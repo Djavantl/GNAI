@@ -1,11 +1,17 @@
 services:
   # PHP-FPM Laravel
   app:
-    build: .
+    build:
+      context: .
+      args:
+        # Passa o ID do seu usuário e grupo do computador para o Docker
+        - USER_ID=${UID:-1000}
+        - GROUP_ID=${GID:-1000}
     container_name: gnai_app
     restart: unless-stopped
     volumes:
       - .:/var/www
+      - /var/www/vendor
     ports:
       - "9000:9000"
     depends_on:

@@ -4,6 +4,9 @@
 
 FROM php:8.4-fpm-alpine
 
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
 # Instala ferramentas e extensões necessárias
 RUN apk update && apk add --no-cache \
     curl \
@@ -13,12 +16,17 @@ RUN apk update && apk add --no-cache \
     libxml2-dev \
     libpng-dev \
     libjpeg-turbo-dev \
+    shadow \
     freetype-dev \
     && rm -rf /var/cache/apk/* \
     \
     && docker-php-ext-install pdo pdo_mysql opcache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
+
+
+# Sincroniza o usuário www-data do container com o seu usuário do computador
+RUN usermod -u ${USER_ID} www-data && groupmod -g ${GROUP_ID} www-data
 
 # Composer global
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -34,7 +42,7 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Instala dependências do Laravel
-RUN composer install --no-scripts --prefer-dist
+RUN composer install --prefer-dist --no-interaction
 
 # Limpa cache Laravel
 RUN php artisan config:clear \
