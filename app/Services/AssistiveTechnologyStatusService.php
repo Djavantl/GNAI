@@ -29,10 +29,10 @@ class AssistiveTechnologyStatusService
         });
     }
 
-    public function deactivate(AssistiveTechnologyStatus $status): AssistiveTechnologyStatus
+    public function toggleActive(AssistiveTechnologyStatus $status): AssistiveTechnologyStatus
     {
         return DB::transaction(function () use ($status) {
-            $status->update(['is_active' => false]);
+            $status->update(['is_active' => ! $status->is_active]);
             return $status;
         });
     }

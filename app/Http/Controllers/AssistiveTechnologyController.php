@@ -2,64 +2,75 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssistiveTechnologyRequest;
 use App\Models\AssistiveTechnology;
-use Illuminate\Http\Request;
+use App\Models\Deficiency;
+use App\Services\AssistiveTechnologyService;
 
 class AssistiveTechnologyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected AssistiveTechnologyService $service;
+
+    public function __construct(AssistiveTechnologyService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index()
     {
-        //
+        $technologies = $this->service->listAll();
+        return view('assistive-technologies.index', compact('technologies'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $deficiencies = Deficiency::where('is_active', true)->get();
+        return view('assistive-technologies.create', compact('deficiencies'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(AssistiveTechnologyRequest $request)
     {
-        //
+        $this->service->store($request->validated());
+
+        return redirect()
+            ->route('assistive-technologies.index')
+            ->with('success', 'Tecnologia assistiva criada com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(AssistiveTechnology $assistiveTechnology)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(AssistiveTechnology $assistiveTechnology)
     {
-        //
+        $deficiencies = Deficiency::where('is_active', true)->get();
+        return view('assistive-technologies.edit', compact('assistiveTechnology', 'deficiencies'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, AssistiveTechnology $assistiveTechnology)
+    public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology)
     {
-        //
+        $this->service->update($assistiveTechnology, $request->validated());
+
+        return redirect()
+            ->route('assistive-technologies.index')
+            ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function toggleActive(AssistiveTechnology $assistiveTechnology)
+    {
+        $tech = $this->service->toggleActive($assistiveTechnology);
+
+        $message = $tech->is_active
+            ? 'Tecnologia assistiva ativada com sucesso!'
+            : 'Tecnologia assistiva desativada com sucesso!';
+
+        return redirect()
+            ->route('assistive-technologies.index')
+            ->with('success', $message);
+    }
+
     public function destroy(AssistiveTechnology $assistiveTechnology)
     {
-        //
+        $this->service->delete($assistiveTechnology);
+
+        return redirect()
+            ->route('assistive-technologies.index')
+            ->with('success', 'Tecnologia assistiva removida com sucesso!');
     }
 }

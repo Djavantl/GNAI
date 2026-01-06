@@ -17,7 +17,7 @@
         </div>
     @endif
 
-    <a href="{{ route('assistive-technology-statuses.create') }}"
+    <a href="{{ route('assistive-technologies-statuses.create') }}"
        class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
         Novo Status
     </a>
@@ -40,13 +40,13 @@
                     {{ $status->is_active ? 'Sim' : 'Não' }}
                 </td>
                 <td class="border p-2 text-center space-x-2">
-                    <a href="{{ route('assistive-technology-statuses.edit', $status) }}"
+                    <a href="{{ route('assistive-technologies-statuses.edit', $status) }}"
                        class="bg-yellow-500 text-white px-3 py-1 rounded">
                         Editar
                     </a>
 
                     @if($status->is_active)
-                        <form action="{{ route('assistive-technology-statuses.deactivate', $status) }}"
+                        <form action="{{ route('assistive-technologies-statuses.deactivate', $status) }}"
                               method="POST"
                               class="inline">
                             @csrf
@@ -57,7 +57,7 @@
                         </form>
                     @endif
 
-                    <form action="{{ route('assistive-technology-statuses.destroy', $status) }}"
+                    <form action="{{ route('assistive-technologies-statuses.destroy', $status) }}"
                           method="POST"
                           class="inline"
                           onsubmit="return confirm('Tem certeza que deseja excluir?')">

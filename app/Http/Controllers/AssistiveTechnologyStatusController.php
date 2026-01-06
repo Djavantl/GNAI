@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreAssistiveTechnologyStatusRequest;
-use App\Http\Requests\UpdateAssistiveTechnologyStatusRequest;
+use App\Http\Requests\AssistiveTechnologyStatusRequest;
 use App\Models\AssistiveTechnologyStatus;
 use App\Services\AssistiveTechnologyStatusService;
 
@@ -29,12 +28,12 @@ class AssistiveTechnologyStatusController extends Controller
         return view('assistive-technology-statuses.create');
     }
 
-    public function store(StoreAssistiveTechnologyStatusRequest $request)
+    public function store(AssistiveTechnologyStatusRequest $request)
     {
         $this->service->store($request->validated());
 
         return redirect()
-            ->route('assistive-technology-statuses.index')
+            ->route('assistive-technologies-statuses.index')
             ->with('success', 'Status criado com sucesso!');
     }
 
@@ -51,25 +50,26 @@ class AssistiveTechnologyStatusController extends Controller
         );
     }
 
-    public function update(UpdateAssistiveTechnologyStatusRequest $request, AssistiveTechnologyStatus $assistiveTechnologyStatus)
+    public function update(AssistiveTechnologyStatusRequest $request, AssistiveTechnologyStatus $assistiveTechnologyStatus)
     {
-        $this->service->update(
-            $assistiveTechnologyStatus,
-            $request->validated()
-        );
+        $this->service->update($assistiveTechnologyStatus, $request->validated());
 
         return redirect()
-            ->route('assistive-technology-statuses.index')
+            ->route('assistive-technologies-statuses.index')
             ->with('success', 'Status atualizado com sucesso!');
     }
 
-    public function deactivate(AssistiveTechnologyStatus $assistiveTechnologyStatus)
+    public function toggleActive(AssistiveTechnologyStatus $assistiveTechnologyStatus)
     {
-        $this->service->deactivate($assistiveTechnologyStatus);
+        $status = $this->service->toggleActive($assistiveTechnologyStatus);
+
+        $message = $status->is_active
+            ? 'Status ativado com sucesso!'
+            : 'Status desativado com sucesso!';
 
         return redirect()
-            ->route('assistive-technology-statuses.index')
-            ->with('success', 'Status desativado com sucesso!');
+            ->route('assistive-technologies-statuses.index')
+            ->with('success', $message);
     }
 
     public function destroy(AssistiveTechnologyStatus $assistiveTechnologyStatus)
@@ -77,7 +77,7 @@ class AssistiveTechnologyStatusController extends Controller
         $this->service->delete($assistiveTechnologyStatus);
 
         return redirect()
-            ->route('assistive-technology-statuses.index')
+            ->route('assistive-technologies-statuses.index')
             ->with('success', 'Registro removido!');
     }
 

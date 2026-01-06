@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class AssistiveTechnology extends Model
 {
     use HasFactory;
@@ -18,18 +20,19 @@ class AssistiveTechnology extends Model
         'quantity',
         'asset_code',
         'conservation_state',
-        'target_audience',
         'requires_training',
         'notes',
         'assistive_technology_status_id',
+        'is_active',
     ];
 
     protected $casts = [
         'requires_training' => 'boolean',
         'quantity' => 'integer',
+        'is_active' => 'boolean',
     ];
 
-    public function status():BelongsTo
+    public function status(): BelongsTo
     {
         return $this->belongsTo(
             AssistiveTechnologyStatus::class,
@@ -37,4 +40,8 @@ class AssistiveTechnology extends Model
         );
     }
 
+    public function deficiencies(): BelongsToMany
+    {
+        return $this->belongsToMany(\App\Models\Deficiency::class, 'assistive_technology_deficiency');
+    }
 }

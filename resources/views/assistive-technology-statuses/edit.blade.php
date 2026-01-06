@@ -9,7 +9,7 @@
 <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
     <h1 class="text-2xl font-bold mb-6">Editar Status</h1>
 
-    <form action="{{ route('assistive-technology-statuses.update', $assistiveTechnologyStatus) }}"
+    <form action="{{ route('assistive-technologies-statuses.update', $assistiveTechnologyStatus) }}"
           method="POST">
         @csrf
         @method('PUT')
@@ -33,11 +33,14 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <input type="hidden" name="is_active" value="0">
+
                 <input type="checkbox"
                        name="is_active"
+                       id="is_active"
                        value="1"
-                    {{ $assistiveTechnologyStatus->is_active ? 'checked' : '' }}>
-                <label>Ativo</label>
+                    {{ old('is_active', $assistiveTechnologyStatus->is_active) ? 'checked' : '' }}>
+                <label for="is_active" class="cursor-pointer">Ativo</label>
             </div>
 
             <div class="flex gap-4 mt-4">
@@ -46,7 +49,7 @@
                     Atualizar
                 </button>
 
-                <a href="{{ route('assistive-technology-statuses.index') }}"
+                <a href="{{ route('assistive-technologies-statuses.index') }}"
                    class="bg-gray-500 text-white px-6 py-2 rounded">
                     Cancelar
                 </a>

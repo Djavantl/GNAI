@@ -9,7 +9,7 @@
 <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
     <h1 class="text-2xl font-bold mb-6">Cadastrar Status</h1>
 
-    <form action="{{ route('assistive-technology-statuses.store') }}" method="POST">
+    <form action="{{ route('assistive-technologies-statuses.store') }}" method="POST">
         @csrf
 
         <div class="grid grid-cols-1 gap-4">
@@ -44,7 +44,7 @@
                     Salvar
                 </button>
 
-                <a href="{{ route('assistive-technology-statuses.index') }}"
+                <a href="{{ route('assistive-technologies-statuses.index') }}"
                    class="bg-gray-500 text-white px-6 py-2 rounded">
                     Cancelar
                 </a>
