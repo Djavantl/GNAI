@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Criar Deficiência</title>
+    <title>Criar Cargo</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -11,9 +11,9 @@
 
 <div class="container py-4">
 
-    <h2 class="mb-3">Cadastrar Nova Deficiência</h2>
+    <h2 class="mb-3">Cadastrar Novo Cargo</h2>
 
-    <a href="{{ route('deficiencies.index') }}" class="btn btn-secondary mb-3">
+    <a href="{{ route('positions.index') }}" class="btn btn-secondary mb-3">
         Voltar
     </a>
 
@@ -28,7 +28,7 @@
         </div>
     @endif
 
-    <form action="{{ route('deficiencies.store') }}" method="POST" class="card p-3">
+    <form action="{{ route('positions.store') }}" method="POST" class="card p-3">
         @csrf
 
         <div class="mb-3">
@@ -38,14 +38,6 @@
                    value="{{ old('name') }}"
                    class="form-control"
                    required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">CID</label>
-            <input type="text"
-                   name="cid_code"
-                   value="{{ old('cid_code') }}"
-                   class="form-control">
         </div>
 
         <div class="mb-3">

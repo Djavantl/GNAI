@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\AssistiveTechnologyStatusController;
 use App\Http\Controllers\DeficiencyController;
 use App\Http\Controllers\AssistiveTechnologyController;
@@ -36,3 +37,12 @@ Route::get('/assistive-technologies/{assistiveTechnology}/edit', [AssistiveTechn
 Route::put('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'update'])->name('assistive-technologies.update');
 Route::patch('/assistive-technologies/{assistiveTechnology}/toggle', [AssistiveTechnologyController::class, 'toggleActive'])->name('assistive-technologies.toggle');
 Route::delete('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'destroy'])->name('assistive-technologies.destroy');
+
+Route::get('/positions', [PositionController::class, 'index'])->name('positions.index');
+Route::get('/positions/create', [PositionController::class, 'create'])->name('positions.create');
+Route::post('/positions/store', [PositionController::class, 'store'])->name('positions.store');
+Route::get('/positions/{position}/edit', [PositionController::class, 'edit'])->name('positions.edit');
+Route::put('/positions/{position}', [PositionController::class, 'update'])->name('positions.update');
+Route::patch('/positions/{position}/deactivate', [PositionController::class, 'toggleActive'])->name('positions.deactivate');
+Route::delete('/positions/{position}', [PositionController::class, 'destroy'])->name('positions.destroy');
+

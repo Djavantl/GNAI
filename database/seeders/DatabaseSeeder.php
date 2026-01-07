@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AssistiveTechnologyStatusSeeder::class, 
             DeficiencySeeder::class,
+            PositionSeeder::class,
         ]);
     }
 }
