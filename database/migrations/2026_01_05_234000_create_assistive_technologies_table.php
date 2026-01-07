@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('assistive_technology_status_id')
                 ->nullable()
                 ->constrained('assistive_technology_statuses')
-                ->onDelete('set null');
+                ->nullOnDelete();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

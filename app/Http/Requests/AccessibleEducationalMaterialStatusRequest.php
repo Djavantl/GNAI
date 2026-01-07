@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class AssistiveTechnologyStatusRequest extends FormRequest
+class AccessibleEducationalMaterialStatusRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,25 +14,18 @@ class AssistiveTechnologyStatusRequest extends FormRequest
 
     public function rules(): array
     {
-        $status = $this->route('assistiveTechnologyStatus');
-        $statusId = $status?->id;
+        $status = $this->route('status');
 
         return [
             'name' => [
                 'required',
                 'string',
-                'max:255',
-                Rule::unique('assistive_technology_statuses', 'name')
-                    ->ignore($statusId),
+                'max:100',
+                Rule::unique('accessible_educational_material_statuses', 'name')
+                    ->ignore($status instanceof \App\Models\AccessibleEducationalMaterialStatus ? $status->id : $status),
             ],
-            'description' => [
-                'nullable',
-                'string',
-            ],
-            'is_active' => [
-                'sometimes',
-                'boolean',
-            ],
+            'description' => 'nullable|string',
+            'is_active' => 'sometimes|boolean',
         ];
     }
 
@@ -40,7 +33,7 @@ class AssistiveTechnologyStatusRequest extends FormRequest
     {
         return [
             'name.required' => 'O nome do status é obrigatório.',
-            'name.unique' => 'Já existe um status com este nome.',
+            'name.unique' => 'Já existe um status com esse nome.',
             'is_active.boolean' => 'O campo ativo deve ser verdadeiro ou falso.',
         ];
     }

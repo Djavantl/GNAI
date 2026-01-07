@@ -6,6 +6,9 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\AssistiveTechnologyStatusController;
 use App\Http\Controllers\DeficiencyController;
 use App\Http\Controllers\AssistiveTechnologyController;
+use App\Http\Controllers\AccessibilityFeatureController;
+use App\Http\Controllers\AccessibleEducationalMaterialController;
+use App\Http\Controllers\AccessibleEducationalMaterialStatusController;
 
 Route::get('/people', [PersonController::class, 'index'])->name('people.index');
 Route::get('/people/create', [PersonController::class, 'create'])->name('people.create');
@@ -46,3 +49,26 @@ Route::put('/positions/{position}', [PositionController::class, 'update'])->name
 Route::patch('/positions/{position}/deactivate', [PositionController::class, 'toggleActive'])->name('positions.deactivate');
 Route::delete('/positions/{position}', [PositionController::class, 'destroy'])->name('positions.destroy');
 
+Route::get('/accessible-educational-material-statuses', [AccessibleEducationalMaterialStatusController::class, 'index'])->name('accessible-educational-material-statuses.index');
+Route::get('/accessible-educational-material-statuses/create', [AccessibleEducationalMaterialStatusController::class, 'create'])->name('accessible-educational-material-statuses.create');
+Route::post('/accessible-educational-material-statuses/store', [AccessibleEducationalMaterialStatusController::class, 'store'])->name('accessible-educational-material-statuses.store');
+Route::get('/accessible-educational-material-statuses/{status}/edit', [AccessibleEducationalMaterialStatusController::class, 'edit'])->name('accessible-educational-material-statuses.edit');
+Route::put('/accessible-educational-material-statuses/{status}', [AccessibleEducationalMaterialStatusController::class, 'update'])->name('accessible-educational-material-statuses.update');
+Route::patch('/accessible-educational-material-statuses/{status}/toggle', [AccessibleEducationalMaterialStatusController::class, 'toggleActive'])->name('accessible-educational-material-statuses.deactivate');
+Route::delete('/accessible-educational-material-statuses/{status}', [AccessibleEducationalMaterialStatusController::class, 'destroy'])->name('accessible-educational-material-statuses.destroy');
+
+Route::get('/accessible-educational-materials', [AccessibleEducationalMaterialController::class, 'index'])->name('accessible-educational-materials.index');
+Route::get('/accessible-educational-materials/create', [AccessibleEducationalMaterialController::class, 'create'])->name('accessible-educational-materials.create');
+Route::post('/accessible-educational-materials/store', [AccessibleEducationalMaterialController::class, 'store'])->name('accessible-educational-materials.store');
+Route::get('/accessible-educational-materials/{accessibleEducationalMaterial}/edit', [AccessibleEducationalMaterialController::class, 'edit'])->name('accessible-educational-materials.edit');
+Route::put('/accessible-educational-materials/{accessibleEducationalMaterial}', [AccessibleEducationalMaterialController::class, 'update'])->name('accessible-educational-materials.update');
+Route::patch('/accessible-educational-materials/{accessibleEducationalMaterial}/toggle', [AccessibleEducationalMaterialController::class, 'toggleActive'])->name('accessible-educational-materials.toggle');
+Route::delete('/accessible-educational-materials/{accessibleEducationalMaterial}', [AccessibleEducationalMaterialController::class, 'destroy'])->name('accessible-educational-materials.destroy');
+
+Route::get('/accessibility-features', [AccessibilityFeatureController::class, 'index'])->name('accessibility-features.index');
+Route::get('/accessibility-features/create', [AccessibilityFeatureController::class, 'create'])->name('accessibility-features.create');
+Route::post('/accessibility-features/store', [AccessibilityFeatureController::class, 'store'])->name('accessibility-features.store');
+Route::get('/accessibility-features/{accessibilityFeature}/edit', [AccessibilityFeatureController::class, 'edit'])->name('accessibility-features.edit');
+Route::put('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'update'])->name('accessibility-features.update');
+Route::patch('/accessibility-features/{accessibilityFeature}/toggle', [AccessibilityFeatureController::class, 'toggleActive'])->name('accessibility-features.toggle');
+Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])->name('accessibility-features.destroy');
