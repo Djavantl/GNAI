@@ -65,4 +65,9 @@ class AccessibleEducationalMaterial extends Model
             'accessible_educational_material_accessibility'
         );
     }
+
+    public function images()
+    {
+        return $this->hasMany(AccessibleEducationalMaterialImage::class);
+    }
 }

@@ -93,10 +93,26 @@ return new class extends Migration {
             );
         });
 
+        Schema::create('accessible_educational_material_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('accessible_educational_material_id')
+                ->constrained('accessible_educational_materials')
+                ->onDelete('cascade')
+                ->name('aem_images_material_id_fk');
+
+            $table->string('path');
+            $table->string('original_name')->nullable();
+            $table->string('mime_type', 50)->nullable();
+            $table->integer('size')->nullable();
+
+            $table->timestamps();
+        });
+
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('accessible_educational_material_images');
         Schema::dropIfExists('accessible_educational_material_deficiency');
         Schema::dropIfExists('accessible_educational_material_accessibility');
         Schema::dropIfExists('accessible_educational_materials');

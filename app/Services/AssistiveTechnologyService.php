@@ -7,10 +7,13 @@ use Illuminate\Support\Facades\DB;
 
 class AssistiveTechnologyService
 {
+    public function __construct(
+        protected AssistiveTechnologyImageService $imageService
+    ) {}
 
     public function listAll()
     {
-        return AssistiveTechnology::with('status', 'deficiencies')
+        return AssistiveTechnology::with(['status', 'deficiencies', 'images'])
             ->orderBy('name')
             ->get();
     }
@@ -22,6 +25,12 @@ class AssistiveTechnologyService
 
             if (isset($data['deficiencies'])) {
                 $tech->deficiencies()->sync($data['deficiencies']);
+            }
+
+            if (isset($data['images']) && is_array($data['images'])) {
+                foreach ($data['images'] as $imageFile) {
+                    $this->imageService->store($tech, $imageFile);
+                }
             }
 
             return $tech;
@@ -37,14 +46,12 @@ class AssistiveTechnologyService
                 $tech->deficiencies()->sync($data['deficiencies']);
             }
 
-            return $tech;
-        });
-    }
+            if (isset($data['images']) && is_array($data['images'])) {
+                foreach ($data['images'] as $imageFile) {
+                    $this->imageService->store($tech, $imageFile);
+                }
+            }
 
-    public function deactivate(AssistiveTechnology $tech): AssistiveTechnology
-    {
-        return DB::transaction(function () use ($tech) {
-            $tech->update(['is_active' => false]);
             return $tech;
         });
     }

@@ -1,0 +1,6 @@
+.git
+.editorconfig
+.dockerignore
+node_modules
+public/storage
+vendor

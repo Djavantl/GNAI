@@ -7,11 +7,16 @@ use Illuminate\Support\Facades\DB;
 
 class AccessibleEducationalMaterialService
 {
+
+    public function __construct(
+        protected AccessibleEducationalMaterialImageService $imageService
+    ) {}
+
     public function listAll()
     {
-        return AccessibleEducationalMaterial::with('status', 'deficiencies')
-            ->orderBy('title')
-            ->get();
+        return AccessibleEducationalMaterial::with('status')
+            ->latest()
+            ->paginate(10);
     }
 
     public function store(array $data): AccessibleEducationalMaterial
@@ -21,6 +26,16 @@ class AccessibleEducationalMaterialService
 
             if (isset($data['deficiencies'])) {
                 $material->deficiencies()->sync($data['deficiencies']);
+            }
+
+            if (isset($data['accessibility_features'])) {
+                $material->accessibilityFeatures()->sync($data['accessibility_features']);
+            }
+
+            if (isset($data['images']) && is_array($data['images'])) {
+                foreach ($data['images'] as $imageFile) {
+                    $this->imageService->store($material, $imageFile);
+                }
             }
 
             return $material;
@@ -36,6 +51,16 @@ class AccessibleEducationalMaterialService
 
             if (isset($data['deficiencies'])) {
                 $material->deficiencies()->sync($data['deficiencies']);
+            }
+
+            if (isset($data['accessibility_features'])) {
+                $material->accessibilityFeatures()->sync($data['accessibility_features']);
+            }
+
+            if (isset($data['images']) && is_array($data['images'])) {
+                foreach ($data['images'] as $imageFile) {
+                    $this->imageService->store($material, $imageFile);
+                }
             }
 
             return $material;

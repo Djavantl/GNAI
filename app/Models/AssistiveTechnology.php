@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AssistiveTechnology extends Model
 {
@@ -43,5 +44,10 @@ class AssistiveTechnology extends Model
     public function deficiencies(): BelongsToMany
     {
         return $this->belongsToMany(\App\Models\Deficiency::class, 'assistive_technology_deficiency');
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(AssistiveTechnologyImage::class);
     }
 }

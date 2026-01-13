@@ -31,9 +31,19 @@ class AssistiveTechnologyRequest extends FormRequest
             'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
             'assistive_technology_status_id' => 'nullable|exists:assistive_technology_statuses,id',
-            'deficiencies' => 'required|array',
+            'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'requires_training' => $this->has('requires_training'),
+            'is_active' => $this->has('is_active'),
+        ]);
     }
 
     public function messages(): array
@@ -47,6 +57,9 @@ class AssistiveTechnologyRequest extends FormRequest
             'assistive_technology_status_id.exists' => 'O status selecionado é inválido.',
             'deficiencies.required' => 'Selecione pelo menos uma deficiência.',
             'deficiencies.*.exists' => 'Uma das deficiências selecionadas é inválida.',
+            'images.*.image' => 'O arquivo deve ser uma imagem.',
+            'images.*.mimes' => 'A imagem deve ser do tipo: jpeg, png, jpg ou webp.',
+            'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',
         ];
     }
 }

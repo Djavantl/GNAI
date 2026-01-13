@@ -18,6 +18,10 @@ RUN apk update && apk add --no-cache \
     libjpeg-turbo-dev \
     shadow \
     freetype-dev \
+    libzip-dev \
+    zip \
+    mysql-client \
+    && docker-php-ext-install zip pcntl \
     && rm -rf /var/cache/apk/* \
     \
     && docker-php-ext-install pdo pdo_mysql opcache \

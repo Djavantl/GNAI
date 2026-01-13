@@ -37,10 +37,27 @@ return new class extends Migration
             $table->timestamps();
             $table->unique(['assistive_technology_id', 'deficiency_id'], 'tech_def_unique');
         });
+
+        Schema::create('assistive_technology_images', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('assistive_technology_id')
+                ->constrained('assistive_technologies')
+                ->onDelete('cascade');
+
+            $table->string('path');
+            $table->string('original_name')->nullable();
+            $table->string('mime_type', 50)->nullable();
+            $table->integer('size')->nullable();
+
+            $table->timestamps();
+        });
+
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('assistive_technology_images');
         Schema::dropIfExists('assistive_technology_deficiency');
         Schema::dropIfExists('assistive_technologies');
     }

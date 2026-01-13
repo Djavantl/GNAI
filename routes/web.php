@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AccessibleEducationalMaterialImageController;
+use App\Http\Controllers\AssistiveTechnologyImageController;
+use App\Http\Controllers\BackupController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PositionController;
@@ -72,3 +75,16 @@ Route::get('/accessibility-features/{accessibilityFeature}/edit', [Accessibility
 Route::put('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'update'])->name('accessibility-features.update');
 Route::patch('/accessibility-features/{accessibilityFeature}/toggle', [AccessibilityFeatureController::class, 'toggleActive'])->name('accessibility-features.toggle');
 Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])->name('accessibility-features.destroy');
+
+Route::post('/assistive-technologies/{assistiveTechnology}/images/store', [AssistiveTechnologyImageController::class, 'store'])->name('assistive-technologies.images.store');
+Route::delete('/assistive-technologies/images/{image}', [AssistiveTechnologyImageController::class, 'destroy'])->name('assistive-technologies.images.destroy');
+
+Route::get('/backups', [BackupController::class, 'index'])->name('backups.index');
+Route::post('/backups/store', [BackupController::class, 'store'])->name('backups.store');
+Route::get('/backups/{id}/edit', [BackupController::class, 'edit'])->name('backups.edit');
+Route::put('/backups/{id}', [BackupController::class, 'update'])->name('backups.update');
+Route::get('/backups/{id}/download', [BackupController::class, 'download'])->name('backups.download');
+Route::delete('/backups/{id}', [BackupController::class, 'destroy'])->name('backups.destroy');
+
+Route::post('/accessible-educational-materials/{material}/images/store', [AccessibleEducationalMaterialImageController::class, 'store'])->name('accessible-educational-materials.images.store');
+Route::delete('/accessible-educational-materials/images/{image}', [AccessibleEducationalMaterialImageController::class, 'destroy'])->name('accessible-educational-materials.images.destroy');
