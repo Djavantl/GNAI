@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccessibleEducationalMaterialImageController;
 use App\Http\Controllers\AssistiveTechnologyImageController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BarrierStatusController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PositionController;
@@ -88,3 +89,11 @@ Route::delete('/backups/{id}', [BackupController::class, 'destroy'])->name('back
 
 Route::post('/accessible-educational-materials/{material}/images/store', [AccessibleEducationalMaterialImageController::class, 'store'])->name('accessible-educational-materials.images.store');
 Route::delete('/accessible-educational-materials/images/{image}', [AccessibleEducationalMaterialImageController::class, 'destroy'])->name('accessible-educational-materials.images.destroy');
+
+Route::get('/barrier-statuses', [BarrierStatusController::class, 'index'])->name('barrier-statuses.index');
+Route::get('/barrier-statuses/create', [BarrierStatusController::class, 'create'])->name('barrier-statuses.create');
+Route::post('/barrier-statuses/store', [BarrierStatusController::class, 'store'])->name('barrier-statuses.store');
+Route::get('/barrier-statuses/{barrierStatus}/edit', [BarrierStatusController::class, 'edit'])->name('barrier-statuses.edit');
+Route::put('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'update'])->name('barrier-statuses.update');
+Route::patch('/barrier-statuses/{barrierStatus}/toggle', [BarrierStatusController::class, 'toggleActive'])->name('barrier-statuses.toggle');
+Route::delete('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'destroy'])->name('barrier-statuses.destroy');
