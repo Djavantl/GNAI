@@ -24,14 +24,14 @@ return [
     'healthy_backup_found_subject_title' => 'Alle backups for :application_name er OK',
     'healthy_backup_found_body' => 'Alle backups for :application_name er ok. Godt gået!',
 
-    'unhealthy_backup_found_subject' => 'Vigtigt: Backups for :application_name fejlbehæftede',
-    'unhealthy_backup_found_subject_title' => 'Vigtigt: Backups for :application_name er fejlbehæftede. :problem',
-    'unhealthy_backup_found_body' => 'Backups for :application_name på disken :disk_name er fejlbehæftede.',
+    'unhealthy_backup_found_subject' => 'Vigtigt: backups for :application_name fejlbehæftede',
+    'unhealthy_backup_found_subject_title' => 'Vigtigt: backups for :application_name er fejlbehæftede. :problem',
+    'unhealthy_backup_found_body' => 'backups for :application_name på disken :disk_name er fejlbehæftede.',
     'unhealthy_backup_found_not_reachable' => 'Backup destinationen kunne ikke findes. :error',
     'unhealthy_backup_found_empty' => 'Denne applikation har ingen backups overhovedet.',
     'unhealthy_backup_found_old' => 'Den seneste backups fra :date er for gammel.',
     'unhealthy_backup_found_unknown' => 'Beklager, en præcis årsag kunne ikke findes.',
-    'unhealthy_backup_found_full' => 'Backups bruger for meget plads. Nuværende disk forbrug er :disk_usage, hvilket er mere end den tilladte grænse på :disk_limit.',
+    'unhealthy_backup_found_full' => 'backups bruger for meget plads. Nuværende disk forbrug er :disk_usage, hvilket er mere end den tilladte grænse på :disk_limit.',
 
     'no_backups_info' => 'Der blev ikke foretaget nogen sikkerhedskopier endnu',
     'application_name' => 'Applikationens navn',

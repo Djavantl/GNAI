@@ -24,14 +24,14 @@ return [
     'healthy_backup_found_subject_title' => 'Alle backups for :application_name er OK',
     'healthy_backup_found_body' => 'Alle backups for :application_name er ok. Godt jobba!',
 
-    'unhealthy_backup_found_subject' => 'Viktig: Backups for :application_name ikke OK',
-    'unhealthy_backup_found_subject_title' => 'Viktig: Backups for :application_name er ikke OK. :problem',
-    'unhealthy_backup_found_body' => 'Backups for :application_name på disken :disk_name er ikke OK.',
+    'unhealthy_backup_found_subject' => 'Viktig: backups for :application_name ikke OK',
+    'unhealthy_backup_found_subject_title' => 'Viktig: backups for :application_name er ikke OK. :problem',
+    'unhealthy_backup_found_body' => 'backups for :application_name på disken :disk_name er ikke OK.',
     'unhealthy_backup_found_not_reachable' => 'Kunne ikke finne backups-destinasjonen. :error',
     'unhealthy_backup_found_empty' => 'Denne applikasjonen mangler backups.',
     'unhealthy_backup_found_old' => 'Den siste backupem fra :date er for gammel.',
     'unhealthy_backup_found_unknown' => 'Beklager, kunne ikke finne nøyaktig årsak.',
-    'unhealthy_backup_found_full' => 'Backups bruker for mye lagringsplass. Nåværende diskbruk er :disk_usage, som er mer enn den tillatte grensen på :disk_limit.',
+    'unhealthy_backup_found_full' => 'backups bruker for mye lagringsplass. Nåværende diskbruk er :disk_usage, som er mer enn den tillatte grensen på :disk_limit.',
 
     'no_backups_info' => 'Ingen sikkerhetskopier ble gjort ennå',
     'application_name' => 'Programnavn',
