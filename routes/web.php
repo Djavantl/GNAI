@@ -13,6 +13,8 @@ use App\Http\Controllers\AssistiveTechnologyController;
 use App\Http\Controllers\AccessibilityFeatureController;
 use App\Http\Controllers\AccessibleEducationalMaterialController;
 use App\Http\Controllers\AccessibleEducationalMaterialStatusController;
+use App\Http\Controllers\SemesterController;
+use App\Http\Controllers\StudentController;
 
 Route::get('/people', [PersonController::class, 'index'])->name('people.index');
 Route::get('/people/create', [PersonController::class, 'create'])->name('people.create');
@@ -97,3 +99,18 @@ Route::get('/barrier-statuses/{barrierStatus}/edit', [BarrierStatusController::c
 Route::put('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'update'])->name('barrier-statuses.update');
 Route::patch('/barrier-statuses/{barrierStatus}/toggle', [BarrierStatusController::class, 'toggleActive'])->name('barrier-statuses.toggle');
 Route::delete('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'destroy'])->name('barrier-statuses.destroy');
+
+Route::get('/semesters', [SemesterController::class, 'index'])->name('semesters.index');
+Route::get('/semesters/create', [SemesterController::class, 'create'])->name('semesters.create');
+Route::post('/semesters/store', [SemesterController::class, 'store'])->name('semesters.store');
+Route::get('/semesters/{semester}/edit', [SemesterController::class, 'edit'])->name('semesters.edit');
+Route::put('/semesters/{semester}', [SemesterController::class, 'update'])->name('semesters.update');
+Route::patch('/semesters/{semester}/set-current', [SemesterController::class, 'setCurrent'])->name('semesters.setCurrent');
+Route::delete('/semesters/{semester}', [SemesterController::class, 'destroy'])->name('semesters.destroy');
+
+Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
+Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
+Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
+Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
+Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
