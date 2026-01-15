@@ -19,7 +19,7 @@
     @endif
 
     <a
-        href="{{ route('barrier-statuses.create') }}"
+        href="{{ route('inclusive-radar.barrier-statuses.create') }}"
         class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block"
     >
         Novo Status
@@ -52,14 +52,14 @@
 
                 <td class="border p-2 text-center space-x-2">
                     <a
-                        href="{{ route('barrier-statuses.edit', $status) }}"
+                        href="{{ route('inclusive-radar.barrier-statuses.edit', $status) }}"
                         class="bg-yellow-500 text-white px-3 py-1 rounded"
                     >
                         Editar
                     </a>
 
                     <form
-                        action="{{ route('barrier-statuses.toggle', $status) }}"
+                        action="{{ route('inclusive-radar.barrier-statuses.toggle', $status) }}"
                         method="POST"
                         class="inline"
                     >
@@ -73,7 +73,7 @@
                     </form>
 
                     <form
-                        action="{{ route('barrier-statuses.destroy', $status) }}"
+                        action="{{ route('inclusive-radar.barrier-statuses.destroy', $status) }}"
                         method="POST"
                         class="inline"
                         onsubmit="return confirm('Tem certeza que deseja excluir?')"

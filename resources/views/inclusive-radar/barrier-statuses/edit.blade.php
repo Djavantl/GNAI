@@ -11,7 +11,7 @@
     <h1 class="text-2xl font-bold mb-6">Editar Status de Barreira</h1>
 
     <form
-        action="{{ route('barrier-statuses.update', $barrierStatus) }}"
+        action="{{ route('inclusive-radar.barrier-statuses.update', $barrierStatus) }}"
         method="POST"
     >
         @csrf
@@ -62,7 +62,7 @@
                 </button>
 
                 <a
-                    href="{{ route('barrier-statuses.index') }}"
+                    href="{{ route('inclusive-radar.barrier-statuses.index') }}"
                     class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded"
                 >
                     Cancelar

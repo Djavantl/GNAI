@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'osm' => [
+        'api_url' => env('OSM_API_URL', 'https://nominatim.openstreetmap.org/search'),
+        'user_agent' => env('OSM_USER_AGENT', 'Mxrlrey - marleyextreme02@gmail.com'),
+    ],
+
 ];

@@ -1,16 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InclusiveRadar\{
-    AssistiveTechnologyController,
+use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     AssistiveTechnologyStatusController,
     AssistiveTechnologyImageController,
     AccessibleEducationalMaterialController,
     AccessibleEducationalMaterialStatusController,
     AccessibleEducationalMaterialImageController,
     AccessibilityFeatureController,
-    BarrierStatusController
-};
+    BarrierCategoryController,
+    BarrierController,
+    BarrierImageController,
+    BarrierStatusController,
+    InstitutionController,
+    LocationController};
 
 //Assistive Technology Statuses
 
@@ -72,6 +75,10 @@ Route::put('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatu
 Route::patch('/accessibility-features/{accessibilityFeature}/toggle', [AccessibilityFeatureController::class, 'toggleActive'])->name('accessibility-features.toggle');
 Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])->name('accessibility-features.destroy');
 
+// Barrier Images
+Route::post('/barriers/{barrier}/images/store', [BarrierImageController::class, 'store'])->name('barriers.images.store');
+Route::delete('/barriers/images/{image}', [BarrierImageController::class, 'destroy'])->name('barriers.images.destroy');
+
 //Barrier Statuses
 
 Route::get('/barrier-statuses', [BarrierStatusController::class, 'index'])->name('barrier-statuses.index');
@@ -81,3 +88,39 @@ Route::get('/barrier-statuses/{barrierStatus}/edit', [BarrierStatusController::c
 Route::put('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'update'])->name('barrier-statuses.update');
 Route::patch('/barrier-statuses/{barrierStatus}/toggle', [BarrierStatusController::class, 'toggleActive'])->name('barrier-statuses.toggle');
 Route::delete('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'destroy'])->name('barrier-statuses.destroy');
+
+// Barrier Categories
+Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])->name('barrier-categories.index');
+Route::get('/barrier-categories/create', [BarrierCategoryController::class, 'create'])->name('barrier-categories.create');
+Route::post('/barrier-categories/store', [BarrierCategoryController::class, 'store'])->name('barrier-categories.store');
+Route::get('/barrier-categories/{barrierCategory}/edit', [BarrierCategoryController::class, 'edit'])->name('barrier-categories.edit');
+Route::put('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'update'])->name('barrier-categories.update');
+Route::patch('/barrier-categories/{barrierCategory}/toggle', [BarrierCategoryController::class, 'toggleActive'])->name('barrier-categories.toggle-active');
+Route::delete('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'destroy'])->name('barrier-categories.destroy');
+
+// Barriers (Contribuições/Denúncias)
+Route::get('/barriers', [BarrierController::class, 'index'])->name('barriers.index');
+Route::get('/barriers/create', [BarrierController::class, 'create'])->name('barriers.create');
+Route::post('/barriers/store', [BarrierController::class, 'store'])->name('barriers.store');
+Route::get('/barriers/{barrier}/edit', [BarrierController::class, 'edit'])->name('barriers.edit');
+Route::put('/barriers/{barrier}', [BarrierController::class, 'update'])->name('barriers.update');
+Route::patch('/barriers/{barrier}/toggle', [BarrierController::class, 'toggleActive'])->name('barriers.toggle');
+Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])->name('barriers.destroy');
+
+// Institutions (Bases do Mapa)
+Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
+Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');
+Route::post('/institutions/store', [InstitutionController::class, 'store'])->name('institutions.store');
+Route::get('/institutions/{institution}/edit', [InstitutionController::class, 'edit'])->name('institutions.edit');
+Route::put('/institutions/{institution}', [InstitutionController::class, 'update'])->name('institutions.update');
+Route::patch('/institutions/{institution}/toggle', [InstitutionController::class, 'toggleActive'])->name('institutions.toggle-active');
+Route::delete('/institutions/{institution}', [InstitutionController::class, 'destroy'])->name('institutions.destroy');
+
+// Locations (Pontos de Referência dentro das Instituições)
+Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
+Route::get('/locations/create', [LocationController::class, 'create'])->name('locations.create');
+Route::post('/locations/store', [LocationController::class, 'store'])->name('locations.store');
+Route::get('/locations/{location}/edit', [LocationController::class, 'edit'])->name('locations.edit');
+Route::put('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
+Route::patch('/locations/{location}/toggle', [LocationController::class, 'toggleActive'])->name('locations.toggle-active');
+Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
