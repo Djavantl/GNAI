@@ -11,11 +11,16 @@ use Illuminate\View\View;
 
 class TypeAttributeController extends Controller
 {
-    public function __construct(private TypeAttributeService $service) {}
+    protected TypeAttributeService $service;
+
+    public function __construct(TypeAttributeService $service)
+    {
+        $this->service = $service;
+    }
 
     public function index(): View
     {
-        $attributes = TypeAttribute::orderBy('label')->get();
+        $attributes = $this->service->listAll();
         return view('inclusive-radar.type-attributes.index', compact('attributes'));
     }
 
@@ -26,39 +31,43 @@ class TypeAttributeController extends Controller
 
     public function store(TypeAttributeRequest $request): RedirectResponse
     {
-        $this->service->create($request->validated());
+        $this->service->store($request->validated());
 
         return redirect()
             ->route('inclusive-radar.type-attributes.index')
             ->with('success', 'Atributo criado com sucesso.');
     }
 
-    public function edit(TypeAttribute $type_attribute): View
+    public function edit(TypeAttribute $typeAttribute): View
     {
-        return view('inclusive-radar.type-attributes.edit', ['attribute' => $type_attribute]);
+        return view('inclusive-radar.type-attributes.edit', compact('typeAttribute'));
     }
 
-    public function update(TypeAttributeRequest $request, TypeAttribute $type_attribute): RedirectResponse
+    public function update(TypeAttributeRequest $request, TypeAttribute $typeAttribute): RedirectResponse
     {
-        $this->service->update($type_attribute, $request->validated());
+        $this->service->update($typeAttribute, $request->validated());
 
         return redirect()
             ->route('inclusive-radar.type-attributes.index')
             ->with('success', 'Atributo atualizado com sucesso.');
     }
 
-    public function toggle(TypeAttribute $type_attribute): RedirectResponse
+    public function toggleActive(TypeAttribute $typeAttribute): RedirectResponse
     {
-        $this->service->toggleActive($type_attribute);
+        $attribute = $this->service->toggleActive($typeAttribute);
+
+        $message = $attribute->is_active
+            ? 'Atributo ativado com sucesso!'
+            : 'Atributo desativado com sucesso!';
 
         return redirect()
             ->back()
-            ->with('success', 'Status de ativo alterado com sucesso.');
+            ->with('success', $message);
     }
 
-    public function destroy(TypeAttribute $type_attribute): RedirectResponse
+    public function destroy(TypeAttribute $typeAttribute): RedirectResponse
     {
-        $this->service->delete($type_attribute);
+        $this->service->delete($typeAttribute);
 
         return redirect()
             ->route('inclusive-radar.type-attributes.index')

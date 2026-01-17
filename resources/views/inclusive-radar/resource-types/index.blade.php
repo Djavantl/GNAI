@@ -25,7 +25,7 @@
         </a>
     </div>
 
-    {{-- Sucesso --}}
+    {{-- Mensagem de Sucesso --}}
     @if(session('success'))
         <div class="bg-green-100 border border-green-200 text-green-800 p-4 rounded mb-6 flex items-center gap-3 shadow-sm">
             <i class="fas fa-check-circle text-green-600"></i>
@@ -45,7 +45,7 @@
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                @forelse($types as $type)
+                @forelse($resourceTypes as $type)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-4 px-4 align-middle">
                             <div class="flex items-center gap-3">
@@ -82,10 +82,13 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
 
+                                {{-- ALTERAÇÃO AQUI: Mudado de .toggle para .toggleActive --}}
                                 <form action="{{ route('inclusive-radar.resource-types.toggle', $type) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="px-3 py-1 rounded transition border text-sm font-semibold {{ $type->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }}">
+                                    <button type="submit"
+                                            title="{{ $type->is_active ? 'Desativar' : 'Ativar' }}"
+                                            class="px-3 py-1 rounded transition border text-sm font-semibold {{ $type->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }}">
                                         <i class="fas {{ $type->is_active ? 'fa-eye-slash' : 'fa-eye' }}"></i>
                                     </button>
                                 </form>
@@ -93,7 +96,8 @@
                                 <form action="{{ route('inclusive-radar.resource-types.destroy', $type) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Excluir este tipo?')" class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold">
+                                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este tipo de recurso?')"
+                                            class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -103,7 +107,7 @@
                 @empty
                     <tr>
                         <td colspan="4" class="py-12 text-center text-gray-400">
-                            <p>Nenhum tipo de recurso cadastrado.</p>
+                            <p class="italic text-lg">Nenhum tipo de recurso cadastrado no momento.</p>
                         </td>
                     </tr>
                 @endforelse

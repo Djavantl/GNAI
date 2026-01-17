@@ -7,30 +7,36 @@ use App\Http\Requests\InclusiveRadar\AccessibleEducationalMaterialImageRequest;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterialImage;
 use App\Services\InclusiveRadar\AccessibleEducationalMaterialImageService;
+use Illuminate\Http\RedirectResponse;
 
 class AccessibleEducationalMaterialImageController extends Controller
 {
-    public function __construct(
-        private AccessibleEducationalMaterialImageService $service
-    ) {}
+    protected AccessibleEducationalMaterialImageService $service;
 
-    public function store(
-        AccessibleEducationalMaterialImageRequest $request,
-        AccessibleEducationalMaterial $material
-    ) {
+    public function __construct(AccessibleEducationalMaterialImageService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function store(AccessibleEducationalMaterialImageRequest $request, AccessibleEducationalMaterial $material): RedirectResponse
+    {
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $imageFile) {
                 $this->service->store($material, $imageFile);
             }
         }
 
-        return back()->with('success', 'Imagens adicionadas com sucesso.');
+        return redirect()
+            ->route('inclusive-radar.accessible-educational-materials.edit', $material)
+            ->with('success', 'Imagens adicionadas com sucesso!');
     }
 
-    public function destroy(AccessibleEducationalMaterialImage $image)
+    public function destroy(AccessibleEducationalMaterialImage $image): RedirectResponse
     {
-        $this->service->delete($image);
+        $material = $this->service->delete($image);
 
-        return back()->with('success', 'Imagem removida com sucesso.');
+        return redirect()
+            ->route('inclusive-radar.accessible-educational-materials.edit', $material)
+            ->with('success', 'Imagem removida com sucesso!');
     }
 }

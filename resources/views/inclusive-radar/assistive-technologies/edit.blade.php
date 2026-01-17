@@ -15,7 +15,6 @@
         <span class="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded">ID: #{{ $assistiveTechnology->id }}</span>
     </div>
 
-    {{-- Exibição de Erros --}}
     @if($errors->any())
         <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
             <p class="font-bold mb-1 italic">Atenção: Existem erros no preenchimento.</p>
@@ -75,14 +74,13 @@
                 </label>
                 <input type="file" name="images[]" multiple accept="image/*"
                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
-                <p class="text-xs text-blue-600 mt-1 italic">As novas fotos serão somadas à galeria atual.</p>
             </div>
 
             {{-- Tipo / Categoria --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block font-bold text-gray-700 mb-1">Tipo / Categoria *</label>
-                    <select name="type_id" id="type_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500 @error('type_id') border-red-500 @enderror">
+                    <select name="type_id" id="type_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500">
                         <option value="">Selecione um tipo</option>
                         @foreach(\App\Models\InclusiveRadar\ResourceType::where('for_assistive_technology', true)->get() as $type)
                             <option value="{{ $type->id }}"
@@ -92,14 +90,12 @@
                         @endforeach
                     </select>
                 </div>
-                {{-- O campo Quantidade foi removido conforme sua migration --}}
             </div>
 
             {{-- SEÇÃO DE ATRIBUTOS DINÂMICOS --}}
             <div id="dynamic-attributes-container" class="hidden mt-4">
                 <label class="block font-bold text-blue-900 mb-2 border-l-4 border-blue-500 pl-2">Especificações Técnicas</label>
                 <div id="dynamic-attributes" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    {{-- Preenchido via JS --}}
                 </div>
             </div>
 
@@ -204,9 +200,6 @@
     const container = document.getElementById('dynamic-attributes');
     const outerContainer = document.getElementById('dynamic-attributes-container');
 
-    /**
-     * Carrega atributos via AJAX e preenche valores salvos
-     */
     function loadAttributes(typeId, currentValues = {}) {
         if (!typeId) {
             container.innerHTML = '';
@@ -214,70 +207,63 @@
             return;
         }
 
-        container.innerHTML = '<p class="text-sm text-gray-400">Carregando especificações...</p>';
+        container.innerHTML = '<p class="text-sm text-gray-500 italic"><i class="fas fa-spinner fa-spin mr-2"></i>Carregando especificações...</p>';
         outerContainer.classList.remove('hidden');
 
-        fetch(`/inclusive-radar/resource-types/${typeId}/attributes`)
-            .then(res => res.json())
+        // CORREÇÃO: Usando a URL absoluta gerada pelo Laravel
+        const apiUrl = "{{ url('inclusive-radar/resource-types') }}/" + typeId + "/attributes";
+
+        fetch(apiUrl)
+            .then(res => {
+                if (!res.ok) throw new Error('Erro na requisição');
+                return res.json();
+            })
             .then(attributes => {
                 container.innerHTML = '';
                 if (attributes.length > 0) {
                     attributes.forEach(attr => {
                         const div = document.createElement('div');
                         div.className = "flex flex-col gap-1";
-
                         const label = document.createElement('label');
                         label.className = "text-sm font-bold text-gray-600";
                         label.innerText = attr.label + (attr.is_required ? ' *' : '');
 
-                        // Valor salvo: vindo do banco ou do old() após erro de validação
                         const savedValue = currentValues[attr.id] || '';
-
                         let input;
 
                         if (attr.field_type === 'text') {
                             input = document.createElement('textarea');
                             input.rows = 2;
                             input.value = savedValue;
-                        }
-                        else if (attr.field_type === 'boolean') {
+                        } else if (attr.field_type === 'boolean') {
                             div.className = "flex items-center gap-3 p-2 bg-white rounded border border-gray-100";
-
-                            // 1. Hidden input para garantir que o valor '0' seja enviado se desmarcado
                             const hiddenInput = document.createElement('input');
                             hiddenInput.type = 'hidden';
                             hiddenInput.name = `attributes[${attr.id}]`;
                             hiddenInput.value = '0';
                             div.appendChild(hiddenInput);
 
-                            // 2. Checkbox real
                             input = document.createElement('input');
                             input.type = 'checkbox';
                             input.value = '1';
                             input.className = "w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500";
-
-                            // Se o valor salvo for '1', 'true' ou 'on', marcamos o checkbox
                             if (savedValue == '1' || savedValue === 'on' || savedValue === true) {
                                 input.checked = true;
                             }
-                        }
-                        else {
+                        } else {
                             input = document.createElement('input');
                             input.type = (attr.field_type === 'integer' || attr.field_type === 'decimal') ? 'number' :
                                 (attr.field_type === 'date' ? 'date' : 'text');
-
                             if (attr.field_type === 'decimal') input.step = '0.01';
                             input.value = savedValue;
                         }
 
-                        // Estilização para campos que não são checkbox
                         if (attr.field_type !== 'boolean') {
                             input.className = 'w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 text-sm';
                         }
 
                         input.name = `attributes[${attr.id}]`;
 
-                        // Ordem de inserção no HTML
                         if (attr.field_type === 'boolean') {
                             div.appendChild(input);
                             div.appendChild(label);
@@ -285,7 +271,6 @@
                             div.appendChild(label);
                             div.appendChild(input);
                         }
-
                         container.appendChild(div);
                     });
                 } else {
@@ -293,37 +278,31 @@
                 }
             })
             .catch(err => {
-                console.error("Erro ao carregar atributos:", err);
-                outerContainer.classList.add('hidden');
+                console.error("Erro:", err);
+                container.innerHTML = '<p class="text-red-500 text-sm">Não foi possível carregar as especificações.</p>';
             });
     }
 
-    // Lógica para determinar os valores iniciais (Banco de dados + Old inputs)
     @php
+        // Recupera valores do banco usando o ID da tecnologia atual
         $databaseValues = \App\Models\InclusiveRadar\ResourceAttributeValue::where('resource_type', 'assistive_technology')
             ->where('resource_id', $assistiveTechnology->id)
             ->pluck('value', 'attribute_id');
 
-        // O old('attributes') tem prioridade sobre o banco de dados
+        // Mescla valores anteriores (caso haja erro de validação) com os do banco
         $finalValues = old('attributes', $databaseValues);
     @endphp
 
     const initialValues = @json($finalValues);
 
-    // 1. Carrega os atributos ao abrir a página usando o tipo atual da tecnologia
+    // Carrega atributos na inicialização
     if (typeSelect.value) {
         loadAttributes(typeSelect.value, initialValues);
     }
 
-    // 2. Evento de mudança de tipo
+    // Recarrega se o usuário mudar o tipo manualmente
     typeSelect.addEventListener('change', function() {
-        // Se o usuário voltar para o tipo original da tecnologia, restauramos os valores salvos
-        if (this.value == "{{ $assistiveTechnology->type_id }}") {
-            loadAttributes(this.value, initialValues);
-        } else {
-            // Se mudar para um novo tipo, começa com os atributos vazios
-            loadAttributes(this.value, {});
-        }
+        loadAttributes(this.value, {});
     });
 </script>
 </body>

@@ -3,12 +3,11 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\ResourceStatus;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Collection;
 
 class ResourceStatusService
 {
-
     public function listAll(): Collection
     {
         return ResourceStatus::orderBy('name')->get();
@@ -30,21 +29,34 @@ class ResourceStatusService
             ->get();
     }
 
+    public function store(array $data): ResourceStatus
+    {
+        return DB::transaction(function () use ($data) {
+            return ResourceStatus::create($data);
+        });
+    }
+
     public function update(ResourceStatus $status, array $data): ResourceStatus
     {
-        unset($data['code']);
-
-        $status->update($data);
-
-        return $status;
+        return DB::transaction(function () use ($status, $data) {
+            unset($data['code']);
+            $status->update($data);
+            return $status;
+        });
     }
 
     public function toggleActive(ResourceStatus $status): ResourceStatus
     {
-        $status->update([
-            'is_active' => ! $status->is_active
-        ]);
+        return DB::transaction(function () use ($status) {
+            $status->update(['is_active' => ! $status->is_active]);
+            return $status;
+        });
+    }
 
-        return $status;
+    public function delete(ResourceStatus $status): void
+    {
+        DB::transaction(function () use ($status) {
+            $status->delete();
+        });
     }
 }

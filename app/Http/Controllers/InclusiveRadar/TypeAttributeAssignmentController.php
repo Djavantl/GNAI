@@ -22,16 +22,22 @@ class TypeAttributeAssignmentController extends Controller
 
     public function index(): View
     {
-        $assignments = TypeAttributeAssignment::with(['type', 'attribute'])->get();
-        return view('inclusive-radar.attribute-assignments.index', compact('assignments'));
+        $assignments = $this->service->listAll();
+
+        return view(
+            'inclusive-radar.attribute-assignments.index',
+            compact('assignments')
+        );
     }
 
     public function create(): View
     {
-        $types = ResourceType::where('is_active', true)->get();
-        $attributes = TypeAttribute::where('is_active', true)->get();
+        $data = $this->service->getCreateData();
 
-        return view('inclusive-radar.attribute-assignments.create', compact('types', 'attributes'));
+        return view(
+            'inclusive-radar.attribute-assignments.create',
+            $data
+        );
     }
 
     public function store(TypeAttributeAssignmentRequest $request): RedirectResponse
@@ -43,40 +49,44 @@ class TypeAttributeAssignmentController extends Controller
 
         return redirect()
             ->route('inclusive-radar.type-attribute-assignments.index')
-            ->with('success', 'Vínculos processados com sucesso.');
+            ->with('success', 'Vínculos processados com sucesso!');
     }
 
-    public function edit($type_id): View
+    public function edit(ResourceType $resourceType): View
     {
-        $type = ResourceType::findOrFail($type_id);
-        $types = ResourceType::where('is_active', true)->get();
-        $attributes = TypeAttribute::where('is_active', true)->get();
+        $data = $this->service->getEditData($resourceType);
 
-        $assignedAttributeIds = TypeAttributeAssignment::where('type_id', $type_id)
-            ->pluck('attribute_id')
-            ->toArray();
-
-        return view('inclusive-radar.attribute-assignments.edit', compact('type', 'types', 'attributes', 'assignedAttributeIds'));
+        return view(
+            'inclusive-radar.attribute-assignments.edit',
+            $data
+        );
     }
 
-    public function update(TypeAttributeAssignmentRequest $request, $id): RedirectResponse
+    public function update(TypeAttributeAssignmentRequest $request, ResourceType $resourceType): RedirectResponse
     {
-        $this->service->syncAttributes($request->type_id, $request->input('attribute_ids', []));
+        $this->service->syncAttributes(
+            $resourceType->id,
+            $request->input('attribute_ids', [])
+        );
 
         return redirect()
             ->route('inclusive-radar.type-attribute-assignments.index')
             ->with('success', 'Atributos atualizados com sucesso para este tipo!');
     }
 
-    public function destroy(TypeAttributeAssignment $assignment)
+    public function destroy(TypeAttributeAssignment $assignment): RedirectResponse
     {
         $this->service->removeAssignment($assignment->id);
-        return redirect()->route('inclusive-radar.type-attribute-assignments.index')->with('success', 'Vinculação removida com sucesso!');
+
+        return redirect()
+            ->route('inclusive-radar.type-attribute-assignments.index')
+            ->with('success', 'Vinculação removida com sucesso!');
     }
 
-    public function getAttributesByType($typeId)
+    public function getAttributesByType(ResourceType $resourceType)
     {
-        $attributes = $this->service->getAttributesByTypeId($typeId);
+        $attributes = $this->service->getAttributesByTypeId($resourceType->id);
+
         return response()->json($attributes);
     }
 }

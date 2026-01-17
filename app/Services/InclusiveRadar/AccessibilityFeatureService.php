@@ -3,18 +3,21 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\AccessibilityFeature;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AccessibilityFeatureService
 {
-    public function listAll()
+    public function listAll(): Collection
     {
         return AccessibilityFeature::orderBy('name')->get();
     }
 
     public function store(array $data): AccessibilityFeature
     {
-        return DB::transaction(fn () => AccessibilityFeature::create($data));
+        return DB::transaction(function () use ($data) {
+            return AccessibilityFeature::create($data);
+        });
     }
 
     public function update(AccessibilityFeature $feature, array $data): AccessibilityFeature
@@ -29,8 +32,9 @@ class AccessibilityFeatureService
     {
         return DB::transaction(function () use ($feature) {
             $feature->update([
-                'is_active' => !$feature->is_active
+                'is_active' => !$feature->is_active,
             ]);
+
             return $feature;
         });
     }

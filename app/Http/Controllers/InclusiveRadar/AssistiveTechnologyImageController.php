@@ -7,29 +7,35 @@ use App\Http\Requests\InclusiveRadar\AssistiveTechnologyImageRequest;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\AssistiveTechnologyImage;
 use App\Services\InclusiveRadar\AssistiveTechnologyImageService;
+use Illuminate\Http\RedirectResponse;
 
 class AssistiveTechnologyImageController extends Controller
 {
-    public function __construct(
-        private AssistiveTechnologyImageService $service
-    ) {}
+    protected AssistiveTechnologyImageService $imageService;
 
-    public function store(
-        AssistiveTechnologyImageRequest $request,
-        AssistiveTechnology $technology
-    ) {
-        $this->service->store(
-            $technology,
+    public function __construct(AssistiveTechnologyImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
+    public function store(AssistiveTechnologyImageRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse
+    {
+        $this->imageService->store(
+            $assistiveTechnology,
             $request->file('image')
         );
 
-        return back()->with('success', 'Imagem adicionada com sucesso.');
+        return redirect()
+            ->route('inclusive-radar.assistive-technologies.edit', $assistiveTechnology)
+            ->with('success', 'Imagem adicionada com sucesso!');
     }
 
-    public function destroy(AssistiveTechnologyImage $image)
+    public function destroy(AssistiveTechnologyImage $image): RedirectResponse
     {
-        $this->service->delete($image);
+        $technology = $this->imageService->delete($image);
 
-        return back()->with('success', 'Imagem removida com sucesso.');
+        return redirect()
+            ->route('inclusive-radar.assistive-technologies.edit', $technology)
+            ->with('success', 'Imagem removida com sucesso!');
     }
 }

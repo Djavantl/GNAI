@@ -14,6 +14,13 @@
         <span class="text-sm text-gray-500">ID: #{{ $material->id }}</span>
     </div>
 
+    {{-- Alertas de Sucesso ou Erro --}}
+    @if(session('success'))
+        <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
+
     @if($errors->any())
         <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
             <p class="font-bold mb-1 italic">Atenção: Existem erros no preenchimento.</p>
@@ -25,6 +32,7 @@
         </div>
     @endif
 
+    {{-- FORMULÁRIO PRINCIPAL --}}
     <form action="{{ route('inclusive-radar.accessible-educational-materials.update', $material->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
@@ -38,7 +46,7 @@
                 @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
-            {{-- Imagens --}}
+            {{-- Gerenciamento de Imagens --}}
             <div class="bg-blue-50 p-4 rounded border border-blue-100">
                 <label class="block font-semibold text-blue-800 mb-1">
                     <i class="fas fa-camera mr-1"></i> Adicionar Novas Imagens
@@ -47,10 +55,17 @@
                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
 
                 @if($material->images->count() > 0)
-                    <div class="mt-4 grid grid-cols-4 gap-2">
+                    <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
                         @foreach($material->images as $image)
-                            <div class="relative group">
-                                <img src="{{ asset('storage/' . $image->path) }}" class="h-20 w-full object-cover rounded border">
+                            <div class="relative group border rounded p-1 bg-white shadow-sm">
+                                <img src="{{ asset('storage/' . $image->path) }}" class="h-24 w-full object-cover rounded">
+
+                                {{-- Botão de Excluir Imagem Individual --}}
+                                <button type="button"
+                                        onclick="if(confirm('Deseja excluir esta imagem permanentemente?')) document.getElementById('delete-image-{{ $image->id }}').submit();"
+                                        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-700 transition z-10">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
                             </div>
                         @endforeach
                     </div>
@@ -139,10 +154,9 @@
                 </div>
             </div>
 
-            {{-- Configurações Ativo/Treinamento (Padronizado com TA) --}}
+            {{-- Status e Treinamento --}}
             <div class="flex flex-col gap-2 p-3 bg-gray-100 rounded border border-gray-300 mt-2">
                 <div class="flex items-center gap-2">
-                    {{-- Importante: hidden antes do checkbox --}}
                     <input type="hidden" name="requires_training" value="0">
                     <input type="checkbox" name="requires_training" id="requires_training" value="1"
                            {{ old('requires_training', $material->requires_training) ? 'checked' : '' }}
@@ -150,7 +164,6 @@
                     <label for="requires_training" class="cursor-pointer text-sm font-medium text-gray-700">Requer Treinamento para o uso</label>
                 </div>
                 <div class="flex items-center gap-2">
-                    {{-- Importante: hidden antes do checkbox --}}
                     <input type="hidden" name="is_active" value="0">
                     <input type="checkbox" name="is_active" id="is_active" value="1"
                            {{ old('is_active', $material->is_active) ? 'checked' : '' }}
@@ -171,6 +184,16 @@
             </div>
         </div>
     </form>
+
+    {{-- FORMULÁRIOS DE DELEÇÃO DE IMAGEM (EXTERNOS AO FORM PRINCIPAL) --}}
+    @foreach($material->images as $image)
+        <form id="delete-image-{{ $image->id }}"
+              action="{{ route('inclusive-radar.accessible-educational-materials.images.destroy', $image->id) }}"
+              method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+    @endforeach
 </div>
 
 <script>
@@ -178,9 +201,6 @@
     const container = document.getElementById('dynamic-attributes');
     const outerContainer = document.getElementById('dynamic-attributes-container');
 
-    /**
-     * Carrega atributos via AJAX e preenche valores salvos
-     */
     function loadAttributes(typeId, currentValues = {}) {
         if (!typeId) {
             container.innerHTML = '';
@@ -188,15 +208,11 @@
             return;
         }
 
-        container.innerHTML = '<p class="text-sm text-gray-400">Carregando especificações...</p>';
+        container.innerHTML = '<p class="text-sm text-gray-400 text-center col-span-2">Carregando especificações...</p>';
         outerContainer.classList.remove('hidden');
 
-        // Note que aqui usamos o prefixo /inclusive-radar/ conforme seu exemplo de TA que funciona
         fetch(`/inclusive-radar/resource-types/${typeId}/attributes`)
-            .then(res => {
-                if (!res.ok) throw new Error('Erro ao buscar atributos');
-                return res.json();
-            })
+            .then(res => res.json())
             .then(attributes => {
                 container.innerHTML = '';
                 if (attributes.length > 0) {
@@ -208,23 +224,31 @@
                         label.className = "text-sm font-bold text-gray-600";
                         label.innerText = attr.label + (attr.is_required ? ' *' : '');
 
-                        // Recupera o valor salvo (Prioridade: ID do atributo)
                         const savedValue = currentValues[attr.id] || '';
 
                         let input;
                         if (attr.field_type === 'text') {
                             input = document.createElement('textarea');
                             input.rows = 2;
+                            input.value = savedValue;
                         } else if (attr.field_type === 'boolean') {
                             div.className = "flex items-center gap-3 p-2 bg-white rounded border border-gray-100";
+
+                            // Input hidden para garantir que o valor '0' seja enviado se o checkbox estiver desmarcado
+                            const hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = `attributes[${attr.id}]`;
+                            hiddenInput.value = '0';
+                            div.appendChild(hiddenInput);
+
                             input = document.createElement('input');
                             input.type = 'checkbox';
+                            input.value = '1';
                             input.className = "w-5 h-5 text-blue-600";
-                            if (savedValue == '1' || savedValue === 'on') input.checked = true;
+                            if (savedValue == '1' || savedValue === 'on' || savedValue === true) input.checked = true;
                         } else {
                             input = document.createElement('input');
-                            input.type = (attr.field_type === 'integer' || attr.field_type === 'decimal') ? 'number' :
-                                (attr.field_type === 'date' ? 'date' : 'text');
+                            input.type = (attr.field_type === 'integer' || attr.field_type === 'decimal') ? 'number' : 'text';
                             if(attr.field_type === 'decimal') input.step = '0.01';
                             input.value = savedValue;
                         }
@@ -232,7 +256,6 @@
                         if (attr.field_type !== 'boolean') {
                             input.className = 'w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 text-sm';
                         }
-
                         input.name = `attributes[${attr.id}]`;
 
                         if(attr.field_type === 'boolean') {
@@ -242,7 +265,6 @@
                             div.appendChild(label);
                             div.appendChild(input);
                         }
-
                         container.appendChild(div);
                     });
                 } else {
@@ -251,27 +273,25 @@
             })
             .catch(err => {
                 console.error("Erro:", err);
-                container.innerHTML = '<p class="text-red-500 text-sm">Erro ao carregar especificações técnicas.</p>';
+                container.innerHTML = '<p class="text-red-500 text-sm">Erro ao carregar especificações.</p>';
             });
     }
 
-    // Lógica para capturar os valores que já existem no banco (Igual ao seu TA)
     @php
         $databaseValues = \App\Models\InclusiveRadar\ResourceAttributeValue::where('resource_type', 'educational_material')
             ->where('resource_id', $material->id)
             ->pluck('value', 'attribute_id');
-
         $finalValues = old('attributes', $databaseValues);
     @endphp
 
     const initialValues = @json($finalValues);
 
-    // 1. Carrega ao abrir a página
+    // Inicialização
     if (typeSelect.value) {
         loadAttributes(typeSelect.value, initialValues);
     }
 
-    // 2. Evento de mudança
+    // Listener de mudança de tipo
     typeSelect.addEventListener('change', function() {
         if(this.value == "{{ $material->type_id }}") {
             loadAttributes(this.value, initialValues);

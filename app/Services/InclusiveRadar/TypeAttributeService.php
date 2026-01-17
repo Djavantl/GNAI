@@ -3,29 +3,41 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\TypeAttribute;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class TypeAttributeService
 {
-    public function create(array $data): TypeAttribute
+    public function listAll(): Collection
     {
-        return TypeAttribute::create($data);
+        return TypeAttribute::orderBy('label')->get();
+    }
+
+    public function store(array $data): TypeAttribute
+    {
+        return DB::transaction(function () use ($data) {
+            return TypeAttribute::create($data);
+        });
     }
 
     public function update(TypeAttribute $attribute, array $data): TypeAttribute
     {
-        $attribute->update($data);
-        return $attribute;
+        return DB::transaction(function () use ($attribute, $data) {
+            $attribute->update($data);
+            return $attribute;
+        });
     }
 
     public function toggleActive(TypeAttribute $attribute): TypeAttribute
     {
-        $attribute->is_active = !$attribute->is_active;
-        $attribute->save();
-        return $attribute;
+        return DB::transaction(function () use ($attribute) {
+            $attribute->update(['is_active' => !$attribute->is_active]);
+            return $attribute;
+        });
     }
 
     public function delete(TypeAttribute $attribute): void
     {
-        $attribute->delete();
+        DB::transaction(fn() => $attribute->delete());
     }
 }

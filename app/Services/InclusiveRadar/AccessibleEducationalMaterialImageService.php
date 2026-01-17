@@ -11,15 +11,15 @@ use Illuminate\Support\Str;
 
 class AccessibleEducationalMaterialImageService
 {
+    private const DISK = 'public';
 
-    public function store(
-        AccessibleEducationalMaterial $material,
-        UploadedFile $file
-    ): AccessibleEducationalMaterialImage {
+    public function store(AccessibleEducationalMaterial $material, UploadedFile $file): AccessibleEducationalMaterialImage
+    {
         return DB::transaction(function () use ($material, $file) {
             $directory = "accessible-educational-materials/{$material->id}";
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs($directory, $filename, 'public');
+            $filename  = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $path      = $file->storeAs($directory, $filename, self::DISK);
+
             return AccessibleEducationalMaterialImage::create([
                 'accessible_educational_material_id' => $material->id,
                 'path'          => $path,
@@ -30,14 +30,21 @@ class AccessibleEducationalMaterialImageService
         });
     }
 
-    public function delete(AccessibleEducationalMaterialImage $image): void
+    public function delete(AccessibleEducationalMaterialImage $image): AccessibleEducationalMaterial
     {
-        DB::transaction(function () use ($image) {
-            if (Storage::disk('public')->exists($image->path)) {
-                Storage::disk('public')->delete($image->path);
+        return DB::transaction(function () use ($image) {
+            $material = $image->accessibleEducationalMaterial;
+
+            if (!$material) {
+                throw new \Exception("Material educacional não encontrado para esta imagem.");
+            }
+
+            if (Storage::disk(self::DISK)->exists($image->path)) {
+                Storage::disk(self::DISK)->delete($image->path);
             }
 
             $image->delete();
+            return $material;
         });
     }
 }

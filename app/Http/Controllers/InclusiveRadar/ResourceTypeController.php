@@ -11,12 +11,21 @@ use Illuminate\View\View;
 
 class ResourceTypeController extends Controller
 {
-    public function __construct(private ResourceTypeService $service) {}
+    protected ResourceTypeService $service;
+
+    public function __construct(ResourceTypeService $service)
+    {
+        $this->service = $service;
+    }
 
     public function index(): View
     {
-        $types = ResourceType::orderBy('name')->get();
-        return view('inclusive-radar.resource-types.index', compact('types'));
+        $resourceTypes = $this->service->listAll();
+
+        return view(
+            'inclusive-radar.resource-types.index',
+            compact('resourceTypes')
+        );
     }
 
     public function create(): View
@@ -26,42 +35,49 @@ class ResourceTypeController extends Controller
 
     public function store(ResourceTypeRequest $request): RedirectResponse
     {
-        $this->service->create($request->validated());
+        $this->service->store($request->validated());
 
         return redirect()
             ->route('inclusive-radar.resource-types.index')
-            ->with('success', 'Tipo de recurso criado com sucesso.');
+            ->with('success', 'Tipo de recurso criado com sucesso!');
     }
 
-    public function edit(ResourceType $resource_type): View
+    public function edit(ResourceType $resourceType): View
     {
-        return view('inclusive-radar.resource-types.edit', ['type' => $resource_type]);
+        return view(
+            'inclusive-radar.resource-types.edit',
+            compact('resourceType')
+        );
     }
 
-    public function update(ResourceTypeRequest $request, ResourceType $resource_type): RedirectResponse
+    public function update(ResourceTypeRequest $request, ResourceType $resourceType): RedirectResponse
     {
-        $this->service->update($resource_type, $request->validated());
+        $this->service->update($resourceType, $request->validated());
 
         return redirect()
             ->route('inclusive-radar.resource-types.index')
-            ->with('success', 'Tipo de recurso atualizado com sucesso.');
+            ->with('success', 'Tipo de recurso atualizado com sucesso!');
     }
 
-    public function toggle(ResourceType $resource_type): RedirectResponse
+    public function toggleActive(ResourceType $resourceType): RedirectResponse
     {
-        $this->service->toggleActive($resource_type);
+        $resourceType = $this->service->toggleActive($resourceType);
 
-        return redirect()
-            ->back()
-            ->with('success', 'Status de ativo alterado com sucesso.');
-    }
-
-    public function destroy(ResourceType $resource_type): RedirectResponse
-    {
-        $this->service->delete($resource_type);
+        $message = $resourceType->is_active
+            ? 'Tipo de recurso ativado com sucesso!'
+            : 'Tipo de recurso desativado com sucesso!';
 
         return redirect()
             ->route('inclusive-radar.resource-types.index')
-            ->with('success', 'Tipo de recurso excluído com sucesso.');
+            ->with('success', $message);
+    }
+
+    public function destroy(ResourceType $resourceType): RedirectResponse
+    {
+        $this->service->delete($resourceType);
+
+        return redirect()
+            ->route('inclusive-radar.resource-types.index')
+            ->with('success', 'Tipo de recurso removido com sucesso!');
     }
 }

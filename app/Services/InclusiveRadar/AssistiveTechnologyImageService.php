@@ -11,33 +11,37 @@ use Illuminate\Support\Str;
 
 class AssistiveTechnologyImageService
 {
-    public function store(
-        AssistiveTechnology $technology,
-        UploadedFile $file
-    ): AssistiveTechnologyImage {
-        return DB::transaction(function () use ($technology, $file) {
+    private const DISK = 'public';
 
-            $directory = "assistive-technologies/{$technology->id}";
-
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-
-            $path = $file->storeAs($directory, $filename, 'public');
+    public function store(AssistiveTechnology $assistiveTechnology, UploadedFile $file): AssistiveTechnologyImage
+    {
+        return DB::transaction(function () use ($assistiveTechnology, $file) {
+            $directory = "assistive-technologies/{$assistiveTechnology->id}";
+            $filename  = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $path      = $file->storeAs($directory, $filename, self::DISK);
 
             return AssistiveTechnologyImage::create([
-                'assistive_technology_id' => $technology->id,
-                'path'          => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type'     => $file->getMimeType(),
-                'size'          => $file->getSize(),
+                'assistive_technology_id' => $assistiveTechnology->id,
+                'path'                     => $path,
+                'original_name'            => $file->getClientOriginalName(),
+                'mime_type'                => $file->getMimeType(),
+                'size'                     => $file->getSize(),
             ]);
         });
     }
 
-    public function delete(AssistiveTechnologyImage $image): void
+    public function delete(AssistiveTechnologyImage $image): AssistiveTechnology
     {
-        DB::transaction(function () use ($image) {
-            Storage::disk('public')->delete($image->path);
+        return DB::transaction(function () use ($image) {
+            $assistiveTechnology = $image->assistiveTechnology;
+            if (!$assistiveTechnology) {
+                throw new \Exception("Não foi possível localizar a tecnologia vinculada a esta imagem.");
+            }
+            if (Storage::disk(self::DISK)->exists($image->path)) {
+                Storage::disk(self::DISK)->delete($image->path);
+            }
             $image->delete();
+            return $assistiveTechnology;
         });
     }
 }

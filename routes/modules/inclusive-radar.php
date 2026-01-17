@@ -24,7 +24,7 @@ Route::get('/resource-types/create', [ResourceTypeController::class, 'create'])-
 Route::post('/resource-types/store', [ResourceTypeController::class, 'store'])->name('resource-types.store');
 Route::get('/resource-types/{resource_type}/edit', [ResourceTypeController::class, 'edit'])->name('resource-types.edit');
 Route::put('/resource-types/{resource_type}', [ResourceTypeController::class, 'update'])->name('resource-types.update');
-Route::patch('/resource-types/{resource_type}/toggle', [ResourceTypeController::class, 'toggle'])->name('resource-types.toggle');
+Route::patch('/resource-types/{resource_type}/toggle', [ResourceTypeController::class, 'toggleActive'])->name('resource-types.toggle');
 Route::delete('/resource-types/{resource_type}', [ResourceTypeController::class, 'destroy'])->name('resource-types.destroy');
 
 // Type Attributes
@@ -34,7 +34,7 @@ Route::get('/type-attributes/create', [TypeAttributeController::class, 'create']
 Route::post('/type-attributes/store', [TypeAttributeController::class, 'store'])->name('type-attributes.store');
 Route::get('/type-attributes/{type_attribute}/edit', [TypeAttributeController::class, 'edit'])->name('type-attributes.edit');
 Route::put('/type-attributes/{type_attribute}', [TypeAttributeController::class, 'update'])->name('type-attributes.update');
-Route::patch('/type-attributes/{type_attribute}/toggle', [TypeAttributeController::class, 'toggle'])->name('type-attributes.toggle');
+Route::patch('/type-attributes/{type_attribute}/toggle', [TypeAttributeController::class, 'toggleActive'])->name('type-attributes.toggle');
 Route::delete('/type-attributes/{type_attribute}', [TypeAttributeController::class, 'destroy'])->name('type-attributes.destroy');
 
 // Type Attribute Assignments
@@ -45,9 +45,7 @@ Route::post('/type-attribute-assignments/store', [TypeAttributeAssignmentControl
 Route::get('/type-attribute-assignments/{assignment}/edit', [TypeAttributeAssignmentController::class, 'edit'])->name('type-attribute-assignments.edit');
 Route::put('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'update'])->name('type-attribute-assignments.update');
 Route::delete('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'destroy'])->name('type-attribute-assignments.destroy');
-
-
-Route::get('/resource-types/{type}/attributes', [TypeAttributeAssignmentController::class, 'getAttributesByType'])->name('resource-types.attributes');
+Route::get('/resource-types/{resourceType}/attributes', [TypeAttributeAssignmentController::class, 'getAttributesByType'])->name('resource-types.attributes');
 
 // Resource Statuses
 

@@ -6,14 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\ResourceStatusRequest;
 use App\Models\InclusiveRadar\ResourceStatus;
 use App\Services\InclusiveRadar\ResourceStatusService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ResourceStatusController extends Controller
 {
-    public function __construct(
-        protected ResourceStatusService $service
-    ) {}
+    protected ResourceStatusService $service;
 
-    public function index()
+    public function __construct(ResourceStatusService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function index(): View
     {
         $statuses = $this->service->listAll();
 
@@ -23,7 +28,21 @@ class ResourceStatusController extends Controller
         );
     }
 
-    public function edit(ResourceStatus $resourceStatus)
+    public function create(): View
+    {
+        return view('inclusive-radar.resource-statuses.create');
+    }
+
+    public function store(ResourceStatusRequest $request): RedirectResponse
+    {
+        $this->service->store($request->validated());
+
+        return redirect()
+            ->route('inclusive-radar.resource-statuses.index')
+            ->with('success', 'Status criado com sucesso!');
+    }
+
+    public function edit(ResourceStatus $resourceStatus): View
     {
         return view(
             'inclusive-radar.resource-statuses.edit',
@@ -31,21 +50,16 @@ class ResourceStatusController extends Controller
         );
     }
 
-    public function update(
-        ResourceStatusRequest $request,
-        ResourceStatus $resourceStatus
-    ) {
-        $this->service->update(
-            $resourceStatus,
-            $request->validated()
-        );
+    public function update(ResourceStatusRequest $request, ResourceStatus $resourceStatus): RedirectResponse
+    {
+        $this->service->update($resourceStatus, $request->validated());
 
         return redirect()
             ->route('inclusive-radar.resource-statuses.index')
             ->with('success', 'Status atualizado com sucesso!');
     }
 
-    public function toggleActive(ResourceStatus $resourceStatus)
+    public function toggleActive(ResourceStatus $resourceStatus): RedirectResponse
     {
         $status = $this->service->toggleActive($resourceStatus);
 
@@ -56,5 +70,14 @@ class ResourceStatusController extends Controller
         return redirect()
             ->route('inclusive-radar.resource-statuses.index')
             ->with('success', $message);
+    }
+
+    public function destroy(ResourceStatus $resourceStatus): RedirectResponse
+    {
+        $this->service->delete($resourceStatus);
+
+        return redirect()
+            ->route('inclusive-radar.resource-statuses.index')
+            ->with('success', 'Status removido com sucesso!');
     }
 }

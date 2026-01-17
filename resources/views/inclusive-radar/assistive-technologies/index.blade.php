@@ -48,7 +48,8 @@
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                @forelse($technologies as $tech)
+                {{-- ALTERAÇÃO AQUI: De $technologies para $assistiveTechnologies --}}
+                @forelse($assistiveTechnologies as $tech)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-4 px-4 align-middle">
                             <div class="flex items-center gap-3">
@@ -57,7 +58,10 @@
                                 </div>
                                 <div>
                                     <span class="font-bold text-gray-900 block">{{ $tech->name }}</span>
-                                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ $tech->type ?: 'Não definido' }}</span>
+                                    {{-- Ajuste para exibir o nome do tipo vindo da relação --}}
+                                    <span class="text-xs text-gray-500 uppercase tracking-wider">
+                                        {{ $tech->type?->name ?: 'Não definido' }}
+                                    </span>
                                 </div>
                             </div>
                         </td>
