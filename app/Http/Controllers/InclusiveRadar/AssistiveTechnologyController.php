@@ -7,53 +7,80 @@ use App\Http\Requests\InclusiveRadar\AssistiveTechnologyRequest;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
+use App\Services\InclusiveRadar\ResourceAttributeValueService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class AssistiveTechnologyController extends Controller
 {
     protected AssistiveTechnologyService $service;
+    protected ResourceAttributeValueService $attributeService;
 
-    public function __construct(AssistiveTechnologyService $service)
-    {
+    public function __construct(
+        AssistiveTechnologyService $service,
+        ResourceAttributeValueService $attributeService
+    ) {
         $this->service = $service;
+        $this->attributeService = $attributeService;
     }
 
-    public function index()
+    public function index(): View
     {
         $technologies = $this->service->listAll();
         return view('inclusive-radar.assistive-technologies.index', compact('technologies'));
     }
 
-    public function create()
+    public function create(): View
     {
         $deficiencies = Deficiency::where('is_active', true)->get();
         return view('inclusive-radar.assistive-technologies.create', compact('deficiencies'));
     }
 
-    public function store(AssistiveTechnologyRequest $request)
+    public function store(AssistiveTechnologyRequest $request): RedirectResponse
     {
-        $this->service->store($request->validated());
+
+        $resource = $this->service->store($request->validated());
+        $dynamicAttributes = $request->input('attributes', []);
+
+        $this->attributeService->saveValues(
+            'assistive_technology',
+            $resource->id,
+            $dynamicAttributes
+        );
 
         return redirect()
             ->route('inclusive-radar.assistive-technologies.index')
             ->with('success', 'Tecnologia assistiva criada com sucesso!');
     }
 
-    public function edit(AssistiveTechnology $assistiveTechnology)
+    public function edit(AssistiveTechnology $assistiveTechnology): View
     {
+
+        $assistiveTechnology->load(['deficiencies', 'images']);
+
         $deficiencies = Deficiency::where('is_active', true)->get();
+
         return view('inclusive-radar.assistive-technologies.edit', compact('assistiveTechnology', 'deficiencies'));
     }
 
-    public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology)
+    public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
+
         $this->service->update($assistiveTechnology, $request->validated());
+        $dynamicAttributes = $request->input('attributes', []);
+
+        $this->attributeService->saveValues(
+            'assistive_technology',
+            $assistiveTechnology->id,
+            $dynamicAttributes
+        );
 
         return redirect()
             ->route('inclusive-radar.assistive-technologies.index')
             ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
     }
 
-    public function toggleActive(AssistiveTechnology $assistiveTechnology)
+    public function toggleActive(AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
         $tech = $this->service->toggleActive($assistiveTechnology);
 
@@ -66,7 +93,7 @@ class AssistiveTechnologyController extends Controller
             ->with('success', $message);
     }
 
-    public function destroy(AssistiveTechnology $assistiveTechnology)
+    public function destroy(AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
         $this->service->delete($assistiveTechnology);
 

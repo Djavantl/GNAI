@@ -19,8 +19,7 @@ class AssistiveTechnologyRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'type' => 'nullable|string|max:100',
-            'quantity' => 'nullable|integer|min:0',
+            'type_id' => 'required|exists:resource_types,id',
             'asset_code' => [
                 'nullable',
                 'string',
@@ -30,19 +29,21 @@ class AssistiveTechnologyRequest extends FormRequest
             'conservation_state' => 'nullable|string|max:50',
             'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
-            'assistive_technology_status_id' => 'nullable|exists:assistive_technology_statuses,id',
+            'status_id' => 'nullable|exists:resource_statuses,id',
+            'notes' => 'nullable|string',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+            'attributes' => 'nullable|array',
         ];
     }
 
     protected function prepareForValidation()
     {
         $this->merge([
-            'requires_training' => $this->has('requires_training'),
-            'is_active' => $this->has('is_active'),
+            'requires_training' => $this->boolean('requires_training'),
+            'is_active' => $this->boolean('is_active'),
         ]);
     }
 
@@ -50,15 +51,10 @@ class AssistiveTechnologyRequest extends FormRequest
     {
         return [
             'name.required' => 'O nome da tecnologia assistiva é obrigatório.',
-            'asset_code.unique' => 'O código do ativo já está em uso.',
-            'quantity.integer' => 'A quantidade deve ser um número inteiro.',
-            'requires_training.boolean' => 'O campo de necessidade de treinamento deve ser verdadeiro ou falso.',
-            'is_active.boolean' => 'O campo ativo deve ser verdadeiro ou falso.',
-            'assistive_technology_status_id.exists' => 'O status selecionado é inválido.',
-            'deficiencies.required' => 'Selecione pelo menos uma deficiência.',
-            'deficiencies.*.exists' => 'Uma das deficiências selecionadas é inválida.',
-            'images.*.image' => 'O arquivo deve ser uma imagem.',
-            'images.*.mimes' => 'A imagem deve ser do tipo: jpeg, png, jpg ou webp.',
+            'type_id.required' => 'Selecione uma categoria/tipo de tecnologia.',
+            'type_id.exists' => 'A categoria selecionada é inválida.',
+            'asset_code.unique' => 'O código patrimonial já está em uso.',
+            'deficiencies.required' => 'Selecione pelo menos um público-alvo (deficiência).',
             'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',
         ];
     }

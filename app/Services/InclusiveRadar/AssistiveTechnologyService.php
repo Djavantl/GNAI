@@ -4,6 +4,7 @@ namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class AssistiveTechnologyService
 {
@@ -11,9 +12,14 @@ class AssistiveTechnologyService
         protected AssistiveTechnologyImageService $imageService
     ) {}
 
-    public function listAll()
+    public function listAll(): Collection
     {
-        return AssistiveTechnology::with(['status', 'deficiencies', 'images'])
+        return AssistiveTechnology::with([
+            'type',
+            'resourceStatus',
+            'deficiencies',
+            'images'
+        ])
             ->orderBy('name')
             ->get();
     }
@@ -23,7 +29,7 @@ class AssistiveTechnologyService
         return DB::transaction(function () use ($data) {
             $tech = AssistiveTechnology::create($data);
 
-            if (isset($data['deficiencies'])) {
+            if (!empty($data['deficiencies'])) {
                 $tech->deficiencies()->sync($data['deficiencies']);
             }
 

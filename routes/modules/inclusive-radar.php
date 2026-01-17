@@ -2,10 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
-    AssistiveTechnologyStatusController,
     AssistiveTechnologyImageController,
     AccessibleEducationalMaterialController,
-    AccessibleEducationalMaterialStatusController,
     AccessibleEducationalMaterialImageController,
     AccessibilityFeatureController,
     BarrierCategoryController,
@@ -13,17 +11,50 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     BarrierImageController,
     BarrierStatusController,
     InstitutionController,
-    LocationController};
+    LocationController,
+    ResourceStatusController,
+    ResourceTypeController,
+    TypeAttributeAssignmentController,
+    TypeAttributeController};
 
-//Assistive Technology Statuses
+// Resource Types
 
-Route::get('/assistive-technologies-statuses', [AssistiveTechnologyStatusController::class, 'index'])->name('assistive-technologies-statuses.index');
-Route::get('/assistive-technologies-statuses/create', [AssistiveTechnologyStatusController::class, 'create'])->name('assistive-technologies-statuses.create');
-Route::post('/assistive-technologies-statuses/store', [AssistiveTechnologyStatusController::class, 'store'])->name('assistive-technologies-statuses.store');
-Route::get('/assistive-technologies-statuses/{assistiveTechnologyStatus}/edit', [AssistiveTechnologyStatusController::class, 'edit'])->name('assistive-technologies-statuses.edit');
-Route::put('/assistive-technologies-statuses/{assistiveTechnologyStatus}', [AssistiveTechnologyStatusController::class, 'update'])->name('assistive-technologies-statuses.update');
-Route::patch('/assistive-technologies-statuses/{assistiveTechnologyStatus}/toggle', [AssistiveTechnologyStatusController::class, 'toggleActive'])->name('assistive-technologies-statuses.toggle');
-Route::delete('/assistive-technologies-statuses/{assistiveTechnologyStatus}', [AssistiveTechnologyStatusController::class, 'destroy'])->name('assistive-technologies-statuses.destroy');
+Route::get('/resource-types', [ResourceTypeController::class, 'index'])->name('resource-types.index');
+Route::get('/resource-types/create', [ResourceTypeController::class, 'create'])->name('resource-types.create');
+Route::post('/resource-types/store', [ResourceTypeController::class, 'store'])->name('resource-types.store');
+Route::get('/resource-types/{resource_type}/edit', [ResourceTypeController::class, 'edit'])->name('resource-types.edit');
+Route::put('/resource-types/{resource_type}', [ResourceTypeController::class, 'update'])->name('resource-types.update');
+Route::patch('/resource-types/{resource_type}/toggle', [ResourceTypeController::class, 'toggle'])->name('resource-types.toggle');
+Route::delete('/resource-types/{resource_type}', [ResourceTypeController::class, 'destroy'])->name('resource-types.destroy');
+
+// Type Attributes
+
+Route::get('/type-attributes', [TypeAttributeController::class, 'index'])->name('type-attributes.index');
+Route::get('/type-attributes/create', [TypeAttributeController::class, 'create'])->name('type-attributes.create');
+Route::post('/type-attributes/store', [TypeAttributeController::class, 'store'])->name('type-attributes.store');
+Route::get('/type-attributes/{type_attribute}/edit', [TypeAttributeController::class, 'edit'])->name('type-attributes.edit');
+Route::put('/type-attributes/{type_attribute}', [TypeAttributeController::class, 'update'])->name('type-attributes.update');
+Route::patch('/type-attributes/{type_attribute}/toggle', [TypeAttributeController::class, 'toggle'])->name('type-attributes.toggle');
+Route::delete('/type-attributes/{type_attribute}', [TypeAttributeController::class, 'destroy'])->name('type-attributes.destroy');
+
+// Type Attribute Assignments
+
+Route::get('/type-attribute-assignments', [TypeAttributeAssignmentController::class, 'index'])->name('type-attribute-assignments.index');
+Route::get('/type-attribute-assignments/create', [TypeAttributeAssignmentController::class, 'create'])->name('type-attribute-assignments.create');
+Route::post('/type-attribute-assignments/store', [TypeAttributeAssignmentController::class, 'store'])->name('type-attribute-assignments.store');
+Route::get('/type-attribute-assignments/{assignment}/edit', [TypeAttributeAssignmentController::class, 'edit'])->name('type-attribute-assignments.edit');
+Route::put('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'update'])->name('type-attribute-assignments.update');
+Route::delete('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'destroy'])->name('type-attribute-assignments.destroy');
+
+
+Route::get('/resource-types/{type}/attributes', [TypeAttributeAssignmentController::class, 'getAttributesByType'])->name('resource-types.attributes');
+
+// Resource Statuses
+
+Route::get('/resource-statuses', [ResourceStatusController::class, 'index'])->name('resource-statuses.index');
+Route::get('/resource-statuses/{resourceStatus}/edit', [ResourceStatusController::class, 'edit'])->name('resource-statuses.edit');
+Route::put('/resource-statuses/{resourceStatus}', [ResourceStatusController::class, 'update'])->name('resource-statuses.update');
+Route::patch('/resource-statuses/{resourceStatus}/toggle', [ResourceStatusController::class, 'toggleActive'])->name('resource-statuses.toggle-active');
 
 //Assistive Technologies
 
@@ -40,25 +71,15 @@ Route::delete('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnol
 Route::post('/assistive-technologies/{assistiveTechnology}/images/store', [AssistiveTechnologyImageController::class, 'store'])->name('assistive-technologies.images.store');
 Route::delete('/assistive-technologies/images/{image}', [AssistiveTechnologyImageController::class, 'destroy'])->name('assistive-technologies.images.destroy');
 
-//Accessible Educational Material Statuses
-
-Route::get('/accessible-educational-material-statuses', [AccessibleEducationalMaterialStatusController::class, 'index'])->name('accessible-educational-material-statuses.index');
-Route::get('/accessible-educational-material-statuses/create', [AccessibleEducationalMaterialStatusController::class, 'create'])->name('accessible-educational-material-statuses.create');
-Route::post('/accessible-educational-material-statuses/store', [AccessibleEducationalMaterialStatusController::class, 'store'])->name('accessible-educational-material-statuses.store');
-Route::get('/accessible-educational-material-statuses/{status}/edit', [AccessibleEducationalMaterialStatusController::class, 'edit'])->name('accessible-educational-material-statuses.edit');
-Route::put('/accessible-educational-material-statuses/{status}', [AccessibleEducationalMaterialStatusController::class, 'update'])->name('accessible-educational-material-statuses.update');
-Route::patch('/accessible-educational-material-statuses/{status}/toggle', [AccessibleEducationalMaterialStatusController::class, 'toggleActive'])->name('accessible-educational-material-statuses.toggle');
-Route::delete('/accessible-educational-material-statuses/{status}', [AccessibleEducationalMaterialStatusController::class, 'destroy'])->name('accessible-educational-material-statuses.destroy');
-
 //Accessible Educational Materials
 
 Route::get('/accessible-educational-materials', [AccessibleEducationalMaterialController::class, 'index'])->name('accessible-educational-materials.index');
 Route::get('/accessible-educational-materials/create', [AccessibleEducationalMaterialController::class, 'create'])->name('accessible-educational-materials.create');
 Route::post('/accessible-educational-materials/store', [AccessibleEducationalMaterialController::class, 'store'])->name('accessible-educational-materials.store');
-Route::get('/accessible-educational-materials/{accessibleEducationalMaterial}/edit', [AccessibleEducationalMaterialController::class, 'edit'])->name('accessible-educational-materials.edit');
-Route::put('/accessible-educational-materials/{accessibleEducationalMaterial}', [AccessibleEducationalMaterialController::class, 'update'])->name('accessible-educational-materials.update');
-Route::patch('/accessible-educational-materials/{accessibleEducationalMaterial}/toggle', [AccessibleEducationalMaterialController::class, 'toggleActive'])->name('accessible-educational-materials.toggle');
-Route::delete('/accessible-educational-materials/{accessibleEducationalMaterial}', [AccessibleEducationalMaterialController::class, 'destroy'])->name('accessible-educational-materials.destroy');
+Route::get('/accessible-educational-materials/{material}/edit', [AccessibleEducationalMaterialController::class, 'edit'])->name('accessible-educational-materials.edit');
+Route::put('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'update'])->name('accessible-educational-materials.update');
+Route::patch('/accessible-educational-materials/{material}/toggle', [AccessibleEducationalMaterialController::class, 'toggleActive'])->name('accessible-educational-materials.toggle');
+Route::delete('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'destroy'])->name('accessible-educational-materials.destroy');
 
 //Accessible Educational Material Images
 

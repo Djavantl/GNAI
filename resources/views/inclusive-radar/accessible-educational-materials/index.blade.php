@@ -33,13 +33,14 @@
         </div>
     @endif
 
-    {{-- Tabela Estilo TA/Backup --}}
+    {{-- Tabela Estilo TA / GNAI --}}
     <div class="bg-white p-6 rounded shadow border-t-4 border-blue-600">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                 <tr class="border-b-2 border-gray-100">
                     <th class="py-3 px-4 font-bold text-gray-700">Título / Tipo</th>
+                    <th class="py-3 px-4 font-bold text-gray-700">Público-alvo</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-center">Patrimônio</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-center">Status</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-center">Ativo</th>
@@ -49,6 +50,7 @@
                 <tbody class="divide-y divide-gray-100">
                 @forelse($materials as $material)
                     <tr class="hover:bg-gray-50 transition">
+                        {{-- Título e Tipo --}}
                         <td class="py-4 px-4 align-middle">
                             <div class="flex items-center gap-3">
                                 <div class="bg-blue-100 text-blue-600 p-2 rounded">
@@ -56,38 +58,65 @@
                                 </div>
                                 <div>
                                     <span class="font-bold text-gray-900 block">{{ $material->title }}</span>
-                                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ $material->type }}</span>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wider">{{ $material->type ?: 'Material' }}</span>
                                 </div>
                             </div>
                         </td>
 
+                        {{-- Público-alvo (Tags de Deficiências) --}}
+                        <td class="py-4 px-4 align-middle">
+                            <div class="flex flex-wrap gap-1 max-w-xs">
+                                @forelse($material->deficiencies as $deficiency)
+                                    <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded border border-gray-200 uppercase font-medium">
+                                        {{ $deficiency->name }}
+                                    </span>
+                                @empty
+                                    <span class="text-gray-400 text-xs italic">Não definido</span>
+                                @endforelse
+                            </div>
+                        </td>
+
+                        {{-- Patrimônio --}}
                         <td class="py-4 px-4 text-center align-middle font-mono text-sm text-gray-600">
                             {{ $material->asset_code ?: 'N/A' }}
                         </td>
 
-                        {{-- No seu index.blade.php, procure a linha do status e mude para: --}}
+                        {{-- Status --}}
                         <td class="py-4 px-4 text-center align-middle">
                             <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold border border-amber-100">
-                                {{ $material->status?->name ?? 'Sem Status' }}
+                                {{ $material->resourceStatus?->name ?? 'Sem Status' }}
                             </span>
                         </td>
 
+                        {{-- Ativo (SIM/NÃO) --}}
                         <td class="py-4 px-4 text-center align-middle">
                             @if($material->is_active)
-                                <span class="text-green-600 bg-green-50 px-2 py-1 rounded text-xs font-bold">SIM</span>
+                                <span class="text-green-600 bg-green-50 px-2 py-1 rounded text-xs font-bold border border-green-100">SIM</span>
                             @else
-                                <span class="text-red-600 bg-red-50 px-2 py-1 rounded text-xs font-bold">NÃO</span>
+                                <span class="text-red-600 bg-red-50 px-2 py-1 rounded text-xs font-bold border border-red-100">NÃO</span>
                             @endif
                         </td>
 
+                        {{-- Ações conforme TA --}}
                         <td class="py-4 px-4 text-right align-middle">
                             <div class="flex justify-end gap-2">
                                 {{-- Botão Editar --}}
                                 <a href="{{ route('inclusive-radar.accessible-educational-materials.edit', $material) }}"
                                    class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm font-semibold"
-                                   title="Editar Material">
+                                   title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
+
+                                {{-- Botão Ativar/Desativar (Toggle) --}}
+                                <form action="{{ route('inclusive-radar.accessible-educational-materials.toggle', $material) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit"
+                                            class="{{ $material->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }} px-3 py-1 rounded transition border text-sm font-semibold"
+                                            title="{{ $material->is_active ? 'Desativar' : 'Ativar' }}">
+                                        <i class="fas {{ $material->is_active ? 'fa-eye-slash' : 'fa-eye' }}"></i>
+                                    </button>
+                                </form>
 
                                 {{-- Botão Excluir --}}
                                 <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}" method="POST" class="inline">
@@ -96,7 +125,7 @@
                                     <button type="submit"
                                             onclick="return confirm('Excluir este material permanentemente?')"
                                             class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold"
-                                            title="Excluir Material">
+                                            title="Excluir">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -105,34 +134,27 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="py-12 text-center text-gray-400">
-                            <i class="fas fa-box-open text-4xl mb-4 block opacity-20"></i>
-                            <p class="text-lg">Nenhum material cadastrado.</p>
-                            <p class="text-sm">Clique em "Novo Material" para começar.</p>
+                        <td colspan="6" class="py-12 text-center text-gray-400">
+                            <i class="fas fa-book-open text-4xl mb-4 block opacity-20"></i>
+                            <p class="text-lg">Nenhum material pedagógico encontrado.</p>
+                            <p class="text-sm">Clique em "Novo Material" para iniciar o cadastro.</p>
                         </td>
                     </tr>
                 @endforelse
                 </tbody>
             </table>
         </div>
-
-        {{-- Paginação --}}
-        @if($materials->hasPages())
-            <div class="mt-6 pt-4 border-t border-gray-100">
-                {{ $materials->links() }}
-            </div>
-        @endif
     </div>
 
-    {{-- Rodapé Informativo --}}
+    {{-- Rodapé Informativo Estilo GNAI --}}
     <div class="mt-8 bg-blue-50 p-4 rounded border border-blue-100 flex items-center gap-4">
         <div class="bg-blue-600 text-white p-3 rounded-full shadow-lg">
             <i class="fas fa-info-circle text-xl"></i>
         </div>
         <div>
-            <h3 class="font-bold text-blue-800 text-sm uppercase tracking-wider">Gestão de Acervo</h3>
+            <h3 class="font-bold text-blue-800 text-sm uppercase tracking-wider">Gestão de Materiais Pedagógicos</h3>
             <p class="text-sm text-blue-700">
-                Lembre-se de vincular os <b>Recursos de Acessibilidade</b> em cada material para facilitar a busca pelos alunos.
+                Lembre-se de vincular as deficiências em cada material para garantir que os filtros de busca no radar funcionem com precisão.
             </p>
         </div>
     </div>

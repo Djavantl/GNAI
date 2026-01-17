@@ -7,14 +7,6 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('accessible_educational_material_statuses', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
-
         Schema::create('accessibility_features', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255);
@@ -23,38 +15,33 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-
         Schema::create('accessible_educational_materials', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('type')->nullable();
-            $table->string('format')->nullable();
-            $table->string('language', 10)->nullable();
-            $table->string('isbn')->nullable()->unique();
-            $table->string('publisher')->nullable();
-            $table->string('edition')->nullable();
-            $table->date('publication_date')->nullable();
-            $table->integer('pages')->nullable();
-            $table->string('asset_code', 50)->nullable()->unique();
-            $table->string('location')->nullable();
-            $table->string('conservation_state', 50)->nullable();
-            $table->boolean('requires_training')->default(false);
-            $table->decimal('cost', 10, 2)->nullable();
 
-            $table->foreignId('accessible_educational_material_status_id')
+            $table->foreignId('type_id')
                 ->nullable()
-                ->constrained('accessible_educational_material_statuses')
-                ->nullOnDelete()
-                ->name('aem_status_id_fk');
+                ->constrained('resource_types')
+                ->nullOnDelete();
+
+            $table->boolean('requires_training')->default(false);
+            $table->string('asset_code', 50)->nullable()->unique();
+            $table->text('notes')->nullable();
+
+            $table->foreignId('status_id')
+                ->nullable()
+                ->constrained('resource_statuses')
+                ->nullOnDelete();
 
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->index(['type', 'is_active']);
+            $table->index(['type_id', 'is_active']);
         });
 
         Schema::create('accessible_educational_material_accessibility', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('accessible_educational_material_id')
                 ->constrained('accessible_educational_materials')
                 ->cascadeOnDelete()
@@ -70,7 +57,6 @@ return new class extends Migration {
                 'aem_accessibility_unique'
             );
         });
-
 
         Schema::create('accessible_educational_material_deficiency', function (Blueprint $table) {
             $table->id();
@@ -95,19 +81,18 @@ return new class extends Migration {
 
         Schema::create('accessible_educational_material_images', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('accessible_educational_material_id')
                 ->constrained('accessible_educational_materials')
                 ->onDelete('cascade')
-                ->name('aem_images_material_id_fk');
+                ->name('aem_image_material_fk');
 
             $table->string('path');
             $table->string('original_name')->nullable();
             $table->string('mime_type', 50)->nullable();
             $table->integer('size')->nullable();
-
             $table->timestamps();
         });
-
     }
 
     public function down(): void
@@ -117,6 +102,5 @@ return new class extends Migration {
         Schema::dropIfExists('accessible_educational_material_accessibility');
         Schema::dropIfExists('accessible_educational_materials');
         Schema::dropIfExists('accessibility_features');
-        Schema::dropIfExists('accessible_educational_material_statuses');
     }
 };

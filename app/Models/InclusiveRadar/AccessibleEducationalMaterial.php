@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AccessibleEducationalMaterial extends Model
 {
@@ -16,59 +17,57 @@ class AccessibleEducationalMaterial extends Model
 
     protected $fillable = [
         'title',
-        'type',
-        'format',
-        'language',
-        'isbn',
-        'publisher',
-        'edition',
-        'publication_date',
-        'pages',
-        'accessibility_features',
+        'type_id',
         'asset_code',
-        'location',
-        'conservation_state',
         'requires_training',
-        'cost',
-        'accessible_educational_material_status_id',
+        'notes',
+        'status_id',
         'is_active',
     ];
 
     protected $casts = [
-        'publication_date' => 'date',
-        'pages' => 'integer',
-        'accessibility_features' => 'array',
         'requires_training' => 'boolean',
         'is_active' => 'boolean',
-        'cost' => 'decimal:2',
     ];
 
-    public function status(): BelongsTo
+    public function type(): BelongsTo
     {
-        return $this->belongsTo(
-            AccessibleEducationalMaterialStatus::class,
-            'accessible_educational_material_status_id'
-        );
+        return $this->belongsTo(ResourceType::class, 'type_id');
+    }
+
+    public function attributeValues(): HasMany
+    {
+        return $this->hasMany(ResourceAttributeValue::class, 'resource_id')
+            ->where('resource_type', 'accessible_educational_material');
+    }
+
+    public function resourceStatus(): BelongsTo
+    {
+        return $this->belongsTo(ResourceStatus::class, 'status_id');
     }
 
     public function deficiencies(): BelongsToMany
     {
         return $this->belongsToMany(
             Deficiency::class,
-            'accessible_educational_material_deficiency'
+            'accessible_educational_material_deficiency',
+            'accessible_educational_material_id',
+            'deficiency_id'
         );
     }
 
-    public function accessibilities(): BelongsToMany
+    public function accessibilityFeatures(): BelongsToMany
     {
         return $this->belongsToMany(
             AccessibilityFeature::class,
-            'accessible_educational_material_accessibility'
+            'accessible_educational_material_accessibility',
+            'accessible_educational_material_id',
+            'accessibility_feature_id'
         );
     }
 
-    public function images()
+    public function images(): HasMany
     {
-        return $this->hasMany(AccessibleEducationalMaterialImage::class);
+        return $this->hasMany(AccessibleEducationalMaterialImage::class, 'accessible_educational_material_id');
     }
 }

@@ -7,14 +7,18 @@ use Illuminate\Support\Facades\DB;
 
 class AccessibleEducationalMaterialService
 {
-
     public function __construct(
         protected AccessibleEducationalMaterialImageService $imageService
     ) {}
 
     public function listAll()
     {
-        return AccessibleEducationalMaterial::with('status')
+        return AccessibleEducationalMaterial::with([
+            'resourceStatus',
+            'deficiencies',
+            'accessibilityFeatures',
+            'images',
+        ])
             ->latest()
             ->paginate(10);
     }
@@ -24,11 +28,11 @@ class AccessibleEducationalMaterialService
         return DB::transaction(function () use ($data) {
             $material = AccessibleEducationalMaterial::create($data);
 
-            if (isset($data['deficiencies'])) {
+            if (!empty($data['deficiencies'])) {
                 $material->deficiencies()->sync($data['deficiencies']);
             }
 
-            if (isset($data['accessibility_features'])) {
+            if (!empty($data['accessibility_features'])) {
                 $material->accessibilityFeatures()->sync($data['accessibility_features']);
             }
 
@@ -42,10 +46,8 @@ class AccessibleEducationalMaterialService
         });
     }
 
-    public function update(
-        AccessibleEducationalMaterial $material,
-        array $data
-    ): AccessibleEducationalMaterial {
+    public function update(AccessibleEducationalMaterial $material, array $data): AccessibleEducationalMaterial
+    {
         return DB::transaction(function () use ($material, $data) {
             $material->update($data);
 

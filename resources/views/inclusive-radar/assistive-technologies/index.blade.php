@@ -72,7 +72,7 @@
 
                         <td class="py-4 px-4 text-center align-middle">
                             <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold border border-amber-100">
-                                {{ $tech->status?->name ?? 'Sem Status' }}
+                                {{ $tech->resourceStatus?->name ?? 'Sem Status' }}
                             </span>
                         </td>
 
