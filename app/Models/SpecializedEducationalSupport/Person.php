@@ -52,4 +52,10 @@ class Person extends Model
     {
         return self::genderOptions()[$this->gender] ?? $this->gender;
     }
+
+    public function guardians()
+    {
+        return $this->hasMany(Guardian::class);
+    }
+
 }

@@ -18,11 +18,12 @@ services:
       db:
         condition: service_healthy
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: gnai_db
-      DB_USERNAME: gnai_user
-      DB_PASSWORD: gnai2026ads
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
 
   # MySQL
   db:
@@ -31,10 +32,10 @@ services:
     container_name: gnai_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: gnai2026ads
-      MYSQL_DATABASE: gnai_db
-      MYSQL_USER: gnai_user
-      MYSQL_PASSWORD: gnai2026ads
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
       - dbdata:/var/lib/mysql
     ports:

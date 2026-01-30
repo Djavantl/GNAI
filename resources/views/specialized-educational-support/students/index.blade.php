@@ -40,6 +40,12 @@
                         <a href="{{ route('specialized-educational-support.students.edit', $student) }}" class="btn btn-sm btn-warning">
                             Editar
                         </a>
+                        <a href="{{ route('specialized-educational-support.guardians.index', $student) }}" class="btn btn-sm btn-warning">
+                            Responsáveis
+                        </a>
+                        <a href="{{ route('specialized-educational-support.guardians.create', $student) }}" class="btn btn-sm btn-warning">
+                            Adicionar Responsavel
+                        </a>
                         <form action="{{ route('specialized-educational-support.students.destroy', $student) }}" method="POST">
                             @csrf
                             @method('DELETE')

@@ -25,6 +25,11 @@ class Student extends Model
         return $this->belongsTo(Person::class);
     }
 
+    public function guardians()
+    {
+        return $this->hasMany(Guardian::class);
+    }
+
     /*
      * Helpers
      */

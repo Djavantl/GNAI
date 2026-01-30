@@ -22,4 +22,9 @@ class Position extends Model
     //         $query->where('is_active', true);
     //     });
     // }
+
+    public function professionals(): HasMany
+    {
+        return $this->hasMany(Professional::class);
+    }
 }

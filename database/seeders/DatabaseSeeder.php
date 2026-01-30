@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\PositionSeeder;
+use Database\Seeders\SpecializedEducationalSupport\PSPUSeeder;
 use Database\Seeders\InclusiveRadar\BarrierCategorySeeder;
 use Database\Seeders\InclusiveRadar\BarrierStatusSeeder;
 use Database\Seeders\InclusiveRadar\ResourceTypeSeeder;
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             TypeAttributeAssignmentSeeder::class,
             AccessibilityFeatureSeeder::class,
             ResourceStatusSeeder::class,
+            PSPUSeeder::class,
         ]);
     }
 }
