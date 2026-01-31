@@ -33,22 +33,40 @@
                 @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
-            {{-- Aplicação --}}
-            <div class="bg-gray-50 p-4 rounded border border-gray-200">
-                <label class="block font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Este tipo se aplica a:</label>
-                <div class="flex flex-col gap-3">
-                    <label class="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" name="for_assistive_technology" value="1" {{ old('for_assistive_technology') ? 'checked' : '' }} class="w-5 h-5 text-blue-600 rounded">
-                        <span class="text-gray-700 font-medium">Tecnologias Assistivas (Hardware/Equipamentos)</span>
-                    </label>
-                    <label class="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" name="for_educational_material" value="1" {{ old('for_educational_material') ? 'checked' : '' }} class="w-5 h-5 text-blue-600 rounded">
-                        <span class="text-gray-700 font-medium">Materiais Didáticos / Educacionais</span>
-                    </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- Aplicação --}}
+                <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                    <label class="block font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Este tipo se aplica a:</label>
+                    <div class="flex flex-col gap-3">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="for_assistive_technology" value="1" {{ old('for_assistive_technology') ? 'checked' : '' }} class="w-5 h-5 text-blue-600 rounded">
+                            <span class="text-gray-700 font-medium text-sm">Tecnologias Assistivas</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="for_educational_material" value="1" {{ old('for_educational_material') ? 'checked' : '' }} class="w-5 h-5 text-blue-600 rounded">
+                            <span class="text-gray-700 font-medium text-sm">Materiais Didáticos</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- É Digital? (NOVO CAMPO) --}}
+                <div class="bg-blue-50 p-4 rounded border border-blue-200">
+                    <label class="block font-bold text-blue-800 mb-3 text-sm uppercase tracking-wide italic">Natureza do Recurso:</label>
+                    <div class="flex flex-col gap-2">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="is_digital" value="1" {{ old('is_digital') ? 'checked' : '' }} class="w-5 h-5 text-indigo-600 rounded border-blue-300">
+                            <div>
+                                <span class="text-blue-900 font-bold block text-sm">Este recurso é digital?</span>
+                                <span class="text-blue-700 text-xs italic leading-tight block">
+                                    (Marque para PDFs, Softwares, Links ou Vídeos. Itens físicos como cadeiras e lupas devem ficar desmarcados.)
+                                </span>
+                            </div>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            {{-- Ativo --}}
+            {{-- Status Ativo --}}
             <div class="flex items-center gap-2 p-3 bg-green-50 rounded border border-green-100">
                 <input type="hidden" name="is_active" value="0">
                 <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', '1') == '1' ? 'checked' : '' }} class="w-4 h-4 text-green-600">

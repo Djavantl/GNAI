@@ -13,7 +13,7 @@
 
     @if($errors->any())
         <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-            <p class="font-bold mb-1 italic">Atenção: Existem erros no preenchimento.</p>
+            <p class="font-bold mb-1 italic text-sm">Atenção: Existem erros no preenchimento.</p>
             <ul class="list-disc ml-5 text-sm">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -48,26 +48,29 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block font-bold text-gray-700 mb-1">Tipo / Categoria *</label>
+                    <label class="block font-bold text-gray-700 mb-1 text-sm uppercase">Tipo / Categoria *</label>
                     <select name="type_id" id="type_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-green-500">
                         <option value="">-- Selecione o tipo --</option>
                         @foreach(\App\Models\InclusiveRadar\ResourceType::where('for_assistive_technology', true)->where('is_active', true)->get() as $type)
-                            <option value="{{ $type->id }}" {{ old('type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                            <option value="{{ $type->id }}"
+                                    data-digital="{{ $type->is_digital ? '1' : '0' }}"
+                                {{ old('type_id') == $type->id ? 'selected' : '' }}>
+                                {{ $type->name }} {{ $type->is_digital ? '(Digital)' : '' }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
             </div>
 
-            {{-- Container de Atributos Dinâmicos --}}
             <div id="dynamic-attributes-container" class="hidden mt-4">
-                <label class="block font-bold text-blue-900 mb-2 border-l-4 border-blue-500 pl-2">Especificações Técnicas</label>
+                <label class="block font-bold text-blue-900 mb-2 border-l-4 border-blue-500 pl-2 text-sm uppercase">Especificações Técnicas</label>
                 <div id="dynamic-attributes" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200"></div>
             </div>
 
             <div class="mt-4">
-                <label class="block font-bold text-gray-700 mb-2">Público-alvo (Deficiências) *</label>
+                <label class="block font-bold text-gray-700 mb-2 text-sm uppercase">Público-alvo (Deficiências) *</label>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-2 bg-gray-50 p-4 rounded border border-gray-200">
-                    @foreach($deficiencies as $def)
+                    @foreach(\App\Models\SpecializedEducationalSupport\Deficiency::where('is_active', true)->get() as $def)
                         <div class="flex items-center gap-2 group">
                             <input type="checkbox" name="deficiencies[]" value="{{ $def->id }}" id="def_{{ $def->id }}"
                                    {{ (is_array(old('deficiencies')) && in_array($def->id, old('deficiencies'))) ? 'checked' : '' }}
@@ -78,19 +81,23 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Código Patrimonial</label>
-                    <input type="text" name="asset_code" value="{{ old('asset_code') }}" class="w-full border p-2 rounded">
+            <div id="inventory-section" class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2 transition-all">
+                <div id="asset-code-container" class="hidden">
+                    <label class="block font-bold text-gray-700 mb-1">Cód. Patrimonial</label>
+                    <input type="text" name="asset_code" value="{{ old('asset_code') }}" class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500">
                 </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Estado de Conservação</label>
-                    <input type="text" name="conservation_state" value="{{ old('conservation_state') }}" class="w-full border p-2 rounded">
+                <div id="quantity-container" class="hidden">
+                    <label class="block font-bold text-gray-700 mb-1">Quantidade Total *</label>
+                    <input type="number" name="quantity" id="quantity_field" value="{{ old('quantity', 1) }}" min="0" class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500">
+                </div>
+                <div id="conservation-container" class="hidden">
+                    <label class="block font-bold text-gray-700 mb-1">Conservação</label>
+                    <input type="text" name="conservation_state" value="{{ old('conservation_state') }}" class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500" placeholder="Ex: Novo">
                 </div>
                 <div>
                     <label class="block font-bold text-gray-700 mb-1">Status Operacional</label>
-                    <select name="status_id" class="w-full border p-2 rounded bg-white">
-                        <option value="">Selecione um status</option>
+                    <select name="status_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-green-500">
+                        <option value="">Selecione...</option>
                         @foreach(\App\Models\InclusiveRadar\ResourceStatus::where('is_active', true)->where('for_assistive_technology', true)->get() as $status)
                             <option value="{{ $status->id }}" {{ old('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                         @endforeach
@@ -102,7 +109,7 @@
                 <div class="flex items-center gap-2">
                     <input type="hidden" name="requires_training" value="0">
                     <input type="checkbox" name="requires_training" id="requires_training" value="1" {{ old('requires_training') ? 'checked' : '' }} class="w-4 h-4 text-blue-600 rounded">
-                    <label for="requires_training" class="cursor-pointer text-sm font-medium text-gray-700">Requer Treinamento para o uso</label>
+                    <label for="requires_training" class="cursor-pointer text-sm font-medium text-gray-700 italic">Requer Treinamento para o uso</label>
                 </div>
                 <div class="flex items-center gap-2">
                     <input type="hidden" name="is_active" value="0">
@@ -111,7 +118,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-4 mt-4">
+            <div class="flex gap-4 mt-6">
                 <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-10 py-3 rounded shadow-lg transition font-bold text-lg flex-1 md:flex-none">
                     <i class="fas fa-save mr-2"></i> Salvar Tecnologia
                 </button>
@@ -125,7 +132,40 @@
     const typeSelect = document.getElementById('type_id');
     const container = document.getElementById('dynamic-attributes');
     const outerContainer = document.getElementById('dynamic-attributes-container');
+    const assetContainer = document.getElementById('asset-code-container');
+    const quantityContainer = document.getElementById('quantity-container');
+    const conservationContainer = document.getElementById('conservation-container');
+    const quantityField = document.getElementById('quantity_field');
+
     const oldAttributes = @json(old('attributes', []));
+
+    function handleDigitalType() {
+        const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+        if (!selectedOption || selectedOption.value === "") {
+            assetContainer.classList.add('hidden');
+            quantityContainer.classList.add('hidden');
+            conservationContainer.classList.add('hidden');
+            return;
+        }
+
+        const isDigital = selectedOption.getAttribute('data-digital') === '1';
+
+        if (isDigital) {
+            assetContainer.classList.add('hidden');
+            quantityContainer.classList.add('hidden');
+            conservationContainer.classList.add('hidden');
+            // Limpa o valor para que o Request trate como NULL
+            quantityField.value = '';
+        } else {
+            assetContainer.classList.remove('hidden');
+            quantityContainer.classList.remove('hidden');
+            conservationContainer.classList.remove('hidden');
+            // Se estiver vazio (mudando de digital para físico), redefine como 1
+            if (!quantityField.value || quantityField.value === "") {
+                quantityField.value = 1;
+            }
+        }
+    }
 
     function loadAttributes(typeId, currentValues = {}) {
         if (!typeId) {
@@ -133,87 +173,57 @@
             outerContainer.classList.add('hidden');
             return;
         }
-
-        container.innerHTML = '<p class="text-sm text-gray-500 italic"><i class="fas fa-spinner fa-spin mr-2"></i>Carregando especificações...</p>';
+        container.innerHTML = '<p class="text-sm text-gray-500 italic px-2"><i class="fas fa-spinner fa-spin mr-2"></i>Carregando...</p>';
         outerContainer.classList.remove('hidden');
-
-        // CORREÇÃO: Usando url() para garantir o caminho correto da API
-        const apiUrl = "{{ url('inclusive-radar/resource-types') }}/" + typeId + "/attributes";
-
-        fetch(apiUrl)
-            .then(res => {
-                if (!res.ok) throw new Error('Erro: ' + res.status);
-                return res.json();
-            })
+        fetch("{{ url('inclusive-radar/resource-types') }}/" + typeId + "/attributes")
+            .then(res => res.json())
             .then(attributes => {
                 container.innerHTML = '';
                 if (attributes && attributes.length > 0) {
                     attributes.forEach(attr => {
                         const div = document.createElement('div');
                         div.className = "flex flex-col gap-1";
-
                         const label = document.createElement('label');
                         label.className = "text-sm font-bold text-gray-600";
                         label.innerText = attr.label + (attr.is_required ? ' *' : '');
-
                         const savedValue = currentValues[attr.id] || '';
                         let input;
-
-                        if (attr.field_type === 'text') {
-                            input = document.createElement('textarea');
-                            input.rows = 2;
-                            input.value = savedValue;
-                        } else if (attr.field_type === 'boolean') {
-                            div.className = "flex items-center gap-3 p-2 bg-white rounded border border-gray-100";
+                        if (attr.field_type === 'boolean') {
+                            div.className = "flex items-center gap-3 p-2 bg-white rounded border border-gray-100 shadow-sm";
                             const hiddenInput = document.createElement('input');
                             hiddenInput.type = 'hidden';
                             hiddenInput.name = `attributes[${attr.id}]`;
                             hiddenInput.value = '0';
                             div.appendChild(hiddenInput);
-
                             input = document.createElement('input');
                             input.type = 'checkbox';
                             input.value = '1';
                             input.className = "w-5 h-5 text-green-600 rounded border-gray-300";
                             if (savedValue == '1' || savedValue === 'on') input.checked = true;
-                        } else {
-                            input = document.createElement('input');
-                            input.type = (attr.field_type === 'integer' || attr.field_type === 'decimal') ? 'number' :
-                                (attr.field_type === 'date' ? 'date' : 'text');
-                            if (attr.field_type === 'decimal') input.step = '0.01';
-                            input.value = savedValue;
-                        }
-
-                        if (attr.field_type !== 'boolean') {
-                            input.className = 'w-full border p-2 rounded focus:ring-2 focus:ring-green-500 text-sm';
-                        }
-
-                        input.name = `attributes[${attr.id}]`;
-
-                        if (attr.field_type === 'boolean') {
                             div.appendChild(input);
                             div.appendChild(label);
                         } else {
+                            input = document.createElement('input');
+                            input.type = (attr.field_type === 'integer' || attr.field_type === 'decimal') ? 'number' : (attr.field_type === 'date' ? 'date' : 'text');
+                            input.name = `attributes[${attr.id}]`;
+                            input.value = savedValue;
+                            input.className = 'w-full border p-2 rounded focus:ring-2 focus:ring-green-500 text-sm bg-white';
                             div.appendChild(label);
                             div.appendChild(input);
                         }
                         container.appendChild(div);
                     });
-                } else {
-                    outerContainer.classList.add('hidden');
-                }
-            })
-            .catch(err => {
-                console.error("Erro no fetch:", err);
-                container.innerHTML = '<p class="text-red-500 text-sm col-span-full">Não foi possível carregar as especificações técnicas.</p>';
+                } else { outerContainer.classList.add('hidden'); }
             });
     }
 
     typeSelect.addEventListener('change', function() {
+        handleDigitalType();
         loadAttributes(this.value, {});
     });
 
     if (typeSelect.value) {
+        handleDigitalType();
         loadAttributes(typeSelect.value, oldAttributes);
     }
 </script>

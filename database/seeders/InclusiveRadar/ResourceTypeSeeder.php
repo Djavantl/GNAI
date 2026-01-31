@@ -13,13 +13,14 @@ class ResourceTypeSeeder extends Seeder
         $now = Carbon::now();
 
         $types = [
-            ['name' => 'Slide', 'for_educational_material' => true],
-            ['name' => 'PDF', 'for_educational_material' => true],
-            ['name' => 'Livro', 'for_educational_material' => true],
-            ['name' => 'Vídeo Educacional', 'for_educational_material' => true],
-            ['name' => 'Bengala', 'for_assistive_technology' => true],
-            ['name' => 'Prótese', 'for_assistive_technology' => true],
-            ['name' => 'Órtese', 'for_assistive_technology' => true],
+            ['name' => 'Slide', 'for_educational_material' => true, 'is_digital' => true],
+            ['name' => 'PDF', 'for_educational_material' => true, 'is_digital' => true],
+            ['name' => 'Vídeo Educacional', 'for_educational_material' => true, 'is_digital' => true],
+            ['name' => 'Livro', 'for_educational_material' => true, 'is_digital' => false],
+            ['name' => 'Bengala', 'for_assistive_technology' => true, 'is_digital' => false],
+            ['name' => 'Prótese', 'for_assistive_technology' => true, 'is_digital' => false],
+            ['name' => 'Órtese', 'for_assistive_technology' => true, 'is_digital' => false],
+            ['name' => 'Software de Leitura', 'for_assistive_technology' => true, 'is_digital' => true],
         ];
 
         foreach ($types as $type) {
@@ -28,6 +29,7 @@ class ResourceTypeSeeder extends Seeder
                 [
                     'for_assistive_technology' => $type['for_assistive_technology'] ?? false,
                     'for_educational_material' => $type['for_educational_material'] ?? false,
+                    'is_digital' => $type['is_digital'] ?? false,
                     'is_active' => true,
                     'created_at' => $now,
                     'updated_at' => $now,

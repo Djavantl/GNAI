@@ -15,12 +15,14 @@ class ResourceType extends Model
         'name',
         'for_assistive_technology',
         'for_educational_material',
+        'is_digital',
         'is_active',
     ];
 
     protected $casts = [
         'for_assistive_technology' => 'boolean',
         'for_educational_material' => 'boolean',
+        'is_digital' => 'boolean',
         'is_active' => 'boolean',
     ];
 
@@ -37,5 +39,10 @@ class ResourceType extends Model
     public function scopeForEducationalMaterial($query)
     {
         return $query->where('for_educational_material', true);
+    }
+
+    public function scopeDigital($query)
+    {
+        return $query->where('is_digital', true);
     }
 }

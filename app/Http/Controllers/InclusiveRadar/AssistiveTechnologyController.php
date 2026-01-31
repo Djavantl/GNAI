@@ -8,6 +8,8 @@ use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
+use Exception;
 
 class AssistiveTechnologyController extends Controller
 {
@@ -20,8 +22,7 @@ class AssistiveTechnologyController extends Controller
 
     public function index(): View
     {
-        $assistiveTechnologies =
-            $this->assistiveTechnologyService->listAll();
+        $assistiveTechnologies = $this->assistiveTechnologyService->listAll();
 
         return view(
             'inclusive-radar.assistive-technologies.index',
@@ -39,9 +40,7 @@ class AssistiveTechnologyController extends Controller
 
     public function store(AssistiveTechnologyRequest $request): RedirectResponse
     {
-        $this->assistiveTechnologyService->store(
-            $request->validated()
-        );
+        $this->assistiveTechnologyService->store($request->validated());
 
         return redirect()
             ->route('inclusive-radar.assistive-technologies.index')
@@ -52,29 +51,33 @@ class AssistiveTechnologyController extends Controller
     {
         return view(
             'inclusive-radar.assistive-technologies.edit',
-            $this->assistiveTechnologyService->getEditData(
-                $assistiveTechnology
-            )
+            $this->assistiveTechnologyService->getEditData($assistiveTechnology)
         );
     }
 
     public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
-        $this->assistiveTechnologyService->update(
-            $assistiveTechnology,
-            $request->validated()
-        );
+        try {
+            $this->assistiveTechnologyService->update(
+                $assistiveTechnology,
+                $request->validated()
+            );
 
-        return redirect()
-            ->route('inclusive-radar.assistive-technologies.index')
-            ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
+            return redirect()
+                ->route('inclusive-radar.assistive-technologies.index')
+                ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
+
+        } catch (Exception $e) {
+
+            return back()
+                ->withInput()
+                ->withErrors(['quantity' => $e->getMessage()]);
+        }
     }
 
     public function toggleActive(AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
-        $this->assistiveTechnologyService->toggleActive(
-            $assistiveTechnology
-        );
+        $this->assistiveTechnologyService->toggleActive($assistiveTechnology);
 
         return redirect()
             ->route('inclusive-radar.assistive-technologies.index')
@@ -83,12 +86,22 @@ class AssistiveTechnologyController extends Controller
 
     public function destroy(AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
-        $this->assistiveTechnologyService->delete(
-            $assistiveTechnology
-        );
+        try {
+            $this->assistiveTechnologyService->delete($assistiveTechnology);
 
-        return redirect()
-            ->route('inclusive-radar.assistive-technologies.index')
-            ->with('success', 'Tecnologia assistiva removida com sucesso!');
+            return redirect()
+                ->route('inclusive-radar.assistive-technologies.index')
+                ->with('success', 'Tecnologia removida com sucesso!');
+
+        } catch (ValidationException $e) {
+            return redirect()
+                ->route('inclusive-radar.assistive-technologies.index')
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (Exception $e) {
+            return redirect()
+                ->route('inclusive-radar.assistive-technologies.index')
+                ->with('error', $e->getMessage());
+        }
     }
 }

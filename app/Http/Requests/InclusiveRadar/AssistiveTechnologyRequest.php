@@ -4,6 +4,7 @@ namespace App\Http\Requests\InclusiveRadar;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\InclusiveRadar\ResourceType;
 
 class AssistiveTechnologyRequest extends FormRequest
 {
@@ -16,6 +17,11 @@ class AssistiveTechnologyRequest extends FormRequest
     {
         $tech = $this->route('assistiveTechnology');
 
+        $isDigital = false;
+        if ($this->type_id) {
+            $isDigital = ResourceType::where('id', $this->type_id)->where('is_digital', true)->exists();
+        }
+
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -26,6 +32,10 @@ class AssistiveTechnologyRequest extends FormRequest
                 'max:50',
                 Rule::unique('assistive_technologies', 'asset_code')->ignore($tech?->id),
             ],
+            'quantity' => $isDigital
+                ? 'nullable'
+                : 'required|integer',
+
             'conservation_state' => 'nullable|string|max:50',
             'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
@@ -41,9 +51,12 @@ class AssistiveTechnologyRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        $isDigital = ResourceType::where('id', $this->type_id)->where('is_digital', true)->exists();
+
         $this->merge([
             'requires_training' => $this->boolean('requires_training'),
             'is_active' => $this->boolean('is_active'),
+            'quantity' => $isDigital ? null : $this->quantity,
         ]);
     }
 
@@ -52,7 +65,8 @@ class AssistiveTechnologyRequest extends FormRequest
         return [
             'name.required' => 'O nome da tecnologia assistiva é obrigatório.',
             'type_id.required' => 'Selecione uma categoria/tipo de tecnologia.',
-            'type_id.exists' => 'A categoria selecionada é inválida.',
+            'quantity.required' => 'Para recursos físicos, a quantidade é obrigatória.',
+            'quantity.integer' => 'A quantidade deve ser um número inteiro.',
             'asset_code.unique' => 'O código patrimonial já está em uso.',
             'deficiencies.required' => 'Selecione pelo menos um público-alvo (deficiência).',
             'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',

@@ -11,6 +11,7 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     BarrierImageController,
     BarrierStatusController,
     InstitutionController,
+    LoanController,
     LocationController,
     ResourceStatusController,
     ResourceTypeController,
@@ -143,3 +144,13 @@ Route::get('/locations/{location}/edit', [LocationController::class, 'edit'])->n
 Route::put('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
 Route::patch('/locations/{location}/toggle', [LocationController::class, 'toggleActive'])->name('locations.toggle-active');
 Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
+
+// Loans (Empréstimos de Tecnologias e Materiais)
+
+Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
+Route::get('/loans/create', [LoanController::class, 'create'])->name('loans.create');
+Route::post('/loans/store', [LoanController::class, 'store'])->name('loans.store');
+Route::get('/loans/{loan}/edit', [LoanController::class, 'edit'])->name('loans.edit');
+Route::put('/loans/{loan}', [LoanController::class, 'update'])->name('loans.update');
+Route::patch('/loans/{loan}/return', [LoanController::class, 'returnItem'])->name('loans.return');
+Route::delete('/loans/{loan}', [LoanController::class, 'destroy'])->name('loans.destroy');

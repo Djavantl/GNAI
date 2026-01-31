@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccessibleEducationalMaterial extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'accessible_educational_materials';
 
@@ -19,6 +21,8 @@ class AccessibleEducationalMaterial extends Model
         'title',
         'type_id',
         'asset_code',
+        'quantity',
+        'quantity_available',
         'requires_training',
         'notes',
         'status_id',
@@ -30,20 +34,25 @@ class AccessibleEducationalMaterial extends Model
         'is_active' => 'boolean',
     ];
 
+    public function loans(): MorphMany
+    {
+        return $this->morphMany(Loan::class, 'loanable');
+    }
+
     public function type(): BelongsTo
     {
         return $this->belongsTo(ResourceType::class, 'type_id');
+    }
+
+    public function resourceStatus(): BelongsTo
+    {
+        return $this->belongsTo(ResourceStatus::class, 'status_id');
     }
 
     public function attributeValues(): HasMany
     {
         return $this->hasMany(ResourceAttributeValue::class, 'resource_id')
             ->where('resource_type', 'accessible_educational_material');
-    }
-
-    public function resourceStatus(): BelongsTo
-    {
-        return $this->belongsTo(ResourceStatus::class, 'status_id');
     }
 
     public function deficiencies(): BelongsToMany

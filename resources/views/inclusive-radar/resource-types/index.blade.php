@@ -39,6 +39,7 @@
                 <thead>
                 <tr class="border-b-2 border-gray-100">
                     <th class="py-3 px-4 font-bold text-gray-700">Nome do Tipo</th>
+                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Natureza</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-center">Finalidade</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-center">Status</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-right">Ações</th>
@@ -54,6 +55,21 @@
                                 </div>
                                 <span class="font-bold text-gray-900">{{ $type->name }}</span>
                             </div>
+                        </td>
+
+                        {{-- COLUNA ATUALIZADA: Natureza do Recurso --}}
+                        <td class="py-4 px-4 text-center align-middle">
+                            @if($type->is_digital)
+                                <div class="flex items-center justify-center gap-1 text-indigo-700 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">
+                                    <i class="fas fa-cloud text-[10px]"></i>
+                                    <span class="text-[10px] font-bold uppercase tracking-tighter">Digital</span>
+                                </div>
+                            @else
+                                <div class="flex items-center justify-center gap-1 text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-100">
+                                    <i class="fas fa-box text-[10px]"></i>
+                                    <span class="text-[10px] font-bold uppercase tracking-tighter">Físico</span>
+                                </div>
+                            @endif
                         </td>
 
                         <td class="py-4 px-4 text-center align-middle">
@@ -78,11 +94,11 @@
                         <td class="py-4 px-4 text-right align-middle">
                             <div class="flex justify-end gap-2">
                                 <a href="{{ route('inclusive-radar.resource-types.edit', $type) }}"
-                                   class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm font-semibold">
+                                   class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm font-semibold"
+                                   title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
 
-                                {{-- ALTERAÇÃO AQUI: Mudado de .toggle para .toggleActive --}}
                                 <form action="{{ route('inclusive-radar.resource-types.toggle', $type) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
@@ -96,8 +112,9 @@
                                 <form action="{{ route('inclusive-radar.resource-types.destroy', $type) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este tipo de recurso?')"
-                                            class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold">
+                                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este tipo de recurso? Recursos vinculados podem impedir a exclusão.')"
+                                            class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold"
+                                            title="Excluir">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -106,7 +123,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="py-12 text-center text-gray-400">
+                        <td colspan="5" class="py-12 text-center text-gray-400">
                             <p class="italic text-lg">Nenhum tipo de recurso cadastrado no momento.</p>
                         </td>
                     </tr>

@@ -6,19 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AccessibleEducationalMaterialRequest;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Services\InclusiveRadar\AccessibleEducationalMaterialService;
-use App\Services\InclusiveRadar\ResourceAttributeValueService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
+use Exception;
 
 class AccessibleEducationalMaterialController extends Controller
 {
     protected AccessibleEducationalMaterialService $service;
-    protected ResourceAttributeValueService $attributeService;
 
-    public function __construct(AccessibleEducationalMaterialService $service, ResourceAttributeValueService $attributeService)
+    public function __construct(AccessibleEducationalMaterialService $service)
     {
         $this->service = $service;
-        $this->attributeService = $attributeService;
     }
 
     public function index(): View
@@ -33,23 +32,15 @@ class AccessibleEducationalMaterialController extends Controller
 
     public function create(): View
     {
-        $data = $this->service->getCreateData();
-
         return view(
             'inclusive-radar.accessible-educational-materials.create',
-            $data
+            $this->service->getCreateData()
         );
     }
 
     public function store(AccessibleEducationalMaterialRequest $request): RedirectResponse
     {
-        $material = $this->service->store($request->validated());
-
-        $this->attributeService->saveValues(
-            'educational_material',
-            $material->id,
-            $request->input('attributes', [])
-        );
+        $this->service->store($request->validated());
 
         return redirect()
             ->route('inclusive-radar.accessible-educational-materials.index')
@@ -58,49 +49,58 @@ class AccessibleEducationalMaterialController extends Controller
 
     public function edit(AccessibleEducationalMaterial $material): View
     {
-        $data = $this->service->getEditData($material);
-
         return view(
             'inclusive-radar.accessible-educational-materials.edit',
-            $data
+            $this->service->getEditData($material)
         );
     }
 
     public function update(AccessibleEducationalMaterialRequest $request, AccessibleEducationalMaterial $material): RedirectResponse
     {
-        $this->service->update($material, $request->validated());
+        try {
+            $this->service->update($material, $request->validated());
 
-        $this->attributeService->saveValues(
-            'educational_material',
-            $material->id,
-            $request->input('attributes', [])
-        );
+            return redirect()
+                ->route('inclusive-radar.accessible-educational-materials.index')
+                ->with('success', 'Material pedagógico acessível atualizado com sucesso!');
 
-        return redirect()
-            ->route('inclusive-radar.accessible-educational-materials.index')
-            ->with('success', 'Material pedagógico acessível atualizado com sucesso!');
+        } catch (ValidationException $e) {
+            return back()
+                ->withInput()
+                ->withErrors($e->validator);
+        } catch (Exception $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['quantity' => $e->getMessage()]);
+        }
     }
 
     public function toggleActive(AccessibleEducationalMaterial $material): RedirectResponse
     {
-        $updatedMaterial = $this->service->toggleActive($material);
-
-        $message = $updatedMaterial->is_active
-            ? 'Material pedagógico acessível ativado com sucesso!'
-            : 'Material pedagógico acessível desativado com sucesso!';
+        $this->service->toggleActive($material);
 
         return redirect()
             ->route('inclusive-radar.accessible-educational-materials.index')
-            ->with('success', $message);
+            ->with('success', 'Status do material atualizado com sucesso!');
     }
 
     public function destroy(AccessibleEducationalMaterial $material): RedirectResponse
     {
-        $this->service->delete($material);
+        try {
+            $this->service->delete($material);
 
-        return redirect()
-            ->route('inclusive-radar.accessible-educational-materials.index')
-            ->with('success', 'Material pedagógico acessível removido com sucesso!');
+            return redirect()
+                ->route('inclusive-radar.accessible-educational-materials.index')
+                ->with('success', 'Material removido com sucesso!');
+
+        } catch (ValidationException $e) {
+            return redirect()
+                ->route('inclusive-radar.accessible-educational-materials.index')
+                ->withErrors($e->validator);
+        } catch (Exception $e) {
+            return redirect()
+                ->route('inclusive-radar.accessible-educational-materials.index')
+                ->with('error', $e->getMessage());
+        }
     }
-
 }

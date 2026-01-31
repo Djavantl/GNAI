@@ -26,13 +26,13 @@ class LoginController extends Controller
 
             if ($user->role === 'admin') {
                 return redirect()
-                    ->route('specialized-educational-support.dashboard')
+                    ->route('auth.dashboard')
                     ->with('success', 'login realizado com sucesso.');
             }
 
             if ($user->role === 'professional' && $user->professional_id) {
                 return redirect()
-                    ->route('specialized-educational-support.dashboard')
+                    ->route('auth.dashboard')
                     ->with('success', 'login realizado com sucesso.');
             }
 
@@ -49,7 +49,7 @@ class LoginController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('specialized-educational-support.login');
+        return redirect()->route('auth.login');
     }
 }
 

@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('for_assistive_technology')->default(false);
             $table->boolean('for_educational_material')->default(false);
+            $table->boolean('is_digital')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

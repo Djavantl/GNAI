@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+
+    public function up(): void
+    {
+        Schema::create('loans', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('loanable');
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->foreignId('professional_id')->constrained('professionals');
+            $table->dateTime('loan_date');
+            $table->dateTime('due_date');
+            $table->dateTime('return_date')->nullable();
+            $table->enum('status', ['active', 'returned', 'late', 'damaged'])->default('active');
+            $table->text('observation')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('loans');
+    }
+};

@@ -18,6 +18,8 @@ return new class extends Migration
                 ->nullOnDelete();
 
             $table->string('asset_code', 50)->nullable()->unique();
+            $table->integer('quantity')->nullable();
+            $table->integer('quantity_available')->nullable();
             $table->string('conservation_state', 50)->nullable();
             $table->boolean('requires_training')->default(false);
             $table->text('notes')->nullable();
@@ -26,6 +28,7 @@ return new class extends Migration
                 ->constrained('resource_statuses')
                 ->nullOnDelete();
             $table->boolean('is_active')->default(true);
+            $table->softDeletes();
             $table->timestamps();
         });
 

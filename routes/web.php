@@ -15,4 +15,12 @@ Route::middleware('web')->group(function () {
     Route::prefix('backup')
         ->name('backup.')
         ->group(base_path('routes/modules/backup.php'));
+
+    Route::prefix('report')
+        ->name('report.')
+        ->group(base_path('routes/report.php'));
+
+    Route::prefix('auth')
+        ->name('auth.')
+        ->group(base_path('routes/auth.php'));
 });

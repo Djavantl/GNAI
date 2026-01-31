@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AssistiveTechnology extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'assistive_technologies';
 
@@ -21,6 +22,8 @@ class AssistiveTechnology extends Model
         'description',
         'type_id',
         'asset_code',
+        'quantity',
+        'quantity_available',
         'conservation_state',
         'requires_training',
         'notes',
@@ -32,6 +35,11 @@ class AssistiveTechnology extends Model
         'requires_training' => 'boolean',
         'is_active' => 'boolean',
     ];
+
+    public function loans(): MorphMany
+    {
+        return $this->morphMany(Loan::class, 'loanable');
+    }
 
     public function type(): BelongsTo
     {

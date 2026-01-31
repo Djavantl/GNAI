@@ -12,7 +12,7 @@
     <div class="container-fluid">
         <span class="navbar-brand">NAPNE</span>
 
-        <form action="{{ route('specialized-educational-support.logout') }}" method="POST">
+        <form action="{{ route('auth.logout') }}" method="POST">
             @csrf
             <button class="btn btn-outline-light btn-sm">
                 Sair

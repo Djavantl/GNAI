@@ -26,6 +26,8 @@ return new class extends Migration {
 
             $table->boolean('requires_training')->default(false);
             $table->string('asset_code', 50)->nullable()->unique();
+            $table->integer('quantity')->nullable();
+            $table->integer('quantity_available')->nullable();
             $table->text('notes')->nullable();
 
             $table->foreignId('status_id')
@@ -34,8 +36,8 @@ return new class extends Migration {
                 ->nullOnDelete();
 
             $table->boolean('is_active')->default(true);
+            $table->softDeletes();
             $table->timestamps();
-
             $table->index(['type_id', 'is_active']);
         });
 
