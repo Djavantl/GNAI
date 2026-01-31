@@ -29,34 +29,37 @@
                 <th>Ações</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach($students as $student)
-                <tr>
-                    <td>{{ $student->person->name }}</td>
-                    <td>{{ $student->registration }}</td>
-                    <td>{{ ucfirst($student->status) }}</td>
-                    <td>{{ \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') }}</td>
-                    <td class="d-flex gap-2">
-                        <a href="{{ route('specialized-educational-support.students.edit', $student) }}" class="btn btn-sm btn-warning">
-                            Editar
-                        </a>
-                        <a href="{{ route('specialized-educational-support.guardians.index', $student) }}" class="btn btn-sm btn-warning">
-                            Responsáveis
-                        </a>
-                        <a href="{{ route('specialized-educational-support.guardians.create', $student) }}" class="btn btn-sm btn-warning">
-                            Adicionar Responsavel
-                        </a>
-                        <form action="{{ route('specialized-educational-support.students.destroy', $student) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-danger"
-                                onclick="return confirm('Deseja excluir este aluno?')">
-                                Excluir
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
+            <tbody>
+                @foreach($students as $student)
+                    <tr>
+                        <td>{{ $student->person->name }}</td>
+                        <td>{{ $student->registration }}</td>
+                        <td>{{ ucfirst($student->status) }}</td>
+                        <td>{{ \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') }}</td>
+                        <td class="d-flex gap-2">
+                            <a href="{{ route('specialized-educational-support.student-context.show', $student) }}" class="btn btn-sm btn-info text-white">
+                                Contexto AEE
+                            </a>
+
+                            <a href="{{ route('specialized-educational-support.students.edit', $student) }}" class="btn btn-sm btn-warning">
+                                Editar
+                            </a>
+
+                            <a href="{{ route('specialized-educational-support.student-deficiencies.index', $student) }}" class="btn btn-sm btn-warning">
+                                deficiencias
+                            </a>
+                            
+                            <form action="{{ route('specialized-educational-support.students.destroy', $student) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Deseja excluir este aluno?')">
+                                    Excluir
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
         </tbody>
     </table>
 </div>

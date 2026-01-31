@@ -17,22 +17,41 @@ class Student extends Model
         'notes',
     ];
 
-    /*
-     * Relacionamentos
-     */
+    
+    // Relacionamentos
+    
+    // pessoa
+
     public function person()
     {
         return $this->belongsTo(Person::class);
     }
+
+    // responsaveis
 
     public function guardians()
     {
         return $this->hasMany(Guardian::class);
     }
 
-    /*
-     * Helpers
-     */
+    
+    // Contexto educacional
+    
+    public function context()
+    {
+        return $this->hasOne(StudentContext::class);
+    }
+
+   // Deficiências do aluno 
+
+    public function deficiencies()
+    {
+        return $this->hasMany(StudentDeficiencies::class, 'student_id');
+    }
+
+    
+    // Helpers
+    
     public static function statusOptions(): array
     {
         return [

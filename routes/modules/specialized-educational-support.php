@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\SpecializedEducationalSupport\{
+    StudentDeficienciesController,
     PersonController,
     StudentController,
+    StudentContextController,
     DeficiencyController,
     PositionController,
     SemesterController,
@@ -81,4 +83,21 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/professionals/{professional}',[ProfessionalController::class, 'update'])->name('professionals.update');
     Route::delete('/professionals/{professional}',[ProfessionalController::class, 'destroy'])->name('professionals.destroy');
 
+    // Contexto do aluno
+
+    Route::get('student-context/{student}/show', [StudentContextController::class, 'show'])->name('student-context.show');
+    Route::get('student-context/{student}/create', [StudentContextController::class, 'create'])->name('student-context.create');
+    Route::post('student-context/{student}/store', [StudentContextController::class, 'store'])->name('student-context.store');
+    Route::get('student-context/{student_context}/edit', [StudentContextController::class, 'edit'])->name('student-context.edit');
+    Route::put('student-context/{student_context}', [StudentContextController::class, 'update'])->name('student-context.update');
+    Route::delete('student-context/{student_context}', [StudentContextController::class, 'destroy'])->name('student-context.destroy');
+
+    // Deficiencias do aluno
+
+    Route::get('student-deficiencies/{student}', [StudentDeficienciesController::class, 'index'])->name('student-deficiencies.index');
+    Route::get('student-deficiencies/{student}/create', [StudentDeficienciesController::class, 'create'])->name('student-deficiencies.create');
+    Route::post('student-deficiencies/{student}', [StudentDeficienciesController::class, 'store'])->name('student-deficiencies.store');
+    Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])->name('student-deficiencies.edit');  
+    Route::put('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])->name('student-deficiencies.update');
+    Route::delete('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])->name('student-deficiencies.destroy');
 });
