@@ -2,13 +2,12 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\{BarrierStatus, InspectionType};
+use App\Models\InclusiveRadar\{Barrier, BarrierCategory, Institution};
 use App\Models\SpecializedEducationalSupport\{Professional, Student};
-use App\Models\InclusiveRadar\{Barrier, BarrierCategory, BarrierStatus, Institution};
 use App\Services\SpecializedEducationalSupport\DeficiencyService;
-use App\Enums\InclusiveRadar\InspectionType;
-use Illuminate\Support\Facades\{Auth, DB};
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\{Auth, DB};
 
 class BarrierService
 {
@@ -20,8 +19,11 @@ class BarrierService
     public function listAll(): Collection
     {
         return Barrier::with([
-            'category', 'status', 'location', 'deficiencies',
-            'inspections.images', 'registeredBy'
+            'category',
+            'location',
+            'deficiencies',
+            'inspections.images',
+            'registeredBy'
         ])->latest()->get();
     }
 
@@ -30,8 +32,7 @@ class BarrierService
         return [
             'institutions'  => Institution::with('locations')->where('is_active', true)->orderBy('name')->get(),
             'categories'    => BarrierCategory::where('is_active', true)->get(),
-            'statuses'      => BarrierStatus::where('is_active', true)->get(),
-            'deficiencies'  => $this->deficiencyService->listAll(),
+            'deficiencies'  => $this->deficiencyService->listActiveOrdered(),
             'students'      => Student::has('person')->with('person')->get()->sortBy('person.name'),
             'professionals' => Professional::has('person')->with('person')->get()->sortBy('person.name'),
         ];
@@ -46,89 +47,12 @@ class BarrierService
 
     public function store(array $data): Barrier
     {
-        return DB::transaction(function () use ($data) {
-            if (Auth::check()) {
-                $data['registered_by_user_id'] = Auth::id();
-            }
-
-            if (!empty($data['identified_at']) && str_contains($data['identified_at'], '/')) {
-                $data['identified_at'] = Carbon::createFromFormat('d/m/Y', $data['identified_at'])->format('Y-m-d');
-            }
-
-            $barrierData = collect($data)->except([
-                'deficiencies',
-                'images',
-                'no_location',
-                'inspection_description'
-            ])->toArray();
-
-            $barrier = Barrier::create($barrierData);
-
-            if (!empty($data['deficiencies'])) {
-                $barrier->deficiencies()->sync($data['deficiencies']);
-            }
-
-            $this->inspectionService->createForModel($barrier, [
-                'state'           => null,
-                'inspection_date' => $data['identified_at'] ?? now(),
-                'type'            => InspectionType::INITIAL->value,
-                'description'     => $data['inspection_description'] ?? 'Registro inicial da barreira.',
-                'images'          => $data['images'] ?? []
-            ]);
-
-            return $barrier;
-        });
+        return DB::transaction(fn() => $this->persist(new Barrier(), $data));
     }
 
     public function update(Barrier $barrier, array $data): Barrier
     {
-        return DB::transaction(function () use ($barrier, $data) {
-
-            if (!empty($data['identified_at']) && str_contains($data['identified_at'], '/')) {
-                $data['identified_at'] = Carbon::createFromFormat('d/m/Y', $data['identified_at'])->format('Y-m-d');
-            }
-            if (!empty($data['resolved_at']) && str_contains($data['resolved_at'], '/')) {
-                $data['resolved_at'] = Carbon::createFromFormat('d/m/Y', $data['resolved_at'])->format('Y-m-d');
-            }
-
-            if ($data['not_applicable'] ?? false) {
-                $data['affected_student_id'] = null;
-                $data['affected_professional_id'] = null;
-            }
-
-            if (!empty($data['no_location'])) {
-                $data['location_id'] = null;
-            }
-
-            $oldStatus = $barrier->getOriginal('barrier_status_id');
-            $newStatus = $data['barrier_status_id'] ?? $oldStatus;
-
-            $barrier->update(collect($data)->except([
-                'deficiencies',
-                'images',
-                'inspection_description',
-                'inspection_type'
-            ])->toArray());
-
-            if (array_key_exists('deficiencies', $data)) {
-                $barrier->deficiencies()->sync($data['deficiencies'] ?? []);
-            }
-
-            $hasNewImages = !empty($data['images']);
-            $statusChanged = (int)$newStatus !== (int)$oldStatus;
-
-            if ($hasNewImages || $statusChanged) {
-                $this->inspectionService->createForModel($barrier, [
-                    'state'           => null,
-                    'inspection_date' => $data['resolved_at'] ?? now(),
-                    'type'            => $data['inspection_type'] ?? ($hasNewImages ? InspectionType::PERIODIC->value : InspectionType::RESOLUTION->value),
-                    'description'     => $data['inspection_description'] ?? 'Atualização de status/vistoria.',
-                    'images'          => $data['images'] ?? []
-                ]);
-            }
-
-            return $barrier->fresh();
-        });
+        return DB::transaction(fn() => $this->persist($barrier, $data));
     }
 
     public function toggleActive(Barrier $barrier): Barrier
@@ -139,6 +63,66 @@ class BarrierService
 
     public function delete(Barrier $barrier): void
     {
-        DB::transaction(fn () => $barrier->delete());
+        DB::transaction(fn() => $barrier->delete());
+    }
+
+    protected function persist(Barrier $barrier, array $data): Barrier
+    {
+        $data = $this->prepareData($barrier, $data);
+
+        $barrier->fill($data)->save();
+
+        $this->syncRelations($barrier, $data);
+        $this->handleInspectionLog($barrier, $data);
+
+        return $barrier->fresh(['category', 'location', 'deficiencies']);
+    }
+
+    protected function prepareData(Barrier $barrier, array $data): array
+    {
+        if (!$barrier->exists && Auth::check()) {
+            $data['registered_by_user_id'] = Auth::id();
+        }
+
+        if ($data['not_applicable'] ?? false) {
+            $data['affected_student_id'] = null;
+            $data['affected_professional_id'] = null;
+        }
+
+        if (!empty($data['no_location'])) {
+            $data['location_id'] = null;
+        }
+
+        return $data;
+    }
+
+    protected function handleInspectionLog(Barrier $barrier, array $data): void
+    {
+        $isUpdate = $barrier->wasRecentlyCreated === false;
+        $oldStatus = $isUpdate ? $barrier->latestStatus()?->value : null;
+        $newStatus = $data['status'] ?? $oldStatus ?? BarrierStatus::IDENTIFIED->value;
+
+        $statusChanged = $isUpdate && $newStatus !== $oldStatus;
+        $hasInteraction = filled($data['inspection_description'] ?? null) || !empty($data['images']);
+
+        if ($isUpdate && !$statusChanged && !$hasInteraction) {
+            return;
+        }
+
+        $this->inspectionService->createForModel($barrier, [
+            'state'           => null,
+            'status'          => $newStatus,
+            'inspection_date' => $data['inspection_date'] ?? now(),
+            'type'            => $data['inspection_type'] ?? ($isUpdate ? InspectionType::PERIODIC->value : InspectionType::INITIAL->value),
+            'description'     => $data['inspection_description'] ?? ($isUpdate ? null : 'Registro inicial da barreira.'),
+            'images'          => $data['images'] ?? [],
+        ]);
+    }
+
+    protected function syncRelations(Barrier $barrier, array $data): void
+    {
+        if (isset($data['deficiencies'])) {
+            $barrier->deficiencies()->sync($data['deficiencies']);
+        }
     }
 }

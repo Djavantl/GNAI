@@ -4,7 +4,10 @@ namespace App\Http\Requests\InclusiveRadar;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use App\Models\InclusiveRadar\ResourceType;
+use App\Enums\InclusiveRadar\InspectionType;
+use App\Enums\InclusiveRadar\ConservationState;
 
 class AccessibleEducationalMaterialRequest extends FormRequest
 {
@@ -28,15 +31,17 @@ class AccessibleEducationalMaterialRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'type_id' => 'required|exists:resource_types,id',
-
             'asset_code' => [
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique('accessible_educational_materials', 'asset_code')->ignore($material?->id),
+                Rule::unique('accessible_educational_materials', 'asset_code')
+                    ->ignore($material?->id),
             ],
 
-            'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
+            'quantity' => $isDigital
+                ? 'nullable'
+                : 'required|integer|min:0',
 
             'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
@@ -44,22 +49,27 @@ class AccessibleEducationalMaterialRequest extends FormRequest
             'notes' => 'nullable|string',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
+
             'accessibility_features' => 'nullable|array',
             'accessibility_features.*' => 'exists:accessibility_features,id',
-            'conservation_state' => $isUpdate
-                ? 'nullable|string|max:50'
-                : 'required|string|max:50',
 
-            'inspection_date' => $isUpdate
-                ? 'nullable|date'
-                : 'required|date|before_or_equal:today',
+            'conservation_state' => [
+                $isUpdate ? 'nullable' : 'required',
+                new Enum(ConservationState::class),
+            ],
 
-            'inspection_type' => $isUpdate
-                ? 'nullable'
-                : 'required|in:initial,return,maintenance,periodic,resolution',
+            'inspection_type' => [
+                $isUpdate ? 'nullable' : 'required',
+                new Enum(InspectionType::class),
+            ],
 
-            'inspection_description' => 'nullable|string',
+            'inspection_date' => [
+                $isUpdate ? 'nullable' : 'required',
+                'date',
+                'before_or_equal:today',
+            ],
 
+            'inspection_description' => 'nullable|string|max:1000',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
             'attributes' => 'nullable|array',
@@ -68,15 +78,17 @@ class AccessibleEducationalMaterialRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
+
         $this->merge([
             'requires_training' => $this->boolean('requires_training'),
             'is_active' => $this->boolean('is_active'),
 
             'inspection_type' => $this->inspection_type
-                ?? ($this->isMethod('post') ? 'initial' : null),
+                ?? (!$isUpdate ? InspectionType::INITIAL->value : null),
 
             'inspection_date' => $this->inspection_date
-                ?? ($this->isMethod('post') ? now()->format('Y-m-d') : null),
+                ?? (!$isUpdate ? now()->format('Y-m-d') : null),
         ]);
     }
 
@@ -86,11 +98,11 @@ class AccessibleEducationalMaterialRequest extends FormRequest
             'name.required' => 'O nome do material pedagógico é obrigatório.',
             'type_id.required' => 'Selecione uma categoria/tipo de material.',
             'quantity.required' => 'Para materiais físicos, a quantidade é obrigatória.',
-            'quantity.integer' => 'A quantidade deve ser um número inteiro.',
             'asset_code.unique' => 'O código patrimonial já está em uso.',
-            'deficiencies.required' => 'Selecione pelo menos uma deficiência atendida.',
-            'conservation_state.required' => 'O estado de conservação é obrigatório no cadastro.',
-            'images.*.image' => 'O arquivo deve ser uma imagem válida.',
+            'deficiencies.required' => 'Selecione pelo menos um público-alvo.',
+            'conservation_state.required' => 'O estado de conservação atual é obrigatório no cadastro.',
+            'inspection_date.before_or_equal' => 'A data da inspeção não pode ser no futuro.',
+            'images.*.image' => 'O arquivo deve ser uma imagem.',
             'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',
             'accessibility_features.*.exists' => 'Um dos recursos de acessibilidade selecionados é inválido.',
         ];

@@ -2,6 +2,7 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\SpecializedEducationalSupport\Professional;
@@ -24,7 +25,6 @@ class Barrier extends Model
         'registered_by_user_id',
         'institution_id',
         'barrier_category_id',
-        'barrier_status_id',
         'location_id',
         'affected_student_id',
         'affected_professional_id',
@@ -76,11 +76,6 @@ class Barrier extends Model
         return $this->belongsTo(BarrierCategory::class, 'barrier_category_id');
     }
 
-    public function status(): BelongsTo
-    {
-        return $this->belongsTo(BarrierStatus::class, 'barrier_status_id');
-    }
-
     public function location() {
         return $this->belongsTo(Location::class)->withTrashed();
     }
@@ -103,6 +98,14 @@ class Barrier extends Model
             'barrier_id',
             'deficiency_id'
         )->withTimestamps();
+    }
+
+    public function latestStatus(): ?BarrierStatus
+    {
+        return $this->inspections()
+            ->latest('inspection_date')
+            ->latest('created_at')
+            ->first()?->status;
     }
 
     public function inspections(): MorphMany

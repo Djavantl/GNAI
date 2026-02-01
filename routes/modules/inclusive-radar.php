@@ -7,7 +7,6 @@ use App\Http\Controllers\InclusiveRadar\{
     AccessibilityFeatureController,
     BarrierCategoryController,
     BarrierController,
-    BarrierStatusController,
     InstitutionController,
     LoanController,
     LocationController,
@@ -15,7 +14,6 @@ use App\Http\Controllers\InclusiveRadar\{
     ResourceTypeController,
     TypeAttributeAssignmentController,
     TypeAttributeController,
-    InspectionController
 };
 
 
@@ -63,13 +61,6 @@ Route::put('/accessible-educational-materials/{material}', [AccessibleEducationa
 Route::patch('/accessible-educational-materials/{material}/toggle', [AccessibleEducationalMaterialController::class, 'toggleActive'])->name('accessible-educational-materials.toggle');
 Route::delete('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'destroy'])->name('accessible-educational-materials.destroy');
 
-//Inspections (Polymorphic replacement for old image routes)
-
-Route::post('/assistive-technologies/{assistiveTechnology}/inspections', [InspectionController::class, 'storeForTech'])->name('assistive-technologies.inspections.store');
-Route::post('/accessible-educational-materials/{material}/inspections', [InspectionController::class, 'storeForMaterial'])->name('accessible-educational-materials.inspections.store');
-Route::post('/barriers/{barrier}/inspections', [InspectionController::class, 'storeForBarrier'])->name('barriers.inspections.store');
-
-
 //Barriers & Infrastructure
 
 Route::get('/barriers', [BarrierController::class, 'index'])->name('barriers.index');
@@ -79,14 +70,6 @@ Route::get('/barriers/{barrier}/edit', [BarrierController::class, 'edit'])->name
 Route::put('/barriers/{barrier}', [BarrierController::class, 'update'])->name('barriers.update');
 Route::patch('/barriers/{barrier}/toggle', [BarrierController::class, 'toggleActive'])->name('barriers.toggle');
 Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])->name('barriers.destroy');
-
-Route::get('/barrier-statuses', [BarrierStatusController::class, 'index'])->name('barrier-statuses.index');
-Route::get('/barrier-statuses/create', [BarrierStatusController::class, 'create'])->name('barrier-statuses.create');
-Route::post('/barrier-statuses/store', [BarrierStatusController::class, 'store'])->name('barrier-statuses.store');
-Route::get('/barrier-statuses/{barrierStatus}/edit', [BarrierStatusController::class, 'edit'])->name('barrier-statuses.edit');
-Route::put('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'update'])->name('barrier-statuses.update');
-Route::patch('/barrier-statuses/{barrierStatus}/toggle', [BarrierStatusController::class, 'toggleActive'])->name('barrier-statuses.toggle');
-Route::delete('/barrier-statuses/{barrierStatus}', [BarrierStatusController::class, 'destroy'])->name('barrier-statuses.destroy');
 
 Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])->name('barrier-categories.index');
 Route::get('/barrier-categories/create', [BarrierCategoryController::class, 'create'])->name('barrier-categories.create');

@@ -8,13 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('barrier_statuses', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
 
         Schema::create('barrier_categories', function (Blueprint $table) {
             $table->id();
@@ -75,10 +68,6 @@ return new class extends Migration
                 ->constrained('barrier_categories')
                 ->restrictOnDelete();
 
-            $table->foreignId('barrier_status_id')
-                ->constrained('barrier_statuses')
-                ->restrictOnDelete();
-
             $table->foreignId('location_id')
                 ->nullable()
                 ->constrained('locations')
@@ -133,6 +122,5 @@ return new class extends Migration
         Schema::dropIfExists('locations');
         Schema::dropIfExists('institutions');
         Schema::dropIfExists('barrier_categories');
-        Schema::dropIfExists('barrier_statuses');
     }
 };

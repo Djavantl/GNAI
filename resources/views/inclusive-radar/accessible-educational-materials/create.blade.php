@@ -29,25 +29,21 @@
     <form action="{{ route('inclusive-radar.accessible-educational-materials.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        {{-- Dados Automáticos da Inspeção Inicial (Sincronizado com TA) --}}
-        <input type="hidden" name="inspection_type" value="{{ \App\Enums\InclusiveRadar\InspectionType::INITIAL->value }}">
-        <input type="hidden" name="inspection_date" value="{{ date('Y-m-d') }}">
-
         <div class="grid grid-cols-1 gap-6">
 
             {{-- SEÇÃO 1: IDENTIFICAÇÃO BÁSICA --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="md:col-span-2">
-                    <label class="block font-bold text-gray-700 mb-1">Título do Material *</label>
+                    <label class="block font-bold text-gray-700 mb-1 text-sm uppercase">Título do Material *</label>
                     <input type="text" name="name" value="{{ old('name') }}"
                            class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 @error('name') border-red-500 @enderror"
                            placeholder="Ex: Livro em Braille, Maquete Tátil...">
                 </div>
                 <div>
-                    <label class="block font-bold text-gray-700 mb-1">Tipo / Categoria *</label>
-                    <select name="type_id" id="type_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500">
+                    <label class="block font-bold text-gray-700 mb-1 text-sm uppercase">Tipo / Categoria *</label>
+                    <select name="type_id" id="type_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500 @error('type_id') border-red-500 @enderror">
                         <option value="">-- Selecione --</option>
-                        @foreach(\App\Models\InclusiveRadar\ResourceType::where('for_educational_material', true)->where('is_active', true)->get() as $type)
+                        @foreach($resourceTypes as $type)
                             <option value="{{ $type->id }}"
                                     data-digital="{{ $type->is_digital ? '1' : '0' }}"
                                 {{ old('type_id') == $type->id ? 'selected' : '' }}>
@@ -58,9 +54,9 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO 2: VISTORIA INICIAL (ESTILO TA - FUNDAMENTAL PARA HISTÓRICO) --}}
+            {{-- SEÇÃO 2: VISTORIA INICIAL (Sincronizado com TA) --}}
             <div class="bg-blue-50 p-5 rounded-lg border border-blue-200 shadow-inner">
-                <h3 class="text-blue-800 font-bold mb-4 flex items-center gap-2 uppercase text-sm">
+                <h3 class="text-blue-800 font-bold mb-4 flex items-center gap-2 uppercase text-xs">
                     <i class="fas fa-clipboard-check"></i> Registro de Vistoria Inicial
                 </h3>
 
@@ -77,8 +73,8 @@
                     </div>
 
                     <div>
-                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Fotos do Material *</label>
-                        <input type="file" name="images[]" multiple accept="image/*" required
+                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Fotos da Vistoria</label>
+                        <input type="file" name="images[]" multiple accept="image/*"
                                class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
                     </div>
                 </div>
@@ -90,7 +86,7 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO 3: ESPECIFICAÇÕES DINÂMICAS E ACESSIBILIDADE --}}
+            {{-- SEÇÃO 3: ESPECIFICAÇÕES E ACESSIBILIDADE --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div id="dynamic-attributes-container" class="hidden">
                     <label class="block font-bold text-gray-800 mb-2 border-l-4 border-blue-500 pl-2 text-sm uppercase">Especificações Técnicas</label>
@@ -103,7 +99,7 @@
                         @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->get() as $feature)
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" name="accessibility_features[]" value="{{ $feature->id }}" id="feat_{{ $feature->id }}"
-                                       {{ (is_array(old('accessibility_features')) && in_array($feature->id, old('accessibility_features'))) ? 'checked' : '' }}
+                                       {{ collect(old('accessibility_features'))->contains($feature->id) ? 'checked' : '' }}
                                        class="w-4 h-4 text-purple-600 rounded">
                                 <label for="feat_{{ $feature->id }}" class="text-sm cursor-pointer text-gray-700">{{ $feature->name }}</label>
                             </div>
@@ -115,14 +111,14 @@
             {{-- SEÇÃO 4: PÚBLICO E INVENTÁRIO --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block font-bold text-gray-700 mb-2 text-sm uppercase">Público-alvo *</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 bg-gray-50 p-4 rounded border border-gray-200">
-                        @foreach(\App\Models\SpecializedEducationalSupport\Deficiency::where('is_active', true)->get() as $def)
+                    <label class="block font-bold text-gray-700 mb-2 text-sm uppercase">Público-alvo / Deficiências *</label>
+                    <div class="grid grid-cols-1 gap-2 bg-gray-50 p-4 rounded border border-gray-200 max-h-48 overflow-y-auto shadow-inner">
+                        @foreach($deficiencies as $def)
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" name="deficiencies[]" value="{{ $def->id }}" id="def_{{ $def->id }}"
-                                       {{ (is_array(old('deficiencies')) && in_array($def->id, old('deficiencies'))) ? 'checked' : '' }}
+                                       {{ collect(old('deficiencies'))->contains($def->id) ? 'checked' : '' }}
                                        class="w-4 h-4 text-blue-600 rounded">
-                                <label for="def_{{ $def->id }}" class="text-xs cursor-pointer text-gray-600">{{ $def->name }}</label>
+                                <label for="def_{{ $def->id }}" class="text-xs cursor-pointer text-gray-600 font-medium">{{ $def->name }}</label>
                             </div>
                         @endforeach
                     </div>
@@ -152,23 +148,23 @@
             </div>
 
             {{-- OPÇÕES FINAIS --}}
-            <div class="flex flex-col gap-2 p-4 bg-gray-100 rounded border border-gray-300">
+            <div class="flex flex-col gap-2 p-4 bg-gray-50 rounded border border-gray-300">
                 <div class="flex items-center gap-2">
                     <input type="checkbox" name="requires_training" id="requires_training" value="1" {{ old('requires_training') ? 'checked' : '' }} class="w-4 h-4 text-blue-600 rounded">
-                    <label for="requires_training" class="cursor-pointer text-sm font-medium text-gray-700 italic">Requer Treinamento para o uso</label>
+                    <label for="requires_training" class="cursor-pointer text-sm font-medium text-gray-700 italic">Requer treinamento específico para uso</label>
                 </div>
                 <div class="flex items-center gap-2">
                     <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', '1') == '1' ? 'checked' : '' }} class="w-4 h-4 text-green-600 rounded">
-                    <label for="is_active" class="cursor-pointer text-sm font-bold text-green-700">Material com Cadastro Ativo</label>
+                    <label for="is_active" class="cursor-pointer text-sm font-bold text-green-700">Material ativo para empréstimos</label>
                 </div>
             </div>
 
             {{-- BOTÕES --}}
             <div class="flex gap-4 mt-4 border-t pt-6">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded shadow-lg transition font-bold text-lg flex-1 md:flex-none">
-                    <i class="fas fa-save mr-2"></i> Concluir Cadastro
+                    <i class="fas fa-save mr-2"></i> Salvar Material
                 </button>
-                <a href="{{ route('inclusive-radar.accessible-educational-materials.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded transition flex items-center font-bold">Cancelar</a>
+                <a href="{{ route('inclusive-radar.accessible-educational-materials.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-6 py-3 rounded transition flex items-center font-bold border">Cancelar</a>
             </div>
         </div>
     </form>
@@ -188,16 +184,13 @@
         const selectedOption = typeSelect.options[typeSelect.selectedIndex];
         if (!selectedOption || selectedOption.value === "") {
             [assetContainer, quantityContainer, conservationContainer].forEach(el => el.classList.add('hidden'));
+            outerContainer.classList.add('hidden');
             return;
         }
 
         const isDigital = selectedOption.getAttribute('data-digital') === '1';
-
-        // Lógica idêntica ao seu TA
         assetContainer.classList.toggle('hidden', isDigital);
         quantityContainer.classList.toggle('hidden', isDigital);
-
-        // Conservação SEMPRE aparece para gerar a vistoria inicial no histórico
         conservationContainer.classList.remove('hidden');
 
         if (isDigital) {
@@ -213,7 +206,7 @@
             outerContainer.classList.add('hidden');
             return;
         }
-        container.innerHTML = '<p class="text-sm text-gray-500 italic px-2"><i class="fas fa-spinner fa-spin mr-2"></i>Carregando...</p>';
+        container.innerHTML = '<div class="col-span-full p-2 text-blue-600 text-xs italic"><i class="fas fa-spinner fa-spin mr-2"></i>Carregando...</div>';
         outerContainer.classList.remove('hidden');
 
         fetch("{{ url('inclusive-radar/resource-types') }}/" + typeId + "/attributes")
@@ -225,14 +218,14 @@
                         const div = document.createElement('div');
                         div.className = "flex flex-col gap-1";
                         const label = document.createElement('label');
-                        label.className = "text-sm font-bold text-gray-600";
+                        label.className = "text-[11px] font-bold text-gray-600 uppercase";
                         label.innerText = attr.label + (attr.is_required ? ' *' : '');
 
                         const savedValue = currentValues[attr.id] || '';
                         let input;
 
                         if (attr.field_type === 'boolean') {
-                            div.className = "flex items-center gap-3 p-2 bg-white rounded border border-gray-100";
+                            div.className = "flex items-center gap-3 p-2 bg-white rounded border border-gray-100 shadow-sm";
                             input = document.createElement('input');
                             input.type = 'checkbox';
                             input.name = `attributes[${attr.id}]`;
@@ -260,10 +253,12 @@
         loadAttributes(this.value, {});
     });
 
-    if (typeSelect.value) {
-        handleTypeChange();
-        loadAttributes(typeSelect.value, oldAttributes);
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeSelect.value) {
+            handleTypeChange();
+            loadAttributes(typeSelect.value, oldAttributes);
+        }
+    });
 </script>
 </body>
 </html>

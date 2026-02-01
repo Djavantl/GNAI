@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->morphs('inspectable');
             $table->string('state')->nullable();
+            $table->string('status')->nullable();
             $table->string('type');
 
             $table->date('inspection_date');

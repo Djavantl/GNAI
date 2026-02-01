@@ -96,10 +96,15 @@
                         </td>
 
                         <td class="py-4 px-4 text-center align-middle">
+                            @php
+                                $status = $barrier->latestStatus();
+                            @endphp
+
                             <span class="bg-white text-gray-600 border-gray-300 px-2 py-1 rounded text-[10px] font-bold border uppercase shadow-sm">
-                                {{ $barrier->status->name }}
+                                {{ $status ? $status->label() : '—' }}
                             </span>
                         </td>
+
 
                         <td class="py-4 px-4 text-center align-middle">
                             <span class="text-sm font-semibold text-gray-700 block leading-tight">

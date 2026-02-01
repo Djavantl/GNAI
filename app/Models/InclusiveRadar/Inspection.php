@@ -2,6 +2,7 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\InspectionType;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,7 @@ class Inspection extends Model
         'inspectable_id',
         'inspectable_type',
         'state',
+        'status',
         'inspection_date',
         'description',
         'type',
@@ -26,6 +28,7 @@ class Inspection extends Model
     protected $casts = [
         'inspection_date' => 'date',
         'state' => ConservationState::class,
+        'status' => BarrierStatus::class,
         'type' => InspectionType::class,
     ];
 

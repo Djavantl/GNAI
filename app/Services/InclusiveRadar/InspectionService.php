@@ -2,6 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Models\InclusiveRadar\Inspection;
 use App\Enums\InclusiveRadar\ConservationState;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,7 @@ class InspectionService
         return DB::transaction(function () use ($model, $data) {
             $inspection = $model->inspections()->create([
                 'state'           => $data['state'] ?? ConservationState::NOT_APPLICABLE->value,
+                'status'          => $data['status'] ?? BarrierStatus::IDENTIFIED->value,
                 'inspection_date' => $data['inspection_date'],
                 'description'     => $data['description'] ?? null,
                 'type'            => $data['type'],

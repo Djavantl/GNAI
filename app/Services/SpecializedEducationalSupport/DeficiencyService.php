@@ -43,4 +43,10 @@ class DeficiencyService
             $deficiency->delete();
         });
     }
+
+    public function listActiveOrdered()
+    {
+        return Deficiency::where('is_active', true)->orderBy('name')->get();
+    }
+
 }

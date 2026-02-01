@@ -7,7 +7,6 @@ use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\PositionSeeder;
 use Database\Seeders\SpecializedEducationalSupport\PSPUSeeder;
 use Database\Seeders\InclusiveRadar\BarrierCategorySeeder;
-use Database\Seeders\InclusiveRadar\BarrierStatusSeeder;
 use Database\Seeders\InclusiveRadar\ResourceTypeSeeder;
 use Database\Seeders\InclusiveRadar\TypeAttributeSeeder;
 use Database\Seeders\InclusiveRadar\TypeAttributeAssignmentSeeder;
@@ -23,7 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DeficiencySeeder::class,
             PositionSeeder::class,
-            BarrierStatusSeeder::class,
             BarrierCategorySeeder::class,
             ResourceTypeSeeder::class,
             TypeAttributeSeeder::class,

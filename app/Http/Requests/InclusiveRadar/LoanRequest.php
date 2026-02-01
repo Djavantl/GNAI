@@ -20,8 +20,8 @@ class LoanRequest extends FormRequest
                 'required',
                 'string',
                 Rule::in([
-                    'App\Models\InclusiveRadar\AssistiveTechnology',
-                    'App\Models\InclusiveRadar\AccessibleEducationalMaterial'
+                    'assistive_technology',
+                    'accessible_educational_material'
                 ]),
             ],
             'student_id' => 'required|exists:students,id',

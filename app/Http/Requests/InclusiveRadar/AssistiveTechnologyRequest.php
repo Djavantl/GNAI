@@ -4,7 +4,10 @@ namespace App\Http\Requests\InclusiveRadar;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use App\Models\InclusiveRadar\ResourceType;
+use App\Enums\InclusiveRadar\InspectionType;
+use App\Enums\InclusiveRadar\ConservationState;
 
 class AssistiveTechnologyRequest extends FormRequest
 {
@@ -20,7 +23,9 @@ class AssistiveTechnologyRequest extends FormRequest
 
         $isDigital = false;
         if ($this->type_id) {
-            $isDigital = ResourceType::where('id', $this->type_id)->where('is_digital', true)->exists();
+            $isDigital = ResourceType::where('id', $this->type_id)
+                ->where('is_digital', true)
+                ->exists();
         }
 
         return [
@@ -31,34 +36,53 @@ class AssistiveTechnologyRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:50',
-                Rule::unique('assistive_technologies', 'asset_code')->ignore($tech?->id),
+                Rule::unique('assistive_technologies', 'asset_code')
+                    ->ignore($tech?->id),
             ],
-            'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
+            'quantity' => $isDigital
+                ? 'nullable'
+                : 'required|integer|min:0',
             'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
             'status_id' => 'nullable|exists:resource_statuses,id',
             'notes' => 'nullable|string',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
-            'conservation_state' => $isUpdate ? 'nullable|string|max:50' : 'required|string|max:50',
-            'inspection_date' => $isUpdate ? 'nullable|date' : 'required|date|before_or_equal:today',
-            'inspection_description' => 'nullable|string',
-            'inspection_type' => $isUpdate ? 'nullable' : 'required|in:initial,return,maintenance,periodic,resolution',
+            'conservation_state' => [
+                $isUpdate ? 'nullable' : 'required',
+                new Enum(ConservationState::class),
+            ],
+            'inspection_type' => [
+                $isUpdate ? 'nullable' : 'required',
+                new Enum(InspectionType::class),
+            ],
+            'inspection_date' => [
+                'required',
+                'date',
+                'before_or_equal:today',
+            ],
+            'inspection_description' => 'nullable|string|max:1000',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
-
             'attributes' => 'nullable|array',
         ];
     }
 
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
+        $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
+
         $this->merge([
             'requires_training' => $this->boolean('requires_training'),
             'is_active' => $this->boolean('is_active'),
-            'inspection_type' => $this->inspection_type ?? ($this->isMethod('post') ? 'initial' : null),
-            'inspection_date' => $this->inspection_date ?? ($this->isMethod('post') ? now()->format('Y-m-d') : null),
+            'inspection_date' => $this->inspection_date ?? now()->format('Y-m-d'),
         ]);
+
+        if (!$isUpdate) {
+            $this->merge([
+                'inspection_type' => $this->inspection_type ?? InspectionType::INITIAL->value,
+            ]);
+        }
     }
 
     public function messages(): array
@@ -70,6 +94,7 @@ class AssistiveTechnologyRequest extends FormRequest
             'asset_code.unique' => 'O código patrimonial já está em uso.',
             'deficiencies.required' => 'Selecione pelo menos um público-alvo.',
             'conservation_state.required' => 'O estado de conservação atual é obrigatório no cadastro.',
+            'inspection_date.before_or_equal' => 'A data da inspeção não pode ser no futuro.',
             'images.*.image' => 'O arquivo deve ser uma imagem.',
             'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',
         ];

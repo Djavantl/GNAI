@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         #map { height: 450px; width: 100%; border-radius: 8px; z-index: 1; border: 1px solid #e2e8f0; }
-        .map-disabled { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
@@ -26,13 +25,13 @@
         </h1>
         <div class="text-right">
             <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Edição de Registro</span>
-            <p class="text-[10px] text-gray-500 mt-1">ID: #{{ $barrier->id }}</p>
+            <p class="text-[10px] text-gray-500 mt-1 uppercase">ID Interno: #{{ $barrier->id }}</p>
         </div>
     </div>
 
     @if($errors->any())
         <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-sm text-sm">
-            <p class="font-bold mb-1 italic text-red-800">Atenção: Verifique os erros no formulário.</p>
+            <p class="font-bold mb-1 italic">Atenção: Verifique os erros no formulário.</p>
             <ul class="list-disc ml-5">
                 @foreach($errors->all() as $error) <li>{{ $error }}</li> @endforeach
             </ul>
@@ -56,7 +55,7 @@
                     <div>
                         <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Campus / Unidade *</label>
                         <select name="institution_id" id="institution_select" required
-                                class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500 text-sm font-semibold {{ $errors->has('institution_id') ? 'border-red-500' : '' }}">
+                                class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500 text-sm font-semibold">
                             <option value="">-- Selecione a Unidade --</option>
                             @foreach($institutions as $inst)
                                 <option value="{{ $inst->id }}" data-lat="{{ $inst->latitude }}" data-lng="{{ $inst->longitude }}"
@@ -85,7 +84,7 @@
                     <div>
                         <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Título do Relato *</label>
                         <input type="text" name="name" value="{{ old('name', $barrier->name) }}" required
-                               class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 text-sm {{ $errors->has('name') ? 'border-red-500' : '' }}"
+                               class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 text-sm"
                                placeholder="Ex: Calçada irregular">
                     </div>
 
@@ -98,15 +97,15 @@
                         <div>
                             <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Prioridade</label>
                             <select name="priority" class="w-full border p-2 rounded bg-white text-sm">
-                                <option value="low" {{ old('priority', $barrier->priority) == 'low' ? 'selected' : '' }}>Baixa</option>
-                                <option value="medium" {{ old('priority', $barrier->priority) == 'medium' ? 'selected' : '' }}>Média</option>
-                                <option value="high" {{ old('priority', $barrier->priority) == 'high' ? 'selected' : '' }}>Alta</option>
-                                <option value="critical" {{ old('priority', $barrier->priority) == 'critical' ? 'selected' : '' }}>Crítica</option>
+                                <option value="low" @selected(old('priority', $barrier->priority?->value) === 'low')>Baixa</option>
+                                <option value="medium" @selected(old('priority', $barrier->priority?->value) === 'medium')>Média</option>
+                                <option value="high" @selected(old('priority', $barrier->priority?->value) === 'high')>Alta</option>
+                                <option value="critical" @selected(old('priority', $barrier->priority?->value) === 'critical')>Crítica</option>
                             </select>
                         </div>
                     </div>
 
-                    {{-- 2. Pessoa Impactada (Restaurado Integralmente) --}}
+                    {{-- 2. Pessoa Impactada --}}
                     <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 space-y-4">
                         <h3 class="text-gray-700 font-bold mb-2 flex items-center gap-2 uppercase text-xs">
                             <i class="fas fa-users"></i> 2. Pessoa Impactada
@@ -115,18 +114,14 @@
                         <div class="flex flex-col gap-2 p-2 bg-blue-50 rounded border border-blue-100">
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" name="is_anonymous" id="is_anonymous" value="1" {{ old('is_anonymous', $barrier->is_anonymous) ? 'checked' : '' }} class="w-4 h-4 text-gray-700 rounded">
-                                <label for="is_anonymous" class="text-xs font-bold text-gray-700 uppercase cursor-pointer italic">
-                                    Desejo fazer um Relato Anônimo
-                                </label>
+                                <label for="is_anonymous" class="text-xs font-bold text-gray-700 uppercase cursor-pointer italic">Relato Anônimo</label>
                             </div>
 
                             <div id="wrapper_not_applicable" class="flex items-center gap-2 border-t border-blue-200 pt-2 mt-1">
                                 <input type="checkbox" name="not_applicable" id="not_applicable" value="1"
                                        {{ old('not_applicable', $barrier->not_applicable) ? 'checked' : '' }}
                                        class="w-4 h-4 text-blue-600 rounded">
-                                <label for="not_applicable" class="text-xs font-bold text-blue-800 uppercase cursor-pointer">
-                                    Não se aplica a uma pessoa específica (Relato Geral)
-                                </label>
+                                <label for="not_applicable" class="text-xs font-bold text-blue-800 uppercase cursor-pointer">Relato Geral (Não se aplica a um CPF)</label>
                             </div>
                         </div>
 
@@ -135,7 +130,7 @@
                                 <div>
                                     <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Estudante Impactado</label>
                                     <select name="affected_student_id" class="w-full border p-2 rounded bg-white text-sm">
-                                        <option value="">-- Selecione o Estudante (se houver) --</option>
+                                        <option value="">-- Selecione o Estudante --</option>
                                         @foreach($students as $student)
                                             <option value="{{ $student->id }}" {{ old('affected_student_id', $barrier->affected_student_id) == $student->id ? 'selected' : '' }}>
                                                 {{ $student->person?->name }}
@@ -143,11 +138,10 @@
                                         @endforeach
                                     </select>
                                 </div>
-
                                 <div>
                                     <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Profissional Impactado</label>
                                     <select name="affected_professional_id" class="w-full border p-2 rounded bg-white text-sm">
-                                        <option value="">-- Selecione o Profissional (se houver) --</option>
+                                        <option value="">-- Selecione o Profissional --</option>
                                         @foreach($professionals as $prof)
                                             <option value="{{ $prof->id }}" {{ old('affected_professional_id', $barrier->affected_professional_id) == $prof->id ? 'selected' : '' }}>
                                                 {{ $prof->person?->name }}
@@ -161,15 +155,11 @@
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
                                         <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Nome da Pessoa</label>
-                                        <input type="text" name="affected_person_name"
-                                               value="{{ old('affected_person_name', $barrier->affected_person_name) }}"
-                                               class="w-full border p-2 rounded text-sm placeholder="Ex: João da Silva">
+                                        <input type="text" name="affected_person_name" value="{{ old('affected_person_name', $barrier->affected_person_name) }}" class="w-full border p-2 rounded text-sm" placeholder="Ex: Visitante">
                                     </div>
                                     <div>
                                         <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Papel / Vínculo</label>
-                                        <input type="text" name="affected_person_role"
-                                               value="{{ old('affected_person_role', $barrier->affected_person_role) }}"
-                                               class="w-full border p-2 rounded text-sm placeholder="Ex: Visitante">
+                                        <input type="text" name="affected_person_role" value="{{ old('affected_person_role', $barrier->affected_person_role) }}" class="w-full border p-2 rounded text-sm" placeholder="Ex: Familiar">
                                     </div>
                                 </div>
                             </div>
@@ -178,7 +168,7 @@
 
                     <div>
                         <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Descrição Detalhada</label>
-                        <textarea name="description" rows="3" required class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 text-sm">{{ old('description', $barrier->description) }}</textarea>
+                        <textarea name="description" rows="3" required class="w-full border p-2 rounded text-sm">{{ old('description', $barrier->description) }}</textarea>
                     </div>
 
                     <div>
@@ -218,16 +208,16 @@
                         </div>
                     </div>
                     <div id="map"></div>
-                    <div id="coord_badge" class="absolute bottom-4 right-4 z-[1000] bg-white/90 px-3 py-1 rounded shadow text-[10px] font-mono border border-gray-300">
+                    <div id="coord_badge" class="absolute bottom-4 right-4 z-[1000] bg-white/90 px-3 py-1 rounded shadow text-[10px] font-mono border border-gray-300 hidden">
                         LAT: <span id="lat_txt">0</span> | LNG: <span id="lng_txt">0</span>
                     </div>
                     <input type="hidden" name="latitude" id="lat" value="{{ old('latitude', $barrier->latitude) }}">
                     <input type="hidden" name="longitude" id="lng" value="{{ old('longitude', $barrier->longitude) }}">
                 </div>
 
-                {{-- HISTÓRICO DE VISTORIAS (Estilo Tecnologia Assistiva) --}}
+                {{-- HISTÓRICO DE VISTORIAS --}}
                 <div class="mt-2">
-                    <label class="block font-bold mb-4 text-gray-800 uppercase text-sm tracking-wide">
+                    <label class="block font-bold mb-4 text-gray-800 uppercase text-xs tracking-wide">
                         <i class="fas fa-history mr-2 text-blue-600"></i>Histórico de Vistorias e Fotos
                     </label>
 
@@ -235,21 +225,21 @@
                         @forelse($barrier->inspections()->with('images')->latest('inspection_date')->get() as $inspection)
                             <div class="border rounded-lg bg-gray-50 overflow-hidden shadow-sm">
                                 <div class="bg-gray-100 px-4 py-2 border-b flex justify-between items-center">
-                                    <span class="text-xs font-bold text-blue-700">
+                                    <span class="text-[10px] font-bold text-blue-700">
                                         <i class="far fa-calendar-alt mr-1"></i>
                                         {{ $inspection->inspection_date?->format('d/m/Y') }}
                                     </span>
-                                    <span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-white border border-gray-300">
-                                        Vistoria
+                                    <span class="text-[9px] font-bold uppercase px-2 py-1 rounded bg-white border border-gray-300">
+                                        {{ $inspection->status?->label() }}
                                     </span>
                                 </div>
-                                <div class="p-4">
-                                    <p class="text-sm text-gray-800 mb-3 italic">"{{ $inspection->description }}"</p>
+                                <div class="p-3">
+                                    <p class="text-xs text-gray-700 italic">"{{ $inspection->description }}"</p>
                                     @if($inspection->images->count() > 0)
-                                        <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                        <div class="grid grid-cols-5 gap-2 mt-3">
                                             @foreach($inspection->images as $img)
-                                                <a href="{{ asset('storage/' . $img->path) }}" target="_blank" class="block border rounded p-1 bg-white">
-                                                    <img src="{{ asset('storage/' . $img->path) }}" class="h-16 w-full object-cover rounded">
+                                                <a href="{{ asset('storage/' . $img->path) }}" target="_blank" class="block border rounded p-1 bg-white hover:border-blue-500 transition">
+                                                    <img src="{{ asset('storage/' . $img->path) }}" class="h-12 w-full object-cover rounded">
                                                 </a>
                                             @endforeach
                                         </div>
@@ -257,7 +247,7 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="text-center py-6 border-2 border-dashed rounded-lg text-gray-400 font-bold text-xs">
+                            <div class="text-center py-6 border-2 border-dashed rounded-lg text-gray-400 font-bold text-[10px] uppercase">
                                 Nenhuma vistoria registrada anteriormente.
                             </div>
                         @endforelse
@@ -267,15 +257,16 @@
                 {{-- NOVA VISTORIA / ATUALIZAÇÃO --}}
                 <div class="bg-blue-50 p-5 rounded-lg border-2 border-blue-200">
                     <h3 class="text-blue-800 font-bold mb-4 flex items-center gap-2 uppercase text-xs">
-                        <i class="fas fa-plus-circle"></i> Atualizar Estado / Adicionar Fotos
+                        <i class="fas fa-plus-circle"></i> Registrar Nova Vistoria / Atualizar Estado
                     </h3>
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Status Atual</label>
-                            <select name="barrier_status_id" class="w-full border p-2 rounded bg-white text-sm">
-                                @foreach($statuses as $status)
-                                    <option value="{{ $status->id }}" {{ old('barrier_status_id', $barrier->barrier_status_id) == $status->id ? 'selected' : '' }}>
-                                        {{ $status->name }}
+                            <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Novo Status</label>
+                            <select name="status" class="w-full border p-2 rounded bg-white text-sm">
+                                <option value="">-- Manter/Selecionar status --</option>
+                                @foreach(\App\Enums\InclusiveRadar\BarrierStatus::cases() as $status)
+                                    <option value="{{ $status->value }}" @selected(old('status') == $status->value)>
+                                        {{ $status->label() }}
                                     </option>
                                 @endforeach
                             </select>
@@ -285,14 +276,16 @@
                             <input type="date" name="inspection_date" value="{{ date('Y-m-d') }}" class="w-full border p-2 rounded text-sm">
                         </div>
                     </div>
-                    <textarea name="inspection_description" rows="2" class="w-full border p-2 rounded text-sm mb-4" placeholder="Notas sobre a situação atual..."></textarea>
+                    <textarea name="inspection_description" rows="2" class="w-full border p-2 rounded text-sm mb-4" placeholder="Notas sobre a situação atual ou mudanças encontradas..."></textarea>
+
+                    <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Anexar Novas Fotos</label>
                     <input type="file" name="images[]" multiple accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white cursor-pointer">
                 </div>
 
-                <div class="flex items-center gap-4 p-4 bg-gray-100 rounded border border-gray-300">
+                <div class="flex items-center gap-4 p-4 bg-gray-100 rounded border border-gray-300 shadow-inner">
                     <div class="flex items-center gap-2">
                         <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $barrier->is_active) ? 'checked' : '' }} class="w-5 h-5 text-green-600 rounded">
-                        <label for="is_active" class="cursor-pointer text-sm font-bold text-green-700 uppercase">Cadastro Ativo</label>
+                        <label for="is_active" class="cursor-pointer text-sm font-bold text-green-700 uppercase">Barreira Ainda Ativa no Sistema</label>
                     </div>
                 </div>
             </div>
@@ -300,7 +293,7 @@
 
         <div class="flex gap-4 mt-8 border-t pt-6">
             <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-12 py-3 rounded shadow-lg transition font-bold text-lg">
-                <i class="fas fa-save mr-2"></i> Atualizar Barreira
+                <i class="fas fa-save mr-2"></i> Salvar Alterações
             </button>
             <a href="{{ route('inclusive-radar.barriers.index') }}" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-3 rounded transition font-bold text-center">
                 Cancelar
@@ -318,7 +311,7 @@
     let barrierMarker = null;
     const institutionsData = @json($institutions);
 
-    const iconInst = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png', iconSize: [25,41], iconAnchor: [12,41], popupAnchor: [1,-34] });
+    const iconInst = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png', iconSize: [25,41], iconAnchor: [12,41] });
     const iconRef = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png', iconSize: [20,32], iconAnchor: [10,32] });
     const iconBarrier = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png', shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', iconSize: [30,48], iconAnchor: [15,48] });
 
@@ -327,10 +320,7 @@
         if(barrierMarker) { barrierMarker.setLatLng([lat, lng]); }
         else {
             barrierMarker = L.marker([lat, lng], {icon: iconBarrier, draggable: true}).addTo(map);
-            barrierMarker.on('dragend', function(e) {
-                const pos = e.target.getLatLng();
-                updateInputs(pos.lat, pos.lng);
-            });
+            barrierMarker.on('dragend', (e) => updateInputs(e.target.getLatLng().lat, e.target.getLatLng().lng));
         }
         updateInputs(lat, lng);
         if(fly) map.flyTo([lat, lng], 19);
@@ -353,12 +343,11 @@
         if(instId) {
             const instLat = selected.dataset.lat;
             const instLng = selected.dataset.lng;
-            L.marker([instLat, instLng], {icon: iconInst}).addTo(layerInstituicao).bindPopup("<b>Sede:</b> " + selected.text);
-            map.flyTo([instLat, instLng], 17);
+            L.marker([instLat, instLng], {icon: iconInst}).addTo(layerInstituicao);
 
             const inst = institutionsData.find(i => i.id == instId);
             const locSelect = document.getElementById('location_select');
-            const oldLocId = "{{ old('location_id', $barrier->location_id) }}";
+            const currentLocId = "{{ old('location_id', $barrier->location_id) }}";
 
             locSelect.innerHTML = '<option value="">Selecione um local...</option>';
             if(inst && inst.locations) {
@@ -368,11 +357,13 @@
                     opt.text = loc.name;
                     opt.dataset.lat = loc.latitude;
                     opt.dataset.lng = loc.longitude;
-                    if(oldLocId == loc.id) opt.selected = true;
+                    if(currentLocId == loc.id) opt.selected = true;
                     locSelect.appendChild(opt);
-                    L.marker([loc.latitude, loc.longitude], {icon: iconRef}).addTo(layerReferencias).bindPopup("<b>Referência:</b> " + loc.name);
+                    L.marker([loc.latitude, loc.longitude], {icon: iconRef}).addTo(layerReferencias);
                 });
             }
+            // Se estivermos mudando a inst agora, e não carregando a página, voamos para ela
+            if(!barrierMarker) map.flyTo([instLat, instLng], 17);
         }
     });
 
@@ -400,24 +391,19 @@
     function togglePersonFields() {
         const isAnonymous = document.getElementById('is_anonymous').checked;
         const notApplicable = document.getElementById('not_applicable').checked;
-        const identificationFields = document.getElementById('identification_fields');
-        const wrapperNotApplicable = document.getElementById('wrapper_not_applicable');
-        const personSelects = document.getElementById('person_selects');
-        const manualData = document.getElementById('manual_person_data');
+        const fields = document.getElementById('identification_fields');
+        const wrapper = document.getElementById('wrapper_not_applicable');
+        const selects = document.getElementById('person_selects');
+        const manual = document.getElementById('manual_person_data');
 
         if (isAnonymous) {
-            identificationFields.classList.add('hidden');
-            wrapperNotApplicable.classList.add('hidden');
+            fields.classList.add('hidden');
+            wrapper.classList.add('hidden');
         } else {
-            identificationFields.classList.remove('hidden');
-            wrapperNotApplicable.classList.remove('hidden');
-            if(notApplicable) {
-                personSelects.classList.add('hidden');
-                manualData.classList.remove('hidden');
-            } else {
-                personSelects.classList.remove('hidden');
-                manualData.classList.add('hidden');
-            }
+            fields.classList.remove('hidden');
+            wrapper.classList.remove('hidden');
+            selects.classList.toggle('hidden', notApplicable);
+            manual.classList.toggle('hidden', !notApplicable);
         }
     }
 
@@ -426,12 +412,20 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         togglePersonFields();
-        const instSelect = document.getElementById('institution_select');
-        if(instSelect.value) instSelect.dispatchEvent(new Event('change'));
 
+        // Disparar o change da instituição para carregar os locais do prédio
+        const instSelect = document.getElementById('institution_select');
+        if(instSelect.value) {
+            instSelect.dispatchEvent(new Event('change'));
+        }
+
+        // Posicionar o marcador se houver coordenadas salvas
         const initLat = "{{ old('latitude', $barrier->latitude) }}";
         const initLng = "{{ old('longitude', $barrier->longitude) }}";
-        if(initLat && initLng) setBarrierLocation(initLat, initLng, true);
+        if(initLat && initLng) {
+            // Pequeno delay para o mapa renderizar antes do marcador
+            setTimeout(() => setBarrierLocation(initLat, initLng, true), 300);
+        }
     });
 </script>
 </body>

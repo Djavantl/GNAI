@@ -216,39 +216,74 @@
                     <input type="hidden" name="latitude" id="lat" value="{{ old('latitude') }}">
                     <input type="hidden" name="longitude" id="lng" value="{{ old('longitude') }}">
 
-                    <div class="mt-4">
-                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Status Inicial</label>
-                        <select name="barrier_status_id" class="w-full border p-2 rounded bg-white text-sm">
-                            @foreach($statuses as $status)
-                                <option value="{{ $status->id }}" {{ old('barrier_status_id', $loop->first ? $status->id : null) == $status->id ? 'selected' : '' }}>
-                                    {{ $status->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
                 </div>
 
-                <div class="bg-gray-50 p-5 rounded-lg border-2 border-dashed border-gray-300">
-                    <label class="block font-bold text-gray-700 mb-2 text-xs uppercase flex items-center gap-2">
-                        <i class="fas fa-camera text-blue-600"></i> Fotos da Barreira e Vistoria
-                    </label>
-                    <input type="file" name="images[]" multiple accept="image/*"
-                           class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-blue-700 file:text-white cursor-pointer">
+                {{-- SEÇÃO DE VISTORIA INICIAL --}}
+                <div class="bg-blue-50 p-5 rounded-lg border border-blue-200 shadow-inner">
+                    <h3 class="text-blue-800 font-bold mb-4 flex items-center gap-2 uppercase text-sm">
+                        <i class="fas fa-clipboard-check"></i> Registro de Vistoria Inicial
+                    </h3>
 
-                    <div class="mt-4">
-                        <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Notas da Vistoria Inicial (Opcional)</label>
-                        <textarea name="inspection_description" rows="2" class="w-full border p-2 rounded text-sm" placeholder="Observações sobre as fotos ou condições do local...">{{ old('inspection_description') }}</textarea>
-                    </div>
-                </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                <div class="flex flex-col md:flex-row gap-4 p-4 bg-gray-100 rounded border border-gray-300">
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }} class="w-5 h-5 text-green-600 rounded">
-                            <label for="is_active" class="cursor-pointer text-sm font-bold text-green-700">Ativar no Radar</label>
+                        {{-- Status da Barreira --}}
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">
+                                Status da Barreira *
+                            </label>
+                            <select name="status" class="w-full border p-2 rounded bg-white text-sm">
+                                @foreach(\App\Enums\InclusiveRadar\BarrierStatus::cases() as $status)
+                                    <option value="{{ $status->value }}"
+                                        {{ old('status', \App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->value) === $status->value ? 'selected' : '' }}>
+                                        {{ $status->label() }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Upload de fotos --}}
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">
+                                Fotos da Barreira
+                            </label>
+                            <input
+                                type="file"
+                                name="images[]"
+                                multiple
+                                accept="image/*"
+                                class="w-full text-xs text-gray-500
+                       file:mr-4 file:py-2 file:px-4
+                       file:rounded file:border-0
+                       file:text-xs file:font-bold
+                       file:bg-blue-700 file:text-white
+                       cursor-pointer">
                         </div>
                     </div>
+
+                    {{-- Observações da Vistoria --}}
+                    <div class="mt-4">
+                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">
+                            Notas da Vistoria Inicial (Opcional)
+                        </label>
+                        <textarea
+                            name="inspection_description"
+                            rows="2"
+                            class="w-full border p-2 rounded text-sm"
+                            placeholder="Observações sobre a vistoria inicial...">{{ old('inspection_description') }}</textarea>
+                    </div>
+
+                    {{-- Campos técnicos (backend) --}}
+                    <input
+                        type="hidden"
+                        name="inspection_type"
+                        value="{{ \App\Enums\InclusiveRadar\InspectionType::INITIAL->value }}">
+
+                    <input
+                        type="hidden"
+                        name="inspection_date"
+                        value="{{ now()->format('Y-m-d') }}">
                 </div>
+
             </div>
         </div>
 
