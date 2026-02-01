@@ -11,7 +11,6 @@
 
 <div class="max-w-7xl mx-auto">
 
-    {{-- Cabeçalho Estilo GNAI --}}
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Tecnologias Assistivas</h1>
@@ -25,7 +24,6 @@
         </a>
     </div>
 
-    {{-- Mensagem de Sucesso --}}
     @if(session('success'))
         <div class="bg-green-100 border border-green-200 text-green-800 p-4 rounded mb-6 flex items-center gap-3 shadow-sm">
             <i class="fas fa-check-circle text-green-600"></i>
@@ -33,7 +31,17 @@
         </div>
     @endif
 
-    {{-- Tabela Estilo GNAI --}}
+    @if($errors->any())
+        <div class="bg-red-100 border border-red-200 text-red-800 p-4 rounded mb-6 flex items-center gap-3 shadow-sm">
+            <i class="fas fa-exclamation-triangle text-red-600"></i>
+            <div>
+                @foreach($errors->all() as $error)
+                    <p class="text-sm font-bold">{{ $error }}</p>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="bg-white p-6 rounded shadow border-t-4 border-blue-600">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -64,7 +72,6 @@
                             </div>
                         </td>
 
-                        {{-- NATUREZA --}}
                         <td class="py-4 px-4 text-center align-middle">
                             @if($tech->type?->is_digital)
                                 <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase border border-indigo-200">Digital</span>
@@ -73,7 +80,6 @@
                             @endif
                         </td>
 
-                        {{-- QUANTIDADE DISPONÍVEL / TOTAL --}}
                         <td class="py-4 px-4 text-center align-middle">
                             @if($tech->type?->is_digital)
                                 <span class="text-blue-600 text-[10px] font-bold uppercase tracking-tighter bg-blue-50 px-2 py-1 rounded border border-blue-100">
@@ -82,7 +88,6 @@
                             @else
                                 <div class="flex flex-col items-center">
                                     <div class="flex items-center gap-1 mb-1">
-                                        {{-- Badge de Disponibilidade --}}
                                         <span class="px-2 py-0.5 rounded text-xs font-bold border {{ $tech->quantity_available > 0 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200' }}">
                                             {{ $tech->quantity_available ?? 0 }}
                                         </span>
@@ -98,10 +103,8 @@
 
                         <td class="py-4 px-4 text-center align-middle">
                             @php
-                                // Lógica visual de status baseada no estoque real
                                 $isUnavailable = !$tech->type?->is_digital && ($tech->quantity_available <= 0);
                             @endphp
-
                             <span class="{{ $isUnavailable ? 'bg-red-100 text-red-700 border-red-200' : 'bg-gray-100 text-gray-600 border-gray-200' }} px-2 py-1 rounded-full text-[10px] font-bold border uppercase">
                                 {{ $isUnavailable ? 'Esgotado' : ($tech->resourceStatus?->name ?? 'Disponível') }}
                             </span>
@@ -118,17 +121,14 @@
                         <td class="py-4 px-4 text-right align-middle">
                             <div class="flex justify-end gap-2">
                                 <a href="{{ route('inclusive-radar.assistive-technologies.edit', $tech) }}"
-                                   class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm font-semibold"
-                                   title="Editar">
+                                   class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm font-semibold">
                                     <i class="fas fa-edit"></i>
                                 </a>
 
                                 <form action="{{ route('inclusive-radar.assistive-technologies.toggle', $tech) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit"
-                                            class="{{ $tech->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }} px-3 py-1 rounded transition border text-sm font-semibold"
-                                            title="{{ $tech->is_active ? 'Ocultar' : 'Mostrar' }}">
+                                    <button type="submit" class="{{ $tech->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }} px-3 py-1 rounded transition border text-sm font-semibold">
                                         <i class="fas {{ $tech->is_active ? 'fa-eye-slash' : 'fa-eye' }}"></i>
                                     </button>
                                 </form>
@@ -136,10 +136,7 @@
                                 <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $tech) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit"
-                                            onclick="return confirm('Deseja remover esta tecnologia?')"
-                                            class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold"
-                                            title="Excluir">
+                                    <button type="submit" onclick="return confirm('Deseja remover esta tecnologia?')" class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -148,9 +145,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="py-12 text-center text-gray-400">
-                            <p class="text-lg font-semibold italic">Nenhuma tecnologia cadastrada.</p>
-                        </td>
+                        <td colspan="6" class="py-12 text-center text-gray-400 font-semibold italic">Nenhuma tecnologia cadastrada.</td>
                     </tr>
                 @endforelse
                 </tbody>

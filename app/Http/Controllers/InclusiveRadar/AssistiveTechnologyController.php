@@ -13,21 +13,15 @@ use Exception;
 
 class AssistiveTechnologyController extends Controller
 {
-    protected AssistiveTechnologyService $assistiveTechnologyService;
-
-    public function __construct(AssistiveTechnologyService $assistiveTechnologyService)
-    {
-        $this->assistiveTechnologyService = $assistiveTechnologyService;
-    }
+    public function __construct(
+        protected AssistiveTechnologyService $assistiveTechnologyService
+    ) {}
 
     public function index(): View
     {
-        $assistiveTechnologies = $this->assistiveTechnologyService->listAll();
-
-        return view(
-            'inclusive-radar.assistive-technologies.index',
-            compact('assistiveTechnologies')
-        );
+        return view('inclusive-radar.assistive-technologies.index', [
+            'assistiveTechnologies' => $this->assistiveTechnologyService->listAll()
+        ]);
     }
 
     public function create(): View
@@ -40,11 +34,17 @@ class AssistiveTechnologyController extends Controller
 
     public function store(AssistiveTechnologyRequest $request): RedirectResponse
     {
-        $this->assistiveTechnologyService->store($request->validated());
+        try {
+            $this->assistiveTechnologyService->store($request->validated());
 
-        return redirect()
-            ->route('inclusive-radar.assistive-technologies.index')
-            ->with('success', 'Tecnologia assistiva criada com sucesso!');
+            return redirect()
+                ->route('inclusive-radar.assistive-technologies.index')
+                ->with('success', 'Tecnologia assistiva criada com sucesso!');
+        } catch (Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Erro ao processar cadastro: ' . $e->getMessage());
+        }
     }
 
     public function edit(AssistiveTechnology $assistiveTechnology): View
@@ -67,11 +67,12 @@ class AssistiveTechnologyController extends Controller
                 ->route('inclusive-radar.assistive-technologies.index')
                 ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
 
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
         } catch (Exception $e) {
-
             return back()
                 ->withInput()
-                ->withErrors(['quantity' => $e->getMessage()]);
+                ->with('error', 'Ocorreu um erro inesperado: ' . $e->getMessage());
         }
     }
 
@@ -80,7 +81,7 @@ class AssistiveTechnologyController extends Controller
         $this->assistiveTechnologyService->toggleActive($assistiveTechnology);
 
         return redirect()
-            ->route('inclusive-radar.assistive-technologies.index')
+            ->back()
             ->with('success', 'Status atualizado com sucesso!');
     }
 
@@ -96,12 +97,11 @@ class AssistiveTechnologyController extends Controller
         } catch (ValidationException $e) {
             return redirect()
                 ->route('inclusive-radar.assistive-technologies.index')
-                ->withErrors($e->validator)
-                ->withInput();
+                ->withErrors($e->validator);
         } catch (Exception $e) {
             return redirect()
                 ->route('inclusive-radar.assistive-technologies.index')
-                ->with('error', $e->getMessage());
+                ->with('error', 'Erro ao excluir: ' . $e->getMessage());
         }
     }
 }

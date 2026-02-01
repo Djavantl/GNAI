@@ -4,12 +4,13 @@ namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\Institution;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class InstitutionService
 {
     public function listAll()
     {
-        return Institution::with('locations')
+        return Institution::with(['locations', 'barriers'])
             ->orderBy('name')
             ->get();
     }
@@ -39,6 +40,14 @@ class InstitutionService
 
     public function delete(Institution $institution): void
     {
+        $hasActiveBarriers = $institution->barriers()
+            ->whereNull('resolved_at')
+            ->exists();
+
+        if ($hasActiveBarriers) {
+            throw new \Exception("Não é possível apagar esta instituição: existem barreiras não resolvidas vinculadas.");
+        }
+
         DB::transaction(function () use ($institution) {
             $institution->delete();
         });

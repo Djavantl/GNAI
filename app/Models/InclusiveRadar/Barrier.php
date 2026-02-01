@@ -2,32 +2,43 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Models\SpecializedEducationalSupport\Professional;
+use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Barrier extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
-        'user_id',
+        'registered_by_user_id',
         'institution_id',
-        'is_anonymous',
-        'reporter_role',
         'barrier_category_id',
-        'priority',
-        'location_id',
-        'latitude',
-        'longitude',
-        'location_specific_details',
         'barrier_status_id',
+        'location_id',
+        'affected_student_id',
+        'affected_professional_id',
+        'not_applicable',
+        'affected_person_name',
+        'affected_person_role',
+        'is_anonymous',
+        'priority',
         'identified_at',
         'resolved_at',
         'is_active',
+        'latitude',
+        'longitude',
+        'location_specific_details',
     ];
 
     protected $casts = [
@@ -35,17 +46,29 @@ class Barrier extends Model
         'resolved_at' => 'date',
         'is_active' => 'boolean',
         'is_anonymous' => 'boolean',
+        'not_applicable' => 'boolean',
+        'priority' => Priority::class,
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
 
-    public function getDisplayNameAttribute(): string
+    public function getReporterDisplayNameAttribute(): string
     {
         if ($this->is_anonymous) {
             return 'Contribuidor Anônimo';
         }
 
-        return $this->user ? $this->user->name : 'Visitante';
+        return $this->registeredBy?->name ?? 'Usuário não identificado';
+    }
+
+    public function registeredBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'registered_by_user_id');
+    }
+
+    public function institution(): BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
     }
 
     public function category(): BelongsTo
@@ -58,23 +81,47 @@ class Barrier extends Model
         return $this->belongsTo(BarrierStatus::class, 'barrier_status_id');
     }
 
-    public function location(): BelongsTo
-    {
-        return $this->belongsTo(Location::class);
+    public function location() {
+        return $this->belongsTo(Location::class)->withTrashed();
     }
 
-    public function user(): BelongsTo
+    public function affectedStudent(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Student::class, 'affected_student_id');
+    }
+
+    public function affectedProfessional(): BelongsTo
+    {
+        return $this->belongsTo(Professional::class, 'affected_professional_id');
     }
 
     public function deficiencies(): BelongsToMany
     {
-        return $this->belongsToMany(Deficiency::class, 'barrier_deficiency');
+        return $this->belongsToMany(
+            Deficiency::class,
+            'barrier_deficiency',
+            'barrier_id',
+            'deficiency_id'
+        )->withTimestamps();
     }
 
-    public function images(): HasMany
+    public function inspections(): MorphMany
     {
-        return $this->hasMany(BarrierImage::class);
+        return $this->morphMany(Inspection::class, 'inspectable')
+            ->with('images')
+            ->orderByDesc('inspection_date')
+            ->orderByDesc('created_at');
+    }
+
+    public function allImages(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            InspectionImage::class,
+            Inspection::class,
+            'inspectable_id',
+            'inspection_id',
+            'id',
+            'id'
+        )->where('inspectable_type', static::class);
     }
 }

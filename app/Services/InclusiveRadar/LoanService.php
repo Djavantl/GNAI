@@ -51,9 +51,9 @@ class LoanService
     public function store(array $data): Loan
     {
         return DB::transaction(function () use ($data) {
-            $this->checkActiveLoanPendency($data);
-
             $item = $data['loanable_type']::lockForUpdate()->findOrFail($data['loanable_id']);
+            $data['loanable_type'] = $item->getMorphClass();
+            $this->checkActiveLoanPendency($data);
 
             if ($item->resourceStatus?->blocks_loan) {
                 throw new \Exception("Este item não permite empréstimos no status atual.");

@@ -5,14 +5,11 @@ namespace App\Http\Controllers\InclusiveRadar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\BarrierRequest;
 use App\Models\InclusiveRadar\Barrier;
-use App\Models\InclusiveRadar\Institution;
-use App\Models\InclusiveRadar\Location;
-use App\Models\InclusiveRadar\BarrierCategory;
-use App\Models\InclusiveRadar\BarrierStatus;
-use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\BarrierService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
+use Exception;
 
 class BarrierController extends Controller
 {
@@ -20,76 +17,86 @@ class BarrierController extends Controller
 
     public function index(): View
     {
-        $barriers = $this->service->listAll();
-        return view('inclusive-radar.barriers.index', compact('barriers'));
+        return view('inclusive-radar.barriers.index', [
+            'barriers' => $this->service->listAll()
+        ]);
     }
 
     public function create(): View
     {
-        $institutions = Institution::with(['locations' => function($q) {
-            $q->where('is_active', true);
-        }])->where('is_active', true)->orderBy('name')->get();
-
-        $categories = BarrierCategory::where('is_active', true)->get();
-        $statuses = BarrierStatus::where('is_active', true)->get();
-        $deficiencies = Deficiency::where('is_active', true)->get();
-
-        return view('inclusive-radar.barriers.create', compact(
-            'institutions',
-            'categories',
-            'statuses',
-            'deficiencies'
-        ));
+        return view(
+            'inclusive-radar.barriers.create',
+            $this->service->getCreateData()
+        );
     }
 
     public function store(BarrierRequest $request): RedirectResponse
     {
-        $this->service->store($request->validated());
+        try {
+            $this->service->store($request->validated());
 
-        return redirect()
-            ->route('inclusive-radar.barriers.index')
-            ->with('success', 'Sua contribuição foi registrada com sucesso! Obrigado por ajudar na acessibilidade.');
+            return redirect()
+                ->route('inclusive-radar.barriers.index')
+                ->with('success', 'Barreira criada com sucesso!');
+        } catch (Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Erro ao processar cadastro: ' . $e->getMessage());
+        }
     }
 
-    public function edit(Barrier $barrier)
+    public function edit(Barrier $barrier): View
     {
-        $institutions = Institution::with(['locations' => function($q) {
-            $q->where('is_active', true);
-        }])->where('is_active', true)->orderBy('name')->get();
-
-        $categories = BarrierCategory::where('is_active', true)->get();
-        $statuses = BarrierStatus::where('is_active', true)->get();
-        $deficiencies = Deficiency::where('is_active', true)->get();
-
-        return view('inclusive-radar.barriers.edit', compact(
-            'barrier',
-            'institutions',
-            'categories',
-            'statuses',
-            'deficiencies'
-        ));
+        return view(
+            'inclusive-radar.barriers.edit',
+            $this->service->getEditData($barrier)
+        );
     }
 
     public function update(BarrierRequest $request, Barrier $barrier): RedirectResponse
     {
-        $this->service->update($barrier, $request->validated());
+        try {
+            $this->service->update($barrier, $request->validated());
 
-        return redirect()
-            ->route('inclusive-radar.barriers.index')
-            ->with('success', 'Relato de barreira atualizado.');
+            return redirect()
+                ->route('inclusive-radar.barriers.index')
+                ->with('success', 'Barreira atualizada com sucesso!');
+        } catch (ValidationException $e) {
+            return back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', 'Ocorreu um erro inesperado: ' . $e->getMessage());
+        }
     }
 
     public function toggleActive(Barrier $barrier): RedirectResponse
     {
         $this->service->toggleActive($barrier);
-        return redirect()->back()->with('success', 'Status alterado.');
+
+        return redirect()
+            ->back()
+            ->with('success', 'Status atualizado com sucesso!');
     }
 
     public function destroy(Barrier $barrier): RedirectResponse
     {
-        $this->service->delete($barrier);
-        return redirect()
-            ->route('inclusive-radar.barriers.index')
-            ->with('success', 'Relato removido.');
+        try {
+            $this->service->delete($barrier);
+
+            return redirect()
+                ->route('inclusive-radar.barriers.index')
+                ->with('success', 'Barreira removida com sucesso!');
+        } catch (ValidationException $e) {
+            return redirect()
+                ->route('inclusive-radar.barriers.index')
+                ->withErrors($e->validator);
+        } catch (Exception $e) {
+            return redirect()
+                ->route('inclusive-radar.barriers.index')
+                ->with('error', 'Erro ao excluir: ' . $e->getMessage());
+        }
     }
 }

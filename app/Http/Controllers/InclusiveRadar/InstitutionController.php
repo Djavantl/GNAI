@@ -95,10 +95,17 @@ class InstitutionController extends Controller
 
     public function destroy(Institution $institution)
     {
-        $this->service->delete($institution);
+        try {
+            $this->service->delete($institution);
 
-        return redirect()
-            ->route('inclusive-radar.institutions.index')
-            ->with('success', 'Instituição removida com sucesso!');
+            return redirect()
+                ->route('inclusive-radar.institutions.index')
+                ->with('success', 'Instituição removida com sucesso!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('inclusive-radar.institutions.index')
+                ->with('error', $e->getMessage());
+        }
     }
+
 }

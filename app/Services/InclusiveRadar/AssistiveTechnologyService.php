@@ -2,8 +2,10 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Models\InclusiveRadar\{AssistiveTechnology, ResourceType, ResourceStatus};
+use App\Models\InclusiveRadar\{AssistiveTechnology, ResourceType};
 use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Services\SpecializedEducationalSupport\DeficiencyService;
+use App\Enums\InclusiveRadar\{ConservationState, InspectionType};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -11,15 +13,14 @@ use Illuminate\Validation\ValidationException;
 class AssistiveTechnologyService
 {
     public function __construct(
-        protected AssistiveTechnologyImageService $imageService,
-        protected ResourceAttributeValueService $attributeValueService
+        protected InspectionService $inspectionService,
+        protected ResourceAttributeValueService $attributeValueService,
+        protected DeficiencyService $deficiencyService
     ) {}
 
     public function listAll(): Collection
     {
-        return AssistiveTechnology::with(['type', 'resourceStatus', 'deficiencies', 'images'])
-            ->orderBy('name')
-            ->get();
+        return AssistiveTechnology::with(['type', 'resourceStatus', 'deficiencies'])->orderBy('name')->get();
     }
 
     public function getCreateData(): array
@@ -32,8 +33,9 @@ class AssistiveTechnologyService
     public function getEditData(AssistiveTechnology $assistiveTechnology): array
     {
         return [
-            'assistiveTechnology' => $assistiveTechnology->load(['deficiencies', 'images']),
-            'attributeValues' => [],
+            'assistiveTechnology' => $assistiveTechnology->load(['deficiencies', 'inspections.images']),
+            'attributeValues' => $this->attributeValueService->getValuesForForm($assistiveTechnology),
+            'deficiencies' => $this->deficiencyService->listAll(),
         ];
     }
 
@@ -47,13 +49,19 @@ class AssistiveTechnologyService
 
             $tech = AssistiveTechnology::create($data);
 
-            if (!empty($data['deficiencies'])) $tech->deficiencies()->sync($data['deficiencies']);
-
-            $this->attributeValueService->saveValues('assistive_technology', $tech->id, $data['attributes'] ?? []);
-
-            if (!empty($data['images'])) {
-                foreach ($data['images'] as $img) $this->imageService->store($tech, $img);
+            if (!empty($data['deficiencies'])) {
+                $tech->deficiencies()->sync($data['deficiencies']);
             }
+
+            $this->attributeValueService->saveValues($tech, $data['attributes'] ?? []);
+
+            $this->inspectionService->createForModel($tech, [
+                'state'           => $data['conservation_state'] ?? ConservationState::NEW->value,
+                'inspection_date' => now(),
+                'type'            => InspectionType::INITIAL->value,
+                'description'     => $data['inspection_description'] ?? 'Vistoria inicial realizada no cadastro.',
+                'images'          => $data['images'] ?? []
+            ]);
 
             return $tech;
         });
@@ -69,27 +77,34 @@ class AssistiveTechnologyService
             } else {
                 $newTotal = (int) ($data['quantity'] ?? 0);
                 $activeLoans = $assistiveTechnology->loans()->whereIn('status', ['active', 'late'])->count();
-
                 if ($newTotal < $activeLoans) {
-                    throw ValidationException::withMessages(['quantity' => "Mínimo permitido: {$activeLoans} (empréstimos ativos)."]);
+                    throw ValidationException::withMessages(['quantity' => "Mínimo permitido: {$activeLoans}."]);
                 }
-
                 $data['quantity_available'] = $newTotal - $activeLoans;
-
-                if ($data['quantity_available'] > 0) {
-                    $status = ResourceStatus::where('code', 'available')->first();
-                    if ($status) $data['status_id'] = $status->id;
-                }
             }
+
+            $oldState = $assistiveTechnology->getOriginal('conservation_state');
+            $newState = $data['conservation_state'] ?? $oldState;
 
             $assistiveTechnology->update($data);
 
-            if (array_key_exists('deficiencies', $data)) $assistiveTechnology->deficiencies()->sync($data['deficiencies'] ?? []);
+            if (array_key_exists('deficiencies', $data)) {
+                $assistiveTechnology->deficiencies()->sync($data['deficiencies'] ?? []);
+            }
 
-            $this->attributeValueService->saveValues('assistive_technology', $assistiveTechnology->id, $data['attributes'] ?? []);
+            $this->attributeValueService->saveValues($assistiveTechnology, $data['attributes'] ?? []);
 
-            if (!empty($data['images'])) {
-                foreach ($data['images'] as $img) $this->imageService->store($assistiveTechnology, $img);
+            $hasNewImages = !empty($data['images']);
+            $stateChanged = $newState !== $oldState;
+
+            if ($hasNewImages || $stateChanged) {
+                $this->inspectionService->createForModel($assistiveTechnology, [
+                    'state'           => $newState,
+                    'inspection_date' => $data['inspection_date'] ?? now(),
+                    'type'            => $data['inspection_type'] ?? ($hasNewImages ? InspectionType::PERIODIC->value : InspectionType::RESOLUTION->value),
+                    'description'     => $data['inspection_description'] ?? 'Atualização de estado via edição cadastral.',
+                    'images'          => $data['images'] ?? []
+                ]);
             }
 
             return $assistiveTechnology->fresh();
@@ -98,10 +113,8 @@ class AssistiveTechnologyService
 
     public function toggleActive(AssistiveTechnology $assistiveTechnology): AssistiveTechnology
     {
-        return DB::transaction(function () use ($assistiveTechnology) {
-            $assistiveTechnology->update(['is_active' => !$assistiveTechnology->is_active]);
-            return $assistiveTechnology;
-        });
+        $assistiveTechnology->update(['is_active' => !$assistiveTechnology->is_active]);
+        return $assistiveTechnology;
     }
 
     public function delete(AssistiveTechnology $assistiveTechnology): void
@@ -113,19 +126,11 @@ class AssistiveTechnologyService
 
             if ($hasOpenLoans) {
                 throw ValidationException::withMessages([
-                    'delete' => 'Não é possível excluir: este recurso ainda não foi devolvido por um beneficiário.'
+                    'delete' => 'Não é possível excluir: este recurso ainda possui empréstimos pendentes (não devolvidos).'
                 ]);
             }
 
             $assistiveTechnology->delete();
         });
-    }
-
-    public function getItemHistory(AssistiveTechnology $assistiveTechnology): Collection
-    {
-        return $assistiveTechnology->loans()
-            ->with(['student.person', 'professional.person'])
-            ->orderByDesc('loan_date')
-            ->get();
     }
 }

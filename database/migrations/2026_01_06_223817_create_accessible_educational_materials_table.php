@@ -17,7 +17,7 @@ return new class extends Migration {
 
         Schema::create('accessible_educational_materials', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('name');
 
             $table->foreignId('type_id')
                 ->nullable()
@@ -29,6 +29,7 @@ return new class extends Migration {
             $table->integer('quantity')->nullable();
             $table->integer('quantity_available')->nullable();
             $table->text('notes')->nullable();
+            $table->string('conservation_state')->default('novo');
 
             $table->foreignId('status_id')
                 ->nullable()
@@ -80,26 +81,10 @@ return new class extends Migration {
                 'aem_deficiency_unique'
             );
         });
-
-        Schema::create('accessible_educational_material_images', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('accessible_educational_material_id')
-                ->constrained('accessible_educational_materials')
-                ->onDelete('cascade')
-                ->name('aem_image_material_fk');
-
-            $table->string('path');
-            $table->string('original_name')->nullable();
-            $table->string('mime_type', 50)->nullable();
-            $table->integer('size')->nullable();
-            $table->timestamps();
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('accessible_educational_material_images');
         Schema::dropIfExists('accessible_educational_material_deficiency');
         Schema::dropIfExists('accessible_educational_material_accessibility');
         Schema::dropIfExists('accessible_educational_materials');

@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 p-8">
+<body class="bg-gray-100 p-4 md:p-8">
 
 <div class="max-w-7xl mx-auto">
 
     {{-- Cabeçalho --}}
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Materiais Pedagógicos Acessíveis</h1>
+            <h1 class="text-2xl font-bold text-gray-800">Materiais Pedagógicos Acessíveis (MPA)</h1>
             <p class="text-gray-600">Gestão de recursos didáticos, livros e jogos adaptados.</p>
         </div>
 
@@ -25,11 +25,24 @@
         </a>
     </div>
 
-    {{-- Feedback de Mensagens --}}
+    {{-- Feedback de Mensagens e Erros de Validação (Bloqueio de Exclusão) --}}
     @if(session('success'))
         <div class="bg-green-100 border border-green-200 text-green-800 p-4 rounded mb-6 flex items-center gap-3 shadow-sm">
             <i class="fas fa-check-circle text-green-600"></i>
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="bg-red-100 border border-red-200 text-red-800 p-4 rounded mb-6 shadow-sm">
+            <div class="flex items-center gap-2 font-bold mb-1">
+                <i class="fas fa-exclamation-triangle"></i> Atenção:
+            </div>
+            <ul class="list-disc ml-5 text-sm">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
@@ -38,7 +51,7 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                <tr class="border-b-2 border-gray-100">
+                <tr class="border-b-2 border-gray-100 uppercase text-[11px] tracking-wider">
                     <th class="py-3 px-4 font-bold text-gray-700">Material / Tipo</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-center">Natureza</th>
                     <th class="py-3 px-4 font-bold text-gray-700 text-center">Estoque (Disp. / Total)</th>
@@ -52,11 +65,20 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="py-4 px-4 align-middle">
                             <div class="flex items-center gap-3">
-                                <div class="bg-blue-100 text-blue-600 p-2 rounded">
-                                    <i class="fas {{ $material->type?->is_digital ? 'fa-file-download' : 'fa-book' }}"></i>
+                                {{-- Thumbnail da Imagem (Pega a primeira imagem da primeira inspeção) --}}
+                                @php
+                                    $firstImage = $material->inspections->flatMap->images->first();
+                                @endphp
+                                <div class="w-12 h-12 flex-shrink-0 bg-gray-100 rounded border border-gray-200 overflow-hidden flex items-center justify-center">
+                                    @if($firstImage)
+                                        <img src="{{ asset('storage/' . $firstImage->path) }}" class="w-full h-full object-cover">
+                                    @else
+                                        <i class="fas {{ $material->type?->is_digital ? 'fa-file-download' : 'fa-book' }} text-gray-400"></i>
+                                    @endif
                                 </div>
                                 <div>
-                                    <span class="font-bold text-gray-900 block leading-tight">{{ $material->title }}</span>
+                                    {{-- CORREÇÃO: title -> name --}}
+                                    <span class="font-bold text-gray-900 block leading-tight">{{ $material->name }}</span>
                                     <span class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">
                                         {{ $material->type?->name ?: 'Didático' }}
                                     </span>
@@ -64,7 +86,6 @@
                             </div>
                         </td>
 
-                        {{-- NATUREZA (IGUAL AO TA) --}}
                         <td class="py-4 px-4 text-center align-middle">
                             @if($material->type?->is_digital)
                                 <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[9px] font-extrabold uppercase border border-indigo-200">Digital</span>
@@ -73,7 +94,6 @@
                             @endif
                         </td>
 
-                        {{-- ESTOQUE DINÂMICO --}}
                         <td class="py-4 px-4 text-center align-middle">
                             @if($material->type?->is_digital)
                                 <span class="text-blue-600 text-[10px] font-bold uppercase tracking-tighter bg-blue-50 px-2 py-1 rounded border border-blue-100">
@@ -95,7 +115,6 @@
                             @endif
                         </td>
 
-                        {{-- STATUS --}}
                         <td class="py-4 px-4 text-center align-middle">
                             @php
                                 $isUnavailable = !$material->type?->is_digital && (($material->quantity_available ?? 0) <= 0);
@@ -105,7 +124,6 @@
                             </span>
                         </td>
 
-                        {{-- ATIVO --}}
                         <td class="py-4 px-4 text-center align-middle">
                             @if($material->is_active)
                                 <span class="text-green-600 bg-green-50 px-2 py-1 rounded text-[10px] font-bold border border-green-100">SIM</span>
@@ -114,11 +132,10 @@
                             @endif
                         </td>
 
-                        {{-- AÇÕES --}}
                         <td class="py-4 px-4 text-right align-middle">
                             <div class="flex justify-end gap-2">
                                 <a href="{{ route('inclusive-radar.accessible-educational-materials.edit', $material) }}"
-                                   class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm"
+                                   class="text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1 rounded transition border border-blue-200 text-sm"
                                    title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -127,7 +144,7 @@
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit"
-                                            class="{{ $material->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }} px-3 py-1 rounded transition border text-sm"
+                                            class="{{ $material->is_active ? 'text-amber-600 border-amber-200 hover:bg-amber-600' : 'text-green-600 border-green-200 hover:bg-green-600' }} hover:text-white px-3 py-1 rounded transition border text-sm"
                                             title="{{ $material->is_active ? 'Ocultar' : 'Mostrar' }}">
                                         <i class="fas {{ $material->is_active ? 'fa-eye-slash' : 'fa-eye' }}"></i>
                                     </button>
@@ -137,8 +154,8 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            onclick="return confirm('Excluir este material permanentemente?')"
-                                            class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm"
+                                            onclick="return confirm('Excluir este material permanentemente? Esta ação não pode ser desfeita e só será permitida se não houver empréstimos pendentes.')"
+                                            class="text-red-600 hover:bg-red-600 hover:text-white px-3 py-1 rounded transition border border-red-200 text-sm"
                                             title="Excluir">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -149,7 +166,8 @@
                 @empty
                     <tr>
                         <td colspan="6" class="py-12 text-center text-gray-400">
-                            <p class="text-lg font-semibold italic">Nenhum material cadastrado.</p>
+                            <i class="fas fa-box-open text-4xl mb-3"></i>
+                            <p class="text-lg font-semibold italic">Nenhum material pedagógico cadastrado.</p>
                         </td>
                     </tr>
                 @endforelse

@@ -16,6 +16,7 @@ class AssistiveTechnologyRequest extends FormRequest
     public function rules(): array
     {
         $tech = $this->route('assistiveTechnology');
+        $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
         $isDigital = false;
         if ($this->type_id) {
@@ -32,31 +33,31 @@ class AssistiveTechnologyRequest extends FormRequest
                 'max:50',
                 Rule::unique('assistive_technologies', 'asset_code')->ignore($tech?->id),
             ],
-            'quantity' => $isDigital
-                ? 'nullable'
-                : 'required|integer',
-
-            'conservation_state' => 'nullable|string|max:50',
+            'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
             'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
             'status_id' => 'nullable|exists:resource_statuses,id',
             'notes' => 'nullable|string',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
+            'conservation_state' => $isUpdate ? 'nullable|string|max:50' : 'required|string|max:50',
+            'inspection_date' => $isUpdate ? 'nullable|date' : 'required|date|before_or_equal:today',
+            'inspection_description' => 'nullable|string',
+            'inspection_type' => $isUpdate ? 'nullable' : 'required|in:initial,return,maintenance,periodic,resolution',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+
             'attributes' => 'nullable|array',
         ];
     }
 
     protected function prepareForValidation()
     {
-        $isDigital = ResourceType::where('id', $this->type_id)->where('is_digital', true)->exists();
-
         $this->merge([
             'requires_training' => $this->boolean('requires_training'),
             'is_active' => $this->boolean('is_active'),
-            'quantity' => $isDigital ? null : $this->quantity,
+            'inspection_type' => $this->inspection_type ?? ($this->isMethod('post') ? 'initial' : null),
+            'inspection_date' => $this->inspection_date ?? ($this->isMethod('post') ? now()->format('Y-m-d') : null),
         ]);
     }
 
@@ -66,9 +67,10 @@ class AssistiveTechnologyRequest extends FormRequest
             'name.required' => 'O nome da tecnologia assistiva é obrigatório.',
             'type_id.required' => 'Selecione uma categoria/tipo de tecnologia.',
             'quantity.required' => 'Para recursos físicos, a quantidade é obrigatória.',
-            'quantity.integer' => 'A quantidade deve ser um número inteiro.',
             'asset_code.unique' => 'O código patrimonial já está em uso.',
-            'deficiencies.required' => 'Selecione pelo menos um público-alvo (deficiência).',
+            'deficiencies.required' => 'Selecione pelo menos um público-alvo.',
+            'conservation_state.required' => 'O estado de conservação atual é obrigatório no cadastro.',
+            'images.*.image' => 'O arquivo deve ser uma imagem.',
             'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',
         ];
     }

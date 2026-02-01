@@ -8,7 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-
         Schema::create('barrier_statuses', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
@@ -36,11 +35,16 @@ return new class extends Migration
             $table->integer('default_zoom')->default(16);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
+
         });
 
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institution_id')->constrained('institutions')->cascadeOnDelete();
+            $table->foreignId('institution_id')
+                ->constrained('institutions')
+                ->cascadeOnDelete();
+
             $table->string('name');
             $table->string('type')->nullable();
             $table->text('description')->nullable();
@@ -49,55 +53,81 @@ return new class extends Migration
             $table->string('google_place_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('barriers', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
             $table->text('description')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('institution_id')->constrained('institutions')->cascadeOnDelete();
-            $table->foreignId('barrier_category_id')->constrained('barrier_categories')->restrictOnDelete();
-            $table->foreignId('barrier_status_id')->constrained('barrier_statuses')->restrictOnDelete();
-            $table->foreignId('location_id')->nullable()->constrained('locations')->cascadeOnDelete();
+
+            $table->foreignId('registered_by_user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->foreignId('institution_id')
+                ->constrained('institutions')
+                ->cascadeOnDelete();
+
+            $table->foreignId('barrier_category_id')
+                ->constrained('barrier_categories')
+                ->restrictOnDelete();
+
+            $table->foreignId('barrier_status_id')
+                ->constrained('barrier_statuses')
+                ->restrictOnDelete();
+
+            $table->foreignId('location_id')
+                ->nullable()
+                ->constrained('locations')
+                ->cascadeOnDelete();
+
+            $table->foreignId('affected_student_id')
+                ->nullable()
+                ->constrained('students')
+                ->nullOnDelete();
+
+            $table->foreignId('affected_professional_id')
+                ->nullable()
+                ->constrained('professionals')
+                ->nullOnDelete();
+
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->string('location_specific_details')->nullable();
-            $table->enum('priority', ['Baixa', 'Média', 'Alta', 'Crítica'])->default('Média');
+            $table->boolean('not_applicable')->default(false);
+            $table->string('affected_person_name')->nullable();
+            $table->string('affected_person_role')->nullable();
             $table->boolean('is_anonymous')->default(false);
-            $table->string('reporter_role')->nullable();
-
+            $table->string('priority')->default('medium');
             $table->date('identified_at');
             $table->date('resolved_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-
-            $table->index(['institution_id', 'barrier_category_id', 'barrier_status_id'], 'barriers_main_search_index');
         });
+
 
         Schema::create('barrier_deficiency', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('barrier_id')->constrained('barriers')->cascadeOnDelete();
-            $table->foreignId('deficiency_id')->constrained('deficiencies')->cascadeOnDelete();
-            $table->timestamps();
-            $table->unique(['barrier_id', 'deficiency_id']);
-        });
 
-        Schema::create('barrier_images', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('barrier_id')->constrained('barriers')->cascadeOnDelete()->name('barrier_images_barrier_fk');
-            $table->string('path');
-            $table->string('original_name')->nullable();
-            $table->string('mime_type', 50)->nullable();
-            $table->integer('size')->nullable();
-            $table->boolean('is_before')->default(true);
+            $table->foreignId('barrier_id')
+                ->constrained('barriers')
+                ->cascadeOnDelete();
+
+            $table->foreignId('deficiency_id')
+                ->constrained('deficiencies')
+                ->cascadeOnDelete();
+
             $table->timestamps();
+
+            $table->unique(['barrier_id', 'deficiency_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('barrier_images');
         Schema::dropIfExists('barrier_deficiency');
         Schema::dropIfExists('barriers');
         Schema::dropIfExists('locations');

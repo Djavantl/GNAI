@@ -12,6 +12,8 @@ use Database\Seeders\InclusiveRadar\ResourceTypeSeeder;
 use Database\Seeders\InclusiveRadar\TypeAttributeSeeder;
 use Database\Seeders\InclusiveRadar\TypeAttributeAssignmentSeeder;
 use Database\Seeders\InclusiveRadar\AccessibilityFeatureSeeder;
+use Database\Seeders\InclusiveRadar\AssistiveTechnologySeeder;
+use Database\Seeders\InclusiveRadar\AccessibleEducationalMaterialSeeder;
 use Database\Seeders\InclusiveRadar\ResourceStatusSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -28,6 +30,8 @@ class DatabaseSeeder extends Seeder
             TypeAttributeAssignmentSeeder::class,
             AccessibilityFeatureSeeder::class,
             ResourceStatusSeeder::class,
+            AssistiveTechnologySeeder::class,
+            AccessibleEducationalMaterialSeeder::class,
             PSPUSeeder::class,
         ]);
     }

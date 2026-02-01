@@ -4,11 +4,12 @@ namespace App\Models\InclusiveRadar;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Institution extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'institutions';
 
@@ -33,5 +34,10 @@ class Institution extends Model
     public function locations(): HasMany
     {
         return $this->hasMany(Location::class);
+    }
+
+    public function barriers(): HasMany
+    {
+        return $this->hasMany(Barrier::class);
     }
 }

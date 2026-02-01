@@ -2,12 +2,14 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\ConservationState;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -18,20 +20,22 @@ class AccessibleEducationalMaterial extends Model
     protected $table = 'accessible_educational_materials';
 
     protected $fillable = [
-        'title',
+        'name',
         'type_id',
         'asset_code',
         'quantity',
         'quantity_available',
         'requires_training',
+        'conservation_state',
         'notes',
         'status_id',
         'is_active',
     ];
 
     protected $casts = [
-        'requires_training' => 'boolean',
-        'is_active' => 'boolean',
+        'requires_training'  => 'boolean',
+        'is_active'          => 'boolean',
+        'conservation_state' => ConservationState::class,
     ];
 
     public function loans(): MorphMany
@@ -49,10 +53,9 @@ class AccessibleEducationalMaterial extends Model
         return $this->belongsTo(ResourceStatus::class, 'status_id');
     }
 
-    public function attributeValues(): HasMany
+    public function attributeValues(): MorphMany
     {
-        return $this->hasMany(ResourceAttributeValue::class, 'resource_id')
-            ->where('resource_type', 'accessible_educational_material');
+        return $this->morphMany(ResourceAttributeValue::class, 'resource');
     }
 
     public function deficiencies(): BelongsToMany
@@ -75,8 +78,23 @@ class AccessibleEducationalMaterial extends Model
         );
     }
 
-    public function images(): HasMany
+    public function inspections(): MorphMany
     {
-        return $this->hasMany(AccessibleEducationalMaterialImage::class, 'accessible_educational_material_id');
+        return $this->morphMany(Inspection::class, 'inspectable')
+            ->with('images')
+            ->orderByDesc('inspection_date')
+            ->orderByDesc('created_at');
+    }
+
+    public function allImages(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            InspectionImage::class,
+            Inspection::class,
+            'inspectable_id',
+            'inspection_id',
+            'id',
+            'id'
+        )->where('inspectable_type', static::class);
     }
 }
