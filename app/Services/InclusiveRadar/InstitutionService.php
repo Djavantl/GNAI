@@ -5,6 +5,7 @@ namespace App\Services\InclusiveRadar;
 use App\Models\InclusiveRadar\Institution;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 class InstitutionService
 {
@@ -45,7 +46,9 @@ class InstitutionService
             ->exists();
 
         if ($hasActiveBarriers) {
-            throw new \Exception("Não é possível apagar esta instituição: existem barreiras não resolvidas vinculadas.");
+            throw ValidationException::withMessages([
+                'institution' => 'Não é possível apagar esta instituição: existem barreiras não resolvidas vinculadas.'
+            ]);
         }
 
         DB::transaction(function () use ($institution) {

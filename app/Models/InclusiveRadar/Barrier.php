@@ -68,7 +68,7 @@ class Barrier extends Model
 
     public function institution(): BelongsTo
     {
-        return $this->belongsTo(Institution::class);
+        return $this->belongsTo(Institution::class)->withTrashed();
     }
 
     public function category(): BelongsTo

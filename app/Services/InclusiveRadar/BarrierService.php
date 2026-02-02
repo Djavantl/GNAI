@@ -58,7 +58,7 @@ class BarrierService
     public function toggleActive(Barrier $barrier): Barrier
     {
         $barrier->update(['is_active' => !$barrier->is_active]);
-        return $barrier;
+        return $barrier->fresh();
     }
 
     public function delete(Barrier $barrier): void
@@ -68,8 +68,8 @@ class BarrierService
 
     protected function persist(Barrier $barrier, array $data): Barrier
     {
+        $data = $this->sanitizeReporterData($data);
         $data = $this->prepareData($barrier, $data);
-
         $barrier->fill($data)->save();
 
         $this->syncRelations($barrier, $data);
@@ -84,16 +84,44 @@ class BarrierService
             $data['registered_by_user_id'] = Auth::id();
         }
 
-        if ($data['not_applicable'] ?? false) {
-            $data['affected_student_id'] = null;
-            $data['affected_professional_id'] = null;
-        }
-
         if (!empty($data['no_location'])) {
             $data['location_id'] = null;
         }
 
         return $data;
+    }
+
+    protected function sanitizeReporterData(array $data): array
+    {
+
+        $allReporterFields = [
+            'affected_student_id'      => null,
+            'affected_professional_id' => null,
+            'affected_person_name'     => null,
+            'affected_person_role'     => null,
+            'is_anonymous'             => false,
+            'not_applicable'           => false,
+        ];
+
+
+        if (!empty($data['is_anonymous'])) {
+            return array_merge($data, $allReporterFields, ['is_anonymous' => true]);
+        }
+
+        if (!empty($data['not_applicable'])) {
+            return array_merge($data, $allReporterFields, [
+                'not_applicable'       => true,
+                'affected_person_name' => $data['affected_person_name'] ?? null,
+                'affected_person_role' => $data['affected_person_role'] ?? null,
+            ]);
+        }
+
+        return array_merge($data, [
+            'is_anonymous'         => false,
+            'not_applicable'       => false,
+            'affected_person_name' => $data['affected_person_name'] ?? null,
+            'affected_person_role' => $data['affected_person_role'] ?? null,
+        ]);
     }
 
     protected function handleInspectionLog(Barrier $barrier, array $data): void
@@ -104,6 +132,17 @@ class BarrierService
 
         $statusChanged = $isUpdate && $newStatus !== $oldStatus;
         $hasInteraction = filled($data['inspection_description'] ?? null) || !empty($data['images']);
+
+        $finalStatuses = [
+            BarrierStatus::RESOLVED->value,
+            BarrierStatus::NOT_APPLICABLE->value
+        ];
+
+        if (in_array($newStatus, $finalStatuses)) {
+            $barrier->update(['resolved_at' => $barrier->resolved_at ?? now()]);
+        } else {
+            $barrier->update(['resolved_at' => null]);
+        }
 
         if ($isUpdate && !$statusChanged && !$hasInteraction) {
             return;

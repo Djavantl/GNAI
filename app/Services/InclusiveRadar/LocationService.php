@@ -2,6 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Models\InclusiveRadar\Location;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -44,18 +45,18 @@ class LocationService
 
     public function delete(Location $location): void
     {
+
+        $hasActiveBarriers = $location->barriers()
+            ->whereNull('resolved_at')
+            ->exists();
+
+        if ($hasActiveBarriers) {
+            throw ValidationException::withMessages([
+                'delete' => 'Não é possível excluir o local: existem barreiras ativas vinculadas a ele.'
+            ]);
+        }
+
         DB::transaction(function () use ($location) {
-
-            $hasOpenBarriers = $location->barriers()
-                ->whereHas('status', fn($q) => $q->where('name', '!=', 'Resolvida'))
-                ->exists();
-
-            if ($hasOpenBarriers) {
-                throw ValidationException::withMessages([
-                    'delete' => 'Não é possível excluir: existem barreiras associadas que ainda não estão resolvidas.'
-                ]);
-            }
-
             $location->delete();
         });
     }
