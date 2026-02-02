@@ -23,6 +23,10 @@ class StudentContextRequest extends FormRequest
     {
         return [
             
+            'evaluation_type' => ['required','in:initial,periodic_review,pei_review,specific_demand'],
+            'is_current' => ['sometimes', 'boolean'],
+            'evaluated_by_professional_id' => ['nullable','exists:professionals,id'],
+
             // Aprendizagem e cognição
             'learning_level' => ['nullable', 'in:very_low,low,adequate,good,excellent'],
             'attention_level' => ['nullable', 'in:very_low,low,moderate,high'],

@@ -13,7 +13,11 @@ class StudentContext extends Model
 
     protected $fillable = [
         'student_id',
-
+        'semester_id',
+        'evaluation_type',
+        'is_current',
+        'evaluated_by_professional_id',
+        
         // Aprendizagem
         'learning_level',
         'attention_level',
@@ -53,5 +57,18 @@ class StudentContext extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    //semestre atual
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    //quem avaliou
+    public function evaluator()
+    {
+        return $this->belongsTo(Professional::class, 'evaluated_by_professional_id');
     }
 }

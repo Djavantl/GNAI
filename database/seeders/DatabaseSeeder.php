@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Database\Seeders\SpecializedEducationalSupport\SemesterSeeder;
+use Database\Seeders\SpecializedEducationalSupport\StudentContextSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\PositionSeeder;
 use Database\Seeders\SpecializedEducationalSupport\PSPUSeeder;
@@ -15,11 +17,13 @@ use Database\Seeders\InclusiveRadar\AssistiveTechnologySeeder;
 use Database\Seeders\InclusiveRadar\AccessibleEducationalMaterialSeeder;
 use Database\Seeders\InclusiveRadar\ResourceStatusSeeder;
 
+
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
         $this->call([
+            SemesterSeeder::class,
             DeficiencySeeder::class,
             PositionSeeder::class,
             BarrierCategorySeeder::class,
@@ -31,6 +35,7 @@ class DatabaseSeeder extends Seeder
             AssistiveTechnologySeeder::class,
             AccessibleEducationalMaterialSeeder::class,
             PSPUSeeder::class,
+            StudentContextSeeder::class,
         ]);
     }
 }

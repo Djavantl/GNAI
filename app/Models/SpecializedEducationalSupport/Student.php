@@ -34,12 +34,11 @@ class Student extends Model
         return $this->hasMany(Guardian::class);
     }
 
-    
     // Contexto educacional
     
-    public function context()
+    public function contexts()
     {
-        return $this->hasOne(StudentContext::class);
+        return $this->hasMany(StudentContext::class);
     }
 
    // Deficiências do aluno 

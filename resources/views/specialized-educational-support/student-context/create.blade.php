@@ -40,6 +40,30 @@
                     @csrf
                     <input type="hidden" name="student_id" value="{{ $student->id }}">
 
+                    <!-- Seção: Tipo de Avaliação -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tipo de Avaliação *</label>
+                            <select name="evaluation_type" class="form-select" required>
+                                <option value="">Selecione o tipo...</option>
+                                <option value="initial">Avaliação Inicial</option>
+                                <option value="periodic_review">Revisão Periódica</option>
+                                <option value="pei_review">Revisão PEI</option>
+                                <option value="specific_demand">Demanda Específica</option>
+                            </select>
+                            <div class="form-text">Obrigatório. Selecione o tipo de avaliação realizada.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4 pt-3">
+                                <input class="form-check-input" type="checkbox" name="is_current" value="1" id="is_current" checked>
+                                <label class="form-check-label fw-bold" for="is_current">
+                                    Definir como contexto atual
+                                </label>
+                                <div class="form-text">Marque para definir este como o contexto atual do aluno.</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Seção 1: Aprendizagem e Cognição -->
                     <h5 class="section-title">Aprendizagem e Cognição</h5>
                     <div class="row mb-4">
@@ -221,9 +245,6 @@
 
                     <!-- Botões -->
                     <div class="d-flex justify-content-between mt-5 pt-4 border-top">
-                        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary px-4">
-                            <i class="bi bi-arrow-left"></i> Cancelar
-                        </a>
                         <button type="submit" class="btn btn-primary px-5 fw-bold">
                             <i class="bi bi-save"></i> Salvar Contexto
                         </button>

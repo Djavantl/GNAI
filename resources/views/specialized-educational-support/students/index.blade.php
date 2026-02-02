@@ -37,8 +37,8 @@
                         <td>{{ ucfirst($student->status) }}</td>
                         <td>{{ \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') }}</td>
                         <td class="d-flex gap-2">
-                            <a href="{{ route('specialized-educational-support.student-context.show', $student) }}" class="btn btn-sm btn-info text-white">
-                                Contexto AEE
+                            <a href="{{ route('specialized-educational-support.student-context.index', $student) }}" class="btn btn-sm btn-info text-white">
+                                Contextos do aluno
                             </a>
 
                             <a href="{{ route('specialized-educational-support.students.edit', $student) }}" class="btn btn-sm btn-warning">

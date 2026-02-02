@@ -12,6 +12,8 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     SemesterController,
     GuardianController,
     ProfessionalController,
+    SessionController,
+    SessionRecordController,
 };
 
 Route::middleware(['auth'])->group(function () {
@@ -85,7 +87,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Contexto do aluno
 
-    Route::get('student-context/{student}/show', [StudentContextController::class, 'show'])->name('student-context.show');
+    Route::get('student-context/{student}/index', [StudentContextController::class, 'index'])->name('student-context.index');
+    Route::get('student-context/{student_context}/show', [StudentContextController::class, 'show'])->name('student-context.show');
+    Route::get('student-context/{student}/show_current', [StudentContextController::class, 'showCurrent'])->name('student-context.show-current');
+    Route::post('student-context/{student_context}/set_current', [StudentContextController::class, 'setCurrent'])->name('student-context.set-current');
     Route::get('student-context/{student}/create', [StudentContextController::class, 'create'])->name('student-context.create');
     Route::post('student-context/{student}/store', [StudentContextController::class, 'store'])->name('student-context.store');
     Route::get('student-context/{student_context}/edit', [StudentContextController::class, 'edit'])->name('student-context.edit');
@@ -100,4 +105,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])->name('student-deficiencies.edit');  
     Route::put('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])->name('student-deficiencies.update');
     Route::delete('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])->name('student-deficiencies.destroy');
+
+    // Sessões de Atendimento
+
+    Route::get('sessions', [SessionController::class, 'index'])->name('sessions.index');
+    Route::get('sessions/create', [SessionController::class, 'create'])->name('sessions.create');
+    Route::post('sessions/store', [SessionController::class, 'store'])->name('sessions.store');
+    Route::get('sessions/{session}/show', [SessionController::class, 'show'])->name('sessions.show');
+    Route::get('sessions/{session}/edit', [SessionController::class, 'edit'])->name('sessions.edit');
+    Route::put('sessions/{session}', [SessionController::class, 'update'])->name('sessions.update');
+    Route::delete('sessions/{session}', [SessionController::class, 'destroy'])->name('sessions.destroy');
+    Route::post('sessions/{session}/restore', [SessionController::class, 'restore'])->name('sessions.restore')->withTrashed();
+    Route::delete('sessions/{session}/force-delete', [SessionController::class, 'forceDelete'])->name('sessions.force-delete')->withTrashed();
+
+    // Registros da Sessão (Session Records)
+
+    Route::get('session-records', [SessionRecordController::class, 'index'])->name('session-records.index');
+    Route::get('session-records/{session}/create', [SessionRecordController::class, 'create'])->name('session-records.create');
+    Route::post('session-records/store', [SessionRecordController::class, 'store'])->name('session-records.store');
+    Route::get('session-records/{sessionRecord}/show', [SessionRecordController::class, 'show'])->name('session-records.show');
+    Route::get('session-records/{sessionRecord}/edit', [SessionRecordController::class, 'edit'])->name('session-records.edit');
+    Route::put('session-records/{sessionRecord}', [SessionRecordController::class, 'update'])->name('session-records.update');
+    Route::delete('session-records/{sessionRecord}', [SessionRecordController::class, 'destroy'])->name('session-records.destroy');
+    Route::post('session-records/{sessionRecord}/restore', [SessionRecordController::class, 'restore'])->name('session-records.restore')->withTrashed();
+    Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->withTrashed();
 });

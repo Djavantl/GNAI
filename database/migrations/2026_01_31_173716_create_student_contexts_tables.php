@@ -19,6 +19,25 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
+            $table->foreignId('semester_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('evaluated_by_professional_id')
+                ->nullable()
+                ->constrained('professionals')
+                ->nullOnDelete();
+
+            $table->enum('evaluation_type', [
+                'initial',
+                'periodic_review',
+                'pei_review',
+                'specific_demand'
+            ]);
+
+            $table->boolean('is_current')->default(false);
+
+
             // Aprendizagem e cognição
 
             $table->enum('learning_level', [

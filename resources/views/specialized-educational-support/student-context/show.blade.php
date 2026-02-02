@@ -110,10 +110,46 @@
             <div class="card shadow border-0 mb-4">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 text-dark"><i class="bi bi-info-circle me-2"></i>Resumo do Contexto</h5>
-                    <span class="badge bg-primary">Última atualização: {{ $context->updated_at->format('d/m/Y') }}</span>
+                    <span class="badge bg-primary">Criado em: {{ $context->created_at->format('d/m/Y') }}</span>
                 </div>
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="info-label">Tipo de Avaliação</div>
+                            <div class="info-value">
+                                @php
+                                    $evaluationTypes = [
+                                        'initial' => 'Avaliação Inicial',
+                                        'periodic_review' => 'Revisão Periódica',
+                                        'pei_review' => 'Revisão PEI',
+                                        'specific_demand' => 'Demanda Específica'
+                                    ];
+                                @endphp
+                                <span class="badge bg-info">
+                                    {{ $evaluationTypes[$context->evaluation_type] ?? $context->evaluation_type }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Status</div>
+                            <div class="info-value">
+                                @if($context->is_current)
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Contexto Atual
+                                    </span>
+                                @else
+                                    <span class="badge bg-secondary">Contexto Histórico</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Última Atualização</div>
+                            <div class="info-value">
+                                {{ $context->updated_at->format('d/m/Y H:i') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
                         <div class="col-md-3">
                             <div class="info-card">
                                 <div class="info-label">Nível de Aprendizagem</div>
@@ -479,6 +515,9 @@
                             <a href="{{ route('specialized-educational-support.student-context.edit', $context->id) }}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil"></i> Editar Contexto
                             </a>
+                            <a href="{{ route('specialized-educational-support.student-context.index', $student->id) }}" class="btn btn-info btn-sm">
+                                <i class="bi bi-list"></i> Ver Histórico
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -497,6 +536,11 @@
                     <a href="{{ route('specialized-educational-support.student-context.create', $student->id) }}" class="btn btn-primary btn-lg px-5 shadow-sm">
                         <i class="bi bi-plus-circle me-2"></i> Adicionar Contexto
                     </a>
+                    <div class="mt-3">
+                        <a href="{{ route('specialized-educational-support.student-context.index', $student->id) }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-clock-history me-1"></i> Ver Histórico de Contextos
+                        </a>
+                    </div>
                 </div>
             </div>
         @endif

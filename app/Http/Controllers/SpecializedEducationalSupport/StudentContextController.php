@@ -18,10 +18,27 @@ class StudentContextController extends Controller
         $this->service = $service;
     }
 
-    public function show(Student $student)
+    public function index(Student $student)
     {
-        $context = $this->service->show($student);
+        $contexts = $this->service->index($student);
+        return view('specialized-educational-support.student-context.index', compact('student', 'contexts'));
+    }
+
+    public function show(StudentContext $student_context)
+    {
+        $student = $student_context->student;
+        $context = $this->service->show($student_context);
         return view('specialized-educational-support.student-context.show', compact('student', 'context'));
+    }
+
+    public function showCurrent(Student $student)
+    {
+        $context = $this->service->showCurrent($student);
+
+        return view(
+            'specialized-educational-support.student-context.show',
+            compact('student', 'context')
+        );
     }
 
     public function create(Student $student)
@@ -34,7 +51,7 @@ class StudentContextController extends Controller
         $this->service->create($student, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.student-context.show', $student)
+            ->route('specialized-educational-support.student-context.index', $student)
             ->with('success', 'Contexto do aluno cadastrado com sucesso.');
     }
 
@@ -49,8 +66,19 @@ class StudentContextController extends Controller
         $this->service->update($student_context, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.student-context.show', $student)
+            ->route('specialized-educational-support.student-context.index', $student)
             ->with('success', 'Contexto do aluno atualizado com sucesso.');
+    }
+
+    public function setCurrent(StudentContext $student_context)
+    {
+        $student = $student_context->student;
+
+        $this->service->setCurrent($student_context);
+
+        return redirect()
+            ->route('specialized-educational-support.student-context.show', $student)
+            ->with('success', 'Contexto definido como atual.');
     }
 
     public function destroy(StudentContext $student_context)

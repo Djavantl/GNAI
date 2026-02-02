@@ -40,6 +40,30 @@
                     @csrf
                     @method('PUT')
 
+                    <!-- Seção: Tipo de Avaliação -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tipo de Avaliação *</label>
+                            <select name="evaluation_type" class="form-select" required>
+                                <option value="">Selecione o tipo...</option>
+                                <option value="initial" {{ $student_context->evaluation_type == 'initial' ? 'selected' : '' }}>Avaliação Inicial</option>
+                                <option value="periodic_review" {{ $student_context->evaluation_type == 'periodic_review' ? 'selected' : '' }}>Revisão Periódica</option>
+                                <option value="pei_review" {{ $student_context->evaluation_type == 'pei_review' ? 'selected' : '' }}>Revisão PEI</option>
+                                <option value="specific_demand" {{ $student_context->evaluation_type == 'specific_demand' ? 'selected' : '' }}>Demanda Específica</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4 pt-3">
+                                <input class="form-check-input" type="checkbox" name="is_current" value="1" 
+                                       id="is_current" {{ $student_context->is_current ? 'checked' : '' }}>
+                                <label class="form-check-label fw-bold" for="is_current">
+                                    Contexto atual
+                                </label>
+                                <div class="form-text">Marque para definir este como o contexto atual do aluno.</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Seção 1: Aprendizagem e Cognição -->
                     <h5 class="section-title">Aprendizagem e Cognição</h5>
                     <div class="row mb-4">
