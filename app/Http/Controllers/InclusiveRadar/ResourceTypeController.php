@@ -23,14 +23,14 @@ class ResourceTypeController extends Controller
         $resourceTypes = $this->service->listAll();
 
         return view(
-            'inclusive-radar.resource-types.index',
+            'pages.inclusive-radar.resource-types.index',
             compact('resourceTypes')
         );
     }
 
     public function create(): View
     {
-        return view('inclusive-radar.resource-types.create');
+        return view('pages.inclusive-radar.resource-types.create');
     }
 
     public function store(ResourceTypeRequest $request): RedirectResponse
@@ -45,7 +45,7 @@ class ResourceTypeController extends Controller
     public function edit(ResourceType $resourceType): View
     {
         return view(
-            'inclusive-radar.resource-types.edit',
+            'pages.inclusive-radar.resource-types.edit',
             compact('resourceType')
         );
     }

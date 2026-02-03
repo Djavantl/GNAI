@@ -23,12 +23,12 @@ class GuardianController extends Controller
     public function index(Student $student)
     {
         $guardians = $this->service->listByStudent($student->id);
-        return view('specialized-educational-support.guardians.index', compact('student', 'guardians'));
+        return view('pages.specialized-educational-support.guardians.index', compact('student', 'guardians'));
     }
 
     public function create(Student $student)
     {
-        return view('specialized-educational-support.guardians.create', compact('student'));
+        return view('pages.specialized-educational-support.guardians.create', compact('student'));
     }
 
     public function store(GuardianRequest $request, Student $student)
@@ -43,7 +43,7 @@ class GuardianController extends Controller
      public function edit(Guardian $guardian)
     {
         $people = Person::orderBy('name')->get();
-        return view('specialized-educational-support.students.edit', compact('student', 'people'));
+        return view('pages.specialized-educational-support.students.edit', compact('student', 'people'));
     }
 
     public function update(GuardianRequest $request, Guardian $guardian)

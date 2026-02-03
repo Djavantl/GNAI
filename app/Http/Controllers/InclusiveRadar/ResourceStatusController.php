@@ -23,14 +23,9 @@ class ResourceStatusController extends Controller
         $statuses = $this->service->listAll();
 
         return view(
-            'inclusive-radar.resource-statuses.index',
+            'pages.inclusive-radar.resource-statuses.index',
             compact('statuses')
         );
-    }
-
-    public function create(): View
-    {
-        return view('inclusive-radar.resource-statuses.create');
     }
 
     public function store(ResourceStatusRequest $request): RedirectResponse
@@ -45,7 +40,7 @@ class ResourceStatusController extends Controller
     public function edit(ResourceStatus $resourceStatus): View
     {
         return view(
-            'inclusive-radar.resource-statuses.edit',
+            'pages.inclusive-radar.resource-statuses.edit',
             compact('resourceStatus')
         );
     }

@@ -20,13 +20,13 @@ class StudentController extends Controller
     public function index()
     {
         $students = $this->service->all();
-        return view('specialized-educational-support.students.index', compact('students'));
+        return view('pages.specialized-educational-support.students.index', compact('students'));
     }
 
     public function create()
     {
         $people = Person::orderBy('name')->get();
-        return view('specialized-educational-support.students.create', compact('people'));
+        return view('pages.specialized-educational-support.students.create', compact('people'));
     }
 
     public function store(StudentRequest $request)
@@ -41,7 +41,7 @@ class StudentController extends Controller
     public function edit(Student $student)
     {
         $people = Person::orderBy('name')->get();
-        return view('specialized-educational-support.students.edit', compact('student', 'people'));
+        return view('pages.specialized-educational-support.students.edit', compact('student', 'people'));
     }
 
     public function update(StudentRequest $request, Student $student)

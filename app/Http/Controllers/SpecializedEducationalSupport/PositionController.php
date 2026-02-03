@@ -20,12 +20,12 @@ class PositionController extends Controller
     {
         $position = $this->service->listAll();
 
-        return view('specialized-educational-support.positions.index', compact('position'));
+        return view('pages.specialized-educational-support.positions.index', compact('position'));
     }
 
     public function create()
     {
-        return view('specialized-educational-support.positions.create');
+        return view('pages.specialized-educational-support.positions.create');
     }
 
     public function store(PositionRequest $request)
@@ -42,7 +42,7 @@ class PositionController extends Controller
 
     public function edit(Position $position)
     {
-        return view('specialized-educational-support.positions.edit',compact('position'));
+        return view('pages.specialized-educational-support.positions.edit',compact('position'));
     }
 
     public function update(PositionRequest $request, Position $position)

@@ -21,7 +21,7 @@ class PersonController extends Controller
     public function index()
     {
         $people = $this->service->listAll();
-        return view('specialized-educational-support.people.index', compact('people'));
+        return view('pages.specialized-educational-support.people.index', compact('people'));
     }
 
     /**
@@ -29,7 +29,7 @@ class PersonController extends Controller
      */
     public function create()
     {
-        return view('specialized-educational-support.people.create');
+        return view('pages.specialized-educational-support.people.create');
     }
 
     /**

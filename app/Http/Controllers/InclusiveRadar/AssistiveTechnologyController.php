@@ -17,14 +17,14 @@ class AssistiveTechnologyController extends Controller
 
     public function index(): View
     {
-        return view('inclusive-radar.assistive-technologies.index', [
+        return view('pages.inclusive-radar.assistive-technologies.index', [
             'assistiveTechnologies' => $this->service->listAll()
         ]);
     }
 
     public function create(): View
     {
-        return view('inclusive-radar.assistive-technologies.create', $this->service->getCreateData());
+        return view('pages.inclusive-radar.assistive-technologies.create', $this->service->getCreateData());
     }
 
     public function store(AssistiveTechnologyRequest $request): RedirectResponse
@@ -38,7 +38,7 @@ class AssistiveTechnologyController extends Controller
 
     public function edit(AssistiveTechnology $assistiveTechnology): View
     {
-        return view('inclusive-radar.assistive-technologies.edit', $this->service->getEditData($assistiveTechnology));
+        return view('pages.inclusive-radar.assistive-technologies.edit', $this->service->getEditData($assistiveTechnology));
     }
 
     public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse

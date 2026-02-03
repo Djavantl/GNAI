@@ -23,7 +23,7 @@ class ProfessionalController extends Controller
         $professionals = $this->service->all();
 
         return view(
-            'specialized-educational-support.professionals.index',
+            'pages.specialized-educational-support.professionals.index',
             compact('professionals')
         );
     }
@@ -33,7 +33,7 @@ class ProfessionalController extends Controller
         $positions = Position::orderBy('name')->get();
 
         return view(
-            'specialized-educational-support.professionals.create',
+            'pages.specialized-educational-support.professionals.create',
             compact('positions')
         );
     }
@@ -52,7 +52,7 @@ class ProfessionalController extends Controller
         $positions = Position::orderBy('name')->get();
 
         return view(
-            'specialized-educational-support.professionals.edit',
+            'pages.specialized-educational-support.professionals.edit',
             compact('professional', 'positions')
         );
     }

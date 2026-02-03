@@ -22,12 +22,12 @@ class LoanController extends Controller
     public function index(): View
     {
         $loans = $this->loanService->listAll();
-        return view('inclusive-radar.loans.index', compact('loans'));
+        return view('pages.inclusive-radar.loans.index', compact('loans'));
     }
 
     public function create(): View
     {
-        return view('inclusive-radar.loans.create', $this->loanService->getCreateData());
+        return view('pages.inclusive-radar.loans.create', $this->loanService->getCreateData());
     }
 
     public function store(LoanRequest $request): RedirectResponse
@@ -43,7 +43,7 @@ class LoanController extends Controller
 
     public function edit(Loan $loan): View
     {
-        return view('inclusive-radar.loans.edit', $this->loanService->getEditData($loan));
+        return view('pages.inclusive-radar.loans.edit', $this->loanService->getEditData($loan));
     }
 
     public function update(LoanRequest $request, Loan $loan): RedirectResponse
@@ -58,18 +58,6 @@ class LoanController extends Controller
         $this->loanService->markAsReturned($loan, $request->all());
         return redirect()->route('inclusive-radar.loans.index')
             ->with('success', 'Devolução registrada com sucesso!');
-    }
-    public function revert(Loan $loan): RedirectResponse
-    {
-        try {
-            $this->loanService->revertReturn($loan);
-
-            return redirect()->route('inclusive-radar.loans.index')
-                ->with('success', 'Devolução estornada! O item voltou ao status de empréstimo ativo e o estoque foi ajustado.');
-        } catch (\Exception $e) {
-            return redirect()->route('inclusive-radar.loans.index')
-                ->withErrors(['revert' => $e->getMessage()]);
-        }
     }
 
     public function destroy(Loan $loan): RedirectResponse

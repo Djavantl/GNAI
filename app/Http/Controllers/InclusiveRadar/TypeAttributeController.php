@@ -21,12 +21,12 @@ class TypeAttributeController extends Controller
     public function index(): View
     {
         $attributes = $this->service->listAll();
-        return view('inclusive-radar.type-attributes.index', compact('attributes'));
+        return view('pages.inclusive-radar.type-attributes.index', compact('attributes'));
     }
 
     public function create(): View
     {
-        return view('inclusive-radar.type-attributes.create');
+        return view('pages.inclusive-radar.type-attributes.create');
     }
 
     public function store(TypeAttributeRequest $request): RedirectResponse
@@ -40,7 +40,7 @@ class TypeAttributeController extends Controller
 
     public function edit(TypeAttribute $typeAttribute): View
     {
-        return view('inclusive-radar.type-attributes.edit', compact('typeAttribute'));
+        return view('pages.inclusive-radar.type-attributes.edit', compact('typeAttribute'));
     }
 
     public function update(TypeAttributeRequest $request, TypeAttribute $typeAttribute): RedirectResponse

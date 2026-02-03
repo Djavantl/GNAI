@@ -25,7 +25,7 @@ class TypeAttributeAssignmentController extends Controller
         $assignments = $this->service->listAll();
 
         return view(
-            'inclusive-radar.attribute-assignments.index',
+            'pages.inclusive-radar.attribute-assignments.index',
             compact('assignments')
         );
     }
@@ -35,7 +35,7 @@ class TypeAttributeAssignmentController extends Controller
         $data = $this->service->getCreateData();
 
         return view(
-            'inclusive-radar.attribute-assignments.create',
+            'pages.inclusive-radar.attribute-assignments.create',
             $data
         );
     }
@@ -57,7 +57,7 @@ class TypeAttributeAssignmentController extends Controller
         $data = $this->service->getEditData($resourceType);
 
         return view(
-            'inclusive-radar.attribute-assignments.edit',
+            'pages.inclusive-radar.attribute-assignments.edit',
             $data
         );
     }

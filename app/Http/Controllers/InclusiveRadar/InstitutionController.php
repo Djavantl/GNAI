@@ -25,12 +25,12 @@ class InstitutionController extends Controller
     {
         $institutions = $this->service->listAll();
 
-        return view('inclusive-radar.institutions.index', compact('institutions'));
+        return view('pages.inclusive-radar.institutions.index', compact('institutions'));
     }
 
     public function create()
     {
-        return view('inclusive-radar.institutions.create');
+        return view('pages.inclusive-radar.institutions.create');
     }
 
     public function store(InstitutionRequest $request)
@@ -57,7 +57,7 @@ class InstitutionController extends Controller
     {
         $institution->load('locations');
 
-        return view('inclusive-radar.institutions.edit', compact('institution'));
+        return view('pages.inclusive-radar.institutions.edit', compact('institution'));
     }
 
     public function update(InstitutionRequest $request, Institution $institution)

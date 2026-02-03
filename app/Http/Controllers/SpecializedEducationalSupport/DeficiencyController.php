@@ -20,12 +20,12 @@ class DeficiencyController extends Controller
     {
         $deficiency = $this->service->listAll();
 
-        return view('specialized-educational-support.deficiencies.index', compact('deficiency'));
+        return view('pages.specialized-educational-support.deficiencies.index', compact('deficiency'));
     }
 
     public function create()
     {
-        return view('specialized-educational-support.deficiencies.create');
+        return view('pages.specialized-educational-support.deficiencies.create');
     }
 
     public function store(DeficiencyRequest $request)
@@ -42,7 +42,7 @@ class DeficiencyController extends Controller
 
     public function edit(Deficiency $deficiency)
     {
-        return view('specialized-educational-support.deficiencies.edit',compact('deficiency'));
+        return view('pages.specialized-educational-support.deficiencies.edit',compact('deficiency'));
     }
 
     public function update(DeficiencyRequest $request, Deficiency $deficiency)

@@ -21,12 +21,12 @@ class AccessibilityFeatureController extends Controller
     public function index(): View
     {
         $features = $this->service->listAll();
-        return view('inclusive-radar.accessibility-features.index', compact('features'));
+        return view('pages.inclusive-radar.accessibility-features.index', compact('features'));
     }
 
     public function create(): View
     {
-        return view('inclusive-radar.accessibility-features.create');
+        return view('pages.inclusive-radar.accessibility-features.create');
     }
 
     public function store(AccessibilityFeatureRequest $request): RedirectResponse
@@ -39,7 +39,7 @@ class AccessibilityFeatureController extends Controller
 
     public function edit(AccessibilityFeature $accessibilityFeature): View
     {
-        return view('inclusive-radar.accessibility-features.edit', compact('accessibilityFeature'));
+        return view('pages.inclusive-radar.accessibility-features.edit', compact('accessibilityFeature'));
     }
 
     public function update(AccessibilityFeatureRequest $request, AccessibilityFeature $accessibilityFeature): RedirectResponse

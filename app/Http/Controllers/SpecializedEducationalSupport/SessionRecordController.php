@@ -26,7 +26,7 @@ class SessionRecordController extends Controller
         $sessionRecords = $this->service->index();
 
         return view(
-            'specialized-educational-support.session-records.index',
+            'pages.specialized-educational-support.session-records.index',
             compact('sessionRecords')
         );
     }
@@ -35,7 +35,7 @@ class SessionRecordController extends Controller
     public function create(Session $session)
     {
         return view(
-            'specialized-educational-support.session-records.create',
+            'pages.specialized-educational-support.session-records.create',
             compact('session')
         );
     }
@@ -56,7 +56,7 @@ class SessionRecordController extends Controller
         $sessionRecord = $this->service->show($sessionRecord);
 
         return view(
-            'specialized-educational-support.session-records.show',
+            'pages.specialized-educational-support.session-records.show',
             compact('sessionRecord')
         );
     }
@@ -65,7 +65,7 @@ class SessionRecordController extends Controller
     public function edit(SessionRecord $sessionRecord)
     {
         return view(
-            'specialized-educational-support.session-records.edit',
+            'pages.specialized-educational-support.session-records.edit',
             compact('sessionRecord')
         );
     }

@@ -17,7 +17,7 @@ class AccessibleEducationalMaterialController extends Controller
 
     public function index(): View
     {
-        return view('inclusive-radar.accessible-educational-materials.index', [
+        return view('pages.inclusive-radar.accessible-educational-materials.index', [
             'materials' => $this->service->listAll()
         ]);
     }
@@ -25,7 +25,7 @@ class AccessibleEducationalMaterialController extends Controller
     public function create(): View
     {
         return view(
-            'inclusive-radar.accessible-educational-materials.create',
+            'pages.inclusive-radar.accessible-educational-materials.create',
             $this->service->getCreateData()
         );
     }
@@ -42,7 +42,7 @@ class AccessibleEducationalMaterialController extends Controller
     public function edit(AccessibleEducationalMaterial $material): View
     {
         return view(
-            'inclusive-radar.accessible-educational-materials.edit',
+            'pages.inclusive-radar.accessible-educational-materials.edit',
             $this->service->getEditData($material)
         );
     }

@@ -24,14 +24,14 @@ class LocationController extends Controller
     {
         $locations = $this->service->listAll();
 
-        return view('inclusive-radar.locations.index', compact('locations'));
+        return view('pages.inclusive-radar.locations.index', compact('locations'));
     }
 
     public function create()
     {
         $institutions = Institution::with('locations')->where('is_active', true)->get();
 
-        return view('inclusive-radar.locations.create', compact('institutions'));
+        return view('pages.inclusive-radar.locations.create', compact('institutions'));
     }
 
     public function store(LocationRequest $request)
@@ -64,7 +64,7 @@ class LocationController extends Controller
     {
         $institutions = Institution::where('is_active', true)->get();
 
-        return view('inclusive-radar.locations.edit', compact('location', 'institutions'));
+        return view('pages.inclusive-radar.locations.edit', compact('location', 'institutions'));
     }
 
     public function update(LocationRequest $request, Location $location)

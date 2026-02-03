@@ -23,7 +23,7 @@ class StudentDeficienciesController extends Controller
     public function index(Student $student)
     {
         $deficiencies = $this->service->listAll($student);
-        return view('specialized-educational-support.student-deficiencies.index', compact('student', 'deficiencies'));
+        return view('pages.specialized-educational-support.student-deficiencies.index', compact('student', 'deficiencies'));
     }
 
     // Exibe o formulário de criação.
@@ -31,7 +31,7 @@ class StudentDeficienciesController extends Controller
     public function create(Student $student)
     {
         $deficienciesList = Deficiency::orderBy('name')->get();
-        return view('specialized-educational-support.student-deficiencies.create', compact('student', 'deficienciesList'));
+        return view('pages.specialized-educational-support.student-deficiencies.create', compact('student', 'deficienciesList'));
     }
 
     // Salva o vínculo da deficiência.
@@ -46,33 +46,33 @@ class StudentDeficienciesController extends Controller
     }
 
     // Exibe o formulário de edição.
-     
+
     public function edit(StudentDeficiencies $student_deficiency)
     {
         // Obtém o aluno através do relacionamento (ou campo student_id)
-        $student = $student_deficiency->student; 
-        
+        $student = $student_deficiency->student;
+
         $deficienciesList = Deficiency::orderBy('name')->get();
-        
-        return view('specialized-educational-support.student-deficiencies.edit', 
+
+        return view('pages.specialized-educational-support.student-deficiencies.edit',
             compact('student', 'student_deficiency', 'deficienciesList')
         );
     }
 
     // Atualiza os dados da deficiência vinculada.
-   
+
     public function update(StudentDeficiencies $student_deficiency, StudentDeficienciesRequest $request)
     {
         $this->service->update($student_deficiency, $request->validated());
-        $student = $student_deficiency->student; 
+        $student = $student_deficiency->student;
 
         return redirect()
             ->route('specialized-educational-support.student-deficiencies.index', $student)
             ->with('success', 'Informações da deficiência atualizadas.');
     }
-    
+
     // Remove o vínculo.
-     
+
     public function destroy(StudentDeficiencies $student_deficiency)
     {
         $student = $student_deficiency->student_id;

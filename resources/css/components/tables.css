@@ -41,22 +41,22 @@
 
 .table td:first-child {
     color: #303972 !important;
-} 
+}
 
-/* .table th:last-child, 
+/* .table th:last-child,
 .table td:last-child {
     text-align: center;
 } */
 
 /* .table-wrapper {
     display: flex;
-    justify-content: left; 
+    justify-content: left;
     width: 100%;
 }
 
 .custom-table-card {
     width: 100%;
-    max-width: 1200px; 
+    max-width: 1200px;
     margin: 0 auto;
 } */
 

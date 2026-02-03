@@ -23,7 +23,7 @@ class SemesterController extends Controller
     {
         $semesters = $this->service->all();
 
-        return view('specialized-educational-support.semesters.index', compact('semesters'));
+        return view('pages.specialized-educational-support.semesters.index', compact('semesters'));
     }
 
     /**
@@ -31,7 +31,7 @@ class SemesterController extends Controller
      */
     public function create()
     {
-        return view('specialized-educational-support.semesters.create');
+        return view('pages.specialized-educational-support.semesters.create');
     }
 
     /**
@@ -60,7 +60,7 @@ class SemesterController extends Controller
      */
     public function edit(Semester $semester)
     {
-        return view('specialized-educational-support.semesters.edit', compact('semester'));
+        return view('pages.specialized-educational-support.semesters.edit', compact('semester'));
     }
 
     /**

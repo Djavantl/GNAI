@@ -22,7 +22,7 @@ class SessionController extends Controller
     public function index()
     {
         $sessions = $this->service->index();
-        return view('specialized-educational-support.sessions.index', compact('sessions'));
+        return view('pages.specialized-educational-support.sessions.index', compact('sessions'));
     }
 
     public function create()
@@ -31,7 +31,7 @@ class SessionController extends Controller
         $professionals = Professional::all();
 
         // dd($students->toArray(), $professionals->toArray());
-        return view('specialized-educational-support.sessions.create', compact('students', 'professionals'));
+        return view('pages.specialized-educational-support.sessions.create', compact('students', 'professionals'));
     }
 
     public function store(SessionRequest $request)
@@ -46,12 +46,12 @@ class SessionController extends Controller
     public function show(Session $session)
     {
         $session = $this->service->show($session);
-        return view('specialized-educational-support.sessions.show', compact('session'));
+        return view('pages.specialized-educational-support.sessions.show', compact('session'));
     }
 
     public function edit(Session $session)
     {
-        return view('specialized-educational-support.sessions.edit', compact('session'));
+        return view('pages.specialized-educational-support.sessions.edit', compact('session'));
     }
 
     public function update(Session $session, SessionRequest $request)

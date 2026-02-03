@@ -16,12 +16,12 @@ class BarrierCategoryController extends Controller
     public function index(): View
     {
         $categories = $this->service->listAll();
-        return view('inclusive-radar.barrier-categories.index', compact('categories'));
+        return view('pages.inclusive-radar.barrier-categories.index', compact('categories'));
     }
 
     public function create(): View
     {
-        return view('inclusive-radar.barrier-categories.create');
+        return view('pages.inclusive-radar.barrier-categories.create');
     }
 
     public function store(BarrierCategoryRequest $request): RedirectResponse
@@ -35,7 +35,7 @@ class BarrierCategoryController extends Controller
 
     public function edit(BarrierCategory $barrierCategory): View
     {
-        return view('inclusive-radar.barrier-categories.edit', compact('barrierCategory'));
+        return view('pages.inclusive-radar.barrier-categories.edit', compact('barrierCategory'));
     }
 
     public function update(BarrierCategoryRequest $request, BarrierCategory $barrierCategory): RedirectResponse

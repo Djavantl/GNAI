@@ -17,14 +17,14 @@ class BarrierController extends Controller
 
     public function index(): View
     {
-        return view('inclusive-radar.barriers.index', [
+        return view('pages.inclusive-radar.barriers.index', [
             'barriers' => $this->service->listAll()
         ]);
     }
 
     public function create(): View
     {
-        return view('inclusive-radar.barriers.create', $this->service->getCreateData());
+        return view('pages.inclusive-radar.barriers.create', $this->service->getCreateData());
     }
 
     public function store(BarrierRequest $request): RedirectResponse
@@ -38,7 +38,7 @@ class BarrierController extends Controller
 
     public function edit(Barrier $barrier): View
     {
-        return view('inclusive-radar.barriers.edit', $this->service->getEditData($barrier));
+        return view('pages.inclusive-radar.barriers.edit', $this->service->getEditData($barrier));
     }
 
     public function update(BarrierRequest $request, Barrier $barrier): RedirectResponse

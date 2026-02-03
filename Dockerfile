@@ -28,7 +28,6 @@ RUN apk update && apk add --no-cache \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
 
-
 # Sincroniza o usuário www-data do container com o seu usuário do computador
 RUN usermod -u ${USER_ID} www-data && groupmod -g ${GROUP_ID} www-data
 
@@ -41,14 +40,14 @@ WORKDIR /var/www
 # Copia os arquivos do projeto
 COPY . .
 
-# Permissões
+# Permissões iniciais para pastas de cache e storage
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Instala dependências do Laravel
 RUN composer install --prefer-dist --no-interaction
 
-# Limpa cache Laravel
+# Limpa cache Laravel para evitar conflitos de configuração
 RUN php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear
@@ -56,5 +55,5 @@ RUN php artisan config:clear \
 # Expõe a porta FPM
 EXPOSE 9000
 
-# Comando principal
-CMD ["php-fpm"]
+# Comando principal: Garante o link do storage e as permissões toda vez que o container subir
+CMD ["sh", "-c", "php artisan storage:link --force && chown -R www-data:www-data /var/www/storage && php-fpm"]
