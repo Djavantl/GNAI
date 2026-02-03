@@ -18,6 +18,9 @@ class StudentContext extends Model
         'is_current',
         'evaluated_by_professional_id',
         
+        'history',
+        'specific_educational_needs',
+
         // Aprendizagem
         'learning_level',
         'attention_level',

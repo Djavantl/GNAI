@@ -48,6 +48,11 @@ class Student extends Model
         return $this->hasMany(StudentDeficiencies::class, 'student_id');
     }
 
+    public function peis()
+    {
+        return $this->hasMany(Pei::class, 'student_id');
+    }
+
     
     // Helpers
     

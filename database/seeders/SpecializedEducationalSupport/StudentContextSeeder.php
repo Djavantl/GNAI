@@ -40,6 +40,10 @@ class StudentContextSeeder extends Seeder
                 'evaluation_type' => 'initial',
                 'is_current' => false,
 
+                // Histórico e necessidades
+                'history' => 'Aluno ingressou na instituição com histórico de dificuldades de adaptação escolar e necessidade de acompanhamento pedagógico.',
+                'specific_educational_needs' => 'Necessita de mediação pedagógica contínua, adaptações metodológicas e acompanhamento do AEE.',
+
                 // Aprendizagem
                 'learning_level' => 'low',
                 'attention_level' => 'moderate',
@@ -81,6 +85,10 @@ class StudentContextSeeder extends Seeder
                 'evaluated_by_professional_id' => $professionals->random()->id,
                 'evaluation_type' => 'periodic_review',
                 'is_current' => true,
+
+                // Histórico e necessidades
+                'history' => 'Aluno apresenta evolução progressiva desde o ingresso, com melhora significativa na participação em sala.',
+                'specific_educational_needs' => 'Manutenção de estratégias pedagógicas diferenciadas, com foco em atividades estruturadas e apoio pontual.',
 
                 // Aprendizagem
                 'learning_level' => 'adequate',

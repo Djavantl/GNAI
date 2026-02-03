@@ -1,72 +1,104 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sessões de Atendimento</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <h2>Sessões de Atendimento</h2>
-        <div class="d-flex justify-content-between align-items-end mb-4">
+@extends('layouts.master')
+
+@section('title', 'Sessões de Atendimento')
+
+@section('content')
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-title">Sessões de Atendimento</h2>
+        <div class="d-flex gap-2">
+            <x-buttons.link-button 
+                :href="route('specialized-educational-support.session-records.index')" 
+                variant="dark"
+            >
+                Registros
+            </x-buttons.link-button>
             
-            <a href="{{ route('specialized-educational-support.sessions.create') }}" class="btn btn-primary">Nova Sessão</a>
-            <a href="{{ route('specialized-educational-support.session-records.index') }}" class="btn btn-sm btn-outline-primary">Registros</a>
-        </div>
-
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <table class="table table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Data</th>
-                            <th>Aluno</th>
-                            <th>Profissional</th>
-                            <th>Tipo</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($sessions as $session)
-                        <tr>
-                            <td>{{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</td>
-                            <td>{{ $session->student->name }}</td>
-                            <td>{{ $session->professional->name }}</td>
-                            <td>{{ $session->type }}</td>
-                            <td><span class="badge bg-info text-dark">{{ $session->status }}</span></td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="{{ route('specialized-educational-support.sessions.show', $session) }}" class="btn btn-sm btn-outline-secondary">Ver</a>
-                                    <a href="{{ route('specialized-educational-support.sessions.edit', $session) }}" class="btn btn-sm btn-outline-warning">Editar</a>
-                                    @if($session->sessionRecord)
-                                        <a href="{{ route('specialized-educational-support.session-records.show', $session->sessionRecord->id) }}" 
-                                        class="btn btn-sm btn-outline-dark">
-                                        <i class="bi bi-file-earmark-text"></i> Ver Registro
-                                        </a>
-                                    @else
-                                        <a href="{{ route('specialized-educational-support.session-records.create', $session->id) }}" 
-                                        class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-plus-circle"></i> Criar Registro
-                                        </a>
-                                    @endif
-                                    <form action="{{ route('specialized-educational-support.sessions.destroy', $session) }}" method="POST" onsubmit="return confirm('Mover para lixeira?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            <x-buttons.link-button 
+                :href="route('specialized-educational-support.sessions.create')" 
+                variant="new"
+            >
+                Nova Sessão
+            </x-buttons.link-button>
         </div>
     </div>
-</body>
-</html>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <x-table.table :headers="['Data', 'Aluno', 'Profissional', 'Tipo', 'Status', 'Ações']">
+    @foreach($sessions as $session)
+        <tr>
+            <x-table.td>{{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</x-table.td>
+            <x-table.td>{{ $session->student->person->name }}</x-table.td>
+            <x-table.td>{{ $session->professional->person->name }}</x-table.td>
+            <x-table.td>{{ $session->type }}</x-table.td>
+            <x-table.td>
+                @php
+                    // Mapeando cores para os diferentes status de sessão
+                    $statusColor = match($session->status) {
+                        'scheduled' => 'info',
+                        'completed' => 'success',
+                        'canceled'  => 'danger',
+                        default     => 'warning'
+                    };
+                    $statusLabel = ucfirst($session->status);
+                @endphp
+                
+                <span class="text-{{ $statusColor }} fw-bold">
+                    {{ $statusLabel }}
+                </span>
+            </x-table.td>
+
+            <x-table.td>
+                <x-table.actions>
+                    {{-- Ver Sessão --}}
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.sessions.show', $session)" 
+                        variant="info"
+                    >
+                        Ver
+                    </x-buttons.link-button>
+
+                    {{-- Editar Sessão --}}
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.sessions.edit', $session)" 
+                        variant="warning"
+                    >
+                        Editar
+                    </x-buttons.link-button>
+
+                    {{-- Lógica do Registro --}}
+                    @if($session->sessionRecord)
+                        <x-buttons.link-button 
+                            :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)" 
+                            variant="dark"
+                        >
+                            Ver Registro
+                        </x-buttons.link-button>
+                    @else
+                        <x-buttons.link-button 
+                            :href="route('specialized-educational-support.session-records.create', $session->id)" 
+                            variant="new"
+                        >
+                            Criar Registro
+                        </x-buttons.link-button>
+                    @endif
+
+                    {{-- Excluir --}}
+                    <form action="{{ route('specialized-educational-support.sessions.destroy', $session) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <x-buttons.submit-button 
+                            variant="danger" 
+                            onclick="return confirm('Mover para lixeira?')"
+                        >
+                            Excluir
+                        </x-buttons.submit-button>
+                    </form>
+                </x-table.actions>
+            </x-table.td>
+        </tr>
+    @endforeach
+    </x-table.table>
+@endsection

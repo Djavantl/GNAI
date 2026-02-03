@@ -37,6 +37,10 @@ return new class extends Migration
 
             $table->boolean('is_current')->default(false);
 
+            // Identificação pedagógica e histórico educacional
+
+            $table->longText('history');
+            $table->longText('specific_educational_needs');
 
             // Aprendizagem e cognição
 

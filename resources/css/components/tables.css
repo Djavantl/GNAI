@@ -1,0 +1,63 @@
+/* Container da Tabela para arredondar os cantos */
+.custom-table-card {
+    background-color: #ffffff;
+    border-radius: 20px; /* Arredondamento natural */
+    overflow: hidden;    /* Essencial para a tabela não "vazar" as pontas */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Remove a linha de borda da última célula para não estragar o design */
+.table > :not(caption) > * > * {
+    border-bottom-width: 2px;
+    border-color: #f5f1f1;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Hover suave com a cor do seu tema */
+.table-hover tbody tr:hover {
+    background-color: rgba(77, 68, 181, 0.02);
+}
+
+/* Garantindo as cores das variáveis que você já tem */
+.text-purple-dark {
+    color: #303972 !important;
+}
+
+.text-purple-light {
+    color: #4130ac !important;
+}
+
+
+/* Centraliza o texto de todas as células, exceto a primeira (opcional) */
+.table th, .table td {
+    height: 4rem;
+    text-align: center; /* Centraliza horizontalmente */
+    vertical-align: middle; /* Centraliza verticalmente */
+}
+
+.table td:first-child {
+    color: #303972 !important;
+} 
+
+/* .table th:last-child, 
+.table td:last-child {
+    text-align: center;
+} */
+
+/* .table-wrapper {
+    display: flex;
+    justify-content: left; 
+    width: 100%;
+}
+
+.custom-table-card {
+    width: 100%;
+    max-width: 1200px; 
+    margin: 0 auto;
+} */
+
+/* Centraliza o conteúdo da célula de ações */

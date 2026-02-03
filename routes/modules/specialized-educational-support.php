@@ -130,3 +130,20 @@ Route::middleware(['auth'])->group(function () {
     Route::post('session-records/{sessionRecord}/restore', [SessionRecordController::class, 'restore'])->name('session-records.restore')->withTrashed();
     Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->withTrashed();
 });
+
+Route::get('/', function () {
+    return view('layouts.app');
+})->name('dashboard');
+
+Route::get('/dashboard', function () {
+    return view('layouts.app');
+})->name('dashboard');
+
+// Rotas para os itens do menu (exemplos)
+Route::get('/inicio', function () {
+    return view('layouts.app', ['title' => 'Início']);
+});
+
+Route::get('/alunos', function () {
+    return view('layouts.app', ['title' => 'Alunos']);
+});

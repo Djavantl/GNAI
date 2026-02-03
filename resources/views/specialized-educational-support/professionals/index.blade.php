@@ -1,83 +1,63 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Profissionais</title>
+@extends('layouts.master')
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@section('title', 'Profissionais')
 
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Profissionais</h2>
-
-        <a href="{{ route('specialized-educational-support.professionals.create') }}"
-           class="btn btn-primary">
-            Novo Profissional
-        </a>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <h2 class="text-title">Profissionais</h2>
+        <x-buttons.link-button 
+            :href="route('specialized-educational-support.professionals.create')"
+            variant="new"
+        >
+             Novo Profissional
+        </x-buttons.link-button>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="card">
-        <div class="card-body">
+    <x-table.table :headers="['Nome', 'Documento', 'Cargo', 'Status', 'Ações']">
+    @foreach($professionals as $professional)
+        <tr>
+            <x-table.td>{{ $professional->person->name }}</x-table.td>
+            <x-table.td>{{ $professional->person->document }}</x-table.td>
+            <x-table.td>{{ $professional->position->name }}</x-table.td>
+            <x-table.td>
+                @php
+                    $statusColor = $professional->status === 'active' ? 'success' : 'danger';
+                    $statusLabel = $professional->status === 'active' ? 'Ativo' : 'Inativo';
+                @endphp
+                
+                <span class="text-{{ $statusColor }} fw-bold">
+                    {{ $statusLabel }}
+                </span>
+            </x-table.td>
 
-            <table class="table table-bordered table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nome</th>
-                        <th>Documento</th>
-                        <th>Cargo</th>
-                        <th>Status</th>
-                        <th width="180">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($professionals as $professional)
-                        <tr>
-                            <td>{{ $professional->person->name }}</td>
-                            <td>{{ $professional->person->document }}</td>
-                            <td>{{ $professional->position->name }}</td>
-                            <td>
-                                <span class="badge {{ $professional->status === 'active' ? 'bg-success' : 'bg-secondary' }}">
-                                    {{ ucfirst($professional->status) }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ route('specialized-educational-support.professionals.edit', $professional) }}"
-                                   class="btn btn-sm btn-warning">
-                                    Editar
-                                </a>
+            <x-table.td>
+                <x-table.actions>
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.professionals.edit', $professional)"
+                        variant="warning"
+                    >
+                        Editar
+                    </x-buttons.link-button>
 
-                                <form
-                                    action="{{ route('specialized-educational-support.professionals.destroy', $professional) }}"
-                                    method="POST"
-                                    class="d-inline"
-                                >
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Deseja remover este profissional?')">
-                                        Excluir
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    <form action="{{ route('specialized-educational-support.professionals.destroy', $professional) }}"
+                        method="POST">
+                        @csrf
+                        @method('DELETE')
 
-        </div>
-    </div>
-
-</div>
-
-</body>
-</html>
+                        <x-buttons.submit-button 
+                            variant="danger"
+                            onclick="return confirm('Deseja remover este profissional?')"
+                        >
+                            Excluir
+                        </x-buttons.submit-button>
+                    </form>
+                </x-table.actions>
+            </x-table.td>
+        </tr>
+    @endforeach
+    </x-table.table>
+@endsection

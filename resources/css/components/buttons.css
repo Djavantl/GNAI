@@ -1,0 +1,46 @@
+/* Botões base */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: .85rem;
+    border-radius: 1.4rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    height: 2.5rem;
+}
+
+.btn-action.new {
+    background-color: #3d35a5;
+    color: #fff;
+}
+
+/* Variações */
+.btn-action.info {
+    background-color: #0dcaf0;
+    color: #fff;
+}
+
+.btn-action.dark {
+    background-color: #212529;
+    color: #fff;
+}
+
+.btn-action.warning {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.btn-action.danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Submit */
+.btn-action.submit {
+    font-weight: 600;
+}

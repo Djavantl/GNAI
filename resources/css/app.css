@@ -1,11 +1,318 @@
-@import 'tailwindcss';
+@import "./components/buttons.css";
+@import "./components/tables.css";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+:root {
+    --primary-color: #4D44B5;
+    --sidebar-width: 250px;
+    --navbar-height: 60px;
+    --sidebar-bg: #4D44B5;
+    --sidebar-text: #ffffff;
+    --sidebar-hover: rgba(255, 255, 255, 0.1);
+    --font-family-base: 'Inter', sans-serif;
+    --font-family-heading: 'Poppins', bold;
+    --text-purple-light: #8a7fd4;  
+    --text-purple-medium: #6c63ff; 
+    --text-purple-dark: #4D44B5;   
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar Fixada com Scroll */
+.sidebar {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s;
+    padding-top: var(--navbar-height);
+    overflow-y: auto; /* Permite scroll na sidebar */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Customizar scrollbar da sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Navbar Fixada */
+.navbar-custom {
+    background-color: var(--primary-color) !important;
+    height: var(--navbar-height);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    padding: 0 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Conteúdo Principal */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: calc(var(--navbar-height) + 1rem) ;
+    min-height: 100vh;
+    transition: all 0.3s;
+    background-color: #e1ebf8;
+}
+
+/* Header da Sidebar */
+.sidebar-header {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    background-color: var(--sidebar-bg);
+    z-index: 1;
+}
+
+/* Menu da Sidebar */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    position: relative;
+}
+
+.sidebar-menu a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+}
+
+.sidebar-menu a:hover {
+    color: white;
+    background-color: var(--sidebar-hover);
+    border-left-color: white;
+    padding-left: 1.25rem;
+}
+
+.sidebar-menu a.active {
+    color: white;
+    background-color: var(--sidebar-hover);
+    border-left-color: #FFD700;
+    font-weight: 500;
+}
+
+.sidebar-menu .icon {
+    width: 20px;
+    margin-right: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.sidebar-menu .text {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-menu .badge {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Separadores do Menu */
+.menu-divider {
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Rodapé da Sidebar */
+.sidebar-footer {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--sidebar-bg);
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-title{
+    font-weight: 700 !important;
+    margin-bottom: 1rem !important;
+    font-family: var(--font-family-heading) !important;
+    color: #303972 !important;
+}
+
+.text-base {
+    font-family: var(--font-family-base) !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding-top: calc(var(--navbar-height) + 0.5rem);
+    }
+    
+    .navbar-toggler {
+        display: block !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+}
+
+/* Animações */
+.page-transition {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Cards Customizados */
+.card-custom {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1rem;
+}
+
+.card-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--primary-color), #6c63ff);
+    color: white;
+    border: none;
+}
+
+/* Breadcrumb Customizado */
+.breadcrumb-custom {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: #6c757d;
+}
+
+/* Alertas */
+.alert-custom {
+    border-radius: 8px;
+    border: none;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Botões */
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+}
+
+.btn-primary-custom:hover {
+    background-color: #3d35a5;
+    border-color: #3d35a5;
+    transform: translateY(-1px);
+}
+
+/* Utilidades */
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-color) !important;
+}
+
+/* Ajuste para o conteúdo não ficar atrás da navbar fixa */
+/* body {
+    padding-top: var(--navbar-height);
+} */
+
+/* Ajuste para garantir que todos os links da sidebar sejam visíveis */
+.sidebar-menu {
+    padding-bottom: 80px; /* Espaço para o rodapé da sidebar */
+}
+
+/* Ajuste fino para melhor visualização em telas menores */
+@media (max-height: 600px) {
+    .sidebar-header {
+        padding: 0.5rem;
+    }
+    
+    .sidebar-menu a {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .sidebar-footer {
+        padding: 0.5rem;
+    }
 }

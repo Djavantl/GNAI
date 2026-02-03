@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Database\Seeders\SpecializedEducationalSupport\SemesterSeeder;
 use Database\Seeders\SpecializedEducationalSupport\StudentContextSeeder;
+use Database\Seeders\SpecializedEducationalSupport\StudentDeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\PositionSeeder;
 use Database\Seeders\SpecializedEducationalSupport\PSPUSeeder;
@@ -36,6 +37,7 @@ class DatabaseSeeder extends Seeder
             AccessibleEducationalMaterialSeeder::class,
             PSPUSeeder::class,
             StudentContextSeeder::class,
+            StudentDeficiencySeeder::class,
         ]);
     }
 }

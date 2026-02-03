@@ -28,22 +28,24 @@ class StudentContextController extends Controller
     {
         $student = $student_context->student;
         $context = $this->service->show($student_context);
-        return view('specialized-educational-support.student-context.show', compact('student', 'context'));
+        $deficiencies = $student->deficiencies;
+        return view('specialized-educational-support.student-context.show', compact('student', 'context', 'deficiencies'));
     }
 
     public function showCurrent(Student $student)
     {
         $context = $this->service->showCurrent($student);
-
+        $deficiencies = $student->deficiencies;
         return view(
             'specialized-educational-support.student-context.show',
-            compact('student', 'context')
+            compact('student', 'context', 'deficiencies')
         );
     }
 
     public function create(Student $student)
     {
-        return view('specialized-educational-support.student-context.create', compact('student'));
+        $deficiencies = $student->deficiencies;
+        return view('specialized-educational-support.student-context.create', compact('student','deficiencies' ));
     }
 
     public function store(Student $student, StudentContextRequest $request)
@@ -57,11 +59,13 @@ class StudentContextController extends Controller
 
     public function edit(StudentContext $student_context)
     {
-        return view('specialized-educational-support.student-context.edit', compact('student_context'));
+        $student = $student_context->student;
+        $deficiencies = $student->deficiencies;
+        return view('specialized-educational-support.student-context.edit', compact('student_context', 'deficiencies'));
     }
 
     public function update(StudentContext $student_context, StudentContextRequest $request)
-    {
+    {   
         $student = $student_context->student;
         $this->service->update($student_context, $request->validated());
 

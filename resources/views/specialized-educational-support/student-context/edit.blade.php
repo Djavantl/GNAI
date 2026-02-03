@@ -26,14 +26,46 @@
             border-radius: 8px;
             border: 1px solid #dee2e6;
         }
+        .deficiency-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .deficiency-badge.mild { background-color: #6c757d; }
+        .deficiency-badge.moderate { background-color: #ffc107; color: #000; }
+        .deficiency-badge.severe { background-color: #dc3545; }
     </style>
 </head>
 <body>
     <div class="container py-5">
         <div class="card shadow border-0">
             <div class="card-header text-dark p-3">
-                <h4 class="mb-0">Editar Contexto: {{ $student_context->student->name ?? 'Aluno' }}</h4>
-                <p class="mb-0 mt-2 opacity-75">Atualize os dados do contexto educacional do aluno</p>
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h4 class="mb-0">Editar Contexto: {{ $student_context->student->name ?? 'Aluno' }}</h4>
+                        <p class="mb-0 mt-2 opacity-75">Atualize os dados do contexto educacional do aluno</p>
+                        
+                        @if(isset($deficiencies) && $deficiencies->count() > 0)
+                            <div class="mt-2">
+                                <small class="opacity-75">Deficiências identificadas:</small>
+                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                    @foreach($deficiencies as $deficiency)
+                                        <span class="deficiency-badge {{ $deficiency->severity ?? 'mild' }}">
+                                            {{ $deficiency->deficiency->name }}
+                                            @if($deficiency->severity)
+                                                <small>{{ $deficiency->severity }}</small>
+                                            @endif
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
             <div class="card-body p-4">
                 <form action="{{ route('specialized-educational-support.student-context.update', $student_context->id) }}" method="POST">
@@ -222,7 +254,22 @@
                         </div>
                     </div>
 
-                    <!-- Seção 5: Avaliação Geral -->
+                    <!-- Seção 5: Histórico e Necessidades Educacionais Específicas -->
+                    <h5 class="section-title">Histórico e Necessidades Educacionais Específicas</h5>
+                    <div class="row mb-4">
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Histórico *</label>
+                            <textarea name="history" class="form-control" rows="4" required>{{ old('history', $student_context->history) }}</textarea>
+                            <div class="form-text">Obrigatório. Registre o histórico completo do aluno.</div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Necessidades Educacionais Específicas *</label>
+                            <textarea name="specific_educational_needs" class="form-control" rows="4" required>{{ old('specific_educational_needs', $student_context->specific_educational_needs) }}</textarea>
+                            <div class="form-text">Obrigatório. Detalhe as necessidades educacionais específicas do aluno.</div>
+                        </div>
+                    </div>
+
+                    <!-- Seção 6: Avaliação Geral -->
                     <h5 class="section-title">Avaliação Geral</h5>
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">

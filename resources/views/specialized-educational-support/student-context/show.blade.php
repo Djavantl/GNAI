@@ -64,6 +64,18 @@
         .print-only {
             display: none;
         }
+        .deficiency-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        .deficiency-badge.mild { background-color: #6c757d; }
+        .deficiency-badge.moderate { background-color: #ffc107; color: #000; }
+        .deficiency-badge.severe { background-color: #dc3545; }
         @media print {
             .no-print {
                 display: none !important;
@@ -91,6 +103,22 @@
                 <div>
                     <h4 class="mb-0"><i class="bi bi-person-badge me-2"></i>Contexto Educacional</h4>
                     <p class="mb-0 mt-2 opacity-75">{{ $student->name }} • Matrícula: {{ $student->registration ?? 'N/A' }}</p>
+                    
+                    @if(isset($deficiencies) && $deficiencies->count() > 0)
+                        <div class="mt-2">
+                            <small class="opacity-75">Deficiências identificadas:</small>
+                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                @foreach($deficiencies as $deficiency)
+                                    <span class="deficiency-badge {{ $deficiency->severity ?? 'mild' }}">
+                                        {{ $deficiency->deficiency->name }}
+                                        @if($deficiency->severity)
+                                            <small>{{ $deficiency->severity }}</small>
+                                        @endif
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <div class="d-flex gap-2">
                     <button onclick="window.print()" class="btn btn-light btn-sm no-print">
@@ -438,6 +466,37 @@
                 </div>
             </div>
 
+            <!-- Histórico e Necessidades Educacionais Específicas -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0 text-dark"><i class="bi bi-journal-text me-2"></i>Histórico e Necessidades Educacionais Específicas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="info-label">Histórico</div>
+                            <div class="info-value bg-light p-4 rounded" style="white-space: pre-line;">
+                                @if($context->history)
+                                    {{ $context->history }}
+                                @else
+                                    <span class="text-muted">Não informado</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="info-label">Necessidades Educacionais Específicas</div>
+                            <div class="info-value bg-light p-4 rounded" style="white-space: pre-line;">
+                                @if($context->specific_educational_needs)
+                                    {{ $context->specific_educational_needs }}
+                                @else
+                                    <span class="text-muted">Não informado</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Avaliação Geral -->
             <div class="card shadow border-0 mb-4">
                 <div class="card-header bg-light">
@@ -447,7 +506,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="info-label">Pontos Fortes / Potencialidades</div>
-                            <div class="info-value bg-success bg-opacity-10 p-3 rounded border-start border-success border-3">
+                            <div class="info-value bg-success bg-opacity-10 p-3 rounded border-start border-success border-3" style="white-space: pre-line;">
                                 @if($context->strengths)
                                     {{ $context->strengths }}
                                 @else
@@ -457,7 +516,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="info-label">Dificuldades</div>
-                            <div class="info-value bg-warning bg-opacity-10 p-3 rounded border-start border-warning border-3">
+                            <div class="info-value bg-warning bg-opacity-10 p-3 rounded border-start border-warning border-3" style="white-space: pre-line;">
                                 @if($context->difficulties)
                                     {{ $context->difficulties }}
                                 @else
@@ -470,7 +529,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="info-label">Recomendações</div>
-                            <div class="info-value bg-info bg-opacity-10 p-3 rounded border-start border-info border-3">
+                            <div class="info-value bg-info bg-opacity-10 p-3 rounded border-start border-info border-3" style="white-space: pre-line;">
                                 @if($context->recommendations)
                                     {{ $context->recommendations }}
                                 @else
@@ -480,7 +539,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="info-label">Observação Geral</div>
-                            <div class="info-value bg-light p-3 rounded border">
+                            <div class="info-value bg-light p-3 rounded border" style="white-space: pre-line;">
                                 @if($context->general_observation)
                                     {{ $context->general_observation }}
                                 @else

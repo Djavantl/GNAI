@@ -22,10 +22,17 @@ class StudentContextRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+            // Dados gerais da avaliação
             'evaluation_type' => ['required','in:initial,periodic_review,pei_review,specific_demand'],
             'is_current' => ['sometimes', 'boolean'],
             'evaluated_by_professional_id' => ['nullable','exists:professionals,id'],
+
+            // Histórico educacional
+            'history' => ['required', 'string'],
+
+            // Necessidades educacionais específicas
+            'specific_educational_needs' => ['required', 'string'],
+
 
             // Aprendizagem e cognição
             'learning_level' => ['nullable', 'in:very_low,low,adequate,good,excellent'],
