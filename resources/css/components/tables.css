@@ -43,6 +43,10 @@
     color: #303972 !important;
 }
 
+/* Aplica a borda roxa apenas na primeira célula (coluna) de cada linha do corpo */
+.table tbody tr td:first-child {
+    border-left: 4px solid #4D44B5 !important;
+}
 /* .table th:last-child,
 .table td:last-child {
     text-align: center;

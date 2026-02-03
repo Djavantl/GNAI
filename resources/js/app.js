@@ -1,30 +1,31 @@
 import './bootstrap';
+import './pages/inclusive-radar/assistive-technologies.js';
 
 // App principal - Sidebar e Navbar
 class App {
     constructor() {
         this.init();
     }
-    
+
     init() {
         this.initSidebar();
         this.initActiveMenu();
         this.initMobileBehavior();
         this.initDropdowns();
     }
-    
+
     // Inicializar sidebar
     initSidebar() {
         this.sidebar = document.querySelector('.sidebar');
         this.navbarToggler = document.querySelector('.navbar-toggler');
-        
+
         if (this.navbarToggler) {
             this.navbarToggler.addEventListener('click', () => this.toggleSidebar());
         }
-        
+
         // Fechar sidebar ao clicar fora (em mobile)
         document.addEventListener('click', (e) => {
-            if (window.innerWidth < 769 && 
+            if (window.innerWidth < 769 &&
                 this.sidebar.classList.contains('show') &&
                 !this.sidebar.contains(e.target) &&
                 !this.navbarToggler.contains(e.target)) {
@@ -32,11 +33,11 @@ class App {
             }
         });
     }
-    
+
     // Alternar sidebar (mobile)
     toggleSidebar() {
         this.sidebar.classList.toggle('show');
-        
+
         // Adicionar overlay em mobile
         if (window.innerWidth < 769) {
             if (this.sidebar.classList.contains('show')) {
@@ -46,7 +47,7 @@ class App {
             }
         }
     }
-    
+
     // Adicionar overlay em mobile
     addOverlay() {
         if (!document.querySelector('.sidebar-overlay')) {
@@ -67,7 +68,7 @@ class App {
             document.body.style.overflow = 'hidden';
         }
     }
-    
+
     // Remover overlay
     removeOverlay() {
         const overlay = document.querySelector('.sidebar-overlay');
@@ -76,17 +77,17 @@ class App {
             document.body.style.overflow = '';
         }
     }
-    
+
     // Marcar item ativo no menu
     initActiveMenu() {
         const currentPath = window.location.pathname;
         const menuItems = document.querySelectorAll('.sidebar-menu a');
-        
+
         menuItems.forEach(item => {
             const href = item.getAttribute('href');
             if (href && currentPath.includes(href.replace('/', ''))) {
                 item.classList.add('active');
-                
+
                 // Expandir grupo se existir
                 const parentGroup = item.closest('.menu-group');
                 if (parentGroup) {
@@ -95,7 +96,7 @@ class App {
             }
         });
     }
-    
+
     // Comportamento mobile
     initMobileBehavior() {
         // Fechar sidebar ao clicar em um link em mobile
@@ -108,17 +109,17 @@ class App {
                 });
             });
         }
-        
+
         // Ajustar altura do conteúdo
         this.adjustContentHeight();
         window.addEventListener('resize', () => this.adjustContentHeight());
     }
-    
+
     // Ajustar altura do conteúdo
     adjustContentHeight() {
         const navbarHeight = document.querySelector('.navbar-custom').offsetHeight;
         const mainContent = document.querySelector('.main-content');
-        
+
         if (mainContent) {
             if (window.innerWidth >= 769) {
                 mainContent.style.marginTop = navbarHeight + 'px';
@@ -127,7 +128,7 @@ class App {
             }
         }
     }
-    
+
     // Inicializar dropdowns
     initDropdowns() {
         const dropdowns = document.querySelectorAll('.dropdown-toggle');
@@ -140,7 +141,7 @@ class App {
                 }
             });
         });
-        
+
         // Fechar dropdowns ao clicar fora
         document.addEventListener('click', (e) => {
             if (!e.target.matches('.dropdown-toggle')) {
@@ -152,7 +153,7 @@ class App {
             }
         });
     }
-    
+
     // Método para mostrar notificações
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
@@ -161,11 +162,11 @@ class App {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
-        
+
         const container = document.querySelector('.main-content');
         if (container) {
             container.insertBefore(notification, container.firstChild);
-            
+
             // Auto-remover após 5 segundos
             setTimeout(() => {
                 if (notification.parentNode) {
@@ -179,19 +180,19 @@ class App {
 // Inicializar app quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
-    
+
     // Adicionar ano atual no footer se existir
     const yearElement = document.querySelector('[data-year]');
     if (yearElement) {
         yearElement.textContent = new Date().getFullYear();
     }
-    
+
     // Tooltips do Bootstrap
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-    
+
     // Popovers do Bootstrap
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.map(function (popoverTriggerEl) {

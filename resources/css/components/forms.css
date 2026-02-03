@@ -1,0 +1,136 @@
+.form-section-divider {
+    background-color: #4D44B5;
+    color: #ffffff;
+    padding: 12px 0;
+    /* Removido as margens negativas */
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Garante que a primeira seção ignore o arredondamento do card pai se necessário */
+.col-12:first-child .form-section-divider {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+/* Como removemos o padding do card, precisamos garantir que os campos
+   não fiquem colados na parede lateral do card */
+form .col-md-6,
+form .col-md-12,
+form .col-12:not(.mb-4) { /* Aplica padding apenas onde não é seção */
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* Estilo para o Checkbox */
+.custom-checkbox {
+    flex-shrink: 0; /* Impede que o box "esmague" se o texto for longo */
+    margin: 0 !important; /* Remove margens do Bootstrap que empurram o box para cima */
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    border: 2px solid #4D44B5 !important;
+}
+
+.custom-checkbox:checked {
+    background-color: #4D44B5 !important; /* Fundo Roxo quando marcado */
+    border-color: #4D44B5 !important;
+}
+
+.custom-checkbox:focus {
+    box-shadow: 0 0 0 0.25rem rgba(77, 68, 181, 0.2) !important;
+    border-color: #4D44B5 !important;
+}
+
+/* Ajuste de alinhamento para o texto do checkbox */
+.custom-checkbox-wrapper {
+    display: flex;
+    align-items: center; /* Centraliza verticalmente o box com o texto */
+    gap: 12px;
+    padding-left: 0;
+    margin-bottom: 0.5rem;
+}
+
+.custom-checkbox-wrapper .form-check-label {
+    cursor: pointer;
+    line-height: 1.2; /* Ajusta a altura da linha para bater com o centro do box */
+    padding-top: 2px; /* Ajuste fino manual para algumas fontes */
+}
+
+.custom-checkbox-wrapper .form-check-input {
+    margin-left: 0; /* Alinha o box à esquerda */
+    float: none;
+}
+
+.inspection-photo-link img:hover {
+    transform: scale(1.15);
+    border-color: #4D44B5 !important;
+    box-shadow: 0 4px 10px rgba(77, 68, 181, 0.3);
+    z-index: 10;
+    position: relative;
+}
+
+/* Garante que o scrollbar não fique feio no card de histórico */
+.history-timeline {
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Faz a linha divisória do histórico ter uma cor suave e margem correta */
+.history-timeline .border-end {
+    border-color: #e9ecef !important;
+}
+
+/* Garante que o texto em itálico do parecer tenha um estilo elegante */
+.history-timeline p.italic {
+    font-style: italic;
+    color: #6c757d;
+    border-left: 2px solid #4D44B5;
+    padding-left: 10px;
+    margin-top: 5px;
+}
+
+.history-timeline label {
+    margin-bottom: 8px !important;
+    display: block;
+    height: 12px; /* Força uma altura fixa para o título do campo */
+}
+
+/* Ajuste fino para a galeria de fotos não colar no título */
+.inspection-photo-link {
+    display: inline-block;
+    margin-top: 2px;
+}
+
+.history-description-text {
+    font-size: 0.85rem;
+    color: #4a5568;
+    line-height: 1.5;
+    background-color: #f8fafc;
+    padding: 8px 12px;
+    border-left: 3px solid #4D44B5;
+    margin-bottom: 0;
+}
+
+.bg-purple {
+    background-color: #4D44B5;
+}
+
+/* Classe de animação */
+.section-animate-in {
+    display: block !important;
+    animation: slideDownFade 0.5s ease-out forwards;
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+

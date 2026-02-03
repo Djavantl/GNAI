@@ -1,5 +1,6 @@
 @import "./components/buttons.css";
 @import "./components/tables.css";
+@import "./components/forms.css";
 
 :root {
     --primary-color: #4D44B5;
@@ -10,9 +11,9 @@
     --sidebar-hover: rgba(255, 255, 255, 0.1);
     --font-family-base: 'Inter', sans-serif;
     --font-family-heading: 'Poppins', bold;
-    --text-purple-light: #8a7fd4;  
-    --text-purple-medium: #6c63ff; 
-    --text-purple-dark: #4D44B5;   
+    --text-purple-light: #8a7fd4;
+    --text-purple-medium: #6c63ff;
+    --text-purple-dark: #4D44B5;
 }
 
 body {
@@ -187,16 +188,16 @@ body {
         transform: translateX(-100%);
         width: 280px;
     }
-    
+
     .sidebar.show {
         transform: translateX(0);
     }
-    
+
     .main-content {
         margin-left: 0;
         padding-top: calc(var(--navbar-height) + 0.5rem);
     }
-    
+
     .navbar-toggler {
         display: block !important;
     }
@@ -214,13 +215,13 @@ body {
 }
 
 @keyframes fadeIn {
-    from { 
-        opacity: 0; 
-        transform: translateY(10px); 
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -306,12 +307,12 @@ body {
     .sidebar-header {
         padding: 0.5rem;
     }
-    
+
     .sidebar-menu a {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
     }
-    
+
     .sidebar-footer {
         padding: 0.5rem;
     }

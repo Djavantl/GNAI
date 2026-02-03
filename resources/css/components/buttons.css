@@ -44,3 +44,9 @@
 .btn-action.submit {
     font-weight: 600;
 }
+
+.btn-action.secondary {
+    background-color: #c8c5c5;
+    color: #3c3b3b;
+    font-weight: 600
+}
