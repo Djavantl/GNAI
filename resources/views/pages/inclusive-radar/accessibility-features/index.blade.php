@@ -1,81 +1,86 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Recursos de Acessibilidade</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Recursos de Acessibilidade</h1>
+@extends('layouts.app')
 
-    @if(session('success'))
-        <div class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
-            {{ session('success') }}
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Recursos de Acessibilidade</h2>
+            <p class="text-muted">Gestão de serviços, adaptações e recursos promotores de acessibilidade.</p>
         </div>
-    @endif
-
-    <div class="mb-6">
-        <a href="{{ route('inclusive-radar.accessibility-features.create') }}"
-           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
-            + Novo Recurso
-        </a>
+        <x-buttons.link-button
+            :href="route('inclusive-radar.accessibility-features.create')"
+            variant="new"
+        >
+            Novo Recurso
+        </x-buttons.link-button>
     </div>
 
-    <table class="w-full border border-gray-200 rounded">
-        <thead class="bg-gray-50 border-b border-gray-200">
-        <tr>
-            <th class="text-left p-3">Nome</th>
-            <th class="text-left p-3">Descrição</th>
-            <th class="text-center p-3">Ativo</th>
-            <th class="text-center p-3">Ações</th>
-        </tr>
-        </thead>
-        <tbody>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <x-table.table :headers="['Nome', 'Descrição', 'Status', 'Ativo', 'Ações']">
         @forelse($features as $feature)
-            <tr class="border-b border-gray-200 hover:bg-gray-50">
-                <td class="p-3">{{ $feature->name }}</td>
-                <td class="p-3">{{ $feature->description }}</td>
-                <td class="p-3 text-center">
+            <tr>
+                <x-table.td>
+                    <strong>{{ $feature->name }}</strong>
+                </x-table.td>
+
+                <x-table.td>
+                    <span class="text-muted small">
+                        {{ $feature->description ?: 'Sem descrição informada.' }}
+                    </span>
+                </x-table.td>
+
+                <x-table.td class="text-center">
+                    <span class="text-muted font-weight-bold text-uppercase" style="font-size: 0.8rem;">
+                        {{ $feature->is_active ? 'Disponível' : 'Indisponível' }}
+                    </span>
+                </x-table.td>
+
+                <x-table.td class="text-center">
                     @if($feature->is_active)
-                        <span class="text-green-600 font-bold">Sim</span>
+                        <span class="text-success font-weight-bold">SIM</span>
                     @else
-                        <span class="text-red-600 font-bold">Não</span>
+                        <span class="text-danger font-weight-bold">NÃO</span>
                     @endif
-                </td>
-                <td class="p-3 text-center flex justify-center gap-2">
-                    <a href="{{ route('inclusive-radar.accessibility-features.edit', $feature) }}"
-                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">
-                        Editar
-                    </a>
+                </x-table.td>
 
-                    <form action="{{ route('inclusive-radar.accessibility-features.toggle', $feature) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                                class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm">
-                            {{ $feature->is_active ? 'Desativar' : 'Ativar' }}
-                        </button>
-                    </form>
+                <x-table.td>
+                    <x-table.actions>
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.accessibility-features.edit', $feature)"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
 
-                    <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}" method="POST"
-                          onsubmit="return confirm('Deseja realmente excluir este recurso?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
-                            Excluir
-                        </button>
-                    </form>
-                </td>
+                        <form action="{{ route('inclusive-radar.accessibility-features.toggle', $feature) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <x-buttons.submit-button
+                                :variant="$feature->is_active ? 'secondary' : 'success'"
+                            >
+                                {{ $feature->is_active ? 'Desativar' : 'Ativar' }}
+                            </x-buttons.submit-button>
+                        </form>
+
+                        <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja realmente remover este recurso?')"
+                            >
+                                Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    </x-table.actions>
+                </x-table.td>
             </tr>
         @empty
             <tr>
-                <td colspan="4" class="p-4 text-center text-gray-500">Nenhum recurso cadastrado.</td>
+                <td colspan="5" class="text-center text-muted py-4">Nenhum recurso de acessibilidade cadastrado.</td>
             </tr>
         @endforelse
-        </tbody>
-    </table>
-</div>
-</body>
-</html>
+    </x-table.table>
+@endsection

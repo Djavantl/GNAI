@@ -1,120 +1,117 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Status</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+@extends('layouts.app')
 
-<body class="bg-gray-100 p-8">
-<div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Editar Status do Recurso</h2>
+            <p class="text-muted">Modifique as regras de negócio e visibilidade para o status: <strong>{{ $resourceStatus->name }}</strong></p>
+        </div>
+        <div class="align-self-center text-end">
+            <span class="d-block text-muted small uppercase fw-bold">Código do Sistema</span>
+            <span class="badge bg-purple-dark fs-6" style="background-color: #4c1d95;">{{ $resourceStatus->code }}</span>
+        </div>
+    </div>
 
-    <h1 class="text-2xl font-bold mb-6">
-        Editar Status
-        <span class="text-sm text-gray-500">
-            ({{ $resourceStatus->code }})
-        </span>
-    </h1>
+    @if($errors->any())
+        <div class="alert alert-danger border-0 shadow-sm mb-4">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <form
-        action="{{ route('inclusive-radar.resource-statuses.update', $resourceStatus) }}"
-        method="POST"
-    >
-        @csrf
-        @method('PUT')
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.resource-statuses.update', $resourceStatus) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        <div class="grid grid-cols-1 gap-4">
+            {{-- SEÇÃO 1: Identificação --}}
+            <x-forms.section title="Identificação do Status" />
 
-            {{-- Nome --}}
-            <div>
-                <label class="block font-medium">Nome exibido</label>
-                <input type="text"
-                       name="name"
-                       value="{{ old('name', $resourceStatus->name) }}"
-                       class="w-full border p-2 rounded">
-                @error('name')
-                <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+            <div class="col-md-12">
+                <x-forms.input
+                    name="name"
+                    label="Nome exibido *"
+                    required
+                    :value="old('name', $resourceStatus->name)"
+                    placeholder="Ex: Disponível, Em Manutenção, Extraviado..."
+                />
             </div>
 
-            {{-- Descrição --}}
-            <div>
-                <label class="block font-medium">Descrição</label>
-                <textarea
+            <div class="col-md-12">
+                <x-forms.textarea
                     name="description"
-                    class="w-full border p-2 rounded"
-                >{{ old('description', $resourceStatus->description) }}</textarea>
+                    label="Descrição / Finalidade"
+                    rows="3"
+                    :value="old('description', $resourceStatus->description)"
+                    placeholder="Explique quando este status deve ser aplicado..."
+                />
             </div>
 
-            {{-- Flags de bloqueio --}}
-            <div class="grid grid-cols-2 gap-4">
-                <label class="flex items-center gap-2">
-                    <input type="checkbox"
-                           name="blocks_loan"
-                           value="1"
-                        @checked(old('blocks_loan', $resourceStatus->blocks_loan))>
-                    Bloqueia empréstimo
-                </label>
+            {{-- SEÇÃO 2: Regras de Negócio (Bloqueios) --}}
+            <x-forms.section title="Regras de Bloqueio" />
 
-                <label class="flex items-center gap-2">
-                    <input type="checkbox"
-                           name="blocks_access"
-                           value="1"
-                        @checked(old('blocks_access', $resourceStatus->blocks_access))>
-                    Bloqueia acesso
-                </label>
+            <div class="col-md-6">
+                <x-forms.checkbox
+                    name="blocks_loan"
+                    label="Bloquear Empréstimo"
+                    description="Recursos com este status não poderão ser emprestados"
+                    :checked="old('blocks_loan', $resourceStatus->blocks_loan)"
+                />
             </div>
 
-            {{-- Aplicabilidade --}}
-            <div class="grid grid-cols-2 gap-4">
-                <label class="flex items-center gap-2">
-                    <input type="checkbox"
-                           name="for_assistive_technology"
-                           value="1"
-                        @checked(old(
-                            'for_assistive_technology',
-                            $resourceStatus->for_assistive_technology
-                        ))>
-                    Tecnologia Assistiva
-                </label>
-
-                <label class="flex items-center gap-2">
-                    <input type="checkbox"
-                           name="for_educational_material"
-                           value="1"
-                        @checked(old(
-                            'for_educational_material',
-                            $resourceStatus->for_educational_material
-                        ))>
-                    Material Educacional
-                </label>
+            <div class="col-md-6">
+                <x-forms.checkbox
+                    name="blocks_access"
+                    label="Bloquear Acesso"
+                    description="Oculta o recurso de consultas gerais no sistema"
+                    :checked="old('blocks_access', $resourceStatus->blocks_access)"
+                />
             </div>
 
-            {{-- Ativo --}}
-            <div class="flex items-center gap-2">
-                <input type="checkbox"
-                       name="is_active"
-                       value="1"
-                    @checked(old('is_active', $resourceStatus->is_active))>
-                <label>Status ativo</label>
+            {{-- SEÇÃO 3: Aplicabilidade e Visibilidade --}}
+            <x-forms.section title="Aplicabilidade e Ativação" />
+
+            <div class="col-md-12 mb-3">
+                <label class="form-label fw-bold text-purple-dark">Disponível para os módulos:</label>
+                <div class="d-flex gap-4 p-3 border rounded bg-light">
+                    <x-forms.checkbox
+                        name="for_assistive_technology"
+                        label="Tecnologia Assistiva"
+                        :checked="old('for_assistive_technology', $resourceStatus->for_assistive_technology)"
+                    />
+                    <x-forms.checkbox
+                        name="for_educational_material"
+                        label="Material Pedagógico"
+                        :checked="old('for_educational_material', $resourceStatus->for_educational_material)"
+                    />
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="p-3 border rounded border-info bg-light">
+                    <x-forms.checkbox
+                        name="is_active"
+                        label="Status Ativo no Sistema"
+                        description="Se desativado, este status não aparecerá em novos cadastros ou edições"
+                        :checked="old('is_active', $resourceStatus->is_active)"
+                    />
+                </div>
             </div>
 
             {{-- Ações --}}
-            <div class="flex gap-4 mt-6">
-                <button type="submit"
-                        class="bg-blue-600 text-white px-6 py-2 rounded">
-                    Salvar alterações
-                </button>
-
-                <a href="{{ route('inclusive-radar.resource-statuses.index') }}"
-                   class="bg-gray-500 text-white px-6 py-2 rounded">
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
+                <x-buttons.link-button href="{{ route('inclusive-radar.resource-statuses.index') }}" variant="secondary">
                     Cancelar
-                </a>
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Atualizar Status
+                </x-buttons.submit-button>
             </div>
 
-        </div>
-    </form>
-
-</div>
-</body>
-</html>
+        </x-forms.form-card>
+    </div>
+@endsection

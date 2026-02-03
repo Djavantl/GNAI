@@ -1,68 +1,76 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Atributos - GNAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-2 text-gray-800">Gerenciar Atributos do Tipo</h1>
-    <p class="text-gray-600 mb-6 italic">Configurando campos para: <strong>{{ $type->name }}</strong></p>
+@extends('layouts.app')
 
-    <form action="{{ route('inclusive-radar.type-attribute-assignments.update', $type->id) }}" method="POST">
-        @csrf
-        @method('PUT')
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Gerenciar Atributos do Tipo</h2>
+            <p class="text-muted">Configurando campos para: <strong>{{ $type->name }}</strong></p>
+        </div>
+        <div class="text-end">
+            <span class="d-block text-muted small uppercase fw-bold">Contexto de Uso</span>
+            <span class="badge bg-purple fs-6">
+                {{ $type->for_assistive_technology ? 'Tecnologia Assistiva' : 'Material Pedagógico' }}
+            </span>
+        </div>
+    </div>
 
-        <div class="grid grid-cols-1 gap-6">
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.type-attribute-assignments.update', $type->id) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-            {{-- O tipo fica como um campo escondido ou um select desabilitado para contexto --}}
+            {{-- Campo oculto para manter a referência do tipo --}}
             <input type="hidden" name="type_id" value="{{ $type->id }}">
 
-            <div>
-                <label class="block font-bold text-gray-700 mb-3">Marque os atributos que este recurso deve possuir:</label>
+            {{-- SEÇÃO 1: Atribuição de Atributos --}}
+            <x-forms.section title="Campos do Formulário" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 bg-gray-50 p-5 rounded-lg border border-gray-200">
-                    @foreach($attributes as $attribute)
-                        <label class="flex items-start gap-3 p-3 bg-white border rounded hover:border-blue-400 hover:shadow-sm transition cursor-pointer group">
-                            <div class="flex items-center h-5">
-                                <input type="checkbox"
-                                       name="attribute_ids[]"
-                                       value="{{ $attribute->id }}"
-                                       {{ in_array($attribute->id, $assignedAttributeIds) ? 'checked' : '' }}
-                                       class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
-                            </div>
+            <div class="col-md-12 mb-4">
+                <label class="form-label fw-bold text-purple-dark px-2">
+                    Marque os atributos técnicos que devem estar disponíveis para este tipo de recurso:
+                </label>
 
-                            <div class="flex flex-col leading-tight">
-                                <span class="text-sm font-bold text-gray-700 group-hover:text-blue-700">{{ $attribute->label }}</span>
-                                <span class="text-[10px] uppercase font-mono text-gray-400 mt-1">{{ $attribute->field_type }}</span>
-                            </div>
-                        </label>
-                    @endforeach
+                <div class="d-flex flex-wrap gap-2 p-4 border rounded bg-light mx-2">
+                    @forelse($attributes as $attribute)
+                        <div class="bg-white border rounded p-3 shadow-sm hover-shadow-transition d-flex align-items-center" style="min-width: 200px; flex: 1;">
+                            <x-forms.checkbox
+                                name="attribute_ids[]"
+                                id="attr_{{ $attribute->id }}"
+                                :value="$attribute->id"
+                                :label="$attribute->label"
+                                class="mb-0 fw-bold text-dark"
+                                :checked="in_array($attribute->id, $assignedAttributeIds)"
+                            />
+                        </div>
+                    @empty
+                        <div class="col-12 text-center py-4">
+                            <p class="text-muted italic">Nenhum atributo disponível para configuração.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
 
-            <div class="bg-blue-50 p-4 rounded border border-blue-100 flex items-start gap-3">
-                <i class="fas fa-info-circle text-blue-600 mt-1"></i>
-                <p class="text-sm text-blue-800 italic">
-                    Ao desmarcar um atributo, ele deixará de aparecer no formulário de cadastro de recursos deste tipo.
-                </p>
+            {{-- SEÇÃO 2: Aviso de Impacto --}}
+            <div class="col-12 px-4 mb-4">
+                <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-0">
+                    <i class="fas fa-exclamation-triangle fa-lg me-3 opacity-75 text-warning"></i>
+                    <div class="small">
+                        <strong>Atenção:</strong> Ao desmarcar um atributo, ele deixará de aparecer imediatamente nos formulários de cadastro e edição de todos os recursos vinculados a este tipo (<strong>{{ $type->name }}</strong>).
+                    </div>
+                </div>
             </div>
 
-            <hr class="my-4">
-
-            <div class="flex gap-4">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded shadow-lg transition font-bold text-lg">
-                    Salvar Alterações
-                </button>
-                <a href="{{ route('inclusive-radar.type-attribute-assignments.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded transition flex items-center">
+            {{-- Botões de Ação --}}
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('inclusive-radar.type-attribute-assignments.index') }}" variant="secondary">
                     Cancelar
-                </a>
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Salvar Alterações
+                </x-buttons.submit-button>
             </div>
-        </div>
-    </form>
-</div>
-</body>
-</html>
+
+        </x-forms.form-card>
+    </div>
+@endsection

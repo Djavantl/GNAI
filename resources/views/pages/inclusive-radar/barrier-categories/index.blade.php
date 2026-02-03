@@ -1,102 +1,96 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categorias de Barreiras - Radar Inclusivo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 p-8">
+@extends('layouts.master')
 
-<div class="max-w-6xl mx-auto">
-    {{-- Cabeçalho --}}
-    <div class="flex justify-between items-center mb-6">
+@section('title', 'Categorias de Barreiras')
+
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Categorias de Barreiras</h1>
-            <p class="text-gray-600">Classificação para o mapeamento de acessibilidade.</p>
+            <h2 class="text-title">Categorias de Barreiras</h2>
+            <p class="text-muted">Classificação para o mapeamento de acessibilidade e identificação de obstáculos.</p>
         </div>
-
-        <a href="{{ route('inclusive-radar.barrier-categories.create') }}"
-           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow transition font-bold flex items-center gap-2">
-            <i class="fas fa-plus-circle"></i>
+        <x-buttons.link-button
+            :href="route('inclusive-radar.barrier-categories.create')"
+            variant="new"
+        >
             Nova Categoria
-        </a>
+        </x-buttons.link-button>
     </div>
 
-    {{-- Feedback --}}
     @if(session('success'))
-        <div class="bg-green-100 border border-green-200 text-green-800 p-4 rounded mb-6 flex items-center gap-3 shadow-sm">
-            <i class="fas fa-check-circle text-green-600"></i>
-            {{ session('success') }}
+        <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger border-0 shadow-sm">
+            @foreach($errors->all() as $error)
+                <p class="mb-0">{{ $error }}</p>
+            @endforeach
         </div>
     @endif
 
-    <div class="bg-white p-6 rounded shadow border-t-4 border-blue-600">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                <tr class="border-b-2 border-gray-100">
-                    <th class="py-3 px-4 font-bold text-gray-700">Nome da Categoria</th>
-                    <th class="py-3 px-4 font-bold text-gray-700">Descrição</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Barreiras Vinculadas</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Status</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-right">Ações</th>
-                </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                @forelse($categories as $category)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="py-4 px-4 align-middle">
-                            <span class="font-bold text-gray-900">{{ $category->name }}</span>
-                        </td>
-                        <td class="py-4 px-4 text-sm text-gray-600 italic">
-                            {{ Str::limit($category->description, 60) ?: 'Sem descrição' }}
-                        </td>
-                        <td class="py-4 px-4 text-center align-middle font-semibold text-blue-600">
-                            {{ $category->barriers_count ?? $category->barriers->count() }}
-                        </td>
-                        <td class="py-4 px-4 text-center align-middle">
-                            @if($category->is_active)
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-200">Ativo</span>
-                            @else
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold border border-red-200">Inativo</span>
-                            @endif
-                        </td>
-                        <td class="py-4 px-4 text-right align-middle">
-                            <div class="flex justify-end gap-2">
-                                <a href="{{ route('inclusive-radar.barrier-categories.edit', $category->id) }}"
-                                   class="text-blue-600 hover:text-blue-800 p-2" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+    <x-table.table :headers="['Nome da Categoria', 'Descrição', 'Vínculos', 'Ativo', 'Ações']">
+        @forelse($categories as $category)
+            <tr>
+                <x-table.td>
+                    <strong class="text-purple-dark">{{ $category->name }}</strong>
+                </x-table.td>
 
-                                <form action="{{ route('inclusive-radar.barrier-categories.toggle-active', $category->id) }}" method="POST">
-                                    @csrf @method('PATCH')
-                                    <button type="submit" class="{{ $category->is_active ? 'text-amber-600' : 'text-green-600' }} p-2"
-                                            title="{{ $category->is_active ? 'Desativar' : 'Ativar' }}">
-                                        <i class="fas {{ $category->is_active ? 'fa-ban' : 'fa-check' }}"></i>
-                                    </button>
-                                </form>
+                <x-table.td>
+                    <span class="text-muted italic" style="font-size: 0.9rem;">
+                        {{ Str::limit($category->description, 80) ?: 'Sem descrição informada' }}
+                    </span>
+                </x-table.td>
 
-                                <form action="{{ route('inclusive-radar.barrier-categories.destroy', $category->id) }}" method="POST"
-                                      onsubmit="return confirm('Tem certeza que deseja excluir? Esta ação não pode ser desfeita se houver barreiras vinculadas.');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 p-2">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="py-8 text-center text-gray-500 italic">Nenhuma categoria cadastrada.</td>
-                    </tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-</body>
-</html>
+                <x-table.td class="text-center">
+                    <span class="badge bg-soft-blue text bg-purple px-3">
+                        {{ $category->barriers_count ?? $category->barriers->count() }}
+                    </span>
+                </x-table.td>
+
+                <x-table.td class="text-center">
+                    @if($category->is_active)
+                        <span class="text-success font-weight-bold">SIM</span>
+                    @else
+                        <span class="text-danger font-weight-bold">NÃO</span>
+                    @endif
+                </x-table.td>
+
+                <x-table.td>
+                    <x-table.actions>
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.barrier-categories.edit', $category)"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
+
+                        <form action="{{ route('inclusive-radar.barrier-categories.toggle-active', $category) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <x-buttons.submit-button
+                                :variant="$category->is_active ? 'secondary' : 'success'"
+                            >
+                                {{ $category->is_active ? 'Desativar' : 'Ativar' }}
+                            </x-buttons.submit-button>
+                        </form>
+
+                        <form action="{{ route('inclusive-radar.barrier-categories.destroy', $category) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Tem certeza que deseja excluir? Esta ação não pode ser desfeita se houver barreiras vinculadas.')"
+                            >
+                                Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    </x-table.actions>
+                </x-table.td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">Nenhuma categoria cadastrada.</td>
+            </tr>
+        @endforelse
+    </x-table.table>
+@endsection

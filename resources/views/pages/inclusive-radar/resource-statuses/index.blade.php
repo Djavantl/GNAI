@@ -1,104 +1,87 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Status do Sistema</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+@extends('layouts.master')
 
-<body class="bg-gray-100 p-8">
-<div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
+@section('title', 'Status do Sistema')
 
-    <h1 class="text-2xl font-bold mb-6">
-        Status do Sistema
-    </h1>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Status do Sistema</h2>
+            <p class="text-muted">Gerencie como os recursos são classificados e quais regras de empréstimo se aplicam a cada estado.</p>
+        </div>
+    </div>
 
     @if(session('success'))
-        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
     @endif
 
-    <table class="w-full border border-gray-300">
-        <thead class="bg-gray-200">
-        <tr>
-            <th class="border p-2 text-left">Código</th>
-            <th class="border p-2 text-left">Nome</th>
-            <th class="border p-2 text-center">Tecnologia Assistiva</th>
-            <th class="border p-2 text-center">Material Educacional</th>
-            <th class="border p-2 text-center">Bloq. Empréstimo</th>
-            <th class="border p-2 text-center">Ativo</th>
-            <th class="border p-2 text-center">Ações</th>
-        </tr>
-        </thead>
-
-        <tbody>
+    <x-table.table :headers="['Nome do Status', 'Aplicabilidade', 'Regra de Empréstimo', 'Ativo', 'Ações']">
         @foreach($statuses as $status)
-            <tr class="hover:bg-gray-50">
+            <tr>
+                <x-table.td>
+                    <span class="fw-bold text-purple-dark fs-6">{{ $status->name }}</span>
+                    @if($status->description)
+                        <br><small class="text-muted italic">{{ Str::limit($status->description, 50) }}</small>
+                    @endif
+                </x-table.td>
 
-                <td class="border p-2 font-mono text-sm text-gray-600">
-                    {{ $status->code }}
-                </td>
+                <x-table.td class="text-center">
+                    <div class="d-flex flex-column gap-1 align-items-center">
+                        @if($status->for_assistive_technology)
+                            <span class="badge bg-light text-primary border w-100" style="font-size: 0.7rem;">TECNOLOGIA</span>
+                        @endif
+                        @if($status->for_educational_material)
+                            <span class="badge bg-light text-success border w-100" style="font-size: 0.7rem;">MATERIAL</span>
+                        @endif
+                    </div>
+                </x-table.td>
 
-                <td class="border p-2">
-                    {{ $status->name }}
-                </td>
+                <x-table.td class="text-center">
+                    @if($status->blocks_loan)
+                        <span class="badge shadow-sm border"
+                              style="background-color: #fff1f2; color: #be123c; border-color: #fecdd3 !important;">
+                            <i class="fas fa-ban me-1"></i> Bloqueia Empréstimo
+                        </span>
+                    @else
+                        <span class="badge shadow-sm border"
+                              style="background-color: #f0fdf4; color: #15803d; border-color: #bbf7d0 !important;">
+                            <i class="fas fa-check-circle me-1"></i> Liberado para Uso
+                        </span>
+                    @endif
+                </x-table.td>
 
-                <td class="border p-2 text-center">
-                    {{ $status->for_assistive_technology ? '✔️' : '—' }}
-                </td>
+                <x-table.td class="text-center">
+                    @if($status->is_active)
+                        <span class="text-success font-weight-bold">SIM</span>
+                    @else
+                        <span class="text-danger font-weight-bold">NÃO</span>
+                    @endif
+                </x-table.td>
 
-                <td class="border p-2 text-center">
-                    {{ $status->for_educational_material ? '✔️' : '—' }}
-                </td>
+                <x-table.td>
+                    <x-table.actions>
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.resource-statuses.edit', $status)"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
 
-                <td class="border p-2 text-center">
-                    {{ $status->blocks_loan ? 'Sim' : 'Não' }}
-                </td>
-
-                <td class="border p-2 text-center">
-                    <span class="{{ $status->is_active ? 'text-green-600' : 'text-red-600' }}">
-                        {{ $status->is_active ? 'Ativo' : 'Inativo' }}
-                    </span>
-                </td>
-
-                <td class="border p-2 text-center space-x-2">
-
-                    {{-- Editar --}}
-                    <a href="{{ route('inclusive-radar.resource-statuses.edit', $status) }}"
-                       class="bg-yellow-500 text-white px-3 py-1 rounded">
-                        Editar
-                    </a>
-
-                    {{-- Ativar / Desativar --}}
-                    <form
-                        action="{{ route('inclusive-radar.resource-statuses.toggle-active', $status) }}"
-                        method="POST"
-                        class="inline"
-                    >
-                        @csrf
-                        @method('PATCH')
-
-                        <button
-                            class="{{ $status->is_active
-                                ? 'bg-gray-500'
-                                : 'bg-green-600'
-                            }} text-white px-3 py-1 rounded">
-                            {{ $status->is_active ? 'Desativar' : 'Ativar' }}
-                        </button>
-                    </form>
-
-                </td>
+                        <form action="{{ route('inclusive-radar.resource-statuses.toggle-active', $status) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <x-buttons.submit-button
+                                :variant="$status->is_active ? 'secondary' : 'success'"
+                            >
+                                {{ $status->is_active ? 'Desativar' : 'Ativar' }}
+                            </x-buttons.submit-button>
+                        </form>
+                    </x-table.actions>
+                </x-table.td>
             </tr>
         @endforeach
-        </tbody>
-    </table>
+    </x-table.table>
 
-    <p class="text-sm text-gray-500 mt-4">
-        ⚠️ Os status do sistema são definidos internamente.
-        Você pode apenas editar nomes, descrições e ativação.
-    </p>
-
-</div>
-</body>
-</html>
+    <style>
+        .text-purple-dark { color: #4c1d95; }
+    </style>
+@endsection

@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Tipo de Recurso</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6 border-b pb-4 text-gray-800">Cadastrar Tipo de Recurso</h1>
+@extends('layouts.app')
+
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Cadastrar Tipo de Recurso</h2>
+            <p class="text-muted">Defina novas categorias para organizar seus equipamentos e materiais didáticos.</p>
+        </div>
+    </div>
 
     @if($errors->any())
-        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-            <ul class="list-disc ml-5 text-sm">
+        <div class="alert alert-danger border-0 shadow-sm mb-4">
+            <ul class="mb-0">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -20,69 +18,81 @@
         </div>
     @endif
 
-    <form action="{{ route('inclusive-radar.resource-types.store') }}" method="POST">
-        @csrf
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.resource-types.store') }}" method="POST">
+            @csrf
 
-        <div class="grid grid-cols-1 gap-6">
-            {{-- Nome --}}
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">Nome do Tipo</label>
-                <input type="text" name="name" value="{{ old('name') }}"
-                       class="w-full border p-2 rounded @error('name') border-red-500 @enderror"
-                       placeholder="Ex: Teclados, Softwares de Leitura, Próteses...">
-                @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+            <x-forms.section title="Identificação da Categoria" />
+
+            <div class="col-md-12">
+                <x-forms.input
+                    name="name"
+                    label="Nome do Tipo *"
+                    required
+                    :value="old('name')"
+                    placeholder="Ex: Teclados Adaptados, Softwares de Leitura, Próteses..."
+                />
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {{-- Aplicação --}}
-                <div class="bg-gray-50 p-4 rounded border border-gray-200">
-                    <label class="block font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Este tipo se aplica a:</label>
-                    <div class="flex flex-col gap-3">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="for_assistive_technology" value="1" {{ old('for_assistive_technology') ? 'checked' : '' }} class="w-5 h-5 text-blue-600 rounded">
-                            <span class="text-gray-700 font-medium text-sm">Tecnologias Assistivas</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="for_educational_material" value="1" {{ old('for_educational_material') ? 'checked' : '' }} class="w-5 h-5 text-blue-600 rounded">
-                            <span class="text-gray-700 font-medium text-sm">Materiais Didáticos</span>
-                        </label>
-                    </div>
-                </div>
+            <x-forms.section title="Regras e Natureza do Recurso" />
 
-                {{-- É Digital? (NOVO CAMPO) --}}
-                <div class="bg-blue-50 p-4 rounded border border-blue-200">
-                    <label class="block font-bold text-blue-800 mb-3 text-sm uppercase tracking-wide italic">Natureza do Recurso:</label>
-                    <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="is_digital" value="1" {{ old('is_digital') ? 'checked' : '' }} class="w-5 h-5 text-indigo-600 rounded border-blue-300">
-                            <div>
-                                <span class="text-blue-900 font-bold block text-sm">Este recurso é digital?</span>
-                                <span class="text-blue-700 text-xs italic leading-tight block">
-                                    (Marque para PDFs, Softwares, Links ou Vídeos. Itens físicos como cadeiras e lupas devem ficar desmarcados.)
-                                </span>
-                            </div>
-                        </label>
+            {{-- Coluna: Aplicação --}}
+            <div class="col-md-6 mb-4"> {{-- Adicionado mb-4 aqui --}}
+                <div class="p-3 border rounded bg-light h-100">
+                    <label class="form-label fw-bold text-purple-dark mb-3 text-uppercase small">Este tipo se aplica a:</label>
+                    <div class="d-flex flex-column gap-2">
+                        <x-forms.checkbox
+                            name="for_assistive_technology"
+                            label="Tecnologias Assistivas"
+                            :checked="old('for_assistive_technology')"
+                        />
+                        <x-forms.checkbox
+                            name="for_educational_material"
+                            label="Materiais Didáticos"
+                            :checked="old('for_educational_material')"
+                        />
                     </div>
                 </div>
             </div>
 
-            {{-- Status Ativo --}}
-            <div class="flex items-center gap-2 p-3 bg-green-50 rounded border border-green-100">
-                <input type="hidden" name="is_active" value="0">
-                <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', '1') == '1' ? 'checked' : '' }} class="w-4 h-4 text-green-600">
-                <label for="is_active" class="cursor-pointer font-semibold text-green-700">Tipo de Recurso Ativo</label>
+            {{-- Coluna: Natureza Digital --}}
+            <div class="col-md-6 mb-4"> {{-- Adicionado mb-4 aqui --}}
+                <div class="p-3 border rounded h-100" style="background-color: #f0f7ff; border-color: #cfe2ff !important;">
+                    <label class="form-label fw-bold text-primary mb-3 text-uppercase small italic">Natureza do Recurso:</label>
+                    <x-forms.checkbox
+                        name="is_digital"
+                        label="Este recurso é digital?"
+                        description="Marque para PDFs, Softwares ou Links."
+                        :checked="old('is_digital')"
+                    />
+                </div>
             </div>
 
-            <div class="flex gap-4 pt-4 border-t">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-10 py-3 rounded shadow-lg transition font-bold text-lg">
-                    Salvar Tipo
-                </button>
-                <a href="{{ route('inclusive-radar.resource-types.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded transition flex items-center">
+            <x-forms.section title="Status de Ativação" />
+
+            <div class="col-md-12">
+                <div class="p-3 border rounded border-success bg-light">
+                    <x-forms.checkbox
+                        name="is_active"
+                        id="is_active"
+                        label="Tipo de Recurso Ativo"
+                        description="Se marcado, esta categoria aparecerá imediatamente nos formulários de cadastro."
+                        :checked="old('is_active', true)"
+                    />
+                </div>
+            </div>
+
+            {{-- Ações --}}
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
+                <x-buttons.link-button href="{{ route('inclusive-radar.resource-types.index') }}" variant="secondary">
                     Cancelar
-                </a>
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Salvar Tipo
+                </x-buttons.submit-button>
             </div>
-        </div>
-    </form>
-</div>
-</body>
-</html>
+
+        </x-forms.form-card>
+    </div>
+@endsection

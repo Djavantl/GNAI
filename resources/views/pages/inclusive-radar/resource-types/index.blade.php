@@ -1,138 +1,115 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tipos de Recursos - GNAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 p-8">
+@extends('layouts.master')
 
-<div class="max-w-6xl mx-auto">
+@section('title', 'Tipos de Recursos')
 
-    {{-- Cabeçalho --}}
-    <div class="flex justify-between items-center mb-6">
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Tipos de Recursos</h1>
-            <p class="text-gray-600">Definição de categorias e atributos para Tecnologias e Materiais.</p>
+            <h2 class="text-title">Tipos de Recursos</h2>
+            <p class="text-muted">Definição de categorias e naturezas para Tecnologias e Materiais.</p>
         </div>
-
-        <a href="{{ route('inclusive-radar.resource-types.create') }}"
-           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow transition font-bold flex items-center gap-2">
-            <i class="fas fa-plus-circle"></i>
-            Novo Tipo
-        </a>
+        <x-buttons.link-button
+            :href="route('inclusive-radar.resource-types.create')"
+            variant="new"
+        >
+            <i class="fas fa-plus-circle me-1"></i> Novo Tipo
+        </x-buttons.link-button>
     </div>
 
-    {{-- Mensagem de Sucesso --}}
     @if(session('success'))
-        <div class="bg-green-100 border border-green-200 text-green-800 p-4 rounded mb-6 flex items-center gap-3 shadow-sm">
-            <i class="fas fa-check-circle text-green-600"></i>
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
     @endif
 
-    <div class="bg-white p-6 rounded shadow border-t-4 border-blue-600">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                <tr class="border-b-2 border-gray-100">
-                    <th class="py-3 px-4 font-bold text-gray-700">Nome do Tipo</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Natureza</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Finalidade</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Status</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-right">Ações</th>
-                </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                @forelse($resourceTypes as $type)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="py-4 px-4 align-middle">
-                            <div class="flex items-center gap-3">
-                                <div class="bg-gray-100 text-gray-600 p-2 rounded">
-                                    <i class="fas fa-tags"></i>
-                                </div>
-                                <span class="font-bold text-gray-900">{{ $type->name }}</span>
-                            </div>
-                        </td>
+    <x-table.table :headers="['Nome do Tipo', 'Natureza', 'Finalidade / Aplicação', 'Status', 'Ativo', 'Ações']">
+        @forelse($resourceTypes as $type)
+            <tr>
+                <x-table.td>
+                    <strong class="text-purple-dark fs-6">{{ $type->name }}</strong>
+                </x-table.td>
 
-                        {{-- COLUNA ATUALIZADA: Natureza do Recurso --}}
-                        <td class="py-4 px-4 text-center align-middle">
-                            @if($type->is_digital)
-                                <div class="flex items-center justify-center gap-1 text-indigo-700 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">
-                                    <i class="fas fa-cloud text-[10px]"></i>
-                                    <span class="text-[10px] font-bold uppercase tracking-tighter">Digital</span>
-                                </div>
-                            @else
-                                <div class="flex items-center justify-center gap-1 text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-100">
-                                    <i class="fas fa-box text-[10px]"></i>
-                                    <span class="text-[10px] font-bold uppercase tracking-tighter">Físico</span>
-                                </div>
-                            @endif
-                        </td>
+                <x-table.td class="text-center">
+                    @if($type->is_digital)
+                        <span class="badge shadow-sm border"
+                              style="background-color: #eef2ff; color: #4338ca; border-color: #e0e7ff !important;">
+                            <i class="fas fa-cloud me-1"></i> DIGITAL
+                        </span>
+                    @else
+                        <span class="badge shadow-sm border"
+                              style="background-color: #fffbeb; color: #b45309; border-color: #fef3c7 !important;">
+                            <i class="fas fa-box me-1"></i> FÍSICO
+                        </span>
+                    @endif
+                </x-table.td>
 
-                        <td class="py-4 px-4 text-center align-middle">
-                            <div class="flex flex-col gap-1 items-center">
-                                @if($type->for_assistive_technology)
-                                    <span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded text-[10px] font-bold border border-purple-100 uppercase">Tec. Assistiva</span>
-                                @endif
-                                @if($type->for_educational_material)
-                                    <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[10px] font-bold border border-blue-100 uppercase">Material Educativo</span>
-                                @endif
-                            </div>
-                        </td>
+                <x-table.td class="text-center">
+                    <div class="d-flex flex-column gap-1 align-items-center">
+                        @if($type->for_assistive_technology)
+                            <span class="badge bg-light text-purple-dark border w-100" style="font-size: 0.65rem;">
+                                TEC. ASSISTIVA
+                            </span>
+                        @endif
+                        @if($type->for_educational_material)
+                            <span class="badge bg-light text-primary border w-100" style="font-size: 0.65rem;">
+                                MATERIAL DIDÁTICO
+                            </span>
+                        @endif
+                    </div>
+                </x-table.td>
 
-                        <td class="py-4 px-4 text-center align-middle">
-                            @if($type->is_active)
-                                <span class="text-green-600 bg-green-50 px-2 py-1 rounded text-xs font-bold border border-green-100">ATIVO</span>
-                            @else
-                                <span class="text-red-600 bg-red-50 px-2 py-1 rounded text-xs font-bold border border-red-100">INATIVO</span>
-                            @endif
-                        </td>
+                <x-table.td class="text-center">
+                    <span class="text-muted font-weight-bold text-uppercase" style="font-size: 0.75rem;">
+                        {{ $type->is_digital ? 'Uso Ilimitado' : 'Controle Patrimonial' }}
+                    </span>
+                </x-table.td>
 
-                        <td class="py-4 px-4 text-right align-middle">
-                            <div class="flex justify-end gap-2">
-                                <a href="{{ route('inclusive-radar.resource-types.edit', $type) }}"
-                                   class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm font-semibold"
-                                   title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                <x-table.td class="text-center">
+                    @if($type->is_active)
+                        <span class="text-success font-weight-bold">SIM</span>
+                    @else
+                        <span class="text-danger font-weight-bold">NÃO</span>
+                    @endif
+                </x-table.td>
 
-                                <form action="{{ route('inclusive-radar.resource-types.toggle', $type) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit"
-                                            title="{{ $type->is_active ? 'Desativar' : 'Ativar' }}"
-                                            class="px-3 py-1 rounded transition border text-sm font-semibold {{ $type->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }}">
-                                        <i class="fas {{ $type->is_active ? 'fa-eye-slash' : 'fa-eye' }}"></i>
-                                    </button>
-                                </form>
+                <x-table.td>
+                    <x-table.actions>
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.resource-types.edit', $type)"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
 
-                                <form action="{{ route('inclusive-radar.resource-types.destroy', $type) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este tipo de recurso? Recursos vinculados podem impedir a exclusão.')"
-                                            class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold"
-                                            title="Excluir">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="py-12 text-center text-gray-400">
-                            <p class="italic text-lg">Nenhum tipo de recurso cadastrado no momento.</p>
-                        </td>
-                    </tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+                        <form action="{{ route('inclusive-radar.resource-types.toggle', $type) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <x-buttons.submit-button
+                                :variant="$type->is_active ? 'secondary' : 'success'"
+                            >
+                                {{ $type->is_active ? 'Desativar' : 'Ativar' }}
+                            </x-buttons.submit-button>
+                        </form>
 
-</body>
-</html>
+                        <form action="{{ route('inclusive-radar.resource-types.destroy', $type) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Tem certeza que deseja remover este tipo?')"
+                            >
+                                Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    </x-table.actions>
+                </x-table.td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">Nenhum tipo de recurso cadastrado.</td>
+            </tr>
+        @endforelse
+    </x-table.table>
+
+    <style>
+        .text-purple-dark { color: #4c1d95; }
+    </style>
+@endsection

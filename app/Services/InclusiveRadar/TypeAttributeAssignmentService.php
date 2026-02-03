@@ -77,9 +77,11 @@ class TypeAttributeAssignmentService
         });
     }
 
-    public function removeAssignment(TypeAttributeAssignment $assignment): void
+    public function removeAssignment(ResourceType $type): void
     {
-        DB::transaction(fn() => $assignment->delete());
+        DB::transaction(function () use ($type) {
+            TypeAttributeAssignment::where('type_id', $type->id)->delete();
+        });
     }
 
     public function getAttributesByTypeId(int $typeId): Collection

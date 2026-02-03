@@ -1,101 +1,86 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurar Atributos - GNAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-4xl mx-auto bg-white p-6 rounded shadow border-t-4 border-blue-600">
-    <h1 class="text-2xl font-bold mb-2 text-gray-800">Configurar Atributos por Tipo</h1>
-    <p class="text-gray-600 mb-6 border-b pb-4">Defina quais campos estarão disponíveis para cada tipo de recurso.</p>
+@extends('layouts.app')
 
-    {{-- Bloco de Erros --}}
-    @if($errors->any())
-        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-            <ul class="list-disc ml-5 text-sm">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Configurar Atributos por Tipo</h2>
+            <p class="text-muted">Defina quais campos técnicos estarão disponíveis para cada categoria de recurso.</p>
         </div>
-    @endif
+    </div>
 
-    <form action="{{ route('inclusive-radar.type-attribute-assignments.store') }}" method="POST">
-        @csrf
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.type-attribute-assignments.store') }}" method="POST">
 
-        <div class="grid grid-cols-1 gap-6">
+            {{-- SEÇÃO 1: Seleção do Alvo --}}
+            <x-forms.section title="1. Alvo da Configuração" />
 
-            {{-- Seleção do Tipo de Recurso --}}
-            <div>
-                <label class="block font-bold text-gray-700 mb-2 italic">1. Para qual Tipo de Recurso deseja configurar atributos?</label>
-                <select name="type_id" class="w-full border p-3 rounded focus:ring-2 focus:ring-blue-500 @error('type_id') border-red-500 @enderror bg-gray-50">
-                    <option value="">-- Selecione um tipo --</option>
-                    @foreach($types as $type)
-                        <option value="{{ $type->id }}" {{ old('type_id') == $type->id ? 'selected' : '' }}>
-                            {{ $type->name }} ({{ $type->for_assistive_technology ? 'Assistiva' : 'Educacional' }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('type_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            <div class="col-md-12">
+                <x-forms.select
+                    name="type_id"
+                    label="Para qual Tipo de Recurso deseja configurar atributos? *"
+                    id="type_id"
+                    required
+                    :options="$types->mapWithKeys(fn($type) => [
+                        $type->id => $type->name . ($type->for_assistive_technology ? ' (Assistiva)' : ' (Pedagógico)')
+                    ])"
+                    :selected="old('type_id')"
+                />
             </div>
 
-            {{-- Seleção dos Atributos (Checkboxes) --}}
-            <div>
-                <label class="block font-bold text-gray-700 mb-3 italic">2. Quais atributos (campos) este Tipo deve possuir?</label>
+            {{-- SEÇÃO 2: Seleção de Atributos --}}
+            <x-forms.section title="2. Seleção de Campos Disponíveis" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 bg-gray-50 p-5 rounded-lg border border-gray-200">
-                    @foreach($attributes as $attribute)
-                        <label class="flex items-start gap-3 p-3 bg-white border rounded hover:border-blue-400 hover:shadow-sm transition cursor-pointer group">
-                            <div class="flex items-center h-5">
-                                <input type="checkbox"
-                                       name="attribute_ids[]"
-                                       value="{{ $attribute->id }}"
-                                       {{ is_array(old('attribute_ids')) && in_array($attribute->id, old('attribute_ids')) ? 'checked' : '' }}
-                                       class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
-                            </div>
+            <div class="col-md-12 mb-4">
+                <label class="form-label fw-bold text-purple-dark px-2">Marque os atributos que devem aparecer no formulário:</label>
 
-                            <div class="flex flex-col leading-tight">
-                                <span class="text-sm font-bold text-gray-700 group-hover:text-blue-700">
-                                    {{ $attribute->label }}
-                                </span>
-                                <span class="text-[10px] uppercase font-mono text-gray-400 mt-1">
-                                    Tipo: {{ $attribute->field_type }}
-                                </span>
-                            </div>
-                        </label>
-                    @endforeach
+                <div class="d-flex flex-wrap gap-2 p-4 border rounded bg-light mx-2">
+                    @forelse($attributes as $attribute)
+                        <div class="bg-white border rounded p-3 shadow-sm hover-shadow-transition d-flex align-items-center" style="min-width: 200px; flex: 1;">
+                            <x-forms.checkbox
+                                name="attribute_ids[]"
+                                id="attr_{{ $attribute->id }}"
+                                :value="$attribute->id"
+                                :label="$attribute->label"
+                                class="mb-0 fw-bold text-dark"
+                                :checked="is_array(old('attribute_ids')) && in_array($attribute->id, old('attribute_ids'))"
+                            />
+                        </div>
+                    @empty
+                        <div class="col-12 text-center py-4">
+                            <p class="text-muted italic">Nenhum atributo cadastrado no sistema.</p>
+                        </div>
+                    @endforelse
                 </div>
 
                 @error('attribute_ids')
-                <p class="text-red-500 text-xs mt-2 font-semibold">{{ $message }}</p>
+                <div class="text-danger small fw-bold mt-2 px-2">
+                    <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                </div>
                 @enderror
             </div>
 
-            <div class="bg-blue-50 p-4 rounded border border-blue-100 flex items-start gap-3">
-                <i class="fas fa-info-circle text-blue-600 mt-1"></i>
-                <p class="text-sm text-blue-800">
-                    <strong>Dica:</strong> Se o tipo selecionado já possuir atributos vinculados, os novos marcados aqui serão adicionados à lista existente. Para remover vínculos, utilize a opção <strong>"Gerenciar"</strong> na tela de listagem.
-                </p>
+            {{-- Informativo de Gestão --}}
+            <div class="col-12 px-4 mb-4">
+                <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-0">
+                    <i class="fas fa-lightbulb fa-lg me-3 opacity-50 text-purple"></i>
+                    <div class="small">
+                        Os atributos marcados aqui serão exibidos na tela de cadastro/edição do material.
+                        Para remover ou reordenar, acesse a <a href="{{ route('inclusive-radar.type-attribute-assignments.index') }}" class="fw-bold text-purple">Listagem de Vínculos</a>.
+                    </div>
+                </div>
             </div>
 
-            <hr class="my-4">
-
-            {{-- Botões --}}
-            <div class="flex gap-4">
-                <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded shadow-lg transition font-bold text-lg">
-                    Salvar Configuração
-                </button>
-                <a href="{{ route('inclusive-radar.type-attribute-assignments.index') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded transition flex items-center font-semibold">
+            {{-- Botões de Ação --}}
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('inclusive-radar.type-attribute-assignments.index') }}" variant="secondary">
                     Cancelar
-                </a>
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Salvar Configuração
+                </x-buttons.submit-button>
             </div>
-        </div>
-    </form>
-</div>
-</body>
-</html>
+
+        </x-forms.form-card>
+    </div>
+@endsection

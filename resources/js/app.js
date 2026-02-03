@@ -1,5 +1,7 @@
 import './bootstrap';
 import './pages/inclusive-radar/assistive-technologies.js';
+import './pages/inclusive-radar/accessible-educational-materials.js';
+import './pages/inclusive-radar/loans.js';
 
 // App principal - Sidebar e Navbar
 class App {

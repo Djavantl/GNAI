@@ -1,115 +1,101 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atributos de Recursos - GNAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 p-8">
+@extends('layouts.master')
 
-<div class="max-w-6xl mx-auto">
+@section('title', 'Atributos de Recursos')
 
-    <div class="flex justify-between items-center mb-6">
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Atributos de Recursos</h1>
-            <p class="text-gray-600">Definição de campos dinâmicos (metadados) para os tipos de recursos.</p>
+            <h2 class="text-title">Atributos Personalizados</h2>
+            <p class="text-muted">Gerencie campos dinâmicos para detalhamento técnico dos recursos.</p>
         </div>
-
-        <a href="{{ route('inclusive-radar.type-attributes.create') }}"
-           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow transition font-bold flex items-center gap-2">
-            <i class="fas fa-plus-circle"></i>
-            Novo Atributo
-        </a>
+        <x-buttons.link-button
+            :href="route('inclusive-radar.type-attributes.create')"
+            variant="new"
+        >
+            <i class="fas fa-plus-circle me-1"></i> Novo Atributo
+        </x-buttons.link-button>
     </div>
 
     @if(session('success'))
-        <div class="bg-green-100 border border-green-200 text-green-800 p-4 rounded mb-6 flex items-center gap-3 shadow-sm">
-            <i class="fas fa-check-circle text-green-600"></i>
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
     @endif
 
-    <div class="bg-white p-6 rounded shadow border-t-4 border-blue-600">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                <tr class="border-b-2 border-gray-100">
-                    <th class="py-3 px-4 font-bold text-gray-700">Rótulo (Label) / Slug</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Tipo de Campo</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Obrigatório</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-center">Status</th>
-                    <th class="py-3 px-4 font-bold text-gray-700 text-right">Ações</th>
-                </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                @forelse($attributes as $attr)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="py-4 px-4 align-middle">
-                            <span class="font-bold text-gray-900 block">{{ $attr->label }}</span>
-                            <span class="text-xs text-gray-400 font-mono italic">{{ $attr->name }}</span>
-                        </td>
+    <x-table.table :headers="['Rótulo / Nome Técnico', 'Tipo de Campo', 'Obrigatório', 'Ativo', 'Ações']">
+        @forelse($attributes as $attr)
+            <tr>
+                <x-table.td>
+                    <strong class="text-purple-dark d-block">{{ $attr->label }}</strong>
+                    <small class="text-muted font-mono italic">{{ $attr->name }}</small>
+                </x-table.td>
 
-                        <td class="py-4 px-4 text-center align-middle">
-                            <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-mono border">
-                                {{ strtoupper($attr->field_type) }}
-                            </span>
-                        </td>
+                <x-table.td class="text-center">
+                    <span class="badge bg-light text-muted border font-mono">
+                        {{ strtoupper($attr->field_type) }}
+                    </span>
+                </x-table.td>
 
-                        <td class="py-4 px-4 text-center align-middle">
-                            @if($attr->is_required)
-                                <span class="text-orange-600 font-bold text-xs bg-orange-50 px-2 py-1 rounded border border-orange-100">SIM</span>
-                            @else
-                                <span class="text-gray-400 text-xs">Não</span>
-                            @endif
-                        </td>
+                <x-table.td class="text-center">
+                    @if($attr->is_required)
+                        <span class="badge border shadow-sm"
+                              style="background-color: #fff7ed; color: #c2410c; border-color: #ffedd5 !important;">
+                            SIM
+                        </span>
+                    @else
+                        <span class="text-muted small">Não</span>
+                    @endif
+                </x-table.td>
 
-                        <td class="py-4 px-4 text-center align-middle">
-                            @if($attr->is_active)
-                                <span class="text-green-600 bg-green-50 px-2 py-1 rounded text-xs font-bold border border-green-100">ATIVO</span>
-                            @else
-                                <span class="text-red-600 bg-red-50 px-2 py-1 rounded text-xs font-bold border border-red-100">INATIVO</span>
-                            @endif
-                        </td>
+                <x-table.td class="text-center">
+                    @if($attr->is_active)
+                        <span class="text-success font-weight-bold">SIM</span>
+                    @else
+                        <span class="text-danger font-weight-bold">NÃO</span>
+                    @endif
+                </x-table.td>
 
-                        <td class="py-4 px-4 text-right align-middle">
-                            <div class="flex justify-end gap-2">
-                                <a href="{{ route('inclusive-radar.type-attributes.edit', $attr) }}"
-                                   class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded transition border border-blue-100 text-sm font-semibold">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                <x-table.td>
+                    <x-table.actions>
+                        {{-- Editar --}}
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.type-attributes.edit', $attr)"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
 
-                                <form action="{{ route('inclusive-radar.type-attributes.toggle', $attr) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="px-3 py-1 rounded transition border text-sm font-semibold {{ $attr->is_active ? 'text-amber-600 border-amber-100 hover:bg-amber-50' : 'text-green-600 border-green-100 hover:bg-green-50' }}">
-                                        <i class="fas {{ $attr->is_active ? 'fa-eye-slash' : 'fa-eye' }}"></i>
-                                    </button>
-                                </form>
+                        {{-- Ativar/Desativar (Padrão Cinza/Verde com Texto) --}}
+                        <form action="{{ route('inclusive-radar.type-attributes.toggle', $attr) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <x-buttons.submit-button
+                                :variant="$attr->is_active ? 'secondary' : 'success'"
+                            >
+                                {{ $attr->is_active ? 'Desativar' : 'Ativar' }}
+                            </x-buttons.submit-button>
+                        </form>
 
-                                <form action="{{ route('inclusive-radar.type-attributes.destroy', $attr) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Excluir este atributo permanentemente?')" class="text-red-600 hover:bg-red-50 px-3 py-1 rounded transition border border-red-100 text-sm font-semibold">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="py-12 text-center text-gray-400">
-                            <p>Nenhum atributo cadastrado.</p>
-                        </td>
-                    </tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+                        {{-- Excluir --}}
+                        <form action="{{ route('inclusive-radar.type-attributes.destroy', $attr) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Tem certeza que deseja remover este atributo?')"
+                            >
+                                Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    </x-table.actions>
+                </x-table.td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">Nenhum atributo personalizado cadastrado.</td>
+            </tr>
+        @endforelse
+    </x-table.table>
 
-</body>
-</html>
+    <style>
+        .text-purple-dark { color: #4c1d95; }
+    </style>
+@endsection

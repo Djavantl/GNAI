@@ -1,18 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Categoria de Barreira</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6 border-b pb-4 text-gray-800">Nova Categoria de Barreira</h1>
+@extends('layouts.app')
+
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Nova Categoria de Barreira</h2>
+            <p class="text-muted">Defina classificações para identificar obstáculos à acessibilidade (Ex: Arquitetônica, Atitudinal).</p>
+        </div>
+    </div>
 
     @if($errors->any())
-        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-            <ul class="list-disc ml-5 text-sm">
+        <div class="alert alert-danger border-0 shadow-sm mb-4">
+            <ul class="mb-0">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -20,49 +18,58 @@
         </div>
     @endif
 
-    <form action="{{ route('inclusive-radar.barrier-categories.store') }}" method="POST">
-        @csrf
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.barrier-categories.store') }}" method="POST">
+            @csrf
 
-        <div class="grid grid-cols-1 gap-6">
-            {{-- Nome --}}
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">Nome da Categoria</label>
-                <input type="text" name="name" value="{{ old('name') }}"
-                       class="w-full border p-2 rounded @error('name') border-red-500 @enderror"
-                       placeholder="Ex: Arquitetônica, Atitudinal, Comunicacional...">
-                @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+            {{-- SEÇÃO 1: Identificação da Categoria --}}
+            <x-forms.section title="Informações da Categoria" />
+
+            <div class="col-md-12">
+                <x-forms.input
+                    name="name"
+                    label="Nome da Categoria *"
+                    required
+                    :value="old('name')"
+                    placeholder="Ex: Arquitetônica, Atitudinal, Comunicacional..."
+                />
             </div>
 
-            {{-- Descrição --}}
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">Descrição</label>
-                <textarea name="description" rows="4" class="w-full border p-2 rounded"
-                          placeholder="Descreva o que este tipo de barreira engloba...">{{ old('description') }}</textarea>
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="description"
+                    label="Descrição Detalhada"
+                    rows="4"
+                    :value="old('description')"
+                    placeholder="Descreva o que este tipo de barreira engloba e quais impedimentos ela representa..."
+                />
             </div>
 
-            {{-- Status --}}
-            <div class="p-4 bg-gray-50 rounded border border-gray-200">
-                <div class="flex items-center gap-2">
-                    <input type="hidden" name="is_active" value="0">
-                    <input type="checkbox" name="is_active" id="is_active" value="1"
-                           {{ old('is_active', '1') == '1' ? 'checked' : '' }}
-                           class="w-5 h-5 text-blue-600 rounded">
-                    <label for="is_active" class="cursor-pointer font-semibold text-gray-700">Categoria Ativa para novos registros</label>
+            {{-- SEÇÃO 2: Configurações de Status --}}
+            <x-forms.section title="Status e Visibilidade" />
+
+            <div class="col-md-12 mb-4">
+                <div class="p-3 border rounded bg-light">
+                    <x-forms.checkbox
+                        name="is_active"
+                        id="is_active"
+                        label="Categoria Ativa"
+                        description="Indica se esta categoria estará disponível para seleção no cadastro de novas barreiras"
+                        :checked="old('is_active', true)"
+                    />
                 </div>
             </div>
 
-            <div class="flex gap-4 pt-4">
-                <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded shadow transition font-bold">
-                    Salvar Categoria
-                </button>
-                <a href="{{ route('inclusive-radar.barrier-categories.index') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded transition flex items-center">
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('inclusive-radar.barrier-categories.index') }}" variant="secondary">
                     Cancelar
-                </a>
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Salvar Categoria
+                </x-buttons.submit-button>
             </div>
-        </div>
-    </form>
-</div>
-</body>
-</html>
+
+        </x-forms.form-card>
+    </div>
+@endsection

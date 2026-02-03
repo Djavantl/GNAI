@@ -1,57 +1,58 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Recurso de Acessibilidade</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Editar Recurso de Acessibilidade</h1>
+@extends('layouts.app')
 
-    @if($errors->any())
-        <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-            <ul class="list-disc ml-5">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Editar Recurso de Acessibilidade</h2>
+            <p class="text-muted">Atualizando informações de: <strong>{{ $accessibilityFeature->name }}</strong></p>
         </div>
-    @endif
+    </div>
 
-    <form action="{{ route('inclusive-radar.accessibility-features.update', $accessibilityFeature) }}" method="POST">
-        @csrf
-        @method('PUT')
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.accessibility-features.update', $accessibilityFeature->id) }}" method="POST">
+            @method('PUT')
 
-        <div class="mb-4">
-            <label class="block text-gray-700 mb-1">Nome</label>
-            <input type="text" name="name" value="{{ old('name', $accessibilityFeature->name) }}"
-                   class="w-full border border-gray-300 p-2 rounded focus:ring-blue-500 outline-none" required>
-        </div>
+            <x-forms.section title="Identificação do Recurso" />
 
-        <div class="mb-4">
-            <label class="block text-gray-700 mb-1">Descrição</label>
-            <textarea name="description" rows="3"
-                      class="w-full border border-gray-300 p-2 rounded focus:ring-blue-500 outline-none">{{ old('description', $accessibilityFeature->description) }}</textarea>
-        </div>
+            <div class="col-md-12">
+                <x-forms.input
+                    name="name"
+                    label="Nome do Recurso *"
+                    required
+                    :value="old('name', $accessibilityFeature->name)"
+                />
+            </div>
 
-        <div class="mb-6 flex items-center gap-3">
-            <input type="hidden" name="is_active" value="0">
-            <input type="checkbox" name="is_active" value="1" {{ old('is_active', $accessibilityFeature->is_active) ? 'checked' : '' }}
-            class="w-5 h-5 text-green-600 rounded border-gray-300 focus:ring-green-500">
-            <span class="text-gray-700 font-medium">Ativo</span>
-        </div>
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="description"
+                    label="Descrição Detalhada"
+                    rows="4"
+                    :value="old('description', $accessibilityFeature->description)"
+                />
+            </div>
 
-        <div class="flex gap-4">
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-bold">
-                Atualizar
-            </button>
-            <a href="{{ route('inclusive-radar.accessibility-features.index') }}"
-               class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded font-medium">
-                Cancelar
-            </a>
-        </div>
-    </form>
-</div>
-</body>
-</html>
+            <x-forms.section title="Configurações de Status" />
+
+            <div class="col-md-6">
+                <x-forms.checkbox
+                    name="is_active"
+                    label="Recurso Ativo"
+                    description="Define se este recurso está disponível para uso no sistema"
+                    :checked="old('is_active', $accessibilityFeature->is_active)"
+                />
+            </div>
+
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('inclusive-radar.accessibility-features.index') }}" variant="secondary">
+                    Cancelar Alterações
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Salvar Alterações
+                </x-buttons.submit-button>
+            </div>
+
+        </x-forms.form-card>
+    </div>
+@endsection

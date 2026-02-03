@@ -5,7 +5,6 @@ namespace App\Http\Controllers\InclusiveRadar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\TypeAttributeAssignmentRequest;
 use App\Models\InclusiveRadar\ResourceType;
-use App\Models\InclusiveRadar\TypeAttribute;
 use App\Models\InclusiveRadar\TypeAttributeAssignment;
 use App\Services\InclusiveRadar\TypeAttributeAssignmentService;
 use Illuminate\Http\RedirectResponse;
@@ -52,9 +51,9 @@ class TypeAttributeAssignmentController extends Controller
             ->with('success', 'Vínculos processados com sucesso!');
     }
 
-    public function edit(ResourceType $resourceType): View
+    public function edit(ResourceType $assignment): View
     {
-        $data = $this->service->getEditData($resourceType);
+        $data = $this->service->getEditData($assignment);
 
         return view(
             'pages.inclusive-radar.attribute-assignments.edit',
@@ -62,10 +61,10 @@ class TypeAttributeAssignmentController extends Controller
         );
     }
 
-    public function update(TypeAttributeAssignmentRequest $request, ResourceType $resourceType): RedirectResponse
+    public function update(TypeAttributeAssignmentRequest $request, ResourceType $assignment): RedirectResponse
     {
         $this->service->syncAttributes(
-            $resourceType->id,
+            $assignment->id,
             $request->input('attribute_ids', [])
         );
 
@@ -74,13 +73,13 @@ class TypeAttributeAssignmentController extends Controller
             ->with('success', 'Atributos atualizados com sucesso para este tipo!');
     }
 
-    public function destroy(TypeAttributeAssignment $assignment): RedirectResponse
+    public function destroy(ResourceType $assignment): RedirectResponse
     {
-        $this->service->removeAssignment($assignment->id);
+        $this->service->removeAssignment($assignment);
 
         return redirect()
             ->route('inclusive-radar.type-attribute-assignments.index')
-            ->with('success', 'Vinculação removida com sucesso!');
+            ->with('success', 'Todos os vínculos deste tipo foram removidos!');
     }
 
     public function getAttributesByType(ResourceType $resourceType)

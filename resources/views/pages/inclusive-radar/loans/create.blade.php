@@ -1,20 +1,17 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realizar Empréstimo - GNAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 p-8">
-<div class="max-w-4xl mx-auto bg-white p-6 rounded shadow border-t-4 border-blue-600">
-    <h1 class="text-2xl font-bold mb-6 border-b pb-4 text-gray-800">Registrar Novo Empréstimo</h1>
+@extends('layouts.app')
+
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Registrar Novo Empréstimo</h2>
+            <p class="text-muted">Vincule um recurso de acessibilidade a um estudante e defina os prazos de devolução.</p>
+        </div>
+    </div>
 
     @if($errors->any())
-        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
-            <p class="font-bold mb-1 italic">Atenção: Existem erros no preenchimento.</p>
-            <ul class="list-disc ml-5 text-sm">
+        <div class="alert alert-danger border-0 shadow-sm mb-4">
+            <p class="font-weight-bold mb-1"><i class="fas fa-exclamation-triangle mr-2"></i> Atenção: Existem erros no preenchimento.</p>
+            <ul class="mb-0">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -22,132 +19,115 @@
         </div>
     @endif
 
-    <form action="{{ route('inclusive-radar.loans.store') }}" method="POST">
-        @csrf
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.loans.store') }}" method="POST">
+            @csrf
 
-        <div class="grid grid-cols-1 gap-6">
+            {{-- SEÇÃO 1: Recurso Solicitado --}}
+            <x-forms.section title="Seleção do Recurso" />
 
-            {{-- Seção do Item (Polimórfico) --}}
-            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-bold text-blue-900 mb-1">Tipo de Recurso *</label>
-                    <select name="loanable_type" id="loanable_type" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500" required>
-                        <option value="">-- Selecione o tipo --</option>
-                        <option value="App\Models\InclusiveRadar\AssistiveTechnology" {{ old('loanable_type') == 'App\Models\InclusiveRadar\AssistiveTechnology' ? 'selected' : '' }}>Tecnologia Assistiva</option>
-                        <option value="App\Models\InclusiveRadar\AccessibleEducationalMaterial" {{ old('loanable_type') == 'App\Models\InclusiveRadar\AccessibleEducationalMaterial' ? 'selected' : '' }}>Material Pedagógico</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-bold text-blue-900 mb-1">Item Específico *</label>
-                    <select name="loanable_id" id="loanable_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500" required>
-                        <option value="">-- Selecione o tipo primeiro --</option>
-                    </select>
-                </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="loanable_type"
+                    id="loanable_type"
+                    label="Tipo de Recurso *"
+                    required
+                    :options="[
+                        'App\\Models\\InclusiveRadar\\AssistiveTechnology' => 'Tecnologia Assistiva',
+                        'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial' => 'Material Pedagógico'
+                    ]"
+                    :selected="old('loanable_type')"
+                />
             </div>
 
-            {{-- Seção de Pessoas --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Estudante Beneficiário *</label>
-                    <select name="student_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-green-500">
-                        <option value="">-- Selecione o estudante --</option>
-                        @foreach($students as $student)
-                            <option value="{{ $student->id }}" {{ old('student_id') == $student->id ? 'selected' : '' }}>
-                                {{ $student->person->name }} ({{ $student->registration }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Profissional Responsável *</label>
-                    <select name="professional_id" class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-green-500">
-                        <option value="">-- Selecione o profissional --</option>
-                        @foreach($professionals as $prof)
-                            <option value="{{ $prof->id }}" {{ old('professional_id') == $prof->id ? 'selected' : '' }}>
-                                {{ $prof->person->name }} - {{ $prof->registration }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="loanable_id"
+                    id="loanable_id"
+                    label="Item Específico *"
+                    required
+                    :options="['' => 'Selecione o tipo primeiro']"
+                />
             </div>
 
-            {{-- Datas --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded border border-gray-200">
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Data do Empréstimo *</label>
-                    <input type="datetime-local" name="loan_date" value="{{ old('loan_date', now()->format('Y-m-d\TH:i')) }}"
-                           class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500">
-                </div>
+            {{-- SEÇÃO 2: Envolvidos --}}
+            <x-forms.section title="Responsáveis e Beneficiário" />
 
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Previsão de Devolução *</label>
-                    <input type="date" name="due_date" value="{{ old('due_date') }}"
-                           class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500">
-                    <p class="text-xs text-gray-500 mt-1 italic">Defina o prazo limite para a entrega do item.</p>
-                </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="student_id"
+                    label="Estudante Beneficiário *"
+                    required
+                    :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person->name . ' (' . $s->registration . ')'])"
+                    :selected="old('student_id')"
+                />
             </div>
 
-            {{-- Observações --}}
-            <div>
-                <label class="block font-bold text-gray-700 mb-1">Observações / Estado do Item</label>
-                <textarea name="observation" rows="3" class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500"
-                          placeholder="Anote detalhes sobre o estado de conservação no momento da entrega...">{{ old('observation') }}</textarea>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="professional_id"
+                    label="Profissional Responsável *"
+                    required
+                    :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name . ' - ' . $p->registration])"
+                    :selected="old('professional_id')"
+                />
             </div>
 
-            {{-- Botões --}}
-            <div class="flex gap-4 mt-4 border-t pt-6">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded shadow-lg transition font-bold text-lg flex-1 md:flex-none">
-                    <i class="fas fa-handshake mr-2"></i> Confirmar Empréstimo
-                </button>
-                <a href="{{ route('inclusive-radar.loans.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded transition flex items-center font-bold">
+            {{-- SEÇÃO 3: Prazos e Condições --}}
+            <x-forms.section title="Prazos e Observações" />
+
+            <div class="col-md-6">
+                <x-forms.input
+                    name="loan_date"
+                    label="Data e Hora do Empréstimo *"
+                    type="datetime-local"
+                    required
+                    :value="old('loan_date', now()->format('Y-m-d\TH:i'))"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input
+                    name="due_date"
+                    label="Previsão de Devolução *"
+                    type="date"
+                    required
+                    :value="old('due_date')"
+                />
+                <small class="text-muted italic">Defina o prazo limite para a entrega do item.</small>
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="observation"
+                    label="Observações / Estado do Item"
+                    rows="3"
+                    :value="old('observation')"
+                    placeholder="Anote detalhes sobre o estado de conservação no momento da entrega..."
+                />
+            </div>
+
+            {{-- Ações --}}
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
                     Cancelar
-                </a>
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-handshake mr-2"></i> Confirmar Empréstimo
+                </x-buttons.submit-button>
             </div>
-        </div>
-    </form>
-</div>
 
-<script>
-    const typeSelect = document.getElementById('loanable_type');
-    const itemSelect = document.getElementById('loanable_id');
+        </x-forms.form-card>
+    </div>
 
-    // Mapeamento dos itens vindo do servidor
-    const items = {
-        'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies ?? []),
-        'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials ?? [])
-    };
-
-    typeSelect.addEventListener('change', function() {
-        const selectedType = this.value;
-        itemSelect.innerHTML = '<option value="">-- Selecione o item --</option>';
-
-        if (items[selectedType]) {
-            items[selectedType].forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.id;
-
-                // Lógica Inteligente para o nome do item:
-                // Tenta 'name' (Tecnologia), senão 'title' ou 'description' (Material)
-                const displayName = item.name || item.title || item.description || 'Item sem identificação';
-                const assetCode = item.asset_code || 'S/N';
-
-                option.text = `${displayName} (${assetCode})`;
-                itemSelect.appendChild(option);
-            });
-        }
-    });
-
-    // Re-popular se houver erro de validação (old values)
-    window.addEventListener('DOMContentLoaded', () => {
-        if (typeSelect.value) {
-            typeSelect.dispatchEvent(new Event('change'));
-            setTimeout(() => {
-                itemSelect.value = "{{ old('loanable_id') }}";
-            }, 10);
-        }
-    });
-</script>
-</body>
-</html>
+    <script>
+        window.loanData = {
+            items: {
+                'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies ?? []),
+                'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials ?? [])
+            },
+            oldId: "{{ old('loanable_id') }}"
+        };
+    </script>
+@endsection
