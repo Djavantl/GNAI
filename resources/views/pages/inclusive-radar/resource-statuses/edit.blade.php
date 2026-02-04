@@ -1,26 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+    <x-messages.toast />
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Status do Recurso</h2>
             <p class="text-muted">Modifique as regras de negócio e visibilidade para o status: <strong>{{ $resourceStatus->name }}</strong></p>
         </div>
-        <div class="align-self-center text-end">
-            <span class="d-block text-muted small uppercase fw-bold">Código do Sistema</span>
-            <span class="badge bg-purple-dark fs-6" style="background-color: #4c1d95;">{{ $resourceStatus->code }}</span>
-        </div>
     </div>
-
-    @if($errors->any())
-        <div class="alert alert-danger border-0 shadow-sm mb-4">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
     <div class="mt-3">
         <x-forms.form-card action="{{ route('inclusive-radar.resource-statuses.update', $resourceStatus) }}" method="POST">
@@ -62,7 +50,7 @@
                 />
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6 mb-3">
                 <x-forms.checkbox
                     name="blocks_access"
                     label="Bloquear Acesso"
@@ -71,32 +59,34 @@
                 />
             </div>
 
-            {{-- SEÇÃO 3: Aplicabilidade e Visibilidade --}}
+            {{-- SEÇÃO 3: Aplicabilidade e Ativação --}}
             <x-forms.section title="Aplicabilidade e Ativação" />
 
+            {{-- Status Ativo: Estilo Limpo TA --}}
             <div class="col-md-12 mb-3">
-                <label class="form-label fw-bold text-purple-dark">Disponível para os módulos:</label>
-                <div class="d-flex gap-4 p-3 border rounded bg-light">
+                <x-forms.checkbox
+                    name="is_active"
+                    label="Status Ativo no Sistema"
+                    description="Se desativado, este status não aparecerá em novos cadastros ou edições"
+                    :checked="old('is_active', $resourceStatus->is_active)"
+                />
+            </div>
+
+            {{-- Aplicabilidade: Estilo Público-alvo TA --}}
+            <div class="col-md-12 mb-4">
+                <label class="form-label fw-bold text-purple-dark">Este tipo se aplica a: *</label>
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     <x-forms.checkbox
                         name="for_assistive_technology"
                         label="Tecnologia Assistiva"
                         :checked="old('for_assistive_technology', $resourceStatus->for_assistive_technology)"
+                        class="mb-0"
                     />
                     <x-forms.checkbox
                         name="for_educational_material"
                         label="Material Pedagógico"
                         :checked="old('for_educational_material', $resourceStatus->for_educational_material)"
-                    />
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                <div class="p-3 border rounded border-info bg-light">
-                    <x-forms.checkbox
-                        name="is_active"
-                        label="Status Ativo no Sistema"
-                        description="Se desativado, este status não aparecerá em novos cadastros ou edições"
-                        :checked="old('is_active', $resourceStatus->is_active)"
+                        class="mb-0"
                     />
                 </div>
             </div>
@@ -108,7 +98,7 @@
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Atualizar Status
+                    <i class="fas fa-save mr-2"></i> Salvar Alterações
                 </x-buttons.submit-button>
             </div>
 

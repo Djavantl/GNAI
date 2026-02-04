@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-flex justify-content-between mb-3">
         <h2 class = "text-title">Alunos</h2>
-        <x-buttons.link-button 
+        <x-buttons.link-button
             :href="route('specialized-educational-support.students.create')"
             variant="new"
         >
@@ -28,7 +28,7 @@
                     $statusColor = $student->status === 'active' ? 'success' : 'danger';
                     $statusLabel = $student->status === 'active' ? 'Ativo' : 'Inativo';
                 @endphp
-                
+
                 <span class="text-{{ $statusColor }} fw-bold ">
                     {{ $statusLabel }}
                 </span>
@@ -37,7 +37,7 @@
 
             <x-table.td>
                 <x-table.actions>
-                    <x-buttons.link-button 
+                    <x-buttons.link-button
                         :href="route('specialized-educational-support.students.edit', $student)"
                         variant="warning"
                     >
@@ -49,7 +49,7 @@
                         @csrf
                         @method('DELETE')
 
-                        <x-buttons.submit-button 
+                        <x-buttons.submit-button
                             variant="danger"
                             onclick="return confirm('Deseja excluir este aluno?')"
                         >

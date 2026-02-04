@@ -20,4 +20,14 @@ enum BarrierStatus: string
             self::NOT_APPLICABLE => 'Não Aplicável',
         };
     }
+
+    public function color(): string {
+        return match($this) {
+            self::IDENTIFIED => 'secondary',
+            self::UNDER_ANALYSIS => 'info',
+            self::IN_PROGRESS => 'warning',
+            self::RESOLVED => 'success',
+            self::NOT_APPLICABLE => 'danger',
+        };
+    }
 }

@@ -3,6 +3,8 @@
 @section('title', 'Instituições Base')
 
 @section('content')
+    <x-messages.toast />
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Instituições Base</h2>
@@ -16,41 +18,33 @@
         </x-buttons.link-button>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <x-table.table :headers="['Instituição', 'Localização', 'Coordenadas', 'Status', 'Ações']">
+    <x-table.table :headers="['Nome', 'Localização', 'Status', 'Ações']">
         @forelse($institutions as $inst)
             <tr>
+                {{-- INSTITUIÇÃO: Texto direto --}}
                 <x-table.td>
-                    <strong>{{ $inst->name }}</strong><br>
-                    <small class="text-muted text-uppercase">{{ $inst->short_name ?? 'Sem sigla' }}</small>
+                    {{ $inst->name }}
                 </x-table.td>
 
+                {{-- LOCALIZAÇÃO: Texto direto --}}
                 <x-table.td>
                     {{ $inst->city }} - {{ $inst->state }}
                 </x-table.td>
 
+                {{-- STATUS: Padrão Students --}}
                 <x-table.td>
-                    <code class="text-primary" style="font-size: 0.8rem;">
-                        {{ number_format($inst->latitude, 5) }}, {{ number_format($inst->longitude, 5) }}
-                    </code>
-                </x-table.td>
-
-                <x-table.td class="text-center">
                     @php
                         $statusColor = $inst->is_active ? 'success' : 'danger';
                         $statusLabel = $inst->is_active ? 'Ativo' : 'Inativo';
                     @endphp
-                    <span class="badge bg-{{ $statusColor }} text-uppercase">
+                    <span class="text-{{ $statusColor }} fw-bold">
                         {{ $statusLabel }}
                     </span>
                 </x-table.td>
 
+                {{-- AÇÕES: Editar e Excluir --}}
                 <x-table.td>
                     <x-table.actions>
-                        {{-- Botão Editar --}}
                         <x-buttons.link-button
                             :href="route('inclusive-radar.institutions.edit', $inst)"
                             variant="warning"
@@ -58,24 +52,12 @@
                             Editar
                         </x-buttons.link-button>
 
-                        {{-- Botão Alternar Status (Ativar/Desativar) --}}
-                        <form action="{{ route('inclusive-radar.institutions.toggle-active', $inst) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('PATCH')
-                            <x-buttons.submit-button
-                                :variant="$inst->is_active ? 'secondary' : 'success'"
-                            >
-                                {{ $inst->is_active ? 'Desativar' : 'Ativar' }}
-                            </x-buttons.submit-button>
-                        </form>
-
-                        {{-- Botão Excluir --}}
                         <form action="{{ route('inclusive-radar.institutions.destroy', $inst) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <x-buttons.submit-button
                                 variant="danger"
-                                onclick="return confirm('Tem certeza que deseja excluir esta instituição? Todas as localizações vinculadas serão removidas.')"
+                                onclick="return confirm('Tem certeza que deseja excluir esta instituição?')"
                             >
                                 Excluir
                             </x-buttons.submit-button>
@@ -85,13 +67,8 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-4">Nenhuma instituição cadastrada até o momento.</td>
+                <td colspan="4" class="text-center text-muted py-4">Nenhuma instituição cadastrada até o momento.</td>
             </tr>
         @endforelse
     </x-table.table>
-
-    <div class="mt-3 text-muted" style="font-size: 0.85rem;">
-        <i class="fas fa-info-circle me-1"></i>
-        <span>O status "Ativo" define qual instituição será usada como base padrão para novos relatos.</span>
-    </div>
 @endsection

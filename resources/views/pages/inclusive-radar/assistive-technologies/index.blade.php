@@ -3,10 +3,12 @@
 @section('title', 'Tecnologias Assistivas')
 
 @section('content')
+    <x-messages.toast />
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Tecnologias Assistivas</h2>
-            <p class="text-muted">Gerenciamento de periféricos, softwares e equipamentos de acessibilidade.</p>
+            <p class="text-muted text-base">Gerenciamento de periféricos, softwares e equipamentos de acessibilidade.</p>
         </div>
         <x-buttons.link-button
             :href="route('inclusive-radar.assistive-technologies.create')"
@@ -16,67 +18,44 @@
         </x-buttons.link-button>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    @if($errors->any())
-        <div class="alert alert-danger">
-            @foreach($errors->all() as $error)
-                <p class="mb-0">{{ $error }}</p>
-            @endforeach
-        </div>
-    @endif
-
-    <x-table.table :headers="['Equipamento / Tipo', 'Natureza', 'Estoque (Disp. / Total)', 'Status', 'Ativo', 'Ações']">
+    <x-table.table :headers="['Nome', 'Tipo', 'Natureza', 'Estoque', 'Status', 'Ações']">
         @forelse($assistiveTechnologies as $tech)
             <tr>
+                {{-- NOME: Texto direto, sem span --}}
+                <x-table.td>{{ $tech->name }}</x-table.td>
+
+                {{-- TIPO: Texto direto --}}
+                <x-table.td>{{ $tech->type?->name ?? 'Geral' }}</x-table.td>
+
+                {{-- NATUREZA: Texto direto --}}
+                <x-table.td>{{ $tech->type?->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
+
+                {{-- ESTOQUE: Mantida a lógica de cores --}}
                 <x-table.td>
-                    <strong>{{ $tech->name }}</strong><br>
-                    <small class="text-muted text-uppercase">{{ $tech->type?->name ?: 'Geral' }}</small>
-                </x-table.td>
-
-                <x-table.td class="text-center">
                     @if($tech->type?->is_digital)
-                        <span class="badge bg-info">Digital</span>
+                        <span class="text-info fw-bold">Ilimitado</span>
                     @else
-                        <span class="badge bg-warning text-dark">Físico</span>
+                        <span class="{{ $tech->quantity_available > 0 ? 'text-success' : 'text-danger' }} fw-medium">
+                            {{ $tech->quantity_available ?? 0 }}
+                        </span>
+                        <span class="text-muted">/ {{ $tech->quantity ?? 0 }}</span>
                     @endif
                 </x-table.td>
 
-                <x-table.td class="text-center">
-                    @if($tech->type?->is_digital)
-                        <span class="text-primary font-weight-bold">ILIMITADO</span>
-                    @else
-                        <div>
-                            <span class="badge {{ $tech->quantity_available > 0 ? 'bg-success' : 'bg-danger' }}">
-                                {{ $tech->quantity_available ?? 0 }}
-                            </span>
-                            <span class="text-muted">/ {{ $tech->quantity ?? 0 }}</span>
-                        </div>
-                        <small class="text-muted d-block">{{ $tech->asset_code ?: 'S/ PATRIMÔNIO' }}</small>
-                    @endif
-                </x-table.td>
-
-                <x-table.td class="text-center">
+                {{-- STATUS: Padrão Alunos --}}
+                <x-table.td>
                     @php
                         $isUnavailable = !$tech->type?->is_digital && ($tech->quantity_available <= 0);
-                        $statusLabel = $isUnavailable ? 'Esgotado' : ($tech->resourceStatus?->name ?? 'Disponível');
-                        $statusClass = $isUnavailable ? 'text-danger' : 'text-muted';
+                        $color = $isUnavailable ? 'danger' : ($tech->is_active ? 'success' : 'secondary');
+                        $label = $isUnavailable ? 'Esgotado' : ($tech->is_active ? 'Ativo' : 'Inativo');
                     @endphp
-                    <span class="{{ $statusClass }} font-weight-bold text-uppercase" style="font-size: 0.8rem;">
-                        {{ $statusLabel }}
+
+                    <span class="text-{{ $color }} fw-bold">
+                        {{ $label }}
                     </span>
                 </x-table.td>
 
-                <x-table.td class="text-center">
-                    @if($tech->is_active)
-                        <span class="text-success font-weight-bold">SIM</span>
-                    @else
-                        <span class="text-danger font-weight-bold">NÃO</span>
-                    @endif
-                </x-table.td>
-
+                {{-- AÇÕES --}}
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button
@@ -85,16 +64,6 @@
                         >
                             Editar
                         </x-buttons.link-button>
-
-                        <form action="{{ route('inclusive-radar.assistive-technologies.toggle', $tech) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('PATCH')
-                            <x-buttons.submit-button
-                                :variant="$tech->is_active ? 'secondary' : 'success'"
-                            >
-                                {{ $tech->is_active ? 'Desativar' : 'Ativar' }}
-                            </x-buttons.submit-button>
-                        </form>
 
                         <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $tech) }}" method="POST" class="d-inline">
                             @csrf

@@ -8,16 +8,6 @@
         </div>
     </div>
 
-    @if($errors->any())
-        <div class="alert alert-danger border-0 shadow-sm mb-4">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <div class="mt-3">
         <x-forms.form-card action="{{ route('inclusive-radar.resource-types.store') }}" method="POST">
             @csrf
@@ -34,50 +24,46 @@
                 />
             </div>
 
-            <x-forms.section title="Regras e Natureza do Recurso" />
+            <x-forms.section title="Natureza e Visibilidade" />
 
-            {{-- Coluna: Aplicação --}}
-            <div class="col-md-6 mb-4"> {{-- Adicionado mb-4 aqui --}}
-                <div class="p-3 border rounded bg-light h-100">
-                    <label class="form-label fw-bold text-purple-dark mb-3 text-uppercase small">Este tipo se aplica a:</label>
-                    <div class="d-flex flex-column gap-2">
-                        <x-forms.checkbox
-                            name="for_assistive_technology"
-                            label="Tecnologias Assistivas"
-                            :checked="old('for_assistive_technology')"
-                        />
-                        <x-forms.checkbox
-                            name="for_educational_material"
-                            label="Materiais Didáticos"
-                            :checked="old('for_educational_material')"
-                        />
-                    </div>
-                </div>
+            {{-- Natureza Digital: Estilo Limpo TA --}}
+            <div class="col-md-6">
+                <x-forms.checkbox
+                    name="is_digital"
+                    label="Recurso Digital"
+                    description="Marque para PDFs, Softwares ou Links (Uso Ilimitado)"
+                    :checked="old('is_digital')"
+                />
             </div>
 
-            {{-- Coluna: Natureza Digital --}}
-            <div class="col-md-6 mb-4"> {{-- Adicionado mb-4 aqui --}}
-                <div class="p-3 border rounded h-100" style="background-color: #f0f7ff; border-color: #cfe2ff !important;">
-                    <label class="form-label fw-bold text-primary mb-3 text-uppercase small italic">Natureza do Recurso:</label>
+            {{-- Status Ativo: Estilo Limpo TA --}}
+            <div class="col-md-6">
+                <x-forms.checkbox
+                    name="is_active"
+                    id="is_active"
+                    label="Ativar no Sistema"
+                    description="Fica disponível para uso nos formulários imediatamente"
+                    :checked="old('is_active', true)"
+                />
+            </div>
+
+            {{-- Aplicabilidade: Estilo Público-alvo TA (Box Cinza Horizontal) --}}
+            <div class="col-md-12 mb-4 mt-4">
+                <label class="form-label fw-bold text-purple-dark">Este tipo se aplica a: *</label>
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     <x-forms.checkbox
-                        name="is_digital"
-                        label="Este recurso é digital?"
-                        description="Marque para PDFs, Softwares ou Links."
-                        :checked="old('is_digital')"
+                        name="for_assistive_technology"
+                        id="apply_ta"
+                        label="Tecnologias Assistivas"
+                        :checked="old('for_assistive_technology')"
+                        class="mb-0"
                     />
-                </div>
-            </div>
-
-            <x-forms.section title="Status de Ativação" />
-
-            <div class="col-md-12">
-                <div class="p-3 border rounded border-success bg-light">
                     <x-forms.checkbox
-                        name="is_active"
-                        id="is_active"
-                        label="Tipo de Recurso Ativo"
-                        description="Se marcado, esta categoria aparecerá imediatamente nos formulários de cadastro."
-                        :checked="old('is_active', true)"
+                        name="for_educational_material"
+                        id="apply_material"
+                        label="Materiais Didáticos"
+                        :checked="old('for_educational_material')"
+                        class="mb-0"
                     />
                 </div>
             </div>
@@ -85,7 +71,7 @@
             {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.resource-types.index') }}" variant="secondary">
-                    Cancelar
+                    Voltar para Listagem
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit px-5">

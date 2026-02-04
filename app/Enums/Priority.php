@@ -18,4 +18,14 @@ enum Priority: string
             self::CRITICAL => 'Crítica',
         };
     }
+
+    public function color(): string
+    {
+        return match ($this) {
+            self::LOW => 'info',
+            self::MEDIUM => 'warning',
+            self::HIGH => 'danger',
+            self::CRITICAL => 'dark',
+        };
+    }
 }
