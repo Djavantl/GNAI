@@ -4,6 +4,8 @@ import './pages/inclusive-radar/accessible-educational-materials.js';
 import './pages/inclusive-radar/loans.js';
 import './pages/messages.js';
 import './pages/inclusive-radar/type-attributes.js';
+import './pages/inclusive-radar/institutions.js';
+import './pages/inclusive-radar/locations.js';
 
 // App principal - Sidebar e Navbar
 class App {

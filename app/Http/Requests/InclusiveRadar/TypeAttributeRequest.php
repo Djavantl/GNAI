@@ -3,6 +3,7 @@
 namespace App\Http\Requests\InclusiveRadar;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TypeAttributeRequest extends FormRequest
 {
@@ -13,11 +14,12 @@ class TypeAttributeRequest extends FormRequest
 
     public function rules(): array
     {
-        $attributeId = $this->route('type_attribute')?->id;
+        $attribute = $this->route('typeAttribute');
+        $attributeId = is_object($attribute) ? $attribute->id : $attribute;
 
         return [
-            'name' => 'required|string|max:255|unique:type_attributes,name,' . $attributeId,
-            'label' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:255', Rule::unique('type_attributes', 'name')->ignore($attributeId),],
+            'label' => ['required', 'string', 'max:255', Rule::unique('type_attributes', 'label')->ignore($attributeId),],
             'field_type' => 'required|in:string,integer,decimal,boolean,date,text',
             'is_required' => 'boolean',
             'is_active' => 'boolean',

@@ -30,7 +30,7 @@ class BarrierService
     public function getCreateData(): array
     {
         return [
-            'institutions'  => Institution::with('locations')->where('is_active', true)->orderBy('name')->get(),
+            'institutions' => Institution::with(['locations' => function ($q) {$q->where('is_active', true);}])->where('is_active', true)->orderBy('name')->get(),
             'categories'    => BarrierCategory::where('is_active', true)->get(),
             'deficiencies'  => $this->deficiencyService->listActiveOrdered(),
             'students'      => Student::has('person')->with('person')->get()->sortBy('person.name'),

@@ -29,7 +29,7 @@ class LocationController extends Controller
 
     public function create()
     {
-        $institutions = Institution::with('locations')->where('is_active', true)->get();
+        $institutions = $this->service->getActiveInstitutionsWithLocations();
 
         return view('pages.inclusive-radar.locations.create', compact('institutions'));
     }
@@ -62,10 +62,11 @@ class LocationController extends Controller
 
     public function edit(Location $location)
     {
-        $institutions = Institution::where('is_active', true)->get();
+        $institutions = $this->service->getActiveInstitutionsWithLocations();
 
         return view('pages.inclusive-radar.locations.edit', compact('location', 'institutions'));
     }
+
 
     public function update(LocationRequest $request, Location $location)
     {
