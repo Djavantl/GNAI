@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('short_name')->nullable();
             $table->string('city');
-            $table->string('state', 2);
+            $table->string('state');
+            $table->string('district')->nullable();
+            $table->string('address')->nullable();
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
             $table->integer('default_zoom')->default(16);

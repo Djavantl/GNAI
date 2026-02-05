@@ -3,6 +3,7 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Models\InclusiveRadar\Institution;
 use App\Models\InclusiveRadar\Location;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -59,5 +60,15 @@ class LocationService
         DB::transaction(function () use ($location) {
             $location->delete();
         });
+    }
+
+    public function getActiveInstitutionsWithLocations()
+    {
+        return Institution::with(['locations' => function($query) {
+            $query->where('is_active', true);
+        }])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
     }
 }

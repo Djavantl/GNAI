@@ -116,7 +116,6 @@ form .col-12:not(.mb-4) { /* Aplica padding apenas onde não é seção */
     background-color: #4D44B5;
 }
 
-/* Classe de animação */
 .section-animate-in {
     display: block !important;
     animation: slideDownFade 0.5s ease-out forwards;
@@ -163,5 +162,3 @@ form .col-12:not(.mb-4) { /* Aplica padding apenas onde não é seção */
         transform: translateY(0);
     }
 }
-
-

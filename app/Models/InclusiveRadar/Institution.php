@@ -18,6 +18,8 @@ class Institution extends Model
         'short_name',
         'city',
         'state',
+        'district',
+        'address',
         'latitude',
         'longitude',
         'default_zoom',
