@@ -35,9 +35,10 @@
 /* Centraliza o texto de todas as células, exceto a primeira (opcional) */
 .table th, .table td {
     height: 4rem;
-    text-align: center; /* Centraliza horizontalmente */
+    text-align: left; /* Centraliza horizontalmente */
     vertical-align: middle; /* Centraliza verticalmente */
 }
+
 
 .table td:first-child {
     color: #303972 !important;
@@ -47,10 +48,10 @@
 .table tbody tr td:first-child {
     border-left: 4px solid #4D44B5 !important;
 }
-/* .table th:last-child,
+.table th:last-child,
 .table td:last-child {
     text-align: center;
-} */
+}
 
 /* .table-wrapper {
     display: flex;

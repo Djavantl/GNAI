@@ -21,9 +21,14 @@ class SemesterController extends Controller
      */
     public function index()
     {
-        $semesters = $this->service->all();
+        $semesters = $this->service->index();
 
         return view('pages.specialized-educational-support.semesters.index', compact('semesters'));
+    }
+
+    public function show(Semester $semester)
+    {
+        return view('pages.specialized-educational-support.semesters.show', compact('semester'));
     }
 
     /**

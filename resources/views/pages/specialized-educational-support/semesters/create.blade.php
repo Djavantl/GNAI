@@ -1,95 +1,59 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Criar Semestre</title>
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-light">
-
-<div class="container py-4">
-
-    <h2 class="mb-3">Cadastrar Novo Semestre</h2>
-
-    <a href="{{ route('specialized-educational-support.semesters.index') }}" class="btn btn-secondary mb-3">
-        Voltar
-    </a>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Corrija os erros abaixo:</strong>
-            <ul class="mt-2 mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@section('content')
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-title">Cadastrar Novo Semestre</h2>
+            <p class="text-muted">Defina o período letivo e sua vigência no sistema.</p>
         </div>
-    @endif
+        <x-buttons.link-button :href="route('specialized-educational-support.semesters.index')" variant="secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </x-buttons.link-button>
+    </div>
 
-    <form action="{{ route('specialized-educational-support.semesters.store') }}" method="POST" class="card p-3">
-        @csrf
+    <div class="custom-table-card bg-white shadow-sm">
+        <form action="{{ route('specialized-educational-support.semesters.store') }}" method="POST" class="p-4">
+            @csrf
 
-        <div class="mb-3">
-            <label class="form-label">Ano</label>
-            <input type="number"
-                   name="year"
-                   value="{{ old('year') }}"
-                   class="form-control"
-                   required>
-        </div>
+            <div class="row g-3">
+                <x-forms.section title="Identificação do Período" />
 
-        <div class="mb-3">
-            <label class="form-label">Período (Semestre)</label>
-            <input type="number"
-                   name="term"
-                   value="{{ old('term', 1) }}"
-                   class="form-control"
-                   min="1"
-                   required>
-        </div>
+                <div class="col-md-4">
+                    <x-forms.input name="year" label="Ano Letivo" type="number" :value="old('year', date('Y'))" required />
+                </div>
 
-        <div class="mb-3">
-            <label class="form-label">Rótulo</label>
-            <input type="text"
-                   name="label"
-                   value="{{ old('label') }}"
-                   class="form-control"
-                   placeholder="Ex: 2026.1">
-        </div>
+                <div class="col-md-4">
+                    <x-forms.input name="term" label="Período (Ex: 1 ou 2)" type="number" :value="old('term', 1)" min="1" required />
+                </div>
 
-        <div class="mb-3">
-            <label class="form-label">Data de Início</label>
-            <input type="date"
-                   name="start_date"
-                   value="{{ old('start_date') }}"
-                   class="form-control">
-        </div>
+                <div class="col-md-4">
+                    <x-forms.input name="label" label="Rótulo Exibido" placeholder="Ex: 2026.1" :value="old('label')" />
+                </div>
 
-        <div class="mb-3">
-            <label class="form-label">Data de Fim</label>
-            <input type="date"
-                   name="end_date"
-                   value="{{ old('end_date') }}"
-                   class="form-control">
-        </div>
+                <x-forms.section title="Duração do Semestre" />
 
-        <div class="mb-3 form-check">
-            <input type="checkbox"
-                   name="is_current"
-                   value="1"
-                   class="form-check-input"
-                   {{ old('is_current') ? 'checked' : '' }}>
-            <label class="form-check-label">Definir como semestre atual</label>
-        </div>
+                <div class="col-md-6">
+                    <x-forms.input name="start_date" label="Data de Início" type="date" :value="old('start_date')" />
+                </div>
 
-        <button type="submit" class="btn btn-success">
-            Salvar
-        </button>
-    </form>
+                <div class="col-md-6">
+                    <x-forms.input name="end_date" label="Data de Término" type="date" :value="old('end_date')" />
+                </div>
 
-</div>
+                <div class="col-12 mt-3">
+                    <x-forms.checkbox name="is_current" label="Definir este como o semestre atual do sistema" :checked="old('is_current')" />
+                </div>
 
-</body>
-</html>
+                <div class="col-12 border-top mt-4 pt-4 d-flex gap-2">
+                    <x-buttons.submit-button variant="success">
+                        <i class="fas fa-save"></i> Salvar Semestre
+                    </x-buttons.submit-button>
+                    
+                    <x-buttons.link-button :href="route('specialized-educational-support.semesters.index')" variant="secondary">
+                        Cancelar
+                    </x-buttons.link-button>
+                </div>
+            </div>
+        </form>
+    </div>
+@endsection

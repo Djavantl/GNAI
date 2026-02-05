@@ -1,143 +1,120 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Aluno</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@extends('layouts.app')
 
-<div class="container py-4">
-
-    <h2 class="mb-3">Editar Aluno</h2>
-
-    <a href="{{ route('specialized-educational-support.students.index') }}" class="btn btn-secondary mb-3">
-        Voltar
-    </a>
-
-    {{-- Exibição de erros --}}
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Corrija os erros abaixo:</strong>
-            <ul class="mb-0 mt-2">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Editar Aluno</h2>
+            <p class="text-muted">Atualize as informações cadastrais e acadêmicas do estudante.</p>
         </div>
-    @endif
+    </div>
 
-    <form action="{{ route('specialized-educational-support.students.update', $student) }}" method="POST" class="card p-4">
-        @csrf
-        @method('PUT')
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('specialized-educational-support.students.update', $student) }}" method="POST">
+            @method('PUT')
 
-        {{-- Pessoa --}}
+            <x-forms.section title="Dados Pessoais" />
 
-        <h5 class="mb-3">Dados Pessoais</h5>
-
-        <div class="mb-3">
-            <label class="form-label">Nome completo</label>
-            <input type="text"
-                   name="name"
-                   value="{{ old('name', $student->person->name) }}"
-                   class="form-control"
-                   required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Documento</label>
-            <input type="text"
-                   name="document"
-                   value="{{ old('document', $student->person->document) }}"
-                   class="form-control"
-                   required>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Data de nascimento</label>
-                <input
-                    type="date"
-                    name="birth_date"
-                    class="form-control"
-                    value="{{ old('birth_date', optional($student->person->birth_date)->format('Y-m-d')) }}"
-                >
+            <div class="col-md-12">
+                <x-forms.input 
+                    name="name" 
+                    label="Nome Completo *" 
+                    required 
+                    :value="old('name', $student->person->name)" 
+                />
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Gênero</label>
-                <select name="gender" class="form-select">
-                    @php
-                        $gender = old('gender', $student->person->gender);
-                    @endphp
-                    <option value="not_specified" {{ $gender == 'not_specified' ? 'selected' : '' }}>Não especificado</option>
-                    <option value="male" {{ $gender == 'male' ? 'selected' : '' }}>Masculino</option>
-                    <option value="female" {{ $gender == 'female' ? 'selected' : '' }}>Feminino</option>
-                    <option value="other" {{ $gender == 'other' ? 'selected' : '' }}>Outro</option>
-                </select>
+            <div class="col-md-12">
+                <x-forms.input 
+                    name="document" 
+                    label="Documento *" 
+                    required 
+                    :value="old('document', $student->person->document)" 
+                />
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">E-mail</label>
-            <input type="email"
-                   name="email"
-                   value="{{ old('email', $student->person->email) }}"
-                   class="form-control"
-                   required>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="birth_date" 
+                    label="Data de Nascimento *" 
+                    type="date" 
+                    required 
+                    :value="old('birth_date', optional($student->person->birth_date)->format('Y-m-d'))" 
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Telefone</label>
-            <input type="text"
-                   name="phone"
-                   value="{{ old('phone', $student->person->phone) }}"
-                   class="form-control">
-        </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="gender"
+                    label="Gênero"
+                    :options="[
+                        'not_specified' => 'Não informado',
+                        'male' => 'Masculino',
+                        'female' => 'Feminino',
+                        'other' => 'Outro'
+                    ]"
+                    :value="old('gender', $student->person->gender)"
+                    :selected="old('gender', $student->person->gender)"
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Endereço</label>
-            <textarea name="address"
-                      class="form-control"
-                      rows="2">{{ old('address', $student->person->address) }}</textarea>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="email" 
+                    label="E-mail *" 
+                    type="email" 
+                    required 
+                    :value="old('email', $student->person->email)" 
+                />
+            </div>
 
-        <hr>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="phone" 
+                    label="Telefone" 
+                    :value="old('phone', $student->person->phone)" 
+                />
+            </div>
 
-        {{-- Aluno --}}
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="address"
+                    label="Endereço"
+                    rows="2"
+                    :value="old('address', $student->person->address)"
+                />
+            </div>
 
-        <h5 class="mb-3">Dados Acadêmicos</h5>
+            <x-forms.section title="Dados Acadêmicos" />
 
-        <div class="mb-3">
-            <label class="form-label">Matrícula</label>
-            <input type="text"
-                   name="registration"
-                   value="{{ old('registration', $student->registration) }}"
-                   class="form-control"
-                   required>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="registration" 
+                    label="Matrícula *" 
+                    required 
+                    :value="old('registration', $student->registration)" 
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Data de ingresso</label>
-            <input type="date"
-                   name="entry_date"
-                   value="{{ old('entry_date', $student->entry_date) }}"
-                   class="form-control"
-                   required>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="entry_date" 
+                    label="Data de Ingresso *" 
+                    type="date" 
+                    required 
+                    :value="old('entry_date', $student->entry_date)" 
+                />
+            </div>
 
-        <div class="d-flex gap-3 mt-4">
-            <button type="submit" class="btn btn-success">
-                Atualizar
-            </button>
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('specialized-educational-support.students.index') }}" variant="secondary">
+                    Cancelar
+                </x-buttons.link-button>
 
-            <a href="{{ route('specialized-educational-support.students.index') }}" class="btn btn-outline-secondary">
-                Cancelar
-            </a>
-        </div>
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-sync mr-2"></i> Atualizar Cadastro
+                </x-buttons.submit-button>
+            </div>
 
-    </form>
-</div>
-
-</body>
-</html>
+        </x-forms.form-card>
+    </div>
+@endsection

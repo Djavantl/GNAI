@@ -183,6 +183,16 @@ body {
     font-family: var(--font-family-base) !important;
 }
 
+/* Estilo para valores na página de Show */
+.text-purple-light {
+    word-break: break-word; /* Evita que textos longos estourem o card */
+    white-space: pre-line;  /* Mantém as quebras de linha de textareas */
+}
+
+.italic {
+    font-style: italic;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
     .sidebar {

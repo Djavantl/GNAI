@@ -1,98 +1,116 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Responsável</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@extends('layouts.app')
 
-<div class="container py-4">
-
-    <h2 class="mb-3">Cadastrar Responsável</h2>
-
-    <a href="{{ route('specialized-educational-support.guardians.index', $student) }}" class="btn btn-secondary mb-3">
-        Voltar
-    </a>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Corrija os erros:</strong>
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Cadastrar Responsável</h2>
+            <p class="text-muted">Aluno: <strong>{{ $student->person->name }}</strong></p>
         </div>
-    @endif
+    </div>
 
-    <form action="{{ route('specialized-educational-support.guardians.store', $student) }}" method="POST" class="card p-4">
-        @csrf
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('specialized-educational-support.guardians.store', $student) }}" method="POST">
+            
+            <x-forms.section title="Dados Pessoais" />
 
-        <h5 class="mb-3">Dados do Responsável</h5>
-
-        <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Documento</label>
-            <input type="text" name="document" value="{{ old('document') }}" class="form-control" required>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col">
-                <label class="form-label">Data de Nascimento</label>
-                <input type="date" name="birth_date" value="{{ old('birth_date') }}" class="form-control" required>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="name" 
+                    label="Nome Completo *" 
+                    required 
+                    :value="old('name')" 
+                />
             </div>
-            <div class="col">
-                <label class="form-label">Gênero</label>
-                <select name="gender" class="form-select">
-                    <option value="male">Masculino</option>
-                    <option value="female">Feminino</option>
-                    <option value="other">Outro</option>
-                    <option value="not_specified" selected>Não informado</option>
-                </select>
+
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="document" 
+                    label="CPF/Documento *" 
+                    required 
+                    :value="old('document')" 
+                />
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">E-mail</label>
-            <input type="email" name="email" value="{{ old('email') }}" class="form-control" required>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    type="date" 
+                    name="birth_date" 
+                    label="Data de Nascimento *" 
+                    required 
+                    :value="old('birth_date')" 
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Telefone</label>
-            <input type="text" name="phone" value="{{ old('phone') }}" class="form-control">
-        </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="gender"
+                    label="Gênero"
+                    :options="[
+                        'male' => 'Masculino',
+                        'female' => 'Feminino',
+                        'other' => 'Outro',
+                        'not_specified' => 'Não informado'
+                    ]"
+                    :value="old('gender', 'not_specified')"
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Endereço</label>
-            <textarea name="address" class="form-control">{{ old('address') }}</textarea>
-        </div>
+            <x-forms.section title="Contato e Vínculo" />
 
-        <hr>
+            <div class="col-md-6">
+                <x-forms.input 
+                    type="email" 
+                    name="email" 
+                    label="E-mail *" 
+                    required 
+                    :value="old('email')" 
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Parentesco</label>
-            <select name="relationship" class="form-select" required>
-                <option value="">Selecione</option>
-                <option value="Pai">Pai</option>
-                <option value="Mãe">Mãe</option>
-                <option value="Avô">Avô</option>
-                <option value="Avó">Avó</option>
-                <option value="Responsável Legal">Responsável Legal</option>
-                <option value="Outro">Outro</option>
-            </select>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="phone" 
+                    label="Telefone" 
+                    :value="old('phone')" 
+                />
+            </div>
 
-        <button type="submit" class="btn btn-success">
-            Salvar
-        </button>
-    </form>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="relationship"
+                    label="Parentesco / Vínculo *"
+                    required
+                    :options="[
+                        'father' => 'Pai',
+                        'mother' => 'Mãe',
+                        'grandfather' => 'Avô',
+                        'grandmother' => 'Avó',
+                        'guardian' => 'Responsável Legal',
+                        'other' => 'Outro'
+                    ]"
+                    :value="old('relationship')"
+                />
+            </div>
 
-</div>
+            <div class="col-md-12">
+                <x-forms.textarea 
+                    name="address" 
+                    label="Endereço Completo" 
+                    rows="2" 
+                    :value="old('address')" 
+                />
+            </div>
 
-</body>
-</html>
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('specialized-educational-support.guardians.index', $student) }}" variant="secondary">
+                    Cancelar
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Salvar Responsável
+                </x-buttons.submit-button>
+            </div>
+
+        </x-forms.form-card>
+    </div>
+@endsection

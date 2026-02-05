@@ -1,58 +1,66 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalhes da Sessão</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light p-5">
-    <div class="container" style="max-width: 700px;">
-        <div class="card shadow">
-            <div class="card-header bg-dark text-white d-flex justify-content-between">
-                <h4 class="mb-0">Detalhes da Sessão</h4>
-                <span class="badge bg-primary">{{ $session->status }}</span>
-            </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-sm-4 fw-bold">Aluno:</div>
-                    <div class="col-sm-8">{{ $session->student->name }}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 fw-bold">Profissional:</div>
-                    <div class="col-sm-8">{{ $session->professional->name }}</div>
-                </div>
-                <hr>
-                <div class="row mb-3">
-                    <div class="col-sm-4 fw-bold">Data:</div>
-                    <div class="col-sm-8">{{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 fw-bold">Horário:</div>
-                    <div class="col-sm-8">
-                        {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }} às 
-                        {{ $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--' }}
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 fw-bold">Local:</div>
-                    <div class="col-sm-8">{{ $session->location }}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-sm-4 fw-bold">Tipo:</div>
-                    <div class="col-sm-8">{{ $session->type }}</div>
-                </div>
-                <hr>
-                <div class="row mb-3">
-                    <div class="col-12 fw-bold mb-2">Objetivo:</div>
-                    <div class="col-12 p-3 bg-light border rounded">{{ $session->session_objective }}</div>
-                </div>
+@extends('layouts.app')
 
-                <div class="mt-4">
-                    <a href="{{ route('specialized-educational-support.sessions.edit', $session) }}" class="btn btn-warning">Editar</a>
-                    <a href="{{ route('specialized-educational-support.sessions.index') }}" class="btn btn-secondary">Voltar para Lista</a>
-                </div>
+@section('content')
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-title">Detalhes da Sessão</h2>
+            <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <x-buttons.link-button :href="route('specialized-educational-support.sessions.edit', $session->id)" variant="warning">
+                Editar Sessão
+            </x-buttons.link-button>
+            
+            <x-buttons.link-button :href="route('specialized-educational-support.sessions.index')" variant="secondary">
+                Voltar
+            </x-buttons.link-button>
+        </div>
+    </div>
+
+    {{-- Reutilizando seu componente de card de formulário para manter o estilo --}}
+    <div class="custom-table-card bg-white">
+        <div class="row g-0">
+            
+            <x-forms.section title="Identificação" />
+            
+            <x-show.info-item label="Aluno" :value="$session->student->person->name" column="col-md-6" isBox="true"/>
+            
+            <x-show.info-item label="Profissional" :value="$session->professional->person->name" column="col-md-6" isBox="true"/>
+            
+            <x-show.info-item label="Status" column="col-md-6">
+                <span class="badge" style="background-color: var(--primary-color);">
+                    {{ strtoupper($session->status) }}
+                </span>
+            </x-show.info-item>
+
+            <x-forms.section title="Agendamento e Local"  />
+
+            <x-show.info-item label="Data" isBox="true">
+                {{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}
+            </x-show.info-item>
+
+            <x-show.info-item label="Horário" isBox="true">
+                {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }} às {{ $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--' }}
+            </x-show.info-item>
+
+            <x-show.info-item label="Local" :value="$session->location" isBox="true"/>
+            
+            <x-show.info-item label="Tipo de Atendimento" :value="$session->type" isBox="true"/>
+
+            <x-forms.section title="Conteúdo da Sessão" />
+
+            <x-show.info-textarea label="Objetivo da Sessão" column="col-md-12" isBox="true">{{ $session->session_objective }}</x-show.info-textarea>
+
+            {{-- Rodapé do Card --}}
+            <div class="col-12 border-top p-4  d-flex justify-content-end gap-3">
+                 <form action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir esta sessão permanentemente?')">
+                        Excluir Registro
+                    </x-buttons.submit-button>
+                </form>
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection

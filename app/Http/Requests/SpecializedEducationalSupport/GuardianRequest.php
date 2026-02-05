@@ -4,6 +4,7 @@ namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\SpecializedEducationalSupport\Guardian;
 
 class GuardianRequest extends FormRequest
 {
@@ -14,49 +15,74 @@ class GuardianRequest extends FormRequest
 
     public function rules(): array
     {
+        // Pegamos o objeto do responsável da rota (se existir) para ignorar o CPF dele mesmo na edição
         $guardian = $this->route('guardian');
         $personId = $guardian?->person_id;
 
         return [
-            // Pessoa do responsável
+            // --- Dados da Tabela 'people' ---
             'name' => [
                 'required',
                 'string',
+                'min:3',
                 'max:255'
             ],
 
             'document' => [
                 'required',
                 'string',
+                // Garante que o CPF/RG seja único, mas ignora o ID da pessoa atual se for um Update
                 Rule::unique('people', 'document')->ignore($personId),
             ],
 
             'birth_date' => [
-                'nullable',
-                'date'
+                'required', // Geralmente obrigatório para responsáveis
+                'date',
+                'before:today' // Não pode ter nascido no futuro
+            ],
+
+            'gender' => [
+                'required',
+                // Puxa as chaves (male, female, etc) do array que você criou no Model
+                Rule::in(array_keys(Guardian::genderOptions())),
             ],
 
             'email' => [
                 'nullable',
-                'email'
+                'email',
+                'max:255'
             ],
 
             'phone' => [
-                'nullable',
-                'string'
+                'required', // Importante para a escola conseguir contato
+                'string',
             ],
 
             'address' => [
                 'nullable',
-                'string'
+                'string',
+                'max:500'
             ],
 
-            // Responsável
+            // --- Dados da Tabela 'student_guardians' ---
             'relationship' => [
                 'required',
-                'in:Mãe,Pai,Avô,Avó,Responsável Legal,Outro'
+                'string',
+                // Adicionei o 'r' que faltava em grandmother no seu código original
+                'in:mother,father,grandfather,grandmother,guardian,other'
             ],
+        ];
+    }
 
+    /**
+     * Customização das mensagens (opcional, mas melhora a UX)
+     */
+    public function messages(): array
+    {
+        return [
+            'document.unique' => 'Este CPF/Documento já está cadastrado para outra pessoa.',
+            'relationship.in' => 'O parentesco selecionado é inválido.',
+            'birth_date.before' => 'A data de nascimento deve ser uma data passada.',
         ];
     }
 }

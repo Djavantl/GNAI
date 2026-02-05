@@ -1,90 +1,89 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Criar Sessão</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light p-5">
-    <div class="container" style="max-width: 800px;">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Agendar Nova Sessão</h4>
-            </div>
-            <div class="card-body">
-                <pre>
-                    Total de alunos: {{ count($students) }}
-                    Total de profissionais: {{ count($professionals) }}
-                </pre>
-                <form action="{{ route('specialized-educational-support.sessions.store') }}" method="POST">
-                    @csrf
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Aluno</label>
-                            <select name="student_id" class="form-select @error('student_id') is-invalid @enderror">
-                                <option value="">Selecione...</option>
-                                @foreach($students as $student)
-                                   <option value="{{ $student->id }}">{{ $student->person->name ?? 'Sem Nome' }}</option>
-                                @endforeach
-                            </select>
-                            @error('student_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
+@extends('layouts.app')
 
-                        <div class="col-md-6">
-                            <label class="form-label">Profissional</label>
-                            <select name="professional_id" class="form-select @error('professional_id') is-invalid @enderror">
-                                <option value="">Selecione...</option>
-                                @foreach($professionals as $prof)
-                                    <option value="{{ $prof->id }}">{{ $prof->person->name ?? 'Sem Nome'  }}</option>
-                                @endforeach
-                            </select>
-                            @error('professional_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Data</label>
-                            <input type="date" name="session_date" class="form-control" value="{{ old('session_date') }}">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Início</label>
-                            <input type="time" name="start_time" class="form-control" value="{{ old('start_time') }}">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Fim</label>
-                            <input type="time" name="end_time" class="form-control" value="{{ old('end_time') }}">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Tipo</label>
-                            <input type="text" name="type" class="form-control" placeholder="Ex: Individual" value="{{ old('type') }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Local</label>
-                            <input type="text" name="location" class="form-control" value="{{ old('location') }}">
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label">Objetivo da Sessão</label>
-                            <textarea name="session_objective" class="form-control" rows="3">{{ old('session_objective') }}</textarea>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label">Status</label>
-                            <select name="status" class="form-select">
-                                <option value="Agendado">Agendado</option>
-                                <option value="Realizado">Realizado</option>
-                                <option value="Cancelado">Cancelado</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-success">Salvar Sessão</button>
-                        <a href="{{ route('specialized-educational-support.sessions.index') }}" class="btn btn-secondary">Cancelar</a>
-                    </div>
-                </form>
-            </div>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Agendar Nova Sessão</h2>
+            <p class="text-muted">Preencha os dados para agendar o atendimento especializado.</p>
         </div>
     </div>
-</body>
-</html>
+
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('specialized-educational-support.sessions.store') }}" method="POST">
+            
+            <x-forms.section title="Participantes e Horário" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="student_id"
+                    label="Aluno *"
+                    required
+                    :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person->name ?? 'Sem Nome'])"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="professional_id"
+                    label="Profissional *"
+                    required
+                    :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name ?? 'Sem Nome'])"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input name="session_date" label="Data da Sessão *" type="date" required :value="old('session_date')" />
+            </div>
+
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-6">
+                        <x-forms.input name="start_time" label="Início *" type="time" required :value="old('start_time')" />
+                    </div>
+                    <div class="col-6">
+                        <x-forms.input name="end_time" label="Fim *" type="time" required :value="old('end_time')" />
+                    </div>
+                </div>
+            </div>
+
+            <x-forms.section title="Detalhes do Atendimento" />
+
+            <div class="col-md-6">
+                <x-forms.input name="type" label="Tipo de Atendimento" placeholder="Ex: Individual" :value="old('type')" />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input name="location" label="Local" :value="old('location')" />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="status"
+                    label="Status"
+                    :options="['Agendado' => 'Agendado', 'Realizado' => 'Realizado', 'Cancelado' => 'Cancelado']"
+                    :value="old('status', 'Agendado')"
+                />
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="session_objective"
+                    label="Objetivo da Sessão"
+                    rows="3"
+                    :value="old('session_objective')"
+                />
+            </div>
+
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.index') }}" variant="secondary">
+                    Cancelar
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                    <i class="fas fa-save mr-2"></i> Salvar Sessão
+                </x-buttons.submit-button>
+            </div>
+
+        </x-forms.form-card>
+    </div>
+@endsection

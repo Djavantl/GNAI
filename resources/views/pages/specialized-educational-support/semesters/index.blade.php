@@ -1,77 +1,100 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Semestres</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+@extends('layouts.master')
 
-<body class="bg-gray-100 p-8">
-<div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
+@section('title', 'Gestão de Semestres')
 
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Semestres</h1>
-        <a href="{{ route('specialized-educational-support.semesters.create') }}"
-           class="bg-blue-500 text-white px-4 py-2 rounded">
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Semestres Letivos</h2>
+            <p class="text-muted">Configuração de períodos para organização dos atendimentos e relatórios.</p>
+        </div>
+        <x-buttons.link-button
+            :href="route('specialized-educational-support.semesters.create')"
+            variant="new"
+        >
             Novo Semestre
-        </a>
+        </x-buttons.link-button>
     </div>
 
     @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-3 mb-4 rounded">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="w-full text-left border-collapse">
-        <thead>
-        <tr class="border-b">
-            <th class="p-2">Ano</th>
-            <th class="p-2">Período</th>
-            <th class="p-2">Rótulo</th>
-            <th class="p-2">Atual</th>
-            <th class="p-2">Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($semesters as $semester)
-            <tr class="border-b hover:bg-gray-50">
-                <td class="p-2">{{ $semester->year }}</td>
-                <td class="p-2">{{ $semester->term }}</td>
-                <td class="p-2">{{ $semester->label }}</td>
-                <td class="p-2">
+    <x-table.table :headers="['Ano / Período', 'Rótulo Identificador', 'Status', 'Ações']">
+        @forelse($semesters as $semester)
+            <tr class="{{ $semester->is_current ? 'table-primary' : '' }}">
+                <x-table.td>
+                    <div class="fw-bold">{{ $semester->year }}</div>
+                    <small class="text-muted text-uppercase">{{ $semester->term }}º Período</small>
+                </x-table.td>
+
+                <x-table.td>
+                    <span class="text-uppercase fw-bold">{{ $semester->label }}</span>
+                </x-table.td>
+
+                <x-table.td >
                     @if($semester->is_current)
-                        <span class="text-green-600 font-semibold">Sim</span>
+                        <span class="text-success">
+                            SEMESTRE ATUAL
+                        </span>
                     @else
-                        <span class="text-gray-500">Não</span>
+                        <span class="text-muted">Histórico</span>
                     @endif
-                </td>
-                <td class="p-2 flex gap-3">
-                    <a href="{{ route('specialized-educational-support.semesters.edit', $semester) }}"
-                       class="text-orange-500">Editar</a>
+                </x-table.td>
 
-                    @if(!$semester->is_current)
-                        <form action="{{ route('specialized-educational-support.semesters.setCurrent', $semester) }}"
-                              method="POST">
+                <x-table.td>
+                    <x-table.actions>
+
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.semesters.show', $semester)"
+                            variant="info-outline"
+                        >
+                            ver
+                        </x-buttons.link-button>
+
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.semesters.edit', $semester)"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
+
+                        @if(!$semester->is_current)
+                            <form action="{{ route('specialized-educational-support.semesters.setCurrent', $semester) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('PATCH')
+                                <x-buttons.submit-button variant="success">
+                                    Definir Atual
+                                </x-buttons.submit-button>
+                            </form>
+                        @endif
+
+                        <form action="{{ route('specialized-educational-support.semesters.destroy', $semester) }}" method="POST" class="d-inline">
                             @csrf
-                            @method('PATCH')
-                            <button class="text-blue-500">Definir Atual</button>
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Tem certeza que deseja excluir este semestre?')"
+                            >
+                                Excluir
+                            </x-buttons.submit-button>
                         </form>
-                    @endif
-
-                    <form action="{{ route('specialized-educational-support.semesters.destroy', $semester) }}"
-                          method="POST"
-                          onsubmit="return confirm('Excluir semestre?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="text-red-500">Excluir</button>
-                    </form>
+                    </x-table.actions>
+                </x-table.td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="4" class="text-center text-muted py-5">
+                    Nenhum semestre cadastrado.
                 </td>
             </tr>
-        @endforeach
-        </tbody>
-    </table>
+        @endforelse
+    </x-table.table>
 
-</div>
-</body>
-</html>
+    <div class="mt-4">
+        <div class="alert alert-light border small text-muted">
+            <i class="fas fa-info-circle mr-1"></i>
+            O <strong>Semestre Atual</strong> determina qual período será selecionado por padrão em novos lançamentos e filtros de relatórios.
+        </div>
+    </div>
+@endsection

@@ -8,11 +8,15 @@ use Illuminate\Support\Facades\DB;
 
 class StudentService
 {
-    public function all()
+    public function index()
     {
         return Student::with('person')
             ->orderBy('created_at', 'desc')
             ->get();
+    }
+
+    public function show(Student $student){
+        return $student->load('person');
     }
 
     /**

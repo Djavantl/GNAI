@@ -18,9 +18,14 @@ class PositionController extends Controller
 
     public function index()
     {
-        $position = $this->service->listAll();
+        $position = $this->service->index();
 
         return view('pages.specialized-educational-support.positions.index', compact('position'));
+    }
+
+    public function show(Position $position)
+    {
+        return view('pages.specialized-educational-support.positions.show', compact('position'));
     }
 
     public function create()
@@ -33,11 +38,6 @@ class PositionController extends Controller
         $this->service->store($request->validated());
 
         return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo criado com sucesso!');
-    }
-
-    public function show(Position $position)
-    {
-        //
     }
 
     public function edit(Position $position)

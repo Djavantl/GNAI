@@ -1,106 +1,118 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Responsável</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@extends('layouts.app')
 
-<div class="container py-4">
-
-    <h2 class="mb-3">Editar Responsável</h2>
-
-    <a href="{{ route('specialized-educational-support.guardians.index', $student) }}" class="btn btn-secondary mb-3">
-        Voltar
-    </a>
-
-    <form action="{{ route('specialized-educational-support.guardians.update', [$student, $guardian]) }}" method="POST" class="card p-4">
-        @csrf
-        @method('PUT')
-
-        <h5 class="mb-3">Dados do Responsável</h5>
-
-        <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input type="text"
-                   name="name"
-                   value="{{ old('name', $guardian->person->name) }}"
-                   class="form-control"
-                   required>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Editar Responsável</h2>
+            <p class="text-muted">Editando vínculo de: <strong>{{ $guardian->person->name }}</strong></p>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Documento</label>
-            <input type="text"
-                   name="document"
-                   value="{{ old('document', $guardian->person->document) }}"
-                   class="form-control"
-                   required>
-        </div>
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('specialized-educational-support.guardians.update', [$student, $guardian]) }}" method="POST">
+            @method('PUT')
+            
+            <x-forms.section title="Dados Pessoais" />
 
-        <div class="row mb-3">
-            <div class="col">
-                <label class="form-label">Data de Nascimento</label>
-                <input type="date"
-                       name="birth_date"
-                       value="{{ old('birth_date', $guardian->person->birth_date->format('Y-m-d')) }}"
-                       class="form-control"
-                       required>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="name" 
+                    label="Nome Completo *" 
+                    required 
+                    :value="old('name', $guardian->person->name)" 
+                />
             </div>
-            <div class="col">
-                <label class="form-label">Gênero</label>
-                <select name="gender" class="form-select">
-                    @foreach(\App\Models\Person::genderOptions() as $key => $label)
-                        <option value="{{ $key }}"
-                            {{ old('gender', $guardian->person->gender) === $key ? 'selected' : '' }}>
-                            {{ $label }}
-                        </option>
-                    @endforeach
-                </select>
+
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="document" 
+                    label="CPF/Documento *" 
+                    required 
+                    :value="old('document', $guardian->person->document)" 
+                />
             </div>
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">E-mail</label>
-            <input type="email"
-                   name="email"
-                   value="{{ old('email', $guardian->person->email) }}"
-                   class="form-control"
-                   required>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    type="date" 
+                    name="birth_date" 
+                    label="Data de Nascimento *" 
+                    required 
+                    :value="old('birth_date', $guardian->person->birth_date ? $guardian->person->birth_date->format('Y-m-d') : '')" 
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Telefone</label>
-            <input type="text"
-                   name="phone"
-                   value="{{ old('phone', $guardian->person->phone) }}"
-                   class="form-control">
-        </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="gender"
+                    label="Gênero"
+                    :options="\App\Models\SpecializedEducationalSupport\Person::genderOptions()"
+                    :value="old('gender', $guardian->person->gender)"
+                    :selected="old('gender', $guardian->person->gender)"
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Endereço</label>
-            <textarea name="address" class="form-control">{{ old('address', $guardian->person->address) }}</textarea>
-        </div>
+            <x-forms.section title="Contato e Vínculo" />
 
-        <hr>
+            <div class="col-md-6">
+                <x-forms.input 
+                    type="email" 
+                    name="email" 
+                    label="E-mail *" 
+                    required 
+                    :value="old('email', $guardian->person->email)" 
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Parentesco</label>
-            <select name="relationship" class="form-select" required>
-                <option value="father" {{ $guardian->relationship === 'father' ? 'selected' : '' }}>Pai</option>
-                <option value="mother" {{ $guardian->relationship === 'mother' ? 'selected' : '' }}>Mãe</option>
-                <option value="guardian" {{ $guardian->relationship === 'guardian' ? 'selected' : '' }}>Responsável Legal</option>
-                <option value="other" {{ $guardian->relationship === 'other' ? 'selected' : '' }}>Outro</option>
-            </select>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="phone" 
+                    label="Telefone" 
+                    :value="old('phone', $guardian->person->phone)" 
+                />
+            </div>
 
-        <button type="submit" class="btn btn-success">
-            Atualizar
-        </button>
-    </form>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="relationship"
+                    label="Parentesco / Vínculo *"
+                    required
+                    :options="[
+                        'father' => 'Pai',
+                        'mother' => 'Mãe',
+                        'grandfather' => 'Avô',
+                        'grandmother' => 'Avó',
+                        'guardian' => 'Responsável Legal',
+                        'other' => 'Outro'
+                    ]"
+                    :value="old('relationship', $guardian->relationship)"
+                    :selected="old('relationship', $guardian->relationship)"
+                />
+            </div>
 
-</div>
+            <div class="col-md-12">
+                <x-forms.textarea 
+                    name="address" 
+                    label="Endereço Completo" 
+                    rows="2" 
+                    :value="old('address', $guardian->person->address)" 
+                />
+            </div>
 
-</body>
-</html>
+            <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4">
+                <div>
+                    <x-buttons.link-button href="{{ route('specialized-educational-support.guardians.index', $student) }}" variant="secondary">
+                        Voltar
+                    </x-buttons.link-button>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                        <i class="fas fa-sync mr-2"></i> Atualizar Responsável
+                    </x-buttons.submit-button>
+                </div>
+            </div>
+
+        </x-forms.form-card>
+    </div>
+@endsection

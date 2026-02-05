@@ -1,79 +1,86 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Responsáveis do Aluno</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+@extends('layouts.master')
 
-<div class="container py-4">
+@section('title', 'Responsáveis do Aluno')
 
-    <h2 class="mb-3">
-        Responsáveis — {{ $student->person->name }}
-    </h2>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Responsáveis — {{ $student->person->name }}</h2>
+            <p class="text-muted">Gerenciamento de vínculos familiares e contatos de emergência.</p>
+        </div>
+        <div class="d-flex gap-2 align-items-start">
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.students.index')"
+                variant="secondary"
+            >
+                Voltar para Alunos
+            </x-buttons.link-button>
 
-    <div class="mb-3 d-flex gap-2">
-        <a href="{{ route('specialized-educational-support.students.index') }}" class="btn btn-secondary">
-            Voltar para alunos
-        </a>
-
-        <a href="{{ route('specialized-educational-support.guardians.create', $student) }}" class="btn btn-primary">
-            Novo Responsável
-        </a>
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.guardians.create', $student)"
+                variant="new"
+            >
+                Novo Responsável
+            </x-buttons.link-button>
+        </div>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
+    <x-table.table :headers="['Nome', 'Documento', 'Vínculo (Parentesco)', 'Contato', 'Ações']">
+        @forelse($guardians as $guardian)
             <tr>
-                <th>Nome</th>
-                <th>Documento</th>
-                <th>Parentesco</th>
-                <th>Telefone</th>
-                <th width="180">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($guardians as $guardian)
-                <tr>
-                    <td>{{ $guardian->person->name }}</td>
-                    <td>{{ $guardian->person->document }}</td>
-                    <td>{{ ucfirst($guardian->relationship) }}</td>
-                    <td>{{ $guardian->person->phone ?? '-' }}</td>
-                    <td class="d-flex gap-2">
-                        <a href="{{ route('specialized-educational-support.guardians.edit', [$student, $guardian]) }}"
-                           class="btn btn-sm btn-warning">
-                            Editar
-                        </a>
+                <x-table.td>
+                   {{ $guardian->person->name }}
+                </x-table.td>
 
-                        <form action="{{ route('specialized-educational-support.guardians.destroy', [$student, $guardian]) }}"
-                              method="POST"
-                              onsubmit="return confirm('Remover responsável?')">
+                <x-table.td>
+                    {{ $guardian->person->document }}
+                </x-table.td>
+
+                <x-table.td>
+                        {{ ucfirst($guardian->relationship) }}
+                </x-table.td>
+
+                <x-table.td>
+                        {{ $guardian->person->email }}
+                </x-table.td>
+
+                <x-table.td>
+                    <x-table.actions>
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.guardians.show', $guardian)"
+                            variant="info-outline"
+                        >
+                            ver
+                        </x-buttons.link-button>
+
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.guardians.edit', [$student, $guardian])"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
+
+                        <form action="{{ route('specialized-educational-support.guardians.destroy', [$student, $guardian]) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-sm btn-danger">
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja remover este vínculo de responsabilidade?')"
+                            >
                                 Excluir
-                            </button>
+                            </x-buttons.submit-button>
                         </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="text-center text-muted">
-                        Nenhum responsável cadastrado.
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-</div>
-
-</body>
-</html>
+                    </x-table.actions>
+                </x-table.td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="4" class="text-center text-muted py-4">Nenhum responsável cadastrado para este aluno.</td>
+            </tr>
+        @endforelse
+    </x-table.table>
+@endsection

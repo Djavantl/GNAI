@@ -38,6 +38,34 @@
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button
+                        :href="route('specialized-educational-support.students.show', $student)"
+                        variant="info"
+                    >
+                        Ver
+                    </x-buttons.link-button>
+
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.student-context.index', $student)"
+                        variant="secondary"
+                    >
+                        Contextos
+                    </x-buttons.link-button>
+
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.student-deficiencies.index', $student)"
+                        variant="dark"
+                    >
+                        Deficiências
+                    </x-buttons.link-button>
+
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.guardians.index', $student)"
+                        variant="info"
+                    >
+                        Responsáveis
+                    </x-buttons.link-button>
+
+                    <x-buttons.link-button
                         :href="route('specialized-educational-support.students.edit', $student)"
                         variant="warning"
                     >

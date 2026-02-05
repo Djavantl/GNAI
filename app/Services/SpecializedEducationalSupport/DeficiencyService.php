@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class DeficiencyService
 {
-    public function listAll()
+    public function index()
     {
         return Deficiency::orderBy('name')->get();
     }

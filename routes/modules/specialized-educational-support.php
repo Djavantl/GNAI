@@ -31,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
     //Students
 
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+    Route::get('/students/{student}/show', [StudentController::class, 'show'])->name('students.show');
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
     Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
@@ -40,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     //Deficiencies
 
     Route::get('/deficiencies', [DeficiencyController::class, 'index'])->name('deficiencies.index');
+    Route::get('/deficiencies/{deficiency}/show', [DeficiencyController::class, 'show'])->name('deficiencies.show');
     Route::get('/deficiencies/create', [DeficiencyController::class, 'create'])->name('deficiencies.create');
     Route::post('/deficiencies/store', [DeficiencyController::class, 'store'])->name('deficiencies.store');
     Route::get('/deficiencies/{deficiency}/edit', [DeficiencyController::class, 'edit'])->name('deficiencies.edit');
@@ -50,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
     //Positions
 
     Route::get('/positions', [PositionController::class, 'index'])->name('positions.index');
+    Route::get('/positions/{position}/show', [PositionController::class, 'show'])->name('positions.show');
     Route::get('/positions/create', [PositionController::class, 'create'])->name('positions.create');
     Route::post('/positions/store', [PositionController::class, 'store'])->name('positions.store');
     Route::get('/positions/{position}/edit', [PositionController::class, 'edit'])->name('positions.edit');
@@ -60,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     //Semesters
 
     Route::get('/semesters', [SemesterController::class, 'index'])->name('semesters.index');
+    Route::get('/semesters/{semester}/show', [SemesterController::class, 'show'])->name('semesters.show');
     Route::get('/semesters/create', [SemesterController::class, 'create'])->name('semesters.create');
     Route::post('/semesters/store', [SemesterController::class, 'store'])->name('semesters.store');
     Route::get('/semesters/{semester}/edit', [SemesterController::class, 'edit'])->name('semesters.edit');
@@ -70,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
     //Guardians
 
     Route::get('/students/{student}/guardians',[GuardianController::class, 'index'])->name('guardians.index');
+    Route::get('/guardian/{guardian}/show',[GuardianController::class, 'show'])->name('guardians.show');
     Route::get('/students/{student}/guardians/create',[GuardianController::class, 'create'])->name('guardians.create');
     Route::post('/students/{student}/guardians/store',[GuardianController::class, 'store'])->name('guardians.store');
     Route::get('/students/{student}/guardians/{guardian}/edit',[GuardianController::class, 'edit'])->name('guardians.edit');
@@ -79,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
     // Professionals
 
     Route::get('/professionals',[ProfessionalController::class, 'index'])->name('professionals.index');
+    Route::get('/professionals/{professional}/show',[ProfessionalController::class, 'show'])->name('professionals.show');
     Route::get('/professionals/create',[ProfessionalController::class, 'create'])->name('professionals.create');
     Route::post('/professionals/store',[ProfessionalController::class, 'store'])->name('professionals.store');
     Route::get('/professionals/{professional}/edit',[ProfessionalController::class, 'edit'])->name('professionals.edit');
@@ -100,6 +106,7 @@ Route::middleware(['auth'])->group(function () {
     // Deficiencias do aluno
 
     Route::get('student-deficiencies/{student}', [StudentDeficienciesController::class, 'index'])->name('student-deficiencies.index');
+    Route::get('student-deficiencies/{student_deficiency}/show', [StudentDeficienciesController::class, 'show'])->name('student-deficiencies.show');
     Route::get('student-deficiencies/{student}/create', [StudentDeficienciesController::class, 'create'])->name('student-deficiencies.create');
     Route::post('student-deficiencies/{student}', [StudentDeficienciesController::class, 'store'])->name('student-deficiencies.store');
     Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])->name('student-deficiencies.edit');  

@@ -1,66 +1,58 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Criar Cargo</title>
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-light">
-
-<div class="container py-4">
-
-    <h2 class="mb-3">Cadastrar Novo Cargo</h2>
-
-    <a href="{{ route('specialized-educational-support.positions.index') }}" class="btn btn-secondary mb-3">
-        Voltar
-    </a>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>Corrija os erros abaixo:</strong>
-            <ul class="mt-2 mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Cadastrar Novo Cargo</h2>
+            <p class="text-muted">Defina as atribuições e o status do cargo no sistema.</p>
         </div>
-    @endif
+    </div>
 
-    <form action="{{ route('specialized-educational-support.positions.store') }}" method="POST" class="card p-3">
-        @csrf
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('specialized-educational-support.positions.store') }}" method="POST">
+            
+            <x-forms.section title="Informações do Cargo" />
 
-        <div class="mb-3">
-            <label class="form-label">Nome</label>
-            <input type="text"
-                   name="name"
-                   value="{{ old('name') }}"
-                   class="form-control"
-                   required>
-        </div>
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="name" 
+                    label="Nome do Cargo *" 
+                    required 
+                    placeholder="Ex: Professor AEE, Psicólogo..."
+                    :value="old('name')" 
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Descrição</label>
-            <textarea name="description"
-                      class="form-control"
-                      rows="3">{{ old('description') }}</textarea>
-        </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="is_active"
+                    label="Status *"
+                    required
+                    :options="['1' => 'Ativo', '0' => 'Inativo']"
+                    :value="old('is_active', '1')"
+                />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Status</label>
-            <select name="is_active" class="form-select">
-                <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>Ativa</option>
-                <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Inativa</option>
-            </select>
-        </div>
+            <div class="col-md-12">
+                <x-forms.textarea 
+                    name="description" 
+                    label="Descrição" 
+                    rows="3" 
+                    placeholder="Breve descrição das responsabilidades..."
+                    :value="old('description')" 
+                />
+            </div>
 
-        <button type="submit" class="btn btn-success">
-            Salvar
-        </button>
-    </form>
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('specialized-educational-support.positions.index') }}" variant="secondary">
+                    Cancelar
+                </x-buttons.link-button>
 
-</div>
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save mr-2"></i> Salvar Cargo
+                </x-buttons.submit-button>
+            </div>
 
-</body>
-</html>
+        </x-forms.form-card>
+    </div>
+@endsection

@@ -10,7 +10,7 @@ class SemesterService
     /**
      * Listar todos os semestres
      */
-    public function all()
+    public function index()
     {
         return Semester::orderBy('year', 'desc')
             ->orderBy('term', 'desc')

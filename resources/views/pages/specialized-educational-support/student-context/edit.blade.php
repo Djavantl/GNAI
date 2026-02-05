@@ -1,345 +1,216 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Contexto - {{ $student_context->student->name ?? 'Aluno' }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; }
-        .section-title { 
-            border-left: 5px solid #ffc107; 
-            padding-left: 10px; 
-            margin-bottom: 20px; 
-            color: #856404;
-            margin-top: 30px;
-        }
-        .card-header {
-            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-        }
-        .form-check-label {
-            font-weight: 500;
-        }
-        .checkbox-group {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-        }
-        .deficiency-badge {
-            background-color: #6c757d;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            display: inline-block;
-            margin: 2px;
-        }
-        .deficiency-badge.mild { background-color: #6c757d; }
-        .deficiency-badge.moderate { background-color: #ffc107; color: #000; }
-        .deficiency-badge.severe { background-color: #dc3545; }
-    </style>
-</head>
-<body>
-    <div class="container py-5">
-        <div class="card shadow border-0">
-            <div class="card-header text-dark p-3">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h4 class="mb-0">Editar Contexto: {{ $student_context->student->name ?? 'Aluno' }}</h4>
-                        <p class="mb-0 mt-2 opacity-75">Atualize os dados do contexto educacional do aluno</p>
-                        
-                        @if(isset($deficiencies) && $deficiencies->count() > 0)
-                            <div class="mt-2">
-                                <small class="opacity-75">Deficiências identificadas:</small>
-                                <div class="d-flex flex-wrap gap-1 mt-1">
-                                    @foreach($deficiencies as $deficiency)
-                                        <span class="deficiency-badge {{ $deficiency->severity ?? 'mild' }}">
-                                            {{ $deficiency->deficiency->name }}
-                                            @if($deficiency->severity)
-                                                <small>{{ $deficiency->severity }}</small>
-                                            @endif
-                                        </span>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            <div class="card-body p-4">
-                <form action="{{ route('specialized-educational-support.student-context.update', $student_context->id) }}" method="POST">
-                    @csrf
-                    @method('PUT')
+@extends('layouts.app')
 
-                    <!-- Seção: Tipo de Avaliação -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Tipo de Avaliação *</label>
-                            <select name="evaluation_type" class="form-select" required>
-                                <option value="">Selecione o tipo...</option>
-                                <option value="initial" {{ $student_context->evaluation_type == 'initial' ? 'selected' : '' }}>Avaliação Inicial</option>
-                                <option value="periodic_review" {{ $student_context->evaluation_type == 'periodic_review' ? 'selected' : '' }}>Revisão Periódica</option>
-                                <option value="pei_review" {{ $student_context->evaluation_type == 'pei_review' ? 'selected' : '' }}>Revisão PEI</option>
-                                <option value="specific_demand" {{ $student_context->evaluation_type == 'specific_demand' ? 'selected' : '' }}>Demanda Específica</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check mt-4 pt-3">
-                                <input class="form-check-input" type="checkbox" name="is_current" value="1" 
-                                       id="is_current" {{ $student_context->is_current ? 'checked' : '' }}>
-                                <label class="form-check-label fw-bold" for="is_current">
-                                    Contexto atual
-                                </label>
-                                <div class="form-text">Marque para definir este como o contexto atual do aluno.</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Seção 1: Aprendizagem e Cognição -->
-                    <h5 class="section-title">Aprendizagem e Cognição</h5>
-                    <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold">Nível de Aprendizagem</label>
-                            <select name="learning_level" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="very_low" {{ $student_context->learning_level == 'very_low' ? 'selected' : '' }}>Muito Baixo</option>
-                                <option value="low" {{ $student_context->learning_level == 'low' ? 'selected' : '' }}>Baixo</option>
-                                <option value="adequate" {{ $student_context->learning_level == 'adequate' ? 'selected' : '' }}>Adequado</option>
-                                <option value="good" {{ $student_context->learning_level == 'good' ? 'selected' : '' }}>Bom</option>
-                                <option value="excellent" {{ $student_context->learning_level == 'excellent' ? 'selected' : '' }}>Excelente</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold">Nível de Atenção</label>
-                            <select name="attention_level" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="very_low" {{ $student_context->attention_level == 'very_low' ? 'selected' : '' }}>Muito Baixo</option>
-                                <option value="low" {{ $student_context->attention_level == 'low' ? 'selected' : '' }}>Baixo</option>
-                                <option value="moderate" {{ $student_context->attention_level == 'moderate' ? 'selected' : '' }}>Moderado</option>
-                                <option value="high" {{ $student_context->attention_level == 'high' ? 'selected' : '' }}>Alto</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold">Nível de Memória</label>
-                            <select name="memory_level" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="low" {{ $student_context->memory_level == 'low' ? 'selected' : '' }}>Baixo</option>
-                                <option value="moderate" {{ $student_context->memory_level == 'moderate' ? 'selected' : '' }}>Moderado</option>
-                                <option value="good" {{ $student_context->memory_level == 'good' ? 'selected' : '' }}>Bom</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-bold">Raciocínio</label>
-                            <select name="reasoning_level" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="concrete" {{ $student_context->reasoning_level == 'concrete' ? 'selected' : '' }}>Concreto</option>
-                                <option value="mixed" {{ $student_context->reasoning_level == 'mixed' ? 'selected' : '' }}>Misto</option>
-                                <option value="abstract" {{ $student_context->reasoning_level == 'abstract' ? 'selected' : '' }}>Abstrato</option>
-                            </select>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label class="form-label fw-bold">Observações de Aprendizagem</label>
-                            <textarea name="learning_observations" class="form-control" rows="3">{{ old('learning_observations', $student_context->learning_observations) }}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- Seção 2: Comunicação, Interação e Comportamento -->
-                    <h5 class="section-title">Comunicação, Interação e Comportamento</h5>
-                    <div class="row mb-4">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Tipo de Comunicação</label>
-                            <select name="communication_type" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="verbal" {{ $student_context->communication_type == 'verbal' ? 'selected' : '' }}>Verbal</option>
-                                <option value="non_verbal" {{ $student_context->communication_type == 'non_verbal' ? 'selected' : '' }}>Não Verbal</option>
-                                <option value="mixed" {{ $student_context->communication_type == 'mixed' ? 'selected' : '' }}>Mista</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Nível de Interação</label>
-                            <select name="interaction_level" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="very_low" {{ $student_context->interaction_level == 'very_low' ? 'selected' : '' }}>Muito Baixo</option>
-                                <option value="low" {{ $student_context->interaction_level == 'low' ? 'selected' : '' }}>Baixo</option>
-                                <option value="moderate" {{ $student_context->interaction_level == 'moderate' ? 'selected' : '' }}>Moderado</option>
-                                <option value="good" {{ $student_context->interaction_level == 'good' ? 'selected' : '' }}>Bom</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Nível de Socialização</label>
-                            <select name="socialization_level" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="isolated" {{ $student_context->socialization_level == 'isolated' ? 'selected' : '' }}>Isolado</option>
-                                <option value="selective" {{ $student_context->socialization_level == 'selective' ? 'selected' : '' }}>Seletivo</option>
-                                <option value="participative" {{ $student_context->socialization_level == 'participative' ? 'selected' : '' }}>Participativo</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="checkbox-group">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="shows_aggressive_behavior" value="1" id="agressivo" {{ $student_context->shows_aggressive_behavior ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="agressivo">Apresenta Comportamento Agressivo</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="shows_withdrawn_behavior" value="1" id="retraido" {{ $student_context->shows_withdrawn_behavior ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="retraido">Apresenta Comportamento Retraído</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Observações de Comportamento</label>
-                            <textarea name="behavior_notes" class="form-control" rows="3">{{ old('behavior_notes', $student_context->behavior_notes) }}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- Seção 3: Autonomia e Apoios -->
-                    <h5 class="section-title">Autonomia e Apoios</h5>
-                    <div class="row mb-4">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Nível de Autonomia</label>
-                            <select name="autonomy_level" class="form-select">
-                                <option value="">Selecione...</option>
-                                <option value="dependent" {{ $student_context->autonomy_level == 'dependent' ? 'selected' : '' }}>Dependente</option>
-                                <option value="partial" {{ $student_context->autonomy_level == 'partial' ? 'selected' : '' }}>Parcial</option>
-                                <option value="independent" {{ $student_context->autonomy_level == 'independent' ? 'selected' : '' }}>Independente</option>
-                            </select>
-                        </div>
-                        <div class="col-md-8 mb-3">
-                            <div class="checkbox-group">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" name="needs_mobility_support" value="1" id="mobilidade" {{ $student_context->needs_mobility_support ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="mobilidade">Necessita Apoio à Mobilidade</label>
-                                        </div>
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" name="needs_communication_support" value="1" id="comunicacao" {{ $student_context->needs_communication_support ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="comunicacao">Necessita Apoio à Comunicação</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" name="needs_pedagogical_adaptation" value="1" id="adaptacao" {{ $student_context->needs_pedagogical_adaptation ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="adaptacao">Necessita Adaptação Pedagógica</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="uses_assistive_technology" value="1" id="tecnologia" {{ $student_context->uses_assistive_technology ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="tecnologia">Usa Tecnologia Assistiva</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Seção 4: Saúde -->
-                    <h5 class="section-title">Saúde</h5>
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3">
-                            <div class="checkbox-group">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" name="has_medical_report" value="1" id="laudo" {{ $student_context->has_medical_report ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="laudo">Possui Laudo Médico</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uses_medication" value="1" id="medicacao" {{ $student_context->uses_medication ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="medicacao">Usa Medicação</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Observações de Saúde</label>
-                            <textarea name="medical_notes" class="form-control" rows="3">{{ old('medical_notes', $student_context->medical_notes) }}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- Seção 5: Histórico e Necessidades Educacionais Específicas -->
-                    <h5 class="section-title">Histórico e Necessidades Educacionais Específicas</h5>
-                    <div class="row mb-4">
-                        <div class="col-12 mb-3">
-                            <label class="form-label fw-bold">Histórico *</label>
-                            <textarea name="history" class="form-control" rows="4" required>{{ old('history', $student_context->history) }}</textarea>
-                            <div class="form-text">Obrigatório. Registre o histórico completo do aluno.</div>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label class="form-label fw-bold">Necessidades Educacionais Específicas *</label>
-                            <textarea name="specific_educational_needs" class="form-control" rows="4" required>{{ old('specific_educational_needs', $student_context->specific_educational_needs) }}</textarea>
-                            <div class="form-text">Obrigatório. Detalhe as necessidades educacionais específicas do aluno.</div>
-                        </div>
-                    </div>
-
-                    <!-- Seção 6: Avaliação Geral -->
-                    <h5 class="section-title">Avaliação Geral</h5>
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Pontos Fortes / Potencialidades</label>
-                            <textarea name="strengths" class="form-control" rows="3">{{ old('strengths', $student_context->strengths) }}</textarea>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Dificuldades</label>
-                            <textarea name="difficulties" class="form-control" rows="3">{{ old('difficulties', $student_context->difficulties) }}</textarea>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Recomendações</label>
-                            <textarea name="recommendations" class="form-control" rows="3">{{ old('recommendations', $student_context->recommendations) }}</textarea>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Observação Geral</label>
-                            <textarea name="general_observation" class="form-control" rows="3">{{ old('general_observation', $student_context->general_observation) }}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- Botões -->
-                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
-                        <a href="{{ route('specialized-educational-support.student-context.show', $student_context->student_id) }}" class="btn btn-outline-secondary px-4">
-                            <i class="bi bi-arrow-left"></i> Voltar
-                        </a>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-danger px-4" onclick="confirmDelete()">
-                                <i class="bi bi-trash"></i> Excluir
-                            </button>
-                            <button type="submit" class="btn btn-warning px-5 fw-bold">
-                                <i class="bi bi-save"></i> Atualizar Contexto
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                
-                <!-- Formulário de exclusão -->
-                <form id="delete-form" action="{{ route('specialized-educational-support.student-context.destroy', $student_context->id) }}" method="POST" class="d-none">
-                    @csrf
-                    @method('DELETE')
-                </form>
-            </div>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Editar Contexto: {{ $student_context->student->name ?? 'Aluno' }}</h2>
+            <p class="text-muted">Atualize as informações do contexto educacional e funcional.</p>
         </div>
     </div>
 
-    <!-- Adicionando ícones do Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function confirmDelete() {
-            if (confirm('Tem certeza que deseja excluir este contexto? Esta ação não pode ser desfeita.')) {
-                document.getElementById('delete-form').submit();
-            }
-        }
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('specialized-educational-support.student-context.update', $student_context->id) }}" method="POST">
+            @method('PUT')
+
+            <x-forms.section title="Tipo de Avaliação" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="evaluation_type"
+                    label="Tipo de Avaliação *"
+                    required
+                    :options="[
+                        'initial' => 'Avaliação Inicial',
+                        'periodic_review' => 'Revisão Periódica',
+                        'pei_review' => 'Revisão PEI',
+                        'specific_demand' => 'Demanda Específica'
+                    ]"
+                    :value="old('evaluation_type', $student_context->evaluation_type)"
+                />
+            </div>
+
+            <div class="col-md-6 mt-4">
+                <x-forms.checkbox 
+                    name="is_current" 
+                    label="Contexto atual" 
+                    :checked="old('is_current', $student_context->is_current)" 
+                />
+            </div>
+
+            <x-forms.section title="Aprendizagem e Cognição" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="learning_level"
+                    label="Nível de Aprendizagem"
+                    :options="['very_low' => 'Muito Baixo', 'low' => 'Baixo', 'adequate' => 'Adequado', 'good' => 'Bom', 'excellent' => 'Excelente']"
+                    :value="old('learning_level', $student_context->learning_level)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="attention_level"
+                    label="Nível de Atenção"
+                    :options="['very_low' => 'Muito Baixo', 'low' => 'Baixo', 'moderate' => 'Moderado', 'high' => 'Alto']"
+                    :value="old('attention_level', $student_context->attention_level)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="memory_level"
+                    label="Nível de Memória"
+                    :options="['low' => 'Baixo', 'moderate' => 'Moderado', 'good' => 'Bom']"
+                    :value="old('memory_level', $student_context->memory_level)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="reasoning_level"
+                    label="Raciocínio"
+                    :options="['concrete' => 'Concreto', 'mixed' => 'Misto', 'abstract' => 'Abstrato']"
+                    :value="old('reasoning_level', $student_context->reasoning_level)"
+                />
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea name="learning_observations" label="Observações de Aprendizagem" rows="3" :value="old('learning_observations', $student_context->learning_observations)" />
+            </div>
+
+            <x-forms.section title="Comunicação, Interação e Comportamento" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="communication_type"
+                    label="Tipo de Comunicação"
+                    :options="['verbal' => 'Verbal', 'non_verbal' => 'Não Verbal', 'mixed' => 'Mista']"
+                    :value="old('communication_type', $student_context->communication_type)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="interaction_level"
+                    label="Nível de Interação"
+                    :options="['very_low' => 'Muito Baixo', 'low' => 'Baixo', 'moderate' => 'Moderado', 'good' => 'Bom']"
+                    :value="old('interaction_level', $student_context->interaction_level)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="socialization_level"
+                    label="Nível de Socialização"
+                    :options="['isolated' => 'Isolado', 'selective' => 'Seletivo', 'participative' => 'Participativo']"
+                    :value="old('socialization_level', $student_context->socialization_level)"
+                />
+            </div>
+
+            <div class="col-md-6 mt-4">
+                <div class="d-flex gap-4">
+                    <x-forms.checkbox name="shows_aggressive_behavior" label="Agressivo" :checked="old('shows_aggressive_behavior', $student_context->shows_aggressive_behavior)" />
+                    <x-forms.checkbox name="shows_withdrawn_behavior" label="Retraído" :checked="old('shows_withdrawn_behavior', $student_context->shows_withdrawn_behavior)" />
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea name="behavior_notes" label="Observações de Comportamento" rows="3" :value="old('behavior_notes', $student_context->behavior_notes)" />
+            </div>
+
+            <x-forms.section title="Autonomia e Apoios" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="autonomy_level"
+                    label="Nível de Autonomia"
+                    :options="['dependent' => 'Dependente', 'partial' => 'Parcial', 'independent' => 'Independente']"
+                    :value="old('autonomy_level', $student_context->autonomy_level)"
+                    :selected="old('autonomy_level', $student_context->autonomy_level)"
+                />
+            </div>
+
+            <div class="col-md-6 mt-4">
+                <div class="row">
+                    <div class="col-6"><x-forms.checkbox name="needs_mobility_support" label="Apoio Mobilidade" :checked="old('needs_mobility_support', $student_context->needs_mobility_support)" /></div>
+                    <div class="col-6"><x-forms.checkbox name="needs_communication_support" label="Apoio Comunicação" :checked="old('needs_communication_support', $student_context->needs_communication_support)" /></div>
+                </div>
+            </div>
+
+            <div class="col-md-12 mt-2">
+                <div class="row">
+                    <div class="col-6"><x-forms.checkbox name="needs_pedagogical_adaptation" label="Adaptação Pedagógica" :checked="old('needs_pedagogical_adaptation', $student_context->needs_pedagogical_adaptation)" /></div>
+                    <div class="col-6"><x-forms.checkbox name="uses_assistive_technology" label="Usa Tecnologia Assistiva" :checked="old('uses_assistive_technology', $student_context->uses_assistive_technology)" /></div>
+                </div>
+            </div>
+
+            <x-forms.section title="Saúde" />
+
+            <div class="col-md-6">
+                <x-forms.checkbox name="has_medical_report" label="Possui Laudo Médico" :checked="old('has_medical_report', $student_context->has_medical_report)" />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.checkbox name="uses_medication" label="Usa Medicação" :checked="old('uses_medication', $student_context->uses_medication)" />
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea name="medical_notes" label="Observações de Saúde" rows="3" :value="old('medical_notes', $student_context->medical_notes)" />
+            </div>
+
+            <x-forms.section title="Necessidades Educacionais" />
+
+            <div class="col-md-12">
+                <x-forms.textarea name="history" label="Histórico" rows="4" required :value="old('history', $student_context->history)" />
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea name="specific_educational_needs" label="Necessidades Educacionais Específicas " rows="4" required :value="old('specific_educational_needs', $student_context->specific_educational_needs)" />
+            </div>
+
+            <x-forms.section title="Avaliação Geral" />
+
+            <div class="col-md-6">
+                <x-forms.textarea name="strengths" label="Pontos Fortes" rows="3" :value="old('strengths', $student_context->strengths)" />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.textarea name="difficulties" label="Dificuldades" rows="3" :value="old('difficulties', $student_context->difficulties)" />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.textarea name="recommendations" label="Recomendações" rows="3" :value="old('recommendations', $student_context->recommendations)" />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.textarea name="general_observation" label="Observação Geral" rows="3" :value="old('general_observation', $student_context->general_observation)" />
+            </div>
+
+            <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4">
+                <div>
+                    <x-buttons.link-button href="{{ route('specialized-educational-support.student-context.index', $student_context->student_id) }}" variant="secondary">
+                        Voltar
+                    </x-buttons.link-button>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                        <i class="fas fa-sync mr-2"></i> Atualizar Contexto
+                    </x-buttons.submit-button>
+                </div>
+            </div>
+        </x-forms.form-card>
         
-        // Adiciona validação básica antes do envio
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // Validação opcional pode ser adicionada aqui
-            // Exemplo: verificar se pelo menos um campo foi preenchido
-            const hasMedicalReport = document.querySelector('input[name="has_medical_report"]').checked;
-            const usesMedication = document.querySelector('input[name="uses_medication"]').checked;
-            const medicalNotes = document.querySelector('textarea[name="medical_notes"]').value;
-            
-            if ((hasMedicalReport || usesMedication) && medicalNotes.trim() === '') {
-                if (!confirm('Você marcou opções de saúde, mas não preencheu as observações médicas. Deseja continuar?')) {
-                    e.preventDefault();
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+        {{-- Formulário de exclusão separado para manter a integridade do layout --}}
+        <div class="mt-3 px-4 pb-4">
+            <form action="{{ route('specialized-educational-support.student-context.destroy', $student_context->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir permanentemente este contexto?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-trash mr-1"></i> Excluir Contexto
+                </button>
+            </form>
+        </div>
+    </div>
+@endsection

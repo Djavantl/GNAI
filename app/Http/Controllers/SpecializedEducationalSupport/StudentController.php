@@ -19,8 +19,14 @@ class StudentController extends Controller
 
     public function index()
     {
-        $students = $this->service->all();
+        $students = $this->service->index();
         return view('pages.specialized-educational-support.students.index', compact('students'));
+    }
+
+    public function show(Student $student)
+    {
+        $student = $this->service->show($student);
+        return view('pages.specialized-educational-support.students.show', compact('student'));
     }
 
     public function create()

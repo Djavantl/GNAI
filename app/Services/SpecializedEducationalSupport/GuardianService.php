@@ -16,6 +16,10 @@ class GuardianService
             ->get();
     }
 
+    public function show(Guardian $guardian){
+        return $guardian->load('person', 'student.person');
+    }
+
     public function create(Student $student, array $data): Guardian
     {
         return DB::transaction(function () use ($student, $data) {
@@ -58,7 +62,7 @@ class GuardianService
                 'relationship'=> $data['relationship'],
             ]);
 
-            return $student;
+            return $guardian;
         });
     }
 

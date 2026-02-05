@@ -37,6 +37,13 @@
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button 
+                        :href="route('specialized-educational-support.professionals.show', $professional)"
+                        variant="info"
+                    >
+                        ver
+                    </x-buttons.link-button>
+
+                    <x-buttons.link-button 
                         :href="route('specialized-educational-support.professionals.edit', $professional)"
                         variant="warning"
                     >

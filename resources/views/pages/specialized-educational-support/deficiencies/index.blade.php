@@ -1,87 +1,80 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Deficiências — Lista</title>
+@extends('layouts.master')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+@section('title', 'Deficiências')
 
-<body class="bg-light">
-
-<div class="container py-4">
-
-    <h2 class="mb-3">Lista de Deficiências</h2>
-
-    <a href="{{ route('specialized-educational-support.deficiencies.create') }}" class="btn btn-primary mb-3">
-        + Nova Deficiência
-    </a>
+@section('content')
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <h2 class="text-title">Lista de Deficiências</h2>
+            <p class="text-muted">Categorias e códigos CID registrados.</p>
+        </div>
+        <x-buttons.link-button
+            :href="route('specialized-educational-support.deficiencies.create')"
+            variant="new"
+        >
+            Nova Deficiência
+        </x-buttons.link-button>
+    </div>
 
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>CID</th>
-                <th>Descrição</th>
-                <th>Ativa?</th>
-                <th style="width: 200px;">Ações</th>
-            </tr>
-        </thead>
-
-        <tbody>
+    <x-table.table :headers="['Deficiência / CID', 'Ativo', 'Ações']">
         @foreach($deficiency as $item)
             <tr>
-                <td>{{ $item->id }}</td>
-                <td>{{ $item->name }}</td>
-                <td>{{ $item->cid_code ?? '-' }}</td>
-                <td>{{ $item->description ?? '-' }}</td>
+                
+                <x-table.td>
+                    <strong>{{ $item->name }}</strong><br>
+                    <small class="text-muted">{{ $item->cid_code ?? 'S/ CID' }}</small>
+                </x-table.td>
 
-                <td>
+                <x-table.td >
                     @if($item->is_active)
-                        <span class="badge bg-success">Sim</span>
+                        <span class="text-success font-weight-bold">SIM</span>
                     @else
-                        <span class="badge bg-danger">Não</span>
+                        <span class="text-danger font-weight-bold">NÃO</span>
                     @endif
-                </td>
+                </x-table.td>
 
-                <td class="d-flex gap-1">
+                <x-table.td>
+                    <x-table.actions>
 
-                    <a href="{{ route('specialized-educational-support.deficiencies.edit', $item) }}"
-                       class="btn btn-sm btn-warning">
-                        Editar
-                    </a>
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.deficiencies.show', $item)"
+                            variant="info-outline"
+                        >
+                            ver
+                        </x-buttons.link-button>
 
-                    <form action="{{ route('specialized-educational-support.deficiencies.deactivate', $item) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button class="btn btn-sm btn-outline-secondary">
-                            Ativar / Desativar
-                        </button>
-                    </form>
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.deficiencies.edit', $item)"
+                            variant="warning"
+                        >
+                            Editar
+                        </x-buttons.link-button>
 
-                    <form action="{{ route('specialized-educational-support.deficiencies.destroy', $item) }}" method="POST"
-                          onsubmit="return confirm('Tem certeza que deseja excluir?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-danger">
-                            Excluir
-                        </button>
-                    </form>
+                        <form action="{{ route('specialized-educational-support.deficiencies.deactivate', $item) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <x-buttons.submit-button variant="secondary">
+                                Ativar/Desativar
+                            </x-buttons.submit-button>
+                        </form>
 
-                </td>
+                        <form action="{{ route('specialized-educational-support.deficiencies.destroy', $item) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja excluir este registro?')"
+                            >
+                                Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    </x-table.actions>
+                </x-table.td>
             </tr>
         @endforeach
-        </tbody>
-    </table>
-
-</div>
-
-</body>
-</html>
+    </x-table.table>
+@endsection

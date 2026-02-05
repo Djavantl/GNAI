@@ -22,9 +22,19 @@ class StudentDeficienciesController extends Controller
 
     public function index(Student $student)
     {
-        $deficiencies = $this->service->listAll($student);
+        $deficiencies = $this->service->index($student);
         return view('pages.specialized-educational-support.student-deficiencies.index', compact('student', 'deficiencies'));
     }
+
+    //lista deficiencia especifica
+
+    public function show(StudentDeficiencies $student_deficiency)
+    {
+        $deficiency = $this->service->show($student_deficiency);
+        $student = $student_deficiency->student;
+        return view('pages.specialized-educational-support.student-deficiencies.show', compact('deficiency', 'student'));
+    }
+
 
     // Exibe o formulário de criação.
 

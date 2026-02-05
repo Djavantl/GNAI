@@ -8,11 +8,10 @@ use Illuminate\Support\Facades\DB;
 
 class PositionService
 {
-    public function listAll()
+    public function index()
     {
         return Position::orderBy('name')->get();
     }
-
 
     public function store(array $data): Position
     {

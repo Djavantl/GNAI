@@ -10,11 +10,15 @@ use Illuminate\Support\Facades\DB;
 
 class ProfessionalService
 {
-    public function all()
+    public function index()
     {
         return Professional::with(['person', 'position'])
             ->orderBy('created_at', 'desc')
             ->get();
+    }
+
+    public function show(Professional $professional){
+        return $professional->load('person', 'position');
     }
 
     /**

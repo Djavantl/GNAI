@@ -26,6 +26,12 @@ class GuardianController extends Controller
         return view('pages.specialized-educational-support.guardians.index', compact('student', 'guardians'));
     }
 
+    public function show(Guardian $guardian)
+    {
+        $guardian = $this->service->show($guardian);
+        return view('pages.specialized-educational-support.guardians.show', compact('guardian'));
+    }
+
     public function create(Student $student)
     {
         return view('pages.specialized-educational-support.guardians.create', compact('student'));
@@ -40,21 +46,24 @@ class GuardianController extends Controller
             ->with('success', 'Responsável vinculado com sucesso.');
     }
 
-     public function edit(Guardian $guardian)
+    public function edit(Student $student, Guardian $guardian)
     {
-        $people = Person::orderBy('name')->get();
-        return view('pages.specialized-educational-support.students.edit', compact('student', 'people'));
+        if ($guardian->student_id !== $student->id) {
+            abort(404);
+        }
+        $guardian->load('person');
+        return view('pages.specialized-educational-support.guardians.edit', compact('student', 'guardian'));
     }
 
-    public function update(GuardianRequest $request, Guardian $guardian)
+    public function update(GuardianRequest $request, Student $student, Guardian $guardian)
     {
         $this->service->update($guardian, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.guardians.index')
-            ->with('success', 'Aluno atualizado com sucesso.');
+            ->route('specialized-educational-support.guardians.index', $student->id)
+            ->with('success', 'Dados do responsável atualizados com sucesso.');
     }
-
+    
     public function destroy(string $student, string $guardian)
     {
         $guardian = Guardian::where('id', $guardian)

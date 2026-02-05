@@ -20,13 +20,20 @@ class ProfessionalController extends Controller
 
     public function index()
     {
-        $professionals = $this->service->all();
+        $professionals = $this->service->index();
 
         return view(
             'pages.specialized-educational-support.professionals.index',
             compact('professionals')
         );
     }
+
+    public function show(Professional $professional)
+    {
+        $professional = $this->service->show($professional);
+        return view('pages.specialized-educational-support.professionals.show', compact('professional'));
+    }
+
 
     public function create()
     {

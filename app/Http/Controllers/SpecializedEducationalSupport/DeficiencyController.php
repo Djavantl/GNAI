@@ -18,9 +18,14 @@ class DeficiencyController extends Controller
 
     public function index()
     {
-        $deficiency = $this->service->listAll();
+        $deficiency = $this->service->index();
 
         return view('pages.specialized-educational-support.deficiencies.index', compact('deficiency'));
+    }
+
+     public function show(Deficiency $deficiency)
+    {
+        return view('pages.specialized-educational-support.deficiencies.show', compact('deficiency'));
     }
 
     public function create()
@@ -33,11 +38,6 @@ class DeficiencyController extends Controller
         $this->service->store($request->validated());
 
         return redirect()->route('specialized-educational-support.deficiencies.index')->with('success', 'Deficiência criada com sucesso!');
-    }
-
-    public function show(Deficiency $deficiency)
-    {
-        //
     }
 
     public function edit(Deficiency $deficiency)

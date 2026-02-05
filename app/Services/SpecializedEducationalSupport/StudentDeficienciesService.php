@@ -10,14 +10,14 @@ class StudentDeficienciesService
 {
     // mostra contexto
 
-    public function listAll(Student $student)
+    public function index(Student $student)
     {
         return StudentDeficiencies::where('student_id', $student->id)->get();
     }
 
     public function show(StudentDeficiencies $student_def)
     {
-        return StudentDeficiencies::where('students_deficiencies_id', $student_def->id)->first();
+        return $student_def->load('deficiency');
     }
 
     // Cria contexto
