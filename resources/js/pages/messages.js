@@ -18,7 +18,7 @@ window.addEventListener('load', function() {
                 if (document.getElementById('toast-element')) {
                     window.closeToast();
                 }
-            }, 5000); // Aumentei para 5s para dar tempo de ler erros de validação
+            }, 5000); 
         }, 300);
     }
 });

@@ -142,9 +142,9 @@ Route::get('/', function () {
     return view('layouts.app');
 })->name('dashboard');
 
-Route::get('/dashboard', function () {
-    return view('layouts.app');
-})->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('layouts.app');
+// })->name('dashboard');
 
 // Rotas para os itens do menu (exemplos)
 Route::get('/inicio', function () {

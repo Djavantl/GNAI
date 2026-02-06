@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\SpecializedEducationalSupport\Session;
 
 class LoginController extends Controller
 {
@@ -43,6 +45,18 @@ class LoginController extends Controller
 
         return back()->withErrors([
             'email' => 'Credenciais inválidas.'
+        ]);
+    }
+
+    public function index()
+    {
+        // Buscamos os totais para exibir nos cards do GNAI
+        $totalStudents = Student::count();
+        $totalSessions = Session::count();
+
+        return view('pages.dashboard', [
+            'totalStudents' => $totalStudents,
+            'totalSessions' => $totalSessions
         ]);
     }
 

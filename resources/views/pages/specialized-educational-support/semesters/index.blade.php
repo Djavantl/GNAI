@@ -16,10 +16,6 @@
         </x-buttons.link-button>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
     <x-table.table :headers="['Ano / Período', 'Rótulo Identificador', 'Status', 'Ações']">
         @forelse($semesters as $semester)
             <tr class="{{ $semester->is_current ? 'table-primary' : '' }}">

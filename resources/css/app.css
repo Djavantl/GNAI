@@ -2,6 +2,7 @@
 @import "./components/tables.css";
 @import "./components/forms.css";
 @import "./components/messages.css";
+@import './auth/login.css';
 
 :root {
     --primary-color: #4D44B5;
@@ -114,18 +115,27 @@ body {
     font-size: 0.95rem;
 }
 
-.sidebar-menu a:hover {
-    color: white;
-    background-color: var(--sidebar-hover);
-    border-left-color: white;
-    padding-left: 1.25rem;
-}
 
 .sidebar-menu a.active {
+    color: var(--primary-color) !important;
+    background-color: #e1ebf8; 
+    margin-left: 1rem; 
+    border-radius: 20px 0 0 20px; 
+    border-left: none; 
+    font-weight: 600;
+    display: flex;
+    width: calc(100% - 1rem);
+}
+
+.sidebar-menu a.active .icon i {
+    color: var(--primary-color) !important;
+}
+
+.sidebar-menu a:not(.active):hover {
     color: white;
     background-color: var(--sidebar-hover);
-    border-left-color: #FFD700;
-    font-weight: 500;
+    margin-left: 1rem;
+    border-radius: 20px 0 0 20px;
 }
 
 .sidebar-menu .icon {
