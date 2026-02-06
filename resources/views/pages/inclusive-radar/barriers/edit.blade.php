@@ -1,432 +1,346 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Barreira - Radar Inclusivo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        #map { height: 450px; width: 100%; border-radius: 8px; z-index: 1; border: 1px solid #e2e8f0; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    </style>
-</head>
-<body class="bg-gray-100 p-4 md:p-8">
+@extends('layouts.master')
 
-<div class="max-w-6xl mx-auto bg-white p-6 rounded shadow-lg border-t-4 border-blue-700">
-    {{-- Cabeçalho --}}
-    <div class="flex justify-between items-center mb-6 border-b pb-4">
-        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
-            <span class="bg-blue-700 text-white p-2 rounded-lg"><i class="fas fa-edit"></i></span>
-            Editar Barreira de Acessibilidade
-        </h1>
-        <div class="text-right">
-            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Edição de Registro</span>
-            <p class="text-[10px] text-gray-500 mt-1 uppercase">ID Interno: #{{ $barrier->id }}</p>
+@section('content')
+    <x-messages.toast />
+
+    <div class="d-flex justify-content-between mb-3 px-4">
+        <div>
+            <h2 class="text-title">Editar Barreira de Acessibilidade</h2>
+            <p class="text-muted">Atualize as informações registradas.</p>
         </div>
     </div>
 
-    @if($errors->any())
-        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-sm text-sm">
-            <p class="font-bold mb-1 italic">Atenção: Verifique os erros no formulário.</p>
-            <ul class="list-disc ml-5">
-                @foreach($errors->all() as $error) <li>{{ $error }}</li> @endforeach
-            </ul>
-        </div>
-    @endif
+    <div class="mt-3">
+        <x-forms.form-card action="{{ route('inclusive-radar.barriers.update', $barrier->id) }}"
+                           method="POST"
+                           enctype="multipart/form-data">
 
-    <form action="{{ route('inclusive-radar.barriers.update', $barrier->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
+            @csrf
+            @method('PUT')
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {{-- COLUNA ESQUERDA --}}
-            <div class="lg:col-span-5 space-y-6">
+            {{-- ================= LADO ESQUERDO ================= --}}
+            <div class="col-lg-5 border-end">
 
-                {{-- 1. Instituição e Setor --}}
-                <div class="bg-blue-50 p-5 rounded-lg border border-blue-200 shadow-inner space-y-4">
-                    <h3 class="text-blue-800 font-bold mb-2 flex items-center gap-2 uppercase text-xs">
-                        <i class="fas fa-university"></i> 1. Instituição e Setor
-                    </h3>
+                <x-forms.section title="1. Localização e Contexto" />
 
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Campus / Unidade *</label>
-                        <select name="institution_id" id="institution_select" required
-                                class="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-blue-500 text-sm font-semibold">
-                            <option value="">-- Selecione a Unidade --</option>
-                            @foreach($institutions as $inst)
-                                <option value="{{ $inst->id }}" data-lat="{{ $inst->latitude }}" data-lng="{{ $inst->longitude }}"
-                                    {{ old('institution_id', $barrier->institution_id) == $inst->id ? 'selected' : '' }}>
-                                    {{ $inst->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div id="location_wrapper" class="space-y-4">
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1 text-xs uppercase italic text-blue-600">Prédio / Local de referência</label>
-                            <select name="location_id" id="location_select" class="w-full border p-2 rounded bg-white text-sm">
-                                <option value="">Selecione um local...</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1 text-xs uppercase italic">Complemento da Localização</label>
-                            <input type="text" name="location_specific_details" value="{{ old('location_specific_details', $barrier->location_specific_details) }}" class="w-full border p-2 rounded text-sm" placeholder="Ex: Próximo à porta de entrada">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Título do Relato *</label>
-                        <input type="text" name="name" value="{{ old('name', $barrier->name) }}" required
-                               class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 text-sm"
-                               placeholder="Ex: Calçada irregular">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Data da Identificação *</label>
-                            <input type="date" name="identified_at" value="{{ old('identified_at', $barrier->identified_at?->format('Y-m-d')) }}" required
-                                   class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 text-sm">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Prioridade</label>
-                            <select name="priority" class="w-full border p-2 rounded bg-white text-sm">
-                                <option value="low" @selected(old('priority', $barrier->priority?->value) === 'low')>Baixa</option>
-                                <option value="medium" @selected(old('priority', $barrier->priority?->value) === 'medium')>Média</option>
-                                <option value="high" @selected(old('priority', $barrier->priority?->value) === 'high')>Alta</option>
-                                <option value="critical" @selected(old('priority', $barrier->priority?->value) === 'critical')>Crítica</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- 2. Pessoa Impactada --}}
-                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 space-y-4">
-                        <h3 class="text-gray-700 font-bold mb-2 flex items-center gap-2 uppercase text-xs">
-                            <i class="fas fa-users"></i> 2. Pessoa Impactada
-                        </h3>
-
-                        <div class="flex flex-col gap-2 p-2 bg-blue-50 rounded border border-blue-100">
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" name="is_anonymous" id="is_anonymous" value="1" {{ old('is_anonymous', $barrier->is_anonymous) ? 'checked' : '' }} class="w-4 h-4 text-gray-700 rounded">
-                                <label for="is_anonymous" class="text-xs font-bold text-gray-700 uppercase cursor-pointer italic">Relato Anônimo</label>
-                            </div>
-
-                            <div id="wrapper_not_applicable" class="flex items-center gap-2 border-t border-blue-200 pt-2 mt-1">
-                                <input type="checkbox" name="not_applicable" id="not_applicable" value="1"
-                                       {{ old('not_applicable', $barrier->not_applicable) ? 'checked' : '' }}
-                                       class="w-4 h-4 text-blue-600 rounded">
-                                <label for="not_applicable" class="text-xs font-bold text-blue-800 uppercase cursor-pointer">Relato Geral (Não se aplica a um CPF)</label>
-                            </div>
-                        </div>
-
-                        <div id="identification_fields" class="space-y-4">
-                            <div id="person_selects" class="grid grid-cols-1 gap-4">
-                                <div>
-                                    <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Estudante Impactado</label>
-                                    <select name="affected_student_id" class="w-full border p-2 rounded bg-white text-sm">
-                                        <option value="">-- Selecione o Estudante --</option>
-                                        @foreach($students as $student)
-                                            <option value="{{ $student->id }}" {{ old('affected_student_id', $barrier->affected_student_id) == $student->id ? 'selected' : '' }}>
-                                                {{ $student->person?->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Profissional Impactado</label>
-                                    <select name="affected_professional_id" class="w-full border p-2 rounded bg-white text-sm">
-                                        <option value="">-- Selecione o Profissional --</option>
-                                        @foreach($professionals as $prof)
-                                            <option value="{{ $prof->id }}" {{ old('affected_professional_id', $barrier->affected_professional_id) == $prof->id ? 'selected' : '' }}>
-                                                {{ $prof->person?->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div id="manual_person_data" class="space-y-3">
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Nome da Pessoa</label>
-                                        <input type="text" name="affected_person_name" value="{{ old('affected_person_name', $barrier->affected_person_name) }}" class="w-full border p-2 rounded text-sm" placeholder="Ex: Visitante">
-                                    </div>
-                                    <div>
-                                        <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Papel / Vínculo</label>
-                                        <input type="text" name="affected_person_role" value="{{ old('affected_person_role', $barrier->affected_person_role) }}" class="w-full border p-2 rounded text-sm" placeholder="Ex: Familiar">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Descrição Detalhada</label>
-                        <textarea name="description" rows="3" required class="w-full border p-2 rounded text-sm">{{ old('description', $barrier->description) }}</textarea>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold text-gray-700 mb-1 text-xs uppercase">Categoria</label>
-                        <select name="barrier_category_id" class="w-full border p-2 rounded bg-white text-sm">
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('barrier_category_id', $barrier->barrier_category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-bold text-gray-800 mb-2 border-l-4 border-blue-600 pl-2 text-xs uppercase">Deficiências Relacionadas *</label>
-                    <div class="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded border border-gray-200 max-h-40 overflow-y-auto custom-scrollbar">
-                        @foreach($deficiencies as $def)
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" name="deficiencies[]" value="{{ $def->id }}" id="def_{{ $def->id }}"
-                                       {{ in_array($def->id, old('deficiencies', $barrier->deficiencies->pluck('id')->toArray())) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 rounded">
-                                <label for="def_{{ $def->id }}" class="text-xs cursor-pointer text-gray-600">{{ $def->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-
-            {{-- COLUNA DIREITA --}}
-            <div class="lg:col-span-7 space-y-6">
-
-                {{-- MAPA --}}
-                <div class="relative">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block font-bold text-gray-700 text-xs uppercase">Localização no Mapa</label>
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" name="no_location" id="no_location" value="1" {{ old('no_location', $barrier->latitude === null) ? 'checked' : '' }} class="w-4 h-4 text-blue-600">
-                            <label for="no_location" class="text-[10px] font-bold text-gray-500 uppercase cursor-pointer italic">Sem localização física</label>
-                        </div>
-                    </div>
-                    <div id="map"></div>
-                    <div id="coord_badge" class="absolute bottom-4 right-4 z-[1000] bg-white/90 px-3 py-1 rounded shadow text-[10px] font-mono border border-gray-300 hidden">
-                        LAT: <span id="lat_txt">0</span> | LNG: <span id="lng_txt">0</span>
-                    </div>
-                    <input type="hidden" name="latitude" id="lat" value="{{ old('latitude', $barrier->latitude) }}">
-                    <input type="hidden" name="longitude" id="lng" value="{{ old('longitude', $barrier->longitude) }}">
-                </div>
-
-                {{-- HISTÓRICO DE VISTORIAS --}}
-                <div class="mt-2">
-                    <label class="block font-bold mb-4 text-gray-800 uppercase text-xs tracking-wide">
-                        <i class="fas fa-history mr-2 text-blue-600"></i>Histórico de Vistorias e Fotos
-                    </label>
-
-                    <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                        @forelse($barrier->inspections()->with('images')->latest('inspection_date')->get() as $inspection)
-                            <div class="border rounded-lg bg-gray-50 overflow-hidden shadow-sm">
-                                <div class="bg-gray-100 px-4 py-2 border-b flex justify-between items-center">
-                                    <span class="text-[10px] font-bold text-blue-700">
-                                        <i class="far fa-calendar-alt mr-1"></i>
-                                        {{ $inspection->inspection_date?->format('d/m/Y') }}
-                                    </span>
-                                    <span class="text-[9px] font-bold uppercase px-2 py-1 rounded bg-white border border-gray-300">
-                                        {{ $inspection->status?->label() }}
-                                    </span>
-                                </div>
-                                <div class="p-3">
-                                    <p class="text-xs text-gray-700 italic">"{{ $inspection->description }}"</p>
-                                    @if($inspection->images->count() > 0)
-                                        <div class="grid grid-cols-5 gap-2 mt-3">
-                                            @foreach($inspection->images as $img)
-                                                <a href="{{ asset('storage/' . $img->path) }}" target="_blank" class="block border rounded p-1 bg-white hover:border-blue-500 transition">
-                                                    <img src="{{ asset('storage/' . $img->path) }}" class="h-12 w-full object-cover rounded">
-                                                </a>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @empty
-                            <div class="text-center py-6 border-2 border-dashed rounded-lg text-gray-400 font-bold text-[10px] uppercase">
-                                Nenhuma vistoria registrada anteriormente.
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-
-                {{-- NOVA VISTORIA / ATUALIZAÇÃO --}}
-                <div class="bg-blue-50 p-5 rounded-lg border-2 border-blue-200">
-                    <h3 class="text-blue-800 font-bold mb-4 flex items-center gap-2 uppercase text-xs">
-                        <i class="fas fa-plus-circle"></i> Registrar Nova Vistoria / Atualizar Estado
-                    </h3>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Novo Status</label>
-                            <select name="status" class="w-full border p-2 rounded bg-white text-sm">
-                                <option value="">-- Manter/Selecionar status --</option>
-                                @foreach(\App\Enums\InclusiveRadar\BarrierStatus::cases() as $status)
-                                    <option value="{{ $status->value }}" @selected(old('status') == $status->value)>
-                                        {{ $status->label() }}
+                <div class="col-md-12 mb-3 px-4">
+                    <div class="row">
+                        {{-- Campus --}}
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-purple-dark italic">
+                                Campus / Unidade *
+                            </label>
+                            <select name="institution_id"
+                                    id="institution_select"
+                                    required
+                                    class="form-select custom-input shadow-sm">
+                                <option value="">-- Selecione --</option>
+                                @foreach($institutions as $inst)
+                                    <option value="{{ $inst->id }}"
+                                            data-lat="{{ $inst->latitude }}"
+                                            data-lng="{{ $inst->longitude }}"
+                                            data-zoom="{{ $inst->default_zoom ?? 16 }}"
+                                        {{ old('institution_id', $barrier->institution_id) == $inst->id ? 'selected' : '' }}>
+                                        {{ $inst->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Data da Nova Vistoria</label>
-                            <input type="date" name="inspection_date" value="{{ date('Y-m-d') }}" class="w-full border p-2 rounded text-sm">
+
+                        {{-- Local --}}
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-purple-dark italic">
+                                Prédio / Local
+                            </label>
+                            <select name="location_id"
+                                    id="location_select"
+                                    class="form-select custom-input shadow-sm">
+                                <option value="">Selecione...</option>
+                                @if($barrier->institution && $barrier->institution->locations)
+                                    @foreach($barrier->institution->locations->where('is_active', true) as $location)
+                                        <option value="{{ $location->id }}"
+                                                data-lat="{{ $location->latitude }}"
+                                                data-lng="{{ $location->longitude }}"
+                                            {{ old('location_id', $barrier->location_id) == $location->id ? 'selected' : '' }}>
+                                            {{ $location->name }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
                         </div>
                     </div>
-                    <textarea name="inspection_description" rows="2" class="w-full border p-2 rounded text-sm mb-4" placeholder="Notas sobre a situação atual ou mudanças encontradas..."></textarea>
-
-                    <label class="block font-bold text-gray-700 mb-1 text-[10px] uppercase">Anexar Novas Fotos</label>
-                    <input type="file" name="images[]" multiple accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white cursor-pointer">
                 </div>
 
-                <div class="flex items-center gap-4 p-4 bg-gray-100 rounded border border-gray-300 shadow-inner">
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $barrier->is_active) ? 'checked' : '' }} class="w-5 h-5 text-green-600 rounded">
-                        <label for="is_active" class="cursor-pointer text-sm font-bold text-green-700 uppercase">Barreira Ainda Ativa no Sistema</label>
+                <div id="location_wrapper" class="col-md-12 mb-3 mt-3">
+                    <x-forms.textarea
+                        name="location_specific_details"
+                        label="Complemento"
+                        rows="3"
+                        :value="old('location_specific_details', $barrier->location_specific_details)"
+                    />
+                </div>
+
+                {{-- ================= DETALHES ================= --}}
+                <x-forms.section title="2. Detalhes da Ocorrência" />
+
+                <div class="px-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <x-forms.input name="name"
+                                           label="Nome"
+                                           required
+                                           :value="old('name', $barrier->name)"
+                            />
+                        </div>
+
+                        <div class="col-md-4">
+                            <x-forms.input type="date"
+                                           name="identified_at"
+                                           label="Data"
+                                           required
+                                           :value="old('identified_at', $barrier->identified_at?->format('Y-m-d') ?? now()->format('Y-m-d'))"
+                            />
+                        </div>
+
+                        <div class="col-md-6">
+                            <x-forms.select
+                                name="priority"
+                                label="Prioridade"
+                                :options="collect(App\Enums\Priority::cases())->mapWithKeys(fn($c) => [$c->value => $c->label()])->toArray()"
+                                :selected="old('priority', $barrier->priority?->value)"
+                            />
+                        </div>
+
+                        <div class="col-md-6">
+                            <x-forms.select
+                                name="barrier_category_id"
+                                label="Categoria"
+                                required
+                                :options="$categories->pluck('name', 'id')"
+                                :selected="old('barrier_category_id', $barrier->barrier_category_id)"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mb-3 px-4 mt-3">
+                    <x-forms.textarea
+                        name="description"
+                        label="Descrição"
+                        required
+                        rows="3"
+                        :value="old('description', $barrier->description)"
+                    />
+                </div>
+
+                <div class="px-4">
+                    <div class="bg-light p-3 rounded mb-4 border shadow-sm">
+                        <label class="fw-bold text-purple-dark small uppercase mb-3 d-block">
+                            Pessoa Impactada
+                        </label>
+
+                        <div class="d-flex flex-column gap-2">
+                            <x-forms.checkbox
+                                name="is_anonymous"
+                                id="is_anonymous"
+                                label="Relato Anônimo"
+                                :checked="old('is_anonymous', $barrier->is_anonymous)"
+                            />
+
+                            <div id="wrapper_not_applicable">
+                                <x-forms.checkbox
+                                    name="not_applicable"
+                                    id="not_applicable"
+                                    label="Relato Geral"
+                                    :checked="old('not_applicable', $barrier->not_applicable)"
+                                />
+                            </div>
+                        </div>
+
+                        <div id="identification_fields" class="mt-3">
+                            {{-- SELECTS --}}
+                            <div id="person_selects"
+                                 class="{{ old('not_applicable', $barrier->not_applicable) ? 'd-none' : '' }}">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <x-forms.select
+                                            name="affected_student_id"
+                                            label="Estudante"
+                                            :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person?->name])"
+                                            :selected="old('affected_student_id', $barrier->affected_student_id)"
+                                        />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <x-forms.select
+                                            name="affected_professional_id"
+                                            label="Profissional"
+                                            :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person?->name])"
+                                            :selected="old('affected_professional_id', $barrier->affected_professional_id)"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- MANUAL --}}
+                            <div id="manual_person_data"
+                                 class="{{ old('not_applicable', $barrier->not_applicable) ? '' : 'd-none' }} mt-2">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <x-forms.input
+                                            name="affected_person_name"
+                                            label="Nome"
+                                            :value="old('affected_person_name', $barrier->affected_person_name)"
+                                        />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <x-forms.input
+                                            name="affected_person_role"
+                                            label="Cargo"
+                                            :value="old('affected_person_role', $barrier->affected_person_role)"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ===== Deficiências ===== --}}
+                <div class="col-md-12 mb-4 px-4">
+                    <label class="form-label fw-bold text-purple-dark">
+                        Deficiências *
+                    </label>
+                    <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light max-h-40 overflow-y-auto custom-scrollbar">
+                        @foreach($deficiencies as $def)
+                            <x-forms.checkbox
+                                name="deficiencies[]"
+                                :value="$def->id"
+                                :label="$def->name"
+                                :checked="in_array($def->id, old('deficiencies', $barrier->deficiencies->pluck('id')->toArray()))"
+                            />
+                        @endforeach
+                    </div>
+                    <div class="mt-4">
+                        <x-forms.checkbox
+                            name="is_active"
+                            label="Ativar no Sistema"
+                            description="Fica visível nos dashboards"
+                            :checked="old('is_active', $barrier->is_active)"
+                        />
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="flex gap-4 mt-8 border-t pt-6">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-12 py-3 rounded shadow-lg transition font-bold text-lg">
-                <i class="fas fa-save mr-2"></i> Salvar Alterações
-            </button>
-            <a href="{{ route('inclusive-radar.barriers.index') }}" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-3 rounded transition font-bold text-center">
-                Cancelar
-            </a>
-        </div>
-    </form>
-</div>
+            {{-- LADO DIREITO: Mapa e Vistoria --}}
+            <div class="col-lg-7 bg-light px-0">
+                <x-forms.section title="3. Localização e Fotos" />
 
-<script>
-    const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains:['mt0','mt1','mt2','mt3'], attribution: '© Google Maps' });
-    const map = L.map('map', { center: [-14.2350, -51.9253], zoom: 4, layers: [googleHybrid] });
+                <div class="sticky-top" style="top:20px; z-index:1;">
+                    <div class="mb-4">
+                        <div class="mb-3 px-4">
+                            <x-forms.checkbox
+                                name="no_location"
+                                id="no_location"
+                                label="Sem localização física"
+                                :checked="old('no_location', $barrier->latitude === null && $barrier->longitude === null)"
+                            />
+                        </div>
 
-    let layerInstituicao = L.layerGroup().addTo(map);
-    let layerReferencias = L.layerGroup().addTo(map);
-    let barrierMarker = null;
-    const institutionsData = @json($institutions);
+                        <x-maps.barrier
+                            :barrier="$barrier"
+                            :institution="$barrier->institution"
+                            height="450px"
+                            label="Localização da Barreira"
+                        />
+                    </div>
 
-    const iconInst = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png', iconSize: [25,41], iconAnchor: [12,41] });
-    const iconRef = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png', iconSize: [20,32], iconAnchor: [10,32] });
-    const iconBarrier = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png', shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', iconSize: [30,48], iconAnchor: [15,48] });
+                    {{-- ===== Histórico ===== --}}
+                    <div class="px-4 mt-4">
+                        <h6 class="fw-bold text-purple-dark uppercase small mb-3">
+                            Histórico de Vistorias
+                        </h6>
+                        <div class="custom-scrollbar max-h-300 overflow-y-auto">
+                            @foreach($barrier->inspections()->with('images')->latest()->get() as $i)
+                                <div class="border rounded p-2 mb-2 bg-white shadow-sm">
+                                    <div class="small fw-bold text-muted">
+                                        {{ $i->inspection_date?->format('d/m/Y') }}
+                                        — {{ $i->status?->label() }}
+                                    </div>
+                                    <div class="fst-italic small">
+                                        {{ $i->description }}
+                                    </div>
+                                    @if($i->images->count() > 0)
+                                        <div class="mt-2">
+                                            <small class="text-muted">Fotos: {{ $i->images->count() }}</small>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
 
-    function setBarrierLocation(lat, lng, fly = false) {
-        if(!lat || !lng) return;
-        if(barrierMarker) { barrierMarker.setLatLng([lat, lng]); }
-        else {
-            barrierMarker = L.marker([lat, lng], {icon: iconBarrier, draggable: true}).addTo(map);
-            barrierMarker.on('dragend', (e) => updateInputs(e.target.getLatLng().lat, e.target.getLatLng().lng));
-        }
-        updateInputs(lat, lng);
-        if(fly) map.flyTo([lat, lng], 19);
-    }
+                    {{-- ===== Nova vistoria ===== --}}
+                    <div class="mt-3">
+                        <x-forms.section title="Registrar Nova Vistoria" />
+                        <div class="px-4">
+                            <x-forms.select
+                                name="status"
+                                label="Status"
+                                :options="collect(\App\Enums\InclusiveRadar\BarrierStatus::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])"
+                                :selected="old('status', $barrier->latestStatus()?->value)"
+                            />
 
-    function updateInputs(lat, lng) {
-        document.getElementById('lat').value = lat;
-        document.getElementById('lng').value = lng;
-        document.getElementById('lat_txt').innerText = parseFloat(lat).toFixed(6);
-        document.getElementById('lng_txt').innerText = parseFloat(lng).toFixed(6);
-        document.getElementById('coord_badge').classList.remove('hidden');
-    }
+                            <x-forms.input
+                                type="date"
+                                name="inspection_date"
+                                label="Data da Vistoria"
+                                :value="old('inspection_date', now()->format('Y-m-d'))"
+                            />
 
-    document.getElementById('institution_select').addEventListener('change', function() {
-        const instId = this.value;
-        const selected = this.options[this.selectedIndex];
-        layerInstituicao.clearLayers();
-        layerReferencias.clearLayers();
+                            <x-forms.textarea
+                                name="inspection_description"
+                                label="Notas"
+                                rows="2"
+                                :value="old('inspection_description')"
+                            />
 
-        if(instId) {
-            const instLat = selected.dataset.lat;
-            const instLng = selected.dataset.lng;
-            L.marker([instLat, instLng], {icon: iconInst}).addTo(layerInstituicao);
+                            <x-forms.input
+                                type="file"
+                                name="images[]"
+                                label="Fotos"
+                                multiple
+                                accept="image/*"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            const inst = institutionsData.find(i => i.id == instId);
-            const locSelect = document.getElementById('location_select');
-            const currentLocId = "{{ old('location_id', $barrier->location_id) }}";
+            {{-- FOOTER --}}
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4 bg-white">
+                <x-buttons.link-button href="{{ route('inclusive-radar.barriers.index') }}">
+                    Cancelar
+                </x-buttons.link-button>
+                <x-buttons.submit-button class="btn-action new px-5">
+                    Salvar Alterações
+                </x-buttons.submit-button>
+            </div>
 
-            locSelect.innerHTML = '<option value="">Selecione um local...</option>';
-            if(inst && inst.locations) {
-                inst.locations.forEach(loc => {
-                    const opt = document.createElement('option');
-                    opt.value = loc.id;
-                    opt.text = loc.name;
-                    opt.dataset.lat = loc.latitude;
-                    opt.dataset.lng = loc.longitude;
-                    if(currentLocId == loc.id) opt.selected = true;
-                    locSelect.appendChild(opt);
-                    L.marker([loc.latitude, loc.longitude], {icon: iconRef}).addTo(layerReferencias);
-                });
-            }
-            // Se estivermos mudando a inst agora, e não carregando a página, voamos para ela
-            if(!barrierMarker) map.flyTo([instLat, instLng], 17);
-        }
-    });
+        </x-forms.form-card>
+    </div>
 
-    document.getElementById('location_select').addEventListener('change', function() {
-        const opt = this.options[this.selectedIndex];
-        if(opt.value) setBarrierLocation(opt.dataset.lat, opt.dataset.lng, true);
-    });
+    @push('styles')
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    @endpush
 
-    map.on('click', function(e) {
-        if(!document.getElementById('no_location').checked && document.getElementById('institution_select').value) {
-            setBarrierLocation(e.latlng.lat, e.latlng.lng);
-        }
-    });
+    @push('scripts')
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    @endpush
 
-    document.getElementById('no_location').addEventListener('change', function() {
-        if(this.checked) {
-            if(barrierMarker) map.removeLayer(barrierMarker);
-            barrierMarker = null;
-            document.getElementById('lat').value = '';
-            document.getElementById('lng').value = '';
-            document.getElementById('coord_badge').classList.add('hidden');
-        }
-    });
-
-    function togglePersonFields() {
-        const isAnonymous = document.getElementById('is_anonymous').checked;
-        const notApplicable = document.getElementById('not_applicable').checked;
-        const fields = document.getElementById('identification_fields');
-        const wrapper = document.getElementById('wrapper_not_applicable');
-        const selects = document.getElementById('person_selects');
-        const manual = document.getElementById('manual_person_data');
-
-        if (isAnonymous) {
-            fields.classList.add('hidden');
-            wrapper.classList.add('hidden');
-        } else {
-            fields.classList.remove('hidden');
-            wrapper.classList.remove('hidden');
-            selects.classList.toggle('hidden', notApplicable);
-            manual.classList.toggle('hidden', !notApplicable);
-        }
-    }
-
-    document.getElementById('is_anonymous').addEventListener('change', togglePersonFields);
-    document.getElementById('not_applicable').addEventListener('change', togglePersonFields);
-
-    document.addEventListener('DOMContentLoaded', function() {
-        togglePersonFields();
-
-        // Disparar o change da instituição para carregar os locais do prédio
-        const instSelect = document.getElementById('institution_select');
-        if(instSelect.value) {
-            instSelect.dispatchEvent(new Event('change'));
-        }
-
-        // Posicionar o marcador se houver coordenadas salvas
-        const initLat = "{{ old('latitude', $barrier->latitude) }}";
-        const initLng = "{{ old('longitude', $barrier->longitude) }}";
-        if(initLat && initLng) {
-            // Pequeno delay para o mapa renderizar antes do marcador
-            setTimeout(() => setBarrierLocation(initLat, initLng, true), 300);
-        }
-    });
-</script>
-</body>
-</html>
+    <script>
+        window.institutionsData = @json($institutions);
+        window.oldLocationId = "{{ old('location_id', $barrier->location_id) }}";
+        window.barrierData = @json($barrier);
+        window.initialInstitutionId = "{{ $barrier->institution_id }}";
+    </script>
+@endsection

@@ -30,7 +30,7 @@ class BarrierService
     public function getCreateData(): array
     {
         return [
-            'institutions' => Institution::with(['locations' => function ($q) {$q->where('is_active', true);}])->where('is_active', true)->orderBy('name')->get(),
+            'institutions' => $this->getActiveInstitutionsWithLocationsAndBarriers(),
             'categories'    => BarrierCategory::where('is_active', true)->get(),
             'deficiencies'  => $this->deficiencyService->listActiveOrdered(),
             'students'      => Student::has('person')->with('person')->get()->sortBy('person.name'),
@@ -41,7 +41,7 @@ class BarrierService
     public function getEditData(Barrier $barrier): array
     {
         return array_merge($this->getCreateData(), [
-            'barrier' => $barrier->load(['deficiencies', 'inspections.images', 'location'])
+            'barrier' => $barrier->load(['deficiencies', 'inspections.images', 'location', 'institution',])
         ]);
     }
 
@@ -163,5 +163,23 @@ class BarrierService
         if (isset($data['deficiencies'])) {
             $barrier->deficiencies()->sync($data['deficiencies']);
         }
+    }
+
+    public function getActiveInstitutionsWithLocationsAndBarriers()
+    {
+        return Institution::with([
+            'locations' => function ($q) {
+                $q->where('is_active', true);
+            },
+            'barriers' => function ($q) {
+                $q->where('is_active', true)
+                    ->with(['deficiencies', 'inspections' => function ($query) {
+                        $query->latest()->limit(1);
+                    }]);
+            }
+        ])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
     }
 }

@@ -87,7 +87,7 @@
                     <input type="number" step="any" id="lat_manual" class="form-control"
                            placeholder="-14.2350"
                            aria-describedby="lat_help"
-                           oninput="document.getElementById('lat').value = this.value">
+                           value="{{ old('latitude', -14.2350) }}">
                 </div>
 
                 {{-- LONGITUDE --}}
@@ -97,13 +97,8 @@
                     <input type="number" step="any" id="lng_manual" class="form-control"
                            placeholder="-51.9253"
                            aria-describedby="lng_help"
-                           oninput="document.getElementById('lng').value = this.value">
+                           value="{{ old('longitude', -51.9253) }}">
                 </div>
-
-                {{-- CAMPOS OCULTOS --}}
-                <input type="hidden" name="latitude" id="lat" value="{{ old('latitude', -14.2350) }}">
-                <input type="hidden" name="longitude" id="lng" value="{{ old('longitude', -51.9253) }}">
-
             </div>
 
             {{-- LADO DIREITO — MAPA --}}
@@ -112,21 +107,19 @@
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <section aria-labelledby="map-section-title">
-                        <x-maps.leaflet-picker
-                            height="550px"
+                        <x-maps.institution
                             :lat="old('latitude', -14.2350)"
                             :lng="old('longitude', -51.9253)"
                             :zoom="old('default_zoom', 16)"
-                            latId="lat"
-                            lngId="lng"
-                            zoomId="zoom_range"
+                            height="550px"
+                            label="Localize a Sede no Mapa"
                         />
                     </section>
                 </div>
             </div>
 
             {{-- BOTÕES --}}
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.institutions.index') }}" variant="secondary">
                     Cancelar
                 </x-buttons.link-button>

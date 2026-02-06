@@ -29,7 +29,8 @@
 
                 {{-- SIGLA --}}
                 <div class="col-md-12">
-                    <x-forms.input name="short_name" label="Sigla / Nome Curto" :value="old('short_name', $institution->short_name)"
+                    <x-forms.input name="short_name" label="Sigla / Nome Curto"
+                                   :value="old('short_name', $institution->short_name)"
                                    placeholder="Ex: IFBA-GBI" />
                 </div>
 
@@ -79,9 +80,13 @@
                     <small id="zoom_help" class="text-muted d-block mb-2">Define o nível de aproximação inicial no mapa.</small>
                     <div class="d-flex align-items-center gap-3">
                         <input type="range" name="default_zoom" id="zoom_range" min="1" max="20"
-                               value="{{ old('default_zoom', $institution->default_zoom) }}" class="form-range custom-range"
-                               aria-describedby="zoom_help" oninput="document.getElementById('zoom_val').innerText = this.value">
-                        <span id="zoom_val" class="badge bg-purple-dark p-2" style="min-width: 40px;">{{ old('default_zoom', $institution->default_zoom) }}</span>
+                               value="{{ old('default_zoom', $institution->default_zoom) }}"
+                               class="form-range custom-range"
+                               aria-describedby="zoom_help"
+                               oninput="document.getElementById('zoom_val').innerText = this.value">
+                        <span id="zoom_val" class="badge bg-purple-dark p-2" style="min-width: 40px;">
+                            {{ old('default_zoom', $institution->default_zoom) }}
+                        </span>
                     </div>
                 </div>
 
@@ -90,7 +95,9 @@
                     <label for="lat_manual" class="form-label fw-bold text-purple-dark mb-0">Latitude Sede</label>
                     <small id="lat_help" class="text-muted d-block mb-2">Preenchida pelo mapa ou manualmente em Graus Decimais.</small>
                     <input type="number" step="any" id="lat_manual" class="form-control"
-                           aria-describedby="lat_help" value="{{ old('latitude', $institution->latitude) }}" placeholder="-14.2350">
+                           placeholder="-14.2350"
+                           aria-describedby="lat_help"
+                           value="{{ old('latitude', $institution->latitude) }}">
                 </div>
 
                 {{-- LONGITUDE --}}
@@ -98,13 +105,10 @@
                     <label for="lng_manual" class="form-label fw-bold text-purple-dark mb-0">Longitude Sede</label>
                     <small id="lng_help" class="text-muted d-block mb-2">Preenchida pelo mapa ou manualmente em Graus Decimais.</small>
                     <input type="number" step="any" id="lng_manual" class="form-control"
-                           aria-describedby="lng_help" value="{{ old('longitude', $institution->longitude) }}" placeholder="-51.9253">
+                           placeholder="-51.9253"
+                           aria-describedby="lng_help"
+                           value="{{ old('longitude', $institution->longitude) }}">
                 </div>
-
-                {{-- CAMPOS OCULTOS --}}
-                <input type="hidden" name="latitude" id="lat" value="{{ old('latitude', $institution->latitude) }}">
-                <input type="hidden" name="longitude" id="lng" value="{{ old('longitude', $institution->longitude) }}">
-
             </div>
 
             {{-- LADO DIREITO — MAPA --}}
@@ -113,21 +117,20 @@
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <section aria-labelledby="map-section-title">
-                        <x-maps.leaflet-picker
-                            height="550px"
+                        <x-maps.institution
+                            :institution="$institution"
                             :lat="old('latitude', $institution->latitude)"
                             :lng="old('longitude', $institution->longitude)"
                             :zoom="old('default_zoom', $institution->default_zoom)"
-                            latId="lat"
-                            lngId="lng"
-                            zoomId="zoom_range"
+                            height="550px"
+                            label="Ajuste a Sede no Mapa"
                         />
                     </section>
                 </div>
             </div>
 
             {{-- BOTÕES --}}
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.institutions.index') }}" variant="secondary">
                     Cancelar
                 </x-buttons.link-button>
@@ -136,7 +139,6 @@
                     <i class="fas fa-save mr-2"></i> Atualizar Instituição
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 @endsection

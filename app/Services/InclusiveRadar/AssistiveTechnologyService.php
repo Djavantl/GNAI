@@ -36,7 +36,7 @@ class AssistiveTechnologyService
     {
         return [
             'assistiveTechnology' => $tech->load(['deficiencies', 'inspections.images']),
-            'deficiencies' => $this->deficiencyService->listAll(),
+            'deficiencies' => $this->deficiencyService->index(),
             'attributeValues' => $this->attributeValueService->getValuesForForm($tech),
             'resourceTypes' => ResourceType::active()->forAssistiveTechnology()->orderBy('name')->get(),
         ];

@@ -81,8 +81,9 @@
                     <label for="lat_manual" class="form-label fw-bold text-purple-dark mb-0">Latitude</label>
                     <small id="lat_help" class="text-muted d-block mb-2">Preenchida automaticamente pelo mapa ou manualmente.</small>
                     <input type="number" step="any" id="lat_manual" class="form-control"
-                           aria-describedby="lat_help" value="{{ old('latitude', $location->latitude) }}"
-                           oninput="document.getElementById('lat').value = this.value">
+                           placeholder="-14.2350"
+                           aria-describedby="lat_help"
+                           value="{{ old('latitude', $location->latitude) }}">
                 </div>
 
                 {{-- LONGITUDE --}}
@@ -90,13 +91,10 @@
                     <label for="lng_manual" class="form-label fw-bold text-purple-dark mb-0">Longitude</label>
                     <small id="lng_help" class="text-muted d-block mb-2">Preenchida automaticamente pelo mapa ou manualmente.</small>
                     <input type="number" step="any" id="lng_manual" class="form-control"
-                           aria-describedby="lng_help" value="{{ old('longitude', $location->longitude) }}"
-                           oninput="document.getElementById('lng').value = this.value">
+                           placeholder="-51.9253"
+                           aria-describedby="lng_help"
+                           value="{{ old('longitude', $location->longitude) }}">
                 </div>
-
-                {{-- CAMPOS OCULTOS --}}
-                <input type="hidden" name="latitude" id="lat" value="{{ old('latitude', $location->latitude) }}">
-                <input type="hidden" name="longitude" id="lng" value="{{ old('longitude', $location->longitude) }}">
             </div>
 
             {{-- LADO DIREITO — MAPA --}}
@@ -105,22 +103,24 @@
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <section aria-labelledby="map-section-title">
-                        <x-maps.leaflet-picker
-                            data-location-id="{{ $location->id }}"
+                        @php
+                            // Identifica a instituição atual para centralizar o mapa caso não haja coordenadas no local
+                            $selectedInstitutionId = old('institution_id', $location->institution_id);
+                            $selectedInstitution = $institutions->firstWhere('id', $selectedInstitutionId);
+                        @endphp
+
+                        <x-maps.location
+                            :institution="$selectedInstitution"
+                            :location="$location"
                             height="550px"
-                            :lat="old('latitude', $location->latitude)"
-                            :lng="old('longitude', $location->longitude)"
-                            :zoom="18"
-                            latId="lat"
-                            lngId="lng"
-                            :showLegend="true"
+                            label="Localização no Campus"
                         />
                     </section>
                 </div>
             </div>
 
             {{-- BOTÕES --}}
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.locations.index') }}" variant="secondary">
                     Cancelar
                 </x-buttons.link-button>
@@ -129,11 +129,26 @@
                     <i class="fas fa-save mr-2"></i> Atualizar Localização
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 
     <script>
         window.institutionsData = @json($institutions);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const institutionSelect = document.getElementById('institution_select');
+            if (institutionSelect) {
+                institutionSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const lat = selectedOption.getAttribute('data-lat');
+                    const lng = selectedOption.getAttribute('data-lng');
+                    const zoom = selectedOption.getAttribute('data-zoom');
+
+                    if (lat && lng && window.locationMapInstance) {
+                        window.locationMapInstance.updateLocation(parseFloat(lat), parseFloat(lng), true, false, parseInt(zoom));
+                    }
+                });
+            }
+        });
     </script>
 @endsection
