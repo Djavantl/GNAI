@@ -45,7 +45,7 @@ class AccessibleEducationalMaterialService
                 'accessibilityFeatures',
                 'inspections.images'
             ]),
-            'deficiencies' => $this->deficiencyService->listAll(),
+            'deficiencies' => $this->deficiencyService->index(),
             'attributeValues' => $this->attributeValueService->getValuesForForm($material),
             'resourceTypes' => ResourceType::active()->forEducationalMaterial()->orderBy('name')->get(),
         ];
