@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            {{-- Seção 2: Histórico de Vistorias (Recuperada do antigo) --}}
+            {{-- Seção 2: Histórico de Vistorias --}}
             <x-forms.section title="Histórico de Vistorias" />
 
             <div class="col-12 mb-4 px-4">
@@ -85,17 +85,17 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="inspection_type"
-                    label="Tipo de Registro *"
+                    label="Tipo de Inspeção *"
                     :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
                         ->filter(fn($type) => $type !== \App\Enums\InclusiveRadar\InspectionType::INITIAL)
-                        ->mapWithKeys(fn($item) => [$item->value => $item->name])"
+                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.input
                     name="inspection_date"
-                    label="Data da Atualização *"
+                    label="Data da Inspeção *"
                     type="date"
                     :value="date('Y-m-d')"
                 />
@@ -111,13 +111,17 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="images[]" label="Adicionar Novas Fotos" type="file" multiple />
+                <x-forms.image-uploader
+                    name="images[]"
+                    label="Fotos de Evidência"
+                    :existingImages="old('images', $assistiveTechnology->images?->pluck('path')->toArray() ?? [])"
+                />
             </div>
 
             <div class="col-md-12">
                 <x-forms.textarea
                     name="inspection_description"
-                    label="Notas da nova atualização (Vistoria)"
+                    label="Parecer Técnico / Descrição da Vistoria"
                     rows="3"
                     placeholder="O que mudou no equipamento desde a última vistoria?"
                 />

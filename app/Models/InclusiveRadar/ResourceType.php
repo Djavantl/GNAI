@@ -4,6 +4,7 @@ namespace App\Models\InclusiveRadar;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ResourceType extends Model
 {
@@ -44,5 +45,15 @@ class ResourceType extends Model
     public function scopeDigital($query)
     {
         return $query->where('is_digital', true);
+    }
+
+    public function attributes(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            TypeAttribute::class,
+            'type_attribute_assignments',
+            'type_id',
+            'attribute_id'
+        );
     }
 }

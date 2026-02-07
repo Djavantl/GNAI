@@ -53,7 +53,8 @@
                 <x-forms.select
                     name="inspection_type"
                     label="Tipo de Inspeção *"
-                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())->mapWithKeys(fn($item) => [$item->value => $item->name])"
+                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
+            ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
                 />
             </div>
             <div class="col-md-6">
@@ -68,7 +69,11 @@
                 />
             </div>
             <div class="col-md-6">
-                <x-forms.input name="images[]" label="Fotos de Evidência" type="file" multiple />
+                <x-forms.image-uploader
+                    name="images[]"
+                    label="Fotos de Evidência"
+                    :existingImages="old('images', [])"
+                />
             </div>
 
             <div class="col-md-12">
@@ -134,7 +139,6 @@
                     <i class="fas fa-save mr-2"></i> Finalizar Cadastro
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 @endsection

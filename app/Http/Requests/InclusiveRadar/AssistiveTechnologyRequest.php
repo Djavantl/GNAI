@@ -32,16 +32,11 @@ class AssistiveTechnologyRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'type_id' => 'required|exists:resource_types,id',
-            'asset_code' => [
-                'nullable',
-                'string',
-                'max:50',
+            'asset_code' => ['nullable', 'string', 'max:50',
                 Rule::unique('assistive_technologies', 'asset_code')
                     ->ignore($tech?->id),
             ],
-            'quantity' => $isDigital
-                ? 'nullable'
-                : 'required|integer|min:0',
+            'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
             'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
             'status_id' => 'nullable|exists:resource_statuses,id',

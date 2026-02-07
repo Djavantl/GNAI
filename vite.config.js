@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/pages/inclusive-radar/barriers.js',
                 'resources/js/pages/inclusive-radar/institutions.js',
                 'resources/js/pages/inclusive-radar/locations.js',
+                'resources/js/pages/inclusive-radar/image-uploader.js',
             ],
             refresh: true,
         }),
