@@ -17,9 +17,9 @@ class Student extends Model
         'notes',
     ];
 
-    
+
     // Relacionamentos
-    
+
     // pessoa
 
     public function person()
@@ -35,13 +35,13 @@ class Student extends Model
     }
 
     // Contexto educacional
-    
+
     public function contexts()
     {
         return $this->hasMany(StudentContext::class);
     }
 
-   // Deficiências do aluno 
+   // Deficiências do aluno
 
     public function deficiencies()
     {
@@ -53,9 +53,36 @@ class Student extends Model
         return $this->hasMany(Pei::class, 'student_id');
     }
 
-    
+    public function studentCourses()
+    {
+        return $this->hasMany(StudentCourse::class);
+    }
+
+    // Cursos do aluno 
+    public function courses()
+    {
+        return $this->belongsToMany(
+            Course::class,
+            'student_courses'
+        )
+        ->withPivot(['academic_year', 'is_current', 'status'])
+        ->withTimestamps();
+    }
+
+    // Curso atual do aluno
+    public function currentCourse()
+    {
+        return $this->belongsToMany(
+            Course::class,
+            'student_courses'
+        )
+        ->wherePivot('is_current', true)
+        ->withPivot(['academic_year', 'status'])
+        ->withTimestamps();
+    }
+
     // Helpers
-    
+
     public static function statusOptions(): array
     {
         return [

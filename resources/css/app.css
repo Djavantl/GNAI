@@ -118,10 +118,10 @@ body {
 
 .sidebar-menu a.active {
     color: var(--primary-color) !important;
-    background-color: #e1ebf8; 
-    margin-left: 1rem; 
-    border-radius: 20px 0 0 20px; 
-    border-left: none; 
+    background-color: #e1ebf8;
+    margin-left: 1rem;
+    border-radius: 20px 0 0 20px;
+    border-left: none;
     font-weight: 600;
     display: flex;
     width: calc(100% - 1rem);

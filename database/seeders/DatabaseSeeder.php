@@ -9,6 +9,10 @@ use Database\Seeders\SpecializedEducationalSupport\StudentDeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\PositionSeeder;
 use Database\Seeders\SpecializedEducationalSupport\PSPUSeeder;
+use Database\Seeders\SpecializedEducationalSupport\CoursesSeeder;
+use Database\Seeders\SpecializedEducationalSupport\DisciplinesSeeder;
+use Database\Seeders\SpecializedEducationalSupport\CourseDisciplineSeeder;
+use Database\Seeders\SpecializedEducationalSupport\StudentCourseSeeder;
 use Database\Seeders\InclusiveRadar\BarrierCategorySeeder;
 use Database\Seeders\InclusiveRadar\ResourceTypeSeeder;
 use Database\Seeders\InclusiveRadar\TypeAttributeSeeder;
@@ -38,6 +42,10 @@ class DatabaseSeeder extends Seeder
             PSPUSeeder::class,
             StudentContextSeeder::class,
             StudentDeficiencySeeder::class,
+            CoursesSeeder::class,
+            DisciplinesSeeder::class,
+            CourseDisciplineSeeder::class,
+            StudentCourseSeeder::class,
         ]);
     }
 }

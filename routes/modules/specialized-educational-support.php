@@ -14,6 +14,10 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     ProfessionalController,
     SessionController,
     SessionRecordController,
+    DisciplineController,
+    StudentCourseController,
+    CourseController,
+
 };
 
 Route::middleware(['auth'])->group(function () {
@@ -109,7 +113,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('student-deficiencies/{student_deficiency}/show', [StudentDeficienciesController::class, 'show'])->name('student-deficiencies.show');
     Route::get('student-deficiencies/{student}/create', [StudentDeficienciesController::class, 'create'])->name('student-deficiencies.create');
     Route::post('student-deficiencies/{student}', [StudentDeficienciesController::class, 'store'])->name('student-deficiencies.store');
-    Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])->name('student-deficiencies.edit');  
+    Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])->name('student-deficiencies.edit');
     Route::put('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])->name('student-deficiencies.update');
     Route::delete('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])->name('student-deficiencies.destroy');
 
@@ -136,21 +140,30 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('session-records/{sessionRecord}', [SessionRecordController::class, 'destroy'])->name('session-records.destroy');
     Route::post('session-records/{sessionRecord}/restore', [SessionRecordController::class, 'restore'])->name('session-records.restore')->withTrashed();
     Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->withTrashed();
-});
 
-Route::get('/', function () {
-    return view('layouts.app');
-})->name('dashboard');
+    // Courses
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::get('/courses/{course}/show', [CourseController::class, 'show'])->name('courses.show');
+    Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
+    Route::post('/courses/store', [CourseController::class, 'store'])->name('courses.store');
+    Route::get('/courses/{course}/edit', [CourseController::class, 'edit'])->name('courses.edit');
+    Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+    Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
 
-// Route::get('/dashboard', function () {
-//     return view('layouts.app');
-// })->name('dashboard');
+    // Disciplines
+    Route::get('/disciplines', [DisciplineController::class, 'index'])->name('disciplines.index');
+    Route::get('/disciplines/{discipline}/show', [DisciplineController::class, 'show'])->name('disciplines.show');
+    Route::get('/disciplines/create', [DisciplineController::class, 'create'])->name('disciplines.create');
+    Route::post('/disciplines/store', [DisciplineController::class, 'store'])->name('disciplines.store');
+    Route::get('/disciplines/{discipline}/edit', [DisciplineController::class, 'edit'])->name('disciplines.edit');
+    Route::put('/disciplines/{discipline}', [DisciplineController::class, 'update'])->name('disciplines.update');
+    Route::delete('/disciplines/{discipline}', [DisciplineController::class, 'destroy'])->name('disciplines.destroy');
 
-// Rotas para os itens do menu (exemplos)
-Route::get('/inicio', function () {
-    return view('layouts.app', ['title' => 'Início']);
-});
-
-Route::get('/alunos', function () {
-    return view('layouts.app', ['title' => 'Alunos']);
+    // Student Courses (Enrollments & History)
+    Route::get('/student-courses', [StudentCourseController::class, 'create'])->name('student-courses.create');
+    Route::post('/student-courses/store', [StudentCourseController::class, 'store'])->name('student-courses.store');
+    Route::get('/students/{student}/history', [StudentCourseController::class, 'index'])->name('student-courses.history');
+    Route::get('/student-courses/{studentCourse}/edit', [StudentCourseController::class, 'edit'])->name('student-courses.edit');
+    Route::put('/student-courses/{studentCourse}', [StudentCourseController::class, 'update'])->name('student-courses.update');
+    Route::delete('/student-courses/{studentCourse}', [StudentCourseController::class, 'destroy'])->name('student-courses.destroy');
 });

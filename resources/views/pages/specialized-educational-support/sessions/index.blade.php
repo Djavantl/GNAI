@@ -6,15 +6,15 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="text-title">Sessões de Atendimento</h2>
         <div class="d-flex gap-2">
-            <x-buttons.link-button 
-                :href="route('specialized-educational-support.session-records.index')" 
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.session-records.index')"
                 variant="dark"
             >
                 Registros
             </x-buttons.link-button>
-            
-            <x-buttons.link-button 
-                :href="route('specialized-educational-support.sessions.create')" 
+
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
             >
                 Nova Sessão
@@ -27,7 +27,7 @@
     @endif
 
     <x-table.table :headers="['Data', 'Aluno', 'Profissional', 'Tipo', 'Status', 'Ações']">
-    @foreach($sessions as $session)
+    @forelse($sessions as $session)
         <tr>
             <x-table.td>{{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</x-table.td>
             <x-table.td>{{ $session->student->person->name }}</x-table.td>
@@ -44,7 +44,7 @@
                     };
                     $statusLabel = ucfirst($session->status);
                 @endphp
-                
+
                 <span class="text-{{ $statusColor }} fw-bold">
                     {{ $statusLabel }}
                 </span>
@@ -53,16 +53,16 @@
             <x-table.td>
                 <x-table.actions>
                     {{-- Ver Sessão --}}
-                    <x-buttons.link-button 
-                        :href="route('specialized-educational-support.sessions.show', $session)" 
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.sessions.show', $session)"
                         variant="info"
                     >
                         Ver
                     </x-buttons.link-button>
 
                     {{-- Editar Sessão --}}
-                    <x-buttons.link-button 
-                        :href="route('specialized-educational-support.sessions.edit', $session)" 
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.sessions.edit', $session)"
                         variant="warning"
                     >
                         Editar
@@ -70,15 +70,15 @@
 
                     {{-- Lógica do Registro --}}
                     @if($session->sessionRecord)
-                        <x-buttons.link-button 
-                            :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)" 
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
                             variant="dark"
                         >
                             Ver Registro
                         </x-buttons.link-button>
                     @else
-                        <x-buttons.link-button 
-                            :href="route('specialized-educational-support.session-records.create', $session->id)" 
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.session-records.create', $session->id)"
                             variant="new"
                         >
                             Criar Registro
@@ -89,8 +89,8 @@
                     <form action="{{ route('specialized-educational-support.sessions.destroy', $session) }}" method="POST">
                         @csrf
                         @method('DELETE')
-                        <x-buttons.submit-button 
-                            variant="danger" 
+                        <x-buttons.submit-button
+                            variant="danger"
                             onclick="return confirm('Mover para lixeira?')"
                         >
                             Excluir
@@ -99,6 +99,12 @@
                 </x-table.actions>
             </x-table.td>
         </tr>
-    @endforeach
+    @empty
+            <tr>
+                <td colspan="5" class="text-center text-muted py-5">
+                    Nenhuma sessão cadastrada.
+                </td>
+            </tr>
+    @endforelse
     </x-table.table>
 @endsection

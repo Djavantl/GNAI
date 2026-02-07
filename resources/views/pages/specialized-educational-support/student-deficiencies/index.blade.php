@@ -15,7 +15,7 @@
             >
                 Voltar
             </x-buttons.link-button>
-            
+
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-deficiencies.create', $student)"
                 variant="new"
@@ -24,10 +24,6 @@
             </x-buttons.link-button>
         </div>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
 
     <x-table.table :headers="['Deficiência', 'Severidade', 'Recursos de Apoio', 'Ações']">
         @forelse($deficiencies as $deficiency)
