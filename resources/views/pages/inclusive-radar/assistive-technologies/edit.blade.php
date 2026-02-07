@@ -195,7 +195,7 @@
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar Alterações
+                    Salvar Alterações
                 </x-buttons.submit-button>
             </div>
 

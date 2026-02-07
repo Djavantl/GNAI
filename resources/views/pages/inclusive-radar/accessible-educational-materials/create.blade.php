@@ -24,7 +24,6 @@
                 />
             </div>
 
-            {{-- Campo notes mapeado como Descrição Detalhada para seguir o padrão de TA e do Edit --}}
             <div class="col-md-12">
                 <x-forms.textarea
                     name="notes"
@@ -54,7 +53,7 @@
                 />
             </div>
 
-            {{-- SEÇÃO 2: Especificações Técnicas (Dinâmica via JS) --}}
+            {{-- SEÇÃO 2: Especificações Técnicas --}}
             <div id="dynamic-attributes-container" style="display: none;">
                 <x-forms.section title="Especificações Técnicas" />
                 <div class="row g-0" id="dynamic-attributes">
@@ -81,8 +80,26 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO 4: Vistoria Inicial --}}
-            <x-forms.section title="Nova Atualização de Estado / Vistoria" />
+            {{-- SEÇÃO 4: Detalhes da Vistoria Inicial --}}
+            <x-forms.section title="Detalhes da Vistoria Inicial" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="inspection_type"
+                    label="Tipo de Inspeção *"
+                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :selected="old('inspection_type')"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input
+                    name="inspection_date"
+                    label="Data da Inspeção *"
+                    type="date"
+                    :value="old('inspection_date', date('Y-m-d'))"
+                />
+            </div>
 
             <div class="col-md-6" id="conservation_container">
                 <x-forms.select
@@ -94,11 +111,10 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input
+                <x-forms.image-uploader
                     name="images[]"
                     label="Fotos Iniciais do Material"
-                    type="file"
-                    multiple
+                    :existingImages="old('images', [])"
                 />
             </div>
 
@@ -168,13 +184,14 @@
                 </div>
             </div>
 
+            {{-- BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.accessible-educational-materials.index') }}" variant="secondary">
-                    Cancelar
+                    Voltar para Listagem
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Finalizar Cadastro
+                    Finalizar Cadastro
                 </x-buttons.submit-button>
             </div>
 

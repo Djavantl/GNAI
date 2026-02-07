@@ -58,6 +58,15 @@
                 {{-- AÇÕES --}}
                 <x-table.td>
                     <x-table.actions>
+                        {{-- Botão para ver TA --}}
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.assistive-technologies.show', $tech)"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
+
+                        {{-- Botão para editar TA --}}
                         <x-buttons.link-button
                             :href="route('inclusive-radar.assistive-technologies.edit', $tech)"
                             variant="warning"
@@ -65,6 +74,7 @@
                             Editar
                         </x-buttons.link-button>
 
+                        {{-- Botão para excluir TA --}}
                         <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $tech) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')

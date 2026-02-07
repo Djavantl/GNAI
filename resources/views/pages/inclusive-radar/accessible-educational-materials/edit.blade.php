@@ -28,7 +28,6 @@
                 />
             </div>
 
-            {{-- Campo notes mapeado como Descrição Detalhada para seguir o padrão de TA --}}
             <div class="col-md-12">
                 <x-forms.textarea
                     name="notes"
@@ -59,11 +58,11 @@
                 />
             </div>
 
-            {{-- SEÇÃO 2: Especificações Técnicas (Dinâmica via JS) --}}
+            {{-- SEÇÃO 2: Especificações Técnicas --}}
             <div id="dynamic-attributes-container" style="display: none;">
                 <x-forms.section title="Especificações Técnicas" />
                 <div class="row g-0" id="dynamic-attributes">
-                    {{-- O JS vai preencher aqui --}}
+                    {{-- JS irá preencher --}}
                 </div>
             </div>
 
@@ -90,25 +89,25 @@
             <x-forms.section title="Histórico de Vistorias" />
 
             <div class="col-12 mb-4 px-4">
-                <div class="history-timeline p-4 border rounded bg-light" style="max-height: 400px; overflow-y: auto;">
+                <div class="history-timeline p-4 border rounded bg-light" style="max-height: 450px; overflow-y: auto;">
                     @forelse($material->inspections()->with('images')->latest('inspection_date')->get() as $inspection)
                         <x-forms.inspection-history-card :inspection="$inspection" />
                     @empty
                         <div class="text-center py-5 text-muted bg-white rounded border border-dashed">
-                            <i class="fas fa-history fa-2x mb-3 opacity-20"></i>
-                            <p>Nenhuma vistoria registrada anteriormente.</p>
+                            <i class="fas fa-history fa-3x mb-3 opacity-20"></i>
+                            <p class="fw-bold">Nenhuma vistoria registrada anteriormente.</p>
                         </div>
                     @endforelse
                 </div>
             </div>
 
-            {{-- SEÇÃO 5: Nova Atualização de Estado / Vistoria --}}
-            <x-forms.section title="Nova Atualização de Estado / Vistoria" />
+            {{-- SEÇÃO 5: Detalhes da Vistoria --}}
+            <x-forms.section title="Detalhes da Vistoria" />
 
             <div class="col-md-6">
                 <x-forms.select
                     name="inspection_type"
-                    label="Tipo de Registro *"
+                    label="Tipo de Inspeção *"
                     :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
                         ->filter(fn($type) => $type !== \App\Enums\InclusiveRadar\InspectionType::INITIAL)
                         ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
@@ -118,9 +117,9 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="inspection_date"
-                    label="Data da Atualização *"
+                    label="Data da Inspeção *"
                     type="date"
-                    :value="date('Y-m-d')"
+                    :value="old('inspection_date', date('Y-m-d'))"
                 />
             </div>
 
@@ -134,7 +133,12 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="images[]" label="Adicionar Novas Fotos" type="file" multiple />
+                <x-forms.image-uploader
+                    name="images[]"
+                    label="Adicionar Novas Fotos"
+                    :existingImages="old('images', $material->images?->pluck('path')->toArray() ?? [])"
+                    multiple
+                />
             </div>
 
             <div class="col-md-12">
@@ -209,19 +213,21 @@
                 </div>
             </div>
 
+            {{-- BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.accessible-educational-materials.index') }}" variant="secondary">
                     Cancelar Alterações
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar Alterações
+                    Salvar Alterações
                 </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>
     </div>
 
+    {{-- Script para injetar atributos existentes --}}
     <script>
         window.currentAttributeValues = @json(old('attributes', $attributeValues ?? []));
     </script>

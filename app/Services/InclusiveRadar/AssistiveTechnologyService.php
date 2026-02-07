@@ -14,16 +14,8 @@ class AssistiveTechnologyService
     public function __construct(
         protected InspectionService $inspectionService,
         protected ResourceAttributeValueService $attributeValueService,
+        protected LoanService $loanService,
     ) {}
-
-    // Leitura
-
-    public function index(): Collection
-    {
-        return AssistiveTechnology::with(['type', 'resourceStatus', 'deficiencies'])
-            ->orderBy('name')
-            ->get();
-    }
 
     // Ações principais
 
@@ -43,11 +35,14 @@ class AssistiveTechnologyService
 
     public function toggleActive(AssistiveTechnology $assistiveTechnology): AssistiveTechnology
     {
-        $assistiveTechnology->update([
-            'is_active' => !$assistiveTechnology->is_active
-        ]);
+        return DB::transaction(function () use ($assistiveTechnology) {
 
-        return $assistiveTechnology;
+            $assistiveTechnology->update([
+                'is_active' => !$assistiveTechnology->is_active
+            ]);
+
+            return $assistiveTechnology;
+        });
     }
 
     public function delete(AssistiveTechnology $assistiveTechnology): void
@@ -66,16 +61,22 @@ class AssistiveTechnologyService
 
     protected function persist(AssistiveTechnology $assistiveTechnology, array $data): AssistiveTechnology
     {
-        // Valida regras de negócio, recalcula estoque, salva,
-        // sincroniza relações e registra vistoria se necessário
-        $this->validateBusinessRules($assistiveTechnology, $data);
+        // Valida se a quantidade informada não é menor do que os recursos atualmente emprestados
+        if (isset($data['quantity'])) {
+            $this->loanService->validateStockAvailability($assistiveTechnology, (int)$data['quantity']);
+        }
 
-        $data = $this->calculateStock($assistiveTechnology, $data);
+        // Recalcula o estoque disponível considerando empréstimos ativos
+        $data = $this->loanService->calculateStockForLoan($assistiveTechnology, $data);
 
+        // Preenche os dados do modelo e salva no banco
         $assistiveTechnology->fill($data)->save();
 
+        // Sincroniza relações como deficiências vinculadas e atributos dinâmicos
         $this->syncRelations($assistiveTechnology, $data);
-        $this->handleInspectionLog($assistiveTechnology, $data);
+
+        // Cria uma vistoria caso necessário, usando o serviço de inspeção genérico
+        $this->inspectionService->createInspectionForModel($assistiveTechnology, $data);
 
         return $assistiveTechnology->fresh([
             'type',
@@ -84,93 +85,8 @@ class AssistiveTechnologyService
         ]);
     }
 
-    protected function validateBusinessRules(AssistiveTechnology $assistiveTechnology, array $data): void
-    {
-
-        if ($assistiveTechnology->exists && isset($data['quantity'])) {
-
-            $activeLoans = $assistiveTechnology
-                ->loans()
-                ->whereIn('status', ['active', 'late'])
-                ->count();
-
-            // Impede reduzir quantidade abaixo do que já está emprestado
-            if ((int)$data['quantity'] < $activeLoans) {
-                throw ValidationException::withMessages([
-                    'quantity' => "Mínimo permitido: {$activeLoans} (recursos atualmente em uso)."
-                ]);
-            }
-        }
-    }
-
-    protected function calculateStock(AssistiveTechnology $assistiveTechnology, array $data): array
-    {
-
-        $type = ResourceType::find(
-            $data['type_id'] ?? $assistiveTechnology->type_id
-        );
-
-        // Recursos digitais não possuem controle de estoque
-        if ($type?->is_digital) {
-            $data['quantity'] = null;
-            $data['quantity_available'] = null;
-            return $data;
-        }
-
-        $total = (int) (
-            $data['quantity']
-            ?? $assistiveTechnology->quantity
-            ?? 0
-        );
-
-        $activeLoans = $assistiveTechnology->exists
-            ? $assistiveTechnology
-                ->loans()
-                ->whereIn('status', ['active', 'late'])
-                ->count()
-            : 0;
-
-        $data['quantity_available'] = $total - $activeLoans;
-
-        return $data;
-    }
-
-    protected function handleInspectionLog(AssistiveTechnology $assistiveTechnology, array $data): void
-    {
-
-        $isUpdate = $assistiveTechnology->wasRecentlyCreated === false;
-
-        // Evita criar vistoria quando nada relevante foi alterado
-        if (
-            $isUpdate
-            && !$assistiveTechnology->wasChanged('conservation_state')
-            && empty($data['inspection_description'])
-            && empty($data['images'])
-        ) {
-            return;
-        }
-
-        $this->inspectionService->createForModel(
-            $assistiveTechnology,
-            [
-                'state' => $assistiveTechnology->conservation_state,
-                'inspection_date' => $data['inspection_date'] ?? now(),
-                'type' => $data['inspection_type']
-                    ?? ($isUpdate
-                        ? InspectionType::PERIODIC->value
-                        : InspectionType::INITIAL->value),
-                'description' => $data['inspection_description']
-                    ?? ($isUpdate
-                        ? 'Atualização de estado via edição de material.'
-                        : 'Vistoria inicial de entrada.'),
-                'images' => $data['images'] ?? []
-            ]
-        );
-    }
-
     protected function syncRelations(AssistiveTechnology $assistiveTechnology, array $data): void
     {
-
         // Sincroniza relação com deficiências vinculadas
         if (isset($data['deficiencies'])) {
             $assistiveTechnology

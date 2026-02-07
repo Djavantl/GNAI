@@ -17,17 +17,22 @@ class AccessibleEducationalMaterialController extends Controller
 
     public function index(): View
     {
-        return view('pages.inclusive-radar.accessible-educational-materials.index', [
-            'materials' => $this->service->listAll()
-        ]);
+        $materials = AccessibleEducationalMaterial::with([
+            'type',
+            'resourceStatus',
+            'deficiencies',
+            'accessibilityFeatures'
+        ])
+            ->orderBy('name')
+            ->get();
+
+        return view('pages.inclusive-radar.accessible-educational-materials.index', compact('materials'));
     }
 
     public function create(): View
     {
-        return view(
-            'pages.inclusive-radar.accessible-educational-materials.create',
-            $this->service->getCreateData()
-        );
+        // A view create recebe $deficiencies e $resourceTypes via View Composer
+        return view('pages.inclusive-radar.accessible-educational-materials.create');
     }
 
     public function store(AccessibleEducationalMaterialRequest $request): RedirectResponse
@@ -36,33 +41,66 @@ class AccessibleEducationalMaterialController extends Controller
 
         return redirect()
             ->route('inclusive-radar.accessible-educational-materials.index')
-            ->with('success', 'Material pedagógico acessível criado com sucesso!');
+            ->with('success', 'Material criado com sucesso!');
+    }
+
+    public function show(AccessibleEducationalMaterial $material): View
+    {
+        $material->load([
+            'type',
+            'resourceStatus',
+            'deficiencies',
+            'accessibilityFeatures',
+            'inspections.images',
+            'loans',
+            'attributeValues.attribute'
+        ]);
+
+        $attributeValues = $material->attributeValues
+            ->pluck('value', 'attribute_id')
+            ->toArray();
+
+        return view(
+            'pages.inclusive-radar.accessible-educational-materials.show',
+            compact('material', 'attributeValues')
+        );
     }
 
     public function edit(AccessibleEducationalMaterial $material): View
     {
+        $material->load([
+            'deficiencies',
+            'accessibilityFeatures',
+            'inspections.images',
+            'attributeValues.attribute'
+        ]);
+
+        $attributeValues = $material->attributeValues
+            ->pluck('value', 'attribute_id')
+            ->toArray();
+
+        // A view de edição recebe $deficiencies e $resourceTypes via View Composer
         return view(
             'pages.inclusive-radar.accessible-educational-materials.edit',
-            $this->service->getEditData($material)
+            compact('material', 'attributeValues')
         );
     }
 
-    public function update(
-        AccessibleEducationalMaterialRequest $request,
-        AccessibleEducationalMaterial $material
-    ): RedirectResponse {
+    public function update(AccessibleEducationalMaterialRequest $request, AccessibleEducationalMaterial $material): RedirectResponse
+    {
         $this->service->update($material, $request->validated());
 
         return redirect()
             ->route('inclusive-radar.accessible-educational-materials.index')
-            ->with('success', 'Material pedagógico acessível atualizado com sucesso!');
+            ->with('success', 'Material atualizado com sucesso!');
     }
 
     public function toggleActive(AccessibleEducationalMaterial $material): RedirectResponse
     {
         $this->service->toggleActive($material);
 
-        return redirect()->back()->with('success', 'Status atualizado com sucesso!');
+        return redirect()->back()
+            ->with('success', 'Status atualizado!');
     }
 
     public function destroy(AccessibleEducationalMaterial $material): RedirectResponse
@@ -71,6 +109,6 @@ class AccessibleEducationalMaterialController extends Controller
 
         return redirect()
             ->route('inclusive-radar.accessible-educational-materials.index')
-            ->with('success', 'Material removido com sucesso!');
+            ->with('success', 'Material removido!');
     }
 }

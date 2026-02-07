@@ -5,8 +5,6 @@ namespace App\Http\Controllers\InclusiveRadar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AssistiveTechnologyRequest;
 use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\ResourceType;
-use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -19,17 +17,19 @@ class AssistiveTechnologyController extends Controller
 
     public function index(): View
     {
-        return view('pages.inclusive-radar.assistive-technologies.index', [
-            'assistiveTechnologies' => $this->service->index()
-        ]);
+        $assistiveTechnologies = AssistiveTechnology::with([
+            'type',
+            'resourceStatus',
+            'deficiencies'
+        ])->orderBy('name')->get();
+
+        return view('pages.inclusive-radar.assistive-technologies.index', compact('assistiveTechnologies'));
     }
 
     public function create(): View
     {
-        $deficiencies = Deficiency::orderBy('name')->get();
-        $resourceTypes = ResourceType::active()->forAssistiveTechnology()->orderBy('name')->get();
-
-        return view('pages.inclusive-radar.assistive-technologies.create', compact('deficiencies', 'resourceTypes'));
+        // A view create recebe $deficiencies e $resourceTypes via View Composer
+        return view('pages.inclusive-radar.assistive-technologies.create');
     }
 
     public function store(AssistiveTechnologyRequest $request): RedirectResponse
@@ -56,16 +56,9 @@ class AssistiveTechnologyController extends Controller
             ->pluck('value', 'attribute_id')
             ->toArray();
 
-        $resourceTypes = ResourceType::active()
-            ->forAssistiveTechnology()
-            ->with('attributes')
-            ->orderBy('name')
-            ->get();
-
         return view('pages.inclusive-radar.assistive-technologies.show', compact(
             'assistiveTechnology',
-            'attributeValues',
-            'resourceTypes'
+            'attributeValues'
         ));
     }
 
@@ -81,18 +74,10 @@ class AssistiveTechnologyController extends Controller
             ->pluck('value', 'attribute_id')
             ->toArray();
 
-        $resourceTypes = ResourceType::active()
-            ->forAssistiveTechnology()
-            ->orderBy('name')
-            ->get();
-
-        $deficiencies = Deficiency::orderBy('name')->get();
-
+        // A view edit recebe $deficiencies e $resourceTypes via View Composer
         return view('pages.inclusive-radar.assistive-technologies.edit', compact(
             'assistiveTechnology',
-            'attributeValues',
-            'resourceTypes',
-            'deficiencies'
+            'attributeValues'
         ));
     }
 

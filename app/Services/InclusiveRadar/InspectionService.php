@@ -3,6 +3,7 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Enums\InclusiveRadar\InspectionType;
 use App\Models\InclusiveRadar\Inspection;
 use App\Enums\InclusiveRadar\ConservationState;
 use Illuminate\Database\Eloquent\Model;
@@ -54,6 +55,31 @@ class InspectionService
 
             $inspection->delete();
         });
+    }
+
+    public function createInspectionForModel(Model $model, array $data): ?Inspection
+    {
+        $isUpdate = $model->wasRecentlyCreated === false;
+
+        if (
+            $isUpdate
+            && !$model->wasChanged('conservation_state')
+            && empty($data['inspection_description'])
+            && empty($data['images'])
+        ) {
+            return null;
+        }
+
+        return $this->createForModel(
+            $model,
+            [
+                'state' => $model->conservation_state,
+                'inspection_date' => $data['inspection_date'] ?? now(),
+                'type' => $data['inspection_type'] ?? ($isUpdate ? InspectionType::PERIODIC->value : InspectionType::INITIAL->value),
+                'description' => $data['inspection_description'] ?? ($isUpdate ? 'Atualização de estado via edição de material.' : 'Vistoria inicial de entrada.'),
+                'images' => $data['images'] ?? []
+            ]
+        );
     }
 
 }

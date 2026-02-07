@@ -2,7 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Models\InclusiveRadar\{AccessibleEducationalMaterial, Loan, AssistiveTechnology, ResourceStatus};
+use App\Models\InclusiveRadar\{AccessibleEducationalMaterial, Loan, AssistiveTechnology, ResourceStatus, ResourceType};
 use App\Models\SpecializedEducationalSupport\{Professional, Student};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -160,6 +160,44 @@ class LoanService
                     $item->update(['status_id' => $unavailableStatus->id]);
                 }
             }
+        }
+    }
+
+    public function calculateStockForLoan($item, array $data): array
+    {
+        $type = ResourceType::find($data['type_id'] ?? $item->type_id);
+
+        if ($type?->is_digital) {
+            $data['quantity'] = null;
+            $data['quantity_available'] = null;
+            return $data;
+        }
+
+        $total = (int) ($data['quantity'] ?? $item->quantity ?? 0);
+
+        $activeLoans = $item->exists
+            ? $item->loans()->whereIn('status', ['active', 'late'])->count()
+            : 0;
+
+        $data['quantity_available'] = $total - $activeLoans;
+
+        return $data;
+    }
+
+    public function validateStockAvailability($item, int $quantity): void
+    {
+        if (!isset($item->type) || $item->type->is_digital) {
+            return;
+        }
+
+        $activeLoans = $item->exists
+            ? $item->loans()->whereIn('status', ['active', 'late'])->count()
+            : 0;
+
+        if ($quantity < $activeLoans) {
+            throw ValidationException::withMessages([
+                'quantity' => "Mínimo permitido: {$activeLoans} (recurso atualmente em uso)."
+            ]);
         }
     }
 

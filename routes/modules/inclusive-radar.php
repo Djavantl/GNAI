@@ -57,6 +57,7 @@ Route::delete('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnol
 Route::get('/accessible-educational-materials', [AccessibleEducationalMaterialController::class, 'index'])->name('accessible-educational-materials.index');
 Route::get('/accessible-educational-materials/create', [AccessibleEducationalMaterialController::class, 'create'])->name('accessible-educational-materials.create');
 Route::post('/accessible-educational-materials/store', [AccessibleEducationalMaterialController::class, 'store'])->name('accessible-educational-materials.store');
+Route::get('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'show'])->name('accessible-educational-materials.show');
 Route::get('/accessible-educational-materials/{material}/edit', [AccessibleEducationalMaterialController::class, 'edit'])->name('accessible-educational-materials.edit');
 Route::put('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'update'])->name('accessible-educational-materials.update');
 Route::patch('/accessible-educational-materials/{material}/toggle', [AccessibleEducationalMaterialController::class, 'toggleActive'])->name('accessible-educational-materials.toggle');

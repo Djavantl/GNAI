@@ -57,6 +57,15 @@
                 {{-- AÇÕES: Simpificado como em Alunos --}}
                 <x-table.td>
                     <x-table.actions>
+                        {{-- Botão para ver MPA --}}
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.accessible-educational-materials.show', $material)"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
+
+                        {{-- Botão para editar MPA --}}
                         <x-buttons.link-button
                             :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"
                             variant="warning"
@@ -64,6 +73,7 @@
                             Editar
                         </x-buttons.link-button>
 
+                        {{-- Botão para excluir MPA --}}
                         <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
@@ -76,6 +86,7 @@
                         </form>
                     </x-table.actions>
                 </x-table.td>
+
             </tr>
         @empty
             <tr>
