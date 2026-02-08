@@ -13,7 +13,7 @@ class ResourceTypeRequest extends FormRequest
 
     public function rules(): array
     {
-        $typeId = $this->route('resource_type')?->id;
+        $typeId = $this->route('resourceType')?->id;
 
         return [
             'name' => 'required|string|max:255|unique:resource_types,name,' . $typeId,

@@ -43,6 +43,13 @@
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button
+                            :href="route('inclusive-radar.type-attribute-assignments.show', ['assignment' => $type->id])"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
+
+                        <x-buttons.link-button
                             :href="route('inclusive-radar.type-attribute-assignments.edit', ['assignment' => $type->id])"
                             variant="warning"
                         >

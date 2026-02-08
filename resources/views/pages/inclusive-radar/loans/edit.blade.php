@@ -6,10 +6,9 @@
             <h2 class="text-title">Editar Registro de Empréstimo</h2>
             <p class="text-muted">Atualize prazos, status ou registre a devolução do recurso.</p>
         </div>
-        <div class="align-self-center">
-            <span class="badge bg-light text-muted border py-2 px-3">
-                <i class="fas fa-fingerprint me-1"></i> Protocolo: #{{ $loan->id }}
-            </span>
+        <div class="text-end">
+            <span class="d-block text-muted small uppercase fw-bold">ID no Sistema</span>
+            <span class="badge bg-purple fs-6">{{ $loan->id }}</span>
         </div>
     </div>
 
@@ -65,7 +64,7 @@
             </div>
 
             {{-- SEÇÃO 2: Responsáveis --}}
-            <x-forms.section title="Participantes" />
+            <x-forms.section title="Responsáveis e Beneficiário" />
 
             <div class="col-md-6">
                 <x-forms.select
@@ -88,7 +87,7 @@
             </div>
 
             {{-- SEÇÃO 3: Prazos e Status --}}
-            <x-forms.section title="Controle de Datas e Devolução" />
+            <x-forms.section title="Prazos e Observações" />
 
             <div class="col-md-6">
                 <x-forms.input

@@ -11,16 +11,13 @@ use Illuminate\View\View;
 
 class ResourceTypeController extends Controller
 {
-    protected ResourceTypeService $service;
-
-    public function __construct(ResourceTypeService $service)
-    {
-        $this->service = $service;
-    }
+    public function __construct(
+        protected ResourceTypeService $service
+    ) {}
 
     public function index(): View
     {
-        $resourceTypes = $this->service->listAll();
+        $resourceTypes = ResourceType::orderBy('name')->get();
 
         return view(
             'pages.inclusive-radar.resource-types.index',
@@ -40,6 +37,14 @@ class ResourceTypeController extends Controller
         return redirect()
             ->route('inclusive-radar.resource-types.index')
             ->with('success', 'Tipo de recurso criado com sucesso!');
+    }
+
+    public function show(ResourceType $resourceType): View
+    {
+        return view(
+            'pages.inclusive-radar.resource-types.show',
+            compact('resourceType')
+        );
     }
 
     public function edit(ResourceType $resourceType): View

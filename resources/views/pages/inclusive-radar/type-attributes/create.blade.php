@@ -38,7 +38,9 @@
                     {{-- Adicionei o pointer-events none para reforçar que não é clicável --}}
                     style="background-color: #f8f9fa; cursor: not-allowed; pointer-events: none;"
                 />
-                <small class="text-muted">Gerado automaticamente a partir do rótulo.</small>
+                <div class="mb-3">
+                    <small class="text-muted">Gerado automaticamente a partir do rótulo.</small>
+                </div>
             </div>
 
             <div class="col-md-6">

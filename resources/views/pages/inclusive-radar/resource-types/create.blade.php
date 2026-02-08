@@ -61,7 +61,7 @@
                     <x-forms.checkbox
                         name="for_educational_material"
                         id="apply_material"
-                        label="Materiais Didáticos"
+                        label="Materiais Pedagógicos Acessíveis"
                         :checked="old('for_educational_material')"
                         class="mb-0"
                     />

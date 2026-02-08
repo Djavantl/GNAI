@@ -2,8 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Models\InclusiveRadar\{AccessibleEducationalMaterial, Loan, AssistiveTechnology, ResourceStatus, ResourceType};
-use App\Models\SpecializedEducationalSupport\{Professional, Student};
+use App\Models\InclusiveRadar\{Loan, ResourceStatus, ResourceType};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -11,43 +10,6 @@ use Carbon\Carbon;
 
 class LoanService
 {
-
-    public function listAll(): Collection
-    {
-        return Loan::with(['loanable', 'student.person', 'professional.person'])
-            ->orderByDesc('loan_date')
-            ->get();
-    }
-
-    public function getCreateData(): array
-    {
-        $assistive_technologies = AssistiveTechnology::where('is_active', true)
-            ->whereHas('resourceStatus', fn($q) => $q->where('blocks_loan', false))
-            ->with('type')
-            ->get()
-            ->filter(fn($item) => $item->type?->is_digital || $item->quantity_available > 0);
-
-        $educational_materials = AccessibleEducationalMaterial::where('is_active', true)
-            ->whereHas('resourceStatus', fn($q) => $q->where('blocks_loan', false))
-            ->get();
-
-        return [
-            'students'      => Student::with('person')->get()->sortBy('person.name'),
-            'professionals' => Professional::with('person')->get()->sortBy('person.name'),
-            'assistive_technologies' => $assistive_technologies,
-            'educational_materials'  => $educational_materials,
-        ];
-    }
-
-    public function getEditData(Loan $loan): array
-    {
-        return [
-            'loan'          => $loan->load(['loanable', 'student.person', 'professional.person']),
-            'students'      => Student::with('person')->get()->sortBy('person.name'),
-            'professionals' => Professional::with('person')->get()->sortBy('person.name'),
-        ];
-    }
-
     public function store(array $data): Loan
     {
         return DB::transaction(function () use ($data) {
@@ -68,25 +30,30 @@ class LoanService
     public function update(Loan $loan, array $data): Loan
     {
         return DB::transaction(function () use ($loan, $data) {
-            $isReturningNow = empty($loan->return_date) && !empty($data['return_date']);
+
+            $previousReturnDate = $loan->return_date;
 
             if (!empty($data['return_date'])) {
                 $returnDate = Carbon::parse($data['return_date']);
                 $dueDate = Carbon::parse($loan->due_date);
 
-                if (($data['status'] ?? $loan->status) === 'active') {
-                    $data['status'] = $returnDate->greaterThan($dueDate) ? 'late' : 'returned';
+                $data['status'] = $returnDate->greaterThan($dueDate) ? 'late' : 'returned';
+
+                if (empty($previousReturnDate)) {
+                    $this->handleStockIncrement($loan->loanable, $data['status']);
                 }
             }
 
-            if ($isReturningNow) {
-                $this->handleStockIncrement($loan->loanable, $data['status'] ?? 'returned');
+            if (!empty($data['is_damaged'])) {
+                $data['status'] = 'damaged';
             }
 
             $loan->update($data);
+
             return $loan->fresh();
         });
     }
+
 
     public function markAsReturned(Loan $loan, array $data = []): Loan
     {

@@ -2,41 +2,22 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Models\InclusiveRadar\TypeAttribute;
-use App\Models\InclusiveRadar\ResourceType;
 use App\Models\InclusiveRadar\TypeAttributeAssignment;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class TypeAttributeAssignmentService
 {
-    public function listAll(): Collection
+    public function update(TypeAttributeAssignment $assignment, array $data): TypeAttributeAssignment
     {
-        return TypeAttributeAssignment::with(['type', 'attribute'])
-            ->orderBy('id')
-            ->get();
-    }
+        return DB::transaction(function () use ($assignment, $data) {
+            $assignment->update([
+                'type_id' => $data['type_id'],
+                'attribute_id' => $data['attribute_id'],
+            ]);
 
-    public function getCreateData(): array
-    {
-        return [
-            'types' => ResourceType::where('is_active', true)->orderBy('name')->get(),
-            'attributes' => TypeAttribute::where('is_active', true)->orderBy('label')->get(),
-        ];
-    }
-
-    public function getEditData(ResourceType $type): array
-    {
-        $assignedAttributeIds = TypeAttributeAssignment::where('type_id', $type->id)
-            ->pluck('attribute_id')
-            ->toArray();
-
-        return [
-            'type' => $type,
-            'types' => ResourceType::where('is_active', true)->orderBy('name')->get(),
-            'attributes' => TypeAttribute::where('is_active', true)->orderBy('label')->get(),
-            'assignedAttributeIds' => $assignedAttributeIds,
-        ];
+            return $assignment;
+        });
     }
 
     public function assignAttributesToType(int $typeId, array $attributeIds): void
@@ -65,22 +46,10 @@ class TypeAttributeAssignmentService
         });
     }
 
-    public function update(TypeAttributeAssignment $assignment, array $data): TypeAttributeAssignment
+    public function removeAssignment(int $typeId): void
     {
-        return DB::transaction(function () use ($assignment, $data) {
-            $assignment->update([
-                'type_id' => $data['type_id'],
-                'attribute_id' => $data['attribute_id'],
-            ]);
-
-            return $assignment;
-        });
-    }
-
-    public function removeAssignment(ResourceType $type): void
-    {
-        DB::transaction(function () use ($type) {
-            TypeAttributeAssignment::where('type_id', $type->id)->delete();
+        DB::transaction(function () use ($typeId) {
+            TypeAttributeAssignment::where('type_id', $typeId)->delete();
         });
     }
 

@@ -19,17 +19,12 @@
     </div>
 
     {{-- Agora com 7 colunas --}}
-    <x-table.table :headers="['Item', 'Tipo', 'Beneficiário', 'Data Saída', 'Prazo Entrega', 'Status', 'Ações']">
+    <x-table.table :headers="['Item', 'Beneficiário', 'Data Saída', 'Prazo Entrega', 'Status', 'Ações']">
         @forelse($loans as $loan)
             <tr>
                 {{-- ITEM --}}
                 <x-table.td>
                     {{ $loan->loanable->name ?? ($loan->loanable->title ?? 'Item Removido') }}
-                </x-table.td>
-
-                {{-- TIPO: Coluna separada conforme solicitado --}}
-                <x-table.td>
-                    {{ $loan->loanable_type === 'App\Models\InclusiveRadar\AssistiveTechnology' ? 'Tecnologia' : 'Material' }}
                 </x-table.td>
 
                 {{-- BENEFICIÁRIO --}}
@@ -84,6 +79,13 @@
                                 </x-buttons.submit-button>
                             </form>
                         @endif
+
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.loans.show', $loan)"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
 
                         <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
                             Editar

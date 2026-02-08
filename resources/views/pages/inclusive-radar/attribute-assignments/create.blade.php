@@ -24,7 +24,7 @@
                     id="type_id"
                     required
                     :options="$types->mapWithKeys(fn($type) => [
-                        $type->id => $type->name . ($type->for_assistive_technology ? ' (Assistiva)' : ' (Pedagógico)')
+                        $type->id => $type->name . ($type->for_assistive_technology ? 'Tecnologia Assistiva' : 'Materiais Pedagógicos Acessíveis')
                     ])"
                     :selected="old('type_id')"
                 />

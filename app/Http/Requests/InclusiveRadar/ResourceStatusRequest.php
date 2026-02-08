@@ -3,7 +3,6 @@
 namespace App\Http\Requests\InclusiveRadar;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class ResourceStatusRequest extends FormRequest
 {
@@ -15,56 +14,36 @@ class ResourceStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:100',
-            ],
+            'name' => ['required', 'string', 'max:100'],
+            'description' => ['nullable', 'string'],
 
-            'description' => [
-                'nullable',
-                'string',
-            ],
-
-            'blocks_loan' => [
-                'sometimes',
-                'boolean',
-            ],
-
-            'blocks_access' => [
-                'sometimes',
-                'boolean',
-            ],
-
-            'for_assistive_technology' => [
-                'sometimes',
-                'boolean',
-            ],
-
-            'for_educational_material' => [
-                'sometimes',
-                'boolean',
-            ],
-
-            'is_active' => [
-                'sometimes',
-                'boolean',
-            ],
+            'blocks_loan' => ['boolean'],
+            'blocks_access' => ['boolean'],
+            'for_assistive_technology' => ['boolean'],
+            'for_educational_material' => ['boolean'],
+            'is_active' => ['boolean'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'code.required' => 'O código do status é obrigatório.',
-            'code.unique' => 'Já existe um status com este código.',
-            'code.max' => 'O código pode ter no máximo 50 caracteres.',
-
             'name.required' => 'O nome do status é obrigatório.',
             'name.max' => 'O nome pode ter no máximo 100 caracteres.',
 
             'blocks_loan.boolean' => 'O campo "bloqueia empréstimo" deve ser verdadeiro ou falso.',
             'blocks_access.boolean' => 'O campo "bloqueia acesso" deve ser verdadeiro ou falso.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'blocks_loan' => $this->boolean('blocks_loan'),
+            'blocks_access' => $this->boolean('blocks_access'),
+            'for_assistive_technology' => $this->boolean('for_assistive_technology'),
+            'for_educational_material' => $this->boolean('for_educational_material'),
+            'is_active' => $this->boolean('is_active'),
+        ]);
     }
 }

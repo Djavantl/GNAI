@@ -2,13 +2,9 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\InspectionType;
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoans;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\ResourceType;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class AccessibleEducationalMaterialService
 {

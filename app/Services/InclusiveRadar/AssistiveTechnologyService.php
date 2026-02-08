@@ -2,12 +2,9 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\InspectionType;
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoans;
-use App\Models\InclusiveRadar\{AssistiveTechnology, ResourceType};
-use Illuminate\Support\Collection;
+use App\Models\InclusiveRadar\AssistiveTechnology;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class AssistiveTechnologyService
 {

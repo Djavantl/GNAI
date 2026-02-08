@@ -51,6 +51,13 @@
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button
+                            :href="route('inclusive-radar.type-attributes.show', $attr)"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
+
+                        <x-buttons.link-button
                             :href="route('inclusive-radar.type-attributes.edit', $attr)"
                             variant="warning"
                         >

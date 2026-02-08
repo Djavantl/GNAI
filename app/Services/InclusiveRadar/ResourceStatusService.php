@@ -3,32 +3,10 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\ResourceStatus;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ResourceStatusService
 {
-    public function listAll(): Collection
-    {
-        return ResourceStatus::orderBy('name')->get();
-    }
-
-    public function listForAssistiveTechnology(): Collection
-    {
-        return ResourceStatus::active()
-            ->forAssistiveTechnology()
-            ->orderBy('name')
-            ->get();
-    }
-
-    public function listForEducationalMaterial(): Collection
-    {
-        return ResourceStatus::active()
-            ->forEducationalMaterial()
-            ->orderBy('name')
-            ->get();
-    }
-
     public function store(array $data): ResourceStatus
     {
         return DB::transaction(function () use ($data) {
@@ -36,27 +14,28 @@ class ResourceStatusService
         });
     }
 
-    public function update(ResourceStatus $status, array $data): ResourceStatus
+    public function update(ResourceStatus $resourceStatus, array $data): ResourceStatus
     {
-        return DB::transaction(function () use ($status, $data) {
+        return DB::transaction(function () use ($resourceStatus, $data) {
             unset($data['code']);
-            $status->update($data);
-            return $status;
+            $resourceStatus->update($data);
+            return $resourceStatus;
         });
     }
 
-    public function toggleActive(ResourceStatus $status): ResourceStatus
+    public function toggleActive(ResourceStatus $resourceStatus): ResourceStatus
     {
-        return DB::transaction(function () use ($status) {
-            $status->update(['is_active' => ! $status->is_active]);
-            return $status;
+        return DB::transaction(function () use ($resourceStatus) {
+            $resourceStatus->update([
+                'is_active' => ! $resourceStatus->is_active
+            ]);
+
+            return $resourceStatus;
         });
     }
 
-    public function delete(ResourceStatus $status): void
+    public function delete(ResourceStatus $resourceStatus): void
     {
-        DB::transaction(function () use ($status) {
-            $status->delete();
-        });
+        DB::transaction(fn() => $resourceStatus->delete());
     }
 }

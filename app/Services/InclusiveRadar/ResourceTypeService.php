@@ -3,17 +3,10 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\ResourceType;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ResourceTypeService
 {
-
-    public function listAll(): Collection
-    {
-        return ResourceType::orderBy('name')->get();
-    }
-
     public function store(array $data): ResourceType
     {
         return DB::transaction(function () use ($data) {
@@ -41,8 +34,6 @@ class ResourceTypeService
 
     public function delete(ResourceType $resourceType): void
     {
-        DB::transaction(function () use ($resourceType) {
-            $resourceType->delete();
-        });
+        DB::transaction(fn() => $resourceType->delete());
     }
 }

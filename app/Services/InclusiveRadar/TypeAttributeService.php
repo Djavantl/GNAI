@@ -3,16 +3,10 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Models\InclusiveRadar\TypeAttribute;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TypeAttributeService
 {
-    public function listAll(): Collection
-    {
-        return TypeAttribute::orderBy('label')->get();
-    }
-
     public function store(array $data): TypeAttribute
     {
         return DB::transaction(function () use ($data) {

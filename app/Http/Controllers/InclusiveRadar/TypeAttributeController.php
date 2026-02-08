@@ -11,16 +11,14 @@ use Illuminate\View\View;
 
 class TypeAttributeController extends Controller
 {
-    protected TypeAttributeService $service;
-
-    public function __construct(TypeAttributeService $service)
-    {
-        $this->service = $service;
-    }
+    public function __construct(
+        protected TypeAttributeService $service
+    ) {}
 
     public function index(): View
     {
-        $attributes = $this->service->listAll();
+        $attributes = TypeAttribute::orderBy('label')->get();
+
         return view('pages.inclusive-radar.type-attributes.index', compact('attributes'));
     }
 
@@ -38,6 +36,12 @@ class TypeAttributeController extends Controller
             ->with('success', 'Atributo criado com sucesso.');
     }
 
+    public function show(TypeAttribute $typeAttribute): View
+    {
+        return view('pages.inclusive-radar.type-attributes.show', compact('typeAttribute'));
+    }
+
+
     public function edit(TypeAttribute $typeAttribute): View
     {
         return view('pages.inclusive-radar.type-attributes.edit', compact('typeAttribute'));
@@ -54,15 +58,9 @@ class TypeAttributeController extends Controller
 
     public function toggleActive(TypeAttribute $typeAttribute): RedirectResponse
     {
-        $attribute = $this->service->toggleActive($typeAttribute);
+        $this->service->toggleActive($typeAttribute);
 
-        $message = $attribute->is_active
-            ? 'Atributo ativado com sucesso!'
-            : 'Atributo desativado com sucesso!';
-
-        return redirect()
-            ->back()
-            ->with('success', $message);
+        return redirect()->back()->with('success', 'Status atualizado com sucesso!');
     }
 
     public function destroy(TypeAttribute $typeAttribute): RedirectResponse

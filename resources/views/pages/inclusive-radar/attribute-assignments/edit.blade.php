@@ -6,16 +6,16 @@
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Gerenciar Atributos do Tipo</h2>
-            <p class="text-muted">Configurando campos para: <strong>{{ $type->name }}</strong></p>
+            <p class="text-muted">Configurando campos para: <strong>{{ $assignment->name }}</strong></p>
         </div>
     </div>
 
     <div class="mt-3">
-        <x-forms.form-card action="{{ route('inclusive-radar.type-attribute-assignments.update', $type->id) }}" method="POST">
+        <x-forms.form-card action="{{ route('inclusive-radar.type-attribute-assignments.update', $assignment->id) }}" method="POST">
             @csrf
             @method('PUT')
 
-            <input type="hidden" name="type_id" value="{{ $type->id }}">
+            <input type="hidden" name="type_id" value="{{ $assignment->id }}">
 
             {{-- SEÇÃO 1: Atribuição de Atributos --}}
             <x-forms.section title="Campos do Formulário" />
@@ -49,7 +49,7 @@
             <div class="col-12 px-2 mt-2">
                 <div class="p-3 border-start border-warning bg-light mx-2" style="border-width: 4px !important;">
                     <p class="text-muted mb-0" style="font-size: 0.85rem; line-height: 1.4;">
-                        <span class="text-warning fw-bold">Aviso:</span> Ao desmarcar um atributo, ele deixará de aparecer imediatamente nos formulários de cadastro e edição de todos os recursos vinculados a este tipo (<strong>{{ $type->name }}</strong>).
+                        <span class="text-warning fw-bold">Aviso:</span> Ao desmarcar um atributo, ele deixará de aparecer imediatamente nos formulários de cadastro e edição de todos os recursos vinculados a este tipo (<strong>{{ $assignment->name }}</strong>).
                         Os dados já salvos anteriormente não serão excluídos, mas ficarão ocultos na interface de edição.
                     </p>
                 </div>

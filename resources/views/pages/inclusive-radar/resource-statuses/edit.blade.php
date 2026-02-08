@@ -78,13 +78,13 @@
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     <x-forms.checkbox
                         name="for_assistive_technology"
-                        label="Tecnologia Assistiva"
+                        label="Tecnologias Assistivas"
                         :checked="old('for_assistive_technology', $resourceStatus->for_assistive_technology)"
                         class="mb-0"
                     />
                     <x-forms.checkbox
                         name="for_educational_material"
-                        label="Material Pedagógico"
+                        label="Materiais Pedagógicos Acessíveis"
                         :checked="old('for_educational_material', $resourceStatus->for_educational_material)"
                         class="mb-0"
                     />

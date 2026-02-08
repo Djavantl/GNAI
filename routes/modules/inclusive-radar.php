@@ -19,29 +19,32 @@ use App\Http\Controllers\InclusiveRadar\{
 
 //Resource Types & Attributes
 
+Route::get('/resource-types/{resourceType}/attributes', [TypeAttributeAssignmentController::class, 'getAttributesByType'])->name('resource-types.attributes');
+Route::get('/type-attribute-assignments', [TypeAttributeAssignmentController::class, 'index'])->name('type-attribute-assignments.index');
+Route::get('/type-attribute-assignments/create', [TypeAttributeAssignmentController::class, 'create'])->name('type-attribute-assignments.create');
+Route::post('/type-attribute-assignments/store', [TypeAttributeAssignmentController::class, 'store'])->name('type-attribute-assignments.store');
+Route::get('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'show'])->name('type-attribute-assignments.show');
+Route::get('/type-attribute-assignments/{assignment}/edit', [TypeAttributeAssignmentController::class, 'edit'])->name('type-attribute-assignments.edit');
+Route::put('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'update'])->name('type-attribute-assignments.update');
+Route::delete('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'destroy'])->name('type-attribute-assignments.destroy');
+
 Route::get('/resource-types', [ResourceTypeController::class, 'index'])->name('resource-types.index');
 Route::get('/resource-types/create', [ResourceTypeController::class, 'create'])->name('resource-types.create');
 Route::post('/resource-types/store', [ResourceTypeController::class, 'store'])->name('resource-types.store');
+Route::get('/resource-types/{resourceType}', [ResourceTypeController::class, 'show'])->name('resource-types.show');
 Route::get('/resource-types/{resourceType}/edit', [ResourceTypeController::class, 'edit'])->name('resource-types.edit');
 Route::put('/resource-types/{resourceType}', [ResourceTypeController::class, 'update'])->name('resource-types.update');
 Route::patch('/resource-types/{resourceType}/toggle', [ResourceTypeController::class, 'toggleActive'])->name('resource-types.toggle');
 Route::delete('/resource-types/{resourceType}', [ResourceTypeController::class, 'destroy'])->name('resource-types.destroy');
-Route::get('/resource-types/{resourceType}/attributes', [TypeAttributeAssignmentController::class, 'getAttributesByType'])->name('resource-types.attributes');
 
 Route::get('/type-attributes', [TypeAttributeController::class, 'index'])->name('type-attributes.index');
 Route::get('/type-attributes/create', [TypeAttributeController::class, 'create'])->name('type-attributes.create');
 Route::post('/type-attributes/store', [TypeAttributeController::class, 'store'])->name('type-attributes.store');
+Route::get('/type-attributes/{typeAttribute}', [TypeAttributeController::class, 'show'])->name('type-attributes.show');
 Route::get('/type-attributes/{typeAttribute}/edit', [TypeAttributeController::class, 'edit'])->name('type-attributes.edit');
 Route::put('/type-attributes/{typeAttribute}', [TypeAttributeController::class, 'update'])->name('type-attributes.update');
 Route::patch('/type-attributes/{typeAttribute}/toggle', [TypeAttributeController::class, 'toggleActive'])->name('type-attributes.toggle');
 Route::delete('/type-attributes/{typeAttribute}', [TypeAttributeController::class, 'destroy'])->name('type-attributes.destroy');
-
-Route::get('/type-attribute-assignments', [TypeAttributeAssignmentController::class, 'index'])->name('type-attribute-assignments.index');
-Route::get('/type-attribute-assignments/create', [TypeAttributeAssignmentController::class, 'create'])->name('type-attribute-assignments.create');
-Route::post('/type-attribute-assignments/store', [TypeAttributeAssignmentController::class, 'store'])->name('type-attribute-assignments.store');
-Route::get('/type-attribute-assignments/{assignment}/edit', [TypeAttributeAssignmentController::class, 'edit'])->name('type-attribute-assignments.edit');
-Route::put('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'update'])->name('type-attribute-assignments.update');
-Route::delete('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'destroy'])->name('type-attribute-assignments.destroy');
 
 // Assistive Technologies
 Route::get('/assistive-technologies', [AssistiveTechnologyController::class, 'index'])->name('assistive-technologies.index');
@@ -81,9 +84,7 @@ Route::put('/barrier-categories/{barrierCategory}', [BarrierCategoryController::
 Route::patch('/barrier-categories/{barrierCategory}/toggle', [BarrierCategoryController::class, 'toggleActive'])->name('barrier-categories.toggle-active');
 Route::delete('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'destroy'])->name('barrier-categories.destroy');
 
-
 //Map Bases & Locations
-
 
 Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
 Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');
@@ -101,17 +102,19 @@ Route::put('/locations/{location}', [LocationController::class, 'update'])->name
 Route::patch('/locations/{location}/toggle', [LocationController::class, 'toggleActive'])->name('locations.toggle-active');
 Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
 
-
 //Support Services
+
 Route::get('/accessibility-features', [AccessibilityFeatureController::class, 'index'])->name('accessibility-features.index');
 Route::get('/accessibility-features/create', [AccessibilityFeatureController::class, 'create'])->name('accessibility-features.create');
 Route::post('/accessibility-features/store', [AccessibilityFeatureController::class, 'store'])->name('accessibility-features.store');
+Route::get('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'show'])->name('accessibility-features.show');
 Route::get('/accessibility-features/{accessibilityFeature}/edit', [AccessibilityFeatureController::class, 'edit'])->name('accessibility-features.edit');
 Route::put('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'update'])->name('accessibility-features.update');
 Route::patch('/accessibility-features/{accessibilityFeature}/toggle', [AccessibilityFeatureController::class, 'toggleActive'])->name('accessibility-features.toggle');
 Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])->name('accessibility-features.destroy');
 
 Route::get('/resource-statuses', [ResourceStatusController::class, 'index'])->name('resource-statuses.index');
+Route::get('/resource-statuses/{resourceStatus}', [ResourceStatusController::class, 'show'])->name('resource-statuses.show');
 Route::get('/resource-statuses/{resourceStatus}/edit', [ResourceStatusController::class, 'edit'])->name('resource-statuses.edit');
 Route::put('/resource-statuses/{resourceStatus}', [ResourceStatusController::class, 'update'])->name('resource-statuses.update');
 Route::patch('/resource-statuses/{resourceStatus}/toggle', [ResourceStatusController::class, 'toggleActive'])->name('resource-statuses.toggle-active');
@@ -119,6 +122,7 @@ Route::patch('/resource-statuses/{resourceStatus}/toggle', [ResourceStatusContro
 Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
 Route::get('/loans/create', [LoanController::class, 'create'])->name('loans.create');
 Route::post('/loans/store', [LoanController::class, 'store'])->name('loans.store');
+Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
 Route::get('/loans/{loan}/edit', [LoanController::class, 'edit'])->name('loans.edit');
 Route::put('/loans/{loan}', [LoanController::class, 'update'])->name('loans.update');
 Route::patch('/loans/{loan}/return', [LoanController::class, 'returnItem'])->name('loans.return');

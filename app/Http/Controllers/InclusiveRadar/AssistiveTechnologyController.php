@@ -23,7 +23,10 @@ class AssistiveTechnologyController extends Controller
             'deficiencies'
         ])->orderBy('name')->get();
 
-        return view('pages.inclusive-radar.assistive-technologies.index', compact('assistiveTechnologies'));
+        return view(
+            'pages.inclusive-radar.assistive-technologies.index',
+            compact('assistiveTechnologies')
+        );
     }
 
     public function create(): View
@@ -56,10 +59,10 @@ class AssistiveTechnologyController extends Controller
             ->pluck('value', 'attribute_id')
             ->toArray();
 
-        return view('pages.inclusive-radar.assistive-technologies.show', compact(
-            'assistiveTechnology',
-            'attributeValues'
-        ));
+        return view(
+            'pages.inclusive-radar.assistive-technologies.show',
+            compact('assistiveTechnology', 'attributeValues')
+        );
     }
 
     public function edit(AssistiveTechnology $assistiveTechnology): View
@@ -75,10 +78,10 @@ class AssistiveTechnologyController extends Controller
             ->toArray();
 
         // A view edit recebe $deficiencies e $resourceTypes via View Composer
-        return view('pages.inclusive-radar.assistive-technologies.edit', compact(
-            'assistiveTechnology',
-            'attributeValues'
-        ));
+        return view(
+            'pages.inclusive-radar.assistive-technologies.edit',
+            compact('assistiveTechnology', 'attributeValues')
+        );
     }
 
     public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse

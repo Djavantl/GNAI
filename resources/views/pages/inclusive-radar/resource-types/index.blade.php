@@ -54,6 +54,13 @@
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button
+                            :href="route('inclusive-radar.resource-types.show', $type)"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
+
+                        <x-buttons.link-button
                             :href="route('inclusive-radar.resource-types.edit', $type)"
                             variant="warning"
                         >

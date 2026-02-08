@@ -21,12 +21,13 @@ class AccessibleEducationalMaterialController extends Controller
             'type',
             'resourceStatus',
             'deficiencies',
-            'accessibilityFeatures'
-        ])
-            ->orderBy('name')
-            ->get();
+            'accessibilityFeatures',
+        ])->orderBy('name')->get();
 
-        return view('pages.inclusive-radar.accessible-educational-materials.index', compact('materials'));
+        return view(
+            'pages.inclusive-radar.accessible-educational-materials.index',
+            compact('materials')
+        );
     }
 
     public function create(): View
@@ -75,9 +76,7 @@ class AccessibleEducationalMaterialController extends Controller
             'attributeValues.attribute'
         ]);
 
-        $attributeValues = $material->attributeValues
-            ->pluck('value', 'attribute_id')
-            ->toArray();
+        $attributeValues = $material->attributeValues->pluck('value', 'attribute_id')->toArray();
 
         // A view de edição recebe $deficiencies e $resourceTypes via View Composer
         return view(

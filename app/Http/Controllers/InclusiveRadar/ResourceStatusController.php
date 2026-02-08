@@ -11,20 +11,25 @@ use Illuminate\View\View;
 
 class ResourceStatusController extends Controller
 {
-    protected ResourceStatusService $service;
-
-    public function __construct(ResourceStatusService $service)
-    {
-        $this->service = $service;
-    }
+    public function __construct(
+        protected ResourceStatusService $service
+    ) {}
 
     public function index(): View
     {
-        $statuses = $this->service->listAll();
+        $resourceStatuses = ResourceStatus::orderBy('name')->get();
 
         return view(
             'pages.inclusive-radar.resource-statuses.index',
-            compact('statuses')
+            compact('resourceStatuses')
+        );
+    }
+
+    public function show(ResourceStatus $resourceStatus): View
+    {
+        return view(
+            'pages.inclusive-radar.resource-statuses.show',
+            compact('resourceStatus')
         );
     }
 
@@ -56,9 +61,9 @@ class ResourceStatusController extends Controller
 
     public function toggleActive(ResourceStatus $resourceStatus): RedirectResponse
     {
-        $status = $this->service->toggleActive($resourceStatus);
+        $resourceStatus = $this->service->toggleActive($resourceStatus);
 
-        $message = $status->is_active
+        $message = $resourceStatus->is_active
             ? 'Status ativado com sucesso!'
             : 'Status desativado com sucesso!';
 
