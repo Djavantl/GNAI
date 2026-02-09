@@ -1,7 +1,7 @@
 <aside class="sidebar">
     <ul class="sidebar-menu">
         <li>
-            <a href="{{ route('auth.dashboard') }}"
+            <a href="{{ route('dashboard') }}"
                class="{{ request()->routeIs('auth.dashboard') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-speedometer2"></i></span>
                 <span class="text">Dashboard</span>

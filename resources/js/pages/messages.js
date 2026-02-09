@@ -2,6 +2,7 @@ window.closeToast = function() {
     const el = document.getElementById('toast-element');
     const container = document.getElementById('toast-container');
     if (el) {
+        el.style.pointerEvents = 'none';
         el.classList.add('animate-slide-out');
         setTimeout(() => {
             if (container) container.remove();
@@ -18,7 +19,7 @@ window.addEventListener('load', function() {
                 if (document.getElementById('toast-element')) {
                     window.closeToast();
                 }
-            }, 5000); 
+            }, 5000);
         }, 300);
     }
 });

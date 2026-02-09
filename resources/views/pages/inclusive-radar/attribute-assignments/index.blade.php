@@ -3,7 +3,6 @@
 @section('title', 'Vínculos de Atributos')
 
 @section('content')
-    <x-messages.toast />
 
     <div class="d-flex justify-content-between mb-3">
         <div>

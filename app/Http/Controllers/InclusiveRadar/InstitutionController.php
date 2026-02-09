@@ -75,11 +75,8 @@ class InstitutionController extends Controller
         );
     }
 
-    public function update(
-        InstitutionRequest $request,
-        Institution $institution
-    ): RedirectResponse {
-
+    public function update(InstitutionRequest $request, Institution $institution): RedirectResponse
+    {
         $data = $request->validated();
 
         if (empty($data['latitude']) || empty($data['longitude'])) {

@@ -8,38 +8,53 @@ use App\Models\InclusiveRadar\Location;
 use App\Models\InclusiveRadar\Institution;
 use App\Services\InclusiveRadar\LocationService;
 use App\Services\InclusiveRadar\OpenStreetMapService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class LocationController extends Controller
 {
-    protected LocationService $service;
-    protected OpenStreetMapService $osmService;
+    public function __construct(
+        protected LocationService $service,
+        protected OpenStreetMapService $osmService
+    ) {}
 
-    public function __construct(LocationService $service, OpenStreetMapService $osmService)
+    public function index(): View
     {
-        $this->service = $service;
-        $this->osmService = $osmService;
+        $locations = Location::with(['institution', 'barriers'])
+            ->orderBy('name')
+            ->get();
+
+        return view(
+            'pages.inclusive-radar.locations.index',
+            compact('locations')
+        );
     }
 
-    public function index()
+    public function create(): View
     {
-        $locations = $this->service->listAll();
+        $institutions = Institution::with(['locations' => function ($query) {
+            $query->where('is_active', true)
+                ->orderBy('name');
+        }])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
-        return view('pages.inclusive-radar.locations.index', compact('locations'));
+        return view(
+            'pages.inclusive-radar.locations.create',
+            compact('institutions')
+        );
     }
 
-    public function create()
-    {
-        $institutions = $this->service->getActiveInstitutionsWithLocations();
 
-        return view('pages.inclusive-radar.locations.create', compact('institutions'));
-    }
-
-    public function store(LocationRequest $request)
+    public function store(LocationRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
         if (empty($data['latitude']) || empty($data['longitude'])) {
+
             $institution = Institution::find($data['institution_id']);
+
             $address = "{$data['name']}, {$institution->city}, {$institution->state}";
             $coords = $this->osmService->geocode($address);
 
@@ -47,9 +62,12 @@ class LocationController extends Controller
                 $data['latitude'] = $coords['latitude'];
                 $data['longitude'] = $coords['longitude'];
             } else {
-                return redirect()->back()
+                return redirect()
+                    ->back()
                     ->withInput()
-                    ->withErrors(['latitude' => 'Não foi possível determinar a localização. Por favor, clique no mapa.']);
+                    ->withErrors([
+                        'latitude' => 'Não foi possível determinar a localização. Clique no mapa.'
+                    ]);
             }
         }
 
@@ -60,22 +78,42 @@ class LocationController extends Controller
             ->with('success', 'Ponto de referência criado com sucesso!');
     }
 
-    public function edit(Location $location)
+    public function show(Location $location): View
     {
-        $institutions = $this->service->getActiveInstitutionsWithLocations();
-
-        return view('pages.inclusive-radar.locations.edit', compact('location', 'institutions'));
+        return view(
+            'pages.inclusive-radar.locations.show',
+            compact('location')
+        );
     }
 
+    public function edit(Location $location): View
+    {
+        $institutions = Institution::with([
+            'locations' => fn ($q) =>
+            $q->where('is_active', true)
+                ->orderBy('name')
+        ])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
-    public function update(LocationRequest $request, Location $location)
+        return view(
+            'pages.inclusive-radar.locations.edit',
+            compact('location', 'institutions')
+        );
+    }
+
+    public function update(LocationRequest $request, Location $location): RedirectResponse
     {
         $data = $request->validated();
 
         if (empty($data['latitude']) || empty($data['longitude'])) {
+
             $institution = Institution::find($data['institution_id']);
+
             $address = "{$data['name']}, {$institution->city}, {$institution->state}";
             $coords = $this->osmService->geocode($address);
+
             if ($coords) {
                 $data['latitude'] = $coords['latitude'];
                 $data['longitude'] = $coords['longitude'];
@@ -89,7 +127,7 @@ class LocationController extends Controller
             ->with('success', 'Localização atualizada com sucesso!');
     }
 
-    public function toggleActive(Location $location)
+    public function toggleActive(Location $location): RedirectResponse
     {
         $location = $this->service->toggleActive($location);
 
@@ -102,7 +140,7 @@ class LocationController extends Controller
             ->with('success', $message);
     }
 
-    public function destroy(Location $location)
+    public function destroy(Location $location): RedirectResponse
     {
         $this->service->delete($location);
 

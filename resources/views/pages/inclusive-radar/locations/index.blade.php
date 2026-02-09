@@ -3,7 +3,6 @@
 @section('title', 'Pontos de Referência')
 
 @section('content')
-    <x-messages.toast />
 
     <div class="d-flex justify-content-between mb-3">
         <div>
@@ -44,6 +43,13 @@
                 {{-- AÇÕES --}}
                 <x-table.td>
                     <x-table.actions>
+                        <x-buttons.link-button
+                            :href="route('inclusive-radar.locations.show', $loc)"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
+
                         <x-buttons.link-button
                             :href="route('inclusive-radar.locations.edit', $loc)"
                             variant="warning"

@@ -46,7 +46,7 @@
 
                 {{-- NOME DO LOCAL --}}
                 <div class="col-md-12">
-                    <x-forms.input name="name" id="location_name" label="Nome do Local/Prédio" required
+                    <x-forms.input name="name" id="location_name" label="Nome do Local" required
                                    aria-required="true" :value="old('name')" placeholder="Ex: Bloco Acadêmico II" />
                 </div>
 

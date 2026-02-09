@@ -21,6 +21,6 @@ Route::middleware('web')->group(function () {
         ->group(base_path('routes/report.php'));
 
     Route::prefix('auth')
-        ->name('auth.')
+        ->name('')
         ->group(base_path('routes/auth.php'));
 });

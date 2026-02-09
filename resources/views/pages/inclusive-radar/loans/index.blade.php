@@ -3,7 +3,6 @@
 @section('title', 'Empréstimos de Recursos')
 
 @section('content')
-    <x-messages.toast />
 
     <div class="d-flex justify-content-between mb-3">
         <div>
