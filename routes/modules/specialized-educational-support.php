@@ -17,6 +17,7 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     DisciplineController,
     StudentCourseController,
     CourseController,
+    PendencyController,
 
 };
 
@@ -166,4 +167,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/student-courses/{studentCourse}/edit', [StudentCourseController::class, 'edit'])->name('student-courses.edit');
     Route::put('/student-courses/{studentCourse}', [StudentCourseController::class, 'update'])->name('student-courses.update');
     Route::delete('/student-courses/{studentCourse}', [StudentCourseController::class, 'destroy'])->name('student-courses.destroy');
+
+    // Pendencies
+    Route::get('/pendencies', [PendencyController::class, 'index'])->name('pendencies.index');
+    Route::get('/pendencies/{pendency}/show', [PendencyController::class, 'show'])->name('pendencies.show');
+    Route::get('/pendencies/create', [PendencyController::class, 'create'])->name('pendencies.create');
+    Route::post('/pendencies/store', [PendencyController::class, 'store'])->name('pendencies.store');
+    Route::get('/pendencies/{pendency}/edit', [PendencyController::class, 'edit'])->name('pendencies.edit');
+    Route::put('/pendencies/{pendency}', [PendencyController::class, 'update'])->name('pendencies.update');
+    Route::delete('/pendencies/{pendency}', [PendencyController::class, 'destroy'])->name('pendencies.destroy');
+    Route::get('/my-pendencies', [PendencyController::class, 'myPendencies'])->name('pendencies.my');
+    Route::put('/pendencies/{pendency}/complete', [PendencyController::class, 'markAsCompleted'])->name('pendencies.complete');
 });

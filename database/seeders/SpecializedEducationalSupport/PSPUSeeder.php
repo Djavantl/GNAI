@@ -25,25 +25,25 @@ class PSPUSeeder extends Seeder
             // students
 
             Person::create([
-                'name' => 'Ana Souza',
+                'name' => 'Jader',
                 'document' => '11111111111',
                 'birth_date' => '2012-01-10',
-                'gender' => 'female',
-                'email' => 'ana.aluno@teste.com',
+                'gender' => 'male',
+                'email' => 'jaderadriel7@gmail.com',
             ]),
             Person::create([
-                'name' => 'Carlos Lima',
+                'name' => 'Gabriel',
                 'document' => '22222222222',
                 'birth_date' => '2011-03-15',
                 'gender' => 'male',
-                'email' => 'carlos.aluno@teste.com',
+                'email' => 'gabrielrochagomes639@gmail.com',
             ]),
             Person::create([
-                'name' => 'Pedro Rocha',
+                'name' => 'Péricles',
                 'document' => '33333333333',
                 'birth_date' => '2010-07-20',
                 'gender' => 'male',
-                'email' => 'pedro.aluno@teste.com',
+                'email' => 'periclescairess@gmail.com',
             ]),
 
             // professionals
@@ -60,7 +60,7 @@ class PSPUSeeder extends Seeder
                 'document' => '55555555555',
                 'birth_date' => '1988-08-22',
                 'gender' => 'male',
-                'email' => 'joao.prof@teste.com',
+                'email' => 'djvnsala4@gmail.com',
             ]),
             Person::create([
                 'name' => 'Paula Mendes',

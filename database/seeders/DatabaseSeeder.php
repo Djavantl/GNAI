@@ -13,6 +13,7 @@ use Database\Seeders\SpecializedEducationalSupport\CoursesSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DisciplinesSeeder;
 use Database\Seeders\SpecializedEducationalSupport\CourseDisciplineSeeder;
 use Database\Seeders\SpecializedEducationalSupport\StudentCourseSeeder;
+use Database\Seeders\SpecializedEducationalSupport\PendencySeeder;
 use Database\Seeders\InclusiveRadar\BarrierCategorySeeder;
 use Database\Seeders\InclusiveRadar\ResourceTypeSeeder;
 use Database\Seeders\InclusiveRadar\TypeAttributeSeeder;
@@ -46,6 +47,7 @@ class DatabaseSeeder extends Seeder
             DisciplinesSeeder::class,
             CourseDisciplineSeeder::class,
             StudentCourseSeeder::class,
+            PendencySeeder::class,
         ]);
     }
 }

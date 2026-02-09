@@ -59,7 +59,7 @@
         </li>
 
         <li>
-            <a href="{{ url('/pendencias') }}"
+            <a href="{{ route('specialized-educational-support.pendencies.index') }}"
                class="{{ request()->is('pendencias*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-exclamation-triangle"></i></span>
                 <span class="text">Pendências</span>
