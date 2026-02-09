@@ -30,4 +30,14 @@ enum BarrierStatus: string
             self::NOT_APPLICABLE => 'danger',
         };
     }
+
+    public function allowsDeletion(): bool
+    {
+        return match($this) {
+            self::RESOLVED,
+            self::NOT_APPLICABLE => true,
+            default => false,
+        };
+    }
+
 }

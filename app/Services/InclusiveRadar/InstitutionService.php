@@ -2,25 +2,17 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
 use App\Models\InclusiveRadar\Institution;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Validation\ValidationException;
 
 class InstitutionService
 {
-    public function listAll()
-    {
-        return Institution::with(['locations', 'barriers'])
-            ->orderBy('name')
-            ->get();
-    }
-
     public function store(array $data): Institution
     {
-        return DB::transaction(function () use ($data) {
-            return Institution::create($data);
-        });
+        return DB::transaction(
+            fn () => Institution::create($data)
+        );
     }
 
     public function update(Institution $institution, array $data): Institution
@@ -34,24 +26,37 @@ class InstitutionService
     public function toggleActive(Institution $institution): Institution
     {
         return DB::transaction(function () use ($institution) {
-            $institution->update(['is_active' => ! $institution->is_active]);
+
+            $institution->update([
+                'is_active' => ! $institution->is_active
+            ]);
+
             return $institution;
         });
     }
 
     public function delete(Institution $institution): void
     {
-        $hasActiveBarriers = $institution->barriers()
-            ->whereNull('resolved_at')
-            ->exists();
-
-        if ($hasActiveBarriers) {
-            throw ValidationException::withMessages([
-                'institution' => 'Não é possível apagar esta instituição: existem barreiras não resolvidas vinculadas.'
-            ]);
-        }
-
         DB::transaction(function () use ($institution) {
+
+            $hasActiveBarrier = $institution
+                ->barriers()
+                ->get()
+                ->contains(function ($barrier) {
+
+                    $status = $barrier->latestStatus();
+
+                    if (!$status) {
+                        return true;
+                    }
+
+                    return ! $status->allowsDeletion();
+                });
+
+            if ($hasActiveBarrier) {
+                throw new CannotDeleteLinkedBarrierException();
+            }
+
             $institution->delete();
         });
     }

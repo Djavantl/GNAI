@@ -110,7 +110,7 @@
                             }
                         @endphp
 
-                        <x-maps.location
+                        <x-forms.maps.location
                             :institution="$selectedInstitution"
                             :location="null"
                             height="550px"

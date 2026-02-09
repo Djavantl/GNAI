@@ -79,6 +79,7 @@ Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])->nam
 Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])->name('barrier-categories.index');
 Route::get('/barrier-categories/create', [BarrierCategoryController::class, 'create'])->name('barrier-categories.create');
 Route::post('/barrier-categories/store', [BarrierCategoryController::class, 'store'])->name('barrier-categories.store');
+Route::get('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'show'])->name('barrier-categories.show');
 Route::get('/barrier-categories/{barrierCategory}/edit', [BarrierCategoryController::class, 'edit'])->name('barrier-categories.edit');
 Route::put('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'update'])->name('barrier-categories.update');
 Route::patch('/barrier-categories/{barrierCategory}/toggle', [BarrierCategoryController::class, 'toggleActive'])->name('barrier-categories.toggle-active');
@@ -89,6 +90,7 @@ Route::delete('/barrier-categories/{barrierCategory}', [BarrierCategoryControlle
 Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
 Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');
 Route::post('/institutions/store', [InstitutionController::class, 'store'])->name('institutions.store');
+Route::get('/institutions/{institution}', [InstitutionController::class, 'show'])->name('institutions.show');
 Route::get('/institutions/{institution}/edit', [InstitutionController::class, 'edit'])->name('institutions.edit');
 Route::put('/institutions/{institution}', [InstitutionController::class, 'update'])->name('institutions.update');
 Route::patch('/institutions/{institution}/toggle', [InstitutionController::class, 'toggleActive'])->name('institutions.toggle-active');

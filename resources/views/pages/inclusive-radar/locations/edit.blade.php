@@ -109,7 +109,7 @@
                             $selectedInstitution = $institutions->firstWhere('id', $selectedInstitutionId);
                         @endphp
 
-                        <x-maps.location
+                        <x-forms.maps.location
                             :institution="$selectedInstitution"
                             :location="$location"
                             height="550px"

@@ -2,7 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoans;
+use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use Illuminate\Support\Facades\DB;
 
@@ -47,7 +47,7 @@ class AccessibleEducationalMaterialService
         DB::transaction(function () use ($material) {
 
             if ($material->loans()->whereNull('return_date')->exists()) {
-                throw new CannotDeleteWithActiveLoans();
+                throw new CannotDeleteWithActiveLoansException();
             }
 
             $material->delete();

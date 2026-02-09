@@ -117,7 +117,7 @@
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <section aria-labelledby="map-section-title">
-                        <x-maps.institution
+                        <x-forms.maps.institution
                             :institution="$institution"
                             :lat="old('latitude', $institution->latitude)"
                             :lng="old('longitude', $institution->longitude)"

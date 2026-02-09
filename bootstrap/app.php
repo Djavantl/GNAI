@@ -1,6 +1,7 @@
 <?php
 
-use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoans;
+use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
+use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,9 +16,27 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+
+        // Empréstimos ativos
         $exceptions->render(function (
-            CannotDeleteWithActiveLoans $e,
+            CannotDeleteWithActiveLoansException $e,
                                         $request
+        ) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage()
+                ], 422);
+            }
+
+            return back()->withErrors([
+                'delete' => $e->getMessage()
+            ]);
+        });
+
+        // Recursos vinculados
+        $exceptions->render(function (
+            CannotDeleteLinkedBarrierException $e,
+                                                $request
         ) {
             if ($request->expectsJson()) {
                 return response()->json([

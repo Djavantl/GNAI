@@ -35,7 +35,7 @@
     $zoom = $institution->default_zoom ?? $zoom;
 @endphp
 
-<x-maps.base
+<x-forms.maps.base
     mapId="map-barrier"
     :lat="$lat"
     :lng="$lng"
@@ -45,7 +45,7 @@
     latId="lat"
     lngId="lng"
     {{ $attributes }}>
-</x-maps.base>
+</x-forms.maps.base>
 
 @push('scripts')
     <script>

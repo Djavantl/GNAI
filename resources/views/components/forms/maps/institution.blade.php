@@ -16,7 +16,7 @@
     }
 @endphp
 
-<x-maps.base
+<x-forms.maps.base
     mapId="map-institution"
     :lat="$lat"
     :lng="$lng"
@@ -24,7 +24,7 @@
     :height="$attributes->get('height', '550px')"
     :label="$attributes->get('label', 'Localize a Sede no Mapa')"
     {{ $attributes }}>
-</x-maps.base>
+</x-forms.maps.base>
 
 @push('scripts')
     <script>

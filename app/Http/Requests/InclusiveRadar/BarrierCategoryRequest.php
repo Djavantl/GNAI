@@ -21,7 +21,9 @@ class BarrierCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:150',
-                Rule::unique('barrier_categories', 'name')->ignore($category?->id),
+                Rule::unique('barrier_categories', 'name')
+                    ->ignore($category?->id)
+                    ->whereNull('deleted_at')
             ],
             'description' => 'nullable|string',
             'is_active' => 'sometimes|boolean',

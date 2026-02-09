@@ -107,7 +107,7 @@
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <section aria-labelledby="map-section-title">
-                        <x-maps.institution
+                        <x-forms.maps.institution
                             :lat="old('latitude', -14.2350)"
                             :lng="old('longitude', -51.9253)"
                             :zoom="old('default_zoom', 16)"

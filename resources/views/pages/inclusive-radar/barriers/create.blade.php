@@ -215,7 +215,7 @@
                             }
                         @endphp
 
-                        <x-maps.barrier
+                        <x-forms.maps.barrier
                             :institution="$selectedInstitution"
                             height="450px"
                             label="Localização da Barreira"

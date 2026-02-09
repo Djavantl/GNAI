@@ -102,10 +102,12 @@ class Barrier extends Model
 
     public function latestStatus(): ?BarrierStatus
     {
-        return $this->inspections()
+        $status = $this->inspections()
             ->latest('inspection_date')
             ->latest('created_at')
-            ->first()?->status;
+            ->value('status');
+
+        return $status;
     }
 
     public function inspections(): MorphMany

@@ -2,7 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoans;
+use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use Illuminate\Support\Facades\DB;
 
@@ -47,7 +47,7 @@ class AssistiveTechnologyService
         DB::transaction(function () use ($assistiveTechnology) {
 
             if ($assistiveTechnology->loans()->whereNull('return_date')->exists()) {
-                throw new CannotDeleteWithActiveLoans();
+                throw new CannotDeleteWithActiveLoansException();
             }
 
             $assistiveTechnology->delete();

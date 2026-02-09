@@ -246,7 +246,7 @@
                             />
                         </div>
 
-                        <x-maps.barrier
+                        <x-forms.maps.barrier
                             :barrier="$barrier"
                             :institution="$barrier->institution"
                             height="450px"
@@ -325,7 +325,6 @@
                     Salvar Alterações
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 

@@ -7,39 +7,41 @@ use App\Http\Requests\InclusiveRadar\InstitutionRequest;
 use App\Models\InclusiveRadar\Institution;
 use App\Services\InclusiveRadar\InstitutionService;
 use App\Services\InclusiveRadar\OpenStreetMapService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class InstitutionController extends Controller
 {
-    protected InstitutionService $service;
-    protected OpenStreetMapService $osmService;
-
     public function __construct(
-        InstitutionService $service,
-        OpenStreetMapService $osmService
-    ) {
-        $this->service = $service;
-        $this->osmService = $osmService;
-    }
+        protected InstitutionService $service,
+        protected OpenStreetMapService $osmService
+    ) {}
 
-    public function index()
+    public function index(): View
     {
-        $institutions = $this->service->listAll();
+        $institutions = Institution::with(['locations', 'barriers'])
+            ->orderBy('name')
+            ->get();
 
-        return view('pages.inclusive-radar.institutions.index', compact('institutions'));
+        return view(
+            'pages.inclusive-radar.institutions.index',
+            compact('institutions')
+        );
     }
 
-    public function create()
+    public function create(): View
     {
         return view('pages.inclusive-radar.institutions.create');
     }
 
-    public function store(InstitutionRequest $request)
+    public function store(InstitutionRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
         if (empty($data['latitude']) || empty($data['longitude'])) {
             $address = "{$data['name']}, {$data['city']}, {$data['state']}";
             $coords = $this->osmService->geocode($address);
+
             if ($coords) {
                 $data['latitude'] = $coords['latitude'];
                 $data['longitude'] = $coords['longitude'];
@@ -53,20 +55,37 @@ class InstitutionController extends Controller
             ->with('success', 'Instituição criada com sucesso!');
     }
 
-    public function edit(Institution $institution)
+    public function show(Institution $institution): View
+    {
+        $institution->load(['locations', 'barriers']);
+
+        return view(
+            'pages.inclusive-radar.institutions.show',
+            compact('institution')
+        );
+    }
+
+    public function edit(Institution $institution): View
     {
         $institution->load('locations');
 
-        return view('pages.inclusive-radar.institutions.edit', compact('institution'));
+        return view(
+            'pages.inclusive-radar.institutions.edit',
+            compact('institution')
+        );
     }
 
-    public function update(InstitutionRequest $request, Institution $institution)
-    {
+    public function update(
+        InstitutionRequest $request,
+        Institution $institution
+    ): RedirectResponse {
+
         $data = $request->validated();
 
         if (empty($data['latitude']) || empty($data['longitude'])) {
             $address = "{$data['name']}, {$data['city']}, {$data['state']}";
             $coords = $this->osmService->geocode($address);
+
             if ($coords) {
                 $data['latitude'] = $coords['latitude'];
                 $data['longitude'] = $coords['longitude'];
@@ -80,7 +99,7 @@ class InstitutionController extends Controller
             ->with('success', 'Instituição atualizada com sucesso!');
     }
 
-    public function toggleActive(Institution $institution)
+    public function toggleActive(Institution $institution): RedirectResponse
     {
         $institution = $this->service->toggleActive($institution);
 
@@ -93,19 +112,12 @@ class InstitutionController extends Controller
             ->with('success', $message);
     }
 
-    public function destroy(Institution $institution)
+    public function destroy(Institution $institution): RedirectResponse
     {
-        try {
-            $this->service->delete($institution);
+        $this->service->delete($institution);
 
-            return redirect()
-                ->route('inclusive-radar.institutions.index')
-                ->with('success', 'Instituição removida com sucesso!');
-        } catch (\Exception $e) {
-            return redirect()
-                ->route('inclusive-radar.institutions.index')
-                ->with('error', $e->getMessage());
-        }
+        return redirect()
+            ->route('inclusive-radar.institutions.index')
+            ->with('success', 'Instituição removida com sucesso!');
     }
-
 }
