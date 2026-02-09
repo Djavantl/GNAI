@@ -1,7 +1,15 @@
 @extends('layouts.master')
 
+@section('title', 'Cadastrar - Instituição')
+
 @section('content')
-    <x-messages.toast />
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Instituições' => route('inclusive-radar.institutions.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

@@ -1,8 +1,14 @@
 @extends('layouts.master')
 
-@section('title', 'Empréstimos de Recursos')
+@section('title', 'Empréstimos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Empréstimos' => route('inclusive-radar.loans.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
@@ -69,16 +75,6 @@
                 {{-- AÇÕES --}}
                 <x-table.td>
                     <x-table.actions>
-                        @if($loan->status === 'active')
-                            <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('PATCH')
-                                <x-buttons.submit-button variant="success" onclick="return confirm('Confirmar a devolução?')">
-                                    Devolver
-                                </x-buttons.submit-button>
-                            </form>
-                        @endif
-
                         <x-buttons.link-button
                             :href="route('inclusive-radar.loans.show', $loan)"
                             variant="info"

@@ -1,7 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "Editar - $resourceStatus->name")
 
 @section('content')
-    <x-messages.toast />
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Status dos Recursos' => route('inclusive-radar.resource-statuses.index'),
+            $resourceStatus->name => route('inclusive-radar.resource-statuses.show', $resourceStatus),
+            'Editar' => null
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

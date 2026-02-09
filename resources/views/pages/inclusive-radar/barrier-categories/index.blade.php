@@ -3,6 +3,12 @@
 @section('title', 'Categorias de Barreiras')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Categorias de Barreiras' => route('inclusive-radar.barrier-categories.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

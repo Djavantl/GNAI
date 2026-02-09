@@ -1,6 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "$typeAttribute->label")
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Atributos de Recursos' => route('inclusive-radar.type-attributes.index'),
+            $typeAttribute->label => route('inclusive-radar.type-attributes.show', $typeAttribute),
+        ]" />
+    </div>
+
     {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3">
         <div>

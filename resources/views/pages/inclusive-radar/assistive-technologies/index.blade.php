@@ -3,6 +3,12 @@
 @section('title', 'Tecnologias Assistivas')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Tecnologias Assistivas' => route('inclusive-radar.assistive-technologies.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

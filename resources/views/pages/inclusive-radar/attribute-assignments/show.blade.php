@@ -1,6 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "$assignment->name")
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Vínculos de Atributos' => route('inclusive-radar.type-attribute-assignments.index'),
+            $assignment->name => null
+        ]" />
+    </div>
+
     {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3">
         <div>

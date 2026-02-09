@@ -1,7 +1,16 @@
 @extends('layouts.master')
 
+@section('title', "Editar - $location->name ")
+
 @section('content')
-    <x-messages.toast />
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Pontos de Referência' => route('inclusive-radar.locations.index'),
+            $location->name => route('inclusive-radar.locations.show', $location),
+            'Editar' => null
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

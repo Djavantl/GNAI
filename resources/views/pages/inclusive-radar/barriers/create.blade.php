@@ -1,9 +1,17 @@
 @extends('layouts.master')
 
-@section('content')
-    <x-messages.toast />
+@section('title', 'Relatar Barreira')
 
-    <div class="d-flex justify-content-between mb-3 px-4">
+@section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Barreiras' => route('inclusive-radar.barriers.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
+
+    <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Relatar Barreira de Acessibilidade</h2>
             <p class="text-muted">Registre um ponto de obstrução ou dificuldade encontrada no campus.</p>

@@ -1,6 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', 'Cadastrar - Material Pedagógico Acessível')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Materiais Pedagógicos Acessíveis' => route('inclusive-radar.accessible-educational-materials.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Novo Material Pedagógico Acessível (MPA)</h2>

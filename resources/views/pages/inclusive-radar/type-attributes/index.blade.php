@@ -3,10 +3,17 @@
 @section('title', 'Atributos de Recursos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Atributos de Recursos' => route('inclusive-radar.type-attributes.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Atributos Personalizados</h2>
+            <h2 class="text-title">Atributos de Recursos</h2>
             <p class="text-muted">Gerencie campos dinâmicos para detalhamento técnico dos recursos.</p>
         </div>
         <x-buttons.link-button

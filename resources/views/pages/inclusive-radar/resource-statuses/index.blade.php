@@ -3,10 +3,16 @@
 @section('title', 'Status do Sistema')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Status dos Recursos' => route('inclusive-radar.resource-statuses.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Status do Sistema</h2>
+            <h2 class="text-title">Status dos Recursos</h2>
             <p class="text-muted">Gerencie como os recursos são classificados e as regras de empréstimo.</p>
         </div>
     </div>

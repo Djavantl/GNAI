@@ -1,6 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "Editar - $assistiveTechnology->name")
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Tecnologias Assistivas' => route('inclusive-radar.assistive-technologies.index'),
+            $assistiveTechnology->name => route('inclusive-radar.assistive-technologies.show', $assistiveTechnology),
+            'Editar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Tecnologia Assistiva</h2>

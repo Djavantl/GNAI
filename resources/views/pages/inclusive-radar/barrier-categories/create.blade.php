@@ -1,7 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', 'Cadastrar - Categoria de Barreira')
 
 @section('content')
-    <x-messages.toast />
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Categorias de Barreiras' => route('inclusive-radar.barrier-categories.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

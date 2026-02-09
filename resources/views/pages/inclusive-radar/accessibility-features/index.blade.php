@@ -3,6 +3,12 @@
 @section('title', 'Recursos de Acessibilidade')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Recursos de Acessibilidade' => route('inclusive-radar.accessibility-features.index')
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

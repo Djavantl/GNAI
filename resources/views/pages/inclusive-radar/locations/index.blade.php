@@ -3,6 +3,12 @@
 @section('title', 'Pontos de Referência')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Pontos de Referência' => route('inclusive-radar.locations.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

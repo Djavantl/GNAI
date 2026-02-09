@@ -1,6 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "$material->name")
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Materiais Pedagógicos Acessíveis' => route('inclusive-radar.accessible-educational-materials.index'),
+            $material->name => null
+        ]" />
+    </div>
+
     {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3">
         <div>

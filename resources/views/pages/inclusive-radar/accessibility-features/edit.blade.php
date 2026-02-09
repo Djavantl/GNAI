@@ -1,6 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "Editar - $accessibilityFeature->name")
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Recursos de Acessibilidade' => route('inclusive-radar.accessibility-features.index'),
+            $accessibilityFeature->name => route('inclusive-radar.accessibility-features.show', $accessibilityFeature),
+            'Editar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Recurso de Acessibilidade</h2>

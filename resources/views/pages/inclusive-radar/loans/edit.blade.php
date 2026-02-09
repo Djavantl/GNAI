@@ -1,6 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "Editar - Empréstimo $loan->id ")
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Empréstimos' => route('inclusive-radar.loans.index'),
+            $loan->id => route('inclusive-radar.loans.show', $loan),
+            'Editar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Registro de Empréstimo</h2>
@@ -143,6 +154,16 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                @if($loan->status === 'active')
+                    <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PATCH')
+                        <x-buttons.submit-button variant="success" onclick="return confirm('Confirmar a devolução?')">
+                            Devolver
+                        </x-buttons.submit-button>
+                    </form>
+                @endif
+
                 <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
                     Cancelar
                 </x-buttons.link-button>

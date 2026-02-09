@@ -3,6 +3,12 @@
 @section('title', 'Tipos de Recursos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Tipos de Recursos' => route('inclusive-radar.resource-types.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

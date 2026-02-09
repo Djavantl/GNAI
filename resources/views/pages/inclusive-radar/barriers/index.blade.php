@@ -1,8 +1,15 @@
 @extends('layouts.master')
 
-@section('title', 'Mapa de Barreiras')
+@section('title', 'Barreiras')
 
 @section('content')
+
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Barreiras' => route('inclusive-radar.barriers.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

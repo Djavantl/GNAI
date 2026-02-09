@@ -1,9 +1,18 @@
 @extends('layouts.master')
 
-@section('content')
-    <x-messages.toast />
+@section('title', "Editar - $barrier->name")
 
-    <div class="d-flex justify-content-between mb-3 px-4">
+@section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Barreiras' => route('inclusive-radar.barriers.index'),
+            //$barrier->name => route('inclusive-radar.barriers.show', $barrier->name),
+            'Editar' => null
+        ]" />
+    </div>
+
+    <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Barreira de Acessibilidade</h2>
             <p class="text-muted">Atualize as informações registradas.</p>

@@ -1,7 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "Editar - $barrierCategory->name")
 
 @section('content')
-    <x-messages.toast />
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Categorias de Barreiras' => route('inclusive-radar.barrier-categories.index'),
+            $barrierCategory->name => route('inclusive-radar.barrier-categories.show', $barrierCategory),
+            'Editar' => null
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

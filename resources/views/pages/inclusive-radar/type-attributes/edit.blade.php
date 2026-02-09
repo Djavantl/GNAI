@@ -1,7 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "Editar - $typeAttribute->label")
 
 @section('content')
-    <x-messages.toast />
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Atributos de Recursos' => route('inclusive-radar.type-attributes.index'),
+            $typeAttribute->label => route('inclusive-radar.type-attributes.show', $typeAttribute),
+            'Editar' => null
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>

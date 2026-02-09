@@ -1,6 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', "Editar - $material->name")
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Materiais Pedagógicos Acessíveis' => route('inclusive-radar.accessible-educational-materials.index'),
+            $material->name => route('inclusive-radar.accessible-educational-materials.show', $material),
+            'Editar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Material Pedagógico Acessível</h2>

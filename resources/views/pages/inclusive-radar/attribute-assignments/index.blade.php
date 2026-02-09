@@ -3,6 +3,12 @@
 @section('title', 'Vínculos de Atributos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Vínculos de Atributos' => route('inclusive-radar.type-attribute-assignments.index'),
+        ]" />
+    </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
