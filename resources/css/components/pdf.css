@@ -1,0 +1,107 @@
+/* Configurações de Página e Impressão */
+@page {
+    margin: 80px 50px 80px 50px;
+}
+
+body {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 10px;
+    color: #000;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Cabeçalho do Relatório */
+.header {
+    text-align: center;
+    border-bottom: 2pt solid #000;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.header h2 {
+    margin: 0;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.header p {
+    margin: 3px 0;
+    font-size: 11px;
+}
+
+/* Títulos de Seção (Ex: 1. Identificação Técnica) */
+.section-title {
+    background: #eee;
+    padding: 6px 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1pt solid #000;
+    border-left: 5pt solid #000;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-size: 11px;
+}
+
+/* Estrutura de Tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    table-layout: fixed;
+}
+
+td {
+    border: 1pt solid #000;
+    padding: 6px;
+    vertical-align: top;
+    word-wrap: break-word;
+}
+
+/* Rótulos (Labels) e Valores */
+.label {
+    font-weight: bold;
+    font-size: 8px;
+    color: #000;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.value {
+    font-size: 11px;
+    color: #000;
+    font-weight: normal; /* Garante que o valor não herde negrito do label */
+}
+
+/* Áreas de Texto (Observações) */
+.text-box {
+    border: 1pt solid #000;
+    padding: 8px;
+    background: #fff;
+    margin-bottom: 10px;
+    font-size: 10px;
+    text-align: justify;
+    min-height: 30px;
+    font-weight: normal;
+}
+
+/* Área de Assinaturas */
+.signature-wrapper {
+    margin-top: 50px;
+    width: 100%;
+}
+
+.signature-box {
+    text-align: center;
+    border: none !important;
+}
+
+.line {
+    border-top: 1pt solid #000;
+    width: 220px;
+    margin: 0 auto 5px auto;
+}
+

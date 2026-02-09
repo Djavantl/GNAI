@@ -8,6 +8,7 @@ use App\Http\Requests\SpecializedEducationalSupport\StudentContextRequest;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentContext;
 use App\Services\SpecializedEducationalSupport\StudentContextService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StudentContextController extends Controller
 {
@@ -93,5 +94,17 @@ class StudentContextController extends Controller
         return redirect()
             ->route('specialized-educational-support.student-context.show', $student)
             ->with('success', 'Contexto do aluno removido com sucesso.');
+    }
+
+    public function generatePdf($student_context)
+    {
+        $context = StudentContext::with(['student.person'])->findOrFail($student_context);
+        $student = $context->student;
+
+        $pdf = Pdf::loadView('pages.specialized-educational-support.student-context.pdf', compact('context', 'student'))
+                ->setPaper('a4', 'portrait')
+                ->setOption(['enable_php' => true]); 
+
+        return $pdf->stream("Contexto_{$student->person->name}.pdf");
     }
 }

@@ -107,6 +107,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('student-context/{student_context}/edit', [StudentContextController::class, 'edit'])->name('student-context.edit');
     Route::put('student-context/{student_context}', [StudentContextController::class, 'update'])->name('student-context.update');
     Route::delete('student-context/{student_context}', [StudentContextController::class, 'destroy'])->name('student-context.destroy');
+    Route::get('/student-context/{student_context}/pdf', [StudentContextController::class, 'generatePdf'])->name('student-context.pdf');
 
     // Deficiencias do aluno
 
@@ -141,6 +142,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('session-records/{sessionRecord}', [SessionRecordController::class, 'destroy'])->name('session-records.destroy');
     Route::post('session-records/{sessionRecord}/restore', [SessionRecordController::class, 'restore'])->name('session-records.restore')->withTrashed();
     Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->withTrashed();
+    Route::get('session-records/{sessionRecord}/pdf',[SessionRecordController::class, 'generatePdf'])->name('session-records.pdf');
 
     // Courses
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');

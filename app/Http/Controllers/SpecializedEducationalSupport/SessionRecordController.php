@@ -10,6 +10,7 @@ use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Services\SpecializedEducationalSupport\SessionRecordService;
 use App\Http\Requests\SpecializedEducationalSupport\SessionRecordRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SessionRecordController extends Controller
 {
@@ -110,5 +111,28 @@ class SessionRecordController extends Controller
         $this->service->forceDelete($sessionRecord);
 
         return redirect()->back()->with('success', 'Removido permanentemente.');
+    }
+
+    public function generatePdf(SessionRecord $sessionRecord)
+    {
+        $sessionRecord->load([
+            'session.student.person',
+            'session.professional.person'
+        ]);
+
+        $session = $sessionRecord->session;
+        $student = $session->student;
+        $professional = $session->professional;
+
+        $pdf = Pdf::loadView(
+            'pages.specialized-educational-support.session-records.pdf',
+            compact('sessionRecord', 'session', 'student', 'professional')
+        )
+        ->setPaper('a4', 'portrait')
+        ->setOption(['enable_php' => true]);
+
+        return $pdf->stream(
+            "Registro_Sessao_{$student->person->name}_{$sessionRecord->record_date}.pdf"
+        );
     }
 }

@@ -15,6 +15,10 @@
             </p>
         </div>
         <div class="d-flex gap-2">
+            <a href="{{ route('specialized-educational-support.session-records.pdf', $sessionRecord) }}" target="_blank" class="btn-action primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-file-pdf"></i> Gerar PDF
+            </a>    
+
             <x-buttons.link-button :href="route('specialized-educational-support.session-records.edit', $sessionRecord)" variant="warning">
                 <i class="fas fa-edit"></i> Editar Registro
             </x-buttons.link-button>

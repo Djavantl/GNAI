@@ -10,9 +10,9 @@
             </p>
         </div>
         <div class="d-flex gap-2">
-            <button onclick="window.print()" class="btn-action secondary">
-                <i class="fas fa-print"></i> Imprimir
-            </button>
+            <a href="{{ route('specialized-educational-support.student-context.pdf', $context->id) }}" target="_blank" class="btn-action primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-file-pdf"></i> Gerar PDF
+            </a>
             
             @if(isset($context))
                 <x-buttons.link-button :href="route('specialized-educational-support.student-context.edit', $context->id)" variant="warning">
