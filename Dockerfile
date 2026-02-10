@@ -16,17 +16,18 @@ RUN apk update && apk add --no-cache \
     libxml2-dev \
     libpng-dev \
     libjpeg-turbo-dev \
-    shadow \
     freetype-dev \
+    libwebp-dev \
     libzip-dev \
     zip \
     mysql-client \
-    && docker-php-ext-install zip pcntl \
-    && rm -rf /var/cache/apk/* \
-    \
-    && docker-php-ext-install pdo pdo_mysql opcache \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd
+    shadow \
+    && docker-php-ext-configure gd \
+        --with-freetype=/usr/include/ \
+        --with-jpeg=/usr/include/ \
+        --with-webp=/usr/include/ \
+    && docker-php-ext-install gd zip pcntl pdo pdo_mysql opcache \
+    && rm -rf /var/cache/apk/*
 
 # Sincroniza o usuário www-data do container com o seu usuário do computador
 RUN usermod -u ${USER_ID} www-data && groupmod -g ${GROUP_ID} www-data
@@ -55,5 +56,5 @@ RUN php artisan config:clear \
 # Expõe a porta FPM
 EXPOSE 9000
 
-# Comando principal: Garante o link do storage e as permissões toda vez que o container subir
+# Comando principal: linka storage e garante permissões sempre que o container sobe
 CMD ["sh", "-c", "php artisan storage:link --force && chown -R www-data:www-data /var/www/storage && php-fpm"]

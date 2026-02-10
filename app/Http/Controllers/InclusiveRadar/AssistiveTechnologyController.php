@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AssistiveTechnologyRequest;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -107,5 +108,29 @@ class AssistiveTechnologyController extends Controller
         return redirect()
             ->route('inclusive-radar.assistive-technologies.index')
             ->with('success', 'Tecnologia removida com sucesso!');
+    }
+
+    public function generatePdf(AssistiveTechnology $assistiveTechnology)
+    {
+        $assistiveTechnology->load([
+            'type',
+            'resourceStatus',
+            'deficiencies',
+            'attributeValues.attribute',
+            'inspections.images'
+        ]);
+
+        $attributeValues = $assistiveTechnology->attributeValues
+            ->pluck('value', 'attribute_id')
+            ->toArray();
+
+        $pdf = Pdf::loadView(
+            'pages.inclusive-radar.assistive-technologies.pdf',
+            compact('assistiveTechnology', 'attributeValues')
+        )
+            ->setPaper('a4', 'portrait')
+            ->setOption(['enable_php' => true]);
+
+        return $pdf->stream("TA_{$assistiveTechnology->name}.pdf");
     }
 }
