@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
             StudentCourseSeeder::class,
             PendencySeeder::class,
             AdminSeeder::class,
+            PermissionSeeder::class,
         ]);
     }
 }

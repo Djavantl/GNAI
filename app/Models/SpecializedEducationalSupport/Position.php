@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models\SpecializedEducationalSupport;
+use App\Models\Permission;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,5 +27,10 @@ class Position extends Model
     public function professionals(): HasMany
     {
         return $this->hasMany(Professional::class);
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'permission_position');
     }
 }

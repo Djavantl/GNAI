@@ -17,3 +17,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [LoginController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
+
+Route::get('/teste-404', function () {
+    abort(404);
+});
+
+Route::get('/teste-403', function () {
+    abort(403);
+});

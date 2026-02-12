@@ -3,6 +3,7 @@
 @import "./components/forms.css";
 @import "./components/messages.css";
 @import "./components/photos.css";
+@import"./pages/errors.css";
 @import './auth/login.css';
 
 :root {

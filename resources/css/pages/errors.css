@@ -1,0 +1,83 @@
+/* resources/css/pages/404.css e 403.css */
+.error-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 20px;
+}
+
+.ops-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #8a7fd4;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.icon-wrapper {
+    margin: 20px 0;
+    animation: float 3s ease-in-out infinite;
+}
+
+.error-code {
+    font-size: 10rem;
+    font-weight: 900;
+    color: #4D44B5; /* Roxo principal */
+    line-height: 0.8;
+    margin: 0;
+    letter-spacing: -5px;
+}
+
+.error-title {
+    font-size: 2.2rem;
+    color: #303972;
+    margin: 15px 0;
+}
+
+.error-description {
+    font-size: 1.1rem;
+    color: #5a5c6f;
+    max-width: 500px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.btn-back {
+    background-color: #4D44B5;
+    color: white;
+    text-decoration: none;
+    padding: 15px 35px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 20px rgba(77, 68, 181, 0.2);
+}
+
+.btn-back:hover {
+    background-color: #3d35a5;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(77, 68, 181, 0.3);
+}
+
+/* Animação Flutuante para o Ícone */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+@media (max-width: 576px) {
+    .error-code { font-size: 6rem; }
+    .error-title { font-size: 1.5rem; }
+}
+
+
+

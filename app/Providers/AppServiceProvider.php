@@ -11,6 +11,9 @@ use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Inspection;
+use Illuminate\Support\Facades\Gate;
+use App\Models\Permission;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +30,31 @@ class AppServiceProvider extends ServiceProvider
             'barrier'                         => Barrier::class,
             'inspection'                      => Inspection::class,
         ]);
+
+        // --- SISTEMA DE PERMISSÕES ---
+        // Verifica se a tabela existe para evitar erros em novas instalações/migrations
+        if (Schema::hasTable('permissions')) {
+            try {
+
+                // ADMIN TEM TODAS PERMISSÕES
+                Gate::before(function ($user, $ability) {
+                    if ($user->is_admin) {
+                        return true;
+                    }
+                });
+
+                $permissions = Permission::all();
+
+                foreach ($permissions as $permission) {
+                    Gate::define($permission->slug, function ($user) use ($permission) {
+                        return $user->hasPermission($permission->slug);
+                    });
+                }
+
+            } catch (\Exception $e) {
+                // Silencia erros
+            }
+        }
 
         // View Composer para Accessible Educational Materials
         View::composer(['pages.inclusive-radar.accessible-educational-materials.create',

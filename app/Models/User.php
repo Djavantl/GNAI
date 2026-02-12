@@ -51,6 +51,22 @@ class User extends Authenticatable
         return $this->professional?->person?->photo_url ?? asset('images/default-user.png');
     }
 
+    public function hasPermission(string $permissionSlug): bool
+    {
+        // Se for admin total, libera tudo
+        if ($this->is_admin) return true;
+
+        return $this->professional
+            ?->position
+            ?->permissions
+            ->contains('slug', $permissionSlug) ?? false;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
+    }
+
     /**
      * Get the attributes that should be cast.
      *

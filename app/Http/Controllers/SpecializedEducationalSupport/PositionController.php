@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
 use App\Http\Controllers\Controller;
+use App\Models\Permission;
 use App\Http\Requests\SpecializedEducationalSupport\PositionRequest;
 use App\Models\SpecializedEducationalSupport\Position;
 use App\Services\SpecializedEducationalSupport\PositionService;
@@ -30,7 +31,11 @@ class PositionController extends Controller
 
     public function create()
     {
-        return view('pages.specialized-educational-support.positions.create');
+        $permissions = Permission::all()->groupBy(function ($permission) {
+            return explode('.', $permission->slug)[0];
+        });
+
+        return view('pages.specialized-educational-support.positions.create', compact('permissions'));
     }
 
     public function store(PositionRequest $request)
@@ -40,9 +45,18 @@ class PositionController extends Controller
         return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo criado com sucesso!');
     }
 
+    
     public function edit(Position $position)
     {
-        return view('pages.specialized-educational-support.positions.edit',compact('position'));
+        $permissions = Permission::all()->groupBy(function ($permission) {
+            return explode('.', $permission->slug)[0];
+        });
+
+        $selectedPermissions = $position->permissions->pluck('id')->toArray();
+
+        return view('pages.specialized-educational-support.positions.edit',
+            compact('position', 'permissions', 'selectedPermissions')
+        );
     }
 
     public function update(PositionRequest $request, Position $position)

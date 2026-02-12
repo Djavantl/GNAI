@@ -39,6 +39,8 @@ class PositionRequest extends FormRequest
                 'sometimes',
                 'boolean',
             ],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['exists:permissions,id'],
         ];
     }
 

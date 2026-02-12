@@ -72,56 +72,76 @@
 
         <li class="menu-divider">Atendimento AEE</li>
 
+        @can('student.index')
         <li class="nav-item">
             <a href="{{ route('specialized-educational-support.students.index') }}"
-                class="{{ request()->routeIs(['specialized-educational-support.students.*',
-                'specialized-educational-support.guardians.*', 
-                'specialized-educational-support.student-context.*',
-                'specialized-educational-support.student-deficiencies.*']) ? 'active' : '' }}">
+                class="{{ request()->routeIs([
+                    'specialized-educational-support.students.*',
+                    'specialized-educational-support.guardians.*', 
+                    'specialized-educational-support.student-context.*',
+                    'specialized-educational-support.student-deficiencies.*'
+                ]) ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-people"></i></span>
                 <span class="text">Alunos</span>
             </a>
         </li>
+        @endcan
 
+
+        @can('professional.index')
         <li>
             <a href="{{ route('specialized-educational-support.professionals.index') }}"
-               class="{{ request()->routeIs('specialized-educational-support.professionals.*') ? 'active' : '' }}">
+            class="{{ request()->routeIs('specialized-educational-support.professionals.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-person-badge"></i></span>
                 <span class="text">Equipe</span>
             </a>
         </li>
+        @endcan
 
+
+        @can('pei.index')
         <li>
             <a href="{{ url('/peis') }}"
-               class="{{ request()->is('peis*') ? 'active' : '' }}">
+            class="{{ request()->is('peis*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-file-text"></i></span>
                 <span class="text">PEIs</span>
             </a>
         </li>
+        @endcan
 
+
+        @can('session.index')
         <li>
             <a href="{{ route('specialized-educational-support.sessions.index') }}"
-               class="{{ request()->routeIs('specialized-educational-support.sessions.*') ? 'active' : '' }}">
+            class="{{ request()->routeIs('specialized-educational-support.sessions.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-calendar-check"></i></span>
                 <span class="text">Sessões</span>
             </a>
         </li>
+        @endcan
 
+
+        @can('session-record.index')
         <li>
             <a href="{{ route('specialized-educational-support.session-records.index') }}"
-               class="{{ request()->routeIs('specialized-educational-support.session-records.*') ? 'active' : '' }}">
+            class="{{ request()->routeIs('specialized-educational-support.session-records.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-journal-text"></i></span>
                 <span class="text">Registros de Sessões</span>
             </a>
         </li>
+        @endcan
 
+
+        @can('pendency.index')
         <li>
             <a href="{{ route('specialized-educational-support.pendencies.index') }}"
-               class="{{ request()->is('pendencias*') ? 'active' : '' }}">
+            class="{{ request()->is('pendencias*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-exclamation-triangle"></i></span>
                 <span class="text">Pendências</span>
             </a>
         </li>
+        @endcan
+
 
         <li class="menu-divider">Radar Inclusivo</li>
 

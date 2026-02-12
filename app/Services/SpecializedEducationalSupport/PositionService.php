@@ -15,14 +15,31 @@ class PositionService
 
     public function store(array $data): Position
     {
-        return DB::transaction(fn() => Position::create($data)
-        );
+        return DB::transaction(function () use ($data) {
+
+            $permissions = $data['permissions'] ?? [];
+            unset($data['permissions']);
+
+            $position = Position::create($data);
+
+            if (!empty($permissions)) {
+                $position->permissions()->sync($permissions);
+            }
+
+            return $position;
+        });
     }
 
     public function update(Position $position, array $data): Position
     {
         return DB::transaction(function () use ($position, $data) {
+
+            $permissions = $data['permissions'] ?? [];
+            unset($data['permissions']);
+
             $position->update($data);
+            $position->permissions()->sync($permissions);
+
             return $position;
         });
     }

@@ -52,20 +52,82 @@
                 />
             </div>
 
-            <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4">
-                <div>
-                    <x-buttons.link-button href="{{ route('specialized-educational-support.positions.index') }}" variant="secondary">
-                        Voltar
-                    </x-buttons.link-button>
-                </div>
+            <x-forms.section title="Informações do Cargo" />
+            
+            <div class="col-12 ">
+                @foreach($permissions as $group => $groupPermissions)
+                    <div class="border-bottom">
+                        {{-- Cabeçalho do Grupo --}}
+                        <div class="d-flex justify-content-between align-items-center px-4 py-3"
+                            style="background-color: #e1e5f1;">
+                            <h6 class="mb-0 fw-bold text-purple-dark text-capitalize">
+                                {{ ucfirst(str_replace('-', ' ', $group)) }}
+                            </h6>
+                            <x-forms.checkbox
+                                name="check_all_{{ $group }}"
+                                id="check-all-{{ $group }}"
+                                label="Selecionar Todas"
+                                class="check-all"
+                                data-group="{{ $group }}"
+                            />
+                        </div>
+                        {{-- Corpo das permissões --}}
+                        <div class="px-4 py-3">
+                            <div class="row">
+                                @foreach($groupPermissions as $permission)
+                                    <div class="col-md-3 mb-2">
 
-                <div class="d-flex gap-3">
-                    <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                        <i class="fas fa-sync mr-2"></i> Atualizar Cargo
-                    </x-buttons.submit-button>
-                </div>
+                                        <x-forms.checkbox
+                                            name="permissions[]"
+                                            :value="$permission->id"
+                                            :id="'permission-'.$permission->id"
+                                            class="permission-checkbox"
+                                            data-group="{{ $group }}"
+                                            :checked="in_array(
+                                                $permission->id,
+                                                old('permissions',
+                                                    isset($position)
+                                                        ? $position->permissions->pluck('id')->toArray()
+                                                        : []
+                                                )
+                                            )"
+                                            :label="$permission->name"
+                                        />
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-
         </x-forms.form-card>
-    </div>
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('change', function (e) {
+            // Se clicou em um checkbox
+            if (e.target.type === 'checkbox') {
+                let wrapper = e.target.closest('.custom-checkbox-wrapper');
+                if (!wrapper) return;
+                // Se for um "Selecionar Todas"
+                if (wrapper.classList.contains('check-all')) {
+                    let group = wrapper.dataset.group;
+                    let checked = e.target.checked;
+                    if (!group) return;
+                    document.querySelectorAll(
+                        '.permission-checkbox[data-group="'+group+'"] input'
+                    ).forEach(function (checkbox) {
+                        checkbox.checked = checked;
+                    });
+                }
+
+            }
+
+        });
+
+    });
+    </script>
+    @endpush
+
+
 @endsection

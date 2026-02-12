@@ -86,103 +86,273 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
 
-    //Students
+    /*
+    |--------------------------------------------------------------------------
+    | 1. STUDENTS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/students', [StudentController::class, 'index'])
+        ->name('students.index')->middleware('can:student.index');
 
-    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    Route::get('/students/{student}/show', [StudentController::class, 'show'])->name('students.show');
-    Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
-    Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
-    Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
-    Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
-    Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::get('/students/{student}/show', [StudentController::class, 'show'])
+        ->name('students.show')->middleware('can:student.show');
 
-    
-    //Guardians
+    Route::get('/students/create', [StudentController::class, 'create'])
+        ->name('students.create')->middleware('can:student.create');
 
-    Route::get('/students/{student}/guardians',[GuardianController::class, 'index'])->name('guardians.index');
-    Route::get('/guardian/{guardian}/show',[GuardianController::class, 'show'])->name('guardians.show');
-    Route::get('/students/{student}/guardians/create',[GuardianController::class, 'create'])->name('guardians.create');
-    Route::post('/students/{student}/guardians/store',[GuardianController::class, 'store'])->name('guardians.store');
-    Route::get('/students/{student}/guardians/{guardian}/edit',[GuardianController::class, 'edit'])->name('guardians.edit');
-    Route::put('/students/{student}/guardians/{guardian}',[GuardianController::class, 'update'])->name('guardians.update');
-    Route::delete('/students/{student}/guardians/{guardian}',[GuardianController::class, 'destroy'])->name('guardians.destroy');
+    Route::post('/students/store', [StudentController::class, 'store'])
+        ->name('students.store')->middleware('can:student.store');
 
-    // Professionals
+    Route::get('/students/{student}/edit', [StudentController::class, 'edit'])
+        ->name('students.edit')->middleware('can:student.edit');
 
-    Route::get('/professionals',[ProfessionalController::class, 'index'])->name('professionals.index');
-    Route::get('/professionals/{professional}/show',[ProfessionalController::class, 'show'])->name('professionals.show');
-    Route::get('/professionals/create',[ProfessionalController::class, 'create'])->name('professionals.create');
-    Route::post('/professionals/store',[ProfessionalController::class, 'store'])->name('professionals.store');
-    Route::get('/professionals/{professional}/edit',[ProfessionalController::class, 'edit'])->name('professionals.edit');
-    Route::put('/professionals/{professional}',[ProfessionalController::class, 'update'])->name('professionals.update');
-    Route::delete('/professionals/{professional}',[ProfessionalController::class, 'destroy'])->name('professionals.destroy');
+    Route::put('/students/{student}', [StudentController::class, 'update'])
+        ->name('students.update')->middleware('can:student.update');
 
-    // Contexto do aluno
+    Route::delete('/students/{student}', [StudentController::class, 'destroy'])
+        ->name('students.destroy')->middleware('can:student.destroy');
 
-    Route::get('student-context/{student}/index', [StudentContextController::class, 'index'])->name('student-context.index');
-    Route::get('student-context/{student_context}/show', [StudentContextController::class, 'show'])->name('student-context.show');
-    Route::get('student-context/{student}/show_current', [StudentContextController::class, 'showCurrent'])->name('student-context.show-current');
-    Route::post('student-context/{student_context}/set_current', [StudentContextController::class, 'setCurrent'])->name('student-context.set-current');
-    Route::get('student-context/{student}/create', [StudentContextController::class, 'create'])->name('student-context.create');
-    Route::post('student-context/{student}/store', [StudentContextController::class, 'store'])->name('student-context.store');
-    Route::get('student-context/{student_context}/edit', [StudentContextController::class, 'edit'])->name('student-context.edit');
-    Route::put('student-context/{student_context}', [StudentContextController::class, 'update'])->name('student-context.update');
-    Route::delete('student-context/{student_context}', [StudentContextController::class, 'destroy'])->name('student-context.destroy');
-    Route::get('/student-context/{student_context}/pdf', [StudentContextController::class, 'generatePdf'])->name('student-context.pdf');
 
-    // Deficiencias do aluno
+    /*
+    |--------------------------------------------------------------------------
+    | 2. GUARDIANS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/students/{student}/guardians', [GuardianController::class, 'index'])
+        ->name('guardians.index')->middleware('can:guardian.index');
 
-    Route::get('student-deficiencies/{student}', [StudentDeficienciesController::class, 'index'])->name('student-deficiencies.index');
-    Route::get('student-deficiencies/{student_deficiency}/show', [StudentDeficienciesController::class, 'show'])->name('student-deficiencies.show');
-    Route::get('student-deficiencies/{student}/create', [StudentDeficienciesController::class, 'create'])->name('student-deficiencies.create');
-    Route::post('student-deficiencies/{student}', [StudentDeficienciesController::class, 'store'])->name('student-deficiencies.store');
-    Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])->name('student-deficiencies.edit');
-    Route::put('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])->name('student-deficiencies.update');
-    Route::delete('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])->name('student-deficiencies.destroy');
+    Route::get('/guardian/{guardian}/show', [GuardianController::class, 'show'])
+        ->name('guardians.show')->middleware('can:guardian.show');
 
-    // Sessões de Atendimento
+    Route::get('/students/{student}/guardians/create', [GuardianController::class, 'create'])
+        ->name('guardians.create')->middleware('can:guardian.create');
 
-    Route::get('sessions', [SessionController::class, 'index'])->name('sessions.index');
-    Route::get('sessions/create', [SessionController::class, 'create'])->name('sessions.create');
-    Route::post('sessions/store', [SessionController::class, 'store'])->name('sessions.store');
-    Route::get('sessions/{session}/show', [SessionController::class, 'show'])->name('sessions.show');
-    Route::get('sessions/{session}/edit', [SessionController::class, 'edit'])->name('sessions.edit');
-    Route::put('sessions/{session}', [SessionController::class, 'update'])->name('sessions.update');
-    Route::delete('sessions/{session}', [SessionController::class, 'destroy'])->name('sessions.destroy');
-    Route::post('sessions/{session}/restore', [SessionController::class, 'restore'])->name('sessions.restore')->withTrashed();
-    Route::delete('sessions/{session}/force-delete', [SessionController::class, 'forceDelete'])->name('sessions.force-delete')->withTrashed();
+    Route::post('/students/{student}/guardians/store', [GuardianController::class, 'store'])
+        ->name('guardians.store')->middleware('can:guardian.store');
 
-    // Registros da Sessão (Session Records)
+    Route::get('/students/{student}/guardians/{guardian}/edit', [GuardianController::class, 'edit'])
+        ->name('guardians.edit')->middleware('can:guardian.edit');
 
-    Route::get('session-records', [SessionRecordController::class, 'index'])->name('session-records.index');
-    Route::get('session-records/{session}/create', [SessionRecordController::class, 'create'])->name('session-records.create');
-    Route::post('session-records/store', [SessionRecordController::class, 'store'])->name('session-records.store');
-    Route::get('session-records/{sessionRecord}/show', [SessionRecordController::class, 'show'])->name('session-records.show');
-    Route::get('session-records/{sessionRecord}/edit', [SessionRecordController::class, 'edit'])->name('session-records.edit');
-    Route::put('session-records/{sessionRecord}', [SessionRecordController::class, 'update'])->name('session-records.update');
-    Route::delete('session-records/{sessionRecord}', [SessionRecordController::class, 'destroy'])->name('session-records.destroy');
-    Route::post('session-records/{sessionRecord}/restore', [SessionRecordController::class, 'restore'])->name('session-records.restore')->withTrashed();
-    Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->withTrashed();
-    Route::get('session-records/{sessionRecord}/pdf',[SessionRecordController::class, 'generatePdf'])->name('session-records.pdf');
+    Route::put('/students/{student}/guardians/{guardian}', [GuardianController::class, 'update'])
+        ->name('guardians.update')->middleware('can:guardian.update');
 
-    
+    Route::delete('/students/{student}/guardians/{guardian}', [GuardianController::class, 'destroy'])
+        ->name('guardians.destroy')->middleware('can:guardian.destroy');
 
-    // Student Courses (Enrollments & History)
-    Route::get('/student-courses', [StudentCourseController::class, 'create'])->name('student-courses.create');
-    Route::post('/student-courses/store', [StudentCourseController::class, 'store'])->name('student-courses.store');
-    Route::get('/students/{student}/history', [StudentCourseController::class, 'index'])->name('student-courses.history');
-    Route::get('/student-courses/{studentCourse}/edit', [StudentCourseController::class, 'edit'])->name('student-courses.edit');
-    Route::put('/student-courses/{studentCourse}', [StudentCourseController::class, 'update'])->name('student-courses.update');
-    Route::delete('/student-courses/{studentCourse}', [StudentCourseController::class, 'destroy'])->name('student-courses.destroy');
 
-    // Pendencies
-    Route::get('/pendencies', [PendencyController::class, 'index'])->name('pendencies.index');
-    Route::get('/pendencies/{pendency}/show', [PendencyController::class, 'show'])->name('pendencies.show');
-    Route::get('/pendencies/create', [PendencyController::class, 'create'])->name('pendencies.create');
-    Route::post('/pendencies/store', [PendencyController::class, 'store'])->name('pendencies.store');
-    Route::get('/pendencies/{pendency}/edit', [PendencyController::class, 'edit'])->name('pendencies.edit');
-    Route::put('/pendencies/{pendency}', [PendencyController::class, 'update'])->name('pendencies.update');
-    Route::delete('/pendencies/{pendency}', [PendencyController::class, 'destroy'])->name('pendencies.destroy');
-    Route::get('/my-pendencies', [PendencyController::class, 'myPendencies'])->name('pendencies.my');
-    Route::put('/pendencies/{pendency}/complete', [PendencyController::class, 'markAsCompleted'])->name('pendencies.complete');
+    /*
+    |--------------------------------------------------------------------------
+    | 3. PROFESSIONALS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/professionals', [ProfessionalController::class, 'index'])
+        ->name('professionals.index')->middleware('can:professional.index');
+
+    Route::get('/professionals/{professional}/show', [ProfessionalController::class, 'show'])
+        ->name('professionals.show')->middleware('can:professional.show');
+
+    Route::get('/professionals/create', [ProfessionalController::class, 'create'])
+        ->name('professionals.create')->middleware('can:professional.create');
+
+    Route::post('/professionals/store', [ProfessionalController::class, 'store'])
+        ->name('professionals.store')->middleware('can:professional.store');
+
+    Route::get('/professionals/{professional}/edit', [ProfessionalController::class, 'edit'])
+        ->name('professionals.edit')->middleware('can:professional.edit');
+
+    Route::put('/professionals/{professional}', [ProfessionalController::class, 'update'])
+        ->name('professionals.update')->middleware('can:professional.update');
+
+    Route::delete('/professionals/{professional}', [ProfessionalController::class, 'destroy'])
+        ->name('professionals.destroy')->middleware('can:professional.destroy');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 4. STUDENT CONTEXT
+    |--------------------------------------------------------------------------
+    */
+    Route::get('student-context/{student}/index', [StudentContextController::class, 'index'])
+        ->name('student-context.index')->middleware('can:student-context.index');
+
+    Route::get('student-context/{student_context}/show', [StudentContextController::class, 'show'])
+        ->name('student-context.show')->middleware('can:student-context.show');
+
+    Route::get('student-context/{student}/show_current', [StudentContextController::class, 'showCurrent'])
+        ->name('student-context.show-current')->middleware('can:student-context.show-current');
+
+    Route::post('student-context/{student_context}/set_current', [StudentContextController::class, 'setCurrent'])
+        ->name('student-context.set-current')->middleware('can:student-context.set-current');
+
+    Route::get('student-context/{student}/create', [StudentContextController::class, 'create'])
+        ->name('student-context.create')->middleware('can:student-context.create');
+
+    Route::post('student-context/{student}/store', [StudentContextController::class, 'store'])
+        ->name('student-context.store')->middleware('can:student-context.store');
+
+    Route::get('student-context/{student_context}/edit', [StudentContextController::class, 'edit'])
+        ->name('student-context.edit')->middleware('can:student-context.edit');
+
+    Route::put('student-context/{student_context}', [StudentContextController::class, 'update'])
+        ->name('student-context.update')->middleware('can:student-context.update');
+
+    Route::delete('student-context/{student_context}', [StudentContextController::class, 'destroy'])
+        ->name('student-context.destroy')->middleware('can:student-context.destroy');
+
+    Route::get('/student-context/{student_context}/pdf', [StudentContextController::class, 'generatePdf'])
+        ->name('student-context.pdf')->middleware('can:student-context.pdf');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 5. STUDENT DEFICIENCIES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('student-deficiencies/{student}', [StudentDeficienciesController::class, 'index'])
+        ->name('student-deficiencies.index')->middleware('can:student-deficiency.index');
+
+    Route::get('student-deficiencies/{student_deficiency}/show', [StudentDeficienciesController::class, 'show'])
+        ->name('student-deficiencies.show')->middleware('can:student-deficiency.show');
+
+    Route::get('student-deficiencies/{student}/create', [StudentDeficienciesController::class, 'create'])
+        ->name('student-deficiencies.create')->middleware('can:student-deficiency.create');
+
+    Route::post('student-deficiencies/{student}', [StudentDeficienciesController::class, 'store'])
+        ->name('student-deficiencies.store')->middleware('can:student-deficiency.store');
+
+    Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])
+        ->name('student-deficiencies.edit')->middleware('can:student-deficiency.edit');
+
+    Route::put('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])
+        ->name('student-deficiencies.update')->middleware('can:student-deficiency.update');
+
+    Route::delete('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])
+        ->name('student-deficiencies.destroy')->middleware('can:student-deficiency.destroy');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 6. SESSIONS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('sessions', [SessionController::class, 'index'])
+        ->name('sessions.index')->middleware('can:session.index');
+
+    Route::get('sessions/create', [SessionController::class, 'create'])
+        ->name('sessions.create')->middleware('can:session.create');
+
+    Route::post('sessions/store', [SessionController::class, 'store'])
+        ->name('sessions.store')->middleware('can:session.store');
+
+    Route::get('sessions/{session}/show', [SessionController::class, 'show'])
+        ->name('sessions.show')->middleware('can:session.show');
+
+    Route::get('sessions/{session}/edit', [SessionController::class, 'edit'])
+        ->name('sessions.edit')->middleware('can:session.edit');
+
+    Route::put('sessions/{session}', [SessionController::class, 'update'])
+        ->name('sessions.update')->middleware('can:session.update');
+
+    Route::delete('sessions/{session}', [SessionController::class, 'destroy'])
+        ->name('sessions.destroy')->middleware('can:session.destroy');
+
+    Route::post('sessions/{session}/restore', [SessionController::class, 'restore'])
+        ->name('sessions.restore')->middleware('can:session.restore');
+
+    Route::delete('sessions/{session}/force-delete', [SessionController::class, 'forceDelete'])
+        ->name('sessions.force-delete')->middleware('can:session.force-delete');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 7. SESSION RECORDS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('session-records', [SessionRecordController::class, 'index'])
+        ->name('session-records.index')->middleware('can:session-record.index');
+
+    Route::get('session-records/{session}/create', [SessionRecordController::class, 'create'])
+        ->name('session-records.create')->middleware('can:session-record.create');
+
+    Route::post('session-records/store', [SessionRecordController::class, 'store'])
+        ->name('session-records.store')->middleware('can:session-record.store');
+
+    Route::get('session-records/{sessionRecord}/show', [SessionRecordController::class, 'show'])
+        ->name('session-records.show')->middleware('can:session-record.show');
+
+    Route::get('session-records/{sessionRecord}/edit', [SessionRecordController::class, 'edit'])
+        ->name('session-records.edit')->middleware('can:session-record.edit');
+
+    Route::put('session-records/{sessionRecord}', [SessionRecordController::class, 'update'])
+        ->name('session-records.update')->middleware('can:session-record.update');
+
+    Route::delete('session-records/{sessionRecord}', [SessionRecordController::class, 'destroy'])
+        ->name('session-records.destroy')->middleware('can:session-record.destroy');
+
+    Route::post('session-records/{sessionRecord}/restore', [SessionRecordController::class, 'restore'])
+        ->name('session-records.restore')->middleware('can:session-record.restore');
+
+    Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])
+        ->name('session-records.force-delete')->middleware('can:session-record.force-delete');
+
+    Route::get('session-records/{sessionRecord}/pdf', [SessionRecordController::class, 'generatePdf'])
+        ->name('session-records.pdf')->middleware('can:session-record.pdf');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 8. STUDENT COURSES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/student-courses', [StudentCourseController::class, 'create'])
+        ->name('student-courses.create')->middleware('can:student-course.create');
+
+    Route::post('/student-courses/store', [StudentCourseController::class, 'store'])
+        ->name('student-courses.store')->middleware('can:student-course.store');
+
+    Route::get('/students/{student}/history', [StudentCourseController::class, 'index'])
+        ->name('student-courses.history')->middleware('can:student-course.history');
+
+    Route::get('/student-courses/{studentCourse}/edit', [StudentCourseController::class, 'edit'])
+        ->name('student-courses.edit')->middleware('can:student-course.edit');
+
+    Route::put('/student-courses/{studentCourse}', [StudentCourseController::class, 'update'])
+        ->name('student-courses.update')->middleware('can:student-course.update');
+
+    Route::delete('/student-courses/{studentCourse}', [StudentCourseController::class, 'destroy'])
+        ->name('student-courses.destroy')->middleware('can:student-course.destroy');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 9. PENDENCIES
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/pendencies', [PendencyController::class, 'index'])
+        ->name('pendencies.index')->middleware('can:pendency.index');
+
+    Route::get('/pendencies/{pendency}/show', [PendencyController::class, 'show'])
+        ->name('pendencies.show')->middleware('can:pendency.show');
+
+    Route::get('/pendencies/create', [PendencyController::class, 'create'])
+        ->name('pendencies.create')->middleware('can:pendency.create');
+
+    Route::post('/pendencies/store', [PendencyController::class, 'store'])
+        ->name('pendencies.store')->middleware('can:pendency.store');
+
+    Route::get('/pendencies/{pendency}/edit', [PendencyController::class, 'edit'])
+        ->name('pendencies.edit')->middleware('can:pendency.edit');
+
+    Route::put('/pendencies/{pendency}', [PendencyController::class, 'update'])
+        ->name('pendencies.update')->middleware('can:pendency.update');
+
+    Route::delete('/pendencies/{pendency}', [PendencyController::class, 'destroy'])
+        ->name('pendencies.destroy')->middleware('can:pendency.destroy');
+
+    Route::get('/my-pendencies', [PendencyController::class, 'myPendencies'])
+        ->name('pendencies.my')->middleware('can:pendency.my');
+
+    Route::put('/pendencies/{pendency}/complete', [PendencyController::class, 'markAsCompleted'])
+        ->name('pendencies.complete')->middleware('can:pendency.complete');
+
 });
