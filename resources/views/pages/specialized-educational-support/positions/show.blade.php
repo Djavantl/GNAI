@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+     <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Cargos' => route('specialized-educational-support.positions.index'),
+            $position->name => null
+        ]" />
+    </div>
+
     {{-- Cabeçalho da Página --}}
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>

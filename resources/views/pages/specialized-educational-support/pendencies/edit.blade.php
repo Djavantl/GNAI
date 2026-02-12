@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Pendências' => route('specialized-educational-support.pendencies.index'),
+            'Pendência' => route('specialized-educational-support.pendencies.show', $pendency),
+            'Editar' => null
+        ]" />
+    </div>
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Pendência</h2>
@@ -29,15 +37,21 @@
                     name="description"
                     label="Descrição"
                     rows="4"
-                >{{ old('description', $pendency->description) }}</x-forms.textarea>
+                    :value="old('description', $pendency->description)"
+                ></x-forms.textarea>
             </div>
 
             <div class="col-md-6">
                 <x-forms.select
                     name="assigned_to"
                     label="Profissional Responsável *"
-                    :options="$professionals->pluck('name','id')->toArray()"
+                    :options="$professionals
+                        ->mapWithKeys(fn($professional) => [
+                            $professional->id => $professional->person->name
+                        ])
+                        ->toArray()"
                     :value="old('assigned_to', $pendency->assigned_to)"
+                    :selected="old('assigned_to', $pendency->assigned_to)"
                     required
                 />
             </div>
@@ -46,13 +60,13 @@
                 <x-forms.select
                     name="priority"
                     label="Prioridade *"
-                    :options="[
-                        'urgent' => 'Urgente',
-                        'high'   => 'Alta',
-                        'medium' => 'Média',
-                        'low'    => 'Baixa'
-                    ]"
-                    :value="old('priority', $pendency->priority)"
+                    :options="collect(\App\Enums\Priority::cases())
+                                ->mapWithKeys(fn($priority) => [
+                                    $priority->value => $priority->label()
+                                ])
+                                ->toArray()"
+                    :value="old('priority', $pendency->priority?->value)"
+                    :selected="old('priority', $pendency->priority?->value)"
                     required
                 />
             </div>
@@ -62,7 +76,7 @@
                     name="due_date"
                     label="Data de Vencimento"
                     type="date"
-                    :value="old('due_date', $pendency->due_date)"
+                    :value="old('due_date', $pendency->due_date?->format('Y-m-d'))"
                 />
             </div>
 

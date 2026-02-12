@@ -5,6 +5,7 @@ namespace App\Models\SpecializedEducationalSupport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
+use App\Enums\Priority;
 
 class Pendency extends Model
 {
@@ -25,6 +26,7 @@ class Pendency extends Model
     protected $casts = [
         'is_completed' => 'boolean',
         'due_date'     => 'date',
+        'priority'     => Priority::class,
     ];
 
     public function creator()
@@ -47,10 +49,32 @@ class Pendency extends Model
         return $query->where('is_completed', true);
     }
 
+    public function getCreatedAtFormattedAttribute()
+    {
+        return $this->created_at
+            ? $this->created_at->format('d/m/Y H:i')
+            : '—';
+    }
+
+    public function getUpdatedAtFormattedAttribute()
+    {
+        return $this->updated_at
+            ? $this->updated_at->format('d/m/Y H:i')
+            : '—';
+    }
+
+    public function getDueDateFormattedAttribute()
+    {
+        return $this->due_date
+            ? $this->due_date->format('d/m/Y')
+            : '—';
+    }
+
     public function markAsCompleted(): void
     {
         $this->update([
             'is_completed' => true,
         ]);
     }
+
 }

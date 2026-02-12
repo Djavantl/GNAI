@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Pendências' => route('specialized-educational-support.pendencies.index'),
+            $pendency->title => null
+        ]" />
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>
             <h2 class="text-title">Pendência — {{ $pendency->title }}</h2>
@@ -28,18 +35,17 @@
             </x-show.info-item>
 
             <x-show.info-item label="Profissional Responsável" column="col-md-4" isBox="true">
-                {{ optional(\App\Models\Professional::find($pendency->assigned_to))->name ?? ('#' . $pendency->assigned_to) }}
+                {{ $pendency->assignedProfessional->person->name ?? ('#' . $pendency->assigned_to) }}
             </x-show.info-item>
 
             <x-show.info-item label="Prioridade" column="col-md-4" isBox="true">
-                @php
-                    $labels = ['urgent' => 'Urgente','high'=>'Alta','medium'=>'Média','low'=>'Baixa'];
-                @endphp
-                {{ $labels[$pendency->priority] ?? ucfirst($pendency->priority) }}
+                <span class="text-{{ $pendency->priority->color() }} fw-bold">
+                    {{ $pendency->priority->label() }}
+                </span>
             </x-show.info-item>
 
             <x-show.info-item label="Vencimento" column="col-md-4" isBox="true">
-                {{ $pendency->due_date ? \Carbon\Carbon::parse($pendency->due_date)->format('d/m/Y') : '—' }}
+                {{ $pendency->due_date_formatted }}
             </x-show.info-item>
 
             <x-show.info-item label="Concluída" column="col-md-4" isBox="true">
@@ -57,15 +63,15 @@
             <x-forms.section title="Informações do Sistema" />
 
             <x-show.info-item label="Criado por" column="col-md-6" isBox="true">
-                {{ optional(\App\Models\User::find($pendency->created_by))->name ?? ('#' . $pendency->created_by) }}
+                {{ $pendency->creator->professional->person->name ?? ('#' . $pendency->created_by) }}
             </x-show.info-item>
 
             <x-show.info-item label="Criado em" column="col-md-3" isBox="true">
-                {{ $pendency->created_at ? \Carbon\Carbon::parse($pendency->created_at)->format('d/m/Y H:i') : '—' }}
+                {{ $pendency->created_at_formatted }}
             </x-show.info-item>
 
             <x-show.info-item label="Última atualização" column="col-md-3" isBox="true">
-                {{ $pendency->updated_at ? \Carbon\Carbon::parse($pendency->updated_at)->format('d/m/Y H:i') : '—' }}
+                {{ $pendency->updated_at_formatted }}
             </x-show.info-item>
 
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">

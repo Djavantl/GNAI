@@ -62,7 +62,7 @@ class StudentContextController extends Controller
     {
         $student = $student_context->student;
         $deficiencies = $student->deficiencies;
-        return view('pages.specialized-educational-support.student-context.edit', compact('student_context', 'deficiencies'));
+        return view('pages.specialized-educational-support.student-context.edit', compact('student_context', 'deficiencies', 'student'));
     }
 
     public function update(StudentContext $student_context, StudentContextRequest $request)

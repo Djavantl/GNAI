@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Responsáveis' => route('specialized-educational-support.guardians.index', $student),
+            $guardian->person->name => route('specialized-educational-support.guardians.show', $guardian),
+            'Editar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Responsável</h2>

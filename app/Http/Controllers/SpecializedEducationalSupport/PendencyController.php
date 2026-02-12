@@ -7,6 +7,7 @@ use App\Models\SpecializedEducationalSupport\Pendency;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Http\Requests\SpecializedEducationalSupport\PendencyRequest;
 use App\Services\SpecializedEducationalSupport\PendencyService;
+use App\Enums\Priority;
 
 class PendencyController extends Controller
 {
@@ -39,17 +40,22 @@ class PendencyController extends Controller
 
     public function create()
     {
-        $professionals = Professional::orderBy('name')->get();
+        $professionals = Professional::get();
+        $priorities = collect(Priority::cases())
+            ->mapWithKeys(fn($priority) => [
+                $priority->value => $priority->label()
+            ])
+            ->toArray();
 
         return view(
             'pages.specialized-educational-support.pendencies.create',
-            compact('professionals')
+            compact('professionals', 'priorities')
         );
     }
 
     public function store(PendencyRequest $request)
     {
-        $this->service->create($request->validatedData());
+        $this->service->create($request->validated());
 
         return redirect()
             ->route('specialized-educational-support.pendencies.index')
@@ -58,17 +64,22 @@ class PendencyController extends Controller
 
     public function edit(Pendency $pendency)
     {
-        $professionals = Professional::orderBy('name')->get();
+        $professionals = Professional::get();
+        $priorities = collect(Priority::cases())
+            ->mapWithKeys(fn($priority) => [
+                $priority->value => $priority->label()
+            ])
+            ->toArray();
 
         return view(
             'pages.specialized-educational-support.pendencies.edit',
-            compact('pendency', 'professionals')
+            compact('pendency', 'professionals', 'priorities')
         );
     }
 
     public function update(PendencyRequest $request, Pendency $pendency)
     {
-        $this->service->update($pendency, $request->validatedData());
+        $this->service->update($pendency, $request->validated());
 
         return redirect()
             ->route('specialized-educational-support.pendencies.index')

@@ -2,6 +2,7 @@
 @import "./components/tables.css";
 @import "./components/forms.css";
 @import "./components/messages.css";
+@import "./components/photos.css";
 @import './auth/login.css';
 
 :root {

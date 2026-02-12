@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Cursos' => route('specialized-educational-support.courses.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
+
     <h2 class="text-title">Cadastrar Novo Curso</h2>
 
     <x-forms.form-card action="{{ route('specialized-educational-support.courses.store') }}" method="POST">

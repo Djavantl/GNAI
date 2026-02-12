@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Sessões' => route('specialized-educational-support.sessions.index'),
+            'Sessão' => route('specialized-educational-support.session-records.show', $session),
+            'Registro' => route('specialized-educational-support.session-records.show', $sessionRecord),
+            'Editar' => null,
+            
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Registro de Sessão</h2>

@@ -25,6 +25,11 @@ class DisciplineController extends Controller
         return view('pages.specialized-educational-support.disciplines.index', compact('disciplines'));
     }
 
+    public function show(Discipline $discipline)
+    {
+        return view('pages.specialized-educational-support.disciplines.show', compact('discipline'));
+    }
+
     public function create()
     {
         return view('pages.specialized-educational-support.disciplines.create');

@@ -39,6 +39,17 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Professional::class);
     }
+    // Atalho para pegar o nome da Person vinculada
+    public function getNameAttribute()
+    {
+        return $this->professional?->person?->name ?? $this->attributes['name'];
+    }
+
+    // Atalho para pegar a foto da Person vinculada
+    public function getPhotoUrlAttribute()
+    {
+        return $this->professional?->person?->photo_url ?? asset('images/default-user.png');
+    }
 
     /**
      * Get the attributes that should be cast.

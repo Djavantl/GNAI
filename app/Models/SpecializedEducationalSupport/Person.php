@@ -4,6 +4,7 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Person extends Model
 {
@@ -23,6 +24,7 @@ class Person extends Model
         'email',
         'phone',
         'address',
+        'photo',
     ];
 
     // 2. Conversão de tipos (Casting)
@@ -42,6 +44,18 @@ class Person extends Model
             'other' => 'Outro',
             'not_specified' => 'Não informado',
         ];
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        // Se existe algo no banco
+        if ($this->photo) {
+            // O Storage::url() adiciona automaticamente o prefixo '/storage/'
+            return asset('storage/' . $this->photo);
+        }
+
+        // Se não existir, o caminho da imagem padrão
+        return asset('images/default-user.jpg');
     }
 
     /**

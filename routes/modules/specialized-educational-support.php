@@ -20,8 +20,7 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     PendencyController,
 
 };
-
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     //People
 
@@ -31,17 +30,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/people/{person}/edit', [PersonController::class, 'edit'])->name('people.edit');
     Route::put('/people/{person}', [PersonController::class, 'update'])->name('people.update');
     Route::delete('/people/{person}', [PersonController::class, 'destroy'])->name('people.destroy');
-
-
-    //Students
-
-    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    Route::get('/students/{student}/show', [StudentController::class, 'show'])->name('students.show');
-    Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
-    Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
-    Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
-    Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
-    Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
 
     //Deficiencies
 
@@ -76,6 +64,39 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/semesters/{semester}/set-current', [SemesterController::class, 'setCurrent'])->name('semesters.setCurrent');
     Route::delete('/semesters/{semester}', [SemesterController::class, 'destroy'])->name('semesters.destroy');
 
+    // Courses
+    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+    Route::get('/courses/{course}/show', [CourseController::class, 'show'])->name('courses.show');
+    Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
+    Route::post('/courses/store', [CourseController::class, 'store'])->name('courses.store');
+    Route::get('/courses/{course}/edit', [CourseController::class, 'edit'])->name('courses.edit');
+    Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+    Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
+    // Disciplines
+    Route::get('/disciplines', [DisciplineController::class, 'index'])->name('disciplines.index');
+    Route::get('/disciplines/{discipline}/show', [DisciplineController::class, 'show'])->name('disciplines.show');
+    Route::get('/disciplines/create', [DisciplineController::class, 'create'])->name('disciplines.create');
+    Route::post('/disciplines/store', [DisciplineController::class, 'store'])->name('disciplines.store');
+    Route::get('/disciplines/{discipline}/edit', [DisciplineController::class, 'edit'])->name('disciplines.edit');
+    Route::put('/disciplines/{discipline}', [DisciplineController::class, 'update'])->name('disciplines.update');
+    Route::delete('/disciplines/{discipline}', [DisciplineController::class, 'destroy'])->name('disciplines.destroy');
+    
+});
+
+Route::middleware(['auth'])->group(function () {
+
+    //Students
+
+    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+    Route::get('/students/{student}/show', [StudentController::class, 'show'])->name('students.show');
+    Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
+    Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
+    Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
+    Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
+    Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
+
+    
     //Guardians
 
     Route::get('/students/{student}/guardians',[GuardianController::class, 'index'])->name('guardians.index');
@@ -144,23 +165,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->withTrashed();
     Route::get('session-records/{sessionRecord}/pdf',[SessionRecordController::class, 'generatePdf'])->name('session-records.pdf');
 
-    // Courses
-    Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
-    Route::get('/courses/{course}/show', [CourseController::class, 'show'])->name('courses.show');
-    Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
-    Route::post('/courses/store', [CourseController::class, 'store'])->name('courses.store');
-    Route::get('/courses/{course}/edit', [CourseController::class, 'edit'])->name('courses.edit');
-    Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
-    Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
-
-    // Disciplines
-    Route::get('/disciplines', [DisciplineController::class, 'index'])->name('disciplines.index');
-    Route::get('/disciplines/{discipline}/show', [DisciplineController::class, 'show'])->name('disciplines.show');
-    Route::get('/disciplines/create', [DisciplineController::class, 'create'])->name('disciplines.create');
-    Route::post('/disciplines/store', [DisciplineController::class, 'store'])->name('disciplines.store');
-    Route::get('/disciplines/{discipline}/edit', [DisciplineController::class, 'edit'])->name('disciplines.edit');
-    Route::put('/disciplines/{discipline}', [DisciplineController::class, 'update'])->name('disciplines.update');
-    Route::delete('/disciplines/{discipline}', [DisciplineController::class, 'destroy'])->name('disciplines.destroy');
+    
 
     // Student Courses (Enrollments & History)
     Route::get('/student-courses', [StudentCourseController::class, 'create'])->name('student-courses.create');

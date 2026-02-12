@@ -24,11 +24,60 @@
             </a>
         </li>
 
+        @auth
+            @if(auth()->user()->is_admin)
+                <li class="menu-divider">Configurações do Sistema</li>
+
+                <li>
+                    <a href="{{ route('specialized-educational-support.deficiencies.index') }}"
+                       class="{{ request()->routeIs('specialized-educational-support.deficiencies.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-heart-pulse"></i></span>
+                        <span class="text">Deficiências</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('specialized-educational-support.positions.index') }}"
+                       class="{{ request()->routeIs('specialized-educational-support.positions.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-briefcase"></i></span>
+                        <span class="text">Cargos</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('specialized-educational-support.semesters.index') }}"
+                       class="{{ request()->routeIs('specialized-educational-support.semesters.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-calendar3"></i></span>
+                        <span class="text">Semestres</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('specialized-educational-support.courses.index') }}"
+                       class="{{ request()->routeIs('specialized-educational-support.courses.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-mortarboard"></i></span>
+                        <span class="text">Cursos</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('specialized-educational-support.disciplines.index') }}"
+                       class="{{ request()->routeIs('specialized-educational-support.disciplines.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-book-half"></i></span>
+                        <span class="text">Disciplinas</span>
+                    </a>
+                </li>
+            @endif
+        @endauth
+
         <li class="menu-divider">Atendimento AEE</li>
 
-        <li>
+        <li class="nav-item">
             <a href="{{ route('specialized-educational-support.students.index') }}"
-               class="{{ request()->routeIs('specialized-educational-support.students.*') ? 'active' : '' }}">
+                class="{{ request()->routeIs(['specialized-educational-support.students.*',
+                'specialized-educational-support.guardians.*', 
+                'specialized-educational-support.student-context.*',
+                'specialized-educational-support.student-deficiencies.*']) ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-people"></i></span>
                 <span class="text">Alunos</span>
             </a>
@@ -55,6 +104,14 @@
                class="{{ request()->routeIs('specialized-educational-support.sessions.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-calendar-check"></i></span>
                 <span class="text">Sessões</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('specialized-educational-support.session-records.index') }}"
+               class="{{ request()->routeIs('specialized-educational-support.session-records.*') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-journal-text"></i></span>
+                <span class="text">Registros de Sessões</span>
             </a>
         </li>
 

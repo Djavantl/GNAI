@@ -1,12 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Contextos' => route('specialized-educational-support.student-context.index', $student),
+            'Contexto #' . $context->id => null
+        ]" />
+    </div>
     {{-- Cabeçalho da Página --}}
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>
             <h2 class="text-title">Contexto Educacional</h2>
             <p class="text-muted">
-                {{ $student->person->name }} • Matrícula: {{ $student->registration ?? 'N/A' }}
+                Aluno: {{ $student->person->name }} 
             </p>
         </div>
         <div class="d-flex gap-2">

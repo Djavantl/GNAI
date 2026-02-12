@@ -3,10 +3,18 @@
 @section('title', 'Deficiências do Aluno')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Deficiências' => null
+        ]" />
+    </div>
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Deficiências do Aluno</h2>
-            <p class="text-muted">{{ $student->name }} • Matrícula: {{ $student->enrollment ?? 'N/A' }}</p>
+            <p class="text-muted">Aluno: {{ $student->person->name }} </p>
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button

@@ -3,13 +3,20 @@
 @section('title', 'Detalhes da Deficiência')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Deficiências' => route('specialized-educational-support.student-deficiencies.index', $student),
+            $deficiency->deficiency->name  => null
+        ]" />
+    </div>
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Detalhes da Deficiência</h2>
             <p class="text-muted">
-                {{-- Acessando o nome através da relação person --}}
-                Aluno: <strong>{{ $student->person->name ?? 'N/A' }}</strong> 
-                • Matrícula: {{ $student->registration ?? 'N/A' }}
+               Aluno: {{ $student->person->name }}
             </p>
         </div>
        <div class="d-flex gap-2 align-items-start">

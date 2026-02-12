@@ -3,6 +3,13 @@
 @section('title', 'Profissionais')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Profissionais' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <h2 class="text-title">Profissionais</h2>
         <x-buttons.link-button 
@@ -13,14 +20,15 @@
         </x-buttons.link-button>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
     <x-table.table :headers="['Nome', 'Documento', 'Cargo', 'Status', 'Ações']">
     @foreach($professionals as $professional)
         <tr>
-            <x-table.td>{{ $professional->person->name }}</x-table.td>
+            <x-table.td>
+                <div class="name-with-photo">
+                    <img src="{{ $professional->person->photo_url }}" class="avatar-table">
+                    <span class="fw-bold text-purple-dark">{{ $professional->person->name }}</span>
+                </div>
+            </x-table.td>
             <x-table.td>{{ $professional->person->document }}</x-table.td>
             <x-table.td>{{ $professional->position->name }}</x-table.td>
             <x-table.td>

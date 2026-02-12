@@ -3,6 +3,16 @@
 @section('title', 'Responsáveis do Aluno')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Responsáveis' => null
+        ]" />
+    </div>
+
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Responsáveis — {{ $student->person->name }}</h2>
@@ -25,9 +35,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
 
     <x-table.table :headers="['Nome', 'Documento', 'Vínculo (Parentesco)', 'Contato', 'Ações']">
         @forelse($guardians as $guardian)
@@ -52,7 +59,7 @@
                     <x-table.actions>
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.guardians.show', $guardian)"
-                            variant="info-outline"
+                            variant="info"
                         >
                             ver
                         </x-buttons.link-button>
@@ -79,7 +86,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="4" class="text-center text-muted py-4">Nenhum responsável cadastrado para este aluno.</td>
+                <td colspan="5" class="text-center text-muted py-4">Nenhum responsável cadastrado para este aluno.</td>
             </tr>
         @endforelse
     </x-table.table>

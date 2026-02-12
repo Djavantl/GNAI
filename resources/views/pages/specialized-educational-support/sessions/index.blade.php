@@ -3,6 +3,14 @@
 @section('title', 'Sessões de Atendimento')
 
 @section('content')
+
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Sessões' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="text-title">Sessões de Atendimento</h2>
         <div class="d-flex gap-2">
@@ -101,7 +109,7 @@
         </tr>
     @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-5">
+                <td colspan="6" class="text-center text-muted py-5">
                     Nenhuma sessão cadastrada.
                 </td>
             </tr>

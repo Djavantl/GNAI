@@ -3,18 +3,30 @@
 @section('title', 'Pendências')
 
 @section('content')
-    <div class="d-flex justify-content-between mb-3">
-        <h2 class="text-title">Pendências</h2>
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Pendências' => null
+        ]" />
+    </div>
 
-        <x-buttons.link-button :href="route('specialized-educational-support.pendencies.create')" variant="new">
-            Nova Pendência
-        </x-buttons.link-button>
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.pendencies.my')"
-            variant="info"
-        >
-            <i class="fas fa-user-check me-1"></i> Minhas Pendências
-        </x-buttons.link-button>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-title mb-0">Pendências</h2>
+
+        <div class="d-flex gap-2">
+            <x-buttons.link-button 
+                :href="route('specialized-educational-support.pendencies.create')" 
+                variant="new">
+                Nova Pendência
+            </x-buttons.link-button>
+
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.pendencies.my')"
+                variant="info"
+            >
+                <i class="fas fa-user-check me-1"></i> Minhas Pendências
+            </x-buttons.link-button>
+        </div>
     </div>
 
     <x-table.table :headers="['Título','Profissional','Prioridade','Vencimento','Concluída','Ações']">
@@ -28,22 +40,9 @@
                 </x-table.td>
 
                 <x-table.td>
-                    @php
-                        $priorityLabel = [
-                            'urgent' => 'Urgente',
-                            'high'   => 'Alta',
-                            'medium' => 'Média',
-                            'low'    => 'Baixa'
-                        ][$pendency->priority] ?? ucfirst($pendency->priority);
-                        $priorityClass = [
-                            'urgent' => 'danger',
-                            'high'   => 'warning',
-                            'medium' => 'secondary',
-                            'low'    => 'muted'
-                        ][$pendency->priority] ?? 'secondary';
-                    @endphp
-
-                    <span class="text-{{ $priorityClass }} fw-bold">{{ $priorityLabel }}</span>
+                   <span class="text-{{ $pendency->priority->color() }} fw-bold">
+                        {{ $pendency->priority->label() }}
+                    </span>
                 </x-table.td>
 
                 <x-table.td>

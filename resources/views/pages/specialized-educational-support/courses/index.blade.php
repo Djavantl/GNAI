@@ -3,6 +3,13 @@
 @section('title', 'Cursos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Cursos' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <h2 class="text-title">Cursos e Séries</h2>
         <div class="d-flex gap-2">

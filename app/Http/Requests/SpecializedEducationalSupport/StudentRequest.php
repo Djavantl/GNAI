@@ -75,6 +75,18 @@ class StudentRequest extends FormRequest
                 'sometimes',
                 'in:active,locked,completed,dropped'
             ],
+
+            'photo' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg',
+                'max:2048'
+            ],
+
+            'remove_photo' => [
+                'nullable',
+                'boolean' 
+            ],
         ];
     }
 }

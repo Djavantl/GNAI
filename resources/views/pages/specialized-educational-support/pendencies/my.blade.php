@@ -3,6 +3,14 @@
 @section('title', 'Minhas Pendências')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Pendências' => route('specialized-educational-support.pendencies.index'),
+             auth()->user()->name => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Minhas Pendências</h2>
@@ -24,19 +32,8 @@
                 </x-table.td>
 
                 <x-table.td>
-                    @php
-                        $priorityMap = [
-                            'urgent' => ['Urgente', 'danger'],
-                            'high'   => ['Alta', 'warning'],
-                            'medium' => ['Média', 'secondary'],
-                            'low'    => ['Baixa', 'muted'],
-                        ];
-                        [$priorityLabel, $priorityColor] =
-                            $priorityMap[$pendency->priority] ?? [ucfirst($pendency->priority), 'secondary'];
-                    @endphp
-
-                    <span class="text-{{ $priorityColor }} fw-bold">
-                        {{ $priorityLabel }}
+                   <span class="text-{{ $pendency->priority->color() }} fw-bold">
+                        {{ $pendency->priority->label() }}
                     </span>
                 </x-table.td>
 

@@ -3,7 +3,7 @@
     background-color: #ffffff;
     border-radius: 20px; /* Arredondamento natural */
     overflow: hidden;    /* Essencial para a tabela não "vazar" as pontas */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 13px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 

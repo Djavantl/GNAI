@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Profissionais' => route('specialized-educational-support.professionals.index'),
+            $professional->person->name => null
+
+        ]" />
+    </div>
+
     {{-- Cabeçalho da Página --}}
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>
@@ -25,6 +34,14 @@
             
             {{-- SEÇÃO: DADOS PESSOAIS --}}
             <x-forms.section title="Identificação Pessoal" />
+
+            <div class="col-12 d-flex justify-content-center py-4 bg-light mb-4 border-bottom">
+                <div class="text-center">
+                    <img src="{{ $professional->person->photo_url }}" class="avatar-show">
+                    <h4 class="mt-3 text-title mb-0">{{ $professional->person->name }}</h4>
+                    <span class="badge bg-primary">Profissional</span>
+                </div>
+            </div>
             
             <x-show.info-item label="Nome Completo" column="col-md-8" isBox="true">
                 <strong>{{ $professional->person->name }}</strong>

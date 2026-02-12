@@ -1,0 +1,87 @@
+/* Avatar na Tabela (Index) */
+.avatar-table {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e1ebf8;
+    margin-right: 12px;
+}
+
+/* Avatar no Prontuário (Show) */
+.avatar-show {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #4D44B5;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+/* Preview no Formulário (Edit) */
+.photo-preview-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.img-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px dashed #ddd;
+}
+
+/* Alinhamento da coluna de nome com foto */
+.name-with-photo {
+    display: flex;
+    align-items: center;
+}
+
+.nav-profile-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-right: 8px;
+}
+
+.dropdown-toggle::after {
+    vertical-align: middle; /* Alinha a setinha do dropdown com a foto */
+}
+
+/* Botão do Usuário na Navbar */
+.nav-user-dropdown {
+    /* Cor da borda com a sua variável */
+    border: none !important; 
+    background-color: transparent !important;
+    color: white !important; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    transition: all 0.3s ease;
+}
+
+.nav-user-dropdown:hover {
+    color:  #b7b3cf !important;  
+}
+
+/* Efeito de Hover (passar o mouse) */
+.nav-user-dropdown:hover {
+    background-color: var(--text-purple-dark) !important;
+    
+}
+
+/* Ajuste na imagem dentro desse botão */
+.nav-profile-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* Borda fininha branca na foto para destacar do fundo roxo */
+    border: 1px solid rgba(255, 255, 255, 0.5); 
+    margin-right: 10px;
+}

@@ -22,8 +22,7 @@
         <div class="dropdown">
             <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle me-1"></i>
-                Usuário
+                {{ Str::words(Auth::user()->name, 2, '') }}
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Perfil</a></li>

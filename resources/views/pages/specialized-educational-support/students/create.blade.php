@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Cadastrar Novo Aluno</h2>
@@ -9,9 +18,15 @@
     </div>
 
     <div class="mt-3">
-        <x-forms.form-card action="{{ route('specialized-educational-support.students.store') }}" method="POST">
+        <x-forms.form-card action="{{ route('specialized-educational-support.students.store') }}" method="POST" enctype="multipart/form-data">
             
             <x-forms.section title="Dados Pessoais" />
+
+            <div class="col-md-12 mb-3">
+                <label class="form-label fw-bold">Foto do Aluno</label>
+                <input type="file" name="photo" class="form-control" accept="image/*">
+                <small class="text-muted">Formatos aceitos: JPG, PNG. Máximo 2MB.</small>
+            </div>
 
             <div class="col-md-12">
                 <x-forms.input 

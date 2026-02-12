@@ -55,19 +55,22 @@ class SessionRecordController extends Controller
     public function show(SessionRecord $sessionRecord)
     {
         $sessionRecord = $this->service->show($sessionRecord);
+        $session = $sessionRecord->session;
 
         return view(
             'pages.specialized-educational-support.session-records.show',
-            compact('sessionRecord')
+            compact('sessionRecord', 'session')
         );
     }
 
     // formulário de edição
     public function edit(SessionRecord $sessionRecord)
     {
+        $session = $sessionRecord->session;
+
         return view(
             'pages.specialized-educational-support.session-records.edit',
-            compact('sessionRecord')
+            compact('sessionRecord', 'session')
         );
     }
 

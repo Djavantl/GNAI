@@ -3,10 +3,19 @@
 @section('title', 'Histórico de Contextos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Contextos' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Histórico de Contextos</h2>
-            <p class="text-muted">{{ $student->person->name }} • Matrícula: {{ $student->registration ?? 'N/A' }}</p>
+            <p class="text-muted">Aluno: {{ $student->person->name }}</p>
         </div>
         <x-buttons.link-button
             :href="route('specialized-educational-support.student-context.create', $student->id)"

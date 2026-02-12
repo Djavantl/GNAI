@@ -86,6 +86,18 @@ class ProfessionalRequest extends FormRequest
                 'required',
                 'exists:positions,id',
             ],
+
+            'photo' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg',
+                'max:2048'
+            ],
+
+            'remove_photo' => [
+                'nullable',
+                'boolean' 
+            ],
         ];
     }
 }

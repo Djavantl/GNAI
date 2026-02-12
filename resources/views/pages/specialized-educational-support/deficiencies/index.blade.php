@@ -3,6 +3,12 @@
 @section('title', 'Deficiências')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Deficiências' => null
+        ]" />
+    </div>
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Lista de Deficiências</h2>
@@ -15,10 +21,6 @@
             Nova Deficiência
         </x-buttons.link-button>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
 
     <x-table.table :headers="['Deficiência / CID', 'Ativo', 'Ações']">
         @foreach($deficiency as $item)
@@ -42,7 +44,7 @@
 
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.deficiencies.show', $item)"
-                            variant="info-outline"
+                            variant="info"
                         >
                             ver
                         </x-buttons.link-button>

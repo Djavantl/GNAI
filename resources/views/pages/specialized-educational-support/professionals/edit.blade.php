@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Profissionais' => route('specialized-educational-support.professionals.index'),
+            $professional->person->name => route('specialized-educational-support.professionals.show', $professional),
+            'Editar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Editar Profissional</h2>
@@ -9,10 +18,27 @@
     </div>
 
     <div class="mt-3">
-        <x-forms.form-card action="{{ route('specialized-educational-support.professionals.update', $professional) }}" method="POST">
+        <x-forms.form-card action="{{ route('specialized-educational-support.professionals.update', $professional) }}" method="POST" enctype="multipart/form-data">
             @method('PUT')
 
             <x-forms.section title="Dados da Pessoa" />
+
+            <div class="col-md-12 mb-4">
+                <label class="form-label fw-bold d-block">Foto do Profissional</label>
+                <div class="photo-preview-container">
+                    <img src="{{ $professional->person->photo_url }}" class="img-preview mb-2" id="preview">
+                </div>
+                <input type="file" name="photo" class="form-control" accept="image/*">
+                
+                @if($professional->person->photo)
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="remove_photo" value="1" id="removePhoto">
+                        <label class="form-check-label text-danger" for="removePhoto">
+                            <i class="bi bi-trash"></i> Remover foto atual
+                        </label>
+                    </div>
+                @endif
+            </div>
 
             <div class="col-md-6">
                 <x-forms.input 

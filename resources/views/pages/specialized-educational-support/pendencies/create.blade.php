@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Pendências' => route('specialized-educational-support.pendencies.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Criar Nova Pendência</h2>
@@ -35,7 +42,11 @@
                 <x-forms.select
                     name="assigned_to"
                     label="Profissional Responsável *"
-                    :options="$professionals->pluck('name','id')->toArray()"
+                    :options="$professionals
+                        ->mapWithKeys(fn($professional) => [
+                            $professional->id => $professional->person->name
+                        ])
+                        ->toArray()"
                     :value="old('assigned_to')"
                     required
                 />
@@ -45,16 +56,12 @@
                 <x-forms.select
                     name="priority"
                     label="Prioridade *"
-                    :options="[
-                        'urgent' => 'Urgente',
-                        'high'   => 'Alta',
-                        'medium' => 'Média',
-                        'low'    => 'Baixa'
-                    ]"
-                    :value="old('priority', 'medium')"
+                    :options="$priorities"
+                    :value="old('priority')"
                     required
                 />
             </div>
+
 
             <div class="col-md-3">
                 <x-forms.input

@@ -29,7 +29,8 @@ class GuardianController extends Controller
     public function show(Guardian $guardian)
     {
         $guardian = $this->service->show($guardian);
-        return view('pages.specialized-educational-support.guardians.show', compact('guardian'));
+        $student = $guardian->student;
+        return view('pages.specialized-educational-support.guardians.show', compact('guardian', 'student'));
     }
 
     public function create(Student $student)

@@ -1,6 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.master')
+
+@section('title', 'Editar Cursos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Cursos' => route('specialized-educational-support.courses.index'),
+            $course->name => route('specialized-educational-support.courses.show', $course),
+            'Editar' => null
+        ]" />
+    </div>
+
     <h2 class="text-title">Editar Curso: {{ $course->name }}</h2>
 
     <x-forms.form-card action="{{ route('specialized-educational-support.courses.update', $course) }}" method="POST">
@@ -36,7 +47,7 @@
             />
         </div>
 
-        <div class="col-12 d-flex justify-content-end gap-3 pt-4">
+        <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4">
             <x-buttons.link-button href="{{ route('specialized-educational-support.courses.index') }}" variant="secondary">Cancelar</x-buttons.link-button>
             <x-buttons.submit-button type="submit">Atualizar Curso</x-buttons.submit-button>
         </div>

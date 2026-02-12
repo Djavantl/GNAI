@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             guests: 'auth/login',
             users: 'auth/dashboard'
         );
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\CheckAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 

@@ -1,11 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Deficiências' => route('specialized-educational-support.student-deficiencies.index', $student),
+            'Cadastrar' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Vincular Deficiência</h2>
             <p class="text-muted">
-                Aluno: <strong>{{ $student->name }}</strong> • Matrícula: {{ $student->enrollment ?? 'N/A' }}
+                Aluno: {{ $student->person->name }}
             </p>
         </div>
     </div>

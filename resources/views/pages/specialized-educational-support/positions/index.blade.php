@@ -3,6 +3,13 @@
 @section('title', 'Cargos')
 
 @section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Cargos' => null
+        ]" />
+    </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Lista de Cargos</h2>
@@ -38,14 +45,14 @@
 
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.positions.show', $item)"
-                            variant="info-outline"
+                            variant="info"
                         >
                             ver
                         </x-buttons.link-button>
 
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.positions.edit', $item)"
-                            variant="warning-outline"
+                            variant="warning"
                         >
                             Editar
                         </x-buttons.link-button>
@@ -53,7 +60,7 @@
                         <form action="{{ route('specialized-educational-support.positions.deactivate', $item) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
-                            <x-buttons.submit-button variant="dark-outline">
+                            <x-buttons.submit-button variant="dark">
                                 Ativar/Desativar
                             </x-buttons.submit-button>
                         </form>
