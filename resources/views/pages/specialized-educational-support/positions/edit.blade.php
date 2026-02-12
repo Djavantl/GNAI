@@ -100,6 +100,15 @@
                     </div>
                 @endforeach
             </div>
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('specialized-educational-support.positions.index') }}" variant="secondary">
+                    Cancelar
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save mr-2"></i> Salvar Cargo
+                </x-buttons.submit-button>
+            </div>
         </x-forms.form-card>
     @push('scripts')
     <script>

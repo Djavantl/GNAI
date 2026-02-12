@@ -6,7 +6,7 @@
     <title>403 - Acesso Negado | AEE</title>
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    @vite(['resources/css/pages/403.css'])
+    @vite(['resources/css/pages/errors.css'])
     <style>
         :root { --primary-purple: #4D44B5; --text-dark: #303972; --text-gray: #5a5c6f; }
         body { margin: 0; padding: 0; background-color: #f8f9fa; }
