@@ -9,7 +9,7 @@
     <label class="d-block fw-bold text-title small mb-1" style="text-transform: uppercase;">
         {{ $label }}
     </label>
-    
+
     @if($isBox)
         <div class="custom-display-box">
             {{ $slot->isNotEmpty() ? $slot : ($value ?? '---') }}

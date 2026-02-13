@@ -64,6 +64,13 @@
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button
+                            :href="route('inclusive-radar.barriers.show', $barrier)"
+                            variant="info"
+                        >
+                            Ver
+                        </x-buttons.link-button>
+
+                        <x-buttons.link-button
                             :href="route('inclusive-radar.barriers.edit', $barrier)"
                             variant="warning"
                         >

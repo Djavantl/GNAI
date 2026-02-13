@@ -29,23 +29,18 @@
                 <x-forms.section title="1. Localização e Contexto" />
 
                 <div class="col-md-12 mb-3 px-4">
-
                     <div class="row">
-
                         {{-- Campus --}}
                         <div class="col-md-6">
                             <label for="institution_select"
                                    class="form-label fw-bold text-purple-dark italic">
                                 Campus / Unidade <span class="text-danger">*</span>
                             </label>
-
                             <select name="institution_id"
                                     id="institution_select"
                                     required
                                     class="form-select custom-input shadow-sm">
-
                                 <option value="">-- Selecione --</option>
-
                                 @foreach($institutions as $inst)
                                     <option value="{{ $inst->id }}"
                                             data-lat="{{ $inst->latitude }}"
@@ -54,33 +49,27 @@
                                         {{ $inst->name }}
                                     </option>
                                 @endforeach
-
                             </select>
                         </div>
-
 
                         {{-- Local --}}
                         <div class="col-md-6">
                             <label for="location_select"
                                    class="form-label fw-bold text-purple-dark italic">
-                                Prédio / Local
+                                Local/Ponto de Referência
                             </label>
-
                             <select name="location_id"
                                     id="location_select"
                                     class="form-select custom-input shadow-sm">
                                 <option value="">Selecione...</option>
                             </select>
                         </div>
-
                     </div>
                 </div>
-
 
                 {{-- Complemento --}}
                 <div id="location_wrapper"
                      class="{{ old('institution_id') ? '' : 'd-none' }} col-md-12 mb-3 px-4 mt-3">
-
                     <x-forms.textarea
                         name="location_specific_details"
                         label="Complemento"
@@ -94,7 +83,6 @@
 
                 <div class="px-4">
                     <div class="row g-3">
-                        {{-- Título e Data na mesma linha --}}
                         <div class="col-md-8">
                             <x-forms.input name="name" label="Título do Relato" required :value="old('name')" placeholder="Ex: Calçada irregular" />
                         </div>
@@ -103,7 +91,6 @@
                                            :value="old('identified_at', now()->format('Y-m-d'))" />
                         </div>
 
-                        {{-- Prioridade e Categoria na mesma linha --}}
                         <div class="col-md-6">
                             <x-forms.select
                                 name="priority"
@@ -131,7 +118,7 @@
                         required
                         rows="3"
                         placeholder="Explique o problema encontrado..."
-                        :value="old('description', $barrier->description ?? '')"
+                        :value="old('description')"
                     />
                 </div>
 
@@ -198,24 +185,20 @@
                     </div>
                 </div>
 
-                {{-- REMOVA OS CAMPOS OCULTOS DAQUI --}}
-                {{-- Eles já estão no componente do mapa --}}
                 <input type="hidden" name="is_active" value="1">
             </div>
 
             {{-- LADO DIREITO: Mapa e Vistoria --}}
             <div class="col-lg-7 bg-light px-0">
-                <x-forms.section title="3. Localização e Fotos" id="map-section-title" />
+                <x-forms.section title="3. Localização no Mapa" id="map-section-title" />
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
-
                     <div class="mb-4">
                         <div class="mb-3 px-4">
                             <x-forms.checkbox name="no_location" id="no_location" label="Sem localização física" :checked="old('no_location')" />
                         </div>
 
                         @php
-                            // Determinar instituição inicial
                             $selectedInstitution = null;
                             $selectedInstitutionId = old('institution_id');
                             if ($selectedInstitutionId) {
@@ -230,9 +213,9 @@
                         />
                     </div>
 
-                    {{-- ===== Vistoria Inicial (Igual ao estilo do Edit) ===== --}}
+                    {{-- ===== Vistoria Inicial (Padrão TA) ===== --}}
                     <div class="mt-3">
-                        <x-forms.section title="Vistoria Inicial" />
+                        <x-forms.section title="4. Vistoria Inicial" />
 
                         <div class="px-4">
                             <div class="row g-3">
@@ -247,12 +230,11 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <x-forms.input
-                                        type="file"
+                                    {{-- !! COMPONENTE DE UPLOAD IGUAL AO TA !! --}}
+                                    <x-forms.image-uploader
                                         name="images[]"
                                         label="Fotos da Barreira"
-                                        multiple
-                                        accept="image/*"
+                                        :existingImages="old('images', [])"
                                     />
                                 </div>
 

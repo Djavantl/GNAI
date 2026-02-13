@@ -201,6 +201,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('barriers.create')->middleware('can:barrier.create');
     Route::post('/barriers/store', [BarrierController::class, 'store'])
         ->name('barriers.store')->middleware('can:barrier.store');
+    Route::get('/barriers/{barrier}', [BarrierController::class, 'show'])
+        ->name('barriers.show')->middleware('can:barrier.show');
     Route::get('/barriers/{barrier}/edit', [BarrierController::class, 'edit'])
         ->name('barriers.edit')->middleware('can:barrier.edit');
     Route::put('/barriers/{barrier}', [BarrierController::class, 'update'])
