@@ -18,6 +18,7 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     StudentCourseController,
     CourseController,
     PendencyController,
+    PeiController,
 
 };
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
@@ -355,4 +356,101 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/pendencies/{pendency}/complete', [PendencyController::class, 'markAsCompleted'])
         ->name('pendencies.complete')->middleware('can:pendency.complete');
 
+    /*
+    |--------------------------------------------------------------------------
+    | 10. PEI (Plano Educacional Individualizado)
+    |--------------------------------------------------------------------------
+    */
+
+    // Rotas Principais vinculadas ao Aluno
+    Route::get('/peis', [PeiController::class, 'all'])
+        ->name('pei.all');
+
+    Route::get('/students/{student}/peis', [PeiController::class, 'index'])
+        ->name('pei.index');
+
+    Route::get('/peis/{pei}/show', [PeiController::class, 'show'])
+        ->name('pei.show');
+
+    Route::get('/students/{student}/peis/create', [PeiController::class, 'create'])
+        ->name('pei.create');
+
+    Route::post('/peis/store', [PeiController::class, 'store'])
+        ->name('pei.store');
+
+    Route::get('/peis/{pei}/edit', [PeiController::class, 'edit'])
+        ->name('pei.edit');
+
+    Route::put('/peis/{pei}', [PeiController::class, 'update'])
+        ->name('pei.update');
+
+    Route::delete('/peis/{pei}', [PeiController::class, 'destroy'])
+        ->name('pei.destroy');
+
+    Route::patch('/peis/{pei}/finish', [PeiController::class, 'finish'])
+        ->name('pei.finish');
+
+    Route::get('/peis/{pei}/pdf', [PeiController::class, 'generatePdf'])
+        ->name('pei.pdf');
+
+
+    /* --- Tabelas Auxiliares (Ações dentro da tela Ver PEI) --- */
+
+    // Objetivos
+
+    Route::get('peis/objectives/{specific_objective}', [PeiController::class, 'showObjective'])
+        ->name('pei.objective.show');
+
+    Route::get('/peis/{pei}/objectives/create', [PeiController::class, 'createObjective'])
+        ->name('pei.objective.create');
+
+    Route::post('/peis/{pei}/objectives', [PeiController::class, 'storeObjective'])
+        ->name('pei.objective.store');
+
+    Route::get('/peis/objectives/{specific_objective}/edit', [PeiController::class, 'editObjective'])
+        ->name('pei.objective.edit');
+    
+    Route::put('/peis/objectives/{specific_objective}/update', [PeiController::class, 'updateObjective'])
+        ->name('pei.objective.update');
+
+    Route::delete('/peis/objectives/{specific_objective}', [PeiController::class, 'destroyObjective'])
+        ->name('pei.objective.destroy');
+
+    // Conteúdos
+    Route::get('peis/contents/{content_programmatic}', [PeiController::class, 'showContent'])
+        ->name('pei.content.show');
+
+    Route::get('/peis/{pei}/contents/create', [PeiController::class, 'createContent'])
+        ->name('pei.content.create');
+
+    Route::post('/peis/{pei}/contents', [PeiController::class, 'storeContent'])
+        ->name('pei.content.store');
+
+    Route::get('/peis/contents/{content_programmatic}/edit', [PeiController::class, 'editContent'])
+        ->name('pei.content.edit');
+    
+    Route::put('/peis/contents/{content_programmatic}/update', [PeiController::class, 'updateContent'])
+        ->name('pei.content.update');
+
+    Route::delete('/peis/contents/{content_programmatic}', [PeiController::class, 'destroyContent'])
+        ->name('pei.content.destroy');
+
+    // Metodologias
+    Route::get('peis/methodologies/{methodology}', [PeiController::class, 'showMethodology'])
+        ->name('pei.methodology.show');
+
+    Route::get('/peis/{pei}/methodologies/create', [PeiController::class, 'createMethodology'])
+        ->name('pei.methodology.create');
+
+    Route::post('/peis/{pei}/methodologies', [PeiController::class, 'storeMethodology'])
+        ->name('pei.methodology.store');
+
+    Route::get('/peis/methodologies/{methodology}/edit', [PeiController::class, 'editMethodology'])
+        ->name('pei.methodology.edit');
+    
+    Route::put('/peis/methodologies/{methodology}/update', [PeiController::class, 'updateMethodology'])
+        ->name('pei.methodology.update');
+
+    Route::delete('/peis/methodologies/{methodology}', [PeiController::class, 'destroyMethodology'])
+        ->name('pei.methodology.destroy');
 });

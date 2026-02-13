@@ -1,0 +1,24 @@
+
+            // PEI - Principal
+            ['name' => 'Visualizar todos PEIs (lista)', 'slug' => 'pei.all'],
+            ['name' => 'Visualizar aluno PEIs (lista)', 'slug' => 'pei.index'],
+            ['name' => 'Visualizar PEI (detalhes)', 'slug' => 'pei.show'],
+            ['name' => 'Criar PEI (form)', 'slug' => 'pei.create'],
+            ['name' => 'Salvar PEI', 'slug' => 'pei.store'],
+            ['name' => 'Editar PEI (form)', 'slug' => 'pei.edit'],
+            ['name' => 'Atualizar PEI', 'slug' => 'pei.update'],
+            ['name' => 'Excluir PEI', 'slug' => 'pei.destroy'],
+            ['name' => 'Finalizar PEI', 'slug' => 'pei.finish'],
+            ['name' => 'Gerar PDF do PEI', 'slug' => 'pei.pdf'],
+
+            // PEI - Objetivos Específicos
+            ['name' => 'Adicionar Objetivo ao PEI', 'slug' => 'pei.objective.store'],
+            ['name' => 'Remover Objetivo do PEI', 'slug' => 'pei.objective.destroy'],
+
+            // PEI - Conteúdo Programático
+            ['name' => 'Adicionar Conteúdo ao PEI', 'slug' => 'pei.content.store'],
+            ['name' => 'Remover Conteúdo do PEI', 'slug' => 'pei.content.destroy'],
+
+            // PEI - Metodologias
+            ['name' => 'Adicionar Metodologia ao PEI', 'slug' => 'pei.methodology.store'],
+            ['name' => 'Remover Metodologia do PEI', 'slug' => 'pei.methodology.destroy'],

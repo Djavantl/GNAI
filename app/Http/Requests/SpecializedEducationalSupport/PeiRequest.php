@@ -4,14 +4,14 @@ namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PeiAdaptationRequest extends FormRequest
+class PeiRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,11 +22,11 @@ class PeiAdaptationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'course_subject' => 'required|string|max:255', // Componente Curricular 
-            'teacher_name' => 'required|string|max:255',   // Docente 
-            'specific_objectives' => 'required|string',    // Definidos a partir do componente 
-            'content_programmatic' => 'required|string',   // Priorização de conteúdos 
-            'methodology_strategies' => 'required|string', // Recursos e estratégias 
+            'student_id' => 'required|exists:students,id',
+            'course_id' => 'required|exists:courses,id',
+            'discipline_id' => 'required|exists:disciplines,id',
+            'teacher_name' => 'required|string|max:255',
+            'student_context_id' => 'required|exists:student_contexts,id',
         ];
     }
 }

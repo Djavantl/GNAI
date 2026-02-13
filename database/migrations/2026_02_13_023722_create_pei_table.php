@@ -15,10 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('professional_id')->constrained('professionals')->cascadeOnDelete();
-            
-            $table->foreignId('student_context_id')->constrained('student_contexts')->cascadeOnDelete();
             $table->foreignId('semester_id')->constrained('semesters')->cascadeOnDelete(); 
+            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
+            $table->foreignId('discipline_id')->constrained('disciplines')->cascadeOnDelete();
 
+            $table->string('teacher_name'); 
+
+            $table->foreignId('student_context_id')->constrained('student_contexts')->cascadeOnDelete();
+            
             $table->boolean('is_finished')->default(false); 
             $table->timestamps();
         });

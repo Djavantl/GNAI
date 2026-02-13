@@ -101,15 +101,15 @@
         @endcan
 
 
-        @can('pei.index')
+        
         <li>
-            <a href="{{ url('/peis') }}"
+            <a href="{{ route('specialized-educational-support.pei.all') }}"
             class="{{ request()->is('peis*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-file-text"></i></span>
                 <span class="text">PEIs</span>
             </a>
         </li>
-        @endcan
+       
 
 
         @can('session.index')

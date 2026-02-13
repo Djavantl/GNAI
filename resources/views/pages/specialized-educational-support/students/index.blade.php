@@ -72,6 +72,13 @@
                         Responsáveis
                     </x-buttons.link-button>
 
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.pei.index', $student->id)" 
+                        variant="primary"
+                    >
+                         Gerenciar PEIs
+                    </x-buttons.link-button>
+
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.students.edit', $student)"
                         variant="warning"

@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('pei_evaluations', function (Blueprint $table) {
             $table->id();
             // Vinculada à adaptação da disciplina específica
-            $table->foreignId('pei_adaptation_id')->constrained('pei_adaptations')->cascadeOnDelete();
+            $table->foreignId('pei_id')->constrained('peis')->cascadeOnDelete();
             
             // Avaliação e Parecer 
-            $table->longText('evaluation_instruments'); // Como a aprendizagem foi avaliada 
-            $table->longText('final_parecer');       // Descrição de avanços e dificuldades 
-            $table->longText('successful_proposals');   // O que teve êxito e o que não teve 
-            $table->longText('next_stage_goals');       // Objetivos para a próxima etapa 
+            $table->longText('evaluation_instruments'); 
+            $table->longText('final_parecer');        
+            $table->longText('successful_proposals');   
+            $table->longText('next_stage_goals')->nullable();       
             
             $table->timestamps();
         });
