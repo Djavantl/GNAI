@@ -123,6 +123,10 @@
                 </div>
 
                 <div class="d-flex gap-3">
+                    <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)" target="_blank" variant="primary">
+                        Gerar PDF
+                    </x-buttons.link-button>
+
                     <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}"
                           method="POST"
                           onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do material. Confirmar?')">

@@ -2,60 +2,44 @@
 
 namespace App\Services\Report;
 
-use App\Services\Report\Modules\AssistiveTechnologyReportModule;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Collection;
+use App\Services\Report\Modules\AccessibleEducationalMaterialReport;
+use App\Services\Report\Modules\AssistiveTechnologyReport;
+use Illuminate\Http\Request;
 
 class ReportService
 {
-    protected array $availableModules;
+    public function __construct(
+        protected AssistiveTechnologyReport $taModule,
+        protected AccessibleEducationalMaterialReport $materialModule
+    ) {}
 
-    public function __construct()
+    public function generate(Request $request)
     {
-        $this->availableModules = [
-            'assistive_technologies' => new AssistiveTechnologyReportModule(),
+        $result = [
+            'data' => [],
+            'filters' => [] // agora será array associativo por módulo
         ];
-    }
 
-    protected function buildSections(array $modules, array $filters): Collection
-    {
-        $sections = collect();
+        // Módulo de Tecnologia Assistiva
+        if ($request->boolean('ta')) {
+            $taData = $this->taModule->generate($request);
 
-        foreach ($modules as $moduleKey) {
-            if (!isset($this->availableModules[$moduleKey])) {
-                continue;
+            if ($taData->isNotEmpty()) {
+                $result['data']['ta'] = $taData;
+                $result['filters']['ta'] = $this->taModule->getLabels($request); // filtros isolados de TA
             }
-
-            $module = $this->availableModules[$moduleKey];
-
-            $sections->push([
-                'key'   => $moduleKey,
-                'title' => $module->getTitle(),
-                'data'  => $module->getData($filters),
-            ]);
         }
 
-        return $sections;
-    }
+        // Módulo Materiais Pedagógicos
+        if ($request->boolean('materials')) {
+            $mpaData = $this->materialModule->generate($request);
 
-    public function generate(
-        array $modules,
-        array $filters,
-        array $layout,
-        string $format
-    ) {
-        $sections = $this->buildSections($modules, $filters);
-
-        if ($format === 'pdf') {
-            return Pdf::loadView('reports.template', [
-                'sections' => $sections,
-                'layout'   => $layout,
-            ])->download('relatorio.pdf');
+            if ($mpaData->isNotEmpty()) {
+                $result['data']['materials'] = $mpaData;
+                $result['filters']['materials'] = $this->materialModule->getLabels($request); // filtros isolados de MPA
+            }
         }
 
-        return view('reports.index', [
-            'sections' => $sections,
-            'layout'   => $layout,
-        ]);
+        return $result;
     }
 }

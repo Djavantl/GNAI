@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AccessibleEducationalMaterialRequest;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Services\InclusiveRadar\AccessibleEducationalMaterialService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -109,5 +110,30 @@ class AccessibleEducationalMaterialController extends Controller
         return redirect()
             ->route('inclusive-radar.accessible-educational-materials.index')
             ->with('success', 'Material removido!');
+    }
+
+    public function generatePdf(AccessibleEducationalMaterial $material)
+    {
+        $material->load([
+            'type',
+            'resourceStatus',
+            'deficiencies',
+            'accessibilityFeatures',
+            'attributeValues.attribute',
+            'inspections.images'
+        ]);
+
+        $attributeValues = $material->attributeValues
+            ->pluck('value', 'attribute_id')
+            ->toArray();
+
+        $pdf = Pdf::loadView(
+            'pages.inclusive-radar.accessible-educational-materials.pdf',
+            compact('material', 'attributeValues')
+        )
+            ->setPaper('a4', 'portrait')
+            ->setOption(['enable_php' => true]);
+
+        return $pdf->stream("MPA_{$material->name}.pdf");
     }
 }

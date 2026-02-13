@@ -16,13 +16,15 @@
             </a>
         </li>
 
+        @can('report.reports.index')
         <li>
-            <a href="{{ url('/relatorios') }}"
+            <a href="{{ route('report.reports.index') }}"
                class="{{ request()->is('relatorios*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-bar-chart"></i></span>
                 <span class="text">Relatórios</span>
             </a>
         </li>
+        @endcan
 
         @auth
             @if(auth()->user()->is_admin)
@@ -77,7 +79,7 @@
             <a href="{{ route('specialized-educational-support.students.index') }}"
                 class="{{ request()->routeIs([
                     'specialized-educational-support.students.*',
-                    'specialized-educational-support.guardians.*', 
+                    'specialized-educational-support.guardians.*',
                     'specialized-educational-support.student-context.*',
                     'specialized-educational-support.student-deficiencies.*'
                 ]) ? 'active' : '' }}">
@@ -145,6 +147,7 @@
 
         <li class="menu-divider">Radar Inclusivo</li>
 
+        @can('assistive-technology.index')
         <li>
             <a href="{{ route('inclusive-radar.assistive-technologies.index') }}"
                class="{{ request()->routeIs('inclusive-radar.assistive-technologies.*') ? 'active' : '' }}">
@@ -152,7 +155,9 @@
                 <span class="text">Tecnologias Assistivas</span>
             </a>
         </li>
+        @endcan
 
+        @can('barriers.index')
         <li>
             <a href="{{ route('inclusive-radar.barriers.index') }}"
                class="{{ request()->routeIs('inclusive-radar.barriers.*') ? 'active' : '' }}">
@@ -160,7 +165,9 @@
                 <span class="text">Barreiras</span>
             </a>
         </li>
+        @endcan
 
+        @can('material.index')
         <li>
             <a href="{{ route('inclusive-radar.accessible-educational-materials.index') }}"
                class="{{ request()->routeIs('inclusive-radar.accessible-educational-materials.*') ? 'active' : '' }}">
@@ -168,7 +175,9 @@
                 <span class="text">Materiais Pedagógicos</span>
             </a>
         </li>
+        @endcan
 
+        @can('loan.index')
         <li>
             <a href="{{ route('inclusive-radar.loans.index') }}"
                class="{{ request()->routeIs('inclusive-radar.loans.*') ? 'active' : '' }}">
@@ -176,7 +185,9 @@
                 <span class="text">Empréstimos</span>
             </a>
         </li>
+        @endcan
 
+        @can('institutions.index')
         <li>
             <a href="{{ route('inclusive-radar.institutions.index') }}"
                class="{{ request()->routeIs('inclusive-radar.institutions.*') ? 'active' : '' }}">
@@ -184,7 +195,9 @@
                 <span class="text">Instituições</span>
             </a>
         </li>
+        @endcan
 
+        @can('locations.index')
         <li>
             <a href="{{ route('inclusive-radar.locations.index') }}"
                class="{{ request()->routeIs('inclusive-radar.locations.*') ? 'active' : '' }}">
@@ -192,6 +205,8 @@
                 <span class="text">Localizações</span>
             </a>
         </li>
+        @endcan
+
 
         <li class="menu-divider">Outros</li>
 

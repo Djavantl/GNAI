@@ -103,6 +103,75 @@ class PermissionSeeder extends Seeder
             ['name' => 'Excluir Pendência', 'slug' => 'pendency.destroy'],
             ['name' => 'Minhas Pendências (apenas do usuário)', 'slug' => 'pendency.my'],
             ['name' => 'Marcar Pendência como Concluída', 'slug' => 'pendency.complete'],
+
+            // Radar Inclusivo – Tecnologias Assistivas
+
+            ['name' => 'Visualizar TAs (lista)', 'slug' => 'assistive-technology.index'],
+            ['name' => 'Criar TA (form)', 'slug' => 'assistive-technology.create'],
+            ['name' => 'Salvar TA', 'slug' => 'assistive-technology.store'],
+            ['name' => 'Visualizar TA (show)', 'slug' => 'assistive-technology.show'],
+            ['name' => 'Editar TA (form)', 'slug' => 'assistive-technology.edit'],
+            ['name' => 'Atualizar TA', 'slug' => 'assistive-technology.update'],
+            ['name' => 'Ativar/Desativar TA', 'slug' => 'assistive-technology.toggle'],
+            ['name' => 'Excluir TA', 'slug' => 'assistive-technology.destroy'],
+            ['name' => 'Gerar PDF da TA', 'slug' => 'assistive-technology.pdf'],
+
+            // Radar Inclusivo – Materiais Pedagógicos Acessíveis
+
+            ['name' => 'Visualizar Materiais (lista)', 'slug' => 'material.index'],
+            ['name' => 'Criar Material (form)', 'slug' => 'material.create'],
+            ['name' => 'Salvar Material', 'slug' => 'material.store'],
+            ['name' => 'Visualizar Material (show)', 'slug' => 'material.show'],
+            ['name' => 'Editar Material (form)', 'slug' => 'material.edit'],
+            ['name' => 'Atualizar Material', 'slug' => 'material.update'],
+            ['name' => 'Ativar/Desativar Material', 'slug' => 'material.toggle'],
+            ['name' => 'Excluir Material', 'slug' => 'material.destroy'],
+            ['name' => 'Gerar PDF do Material', 'slug' => 'material.pdf'],
+
+            // Radar Inclusivo – Barreiras (operacional)
+
+            ['name' => 'Visualizar Barreiras (lista)', 'slug' => 'barrier.index'],
+            ['name' => 'Criar Barreira (form)', 'slug' => 'barrier.create'],
+            ['name' => 'Salvar Barreira', 'slug' => 'barrier.store'],
+            ['name' => 'Visualizar Barreira (detalhes)', 'slug' => 'barrier.show'],
+            ['name' => 'Editar Barreira (form)', 'slug' => 'barrier.edit'],
+            ['name' => 'Atualizar Barreira', 'slug' => 'barrier.update'],
+            ['name' => 'Ativar/Desativar Barreira', 'slug' => 'barrier.toggle'],
+            ['name' => 'Excluir Barreira', 'slug' => 'barrier.destroy'],
+
+            // Radar Inclusivo – Empréstimos
+
+            ['name' => 'Visualizar Empréstimos (lista)', 'slug' => 'loan.index'],
+            ['name' => 'Criar Empréstimo (form)', 'slug' => 'loan.create'],
+            ['name' => 'Salvar Empréstimo', 'slug' => 'loan.store'],
+            ['name' => 'Visualizar Empréstimo (show)', 'slug' => 'loan.show'],
+            ['name' => 'Editar Empréstimo (form)', 'slug' => 'loan.edit'],
+            ['name' => 'Atualizar Empréstimo', 'slug' => 'loan.update'],
+            ['name' => 'Registrar Devolução', 'slug' => 'loan.return'],
+            ['name' => 'Excluir Empréstimo', 'slug' => 'loan.destroy'],
+
+            // Radar Inclusivo – Relatórios (se houver)
+
+            ['name' => 'Acessar Relatórios', 'slug' => 'report.index'],
+            ['name' => 'Configurar Relatório', 'slug' => 'report.configure'],
+            ['name' => 'Exportar Relatório (PDF/Excel)', 'slug' => 'report.export'],
+
+            // Permissões para cadastros ADMIN (apenas middleware admin)
+
+            ['name' => 'Gerenciar Tipos de Recurso', 'slug' => 'resource-type.manage'],
+            ['name' => 'Gerenciar Atributos de Tipo', 'slug' => 'type-attribute.manage'],
+            ['name' => 'Gerenciar Atribuições Tipo-Atributo', 'slug' => 'type-attribute-assignment.manage'],
+            ['name' => 'Gerenciar Categorias de Barreira', 'slug' => 'barrier-category.manage'],
+            ['name' => 'Gerenciar Instituições', 'slug' => 'institution.manage'],
+            ['name' => 'Gerenciar Localizações', 'slug' => 'location.manage'],
+            ['name' => 'Gerenciar Recursos de Acessibilidade', 'slug' => 'accessibility-feature.manage'],
+            ['name' => 'Gerenciar Status de Recurso', 'slug' => 'resource-status.manage'],
+
+            // Relatórios
+            ['name' => 'Acessar Relatórios (lista)', 'slug' => 'report.index'],
+            ['name' => 'Configurar Filtros do Relatório', 'slug' => 'report.configure'],
+            ['name' => 'Gerar Relatório', 'slug' => 'report.generate'],          // <-- nova
+            ['name' => 'Exportar Relatório (PDF/Excel/HTML)', 'slug' => 'report.export'],
         ];
 
         foreach ($permissions as $p) {
