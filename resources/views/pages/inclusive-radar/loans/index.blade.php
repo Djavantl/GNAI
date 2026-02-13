@@ -50,25 +50,29 @@
                     </span>
                 </x-table.td>
 
-                {{-- STATUS --}}
                 <x-table.td>
                     @php
-                        $statusMap = [
-                            'active'   => ['label' => 'Ativo', 'color' => 'success'],
-                            'returned' => ['label' => 'Devolvido', 'color' => 'secondary'],
-                            'late'     => ['label' => 'Devolvido (Atraso)', 'color' => 'warning'],
-                            'damaged'  => ['label' => 'Com Avaria', 'color' => 'dark'],
-                        ];
+                        $currentStatus = $loan->status instanceof \App\Enums\InclusiveRadar\LoanStatus
+                            ? $loan->status
+                            : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
 
-                        $currentStatus = $statusMap[$loan->status] ?? ['label' => $loan->status, 'color' => 'secondary'];
-
-                        if ($loan->status === 'active' && $loan->due_date->isPast()) {
-                            $currentStatus = ['label' => 'Em Atraso', 'color' => 'danger'];
+                        if ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast()) {
+                            $statusLabel = 'Em Atraso';
+                            $statusColor = 'danger';
+                        } else {
+                            $statusLabel = $currentStatus?->label() ?? $loan->status;
+                            $statusColor = match($currentStatus) {
+                                \App\Enums\InclusiveRadar\LoanStatus::ACTIVE   => 'success',
+                                \App\Enums\InclusiveRadar\LoanStatus::RETURNED => 'secondary',
+                                \App\Enums\InclusiveRadar\LoanStatus::LATE     => 'warning',
+                                \App\Enums\InclusiveRadar\LoanStatus::DAMAGED  => 'dark',
+                                default => 'secondary',
+                            };
                         }
                     @endphp
 
-                    <span class="text-{{ $currentStatus['color'] }} fw-bold">
-                        {{ $currentStatus['label'] }}
+                    <span class="text-{{ $statusColor }} fw-bold">
+                        {{ $statusLabel }}
                     </span>
                 </x-table.td>
 

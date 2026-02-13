@@ -264,4 +264,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/loans/{loan}', [LoanController::class, 'destroy'])
         ->name('loans.destroy')->middleware('can:loan.destroy');
+
+    Route::get('/loans/{loan}/pdf', [LoanController::class, 'generatePdf'])
+        ->name('loans.pdf')->middleware('can:loan.pdf');
 });

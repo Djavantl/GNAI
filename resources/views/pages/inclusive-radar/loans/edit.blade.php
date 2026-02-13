@@ -106,7 +106,6 @@
                     label="Data de Saída"
                     type="datetime-local"
                     readonly
-                    class="bg-light"
                     :value="old('loan_date', $loan->loan_date->format('Y-m-d\TH:i'))"
                 />
             </div>
@@ -124,15 +123,13 @@
                 <x-forms.select
                     name="status"
                     label="Status Atual do Empréstimo"
-                    :options="[
-                        'active' => 'Ativo (Com o aluno)',
-                        'returned' => 'Devolvido (No prazo)',
-                        'late' => 'Devolvido (Com atraso)',
-                        'damaged' => 'Devolvido (Com Avaria)'
-                    ]"
-                    :selected="old('status', $loan->status)"
+                    :options="collect(\App\Enums\InclusiveRadar\LoanStatus::cases())
+                    ->mapWithKeys(fn($status) => [$status->value => $status->label()])
+                    ->toArray()"
+                    :selected="old('status', $loan->status?->value ?? '')"
                 />
             </div>
+
 
             <div class="col-md-6">
                 <x-forms.input
@@ -175,4 +172,7 @@
 
         </x-forms.form-card>
     </div>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/loans.js')
+    @endpush
 @endsection

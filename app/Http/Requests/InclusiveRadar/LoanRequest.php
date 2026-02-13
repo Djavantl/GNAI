@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\LoanStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Validation\Rules\Enum;
 
 class LoanRequest extends FormRequest
 {
@@ -23,8 +25,8 @@ class LoanRequest extends FormRequest
                 Rule::in(array_values(Relation::morphMap())),
             ],
 
-            'student_id' => 'required_without:professional_id|nullable|exists:students,id',
-            'professional_id' => 'required_without:student_id|nullable|exists:professionals,id',
+            'student_id' => 'required|exists:students,id',
+            'professional_id' => 'required|exists:professionals,id',
 
             'loan_date' => 'required|date',
             'due_date' => [
@@ -35,7 +37,7 @@ class LoanRequest extends FormRequest
             'return_date' => 'nullable|date|after_or_equal:loan_date',
             'status' => [
                 'sometimes',
-                Rule::in(['active', 'returned', 'late', 'damaged']),
+                new Enum(LoanStatus::class),
             ],
             'observation' => 'nullable|string',
         ];
@@ -66,12 +68,11 @@ class LoanRequest extends FormRequest
         return [
             'loanable_id.required' => 'O item para empréstimo não foi identificado.',
             'loanable_type.in' => 'O tipo de item selecionado é inválido.',
-            'student_id.required_without' => 'É necessário selecionar um estudante ou um profissional.',
-            'student_id.exists' => 'O estudante selecionado não foi encontrado no sistema.',
-            'professional_id.required_without' => 'O profissional responsável deve ser identificado.',
             'due_date.required' => 'A data de previsão de entrega é obrigatória.',
             'due_date.after_or_equal' => 'A data de entrega não pode ser anterior à data de empréstimo.',
-            'status.in' => 'O status selecionado é inválido.',
+            'return_date.after_or_equal' => 'A data real de devolução deve ser igual ou posterior à data do empréstimo.',
+            'status.enum' => 'O status selecionado é inválido.',
         ];
     }
+
 }

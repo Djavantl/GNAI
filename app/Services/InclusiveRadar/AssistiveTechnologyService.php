@@ -4,6 +4,7 @@ namespace App\Services\InclusiveRadar;
 
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
 use App\Models\InclusiveRadar\AssistiveTechnology;
+use App\Models\InclusiveRadar\ResourceType;
 use Illuminate\Support\Facades\DB;
 
 class AssistiveTechnologyService
@@ -82,19 +83,39 @@ class AssistiveTechnologyService
         ]);
     }
 
-    protected function syncRelations(AssistiveTechnology $assistiveTechnology, array $data): void
-    {
-        // Sincroniza relação com deficiências vinculadas
+    protected function syncRelations(
+        AssistiveTechnology $assistiveTechnology,
+        array $data
+    ): void {
+
+        // Sync deficiências
         if (isset($data['deficiencies'])) {
             $assistiveTechnology
                 ->deficiencies()
                 ->sync($data['deficiencies']);
         }
 
-        // Persiste valores de atributos dinâmicos do recurso
+        // Persiste atributos dinâmicos
         if (isset($data['attributes'])) {
+
+            $type = ResourceType::find($assistiveTechnology->type_id);
+
+            $validAttributeIds = $type
+                ? $type->attributes()
+                    ->pluck('type_attributes.id')
+                    ->toArray()
+                : [];
+
+            // Remove valores inválidos
+            $assistiveTechnology
+                ->attributeValues()
+                ->whereNotIn('attribute_id', $validAttributeIds)
+                ->delete();
+
+            // Salva novos valores
             $this->attributeValueService
                 ->saveValues($assistiveTechnology, $data['attributes']);
         }
     }
+
 }

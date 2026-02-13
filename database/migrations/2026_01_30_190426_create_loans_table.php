@@ -17,7 +17,7 @@ return new class extends Migration
             $table->dateTime('loan_date');
             $table->dateTime('due_date');
             $table->dateTime('return_date')->nullable();
-            $table->enum('status', ['active', 'returned', 'late', 'damaged'])->default('active');
+            $table->string('status')->default('active');
             $table->text('observation')->nullable();
             $table->timestamps();
         });

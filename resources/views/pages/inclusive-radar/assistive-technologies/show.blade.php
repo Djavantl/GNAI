@@ -142,4 +142,7 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/assistive-technologies.js')
+    @endpush
 @endsection

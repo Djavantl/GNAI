@@ -1,7 +1,4 @@
 import './bootstrap';
-import './pages/inclusive-radar/assistive-technologies.js';
-import './pages/inclusive-radar/accessible-educational-materials.js';
-import './pages/inclusive-radar/loans.js';
 import './pages/messages.js';
 import './pages/inclusive-radar/type-attributes.js';
 

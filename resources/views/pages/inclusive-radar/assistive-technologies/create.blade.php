@@ -128,7 +128,7 @@
             <div class="col-md-12 mb-4 mt-4">
                 <label class="form-label fw-bold text-purple-dark">Público-alvo *</label>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
-                    @foreach(\App\Models\SpecializedEducationalSupport\Deficiency::where('is_active', true)->get() as $def)
+                    @foreach(\App\Models\SpecializedEducationalSupport\Deficiency::where('is_active', true)->orderBy('name', 'asc')->get() as $def)
                         <x-forms.checkbox
                             name="deficiencies[]"
                             id="def_{{ $def->id }}"
@@ -145,10 +145,13 @@
                     Voltar para Listagem
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
                     Finalizar Cadastro
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>
     </div>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/assistive-technologies.js')
+    @endpush
 @endsection

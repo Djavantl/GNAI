@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\InclusiveRadar\LoanSeeder;
 use Illuminate\Database\Seeder;
 use Database\Seeders\SpecializedEducationalSupport\SemesterSeeder;
 use Database\Seeders\SpecializedEducationalSupport\StudentContextSeeder;

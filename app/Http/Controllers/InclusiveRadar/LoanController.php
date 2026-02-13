@@ -4,6 +4,7 @@ namespace App\Http\Controllers\InclusiveRadar;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LoanRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\InclusiveRadar\{Loan, AccessibleEducationalMaterial, AssistiveTechnology};
 use App\Models\SpecializedEducationalSupport\{Student, Professional};
 use App\Services\InclusiveRadar\LoanService;
@@ -124,4 +125,23 @@ class LoanController extends Controller
             ->route('inclusive-radar.loans.index')
             ->with('success', 'Registro de empréstimo removido com sucesso!');
     }
+
+    public function generatePdf(Loan $loan)
+    {
+        $loan->load([
+            'loanable.type',
+            'student.person',
+            'professional.person'
+        ]);
+
+        $pdf = Pdf::loadView(
+            'pages.inclusive-radar.loans.pdf',
+            compact('loan')
+        )
+            ->setPaper('a4', 'portrait')
+            ->setOption(['enable_php' => true]);
+
+        return $pdf->stream("Loan_{$loan->id}.pdf");
+    }
+
 }

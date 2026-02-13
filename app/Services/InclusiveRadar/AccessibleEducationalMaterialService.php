@@ -4,6 +4,7 @@ namespace App\Services\InclusiveRadar;
 
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Models\InclusiveRadar\ResourceType;
 use Illuminate\Support\Facades\DB;
 
 class AccessibleEducationalMaterialService
@@ -85,22 +86,34 @@ class AccessibleEducationalMaterialService
 
     protected function syncRelations(AccessibleEducationalMaterial $material, array $data): void
     {
-        // Sincroniza relação com deficiências vinculadas
+        // Sincroniza relação com deficiências
         if (isset($data['deficiencies'])) {
-            $material
-                ->deficiencies()
-                ->sync($data['deficiencies']);
+            $material->deficiencies()->sync($data['deficiencies']);
         }
 
-        // Sincroniza relação com funcionalidades de acessibilidade
+        // Sincroniza funcionalidades de acessibilidade
         if (isset($data['accessibility_features'])) {
-            $material
-                ->accessibilityFeatures()
-                ->sync($data['accessibility_features']);
+            $material->accessibilityFeatures()->sync($data['accessibility_features']);
         }
 
-        // Persiste valores de atributos dinâmicos do recurso
+        // Persiste atributos dinâmicos
         if (isset($data['attributes'])) {
+
+            $type = ResourceType::find($material->type_id);
+
+            $validAttributeIds = $type
+                ? $type->attributes()
+                    ->pluck('type_attributes.id')
+                    ->toArray()
+                : [];
+
+            // Remove valores que não pertencem mais ao tipo
+            $material
+                ->attributeValues()
+                ->whereNotIn('attribute_id', $validAttributeIds)
+                ->delete();
+
+            // Salva novos valores
             $this->attributeValueService
                 ->saveValues($material, $data['attributes']);
         }

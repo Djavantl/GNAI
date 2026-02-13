@@ -66,7 +66,7 @@
             {{-- SEÇÃO 3: Recursos de Acessibilidade --}}
             <x-forms.section title="Recursos de Acessibilidade" />
             <x-show.info-item label="Recursos presentes no material" column="col-md-12" isBox="true">
-                {{ $material->accessibilityFeatures->pluck('name')->join(', ') ?: '---' }}
+                {{ $material->accessibilityFeatures->sortBy('name')->pluck('name')->join(', ') ?: 'Nenhum recurso informado' }}
             </x-show.info-item>
 
             {{-- SEÇÃO 4: Histórico de Vistorias --}}
@@ -112,7 +112,7 @@
             {{-- Linha 3: Público-Alvo (linha completa) --}}
             <div class="row g-3">
                 <x-show.info-item label="Público-Alvo" column="col-md-12" isBox="true">
-                    {{ $material->deficiencies->pluck('name')->join(', ') ?: '---' }}
+                    {{ $material->deficiencies->sortBy('name')->pluck('name')->join(', ') ?: '---' }}
                 </x-show.info-item>
             </div>
 
@@ -146,7 +146,9 @@
                     </x-buttons.link-button>
                 </div>
             </div>
-
         </div>
     </div>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/accessible-educational-materials.js')
+    @endpush
 @endsection

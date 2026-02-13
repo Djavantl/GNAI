@@ -85,16 +85,20 @@
                     {{ $loan->return_date?->format('d/m/Y H:i') ?? 'Não devolvido' }}
                 </x-show.info-item>
 
+                @php
+                    $currentStatus = $loan->status instanceof \App\Enums\InclusiveRadar\LoanStatus
+                        ? $loan->status
+                        : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
+
+                    if ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast()) {
+                        $statusLabel = 'Em Atraso';
+                    } else {
+                        $statusLabel = $currentStatus?->label() ?? $loan->status;
+                    }
+                @endphp
+
                 <x-show.info-item label="Status do Empréstimo" column="col-md-6" isBox="true">
-                    @php
-                        $statusLabels = [
-                            'active' => 'Ativo (Com o aluno)',
-                            'returned' => 'Devolvido (No prazo)',
-                            'late' => 'Devolvido (Com atraso)',
-                            'damaged' => 'Devolvido (Com Avaria)'
-                        ];
-                    @endphp
-                    {{ $statusLabels[$loan->status] ?? $loan->status }}
+                    {{ $statusLabel }}
                 </x-show.info-item>
             </div>
 
@@ -111,7 +115,11 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    @if($loan->status === 'active')
+                    <x-buttons.link-button :href="route('inclusive-radar.loans.pdf', $loan)" target="_blank" variant="primary">
+                        Gerar PDF
+                    </x-buttons.link-button>
+
+                    @if($loan->status->value === 'active')
                         <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
@@ -133,4 +141,7 @@
 
         </div>
     </div>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/loans.js')
+    @endpush
 @endsection

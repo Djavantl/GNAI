@@ -19,7 +19,7 @@ class PSPUSeeder extends Seeder
     public function run(): void
     {
         // People
-        
+
         $people = [
 
             // students

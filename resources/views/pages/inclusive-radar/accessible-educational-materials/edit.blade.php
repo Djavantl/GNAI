@@ -83,7 +83,7 @@
             <div class="col-md-12 mb-4">
                 <label class="form-label fw-bold text-purple-dark">Recursos presentes no material</label>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
-                    @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->get() as $feature)
+                    @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->orderBy('name', 'asc')->get() as $feature)
                         <x-forms.checkbox
                             name="accessibility_features[]"
                             id="feat_{{ $feature->id }}"
@@ -230,7 +230,7 @@
                     Cancelar Alterações
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
                     Salvar Alterações
                 </x-buttons.submit-button>
             </div>
@@ -242,4 +242,7 @@
     <script>
         window.currentAttributeValues = @json(old('attributes', $attributeValues ?? []));
     </script>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/accessible-educational-materials.js')
+    @endpush
 @endsection

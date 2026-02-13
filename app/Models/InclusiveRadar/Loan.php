@@ -2,6 +2,7 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\LoanStatus;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,9 +29,10 @@ class Loan extends Model
     ];
 
     protected $casts = [
-        'loan_date' => 'datetime',
-        'due_date' => 'datetime',
+        'loan_date'   => 'datetime',
+        'due_date'    => 'datetime',
         'return_date' => 'datetime',
+        'status'      => LoanStatus::class,
     ];
 
     public function loanable(): MorphTo
@@ -50,12 +52,12 @@ class Loan extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', LoanStatus::ACTIVE);
     }
 
     public function scopeOverdue($query)
     {
-        return $query->where('status', 'active')
+        return $query->where('status', LoanStatus::ACTIVE)
             ->where('due_date', '<', now());
     }
 }

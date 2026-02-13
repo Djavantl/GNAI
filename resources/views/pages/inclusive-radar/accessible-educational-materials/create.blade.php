@@ -77,7 +77,7 @@
             <div class="col-md-12 mb-4">
                 <label class="form-label fw-bold text-purple-dark">Recursos presentes no material</label>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
-                    @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->get() as $feature)
+                    @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->orderBy('name', 'asc')->get() as $feature)
                         <x-forms.checkbox
                             name="accessibility_features[]"
                             id="feat_{{ $feature->id }}"
@@ -181,7 +181,7 @@
             <div class="col-md-12 mb-4 mt-4">
                 <label class="form-label fw-bold text-purple-dark">Público-alvo *</label>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
-                    @foreach($deficiencies as $def)
+                    @foreach($deficiencies->sortBy('name') as $def)
                         <x-forms.checkbox
                             name="deficiencies[]"
                             id="def_{{ $def->id }}"
@@ -200,7 +200,7 @@
                     Voltar para Listagem
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
                     Finalizar Cadastro
                 </x-buttons.submit-button>
             </div>
@@ -209,7 +209,9 @@
     </div>
 
     <script>
-        // Ponte de dados para manter atributos caso haja erro de validação
         window.currentAttributeValues = @json(old('attributes', []));
     </script>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/accessible-educational-materials.js')
+    @endpush
 @endsection

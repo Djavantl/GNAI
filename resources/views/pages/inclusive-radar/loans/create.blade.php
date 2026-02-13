@@ -140,4 +140,7 @@
             oldId: "{{ old('loanable_id') }}"
         };
     </script>
+    @push('scripts')
+        @vite('resources/js/pages/inclusive-radar/loans.js')
+    @endpush
 @endsection

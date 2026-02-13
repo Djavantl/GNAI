@@ -29,33 +29,39 @@
 </x-pdf.table>
 <x-pdf.text-area label="Descrição" :value="$assistiveTechnology->description" />
 
-{{-- Seção 2: Especificações Técnicas 3 itens por linha --}}
+{{-- Seção 2: Especificações Técnicas --}}
 @if(count($attributeValues) > 0)
     <x-pdf.section-title title="2. Especificações Técnicas" />
     <x-pdf.table>
         @php
-            // Divide os atributos em grupos de 3 para cada linha
             $chunks = collect($attributeValues)->chunk(3);
         @endphp
 
         @foreach($chunks as $chunk)
+
+            @php
+                $count = $chunk->count();
+
+                $colspan = match($count) {
+                    1 => 3,
+                    2 => 1.5,
+                    default => 1
+                };
+            @endphp
+
             <x-pdf.row>
                 @foreach($chunk as $attributeId => $value)
                     @php
                         $attributeLabel = $assistiveTechnology->attributeValues
                             ->firstWhere('attribute_id', $attributeId)?->attribute->label ?? '---';
                     @endphp
+
                     <x-pdf.info-item
                         :label="$attributeLabel"
                         :value="$value"
-                        colspan="1" {{-- ou ajuste para 2 se quiser blocos maiores --}}
+                        :colspan="$colspan"
                     />
                 @endforeach
-
-                {{-- Preenche o restante da linha se tiver menos de 3 itens --}}
-                @for($i = $chunk->count(); $i < 3; $i++)
-                    <x-pdf.info-item :label="''" :value="''" colspan="1" />
-                @endfor
             </x-pdf.row>
         @endforeach
     </x-pdf.table>
@@ -91,10 +97,6 @@
             <x-pdf.info-item
                 label="Estado de Conservação"
                 :value="$lastInspection->state?->label() ?? '---'"
-            />
-            <x-pdf.info-item
-                label="Status"
-                :value="$lastInspection->status?->label() ?? '---'"
             />
         </x-pdf.row>
 

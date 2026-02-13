@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (dynamicAttrContainer) dynamicAttrContainer.style.display = 'block';
 
-        fetch(`/inclusive-radar/resource-types/${typeId}/attributes`)
+        fetch(`/inclusive-radar/admin/resource-types/${typeId}/attributes`)
             .then(res => res.json())
             .then(data => {
                 if (!dynamicAttrList) return;
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const div = document.createElement('div');
                         div.className = "col-md-6 mb-3 px-3";
 
-                        const savedValue = isInitialLoad ? (currentValues[attr.id] || '') : '';
+                        const savedValue = currentValues[attr.id] ?? '';
 
                         if (attr.field_type === 'boolean') {
                             div.innerHTML = `
