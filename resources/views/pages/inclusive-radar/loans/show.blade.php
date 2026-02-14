@@ -110,31 +110,32 @@
 
             {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
+                <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $loan->id }}
+                    <x-buttons.pdf-button
+                        :href="route('inclusive-radar.loans.pdf', $loan)"
+                        class="ms-3"
+                    />
                 </div>
 
                 <div class="d-flex gap-3">
-                    <x-buttons.link-button :href="route('inclusive-radar.loans.pdf', $loan)" target="_blank" variant="primary">
-                        Gerar PDF
-                    </x-buttons.link-button>
 
                     @if($loan->status->value === 'active')
                         <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
                             <x-buttons.submit-button variant="success" onclick="return confirm('Confirmar a devolução?')">
-                                Devolver
+                                <i class="fas fa-undo"></i> Devolver
                             </x-buttons.submit-button>
                         </form>
                     @endif
 
                     <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
-                        Editar Registro
+                        <i class="fas fa-edit"></i> Editar Registro
                     </x-buttons.link-button>
 
                     <x-buttons.link-button :href="route('inclusive-radar.loans.index')" variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

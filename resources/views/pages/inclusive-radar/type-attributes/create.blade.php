@@ -96,10 +96,10 @@
             {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.type-attributes.index') }}" variant="secondary">
-                    Voltar para Listagem
+                    <i class="fas fa-arrow-left"></i> Voltar para Listagem
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
                     <i class="fas fa-save mr-2"></i> Salvar Atributo
                 </x-buttons.submit-button>
             </div>

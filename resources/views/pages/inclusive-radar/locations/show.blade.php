@@ -94,7 +94,6 @@
                         </section>
                     </div>
                 </div>
-
             </div>
 
 
@@ -108,23 +107,33 @@
 
                 <div class="d-flex gap-3">
 
+                    <form action="{{ route('inclusive-radar.locations.destroy', $location) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <x-buttons.submit-button
+                            variant="danger"
+                            onclick="return confirm('Deseja remover este ponto de referência?')"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
+
                     <x-buttons.link-button
                         :href="route('inclusive-radar.locations.edit', $location)"
                         variant="warning"
                     >
-                        Editar Local
+                        <i class="fas fa-edit"></i> Editar Local
                     </x-buttons.link-button>
 
                     <x-buttons.link-button
                         :href="route('inclusive-radar.locations.index')"
                         variant="secondary"
                     >
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
 
                 </div>
             </div>
-
         </x-show.display-card>
     </div>
 @endsection

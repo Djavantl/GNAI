@@ -54,11 +54,11 @@
 
                 <div class="d-flex gap-3">
                     <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.edit', $feature)" variant="warning">
-                        Editar Recurso
+                        <i class="fas fa-edit"></i> Editar Recurso
                     </x-buttons.link-button>
 
                     <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.index')" variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

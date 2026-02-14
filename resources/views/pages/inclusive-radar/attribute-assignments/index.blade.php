@@ -23,7 +23,7 @@
         </x-buttons.link-button>
     </div>
 
-    <x-table.table :headers="['Tipo de Recurso', 'Atributos Atrelados (Campos)', 'Ações']">
+    <x-table.table :headers="['Tipo de Recurso', 'Ações']">
         @php
             $groupedAssignments = $assignments->groupBy('type.name');
         @endphp
@@ -37,28 +37,22 @@
                 {{-- TIPO DE RECURSO: Texto direto na TD como em Alunos --}}
                 <x-table.td>{{ $typeName }}</x-table.td>
 
-                {{-- ATRIBUTOS: Texto direto separado por vírgulas --}}
-                <x-table.td>
-                    @foreach($items as $item)
-                        {{ $item->attribute->label }}{{ !$loop->last ? ',' : '' }}
-                    @endforeach
-                </x-table.td>
-
                 {{-- AÇÕES: Simples e direto --}}
                 <x-table.td>
                     <x-table.actions>
+                        {{-- AÇÕES: Padronizado com ícones --}}
                         <x-buttons.link-button
                             :href="route('inclusive-radar.type-attribute-assignments.show', ['assignment' => $type->id])"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye me-1"></i> Ver
                         </x-buttons.link-button>
 
                         <x-buttons.link-button
                             :href="route('inclusive-radar.type-attribute-assignments.edit', ['assignment' => $type->id])"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit"></i> Editar
                         </x-buttons.link-button>
 
                         <form action="{{ route('inclusive-radar.type-attribute-assignments.destroy', ['assignment' => $type->id]) }}" method="POST" class="d-inline">
@@ -68,7 +62,7 @@
                                 variant="danger"
                                 onclick="return confirm('Isso removerá TODOS os atributos vinculados ao tipo {{ $typeName }}. Continuar?')"
                             >
-                                Excluir
+                                <i class="fas fa-trash-alt me-1"></i> Limpar Vínculos
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>

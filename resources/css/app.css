@@ -3,6 +3,7 @@
 @import "./components/forms.css";
 @import "./components/messages.css";
 @import "./components/photos.css";
+@import "./components/show.css";
 @import"./pages/errors.css";
 @import './auth/login.css';
 
@@ -305,6 +306,15 @@ body {
     border-color: #3d35a5;
     transform: translateY(-1px);
 }
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;   /* espaçamento entre ícone e texto */
+    line-height: 1;  /* força alinhamento vertical */
+    padding: 0.375rem 0.75rem; /* ajuste fino, substitui o padding do btn-sm se necessário */
+}
+
 
 /* Utilidades */
 .text-primary-custom {

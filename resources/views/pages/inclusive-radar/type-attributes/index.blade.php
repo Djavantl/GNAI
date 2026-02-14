@@ -60,14 +60,14 @@
                             :href="route('inclusive-radar.type-attributes.show', $attr)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
 
                         <x-buttons.link-button
                             :href="route('inclusive-radar.type-attributes.edit', $attr)"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit"></i> Editar
                         </x-buttons.link-button>
 
                         <form action="{{ route('inclusive-radar.type-attributes.destroy', $attr) }}" method="POST" class="d-inline">
@@ -77,7 +77,7 @@
                                 variant="danger"
                                 onclick="return confirm('Tem certeza que deseja remover este atributo?')"
                             >
-                                Excluir
+                                <i class="fas fa-trash-alt"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>

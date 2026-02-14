@@ -50,14 +50,14 @@
                             :href="route('inclusive-radar.barrier-categories.show', $category)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
 
                         <x-buttons.link-button
                             :href="route('inclusive-radar.barrier-categories.edit', $category)"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit"></i> Editar
                         </x-buttons.link-button>
 
                         <form action="{{ route('inclusive-radar.barrier-categories.destroy', $category) }}" method="POST" class="d-inline">
@@ -67,7 +67,7 @@
                                 variant="danger"
                                 onclick="return confirm('Tem certeza que deseja excluir?')"
                             >
-                                Excluir
+                                <i class="fas fa-trash-alt"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>

@@ -53,14 +53,14 @@
                             :href="route('inclusive-radar.locations.show', $loc)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
 
                         <x-buttons.link-button
                             :href="route('inclusive-radar.locations.edit', $loc)"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit"></i> Editar
                         </x-buttons.link-button>
 
                         <form action="{{ route('inclusive-radar.locations.destroy', $loc) }}" method="POST" class="d-inline">
@@ -70,7 +70,7 @@
                                 variant="danger"
                                 onclick="return confirm('Deseja remover este ponto de referência?')"
                             >
-                                Excluir
+                                <i class="fas fa-trash-alt"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>

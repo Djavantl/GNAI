@@ -94,13 +94,13 @@
                     <x-buttons.link-button
                         :href="route('inclusive-radar.resource-statuses.edit', $resourceStatus)"
                         variant="warning">
-                        Editar Status
+                        <i class="fas fa-edit"></i> Editar Status
                     </x-buttons.link-button>
 
                     <x-buttons.link-button
                         :href="route('inclusive-radar.resource-statuses.index')"
                         variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

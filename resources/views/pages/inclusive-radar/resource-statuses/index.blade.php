@@ -62,14 +62,14 @@
                             :href="route('inclusive-radar.resource-statuses.show', $resourceStatus)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
 
                         <x-buttons.link-button
                             :href="route('inclusive-radar.resource-statuses.edit', $resourceStatus)"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit"></i> Editar
                         </x-buttons.link-button>
                     </x-table.actions>
                 </x-table.td>

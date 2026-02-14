@@ -162,11 +162,11 @@
                 @endif
 
                 <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-arrow-left"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-handshake mr-2"></i> Atualizar Registro
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save mr-2"></i> Atualizar Registro
                 </x-buttons.submit-button>
             </div>
 

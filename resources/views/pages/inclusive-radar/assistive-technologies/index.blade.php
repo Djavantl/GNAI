@@ -68,7 +68,7 @@
                             :href="route('inclusive-radar.assistive-technologies.show', $tech)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
 
                         {{-- Botão para editar TA --}}
@@ -76,7 +76,7 @@
                             :href="route('inclusive-radar.assistive-technologies.edit', $tech)"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit"></i> Editar
                         </x-buttons.link-button>
 
                         {{-- Botão para excluir TA --}}
@@ -87,7 +87,7 @@
                                 variant="danger"
                                 onclick="return confirm('Deseja remover esta tecnologia?')"
                             >
-                                Excluir
+                                <i class="fas fa-trash-alt"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>

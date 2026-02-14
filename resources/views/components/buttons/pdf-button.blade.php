@@ -1,10 +1,10 @@
 @props(['href'])
 
-<a href="{{ $href }}" 
-   target="_blank" 
-   {{ $attributes->merge(['class' => 'btn-pdf-custom']) }}>
+<a href="{{ $href }}"
+   target="_blank"
+   aria-label="Exportar em PDF"
+    {{ $attributes->merge(['class' => 'btn-pdf-custom']) }}>
     <i class="fas fa-file-pdf"></i>
-
 </a>
 
 <style>

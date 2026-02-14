@@ -43,20 +43,23 @@
                 {{-- AÇÕES: Simples e direto --}}
                 <x-table.td>
                     <x-table.actions>
+                        {{-- Ver --}}
                         <x-buttons.link-button
                             :href="route('inclusive-radar.accessibility-features.show', $feature)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye me-1"></i> Ver
                         </x-buttons.link-button>
 
+                        {{-- Editar --}}
                         <x-buttons.link-button
                             :href="route('inclusive-radar.accessibility-features.edit', $feature)"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit me-1"></i> Editar
                         </x-buttons.link-button>
 
+                        {{-- Excluir --}}
                         <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
@@ -64,7 +67,7 @@
                                 variant="danger"
                                 onclick="return confirm('Deseja realmente remover este recurso?')"
                             >
-                                Excluir
+                                <i class="fas fa-trash-alt me-1"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>

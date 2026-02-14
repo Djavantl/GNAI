@@ -60,6 +60,7 @@
                 </x-table.td>
 
                 {{-- AÇÕES: Simpificado como em Alunos --}}
+                {{-- AÇÕES: Simpificado como em Alunos --}}
                 <x-table.td>
                     <x-table.actions>
                         {{-- Botão para ver MPA --}}
@@ -67,7 +68,7 @@
                             :href="route('inclusive-radar.accessible-educational-materials.show', $material)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye me-1"></i> Ver
                         </x-buttons.link-button>
 
                         {{-- Botão para editar MPA --}}
@@ -75,7 +76,7 @@
                             :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"
                             variant="warning"
                         >
-                            Editar
+                            <i class="fas fa-edit me-1"></i> Editar
                         </x-buttons.link-button>
 
                         {{-- Botão para excluir MPA --}}
@@ -86,12 +87,11 @@
                                 variant="danger"
                                 onclick="return confirm('Deseja remover este material?')"
                             >
-                                Excluir
+                                <i class="fas fa-trash-alt me-1"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>
                 </x-table.td>
-
             </tr>
         @empty
             <tr>

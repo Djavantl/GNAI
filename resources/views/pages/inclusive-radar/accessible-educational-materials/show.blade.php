@@ -66,7 +66,15 @@
             {{-- SEÇÃO 3: Recursos de Acessibilidade --}}
             <x-forms.section title="Recursos de Acessibilidade" />
             <x-show.info-item label="Recursos presentes no material" column="col-md-12" isBox="true">
-                {{ $material->accessibilityFeatures->sortBy('name')->pluck('name')->join(', ') ?: 'Nenhum recurso informado' }}
+                @if($material->accessibilityFeatures->isNotEmpty())
+                    <div class="tag-container">
+                        @foreach($material->accessibilityFeatures->sortBy('name') as $feature)
+                            <x-show.tag color="light">{{ $feature->name }}</x-show.tag>
+                        @endforeach
+                    </div>
+                @else
+                    Nenhum recurso informado
+                @endif
             </x-show.info-item>
 
             {{-- SEÇÃO 4: Histórico de Vistorias --}}
@@ -109,40 +117,65 @@
                 </x-show.info-item>
             </div>
 
-            {{-- Linha 3: Público-Alvo (linha completa) --}}
+            {{-- SEÇÃO 5: Público-Alvo / Deficiências --}}
             <div class="row g-3">
-                <x-show.info-item label="Público-Alvo" column="col-md-12" isBox="true">
-                    {{ $material->deficiencies->sortBy('name')->pluck('name')->join(', ') ?: '---' }}
+                <x-show.info-item label="Público-Alvo (Deficiências)" column="col-md-12" isBox="true">
+                    @if($material->deficiencies->isNotEmpty())
+                        <div class="tag-container">
+                            @foreach($material->deficiencies->sortBy('name') as $deficiency)
+                                <x-show.tag color="light">{{ $deficiency->name }}</x-show.tag>
+                            @endforeach
+                        </div>
+                    @endif
                 </x-show.info-item>
             </div>
 
             {{-- Rodapé de Ações --}}
+            {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
+                <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $material->id }}
+                    <x-buttons.pdf-button
+                        :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)"
+                        class="ms-3"
+                    />
                 </div>
 
                 <div class="d-flex gap-3">
-                    <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)" target="_blank" variant="primary">
-                        Gerar PDF
+                    {{-- Gerar PDF --}}
+                    <x-buttons.link-button
+                        :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)"
+                        target="_blank"
+                        variant="primary"
+                    >
+                        <i class="fas fa-file-pdf"></i> Gerar PDF
                     </x-buttons.link-button>
 
+                    {{-- Excluir Recurso --}}
                     <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}"
                           method="POST"
                           onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do material. Confirmar?')">
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            Excluir Recurso
+                            <i class="fas fa-trash-alt"></i> Excluir Recurso
                         </x-buttons.submit-button>
                     </form>
 
-                    <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.edit', $material)" variant="warning">
-                        Editar Recurso
+                    {{-- Editar Recurso --}}
+                    <x-buttons.link-button
+                        :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"
+                        variant="warning"
+                    >
+                        <i class="fas fa-edit"></i> Editar Recurso
                     </x-buttons.link-button>
 
-                    <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.index')" variant="secondary">
-                        Voltar para Lista
+                    {{-- Voltar para Lista --}}
+                    <x-buttons.link-button
+                        :href="route('inclusive-radar.accessible-educational-materials.index')"
+                        variant="secondary"
+                    >
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

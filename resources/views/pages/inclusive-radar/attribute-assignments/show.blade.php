@@ -48,37 +48,48 @@
                 </x-show.info-item>
             </div>
 
-            {{-- SEÇÃO 2: Atributos Vinculados --}}
             <x-forms.section title="Campos Técnicos Vinculados" />
             <div class="row g-3 mb-4">
                 <x-show.info-item label="Atributos Vinculados" column="col-md-12" isBox="true">
-                    {{ $assignment->attributes->pluck('label')->join(', ') ?: '---' }}
+                    @if($assignment->attributes->isNotEmpty())
+                        <div class="tag-container">
+                            @foreach($assignment->attributes as $attribute)
+                                <x-show.tag color="light">{{ $attribute->label }}</x-show.tag>
+                            @endforeach
+                        </div>
+                    @else
+                        ---
+                    @endif
                 </x-show.info-item>
             </div>
 
-            {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
+                {{-- ID do Sistema --}}
+                <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $assignment->id }}
                 </div>
 
+                {{-- Ações --}}
                 <div class="d-flex gap-3">
+                    {{-- Excluir Todos os Vínculos --}}
                     <form action="{{ route('inclusive-radar.type-attribute-assignments.destroy', $assignment) }}"
                           method="POST"
                           onsubmit="return confirm('ATENÇÃO: Esta ação removerá todos os atributos vinculados. Confirmar?')">
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            Excluir Todos os Vínculos
+                            <i class="fas fa-trash-alt"></i> Limpar Vínculos
                         </x-buttons.submit-button>
                     </form>
 
+                    {{-- Editar Vínculos --}}
                     <x-buttons.link-button :href="route('inclusive-radar.type-attribute-assignments.edit', $assignment)" variant="warning">
-                        Editar Vínculos
+                        <i class="fas fa-edit"></i> Editar Vínculos
                     </x-buttons.link-button>
 
+                    {{-- Voltar para Lista --}}
                     <x-buttons.link-button :href="route('inclusive-radar.type-attribute-assignments.index')" variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

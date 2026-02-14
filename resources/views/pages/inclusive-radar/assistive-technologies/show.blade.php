@@ -106,37 +106,50 @@
             {{-- Linha 3: Público-Alvo (linha completa) --}}
             <div class="row g-3">
                 <x-show.info-item label="Público-Alvo" column="col-md-12" isBox="true">
-                    {{ $assistiveTechnology->deficiencies->pluck('name')->join(', ') ?: '---' }}
+                    @if($assistiveTechnology->deficiencies->isNotEmpty())
+                        <div class="tag-container">
+                            @foreach($assistiveTechnology->deficiencies->sortBy('name') as $deficiency)
+                                <x-show.tag color="light">{{ $deficiency->name }}</x-show.tag>
+                            @endforeach
+                        </div>
+                    @endif
                 </x-show.info-item>
             </div>
 
             {{-- Rodapé de Ações --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
+            <div class="col-12 border-top p-4 d-flex justify-content-between">
+                <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $assistiveTechnology->id }}
+                    <x-buttons.pdf-button :href="route('inclusive-radar.assistive-technologies.pdf', $assistiveTechnology)" class="ms-3" />
                 </div>
 
                 <div class="d-flex gap-3">
-                    <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.pdf', $assistiveTechnology)" target="_blank" variant="primary">
-                        Gerar PDF
-                    </x-buttons.link-button>
 
+                    {{-- Excluir Recurso --}}
                     <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}"
                           method="POST"
                           onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do recurso. Confirmar?')">
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            Excluir Recurso
+                            <i class="fas fa-trash-alt"></i> Excluir Recurso
                         </x-buttons.submit-button>
                     </form>
 
-                    <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.edit', $assistiveTechnology)" variant="warning">
-                        Editar Recurso
+                    {{-- Editar Recurso --}}
+                    <x-buttons.link-button
+                        :href="route('inclusive-radar.assistive-technologies.edit', $assistiveTechnology)"
+                        variant="warning"
+                    >
+                        <i class="fas fa-edit"></i> Editar Recurso
                     </x-buttons.link-button>
 
-                    <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.index')" variant="secondary">
-                        Voltar para Lista
+                    {{-- Voltar para Lista --}}
+                    <x-buttons.link-button
+                        :href="route('inclusive-radar.assistive-technologies.index')"
+                        variant="secondary"
+                    >
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

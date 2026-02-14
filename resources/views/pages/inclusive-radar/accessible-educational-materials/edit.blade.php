@@ -227,11 +227,11 @@
             {{-- BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.accessible-educational-materials.index') }}" variant="secondary">
-                    Cancelar Alterações
+                    <i class="fas fa-arrow-left"></i> Cancelar Alterações
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    Salvar Alterações
+                    <i class="fas fa-save mr-2"></i> Salvar Alterações
                 </x-buttons.submit-button>
             </div>
 

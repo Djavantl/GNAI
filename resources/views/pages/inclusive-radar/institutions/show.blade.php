@@ -111,11 +111,11 @@
 
                 <div class="d-flex gap-3">
                     <x-buttons.link-button :href="route('inclusive-radar.institutions.edit', $institution)" variant="warning">
-                        Editar Instituição
+                        <i class="fas fa-edit"></i> Editar Instituição
                     </x-buttons.link-button>
 
                     <x-buttons.link-button :href="route('inclusive-radar.institutions.index')" variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

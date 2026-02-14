@@ -257,11 +257,11 @@
             {{-- FOOTER / BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4 bg-white">
                 <x-buttons.link-button href="{{ route('inclusive-radar.barriers.index') }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-arrow-left"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save me-2"></i> Salvar Barreira
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save mr-2"></i> Salvar Barreira
                 </x-buttons.submit-button>
             </div>
 

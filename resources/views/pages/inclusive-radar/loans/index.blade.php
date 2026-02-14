@@ -24,7 +24,7 @@
     </div>
 
     {{-- Agora com 7 colunas --}}
-    <x-table.table :headers="['Item', 'Beneficiário', 'Data Saída', 'Prazo Entrega', 'Status', 'Ações']">
+    <x-table.table :headers="['Item', 'Beneficiário', 'Prazo Entrega', 'Status', 'Ações']">
         @forelse($loans as $loan)
             <tr>
                 {{-- ITEM --}}
@@ -36,11 +36,6 @@
                 <x-table.td>
                     {{ $loan->student->person->name }}
                     <small class="text-muted d-block">Matrícula: {{ $loan->student->registration }}</small>
-                </x-table.td>
-
-                {{-- DATA SAÍDA --}}
-                <x-table.td>
-                    {{ $loan->loan_date->format('d/m/Y H:i') }}
                 </x-table.td>
 
                 {{-- PRAZO ENTREGA --}}
@@ -83,18 +78,18 @@
                             :href="route('inclusive-radar.loans.show', $loan)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
 
                         <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
-                            Editar
+                            <i class="fas fa-edit"></i> Editar
                         </x-buttons.link-button>
 
                         <form action="{{ route('inclusive-radar.loans.destroy', $loan) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <x-buttons.submit-button variant="danger" onclick="return confirm('Deseja excluir?')">
-                                Excluir
+                                <i class="fas fa-trash-alt"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>

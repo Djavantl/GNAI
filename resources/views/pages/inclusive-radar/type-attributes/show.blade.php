@@ -77,16 +77,16 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            Excluir Atributo
+                            <i class="fas fa-trash-alt"></i> Excluir Atributo
                         </x-buttons.submit-button>
                     </form>
 
                     <x-buttons.link-button :href="route('inclusive-radar.type-attributes.edit', $typeAttribute)" variant="warning">
-                        Editar Atributo
+                        <i class="fas fa-edit"></i> Editar Atributo
                     </x-buttons.link-button>
 
                     <x-buttons.link-button :href="route('inclusive-radar.type-attributes.index')" variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

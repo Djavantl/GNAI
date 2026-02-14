@@ -50,7 +50,7 @@
 
             <div class="row g-3 mb-4">
 
-                <x-show.info-item label="Ativo no Sistema" column="col-md-6" isBox="true">
+                <x-show.info-item label="Ativo no Sistema" column="col-12" isBox="true">
                     {{ $barrierCategory->is_active ? 'Sim' : 'Não' }}
                 </x-show.info-item>
 
@@ -72,20 +72,20 @@
                         @method('DELETE')
 
                         <x-buttons.submit-button variant="danger">
-                            Excluir Categoria
+                            <i class="fas fa-trash-alt"></i> Excluir Categoria
                         </x-buttons.submit-button>
                     </form>
 
                     <x-buttons.link-button
                         :href="route('inclusive-radar.barrier-categories.edit', $barrierCategory)"
                         variant="warning">
-                        Editar Categoria
+                        <i class="fas fa-edit"></i> Editar Categoria
                     </x-buttons.link-button>
 
                     <x-buttons.link-button
                         :href="route('inclusive-radar.barrier-categories.index')"
                         variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>

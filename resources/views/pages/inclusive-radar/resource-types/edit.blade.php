@@ -83,10 +83,10 @@
             {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.resource-types.index') }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-arrow-left"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
                     <i class="fas fa-save mr-2"></i> Salvar Alterações
                 </x-buttons.submit-button>
             </div>

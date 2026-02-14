@@ -326,13 +326,13 @@
                     href="{{ route('inclusive-radar.barriers.index') }}"
                     variant="secondary"
                 >
-                    Cancelar
+                    <i class="fas fa-arrow-left"></i> Cancelar
                 </x-buttons.link-button>
                 <x-buttons.submit-button
                     type="submit"
-                    class="btn-action new submit px-5"
+                    class="btn-action new submit"
                 >
-                    <i class="fas fa-save me-2"></i> Salvar Alterações
+                    <i class="fas fa-save mr-2"></i> Salvar Alterações
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

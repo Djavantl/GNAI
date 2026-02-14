@@ -69,16 +69,16 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            Excluir Tipo de Recurso
+                            <i class="fas fa-trash-alt"></i> Excluir Tipo de Recurso
                         </x-buttons.submit-button>
                     </form>
 
                     <x-buttons.link-button :href="route('inclusive-radar.resource-types.edit', $resourceType)" variant="warning">
-                        Editar Tipo de Recurso
+                        <i class="fas fa-edit"></i> Editar Tipo de Recurso
                     </x-buttons.link-button>
 
                     <x-buttons.link-button :href="route('inclusive-radar.resource-types.index')" variant="secondary">
-                        Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar para Lista
                     </x-buttons.link-button>
                 </div>
             </div>
