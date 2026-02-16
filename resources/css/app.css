@@ -6,6 +6,7 @@
 @import "./components/show.css";
 @import"./pages/errors.css";
 @import './auth/login.css';
+@import "./components/filters.css";
 
 :root {
     --primary-color: #4D44B5;

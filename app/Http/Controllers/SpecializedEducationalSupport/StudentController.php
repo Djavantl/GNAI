@@ -7,6 +7,7 @@ use App\Http\Requests\SpecializedEducationalSupport\StudentRequest;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Services\SpecializedEducationalSupport\StudentService;
+use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
@@ -17,10 +18,21 @@ class StudentController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $students = $this->service->index();
-        return view('pages.specialized-educational-support.students.index', compact('students'));
+        $students = $this->service->index($request->all());
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.students.partials.table',
+                compact('students')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.students.index',
+            compact('students')
+        );
     }
 
     public function show(Student $student)

@@ -1,6 +1,7 @@
 import './bootstrap';
 import './pages/messages.js';
 import './pages/inclusive-radar/type-attributes.js';
+import initDynamicFilters from './components/dynamicFilters';
 
 
 // App principal - Sidebar e Navbar
@@ -182,6 +183,7 @@ class App {
 // Inicializar app quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
+    initDynamicFilters();
 
     // Adicionar ano atual no footer se existir
     const yearElement = document.querySelector('[data-year]');

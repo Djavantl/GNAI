@@ -10,6 +10,7 @@ use Database\Seeders\SpecializedEducationalSupport\StudentDeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\PositionSeeder;
 use Database\Seeders\SpecializedEducationalSupport\PSPUSeeder;
+use Database\Seeders\SpecializedEducationalSupport\StudentSeeder;
 use Database\Seeders\SpecializedEducationalSupport\CoursesSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DisciplinesSeeder;
 use Database\Seeders\SpecializedEducationalSupport\CourseDisciplineSeeder;
@@ -51,6 +52,7 @@ class DatabaseSeeder extends Seeder
             PendencySeeder::class,
             AdminSeeder::class,
             PermissionSeeder::class,
+            StudentSeeder::class,
         ]);
     }
 }

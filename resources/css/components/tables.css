@@ -66,3 +66,80 @@
 } */
 
 /* Centraliza o conteúdo da célula de ações */
+
+/* 1. Reset e Container */
+.custom-pagination-container nav p {
+    display: none !important; /* Remove qualquer texto "Showing..." automático */
+}
+
+.custom-pagination-container .pagination {
+    margin-bottom: 0;
+    gap: 8px; /* Espaço entre os círculos */
+    align-items: center;
+    border: none;
+}
+
+/* 2. Estilo Geral dos Links */
+.custom-pagination-container .page-link {
+    background: transparent !important;
+    color: #6f42c1;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: none !important;
+}
+
+/* 3. Estilo Circular para os NÚMEROS (Itens do meio) */
+.custom-pagination-container .page-item:not(:first-child):not(:last-child) .page-link {
+    width: 36px;
+    height: 36px;
+    border-radius: 50% !important; /* Círculo perfeito */
+    border: 1.5px solid #e2d9f3 !important; /* Bordinha roxa clara */
+    padding: 0;
+}
+
+/* 4. Número Ativo (Preenchido) */
+.custom-pagination-container .page-item.active .page-link {
+    background-color: #6f42c1 !important;
+    border-color: #6f42c1 !important;
+    color: #ffffff !important;
+}
+
+/* 5. Hover nos Números */
+.custom-pagination-container .page-item:not(.active):not(:first-child):not(:last-child) .page-link:hover {
+    background-color: #f3f0ff !important;
+    border-color: #6f42c1 !important;
+}
+
+/* 6. SETAS (Anterior e Próximo - Triângulos) */
+.custom-pagination-container .page-item:first-child .page-link,
+.custom-pagination-container .page-item:last-child .page-link {
+    border: none !important; /* Sem bordas nas setas */
+    font-size: 1.8rem; /* Setas bem grandes */
+    padding: 0 5px;
+    line-height: 1;
+}
+
+/* Esconder o SVG original do Laravel */
+.custom-pagination-container .page-link svg {
+    display: none !important;
+    
+    
+}
+
+
+/* 7. Estado Desabilitado */
+.custom-pagination-container .page-item.disabled .page-link {
+    color: #ced4da !important;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Animação suave nas setas ao passar o mouse */
+.custom-pagination-container .page-item:not(.disabled):first-child .page-link:hover,
+.custom-pagination-container .page-item:not(.disabled):last-child .page-link:hover {
+    transform: scale(1.3);
+    color: #5a32a3;
+}

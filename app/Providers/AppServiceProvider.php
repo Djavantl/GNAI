@@ -14,6 +14,7 @@ use App\Models\InclusiveRadar\Inspection;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
         Relation::enforceMorphMap([
             'assistive_technology'            => AssistiveTechnology::class,
             'accessible_educational_material' => AccessibleEducationalMaterial::class,

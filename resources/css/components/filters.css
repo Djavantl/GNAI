@@ -1,0 +1,57 @@
+/* ===== Card do filtro ===== */
+.filter-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ===== Grid ===== */
+.filter-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1rem;
+}
+
+/* ===== Grupo ===== */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== Label ===== */
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-purple-dark);
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.3px;
+}
+
+/* ===== Input ===== */
+.filter-input {
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid #e0e4ef;
+    padding: 0 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background-color: #fafbff;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(77, 68, 181, 0.08);
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 768px) {
+    .filter-card {
+        padding: 1rem;
+    }
+}
+
