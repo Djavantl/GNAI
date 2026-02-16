@@ -18,9 +18,16 @@ return new class extends Migration
             
             // Avaliação e Parecer 
             $table->longText('evaluation_instruments'); 
-            $table->longText('final_parecer');        
+            $table->foreignId('semester_id')->constrained('semesters')->cascadeOnDelete(); 
+            $table->longText('parecer');        
             $table->longText('successful_proposals');   
             $table->longText('next_stage_goals')->nullable();       
+            $table->foreignId('evaluated_by_professional_id')
+                ->constrained('professionals')
+                ->cascadeOnDelete();
+
+            $table->string('evaluation_type');
+            $table->date('evaluation_date');
             
             $table->timestamps();
         });

@@ -16,8 +16,18 @@ class StudentService
             ->get();
     }
 
-    public function show(Student $student){
-        return $student->load('person');
+    public function show(Student $student): Student
+    {
+        return $student->load([
+            'person',
+            'guardians',
+            'currentContext',
+            'deficiencies',
+            'peis',
+            'studentCourses',
+            'courses',
+            'currentCourse',
+        ]);
     }
 
     /**

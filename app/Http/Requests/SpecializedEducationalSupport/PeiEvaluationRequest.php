@@ -3,6 +3,7 @@
 namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\SpecializedEducationalSupport\EvaluationType;
 
 class PeiEvaluationRequest extends FormRequest
 {
@@ -23,8 +24,8 @@ class PeiEvaluationRequest extends FormRequest
     {
         return [
             'evaluation_instruments' => 'required|string', // Instrumentos aplicados 
-            'final_parecer' => 'required|string',           // Parecer final descritivo 
-            'successful_proposals' => 'nullable|string',    // Propostas com êxito 
+            'parecer' => 'required|string',                  // Parecer  descritivo 
+            'successful_proposals' => 'required|string',    // Propostas com êxito 
             'next_stage_goals' => 'nullable|string',        // Metas para próxima etapa 
         ];
     }

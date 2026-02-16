@@ -26,7 +26,11 @@ class StudentController extends Controller
     public function show(Student $student)
     {
         $student = $this->service->show($student);
-        return view('pages.specialized-educational-support.students.show', compact('student'));
+
+        return view(
+            'pages.specialized-educational-support.students.show',
+            compact('student')
+        );
     }
 
     public function create()

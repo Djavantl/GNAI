@@ -19,6 +19,8 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     CourseController,
     PendencyController,
     PeiController,
+    PeiEvaluationController,
+    StudentDocumentController,
 
 };
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
@@ -453,4 +455,79 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/peis/methodologies/{methodology}', [PeiController::class, 'destroyMethodology'])
         ->name('pei.methodology.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | 11. PEI Evaluations
+    |--------------------------------------------------------------------------
+    */
+
+    // Lista avaliações de um PEI
+    Route::get('/peis/{pei}/evaluations', [PeiEvaluationController::class, 'index'])
+        ->name('pei-evaluation.index');
+
+    // Formulário de criação
+    Route::get('/peis/{pei}/evaluations/create', [PeiEvaluationController::class, 'create'])
+        ->name('pei-evaluation.create');
+
+    // Salvar avaliação
+    Route::post('/peis/{pei}/evaluations', [PeiEvaluationController::class, 'store'])
+        ->name('pei-evaluation.store');
+
+    // Visualizar avaliação específica
+    Route::get('/pei-evaluations/{pei_evaluation}/show', [PeiEvaluationController::class, 'show'])
+        ->name('pei-evaluation.show');
+
+    // Editar avaliação
+    Route::get('/pei-evaluations/{pei_evaluation}/edit', [PeiEvaluationController::class, 'edit'])
+        ->name('pei-evaluation.edit');
+
+    // Atualizar avaliação
+    Route::put('/pei-evaluations/{pei_evaluation}', [PeiEvaluationController::class, 'update'])
+        ->name('pei-evaluation.update');
+
+    // Remover avaliação
+    Route::delete('/pei-evaluations/{pei_evaluation}', [PeiEvaluationController::class, 'destroy'])
+        ->name('pei-evaluation.destroy');
+
+    // Gerar PDF da avaliação
+    Route::get('/pei-evaluations/{pei_evaluation}/pdf', [PeiEvaluationController::class, 'generatePdf'])
+        ->name('pei-evaluation.pdf');
+
+    /*
+    |--------------------------------------------------------------------------
+    | 12. Student Documents
+    |--------------------------------------------------------------------------
+    */
+
+    // Lista documentos de um aluno
+    Route::get('/students/{student}/documents', [StudentDocumentController::class, 'index'])
+        ->name('student-documents.index');
+
+    // Formulário de criação (upload)
+    Route::get('/students/{student}/documents/create', [StudentDocumentController::class, 'create'])
+        ->name('student-documents.create');
+
+    // Salvar documento
+    Route::post('/students/{student}/documents', [StudentDocumentController::class, 'store'])
+        ->name('student-documents.store');
+
+    // Editar documento
+    Route::get('/student-documents/{student_document}/edit', [StudentDocumentController::class, 'edit'])
+        ->name('student-documents.edit');
+
+    // Atualizar documento
+    Route::put('/student-documents/{student_document}', [StudentDocumentController::class, 'update'])
+        ->name('student-documents.update');
+
+    // Remover documento
+    Route::delete('/student-documents/{student_document}', [StudentDocumentController::class, 'destroy'])
+        ->name('student-documents.destroy');
+
+    // Download do arquivo
+    Route::get('/student-documents/{student_document}/download', [StudentDocumentController::class, 'download'])
+        ->name('student-documents.download');
+        
+    Route::get('/student-documents/{student_document}/view', [StudentDocumentController::class, 'show'])
+    ->name('student-documents.view');
 });

@@ -76,4 +76,9 @@ class Pei extends Model
     {
         return $this->hasMany(Methodology::class);
     }
+
+    public function evaluations(): HasMany
+    {
+        return $this->hasMany(PeiEvaluation::class, 'pei_id');
+    }
 }

@@ -19,6 +19,13 @@
         </div>
 
         <div class="d-flex gap-2">
+
+            <x-buttons.link-button 
+                :href="route('specialized-educational-support.pei-evaluation.index', $pei)" 
+                variant="info">
+                <i class="fas fa-clipboard-check"></i> Avaliações
+            </x-buttons.link-button>
+
             @if(!$pei->is_finished)
                 <x-buttons.link-button 
                     :href="route('specialized-educational-support.pei.edit', $pei->id)" 

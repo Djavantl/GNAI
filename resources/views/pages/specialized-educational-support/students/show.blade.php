@@ -1,123 +1,91 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mb-5">
-        <x-breadcrumb :items="[
-            'Home' => route('dashboard'),
-            'Alunos' => route('specialized-educational-support.students.index'),
-            $student->person->name => null
-        ]" />
+<div class="mb-4">
+    <x-breadcrumb :items="[
+        'Home' => route('dashboard'),
+        'Alunos' => route('specialized-educational-support.students.index'),
+        $student->person->name => null
+    ]" />
+</div>
+
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        <h2 class="text-title">Prontuário de {{$student->person->name}}</h2>
+        <p class="text-muted">Insira as informações pessoais e acadêmicas para registrar o novo estudante no sistema.</p>
     </div>
-    {{-- Cabeçalho da Página --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
-        <div>
-            <h2 class="text-title">Prontuário do Estudante</h2>
-            <p class="text-muted">
-                Gerenciamento de informações cadastrais e acadêmicas.
-            </p>
-        </div>
-        <div class="d-flex gap-2">
-            <x-buttons.link-button :href="route('specialized-educational-support.students.edit', $student)" variant="warning">
-                <i class="fas fa-edit"></i> Editar Prontuário
-            </x-buttons.link-button>
+</div>
 
-            <x-buttons.link-button :href="route('specialized-educational-support.students.index')" variant="secondary">
-                Voltar para Lista
-            </x-buttons.link-button>
-        </div>
-    </div>
+<div class="card shadow-sm border-0">
+    <div class="row g-0">
 
-    <div class="custom-table-card bg-white shadow-sm">
-        <div class="row g-0">
-            
-            {{-- SEÇÃO 1: DADOS PESSOAIS (Model Person) --}}
-            <x-forms.section title="Dados Pessoais" />
+        @include('pages.specialized-educational-support.students.record.sidebar')
 
-            <div class="col-12 d-flex justify-content-center py-4 bg-light mb-4 border-bottom">
-                <div class="text-center">
-                    <img src="{{ $student->person->photo_url }}" class="avatar-show">
-                    <h4 class="mt-3 text-title mb-0">{{ $student->person->name }}</h4>
-                    <span class="badge bg-primary">Aluno AEE</span>
-                </div>
+        <div class="col-md-9 p-0">
+            <div class="p-4 overflow-auto" style="max-height: 85vh;">
+
+                @include('pages.specialized-educational-support.students.record.personal-data')
+                @include('pages.specialized-educational-support.students.record.academic-info')
+                @include('pages.specialized-educational-support.students.record.deficiencies')
+                @include('pages.specialized-educational-support.students.record.guardians')
+                @include('pages.specialized-educational-support.students.record.contexts')
+                @include('pages.specialized-educational-support.students.record.peis')
+
             </div>
-            
-            <x-show.info-item label="Nome Completo" column="col-md-8" isBox="true">
-                <strong>{{ $student->person->name }}</strong>
-            </x-show.info-item>
 
-            <x-show.info-item label="Gênero" column="col-md-4" isBox="true">
-                @php
-                    $genders = ['male' => 'Masculino', 'female' => 'Feminino', 'other' => 'Outro'];
-                @endphp
-                {{ $genders[$student->person->gender] ?? 'Não informado' }}
-            </x-show.info-item>
-
-            <x-show.info-item label="CPF / Documento" column="col-md-4" isBox="true">
-                {{ $student->person->document ?? '---' }}
-            </x-show.info-item>
-
-            <x-show.info-item label="Data de Nascimento" column="col-md-4" isBox="true">
-                {{ $student->person->birth_date ? \Carbon\Carbon::parse($student->person->birth_date)->format('d/m/Y') : '---' }}
-            </x-show.info-item>
-
-            <x-show.info-item label="Idade" column="col-md-4" isBox="true">
-                {{ $student->person->birth_date ? \Carbon\Carbon::parse($student->person->birth_date)->age . ' anos' : '---' }}
-            </x-show.info-item>
-
-            <x-show.info-item label="E-mail" column="col-md-6" isBox="true">
-                {{ $student->person->email ?? 'Nenhum e-mail cadastrado' }}
-            </x-show.info-item>
-
-            <x-show.info-item label="Telefone / Contato" column="col-md-6" isBox="true">
-                {{ $student->person->phone ?? '---' }}
-            </x-show.info-item>
-
-            <x-show.info-item label="Endereço Residencial" column="col-md-12" isBox="true">
-                {{ $student->person->address ?? 'Endereço não informado' }}
-            </x-show.info-item>
-
-
-            {{-- SEÇÃO 2: DADOS ACADÊMICOS (Model Student) --}}
-            <x-forms.section title="Informações Escolares" />
-
-            <x-show.info-item label="Matrícula" column="col-md-4" isBox="true">
-                <span class="text-purple-dark fw-bold">{{ $student->registration }}</span>
-            </x-show.info-item>
-
-            <x-show.info-item label="Status da Matrícula" column="col-md-4" isBox="true">
-                @if($student->status === 'active')
-                    <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i> ATIVO</span>
-                @else
-                    <span class="text-danger fw-bold"><i class="fas fa-times-circle me-1"></i> {{ strtoupper($student->status) }}</span>
-                @endif
-            </x-show.info-item>
-
-            <x-show.info-item label="Data de Ingresso no NAPNE" column="col-md-4" isBox="true">
-                {{ $student->entry_date ? \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') : '---' }}
-            </x-show.info-item>
-
-            {{-- Rodapé de Ações --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $student->id }}
-                </div>
-                
-                <div class="d-flex gap-3">
-                    <form action="{{ route('specialized-educational-support.students.destroy', $student) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do aluno. Confirmar?')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt me-1"></i> Excluir Aluno
-                        </x-buttons.submit-button>
-                    </form>
-
-                    <x-buttons.link-button :href="route('specialized-educational-support.students.edit', $student)" variant="warning">
-                        <i class="fas fa-edit me-1"></i> Editar Prontuário
-                    </x-buttons.link-button>
-                </div>
+            <div class="bg-white p-3 border-top d-flex justify-content-center align-items-center no-print shadow-lg">
+                <span class="small text-muted">Sistema GNAI 2026</span>
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.student-documents.index', $student)"
+                    variant="info"
+                >
+                    <i class="fas fa-folder-open mr-2"></i> Documentos do Aluno
+                </x-buttons.link-button>
             </div>
         </div>
     </div>
+</div>
 @endsection
+
+@push('scripts')
+<style>
+    .bg-soft-info { background-color: #eef0f3; }
+    .list-group-item.active { background-color: #4D44B5; border-color: #4D44B5; }
+    .transition-all { transition: all 0.3s ease; }
+    .hover-shadow:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+    #student-menu .list-group-item { border-left: 3px solid transparent; }
+    
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const links = document.querySelectorAll('#student-menu a');
+        const sections = Array.from(links).map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+
+        function activateLink() {
+            let index = sections.length - 1;
+            for (let i = 0; i < sections.length; i++) {
+                const rect = sections[i].getBoundingClientRect();
+                if (rect.top > 150) break;
+                index = i;
+            }
+            links.forEach(l => l.classList.remove('active'));
+            if (links[index]) links[index].classList.add('active');
+        }
+
+        links.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        const container = document.querySelector('.overflow-auto');
+        container.addEventListener('scroll', activateLink);
+        activateLink();
+    });
+</script>
+@endpush
