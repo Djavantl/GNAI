@@ -24,15 +24,20 @@
     </div>
 
     {{-- Seção de Filtros --}}
-    <x-table.filters :fields="[
+    <x-table.filters
+        data-dynamic-filter
+        data-target="#students-table"
+        :fields="[
         ['name' => 'name', 'label' => 'Nome', 'placeholder' => 'Digite o nome'],
         ['name' => 'email', 'label' => 'E-mail', 'placeholder' => 'Digite o e-mail'],
         ['name' => 'registration', 'label' => 'Matrícula', 'placeholder' => 'Digite a matrícula'],
-        
-    ]" />
-
+    ]"
+    />
 
     <div id="students-table">
         @include('pages.specialized-educational-support.students.partials.table')
     </div>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

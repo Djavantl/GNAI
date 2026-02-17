@@ -5,9 +5,9 @@
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
-            'Home' => route('dashboard'),
-            'Tecnologias Assistivas' => route('inclusive-radar.assistive-technologies.index'),
-        ]" />
+        'Home' => route('dashboard'),
+        'Tecnologias Assistivas' => route('inclusive-radar.assistive-technologies.index'),
+    ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3">
@@ -23,80 +23,58 @@
         </x-buttons.link-button>
     </div>
 
-    <x-table.table :headers="['Nome', 'Tipo', 'Natureza', 'Estoque', 'Status', 'Ações']">
-        @forelse($assistiveTechnologies as $tech)
-            <tr>
-                {{-- NOME: Texto direto, sem span --}}
-                <x-table.td>{{ $tech->name }}</x-table.td>
+    <x-table.filters
+        data-dynamic-filter
+        data-target="#assistive-technologies-table"
+        :fields="[
+        [
+            'name' => 'name',
+            'label' => 'Nome',
+            'placeholder' => 'Digite o nome'
+        ],
+        [
+            'name' => 'type',
+            'label' => 'Tipo',
+            'placeholder' => 'Digite o tipo'
+        ],
+        [
+            'name' => 'is_digital',
+            'label' => 'Natureza',
+            'type' => 'select',
+            'options' => [
+                '' => 'Todos',
+                '1' => 'Digital',
+                '0' => 'Físico',
+            ]
+        ],
+        [
+            'name' => 'is_active',
+            'label' => 'Status',
+            'type' => 'select',
+            'options' => [
+                '' => 'Todos',
+                '1' => 'Ativo',
+                '0' => 'Inativo'
+            ]
+        ],
+        [
+            'name' => 'available',
+            'label' => 'Disponibilidade',
+            'type' => 'select',
+            'options' => [
+                '' => 'Todos',
+                '1' => 'Disponível',
+                '0' => 'Indisponível'
+            ]
+        ],
+    ]"
+    />
 
-                {{-- TIPO: Texto direto --}}
-                <x-table.td>{{ $tech->type?->name ?? 'Geral' }}</x-table.td>
-
-                {{-- NATUREZA: Texto direto --}}
-                <x-table.td>{{ $tech->type?->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
-
-                {{-- ESTOQUE: Mantida a lógica de cores --}}
-                <x-table.td>
-                    @if($tech->type?->is_digital)
-                        <span class="text-info fw-bold">Ilimitado</span>
-                    @else
-                        <span class="{{ $tech->quantity_available > 0 ? 'text-success' : 'text-danger' }} fw-medium">
-                            {{ $tech->quantity_available ?? 0 }}
-                        </span>
-                        <span class="text-muted">/ {{ $tech->quantity ?? 0 }}</span>
-                    @endif
-                </x-table.td>
-
-                {{-- STATUS: Padrão Alunos --}}
-                <x-table.td>
-                    @php
-                        $isUnavailable = !$tech->type?->is_digital && ($tech->quantity_available <= 0);
-                        $color = $isUnavailable ? 'danger' : ($tech->is_active ? 'success' : 'secondary');
-                        $label = $isUnavailable ? 'Esgotado' : ($tech->is_active ? 'Ativo' : 'Inativo');
-                    @endphp
-
-                    <span class="text-{{ $color }} fw-bold">
-                        {{ $label }}
-                    </span>
-                </x-table.td>
-
-                {{-- AÇÕES --}}
-                <x-table.td>
-                    <x-table.actions>
-                        {{-- Botão para ver TA --}}
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.assistive-technologies.show', $tech)"
-                            variant="info"
-                        >
-                            <i class="fas fa-eye"></i> Ver
-                        </x-buttons.link-button>
-
-                        {{-- Botão para editar TA --}}
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.assistive-technologies.edit', $tech)"
-                            variant="warning"
-                        >
-                            <i class="fas fa-edit"></i> Editar
-                        </x-buttons.link-button>
-
-                        {{-- Botão para excluir TA --}}
-                        <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $tech) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja remover esta tecnologia?')"
-                            >
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="text-center text-muted py-4">Nenhuma tecnologia cadastrada.</td>
-            </tr>
-        @endforelse
-    </x-table.table>
+    {{-- Tabela --}}
+    <div id="assistive-technologies-table">
+        @include('pages.inclusive-radar.assistive-technologies.partials.table')
+    </div>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

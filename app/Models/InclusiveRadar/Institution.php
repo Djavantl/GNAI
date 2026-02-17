@@ -42,4 +42,28 @@ class Institution extends Model
     {
         return $this->hasMany(Barrier::class);
     }
+
+    public function scopeFilterName($query, ?string $name)
+    {
+        if ($name) {
+            $query->where('name', 'like', "%{$name}%");
+        }
+    }
+
+    public function scopeFilterStatus($query, $status)
+    {
+        if ($status !== null && $status !== '') {
+            $query->where('is_active', $status);
+        }
+    }
+
+    public function scopeFilterLocation($query, ?string $location)
+    {
+        if ($location) {
+            $query->where(function ($q) use ($location) {
+                $q->where('city', 'like', "%{$location}%")
+                    ->orWhere('state', 'like', "%{$location}%");
+            });
+        }
+    }
 }

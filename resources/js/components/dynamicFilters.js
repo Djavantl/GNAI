@@ -1,36 +1,52 @@
-export default function initDynamicFilters() {
+function initDynamicFilters() {
     const forms = document.querySelectorAll('[data-dynamic-filter]');
 
     forms.forEach(form => {
         const targetSelector = form.dataset.target;
         const container = document.querySelector(targetSelector);
-
         if (!container) return;
 
         let timeout = null;
 
-        form.querySelectorAll('[data-filter-input]').forEach(input => {
-            input.addEventListener('input', () => {
+        // Escuta qualquer mudança no formulário (input ou select)
+        form.addEventListener('input', (e) => {
+            if (e.target.hasAttribute('data-filter-input') || e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') {
                 clearTimeout(timeout);
-                timeout = setTimeout(fetchResults, 400);
-            });
+                timeout = setTimeout(() => fetchResults(), 500);
+            }
         });
 
         function fetchResults(pageUrl = null) {
-            const params = new URLSearchParams(new FormData(form));
-            const url = pageUrl || `${window.location.pathname}?${params.toString()}`;
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
 
-            fetch(url, {
+            // Limpa parâmetros vazios para não sujar a query
+            for (const [key, value] of formData.entries()) {
+                if (value !== '') params.append(key, value);
+            }
+
+            const baseUrl = window.location.pathname;
+            const finalUrl = pageUrl || `${baseUrl}?${params.toString()}`;
+
+            // Opcional: Atualiza a URL no navegador sem recarregar a página
+            window.history.pushState({}, '', finalUrl);
+
+            fetch(finalUrl, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(res => res.text())
-            .then(html => {
-                container.innerHTML = html;
-                attachPagination();
-            });
+                .then(res => {
+                    if (!res.ok) throw new Error('Erro na requisição');
+                    return res.text();
+                })
+                .then(html => {
+                    container.innerHTML = html;
+                    attachPagination();
+                })
+                .catch(error => console.error('Erro ao filtrar:', error));
         }
 
         function attachPagination() {
+            // Re-anexa o evento de clique aos links da paginação que o AJAX trouxe
             container.querySelectorAll('.pagination a').forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
@@ -40,3 +56,5 @@ export default function initDynamicFilters() {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', initDynamicFilters);

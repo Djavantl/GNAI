@@ -29,4 +29,18 @@ class AccessibilityFeature extends Model
             'accessible_educational_material_accessibility'
         );
     }
+
+    public function scopeFilterName($query, ?string $name)
+    {
+        if ($name) {
+            $query->where('name', 'like', "%{$name}%");
+        }
+    }
+
+    public function scopeFilterStatus($query, $status)
+    {
+        if ($status !== null && $status !== '') {
+            $query->where('is_active', $status);
+        }
+    }
 }

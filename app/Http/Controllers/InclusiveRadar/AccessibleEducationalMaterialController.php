@@ -7,6 +7,7 @@ use App\Http\Requests\InclusiveRadar\AccessibleEducationalMaterialRequest;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Services\InclusiveRadar\AccessibleEducationalMaterialService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -16,20 +17,38 @@ class AccessibleEducationalMaterialController extends Controller
         protected AccessibleEducationalMaterialService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
+        $name = trim($request->name ?? '');
+
         $materials = AccessibleEducationalMaterial::with([
             'type',
             'resourceStatus',
             'deficiencies',
             'accessibilityFeatures',
-        ])->orderBy('name')->get();
+        ])
+            ->filterName($name ?: null)
+            ->active($request->is_active)
+            ->byType($request->type)
+            ->digital($request->is_digital)
+            ->available($request->available)
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view(
+                'pages.inclusive-radar.accessible-educational-materials.partials.table',
+                compact('materials')
+            );
+        }
 
         return view(
             'pages.inclusive-radar.accessible-educational-materials.index',
             compact('materials')
         );
     }
+
 
     public function create(): View
     {

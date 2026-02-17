@@ -1,5 +1,5 @@
 {{-- Tabela com Paginação --}}
-<x-table.table 
+<x-table.table
     :headers="['Nome','Contato', 'Matrícula', 'Status', 'Ingresso', 'Ações']"
     :records="$students" {{-- Importante: passa a paginação para o componente --}}
 >

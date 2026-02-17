@@ -38,6 +38,8 @@ class AssistiveTechnology extends Model
         'conservation_state' => ConservationState::class,
     ];
 
+    // Relacoes
+
     public function type(): BelongsTo
     {
         return $this->belongsTo(ResourceType::class, 'type_id');
@@ -86,5 +88,57 @@ class AssistiveTechnology extends Model
     public function loans(): MorphMany
     {
         return $this->morphMany(Loan::class, 'loanable');
+    }
+
+    // QUERY SCOPES
+
+    public function scopeFilterName($query, ?string $name)
+    {
+        if ($name) {
+            $query->where('name', 'like', "%{$name}%");
+        }
+        return $query;
+    }
+
+    public function scopeActive($query, $isActive)
+    {
+        if (!is_null($isActive) && $isActive !== '') {
+            $query->where('is_active', $isActive == '1');
+        }
+        return $query;
+    }
+
+    public function scopeByType($query, $type)
+    {
+        if (!is_null($type) && $type !== '') {
+            $query->whereHas('type', function ($q) use ($type) {
+                $q->where('name', 'like', "%{$type}%");
+            });
+        }
+
+        return $query;
+    }
+
+    public function scopeAvailable($query, $available)
+    {
+        if (!is_null($available) && $available !== '') {
+            if ($available == '1') {
+                $query->where('quantity_available', '>', 0);
+            } else {
+                $query->where('quantity_available', '<=', 0);
+            }
+        }
+        return $query;
+    }
+
+    public function scopeDigital($query, $isDigital)
+    {
+        if (!is_null($isDigital) && $isDigital !== '') {
+            $query->whereHas('type', function ($q) use ($isDigital) {
+                $q->where('is_digital', $isDigital == '1');
+            });
+        }
+
+        return $query;
     }
 }

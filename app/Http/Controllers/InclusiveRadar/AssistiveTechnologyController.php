@@ -7,6 +7,7 @@ use App\Http\Requests\InclusiveRadar\AssistiveTechnologyRequest;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -16,14 +17,28 @@ class AssistiveTechnologyController extends Controller
         protected AssistiveTechnologyService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $assistiveTechnologies = AssistiveTechnology::with([
-            'type',
-            'resourceStatus',
-            'deficiencies'
-        ])->orderBy('name')->get();
+        $name = trim($request->name ?? '');
+        $assistiveTechnologies = AssistiveTechnology::with(['type','resourceStatus','deficiencies'])
+            ->filterName($name ?: null)
+            ->active($request->is_active)
+            ->byType($request->type)
+            ->digital($request->is_digital)
+            ->available($request->available)
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
 
+        // Se for AJAX, retorna só o partial da tabela
+        if ($request->ajax()) {
+            return view(
+                'pages.inclusive-radar.assistive-technologies.partials.table',
+                compact('assistiveTechnologies')
+            );
+        }
+
+        // Caso normal, retorna a página inteira
         return view(
             'pages.inclusive-radar.assistive-technologies.index',
             compact('assistiveTechnologies')

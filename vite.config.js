@@ -14,6 +14,7 @@ export default defineConfig({
                 'resources/js/pages/inclusive-radar/assistive-technologies.js',
                 'resources/js/pages/inclusive-radar/accessible-educational-materials.js',
                 'resources/js/pages/inclusive-radar/loans.js',
+                'resources/js/components/dynamicFilters.js',
             ],
             refresh: true,
         }),

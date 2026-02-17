@@ -18,13 +18,34 @@ class LoanController extends Controller
         protected LoanService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
+
+        $studentId      = $request->student_id ?? null;
+        $professionalId = $request->professional_id ?? null;
+        $status         = $request->status ?? null;
+        $startDate      = $request->start_date ?? null;
+        $endDate        = $request->end_date ?? null;
+
         $loans = Loan::with([
             'loanable',
             'student.person',
             'professional.person'
-        ])->orderByDesc('loan_date')->get();
+        ])
+            ->byStudent($studentId)
+            ->byProfessional($professionalId)
+            ->when($status, fn($q) => $q->byStatus($status))
+            ->loanedBetween($startDate, $endDate)
+            ->orderByDesc('loan_date')
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view(
+                'pages.inclusive-radar.loans.partials.table',
+                compact('loans')
+            );
+        }
 
         return view(
             'pages.inclusive-radar.loans.index',

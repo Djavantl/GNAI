@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AccessibilityFeatureRequest;
 use App\Models\InclusiveRadar\AccessibilityFeature;
 use App\Services\InclusiveRadar\AccessibilityFeatureService;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -15,9 +16,21 @@ class AccessibilityFeatureController extends Controller
         protected AccessibilityFeatureService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $features = AccessibilityFeature::orderBy('name')->get();
+        $features = AccessibilityFeature::query()
+            ->filterName($request->name)
+            ->filterStatus($request->is_active)
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view(
+                'pages.inclusive-radar.accessibility-features.partials.table',
+                compact('features')
+            );
+        }
 
         return view(
             'pages.inclusive-radar.accessibility-features.index',

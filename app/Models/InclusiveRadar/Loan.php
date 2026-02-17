@@ -50,6 +50,43 @@ class Loan extends Model
         return $this->belongsTo(Professional::class, 'professional_id');
     }
 
+    // QUERY SCOPES - Loan
+
+    public function scopeByStatus($query, ?LoanStatus $status)
+    {
+        if (!is_null($status)) {
+            $query->where('status', $status);
+        }
+        return $query;
+    }
+
+    public function scopeByStudent($query, ?int $studentId)
+    {
+        if (!is_null($studentId)) {
+            $query->where('student_id', $studentId);
+        }
+        return $query;
+    }
+
+    public function scopeByProfessional($query, ?int $professionalId)
+    {
+        if (!is_null($professionalId)) {
+            $query->where('professional_id', $professionalId);
+        }
+        return $query;
+    }
+
+    public function scopeLoanedBetween($query, ?string $startDate, ?string $endDate)
+    {
+        if ($startDate) {
+            $query->where('loan_date', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->where('loan_date', '<=', $endDate);
+        }
+        return $query;
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', LoanStatus::ACTIVE);
@@ -59,5 +96,10 @@ class Loan extends Model
     {
         return $query->where('status', LoanStatus::ACTIVE)
             ->where('due_date', '<', now());
+    }
+
+    public function scopeReturned($query)
+    {
+        return $query->where('status', LoanStatus::RETURNED);
     }
 }
