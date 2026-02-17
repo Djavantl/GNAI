@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InclusiveRadar\{
-    AssistiveTechnologyController,
+use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     AccessibleEducationalMaterialController,
     AccessibilityFeatureController,
     BarrierCategoryController,
@@ -10,11 +9,11 @@ use App\Http\Controllers\InclusiveRadar\{
     InstitutionController,
     LoanController,
     LocationController,
+    Logs\AssistiveTechnologyLogController,
     ResourceStatusController,
     ResourceTypeController,
     TypeAttributeAssignmentController,
-    TypeAttributeController,
-};
+    TypeAttributeController};
 
 /*
 |--------------------------------------------------------------------------
@@ -194,6 +193,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [AssistiveTechnologyController::class, 'generatePdf'])
         ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
+
+    Route::get('/assistive-technologies/{assistiveTechnology}/logs', [AssistiveTechnologyLogController::class, 'index'])
+        ->name('assistive-technologies.logs')
+        ->middleware('can:assistive-technology.logs');
+
+    Route::get('/assistive-technologies/{assistiveTechnology}/logs/pdf', [AssistiveTechnologyLogController::class, 'generatePdf']
+    )->name('assistive-technologies.logs.pdf')
+    ->middleware('can:assistive-technology.logs.pdf');
+
 
     Route::get('/barriers', [BarrierController::class, 'index'])
         ->name('barriers.index')->middleware('can:barrier.index');

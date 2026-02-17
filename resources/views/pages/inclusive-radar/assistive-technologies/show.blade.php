@@ -125,6 +125,11 @@
 
                 <div class="d-flex gap-3">
 
+                    <a href="{{ route('inclusive-radar.assistive-technologies.logs', $assistiveTechnology) }}"
+                       class="btn btn-outline-secondary">
+                        Histórico
+                    </a>
+
                     {{-- Excluir Recurso --}}
                     <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}"
                           method="POST"

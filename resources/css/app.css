@@ -7,6 +7,7 @@
 @import"./pages/errors.css";
 @import './auth/login.css';
 @import "./components/filters.css";
+@import "./components/logs.css";
 
 :root {
     --primary-color: #4D44B5;
@@ -236,6 +237,7 @@ body {
 
 /* Animações */
 .page-transition {
+    margin-top: 1.5rem;
     animation: fadeIn 0.3s ease-in-out;
 }
 

@@ -3,6 +3,7 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
+use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\ResourceType;
 use Illuminate\Support\Facades\DB;
@@ -59,27 +60,89 @@ class AssistiveTechnologyService
 
     protected function persist(AssistiveTechnology $assistiveTechnology, array $data): AssistiveTechnology
     {
-        // Valida se a quantidade informada não é menor do que os recursos atualmente emprestados
+        // 1. Captura dos estados antes da mudança
+
+        // Obtém os IDs das deficiências vinculadas antes da alteração
+        $oldDeficiencies = $assistiveTechnology->exists
+            ? $assistiveTechnology->deficiencies()->pluck('deficiencies.id')->toArray()
+            : [];
+
+        // Obtém os valores dos atributos dinâmicos antes da alteração
+        $oldAttributes = $assistiveTechnology->exists
+            ? $assistiveTechnology->attributeValues()->pluck('value', 'attribute_id')->toArray()
+            : [];
+
+        // 2. Processamento padrão
+
+        // Valida se a quantidade solicitada está disponível em estoque
         if (isset($data['quantity'])) {
             $this->loanService->validateStockAvailability($assistiveTechnology, (int)$data['quantity']);
         }
 
-        // Recalcula o estoque disponível considerando empréstimos ativos
+        // Ajusta os dados de estoque considerando regras de negócio de empréstimo
         $data = $this->loanService->calculateStockForLoan($assistiveTechnology, $data);
 
-        // Preenche os dados do modelo e salva no banco
+        // Salva os campos nativos disparando o Trait de auditoria automática
         $assistiveTechnology->fill($data)->save();
 
-        // Sincroniza relações como deficiências vinculadas e atributos dinâmicos
+        // Atualiza as tabelas de relacionamento e atributos dinâmicos
         $this->syncRelations($assistiveTechnology, $data);
 
-        // Cria uma vistoria caso necessário, usando o serviço de inspeção genérico
+        // 3. Comparação e log manual (apenas se não for criação nova)
+
+        // Executa o log manual de relações apenas em edições de registros existentes
+        if (!$assistiveTechnology->wasRecentlyCreated) {
+
+            // Compara e registra mudanças na lista de deficiências
+            if (isset($data['deficiencies'])) {
+                $newDeficiencies = array_map('intval', $data['deficiencies']);
+                sort($oldDeficiencies);
+                sort($newDeficiencies);
+
+                if ($oldDeficiencies !== $newDeficiencies) {
+                    $this->logRelationChange($assistiveTechnology, 'deficiencies', $oldDeficiencies, $newDeficiencies);
+                }
+            }
+
+            // Compara e registra mudanças nos valores dos atributos dinâmicos
+            if (isset($data['attributes'])) {
+                // Limpa valores nulos para garantir uma comparação precisa
+                $newAttributes = array_filter($data['attributes'], fn($v) => !is_null($v));
+
+                // Registra log se houver diferença entre valores antigos e novos
+                if ($oldAttributes != $newAttributes) {
+                    $this->logRelationChange($assistiveTechnology, 'attributes', $oldAttributes, $newAttributes);
+                }
+            }
+        }
+
+        // Gera o registro de inspeção vinculado à tecnologia assistiva
         $this->inspectionService->createInspectionForModel($assistiveTechnology, $data);
 
+        // Retorna o objeto atualizado com seus relacionamentos carregados
         return $assistiveTechnology->fresh([
             'type',
             'resourceStatus',
-            'deficiencies'
+            'deficiencies',
+            'attributeValues'
+        ]);
+    }
+
+    /**
+     * Registra manualmente um log de auditoria para campos de relacionamento
+     */
+    protected function logRelationChange(AssistiveTechnology $model, string $field, array $old, array $new): void
+    {
+        // Insere um novo registro de auditoria focado em campos não nativos
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'updated',
+            'auditable_type' => $model->getMorphClass(),
+            'auditable_id' => $model->id,
+            'old_values' => [$field => $old],
+            'new_values' => [$field => $new],
+            'ip_address' => request()?->ip(),
+            'user_agent' => request()?->userAgent(),
         ]);
     }
 
@@ -88,31 +151,32 @@ class AssistiveTechnologyService
         array $data
     ): void {
 
-        // Sync deficiências
+        // Sincroniza a tabela pivô de deficiências (Many-to-Many)
         if (isset($data['deficiencies'])) {
             $assistiveTechnology
                 ->deficiencies()
                 ->sync($data['deficiencies']);
         }
 
-        // Persiste atributos dinâmicos
+        // Processa e limpa atributos dinâmicos baseados no tipo de recurso
         if (isset($data['attributes'])) {
 
             $type = ResourceType::find($assistiveTechnology->type_id);
 
+            // Identifica quais IDs de atributos pertencem ao tipo de recurso atual
             $validAttributeIds = $type
                 ? $type->attributes()
                     ->pluck('type_attributes.id')
                     ->toArray()
                 : [];
 
-            // Remove valores inválidos
+            // Remove atributos que não pertencem mais a este tipo de tecnologia
             $assistiveTechnology
                 ->attributeValues()
                 ->whereNotIn('attribute_id', $validAttributeIds)
                 ->delete();
 
-            // Salva novos valores
+            // Salva ou atualiza os novos valores dos atributos dinâmicos
             $this->attributeValueService
                 ->saveValues($assistiveTechnology, $data['attributes']);
         }

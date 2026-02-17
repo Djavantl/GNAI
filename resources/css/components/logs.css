@@ -1,0 +1,140 @@
+/* Container que simula a linha do tempo */
+.log-timeline-container {
+    position: relative;
+    background: #ffffff;
+}
+
+/* Entrada individual de Log */
+.log-entry {
+    transition: all 0.2s ease-in-out;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.log-entry:hover {
+    background-color: #fbfaff; /* Leve destaque roxo ao passar o mouse */
+}
+
+/* Círculo do Ícone (Linha do Tempo) */
+.log-icon-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Cores das ações baseadas no tema do sistema */
+.bg-success { background-color: #198754 !important; } /* Criação */
+.bg-warning { background-color: #ffc107 !important; } /* Edição */
+.bg-danger  { background-color: #dc3545 !important; } /* Exclusão */
+.bg-secondary { background-color: #8898aa !important; }
+
+/* Conector vertical entre ícones */
+.log-line-connector {
+    width: 2px;
+    background-color: #e9ecef;
+    flex-grow: 1;
+    margin: 5px 0;
+}
+
+.log-entry:last-child .log-line-connector {
+    display: none;
+}
+
+/* Lista de mudanças (De -> Para) */
+.log-change-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Item de mudança individual */
+.change-item {
+    font-size: 0.85rem;
+    background-color: #fbf9fc; /* Mesmo tom dos seus inputs de formulário */
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e1ebf8;
+    display: flex;
+    flex-wrap: wrap; /* Faz o label ou valores dobrarem se necessário */
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Nome do campo alterado (ex: DESCRIÇÃO) */
+.field-name {
+    font-weight: 700;
+    color: var(--text-purple-dark); /* #4D44B5 */
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    min-width: 110px;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+/* Container de valores que resolve o problema de "texto reto" */
+.values-diff {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap; /* Se o texto for gigante, o valor 'novo' cai para baixo */
+    flex: 1;
+    min-width: 0; /* Permite que o flexbox encolha o conteúdo */
+
+    /* Força a quebra de texto em qualquer lugar para não vazar da borda */
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+/* Pílulas de Valor Antigo e Novo */
+.old-value, .new-value {
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    display: inline-block;
+    max-width: 100%; /* Garante que a pílula não seja maior que a tela */
+}
+
+.old-value {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    text-decoration: line-through;
+    border: 1px solid #feb2b2;
+}
+
+.new-value {
+    background-color: #f0fff4;
+    color: #38a169;
+    font-weight: 600;
+    border: 1px solid #9ae6b4;
+}
+
+/* Estilo da setinha entre valores */
+.diff-arrow {
+    color: #cbd5e0;
+    font-size: 0.75rem;
+}
+
+/* Avatar do usuário no log */
+.avatar-xs .avatar-title {
+    background-color: #e1ebf8 !important;
+    color: var(--text-purple-dark) !important;
+    font-weight: 700;
+    border: 1px solid #d1dcf0;
+}
+
+/* Mensagem amigável quando não há alteração detalhada */
+.log-message {
+    font-style: italic;
+    color: #718096;
+    font-size: 0.85rem;
+    border-left: 3px solid var(--text-purple-dark);
+    padding-left: 10px;
+}
