@@ -1,6 +1,6 @@
 <section id="guardians" class="mb-5 bg-soft-info rounded shadow-sm">
 
-    <x-forms.section title="Guardians" class="m-0" />
+    <x-forms.section title="Responsáveis" class="m-0" />
 
     <div class="pb-3 ps-3 pe-3">
         <div class="row g-3">

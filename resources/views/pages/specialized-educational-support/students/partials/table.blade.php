@@ -31,16 +31,7 @@
                         variant="info"
                         title="Ver ficha do aluno"
                     >
-                        Ver
-                    </x-buttons.link-button>
-
-                    {{-- Atalho para Documentos --}}
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.student-documents.index', $student)"
-                        variant="success"
-                        title="Documentos"
-                    >
-                        <i class="fas fa-file-alt"></i>
+                        <i class="fas fa-eye"></i>Ver
                     </x-buttons.link-button>
 
                     <form action="{{ route('specialized-educational-support.students.destroy', $student) }}"
@@ -51,7 +42,7 @@
                             variant="danger"
                             onclick="return confirm('Deseja realmente excluir este aluno?')"
                         >
-                            Excluir
+                            <i class="fas fa-trash"></i>Excluir
                         </x-buttons.submit-button>
                     </form>
                 </x-table.actions>

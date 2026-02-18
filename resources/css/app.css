@@ -5,9 +5,13 @@
 @import "./components/photos.css";
 @import "./components/show.css";
 @import"./pages/errors.css";
+@import"./pages/sessions.css";
 @import './auth/login.css';
 @import "./components/filters.css";
 @import "./components/logs.css";
+@import "./pages/session-records.css";
+
+
 
 :root {
     --primary-color: #4D44B5;

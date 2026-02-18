@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Requests\SpecializedEducationalSupport;
-
+use App\Enums\Priority;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class PendencyRequest extends FormRequest
 {
@@ -31,10 +32,7 @@ class PendencyRequest extends FormRequest
                 'string',
             ],
 
-            'priority' => [
-                'required',
-                'in:urgent,high,medium,low',
-            ],
+            'priority' => [ new Enum(Priority::class) ],
 
             'due_date' => [
                 'nullable',
@@ -57,8 +55,6 @@ class PendencyRequest extends FormRequest
 
             'title.required' => 'The title field is required.',
             'title.max'      => 'The title may not be greater than 255 characters.',
-
-            'priority.in' => 'Invalid priority level selected.',
 
             'due_date.after_or_equal' =>
                 'The due date must be today or a future date.',

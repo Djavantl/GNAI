@@ -14,39 +14,53 @@ return new class extends Migration
         Schema::create('session_records', function (Blueprint $table) {
             $table->id();
 
-            // Relacionamentos
-            $table->foreignId('attendance_sessions_id')
-              ->constrained('attendance_sessions')
-              ->cascadeOnDelete();
+        
+        $table->foreignId('attendance_session_id')
+            ->constrained('attendance_sessions')
+            ->cascadeOnDelete();
 
-            // Controle temporal
-            $table->date('record_date')->useCurrent();
-            $table->string('duration');
+        $table->string('duration'); 
+        $table->longText('activities_performed');
+        $table->longText('strategies_used')->nullable();
+        $table->longText('resources_used')->nullable();
+        $table->text('general_observations')->nullable();
 
-            // Atividades e estratégias
-            $table->longText('activities_performed');
-            $table->longText('strategies_used')->nullable();
-            $table->longText('resources_used')->nullable();
+        $table->timestamps();
+        $table->softDeletes();
+        });
+
+        Schema::create('student_session_evaluations', function (Blueprint $table) {
+            $table->id();
+
+            // Relacionamento com o registro geral da sessão
+            $table->foreignId('session_record_id')
+                ->constrained('session_records')
+                ->cascadeOnDelete();
+
+            // Relacionamento com o aluno específico
+            $table->foreignId('student_id')
+                ->constrained('students')
+                ->cascadeOnDelete();
+
+            // Regra de Presença
+            $table->boolean('is_present')->default(true);
+            $table->text('absence_reason')->nullable();
+
+            // Comportamento e Adaptações (COMO o aluno reagiu)
             $table->longText('adaptations_made')->nullable();
+            $table->longText('student_participation')->nullable(); 
 
-            // Comportamento e participação
-            $table->string('student_participation');
-            $table->string('engagement_level')->nullable(); 
-            $table->longText('observed_behavior')->nullable();
-            $table->longText('response_to_activities')->nullable();
-
-            // Desenvolvimento / evolução
-            $table->longText('development_evaluation');
+            // Desenvolvimento e Evolução
+            $table->longText('development_evaluation')->nullable();
             $table->longText('progress_indicators')->nullable();
-
-            // Encaminhamentos
             $table->longText('recommendations')->nullable();
             $table->longText('next_session_adjustments')->nullable();
-            $table->boolean('external_referral_needed')->default(false);
-            $table->text('general_observations')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
+
+            // Garante que um aluno não tenha duas avaliações para o mesmo registro de sessão
+            $table->unique(['session_record_id', 'student_id'], 'unique_student_evaluation');
         });
     }
 
@@ -56,5 +70,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('session_records');
+        Schema::dropIfExists('student_session_evaluations');
     }
 };

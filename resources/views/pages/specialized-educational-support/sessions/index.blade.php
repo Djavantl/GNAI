@@ -30,15 +30,17 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
     <x-table.table :headers="['Data', 'Aluno', 'Profissional', 'Tipo', 'Status', 'Ações']">
-    @forelse($sessions as $session)
+    @forelse(collect($sessions) as $session)
         <tr>
             <x-table.td>{{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</x-table.td>
-            <x-table.td>{{ $session->student->person->name }}</x-table.td>
+            <x-table.td>
+                @forelse($session->students ?? [] as $student)
+                    <div>{{ $student->person->name }}</div>
+                @empty
+                    <span class="text-muted">Sem alunos</span>
+                @endforelse
+            </x-table.td>
             <x-table.td>{{ $session->professional->person->name }}</x-table.td>
             <x-table.td>{{ $session->type }}</x-table.td>
             <x-table.td>
@@ -69,12 +71,11 @@
                     </x-buttons.link-button>
 
                     {{-- Editar Sessão --}}
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.sessions.edit', $session)"
-                        variant="warning"
-                    >
-                        Editar
-                    </x-buttons.link-button>
+                    @if($session->status !== 'cancelled' && $session->status !== 'Cancelado')
+                        <x-buttons.link-button :href="route('specialized-educational-support.sessions.edit', $session->id)" variant="warning">
+                            Editar Sessão
+                        </x-buttons.link-button>
+                    @endif
 
                     {{-- Lógica do Registro --}}
                     @if($session->sessionRecord)

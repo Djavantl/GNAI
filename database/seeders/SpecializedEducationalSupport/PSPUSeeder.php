@@ -25,25 +25,25 @@ class PSPUSeeder extends Seeder
             // students
 
             Person::create([
-                'name' => 'Jader',
+                'name' => 'Marley',
                 'document' => '11111111111',
                 'birth_date' => '2012-01-10',
                 'gender' => 'male',
-                'email' => 'jaderadriel7@gmail.com',
+                'email' => 'mxrlrey@gmail.com',
             ]),
             Person::create([
-                'name' => 'Gabriel',
+                'name' => 'Djavan',
                 'document' => '22222222222',
                 'birth_date' => '2011-03-15',
                 'gender' => 'male',
-                'email' => 'gabrielrochagomes639@gmail.com',
+                'email' => 'djvnsala2@gmail.com',
             ]),
             Person::create([
                 'name' => 'Péricles',
                 'document' => '33333333333',
                 'birth_date' => '2010-07-20',
                 'gender' => 'male',
-                'email' => 'periclescairess@gmail.com',
+                'email' => 'djvnsala4@gmail.com',
             ]),
 
             // professionals

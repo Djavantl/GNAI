@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     */
+     */ 
     public function up(): void
     {
         Schema::create('pendencies', function (Blueprint $table) {
@@ -21,12 +21,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('priority', [
-                'urgent',
-                'high',
-                'medium',
-                'low'
-            ])->default('medium');
+            $table->string('priority');
             $table->date('due_date')->nullable();
             $table->boolean('is_completed')->default(false);
 

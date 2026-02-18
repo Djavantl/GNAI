@@ -41,7 +41,7 @@
                 </x-table.td>
 
                 <x-table.td>
-                    <span class="fw-bold text-primary">{{ $pei->discipline->name ?? 'Não informada' }}</span><br>
+                    <span>{{ $pei->discipline->name ?? 'Não informada' }}</span><br>
                     <small class="text-muted">{{ $pei->course->name ?? '' }}</small>
                 </x-table.td>
 
@@ -51,12 +51,12 @@
 
                 <x-table.td>
                     @if($pei->is_finished)
-                        <span class="text-success">
-                            FINALIZADO
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i> Finalizado
                         </span>
                     @else
-                        <span class="text-warning">
-                            EM PREENCHIMENTO
+                        <span class="badge bg-warning text-dark">
+                            <i class="fas fa-clock me-1"></i> Em andamento
                         </span>
                     @endif
                 </x-table.td>
@@ -67,9 +67,8 @@
                             :href="route('specialized-educational-support.pei.show', $pei->id)"
                             variant="info"
                         >
-                            Ver 
+                            <i class="fas fa-eye"></i>
                         </x-buttons.link-button>
-
                     </x-table.actions>
                 </x-table.td>
             </tr>

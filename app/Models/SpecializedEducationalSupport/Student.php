@@ -69,6 +69,16 @@ class Student extends Model
         return $this->hasMany(StudentCourse::class);
     }
 
+    public function sessions()
+    {
+        return $this->belongsToMany(
+            Session::class, 
+            'attendance_session_student', 
+            'student_id',                 
+            'attendance_session_id'       
+        );
+    }
+
     // Cursos do aluno 
     public function courses()
     {

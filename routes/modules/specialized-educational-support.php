@@ -265,6 +265,34 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('sessions/{session}/force-delete', [SessionController::class, 'forceDelete'])
         ->name('sessions.force-delete')->middleware('can:session.force-delete');
 
+    Route::get('sessions/availability', [SessionController::class, 'availability'])
+        ->name('sessions.availability');
+
+    Route::post('sessions/{session}/cancel', [SessionController::class, 'cancel'])
+        ->name('sessions.cancel')->middleware('can:session.edit'); 
+
+    /*
+    |--------------------------------------------------------------------------
+    | 6.1 SESSIONS BY STUDENT (CONTEXTUALIZED)
+    |--------------------------------------------------------------------------
+    */
+    // Listagem de sessões exclusiva de um aluno (dentro do prontuário)
+    Route::get('students/{student}/sessions', [SessionController::class, 'indexByStudent'])
+        ->name('students.sessions.index')->middleware('can:session.index');
+
+    // Formulário de criação com aluno já selecionado/travado
+    Route::get('students/{student}/sessions/create', [SessionController::class, 'createForStudent'])
+        ->name('students.sessions.create')->middleware('can:session.create');
+
+    /*
+    |--------------------------------------------------------------------------
+    | 6.2 SESSIONS BY PROFESSIONAL (MY SCHEDULE)
+    |--------------------------------------------------------------------------
+    */
+    // Rota para o profissional logado ver apenas as suas sessões
+    Route::get('my-sessions', [SessionController::class, 'mySessions'])
+        ->name('sessions.my-sessions')->middleware('can:session.index');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -274,6 +302,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('session-records', [SessionRecordController::class, 'index'])
         ->name('session-records.index')->middleware('can:session-record.index');
 
+    // Alterado para {session} para receber o objeto AttendanceSession no create
     Route::get('session-records/{session}/create', [SessionRecordController::class, 'create'])
         ->name('session-records.create')->middleware('can:session-record.create');
 
@@ -300,7 +329,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('session-records/{sessionRecord}/pdf', [SessionRecordController::class, 'generatePdf'])
         ->name('session-records.pdf')->middleware('can:session-record.pdf');
-
 
     /*
     |--------------------------------------------------------------------------

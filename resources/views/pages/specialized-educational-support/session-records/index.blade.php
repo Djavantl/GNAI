@@ -16,6 +16,7 @@
             <p class="text-muted">Acompanhamento dos atendimentos educacionais especializados.</p>
         </div>
         <div class="d-flex gap-2 align-items-start">
+            {{-- Se houver um ID de sessão no filtro, permite criar novo registro para AQUELA sessão --}}
             @if(request()->has('session_id'))
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.sessions.index')"
@@ -24,8 +25,9 @@
                     Voltar para Sessões
                 </x-buttons.link-button>
 
+                {{-- Corrigido: Rota agora espera o parâmetro {session} conforme definido nas rotas --}}
                 <x-buttons.link-button
-                    :href="route('specialized-educational-support.session-records.create', ['session_id' => request('session_id')])"
+                    :href="route('specialized-educational-support.session-records.create', request('session_id'))"
                     variant="new"
                 >
                     Novo Registro
@@ -34,51 +36,35 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" action="{{ route('specialized-educational-support.session-records.index') }}" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label small fw-bold">Filtrar por Aluno</label>
-                    <select name="student_id" class="form-select">
-                        <option value="">Todos os alunos</option>
-                        {{-- @foreach($students as $student) ... @endforeach --}}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold">Data Início</label>
-                    <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold">Data Fim</label>
-                    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <x-buttons.submit-button variant="primary" class="w-100">
-                        <i class="fas fa-filter mr-1"></i> Filtrar
-                    </x-buttons.submit-button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <x-table.table :headers="['Data / Horário', 'Aluno / Sessão', 'Duração', 'Avaliação', 'Ações']">
+    <x-table.table :headers="['Data / Horário', 'Alunos na Sessão', 'Duração', 'Status/Obs', 'Ações']">
         @forelse($sessionRecords as $record)
             <tr>
                 <x-table.td>
-                    <strong>{{ $record->record_date ? \Carbon\Carbon::parse($record->record_date)->format('d/m/Y') : 'N/A' }}</strong><br>
-                    <small class="text-muted">{{ $record->created_at->format('H:i') }}</small>
+                    {{-- Corrigido: Pegando a data da sessão vinculada --}}
+                    <strong>{{ $record->attendanceSession->session_date->format('d/m/Y') }}</strong><br>
+                    <small class="text-muted">{{ $record->attendanceSession->start_time }}</small>
                 </x-table.td>
 
                 <x-table.td>
-                    @if($record->session && $record->session->student)
-                        <strong>{{ $record->session->student->person->name }}</strong><br>
-                        <small class="text-muted">Sessão #{{ $record->attendance_sessions_id }}</small>
+                    {{-- Agora mostra todos os alunos avaliados neste registro --}}
+                    @if($record->studentEvaluations->isNotEmpty())
+                        @foreach($record->studentEvaluations as $evaluation)
+                            <div class="mb-1">
+                                <i class="fas fa-user-grad small text-muted"></i> 
+                                <strong>{{ $evaluation->student->person->name }}</strong>
+                                @if(!$evaluation->is_present)
+                                    <span class="badge bg-danger p-1" style="font-size: 0.6rem;">FALTA</span>
+                                @endif
+                            </div>
+                        @endforeach
+                        <small class="text-muted">Sessão #{{ $record->attendance_session_id }}</small>
                     @else
-                        <span class="text-danger">Sessão não vinculada</span>
+                        <span class="text-warning small">Nenhum aluno avaliado</span>
                     @endif
                 </x-table.td>
 
@@ -89,8 +75,9 @@
                 </x-table.td>
 
                 <x-table.td>
-                    <div class="small text-muted" title="{{ $record->development_evaluation }}">
-                        {{ Str::limit($record->development_evaluation, 60) }}
+                    <div class="small text-muted">
+                        {{-- Mostra observação geral ou resumo --}}
+                        <strong>Obs:</strong> {{ Str::limit($record->general_observations ?? 'Sem observações gerais.', 50) }}
                     </div>
                 </x-table.td>
 
@@ -113,7 +100,7 @@
                         <form action="{{ route('specialized-educational-support.session-records.destroy', $record) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este registro de sessão?')">
+                            <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este registro e todas as avaliações individuais vinculadas?')">
                                 Excluir
                             </x-buttons.submit-button>
                         </form>

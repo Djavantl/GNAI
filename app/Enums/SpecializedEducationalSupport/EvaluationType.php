@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Enums\SpecializedEducationalSupport;
+use App\Enums\HasEnumHelper;
 
 enum EvaluationType: string
 {

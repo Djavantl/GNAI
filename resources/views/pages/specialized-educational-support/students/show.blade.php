@@ -30,17 +30,13 @@
                 @include('pages.specialized-educational-support.students.record.guardians')
                 @include('pages.specialized-educational-support.students.record.contexts')
                 @include('pages.specialized-educational-support.students.record.peis')
+                @include('pages.specialized-educational-support.students.record.documents')
+                @include('pages.specialized-educational-support.students.record.sessions')
 
             </div>
 
             <div class="bg-white p-3 border-top d-flex justify-content-center align-items-center no-print shadow-lg">
                 <span class="small text-muted">Sistema GNAI 2026</span>
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.student-documents.index', $student)"
-                    variant="info"
-                >
-                    <i class="fas fa-folder-open mr-2"></i> Documentos do Aluno
-                </x-buttons.link-button>
             </div>
         </div>
     </div>

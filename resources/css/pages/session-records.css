@@ -1,0 +1,95 @@
+/* resources/css/pages/session-records.css */
+
+/* Container Principal das Avaliações */
+#students-list .list-group-item {
+    font-family: var(--font-family-base);
+    border: none;
+    padding: 1.2rem 1rem;
+    color: #4A5161;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+/* Estado Hover (semelhante à sua sidebar) */
+#students-list .list-group-item:hover {
+    background-color: #F3F4FF;
+    color: var(--primary-color);
+}
+
+/* Estado Ativo (Selecionado) */
+#students-list .list-group-item.active {
+    background-color: #F3F4FF !important;
+    color: var(--primary-color) !important;
+    border-left: 4px solid var(--primary-color) !important;
+    font-weight: 700;
+}
+
+/* Ajuste dos ícones na lista lateral */
+#students-list .list-group-item i {
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+
+#students-list .list-group-item.active i {
+    transform: translateX(3px);
+    opacity: 1 !important;
+}
+
+/* Títulos dentro das abas */
+.tab-pane h5 {
+    font-family: var(--font-family-heading);
+    color: #303972; /* Cor padronizada dos seus títulos */
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Switch de Presença Customizado */
+.form-check.form-switch .presence-toggle {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Alerta de Ausência */
+.alert-danger {
+    background-color: #FFF5F5;
+    border: 1px solid #FEB2B2;
+    color: #C53030;
+    border-radius: 12px;
+}
+
+/* Badges de Falta */
+.badge.bg-danger {
+    background-color: #FF4B50 !important;
+    font-family: var(--font-family-base);
+    font-weight: 600;
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+}
+
+/* Textareas dentro da avaliação individual */
+.tab-pane .form-label {
+    font-family: var(--font-family-base);
+    font-weight: 600;
+    color: #4D44B5;
+    margin-bottom: 0.5rem;
+}
+
+/* Background suave para o conteúdo da aba */
+.tab-content {
+    background-color: #ffffff;
+    min-height: 400px;
+}
+
+/* Ajuste fino para o card de formulário */
+.custom-table-card {
+    border-radius: 20px !important;
+    border: none !important;
+    box-shadow: 0 10px 30px rgba(77, 68, 181, 0.05) !important;
+}

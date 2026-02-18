@@ -19,7 +19,7 @@ class Pendency extends Model
         'title',
         'description',
         'priority',
-        'due_date',
+        'due_date', 
         'is_completed',
     ];
 

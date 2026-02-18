@@ -37,7 +37,7 @@
                                 :href="route('specialized-educational-support.student-context.show', [$student->currentContext->id])"
                                 variant="info"
                                 class="btn-sm">
-                                <i class="fas fa-eye me-1"></i> Abrir Detalhes
+                                <i class="fas fa-eye"></i> 
                             </x-buttons.link-button>
                         </div>
 

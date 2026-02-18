@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('attendance_sessions', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->foreignId('professional_id')->constrained()->cascadeOnDelete();
             $table->date('session_date');
             $table->time('start_time');
@@ -27,6 +25,22 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('attendance_session_student', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('attendance_session_id')
+                ->constrained('attendance_sessions')
+                ->cascadeOnDelete();
+
+            $table->foreignId('student_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->unique(
+                ['attendance_session_id', 'student_id'],
+                'ass_session_student_unique'
+            );
+        });
     }
 
     /**
@@ -34,6 +48,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('attendance_session_student');
         Schema::dropIfExists('attendance_sessions');
     }
 };

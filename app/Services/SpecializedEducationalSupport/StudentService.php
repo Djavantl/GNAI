@@ -34,7 +34,7 @@ class StudentService
             $query->where('status', $filters['status']);
         }
 
-        return $query->paginate(5)->withQueryString();
+        return $query->paginate(10)->withQueryString();
     }
 
     public function show(Student $student): Student
@@ -48,6 +48,7 @@ class StudentService
             'studentCourses',
             'courses',
             'currentCourse',
+            'sessions' => fn($q) => $q->with(['professional.person', 'sessionRecord'])->orderBy('session_date', 'desc'),
         ]);
     }
 

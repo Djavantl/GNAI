@@ -4,38 +4,35 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SessionRecord extends Model
 {
-     use SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
-        'attendance_sessions_id',
-        'record_date',
+        'attendance_session_id', 
         'duration',
         'activities_performed',
         'strategies_used',
         'resources_used',
-        'adaptations_made',
-        'student_participation',
-        'engagement_level',
-        'observed_behavior',
-        'response_to_activities',
-        'development_evaluation',
-        'progress_indicators',
-        'recommendations',
-        'next_session_adjustments',
-        'external_referral_needed',
         'general_observations',
     ];
 
-    protected $casts = [
-        'record_date' => 'date',
-        'external_referral_needed' => 'boolean',
-    ];
-
-     public function session()
+    /**
+     * Relacionamento com a Sessão de Atendimento (Pai)
+     */
+    public function attendanceSession(): BelongsTo
     {
-        return $this->belongsTo(Session::class, 'attendance_sessions_id');
+        return $this->belongsTo(Session::class, 'attendance_session_id');
+    }
+
+    /**
+     * Relacionamento com as avaliações individuais dos alunos (Filhos)
+     */
+    public function studentEvaluations(): HasMany
+    {
+        return $this->hasMany(StudentSessionEvaluation::class, 'session_record_id');
     }
 }

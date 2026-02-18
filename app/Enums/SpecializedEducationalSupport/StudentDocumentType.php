@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Enums\SpecializedEducationalSupport;
 
 enum StudentDocumentType: string
