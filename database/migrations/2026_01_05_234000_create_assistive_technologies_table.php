@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('asset_code', 50)->nullable()->unique();
             $table->integer('quantity')->nullable();
             $table->integer('quantity_available')->nullable();
-            $table->boolean('requires_training')->default(false);
             $table->text('notes')->nullable();
             $table->string('conservation_state')->default('novo');
             $table->foreignId('status_id')
@@ -29,6 +28,19 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
+            $table->timestamps();
+        });
+
+        // Pivot table TA ↔ Trainings
+        Schema::create('assistive_technology_training', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('assistive_technology_id')
+                ->constrained('assistive_technologies')
+                ->cascadeOnDelete();
+            $table->foreignId('training_id')
+                ->constrained('trainings')
+                ->cascadeOnDelete();
+            $table->unique(['assistive_technology_id', 'training_id'], 'tech_training_unique');
             $table->timestamps();
         });
 

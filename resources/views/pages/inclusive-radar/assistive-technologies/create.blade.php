@@ -20,11 +20,12 @@
 
     <div class="mt-3">
         <x-forms.form-card action="{{ route('inclusive-radar.assistive-technologies.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf {{-- Essencial para o funcionamento do POST --}}
 
             <x-forms.section title="Identificação do Recurso" />
 
             <div class="col-md-12">
-                <x-forms.input name="name" label="Nome da Tecnologia / Equipamento *" required placeholder="Ex: Cadeira de Rodas Motorizada" />
+                <x-forms.input name="name" label="Nome da Tecnologia / Equipamento *" required placeholder="Ex: Cadeira de Rodas Motorizada" :value="old('name')" />
             </div>
 
             <div class="col-md-12">
@@ -32,7 +33,8 @@
                     name="description"
                     label="Descrição Detalhada"
                     rows="3"
-                    placeholder="Descreva o item"
+                    placeholder="Descreva as principais características e finalidade do item"
+                    :value="old('description')"
                 />
             </div>
 
@@ -44,16 +46,19 @@
                     required
                     :options="$resourceTypes->pluck('name', 'id')"
                     :resourceObjects="$resourceTypes"
+                    :selected="old('type_id')"
                 />
             </div>
 
             <div class="col-md-6" id="asset_code_container">
-                <x-forms.input name="asset_code" label="Patrimônio / Tombamento" />
+                <x-forms.input name="asset_code" label="Patrimônio / Tombamento" :value="old('asset_code')" />
             </div>
 
+            {{-- Container para Atributos Dinâmicos via JS --}}
             <div id="dynamic-attributes-container" style="display: none;">
                 <x-forms.section title="Especificações Técnicas" />
                 <div class="row g-0" id="dynamic-attributes">
+                    {{-- Preenchido pelo resources/js/pages/inclusive-radar/assistive-technologies.js --}}
                 </div>
             </div>
 
@@ -63,26 +68,31 @@
                 <x-forms.select
                     name="inspection_type"
                     label="Tipo de Inspeção *"
+                    required
                     :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
-            ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
                 />
             </div>
+
             <div class="col-md-6">
-                <x-forms.input name="inspection_date" label="Data da Inspeção *" type="date" :value="date('Y-m-d')" />
+                <x-forms.input name="inspection_date" label="Data da Inspeção *" type="date" :value="old('inspection_date', date('Y-m-d'))" />
             </div>
 
             <div class="col-md-6" id="conservation_container">
                 <x-forms.select
                     name="conservation_state"
                     label="Estado de Conservação *"
+                    required
                     :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :selected="old('conservation_state')"
                 />
             </div>
+
             <div class="col-md-6">
                 <x-forms.image-uploader
                     name="images[]"
                     label="Fotos de Evidência"
-                    :existingImages="old('images', [])"
                 />
             </div>
 
@@ -92,42 +102,38 @@
                     label="Parecer Técnico / Descrição da Vistoria"
                     rows="3"
                     placeholder="Descreva as condições físicas e funcionais do item na entrada"
+                    :value="old('inspection_description')"
                 />
             </div>
 
             <x-forms.section title="Gestão e Público" />
 
             <div class="col-md-6" id="quantity_container">
-                <x-forms.input name="quantity" label="Quantidade Total *" type="number" id="quantity_input" value="1" />
+                <x-forms.input name="quantity" label="Quantidade Total *" type="number" id="quantity_input" :value="old('quantity', 1)" min="1" />
             </div>
+
             <div class="col-md-6">
                 <x-forms.select
                     name="status_id"
                     label="Status do Recurso"
+                    required
                     :options="\App\Models\InclusiveRadar\ResourceStatus::where('is_active', true)->pluck('name', 'id')"
+                    :selected="old('status_id')"
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.checkbox
-                    name="requires_training"
-                    label="Requer Treinamento"
-                    description="Indica necessidade de capacitação para uso"
-                    :checked="old('requires_training')"
-                />
-            </div>
-            <div class="col-md-6">
-                <x-forms.checkbox
                     name="is_active"
                     label="Ativar no Sistema"
-                    description="Fica visível para empréstimos imediatamente"
+                    description="Fica disponível para visualização e empréstimos"
                     :checked="old('is_active', true)"
                 />
             </div>
 
             <div class="col-md-12 mb-4 mt-4">
-                <label class="form-label fw-bold text-purple-dark">Público-alvo *</label>
-                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
+                <label class="form-label fw-bold text-purple-dark">Público-alvo (Deficiências Atendidas) *</label>
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
                     @foreach(\App\Models\SpecializedEducationalSupport\Deficiency::where('is_active', true)->orderBy('name', 'asc')->get() as $def)
                         <x-forms.checkbox
                             name="deficiencies[]"
@@ -135,11 +141,16 @@
                             :value="$def->id"
                             :label="$def->name"
                             class="mb-0"
+                            :checked="is_array(old('deficiencies')) && in_array($def->id, old('deficiencies'))"
                         />
                     @endforeach
                 </div>
+                @error('deficiencies')
+                <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                @enderror
             </div>
 
+            {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.assistive-technologies.index') }}" variant="secondary">
                     <i class="fas fa-arrow-left"></i> Voltar para Listagem
@@ -151,6 +162,7 @@
             </div>
         </x-forms.form-card>
     </div>
+
     @push('scripts')
         @vite('resources/js/pages/inclusive-radar/assistive-technologies.js')
     @endpush

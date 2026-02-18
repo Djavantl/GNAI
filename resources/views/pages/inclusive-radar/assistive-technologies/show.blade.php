@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@section('title', "$assistiveTechnology->name")
+@section('title', $assistiveTechnology->name)
 
 @section('content')
     {{-- Cabeçalho --}}
@@ -28,28 +28,24 @@
 
             {{-- SEÇÃO 1: Identificação do Recurso --}}
             <x-forms.section title="Identificação do Recurso" />
-            <div class="row g-3">
+            <div class="row g-3 px-4 pb-4">
                 <x-show.info-item label="Nome da Tecnologia" column="col-md-6" isBox="true">
                     <strong>{{ $assistiveTechnology->name }}</strong>
-                </x-show.info-item>
-
-                <x-show.info-item label="Descrição Detalhada" column="col-md-12" isBox="true">
-                    {{ $assistiveTechnology->description ?? '---' }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Categoria / Tipo" column="col-md-6" isBox="true">
                     {{ $assistiveTechnology->type->name ?? '---' }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Patrimônio / Tombamento" column="col-md-6" isBox="true">
-                    {{ $assistiveTechnology->asset_code ?? '---' }}
+                <x-show.info-item label="Descrição Detalhada" column="col-md-12" isBox="true">
+                    {!! nl2br(e($assistiveTechnology->description)) ?? '---' !!}
                 </x-show.info-item>
             </div>
 
             {{-- SEÇÃO 2: Especificações Técnicas (Atributos Dinâmicos) --}}
             @if(count($attributeValues) > 0)
                 <x-forms.section title="Especificações Técnicas" />
-                <div class="row g-3">
+                <div class="row g-3 px-4 pb-4">
                     @foreach($attributeValues as $attributeId => $value)
                         @php
                             $attributeLabel = $assistiveTechnology->attributeValues
@@ -63,104 +59,155 @@
                 </div>
             @endif
 
-            {{-- SEÇÃO 3: Histórico de Vistorias --}}
+            {{-- SEÇÃO 3: TREINAMENTOS E CAPACITAÇÃO --}}
+            <x-forms.section title="Treinamentos e Capacitações" />
+
+            <div class="col-12 mt-4">
+                <div class="px-4 mb-4">
+                    @if($assistiveTechnology->trainings->count() > 0)
+                        {{-- CASO HAJA REGISTROS --}}
+                        <div class="p-0 border rounded bg-white shadow-sm overflow-hidden">
+                            <x-table.table :headers="['Título', 'Status', 'Ações']">
+                                @foreach($assistiveTechnology->trainings as $training)
+                                    <tr>
+                                        {{-- TÍTULO --}}
+                                        <x-table.td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-chalkboard-teacher text-purple me-2"></i>
+                                                <span class="fw-bold text-dark">{{ $training->title }}</span>
+                                            </div>
+                                        </x-table.td>
+
+                                        {{-- STATUS --}}
+                                        <x-table.td>
+                                <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold">
+                                    {{ $training->is_active ? 'Ativo' : 'Inativo' }}
+                                </span>
+                                        </x-table.td>
+
+                                        {{-- AÇÕES --}}
+                                        <x-table.td>
+                                            <x-table.actions>
+                                                {{-- Visualizar --}}
+                                                <x-buttons.link-button
+                                                    :href="route('inclusive-radar.trainings.show', $training)"
+                                                    variant="info"
+                                                >
+                                                    <i class="fas fa-eye"></i>
+                                                </x-buttons.link-button>
+
+                                                {{-- Editar --}}
+                                                <x-buttons.link-button
+                                                    :href="route('inclusive-radar.trainings.edit', $training)"
+                                                    variant="warning"
+                                                >
+                                                    <i class="fas fa-edit"></i>
+                                                </x-buttons.link-button>
+                                            </x-table.actions>
+                                        </x-table.td>
+                                    </tr>
+                                @endforeach
+                            </x-table.table>
+                        </div>
+
+                        {{-- Botão Adicionar no canto inferior direito --}}
+                        <div class="text-end mt-3">
+                            <x-buttons.link-button
+                                :href="route('inclusive-radar.trainings.create', ['type' => 'assistive_technology', 'id' => $assistiveTechnology->id])"
+                                variant="primary"
+                                class="btn-sm shadow-sm"
+                            >
+                                <i class="fas fa-plus me-1"></i> Adicionar Treinamento
+                            </x-buttons.link-button>
+                        </div>
+                    @else
+                        {{-- CASO NÃO HAJA REGISTROS (Vazio) --}}
+                        <div class="text-center py-5 border rounded bg-light border-dashed">
+                            <i class="fas fa-chalkboard-teacher fa-3x mb-3 text-muted opacity-20"></i>
+                            <p class="text-muted italic mb-3">Nenhum treinamento cadastrado para este recurso.</p>
+
+                            <x-buttons.link-button
+                                :href="route('inclusive-radar.trainings.create', ['type' => 'assistive_technology', 'id' => $assistiveTechnology->id])"
+                                variant="primary"
+                                class="shadow-sm"
+                            >
+                                <i class="fas fa-plus me-1"></i> Adicionar Primeiro Treinamento
+                            </x-buttons.link-button>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- SEÇÃO 4: Histórico de Vistorias --}}
             <x-forms.section title="Histórico de Vistorias" />
-            <div class="col-12 mb-4 px-4">
+            <div class="col-12 mb-4 px-4 pb-4">
                 <div class="history-timeline p-4 border rounded bg-light" style="max-height: 450px; overflow-y: auto;">
-                    @forelse($assistiveTechnology->inspections()->with('images')->latest('inspection_date')->get() as $inspection)
+                    {{-- Usando a relação diretamente (assumindo que já foi feito o eager load no Controller) --}}
+                    @forelse($assistiveTechnology->inspections->sortByDesc('inspection_date') as $inspection)
                         <x-forms.inspection-history-card :inspection="$inspection" />
                     @empty
                         <div class="text-center py-5 text-muted bg-white rounded border border-dashed">
                             <i class="fas fa-history fa-3x mb-3 opacity-20"></i>
-                            <p class="fw-bold">Nenhum histórico encontrado para este recurso.</p>
+                            <p class="fw-bold">Nenhum histórico encontrado.</p>
                         </div>
                     @endforelse
                 </div>
             </div>
 
-            {{-- SEÇÃO 4: Gestão e Público --}}
+            {{-- SEÇÃO 5: Gestão e Público --}}
             <x-forms.section title="Gestão e Público" />
-
-            {{-- Linha 1: Quantidade Total | Status do Recurso --}}
-            <div class="row g-3 mb-3">
-                <x-show.info-item label="Quantidade Total" column="col-md-6" isBox="true">
+            <div class="row g-3 px-4 pb-4">
+                <x-show.info-item label="Quantidade Total" column="col-md-4" isBox="true">
                     {{ $assistiveTechnology->quantity }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Status do Recurso" column="col-md-6" isBox="true">
-                    {{ $assistiveTechnology->resourceStatus->name ?? '---' }}
-                </x-show.info-item>
-            </div>
-
-            {{-- Linha 2: Requer Treinamento | Ativo no Sistema --}}
-            <div class="row g-3 mb-3">
-                <x-show.info-item label="Requer Treinamento" column="col-md-6" isBox="true">
-                    {{ $assistiveTechnology->requires_training ? 'Sim' : 'Não' }}
+                <x-show.info-item label="Status do Recurso" column="col-md-4" isBox="true">
+                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subsetle px-3">
+                        {{ $assistiveTechnology->resourceStatus->name ?? '---' }}
+                    </span>
                 </x-show.info-item>
 
-                <x-show.info-item label="Ativo no Sistema" column="col-md-6" isBox="true">
+                <x-show.info-item label="Ativo no Sistema" column="col-md-4" isBox="true">
                     {{ $assistiveTechnology->is_active ? 'Sim' : 'Não' }}
                 </x-show.info-item>
-            </div>
 
-            {{-- Linha 3: Público-Alvo (linha completa) --}}
-            <div class="row g-3">
                 <x-show.info-item label="Público-Alvo" column="col-md-12" isBox="true">
-                    @if($assistiveTechnology->deficiencies->isNotEmpty())
-                        <div class="tag-container">
-                            @foreach($assistiveTechnology->deficiencies->sortBy('name') as $deficiency)
-                                <x-show.tag color="light">{{ $deficiency->name }}</x-show.tag>
-                            @endforeach
-                        </div>
-                    @endif
+                    @forelse($assistiveTechnology->deficiencies->sortBy('name') as $deficiency)
+                        <x-show.tag color="light">{{ $deficiency->name }}</x-show.tag>
+                    @empty
+                        <span class="text-muted">Nenhum público-alvo definido.</span>
+                    @endforelse
                 </x-show.info-item>
             </div>
 
             {{-- Rodapé de Ações --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between">
-                <div class="text-muted small d-flex align-items-center">
-                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $assistiveTechnology->id }}
+            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
+                <div class="text-muted small">
+                    <i class="fas fa-id-card me-1"></i> ID: #{{ $assistiveTechnology->id }}
                     <x-buttons.pdf-button :href="route('inclusive-radar.assistive-technologies.pdf', $assistiveTechnology)" class="ms-3" />
                 </div>
 
-                <div class="d-flex gap-3">
-
-                    <a href="{{ route('inclusive-radar.assistive-technologies.logs', $assistiveTechnology) }}"
-                       class="btn btn-outline-secondary">
-                        Histórico
+                <div class="d-flex gap-2">
+                    <a href="{{ route('inclusive-radar.assistive-technologies.logs', $assistiveTechnology) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-history"></i> Logs
                     </a>
 
-                    {{-- Excluir Recurso --}}
-                    <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}"
-                          method="POST"
-                          onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do recurso. Confirmar?')">
-                        @csrf
-                        @method('DELETE')
+                    <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}" method="POST" onsubmit="return confirm('Deseja realmente excluir esta Tecnologia Assistiva?')">
+                        @csrf @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir Recurso
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
 
-                    {{-- Editar Recurso --}}
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.assistive-technologies.edit', $assistiveTechnology)"
-                        variant="warning"
-                    >
-                        <i class="fas fa-edit"></i> Editar Recurso
+                    <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.edit', $assistiveTechnology)" variant="warning">
+                        <i class="fas fa-edit"></i> Editar
                     </x-buttons.link-button>
 
-                    {{-- Voltar para Lista --}}
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.assistive-technologies.index')"
-                        variant="secondary"
-                    >
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                    <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.index')" variant="secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>
         </div>
     </div>
-    @push('scripts')
-        @vite('resources/js/pages/inclusive-radar/assistive-technologies.js')
-    @endpush
 @endsection

@@ -12,6 +12,7 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     Logs\AssistiveTechnologyLogController,
     ResourceStatusController,
     ResourceTypeController,
+    TrainingController,
     TypeAttributeAssignmentController,
     TypeAttributeController};
 
@@ -247,6 +248,35 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/accessible-educational-materials/{material}/pdf', [AccessibleEducationalMaterialController::class, 'generatePdf'])
         ->name('accessible-educational-materials.pdf')->middleware('can:material.pdf');
+
+    // ------------------- TREINAMENTOS -------------------
+    Route::get('/trainings', [TrainingController::class, 'index'])
+        ->name('trainings.index')->middleware('can:training.index');
+
+    Route::get('/trainings/create', [TrainingController::class, 'create'])
+        ->name('trainings.create')->middleware('can:training.create');
+
+    Route::post('/trainings/store', [TrainingController::class, 'store'])
+        ->name('trainings.store')->middleware('can:training.store');
+
+    Route::get('/trainings/{training}', [TrainingController::class, 'show'])
+        ->name('trainings.show')->middleware('can:training.show');
+
+    Route::get('/trainings/{training}/edit', [TrainingController::class, 'edit'])
+        ->name('trainings.edit')->middleware('can:training.edit');
+
+    Route::put('/trainings/{training}', [TrainingController::class, 'update'])
+        ->name('trainings.update')->middleware('can:training.update');
+
+    Route::patch('/trainings/{training}/toggle', [TrainingController::class, 'toggleActive'])
+        ->name('trainings.toggle')->middleware('can:training.toggle');
+
+    Route::delete('/trainings/{training}', [TrainingController::class, 'destroy'])
+        ->name('trainings.destroy')->middleware('can:training.destroy');
+
+    Route::delete('trainings/files/{file}', [TrainingController::class, 'destroyFile'])
+        ->name('trainings.files.destroy');
+
 
     // ------------------- EMPRÉSTIMOS -------------------
     Route::get('/loans', [LoanController::class, 'index'])

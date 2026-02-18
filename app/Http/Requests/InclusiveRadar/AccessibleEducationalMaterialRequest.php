@@ -38,12 +38,8 @@ class AccessibleEducationalMaterialRequest extends FormRequest
                 Rule::unique('accessible_educational_materials', 'asset_code')
                     ->ignore($material?->id),
             ],
+            'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
 
-            'quantity' => $isDigital
-                ? 'nullable'
-                : 'required|integer|min:0',
-
-            'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
             'status_id' => 'nullable|exists:resource_statuses,id',
             'notes' => 'nullable|string',
@@ -57,18 +53,15 @@ class AccessibleEducationalMaterialRequest extends FormRequest
                 $isUpdate ? 'nullable' : 'required',
                 new Enum(ConservationState::class),
             ],
-
             'inspection_type' => [
                 $isUpdate ? 'nullable' : 'required',
                 new Enum(InspectionType::class),
             ],
-
             'inspection_date' => [
-                $isUpdate ? 'nullable' : 'required',
+                'required',
                 'date',
                 'before_or_equal:today',
             ],
-
             'inspection_description' => 'nullable|string|max:1000',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -81,15 +74,15 @@ class AccessibleEducationalMaterialRequest extends FormRequest
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
         $this->merge([
-            'requires_training' => $this->boolean('requires_training'),
             'is_active' => $this->boolean('is_active'),
-
-            'inspection_type' => $this->inspection_type
-                ?? (!$isUpdate ? InspectionType::INITIAL->value : null),
-
-            'inspection_date' => $this->inspection_date
-                ?? (!$isUpdate ? now()->format('Y-m-d') : null),
+            'inspection_date' => $this->inspection_date ?? now()->format('Y-m-d'),
         ]);
+
+        if (!$isUpdate) {
+            $this->merge([
+                'inspection_type' => $this->inspection_type ?? InspectionType::INITIAL->value,
+            ]);
+        }
     }
 
     public function messages(): array

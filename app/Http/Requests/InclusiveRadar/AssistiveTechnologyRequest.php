@@ -37,12 +37,12 @@ class AssistiveTechnologyRequest extends FormRequest
                     ->ignore($tech?->id),
             ],
             'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
-            'requires_training' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
             'status_id' => 'nullable|exists:resource_statuses,id',
             'notes' => 'nullable|string',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
+
             'conservation_state' => [
                 $isUpdate ? 'nullable' : 'required',
                 new Enum(ConservationState::class),
@@ -68,7 +68,6 @@ class AssistiveTechnologyRequest extends FormRequest
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
         $this->merge([
-            'requires_training' => $this->boolean('requires_training'),
             'is_active' => $this->boolean('is_active'),
             'inspection_date' => $this->inspection_date ?? now()->format('Y-m-d'),
         ]);

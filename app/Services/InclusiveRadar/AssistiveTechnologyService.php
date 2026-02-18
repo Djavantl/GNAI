@@ -16,8 +16,6 @@ class AssistiveTechnologyService
         protected LoanService $loanService,
     ) {}
 
-    // Ações principais
-
     public function store(array $data): AssistiveTechnology
     {
         return DB::transaction(
@@ -35,11 +33,9 @@ class AssistiveTechnologyService
     public function toggleActive(AssistiveTechnology $assistiveTechnology): AssistiveTechnology
     {
         return DB::transaction(function () use ($assistiveTechnology) {
-
             $assistiveTechnology->update([
                 'is_active' => !$assistiveTechnology->is_active
             ]);
-
             return $assistiveTechnology;
         });
     }
@@ -47,93 +43,72 @@ class AssistiveTechnologyService
     public function delete(AssistiveTechnology $assistiveTechnology): void
     {
         DB::transaction(function () use ($assistiveTechnology) {
-
             if ($assistiveTechnology->loans()->whereNull('return_date')->exists()) {
                 throw new CannotDeleteWithActiveLoansException();
             }
-
             $assistiveTechnology->delete();
         });
     }
 
-    // Regras internas
-
     protected function persist(AssistiveTechnology $assistiveTechnology, array $data): AssistiveTechnology
     {
-        // 1. Captura dos estados antes da mudança
-
-        // Obtém os IDs das deficiências vinculadas antes da alteração
+        // 1. Captura estados antes da mudança (Somente o que a TA gerencia diretamente)
         $oldDeficiencies = $assistiveTechnology->exists
             ? $assistiveTechnology->deficiencies()->pluck('deficiencies.id')->toArray()
             : [];
 
-        // Obtém os valores dos atributos dinâmicos antes da alteração
         $oldAttributes = $assistiveTechnology->exists
             ? $assistiveTechnology->attributeValues()->pluck('value', 'attribute_id')->toArray()
             : [];
 
-        // 2. Processamento padrão
-
-        // Valida se a quantidade solicitada está disponível em estoque
+        // 2. Processamento de estoque via LoanService
         if (isset($data['quantity'])) {
             $this->loanService->validateStockAvailability($assistiveTechnology, (int)$data['quantity']);
         }
 
-        // Ajusta os dados de estoque considerando regras de negócio de empréstimo
         $data = $this->loanService->calculateStockForLoan($assistiveTechnology, $data);
 
-        // Salva os campos nativos disparando o Trait de auditoria automática
+        // 3. Salva dados básicos
         $assistiveTechnology->fill($data)->save();
 
-        // Atualiza as tabelas de relacionamento e atributos dinâmicos
+        // 4. Sincroniza relações diretas (Deficiências e Atributos)
         $this->syncRelations($assistiveTechnology, $data);
 
-        // 3. Comparação e log manual (apenas se não for criação nova)
-
-        // Executa o log manual de relações apenas em edições de registros existentes
+        // 5. Log manual de mudanças
         if (!$assistiveTechnology->wasRecentlyCreated) {
-
-            // Compara e registra mudanças na lista de deficiências
+            // Deficiências
             if (isset($data['deficiencies'])) {
                 $newDeficiencies = array_map('intval', $data['deficiencies']);
                 sort($oldDeficiencies);
                 sort($newDeficiencies);
-
                 if ($oldDeficiencies !== $newDeficiencies) {
                     $this->logRelationChange($assistiveTechnology, 'deficiencies', $oldDeficiencies, $newDeficiencies);
                 }
             }
 
-            // Compara e registra mudanças nos valores dos atributos dinâmicos
+            // Atributos
             if (isset($data['attributes'])) {
-                // Limpa valores nulos para garantir uma comparação precisa
                 $newAttributes = array_filter($data['attributes'], fn($v) => !is_null($v));
-
-                // Registra log se houver diferença entre valores antigos e novos
                 if ($oldAttributes != $newAttributes) {
                     $this->logRelationChange($assistiveTechnology, 'attributes', $oldAttributes, $newAttributes);
                 }
             }
         }
 
-        // Gera o registro de inspeção vinculado à tecnologia assistiva
+        // 6. Inspeção
         $this->inspectionService->createInspectionForModel($assistiveTechnology, $data);
 
-        // Retorna o objeto atualizado com seus relacionamentos carregados
         return $assistiveTechnology->fresh([
             'type',
             'resourceStatus',
             'deficiencies',
-            'attributeValues'
+            'attributeValues',
+            'trainings',
         ]);
     }
 
-    /**
-     * Registra manualmente um log de auditoria para campos de relacionamento
-     */
     protected function logRelationChange(AssistiveTechnology $model, string $field, array $old, array $new): void
     {
-        // Insere um novo registro de auditoria focado em campos não nativos
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'updated',
@@ -146,40 +121,40 @@ class AssistiveTechnologyService
         ]);
     }
 
-    protected function syncRelations(
-        AssistiveTechnology $assistiveTechnology,
-        array $data
-    ): void {
-
-        // Sincroniza a tabela pivô de deficiências (Many-to-Many)
+    protected function syncRelations(AssistiveTechnology $assistiveTechnology, array $data): void
+    {
+        // 1. Deficiências (Sincronização normal)
         if (isset($data['deficiencies'])) {
-            $assistiveTechnology
-                ->deficiencies()
-                ->sync($data['deficiencies']);
+            $assistiveTechnology->deficiencies()->sync($data['deficiencies']);
         }
 
-        // Processa e limpa atributos dinâmicos baseados no tipo de recurso
+        // 2. Atributos dinâmicos (O CORAÇÃO DO PROBLEMA)
         if (isset($data['attributes'])) {
-
             $type = ResourceType::find($assistiveTechnology->type_id);
+            $validAttributeIds = $type ? $type->attributes()->pluck('type_attributes.id')->toArray() : [];
 
-            // Identifica quais IDs de atributos pertencem ao tipo de recurso atual
-            $validAttributeIds = $type
-                ? $type->attributes()
-                    ->pluck('type_attributes.id')
-                    ->toArray()
-                : [];
+            // LIMPEZA ATIVA:
+            // Identificamos atributos que o usuário deixou em branco ou que não pertencem mais ao tipo
+            foreach ($data['attributes'] as $attributeId => $value) {
+                if (empty(trim($value))) { // Se estiver vazio ou só com espaços
+                    $assistiveTechnology->attributeValues()
+                        ->where('attribute_id', $attributeId)
+                        ->delete();
 
-            // Remove atributos que não pertencem mais a este tipo de tecnologia
-            $assistiveTechnology
-                ->attributeValues()
+                    // Removemos do array para o service de "save" não tentar processar
+                    unset($data['attributes'][$attributeId]);
+                }
+            }
+
+            // Remove atributos que não pertencem mais a este tipo de recurso (caso mudou o Tipo)
+            $assistiveTechnology->attributeValues()
                 ->whereNotIn('attribute_id', $validAttributeIds)
                 ->delete();
 
-            // Salva ou atualiza os novos valores dos atributos dinâmicos
-            $this->attributeValueService
-                ->saveValues($assistiveTechnology, $data['attributes']);
+            // Salva apenas os que sobraram (que possuem valor real)
+            if (!empty($data['attributes'])) {
+                $this->attributeValueService->saveValues($assistiveTechnology, $data['attributes']);
+            }
         }
     }
-
 }

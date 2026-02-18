@@ -30,7 +30,6 @@ class AssistiveTechnology extends Model
         'asset_code',
         'quantity',
         'quantity_available',
-        'requires_training',
         'conservation_state',
         'notes',
         'status_id',
@@ -38,7 +37,6 @@ class AssistiveTechnology extends Model
     ];
 
     protected $casts = [
-        'requires_training' => 'boolean',
         'is_active' => 'boolean',
         'conservation_state' => ConservationState::class,
     ];
@@ -63,6 +61,11 @@ class AssistiveTechnology extends Model
             'assistive_technology_id',
             'deficiency_id'
         );
+    }
+
+    public function trainings(): MorphMany
+    {
+        return $this->morphMany(Training::class, 'trainable');
     }
 
     public function attributeValues(): MorphMany
@@ -114,7 +117,6 @@ class AssistiveTechnology extends Model
         if (!is_null($isActive) && $isActive !== '') {
             $query->where('is_active', $isActive == '1');
         }
-
         return $query;
     }
 
@@ -125,7 +127,6 @@ class AssistiveTechnology extends Model
             $q->where('name', 'like', "%{$type}%")
             );
         }
-
         return $query;
     }
 
@@ -136,7 +137,6 @@ class AssistiveTechnology extends Model
                 ? $query->where('quantity_available', '>', 0)
                 : $query->where('quantity_available', '<=', 0);
         }
-
         return $query;
     }
 
@@ -147,9 +147,10 @@ class AssistiveTechnology extends Model
             $q->where('is_digital', $isDigital == '1')
             );
         }
-
         return $query;
     }
+
+    // Auditoria
 
     public static function getAuditLabels(): array
     {
@@ -158,12 +159,12 @@ class AssistiveTechnology extends Model
             'description' => 'Descrição',
             'asset_code' => 'Código de Patrimônio',
             'quantity' => 'Quantidade Total',
-            'requires_training' => 'Requer Treinamento',
             'conservation_state' => 'Estado de Conservação',
             'status_id' => 'Status do Recurso',
             'type_id' => 'Tipo de Recurso',
             'is_active' => 'Cadastro Ativo',
             'deficiencies' => 'Público-Alvo (Deficiências)',
+            'trainings' => 'Treinamentos',
             'attributes' => 'Características Técnicas (Atributos)',
         ];
     }
@@ -176,6 +177,12 @@ class AssistiveTechnology extends Model
                 ->join(', ') ?: 'Nenhuma';
         }
 
+        if ($field === 'trainings' && is_array($value)) {
+            return Training::whereIn('id', $value)
+                ->pluck('title')
+                ->join(', ') ?: 'Nenhum';
+        }
+
         if ($field === 'attributes' && is_array($value)) {
             $lines = [];
             foreach ($value as $attrId => $val) {
@@ -185,10 +192,6 @@ class AssistiveTechnology extends Model
                 $lines[] = "<strong>{$label}:</strong> {$prettyVal}";
             }
             return implode('<br>', $lines);
-        }
-
-        if ($field === 'requires_training') {
-            return $value ? 'Sim' : 'Não';
         }
 
         if ($field === 'type_id') {

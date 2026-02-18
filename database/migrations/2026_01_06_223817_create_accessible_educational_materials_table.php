@@ -18,28 +18,41 @@ return new class extends Migration {
         Schema::create('accessible_educational_materials', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-
             $table->foreignId('type_id')
                 ->nullable()
                 ->constrained('resource_types')
                 ->nullOnDelete();
 
-            $table->boolean('requires_training')->default(false);
             $table->string('asset_code', 50)->nullable()->unique();
             $table->integer('quantity')->nullable();
             $table->integer('quantity_available')->nullable();
             $table->text('notes')->nullable();
             $table->string('conservation_state')->default('novo');
-
             $table->foreignId('status_id')
                 ->nullable()
                 ->constrained('resource_statuses')
                 ->nullOnDelete();
-
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();
             $table->index(['type_id', 'is_active']);
+        });
+
+        // Pivot table MPA ↔ Trainings
+        Schema::create('accessible_educational_material_training', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('accessible_educational_material_id')
+                ->constrained('accessible_educational_materials')
+                ->cascadeOnDelete()
+                ->name('aem_training_aem_id_fk'); // NOME CURTO
+
+            $table->foreignId('training_id')
+                ->constrained('trainings')
+                ->cascadeOnDelete()
+                ->name('aem_training_training_id_fk'); // NOME CURTO
+
+            $table->unique(['accessible_educational_material_id', 'training_id'], 'material_training_unique');
+            $table->timestamps();
         });
 
         Schema::create('accessible_educational_material_accessibility', function (Blueprint $table) {
@@ -87,6 +100,7 @@ return new class extends Migration {
     {
         Schema::dropIfExists('accessible_educational_material_deficiency');
         Schema::dropIfExists('accessible_educational_material_accessibility');
+        Schema::dropIfExists('accessible_educational_material_training');
         Schema::dropIfExists('accessible_educational_materials');
         Schema::dropIfExists('accessibility_features');
     }

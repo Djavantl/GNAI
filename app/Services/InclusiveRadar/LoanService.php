@@ -34,20 +34,27 @@ class LoanService
     public function update(Loan $loan, array $data): Loan
     {
         return DB::transaction(function () use ($loan, $data) {
+            $item = $loan->loanable()->lockForUpdate()->first();
 
-            $previousReturnDate = $loan->return_date;
+            // 1. Identificar transições de status importantes
+            $wasReturned = !empty($loan->return_date);
+            $isSettingActive = ($data['status'] ?? null) === LoanStatus::ACTIVE->value;
+            $isSettingReturned = in_array($data['status'] ?? '', [
+                LoanStatus::RETURNED->value,
+                LoanStatus::LATE->value,
+                LoanStatus::DAMAGED->value
+            ]);
 
-            // Valida status e data de devolução
-            $this->validateReturnStatus($loan, $data);
-
-            // Se estiver ativo, zera return_date
-            if (($data['status'] ?? null) === LoanStatus::ACTIVE->value) {
+            // 2. VALIDAÇÃO DE "REATIVAÇÃO": De Devolvido para Ativo
+            if ($wasReturned && $isSettingActive) {
+                $this->handleStockDecrement($item);
                 $data['return_date'] = null;
             }
 
-            // Atualiza o estoque se estiver devolvendo agora
-            if (empty($previousReturnDate) && !empty($data['return_date'])) {
-                $this->handleStockIncrement($loan->loanable, $data['status']);
+            // 3. VALIDAÇÃO DE "DEVOLUÇÃO": De Ativo para Devolvido
+            if (!$wasReturned && $isSettingReturned) {
+                $this->validateReturnStatus($loan, $data);
+                $this->handleStockIncrement($item, $data['status']);
             }
 
             $loan->update($data);

@@ -21,6 +21,7 @@ class AssistiveTechnologyController extends Controller
     {
         $name = trim($request->name ?? '');
         $assistiveTechnologies = AssistiveTechnology::with(['type','resourceStatus','deficiencies'])
+            ->withCount('trainings')
             ->filterName($name ?: null)
             ->active($request->is_active)
             ->byType($request->type)
@@ -30,7 +31,6 @@ class AssistiveTechnologyController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        // Se for AJAX, retorna só o partial da tabela
         if ($request->ajax()) {
             return view(
                 'pages.inclusive-radar.assistive-technologies.partials.table',
@@ -38,7 +38,6 @@ class AssistiveTechnologyController extends Controller
             );
         }
 
-        // Caso normal, retorna a página inteira
         return view(
             'pages.inclusive-radar.assistive-technologies.index',
             compact('assistiveTechnologies')
@@ -47,7 +46,6 @@ class AssistiveTechnologyController extends Controller
 
     public function create(): View
     {
-        // A view create recebe $deficiencies e $resourceTypes via View Composer
         return view('pages.inclusive-radar.assistive-technologies.create');
     }
 
@@ -62,13 +60,15 @@ class AssistiveTechnologyController extends Controller
 
     public function show(AssistiveTechnology $assistiveTechnology): View
     {
+
         $assistiveTechnology->load([
             'type',
             'resourceStatus',
             'deficiencies',
             'inspections.images',
             'loans',
-            'attributeValues.attribute'
+            'attributeValues.attribute',
+            'trainings',
         ]);
 
         $attributeValues = $assistiveTechnology->attributeValues
@@ -86,14 +86,14 @@ class AssistiveTechnologyController extends Controller
         $assistiveTechnology->load([
             'deficiencies',
             'inspections.images',
-            'attributeValues.attribute'
+            'attributeValues.attribute',
+            'trainings',
         ]);
 
         $attributeValues = $assistiveTechnology->attributeValues
             ->pluck('value', 'attribute_id')
             ->toArray();
 
-        // A view edit recebe $deficiencies e $resourceTypes via View Composer
         return view(
             'pages.inclusive-radar.assistive-technologies.edit',
             compact('assistiveTechnology', 'attributeValues')
@@ -132,7 +132,8 @@ class AssistiveTechnologyController extends Controller
             'resourceStatus',
             'deficiencies',
             'attributeValues.attribute',
-            'inspections.images'
+            'inspections.images',
+            'trainings',
         ]);
 
         $attributeValues = $assistiveTechnology->attributeValues
