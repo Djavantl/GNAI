@@ -185,7 +185,13 @@
                     <x-forms.section title="4. Histórico de Vistorias" />
                     <div class="mt-4 px-4">
                         @forelse($barrier->inspections as $inspection)
-                            <x-forms.inspection-history-card :inspection="$inspection" />
+                            <div
+                                class="inspection-link d-block mb-3"
+                                style="cursor:pointer;"
+                                onclick="window.location='{{ route('inclusive-radar.barriers.inspection.show', [$barrier, $inspection]) }}'"
+                            >
+                                <x-forms.inspection-history-card :inspection="$inspection" />
+                            </div>
                         @empty
                             <div class="text-center py-4 bg-light rounded border border-dashed">
                                 <i class="fas fa-history text-muted mb-2"></i>

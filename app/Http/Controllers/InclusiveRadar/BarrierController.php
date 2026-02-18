@@ -4,7 +4,7 @@ namespace App\Http\Controllers\InclusiveRadar;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\BarrierRequest;
-use App\Models\InclusiveRadar\{Barrier, BarrierCategory, Institution};
+use App\Models\InclusiveRadar\{Barrier, BarrierCategory, Inspection, Institution};
 use App\Models\SpecializedEducationalSupport\{Deficiency, Professional, Student};
 use App\Services\InclusiveRadar\BarrierService;
 use Illuminate\Http\RedirectResponse;
@@ -131,4 +131,21 @@ class BarrierController extends Controller
             ->route('inclusive-radar.barriers.index')
             ->with('success', 'Barreira removida com sucesso!');
     }
+
+    public function showInspection(Barrier $barrier, Inspection $inspection)
+    {
+        abort_if(
+            $inspection->inspectable_id !== $barrier->id ||
+            $inspection->inspectable_type !== 'barrier',
+            403
+        );
+
+        $inspection->load('images', 'inspectable');
+
+        return view(
+            'pages.inclusive-radar.barriers.inspections.show',
+            compact('barrier', 'inspection')
+        );
+    }
+
 }

@@ -233,3 +233,13 @@ form .row .row [class*="col-"] {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 }
+
+.inspection-link {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.inspection-link:hover .card {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}

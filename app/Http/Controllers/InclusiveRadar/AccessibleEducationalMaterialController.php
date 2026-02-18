@@ -5,6 +5,7 @@ namespace App\Http\Controllers\InclusiveRadar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AccessibleEducationalMaterialRequest;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Models\InclusiveRadar\Inspection;
 use App\Services\InclusiveRadar\AccessibleEducationalMaterialService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -157,4 +158,21 @@ class AccessibleEducationalMaterialController extends Controller
 
         return $pdf->stream("MPA_{$material->name}.pdf");
     }
+
+    public function showInspection(AccessibleEducationalMaterial $material, Inspection $inspection)
+    {
+        abort_if(
+            $inspection->inspectable_id !== $material->id ||
+            $inspection->inspectable_type !== 'accessible_educational_material',
+            403
+        );
+
+        $inspection->load('images', 'inspectable');
+
+        return view(
+            'pages.inclusive-radar.accessible-educational-materials.inspections.show',
+            compact('material', 'inspection')
+        );
+    }
+
 }

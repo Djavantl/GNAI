@@ -142,9 +142,14 @@
             <x-forms.section title="Histórico de Vistorias" />
             <div class="col-12 mb-4 px-4 pb-4">
                 <div class="history-timeline p-4 border rounded bg-light" style="max-height: 450px; overflow-y: auto;">
-                    {{-- Usando a relação diretamente (assumindo que já foi feito o eager load no Controller) --}}
                     @forelse($assistiveTechnology->inspections->sortByDesc('inspection_date') as $inspection)
-                        <x-forms.inspection-history-card :inspection="$inspection" />
+                        <div
+                            class="inspection-link d-block mb-3"
+                            style="cursor:pointer;"
+                            onclick="window.location='{{ route('inclusive-radar.assistive-technologies.inspection.show', [$assistiveTechnology, $inspection]) }}'"
+                        >
+                            <x-forms.inspection-history-card :inspection="$inspection" />
+                        </div>
                     @empty
                         <div class="text-center py-5 text-muted bg-white rounded border border-dashed">
                             <i class="fas fa-history fa-3x mb-3 opacity-20"></i>

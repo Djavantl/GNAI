@@ -178,6 +178,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/assistive-technologies/store', [AssistiveTechnologyController::class, 'store'])
         ->name('assistive-technologies.store')->middleware('can:assistive-technology.store');
 
+    Route::get('assistive-technologies/{assistiveTechnology}/inspection/{inspection}', [AssistiveTechnologyController::class, 'showInspection'])
+        ->name('assistive-technologies.inspection.show')->middleware('can:assistive-technology.inspection.show');;
+
     Route::get('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'show'])
         ->name('assistive-technologies.show')->middleware('can:assistive-technology.show');
 
@@ -211,6 +214,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('barriers.create')->middleware('can:barrier.create');
     Route::post('/barriers/store', [BarrierController::class, 'store'])
         ->name('barriers.store')->middleware('can:barrier.store');
+    Route::get('barriers/{barrier}/inspection/{inspection}', [BarrierController::class, 'showInspection'])
+        ->name('barriers.inspection.show')->middleware('can:barrier.inspection.show');
     Route::get('/barriers/{barrier}', [BarrierController::class, 'show'])
         ->name('barriers.show')->middleware('can:barrier.show');
     Route::get('/barriers/{barrier}/edit', [BarrierController::class, 'edit'])
@@ -231,6 +236,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/accessible-educational-materials/store', [AccessibleEducationalMaterialController::class, 'store'])
         ->name('accessible-educational-materials.store')->middleware('can:material.store');
+
+    Route::get('accessible-educational-materials/{material}/inspection/{inspection}', [AccessibleEducationalMaterialController::class, 'showInspection'])
+        ->name('accessible-educational-materials.inspection.show')->middleware('can:material.inspection.show');
 
     Route::get('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'show'])
         ->name('accessible-educational-materials.show')->middleware('can:material.show');

@@ -261,12 +261,13 @@
                     <div class="px-4 mt-4">
                         <div class="custom-scrollbar" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
                             @forelse($barrier->inspections()->with('images')->latest('inspection_date')->get() as $inspection)
-                                {{--
-                                    Chamamos o mesmo componente do Show.
-                                    A lógica interna dele já vai identificar que é 'barrier'
-                                    e mostrar os campos corretos.
-                                --}}
-                                <x-forms.inspection-history-card :inspection="$inspection" />
+                                <div
+                                    class="inspection-link d-block mb-3"
+                                    style="cursor:pointer;"
+                                    onclick="window.location='{{ route('inclusive-radar.barriers.inspection.show', [$barrier, $inspection]) }}'"
+                                >
+                                    <x-forms.inspection-history-card :inspection="$inspection" />
+                                </div>
                             @empty
                                 <div class="text-center py-4 text-muted bg-white rounded border border-dashed">
                                     <i class="fas fa-history fa-2x mb-2 opacity-20"></i>

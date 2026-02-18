@@ -5,6 +5,7 @@ namespace App\Http\Controllers\InclusiveRadar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AssistiveTechnologyRequest;
 use App\Models\InclusiveRadar\AssistiveTechnology;
+use App\Models\InclusiveRadar\Inspection;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -149,4 +150,19 @@ class AssistiveTechnologyController extends Controller
 
         return $pdf->stream("TA_{$assistiveTechnology->name}.pdf");
     }
+
+    public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection)
+    {
+
+        abort_if(
+            $inspection->inspectable_id !== $assistiveTechnology->id ||
+            $inspection->inspectable_type !== 'assistive_technology',
+            403
+        );
+
+        $inspection->load('images', 'inspectable');
+
+        return view('pages.inclusive-radar.assistive-technologies.inspections.show', compact('assistiveTechnology', 'inspection'));
+    }
+
 }
