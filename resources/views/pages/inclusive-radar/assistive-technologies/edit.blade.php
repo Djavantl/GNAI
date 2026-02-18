@@ -233,13 +233,6 @@
             </div>
         </x-forms.form-card>
     </div>
-
-    {{-- Form oculto para exclusão de treinamentos --}}
-    <form id="form-delete-training" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-    </form>
-
     <script>
         window.currentAttributeValues = @json($attributeValues ?? []);
 

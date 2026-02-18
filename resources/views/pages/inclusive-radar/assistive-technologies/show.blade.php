@@ -157,26 +157,28 @@
             {{-- SEÇÃO 5: Gestão e Público --}}
             <x-forms.section title="Gestão e Público" />
             <div class="row g-3 px-4 pb-4">
-                <x-show.info-item label="Quantidade Total" column="col-md-4" isBox="true">
+                <x-show.info-item label="Quantidade Total" column="col-md-6" isBox="true">
                     {{ $assistiveTechnology->quantity }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Status do Recurso" column="col-md-4" isBox="true">
+                <x-show.info-item label="Status do Recurso" column="col-md-6" isBox="true">
                     <span class="badge bg-info-subtle text-info-emphasis border border-info-subsetle px-3">
                         {{ $assistiveTechnology->resourceStatus->name ?? '---' }}
                     </span>
                 </x-show.info-item>
 
-                <x-show.info-item label="Ativo no Sistema" column="col-md-4" isBox="true">
+                <x-show.info-item label="Ativo no Sistema" column="col-md-12" isBox="true">
                     {{ $assistiveTechnology->is_active ? 'Sim' : 'Não' }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Público-Alvo" column="col-md-12" isBox="true">
-                    @forelse($assistiveTechnology->deficiencies->sortBy('name') as $deficiency)
-                        <x-show.tag color="light">{{ $deficiency->name }}</x-show.tag>
-                    @empty
-                        <span class="text-muted">Nenhum público-alvo definido.</span>
-                    @endforelse
+                    <div class="tag-container"> {{-- Adicione esta div --}}
+                        @forelse($assistiveTechnology->deficiencies->sortBy('name') as $deficiency)
+                            <x-show.tag color="light">{{ $deficiency->name }}</x-show.tag>
+                        @empty
+                            <span class="text-muted">Nenhum público-alvo definido.</span>
+                        @endforelse
+                    </div>
                 </x-show.info-item>
             </div>
 

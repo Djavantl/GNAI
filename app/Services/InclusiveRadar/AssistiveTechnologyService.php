@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\ResourceType;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class AssistiveTechnologyService
 {
@@ -15,6 +16,12 @@ class AssistiveTechnologyService
         protected ResourceAttributeValueService $attributeValueService,
         protected LoanService $loanService,
     ) {}
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRUD
+    |--------------------------------------------------------------------------
+    */
 
     public function store(array $data): AssistiveTechnology
     {
@@ -36,6 +43,7 @@ class AssistiveTechnologyService
             $assistiveTechnology->update([
                 'is_active' => !$assistiveTechnology->is_active
             ]);
+
             return $assistiveTechnology;
         });
     }
@@ -43,118 +51,226 @@ class AssistiveTechnologyService
     public function delete(AssistiveTechnology $assistiveTechnology): void
     {
         DB::transaction(function () use ($assistiveTechnology) {
+
             if ($assistiveTechnology->loans()->whereNull('return_date')->exists()) {
                 throw new CannotDeleteWithActiveLoansException();
             }
+
             $assistiveTechnology->delete();
         });
     }
 
-    protected function persist(AssistiveTechnology $assistiveTechnology, array $data): AssistiveTechnology
+    /*
+    |--------------------------------------------------------------------------
+    | PERSIST (Fluxo Principal)
+    |--------------------------------------------------------------------------
+    */
+
+    protected function persist(AssistiveTechnology $at, array $data): AssistiveTechnology
     {
-        // 1. Captura estados antes da mudança (Somente o que a TA gerencia diretamente)
-        $oldDeficiencies = $assistiveTechnology->exists
-            ? $assistiveTechnology->deficiencies()->pluck('deficiencies.id')->toArray()
+        [$oldDef, $oldAttr, $oldTrainings] = $this->captureOriginalState($at);
+
+        $data = $this->processStock($at, $data);
+
+        $this->validateStatusChangeWithActiveLoans($at, $data);
+
+        $this->saveModel($at, $data);
+
+        $this->syncRelations($at, $data);
+
+        $this->logRelationChanges($at, $data, $oldDef, $oldAttr, $oldTrainings);
+
+        $this->runInspection($at, $data);
+
+        return $this->loadFreshRelations($at);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Etapas do Persist
+    |--------------------------------------------------------------------------
+    */
+
+    private function captureOriginalState(AssistiveTechnology $at): array
+    {
+        $oldDeficiencies = $at->exists
+            ? $at->deficiencies()->pluck('deficiencies.id')->toArray()
             : [];
 
-        $oldAttributes = $assistiveTechnology->exists
-            ? $assistiveTechnology->attributeValues()->pluck('value', 'attribute_id')->toArray()
+        $oldAttributes = $at->exists
+            ? $at->attributeValues()->pluck('value', 'attribute_id')->toArray()
             : [];
 
-        // 2. Processamento de estoque via LoanService
+        $oldTrainings = $at->exists
+            ? $at->trainings()->pluck('trainings.id')->toArray()
+            : [];
+
+        return [$oldDeficiencies, $oldAttributes, $oldTrainings];
+    }
+
+    private function processStock(AssistiveTechnology $at, array $data): array
+    {
         if (isset($data['quantity'])) {
-            $this->loanService->validateStockAvailability($assistiveTechnology, (int)$data['quantity']);
+            $this->loanService->validateStockAvailability($at,(int)$data['quantity']);
         }
 
-        $data = $this->loanService->calculateStockForLoan($assistiveTechnology, $data);
+        return $this->loanService->calculateStockForLoan($at,$data);
+    }
 
-        // 3. Salva dados básicos
-        $assistiveTechnology->fill($data)->save();
+    private function saveModel(AssistiveTechnology $at, array $data): void
+    {
+        $at->fill($data)->save();
+    }
 
-        // 4. Sincroniza relações diretas (Deficiências e Atributos)
-        $this->syncRelations($assistiveTechnology, $data);
+    protected function syncRelations(AssistiveTechnology $at, array $data): void
+    {
+        if (isset($data['deficiencies'])) {
+            $at->deficiencies()->sync($data['deficiencies']);
+        }
 
-        // 5. Log manual de mudanças
-        if (!$assistiveTechnology->wasRecentlyCreated) {
-            // Deficiências
-            if (isset($data['deficiencies'])) {
-                $newDeficiencies = array_map('intval', $data['deficiencies']);
-                sort($oldDeficiencies);
-                sort($newDeficiencies);
-                if ($oldDeficiencies !== $newDeficiencies) {
-                    $this->logRelationChange($assistiveTechnology, 'deficiencies', $oldDeficiencies, $newDeficiencies);
+        if (isset($data['attributes'])) {
+
+            $type = ResourceType::find($at->type_id);
+
+            $valid = $type
+                ? $type->attributes()->pluck('type_attributes.id')->toArray()
+                : [];
+
+            foreach ($data['attributes'] as $id => $value) {
+                if (empty(trim($value))) {
+                    $at->attributeValues()->where('attribute_id',$id)->delete();
+                    unset($data['attributes'][$id]);
                 }
             }
 
-            // Atributos
-            if (isset($data['attributes'])) {
-                $newAttributes = array_filter($data['attributes'], fn($v) => !is_null($v));
-                if ($oldAttributes != $newAttributes) {
-                    $this->logRelationChange($assistiveTechnology, 'attributes', $oldAttributes, $newAttributes);
-                }
+            $at->attributeValues()
+                ->whereNotIn('attribute_id',$valid)
+                ->delete();
+
+            if (!empty($data['attributes'])) {
+                $this->attributeValueService->saveValues($at,$data['attributes']);
             }
         }
 
-        // 6. Inspeção
-        $this->inspectionService->createInspectionForModel($assistiveTechnology, $data);
+        // ===== TRAININGS =====
 
-        return $assistiveTechnology->fresh([
+        if (!empty($data['trainings'])) {
+
+            $at->trainings()->delete();
+
+            foreach ($data['trainings'] as $training) {
+
+                $t = $at->trainings()->create([
+                    'title'=>$training['title'],
+                    'description'=>$training['description'] ?? null,
+                    'url'=>$training['url'] ?? null,
+                    'is_active'=>true
+                ]);
+
+                if (!empty($training['files'])) {
+
+                    foreach ($training['files'] as $file) {
+
+                        $path = $file->store('trainings','public');
+
+                        $t->files()->create([
+                            'path'=>$path,
+                            'original_name'=>$file->getClientOriginalName(),
+                            'mime_type'=>$file->getMimeType(),
+                            'size'=>$file->getSize(),
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
+    private function logRelationChanges(AssistiveTechnology $at, array $data, array $oldDef, array $oldAttr, array $oldTrainings): void
+    {
+        if ($at->wasRecentlyCreated) return;
+
+        if (isset($data['deficiencies'])) {
+
+            $newDef = array_map('intval',$data['deficiencies']);
+            sort($oldDef);
+            sort($newDef);
+
+            if ($oldDef !== $newDef) {
+                $this->logRelationChange($at,'deficiencies',$oldDef,$newDef);
+            }
+        }
+
+        if (isset($data['attributes'])) {
+
+            $newAttr = array_filter($data['attributes'], fn($v)=>!is_null($v));
+
+            if ($oldAttr != $newAttr) {
+                $this->logRelationChange($at,'attributes',$oldAttr,$newAttr);
+            }
+        }
+
+        if (isset($data['trainings'])) {
+
+            $newTrain = $at->trainings()->pluck('id')->toArray();
+
+            sort($oldTrainings);
+            sort($newTrain);
+
+            if ($oldTrainings !== $newTrain) {
+                $this->logRelationChange($at,'trainings',$oldTrainings,$newTrain);
+            }
+        }
+    }
+
+    private function runInspection(AssistiveTechnology $at, array $data): void
+    {
+        $this->inspectionService->createInspectionForModel($at,$data);
+    }
+
+    private function loadFreshRelations(AssistiveTechnology $at): AssistiveTechnology
+    {
+        return $at->fresh([
             'type',
             'resourceStatus',
             'deficiencies',
             'attributeValues',
-            'trainings',
+            'trainings'
         ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Utilitários
+    |--------------------------------------------------------------------------
+    */
 
     protected function logRelationChange(AssistiveTechnology $model, string $field, array $old, array $new): void
     {
         AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'updated',
-            'auditable_type' => $model->getMorphClass(),
-            'auditable_id' => $model->id,
-            'old_values' => [$field => $old],
-            'new_values' => [$field => $new],
-            'ip_address' => request()?->ip(),
-            'user_agent' => request()?->userAgent(),
+            'user_id'=>auth()->id(),
+            'action'=>'updated',
+            'auditable_type'=>$model->getMorphClass(),
+            'auditable_id'=>$model->id,
+            'old_values'=>[$field=>$old],
+            'new_values'=>[$field=>$new],
+            'ip_address'=>request()?->ip(),
+            'user_agent'=>request()?->userAgent(),
         ]);
     }
 
-    protected function syncRelations(AssistiveTechnology $assistiveTechnology, array $data): void
+    private function validateStatusChangeWithActiveLoans(AssistiveTechnology $at, array $data): void
     {
-        // 1. Deficiências (Sincronização normal)
-        if (isset($data['deficiencies'])) {
-            $assistiveTechnology->deficiencies()->sync($data['deficiencies']);
-        }
+        if (!$at->exists) return;
+        if (!isset($data['status_id'])) return;
 
-        // 2. Atributos dinâmicos (O CORAÇÃO DO PROBLEMA)
-        if (isset($data['attributes'])) {
-            $type = ResourceType::find($assistiveTechnology->type_id);
-            $validAttributeIds = $type ? $type->attributes()->pluck('type_attributes.id')->toArray() : [];
+        $hasActiveLoans = $at->loans()->whereNull('return_date')->exists();
 
-            // LIMPEZA ATIVA:
-            // Identificamos atributos que o usuário deixou em branco ou que não pertencem mais ao tipo
-            foreach ($data['attributes'] as $attributeId => $value) {
-                if (empty(trim($value))) { // Se estiver vazio ou só com espaços
-                    $assistiveTechnology->attributeValues()
-                        ->where('attribute_id', $attributeId)
-                        ->delete();
+        if (!$hasActiveLoans) return;
 
-                    // Removemos do array para o service de "save" não tentar processar
-                    unset($data['attributes'][$attributeId]);
-                }
-            }
-
-            // Remove atributos que não pertencem mais a este tipo de recurso (caso mudou o Tipo)
-            $assistiveTechnology->attributeValues()
-                ->whereNotIn('attribute_id', $validAttributeIds)
-                ->delete();
-
-            // Salva apenas os que sobraram (que possuem valor real)
-            if (!empty($data['attributes'])) {
-                $this->attributeValueService->saveValues($assistiveTechnology, $data['attributes']);
-            }
+        if ($at->status_id != $data['status_id']) {
+            throw ValidationException::withMessages([
+                'status_id'=>'Não é possível alterar o status enquanto houver empréstimos ativos.'
+            ]);
         }
     }
 }

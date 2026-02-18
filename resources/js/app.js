@@ -98,37 +98,37 @@ class App {
         });
     }
 
-    // Comportamento mobile
-    initMobileBehavior() {
-        // Fechar sidebar ao clicar em um link em mobile
-        if (window.innerWidth < 769) {
-            const menuLinks = document.querySelectorAll('.sidebar-menu a');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    this.sidebar.classList.remove('show');
-                    this.removeOverlay();
-                });
-            });
-        }
+    // // Comportamento mobile
+    // initMobileBehavior() {
+    //     // Fechar sidebar ao clicar em um link em mobile
+    //     if (window.innerWidth < 769) {
+    //         const menuLinks = document.querySelectorAll('.sidebar-menu a');
+    //         menuLinks.forEach(link => {
+    //             link.addEventListener('click', () => {
+    //                 this.sidebar.classList.remove('show');
+    //                 this.removeOverlay();
+    //             });
+    //         });
+    //     }
+    //
+    //     // Ajustar altura do conteúdo
+    //     this.adjustContentHeight();
+    //     window.addEventListener('resize', () => this.adjustContentHeight());
+    // }
 
-        // Ajustar altura do conteúdo
-        this.adjustContentHeight();
-        window.addEventListener('resize', () => this.adjustContentHeight());
-    }
-
-    // Ajustar altura do conteúdo
-    adjustContentHeight() {
-        const navbarHeight = document.querySelector('.navbar-custom').offsetHeight;
-        const mainContent = document.querySelector('.main-content');
-
-        if (mainContent) {
-            if (window.innerWidth >= 769) {
-                mainContent.style.marginTop = navbarHeight + 'px';
-            } else {
-                mainContent.style.marginTop = '0';
-            }
-        }
-    }
+    // // Ajustar altura do conteúdo
+    // adjustContentHeight() {
+    //     const navbarHeight = document.querySelector('.navbar-custom').offsetHeight;
+    //     const mainContent = document.querySelector('.main-content');
+    //
+    //     if (mainContent) {
+    //         if (window.innerWidth >= 769) {
+    //             mainContent.style.marginTop = navbarHeight + 'px';
+    //         } else {
+    //             mainContent.style.marginTop = '0';
+    //         }
+    //     }
+    // }
 
     // Inicializar dropdowns
     initDropdowns() {

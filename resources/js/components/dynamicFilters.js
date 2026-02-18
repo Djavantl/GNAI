@@ -8,19 +8,28 @@ function initDynamicFilters() {
 
         let timeout = null;
 
-        // Escuta qualquer mudança no formulário (input ou select)
         form.addEventListener('input', (e) => {
-            if (e.target.hasAttribute('data-filter-input') || e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') {
+            const isFilterInput = e.target.hasAttribute('data-filter-input') ||
+                e.target.tagName === 'SELECT' ||
+                e.target.tagName === 'INPUT';
+
+            if (isFilterInput) {
                 clearTimeout(timeout);
                 timeout = setTimeout(() => fetchResults(), 500);
             }
         });
 
         function fetchResults(pageUrl = null) {
+            // 1. Estabiliza a altura para evitar que o conteúdo abaixo "suba" bruscamente
+            container.style.minHeight = container.offsetHeight + 'px';
+
+            // 2. Feedback visual suave (opacidade em vez de movimento)
+            container.style.transition = 'opacity 0.2s ease-in-out';
+            container.style.opacity = '0.4';
+
             const formData = new FormData(form);
             const params = new URLSearchParams();
 
-            // Limpa parâmetros vazios para não sujar a query
             for (const [key, value] of formData.entries()) {
                 if (value !== '') params.append(key, value);
             }
@@ -28,7 +37,6 @@ function initDynamicFilters() {
             const baseUrl = window.location.pathname;
             const finalUrl = pageUrl || `${baseUrl}?${params.toString()}`;
 
-            // Opcional: Atualiza a URL no navegador sem recarregar a página
             window.history.pushState({}, '', finalUrl);
 
             fetch(finalUrl, {
@@ -39,17 +47,37 @@ function initDynamicFilters() {
                     return res.text();
                 })
                 .then(html => {
+                    // 3. Substitui o conteúdo
                     container.innerHTML = html;
+
+                    // 4. Remove a classe de animação de entrada temporariamente
+                    // para evitar o "pulo" do translateY (opcional, dependendo do seu HTML)
+                    const animatedElements = container.querySelectorAll('.page-transition');
+                    animatedElements.forEach(el => el.classList.remove('page-transition'));
+
+                    // 5. Restaura o container
+                    container.style.opacity = '1';
+
+                    // Delay curto para o navegador renderizar antes de liberar a altura
+                    setTimeout(() => {
+                        container.style.minHeight = '';
+                    }, 100);
+
                     attachPagination();
                 })
-                .catch(error => console.error('Erro ao filtrar:', error));
+                .catch(error => {
+                    console.error('Erro ao filtrar:', error);
+                    container.style.opacity = '1';
+                    container.style.minHeight = '';
+                });
         }
 
         function attachPagination() {
-            // Re-anexa o evento de clique aos links da paginação que o AJAX trouxe
             container.querySelectorAll('.pagination a').forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
+                    // Rola suavemente para o topo do container ao mudar de página
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     fetchResults(link.href);
                 });
             });

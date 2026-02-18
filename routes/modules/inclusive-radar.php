@@ -9,6 +9,7 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     InstitutionController,
     LoanController,
     LocationController,
+    Logs\AccessibleEducationalMaterialLogController,
     Logs\AssistiveTechnologyLogController,
     ResourceStatusController,
     ResourceTypeController,
@@ -249,7 +250,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/accessible-educational-materials/{material}/pdf', [AccessibleEducationalMaterialController::class, 'generatePdf'])
         ->name('accessible-educational-materials.pdf')->middleware('can:material.pdf');
 
+    Route::get('/accessible-educational-materials/{material}/logs', [AccessibleEducationalMaterialLogController::class, 'index'])
+        ->name('accessible-educational-materials.logs')->middleware('can:material.logs');
+
+    Route::get('/accessible-educational-materials/{material}/logs/pdf', [AccessibleEducationalMaterialLogController::class, 'generatePdf'])
+        ->name('accessible-educational-materials.logs.pdf')->middleware('can:material.logs.pdf');
+
     // ------------------- TREINAMENTOS -------------------
+
     Route::get('/trainings', [TrainingController::class, 'index'])
         ->name('trainings.index')->middleware('can:training.index');
 
@@ -258,6 +266,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/trainings/store', [TrainingController::class, 'store'])
         ->name('trainings.store')->middleware('can:training.store');
+
+    Route::delete('trainings/{training}/files/{file}', [TrainingController::class, 'destroyFile'])
+        ->name('trainings.files.destroy');
 
     Route::get('/trainings/{training}', [TrainingController::class, 'show'])
         ->name('trainings.show')->middleware('can:training.show');
@@ -273,9 +284,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/trainings/{training}', [TrainingController::class, 'destroy'])
         ->name('trainings.destroy')->middleware('can:training.destroy');
-
-    Route::delete('trainings/files/{file}', [TrainingController::class, 'destroyFile'])
-        ->name('trainings.files.destroy');
 
 
     // ------------------- EMPRÉSTIMOS -------------------

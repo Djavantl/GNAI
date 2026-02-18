@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->string('url')->nullable();
+            $table->json('url')->nullable();
 
             $table->morphs('trainable');
 

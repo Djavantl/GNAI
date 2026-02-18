@@ -155,17 +155,8 @@
                 <x-forms.select
                     name="status_id"
                     label="Status do Recurso"
-                    :options="\App\Models\InclusiveRadar\ResourceStatus::where('is_active', true)->where('for_educational_material', true)->pluck('name', 'id')"
+                    :options="\App\Models\InclusiveRadar\ResourceStatus::where('is_active', true)->pluck('name', 'id')"
                     :selected="old('status_id')"
-                />
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.checkbox
-                    name="requires_training"
-                    label="Requer Treinamento"
-                    description="Indica necessidade de capacitação para uso do material"
-                    :checked="old('requires_training')"
                 />
             </div>
 

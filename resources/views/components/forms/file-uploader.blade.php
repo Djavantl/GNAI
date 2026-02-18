@@ -5,6 +5,7 @@
     'accept' => '*/*',
     'multiple' => false,
     'deleteRoute' => null,
+    'training' => null,
 ])
 
 <div class="mb-3 file-uploader">
@@ -17,14 +18,14 @@
            @if($multiple) multiple @endif
            accept="{{ $accept }}"
            class="d-none"
-           onchange="updateFileList(this, 'list-{{ $name }}')">
+           onchange="handleFileSelection(this, '{{ $name }}')">
 
     {{-- 1. ARQUIVOS JÁ SALVOS --}}
     <div class="existing-files-container d-flex flex-column gap-2 mb-2">
         @foreach($existingFiles as $file)
             <div class="d-flex gap-2 mb-2 existing-file-item">
                 <div class="flex-grow-1">
-                    <div class="form-control bg-light d-flex align-items-center justify-content-between" style="height: calc(1.5 em + 0.75 rem + 2 px);">
+                    <div class="form-control bg-light d-flex align-items-center justify-content-between" style="height: calc(1.5em + 0.75rem + 2px);">
                         <a href="{{ asset('storage/' . $file->path) }}" target="_blank" class="text-decoration-none text-primary text-truncate">
                             <i class="fas fa-file-alt me-2 text-secondary"></i>
                             {{ $file->original_name ?? basename($file->path) }}
@@ -33,18 +34,15 @@
                     </div>
                 </div>
 
-                @if($deleteRoute)
-                    <form action="{{ route($deleteRoute, $file->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        {{-- Botão lixeira igual ao dos links --}}
-                        <button type="submit"
-                                class="btn btn-outline-danger"
-                                onclick="return confirm('Tem certeza que deseja remover este arquivo permanentemente?')"
-                                title="Remover arquivo">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form>
+                @if($deleteRoute && $training && $file->id)
+                    <button type="button"
+                            class="btn btn-outline-danger btn-delete-file"
+                            data-url="{{ route($deleteRoute, [$training->id, $file->id]) }}"
+                            data-file-id="{{ $file->id }}"
+                            data-token="{{ csrf_token() }}"
+                            onclick="return confirm('Tem certeza que deseja remover este arquivo permanentemente?') && deleteFile(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 @endif
             </div>
         @endforeach
@@ -53,9 +51,8 @@
     {{-- 2. LISTA DE NOVOS ARQUIVOS SELECIONADOS --}}
     <div id="list-{{ $name }}" class="mb-2 d-flex flex-column gap-1"></div>
 
-    {{-- 3. BOTÃO DE AÇÃO (O ROXINHO) --}}
+    {{-- 3. BOTÃO DE AÇÃO --}}
     <div class="d-flex align-items-center gap-2 mt-2">
-        {{-- Voltando para variant="primary" para garantir a cor roxa do seu tema --}}
         <x-buttons.link-button
             href="javascript:void(0)"
             onclick="document.getElementById('input-{{ $name }}').click()"
@@ -72,24 +69,73 @@
 </div>
 
 <script>
-    if (typeof updateFileList !== 'function') {
-        function updateFileList(input, listId) {
-            const list = document.getElementById(listId);
-            list.innerHTML = '';
+    // Mantém os arquivos selecionados temporariamente
+    window.selectedFiles_{{ $name }} = [];
 
-            if (input.files.length > 0) {
-                const header = document.createElement('div');
-                header.className = 'fw-bold small text-success mb-1 mt-2';
-                header.innerHTML = '<i class="fas fa-check-circle"></i> Novos arquivos para enviar:';
-                list.appendChild(header);
+    function handleFileSelection(input, listId) {
+        const files = Array.from(input.files);
 
-                Array.from(input.files).forEach(file => {
-                    const item = document.createElement('div');
-                    item.className = 'small text-muted ps-3 border-start ms-2 mb-1';
-                    item.innerHTML = `<i class="fas fa-paperclip me-1"></i> ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-                    list.appendChild(item);
-                });
+        // Adiciona arquivos à lista global
+        window.selectedFiles_{{ $name }} = window.selectedFiles_{{ $name }}.concat(files);
+
+        // Atualiza preview
+        updateFileListPreview(listId);
+
+        // Limpa input para permitir re-seleção
+        input.value = '';
+    }
+
+    function updateFileListPreview(listId) {
+        const container = document.getElementById('list-' + listId);
+        container.innerHTML = '';
+
+        window.selectedFiles_{{ $name }}.forEach((file, index) => {
+            const div = document.createElement('div');
+            div.className = 'd-flex gap-2 mb-1 align-items-center';
+
+            div.innerHTML = `
+                <span class="flex-grow-1 text-truncate">${file.name}</span>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSelectedFile(${index}, '${listId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+
+            container.appendChild(div);
+        });
+    }
+
+    function removeSelectedFile(index, listId) {
+        window.selectedFiles_{{ $name }}.splice(index, 1);
+        updateFileListPreview(listId);
+    }
+
+    // DELETE de arquivos existentes
+    function deleteFile(button) {
+        const url = button.getAttribute('data-url');
+        const token = button.getAttribute('data-token');
+
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
-        }
+        })
+            .then(response => {
+                if (response.ok) {
+                    button.closest('.existing-file-item').remove();
+                    showSuccessMessage('Arquivo removido com sucesso!');
+                } else {
+                    return response.json().then(data => { throw new Error(data.message || 'Erro ao remover arquivo'); });
+                }
+            })
+            .catch(error => alert(error.message));
+
+        return false;
+    }
+
+    function showSuccessMessage(message) {
+        alert(message);
     }
 </script>

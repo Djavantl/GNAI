@@ -122,6 +122,7 @@
                     :existingFiles="$training->files"
                     :multiple="true"
                     deleteRoute="inclusive-radar.trainings.files.destroy"
+                    :training="$training"
                 />
             </div>
 

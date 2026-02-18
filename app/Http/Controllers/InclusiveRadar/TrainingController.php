@@ -11,6 +11,7 @@ use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Services\InclusiveRadar\TrainingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class TrainingController extends Controller
@@ -127,14 +128,26 @@ class TrainingController extends Controller
         }
     }
 
-    public function destroyFile(TrainingFile $file): RedirectResponse
+    public function destroyFile(Training $training, TrainingFile $file)
     {
+        if ($file->training_id !== $training->id) {
+            abort(403, 'Arquivo não pertence a este treinamento.');
+        }
+
         try {
             $file->delete();
 
+            if (request()->wantsJson()) {
+                return response()->json(['message' => 'Arquivo removido com sucesso!']);
+            }
+
             return redirect()->back()->with('success', 'Arquivo removido com sucesso!');
         } catch (\Exception $e) {
+            if (request()->wantsJson()) {
+                return response()->json(['message' => 'Erro ao remover arquivo: ' . $e->getMessage()], 500);
+            }
             return redirect()->back()->with('error', 'Erro ao remover arquivo: ' . $e->getMessage());
         }
     }
+
 }

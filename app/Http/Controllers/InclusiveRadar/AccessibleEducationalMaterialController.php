@@ -27,6 +27,7 @@ class AccessibleEducationalMaterialController extends Controller
             'deficiencies',
             'accessibilityFeatures',
         ])
+            ->withCount('trainings')
             ->filterName($name ?: null)
             ->active($request->is_active)
             ->byType($request->type)
@@ -49,10 +50,8 @@ class AccessibleEducationalMaterialController extends Controller
         );
     }
 
-
     public function create(): View
     {
-        // A view create recebe $deficiencies e $resourceTypes via View Composer
         return view('pages.inclusive-radar.accessible-educational-materials.create');
     }
 
@@ -74,7 +73,8 @@ class AccessibleEducationalMaterialController extends Controller
             'accessibilityFeatures',
             'inspections.images',
             'loans',
-            'attributeValues.attribute'
+            'attributeValues.attribute',
+            'trainings',
         ]);
 
         $attributeValues = $material->attributeValues
@@ -93,12 +93,14 @@ class AccessibleEducationalMaterialController extends Controller
             'deficiencies',
             'accessibilityFeatures',
             'inspections.images',
-            'attributeValues.attribute'
+            'attributeValues.attribute',
+            'trainings',
         ]);
 
-        $attributeValues = $material->attributeValues->pluck('value', 'attribute_id')->toArray();
+        $attributeValues = $material->attributeValues
+            ->pluck('value', 'attribute_id')
+            ->toArray();
 
-        // A view de edição recebe $deficiencies e $resourceTypes via View Composer
         return view(
             'pages.inclusive-radar.accessible-educational-materials.edit',
             compact('material', 'attributeValues')
@@ -118,8 +120,7 @@ class AccessibleEducationalMaterialController extends Controller
     {
         $this->service->toggleActive($material);
 
-        return redirect()->back()
-            ->with('success', 'Status atualizado!');
+        return redirect()->back()->with('success', 'Status atualizado com sucesso!');
     }
 
     public function destroy(AccessibleEducationalMaterial $material): RedirectResponse
@@ -139,7 +140,8 @@ class AccessibleEducationalMaterialController extends Controller
             'deficiencies',
             'accessibilityFeatures',
             'attributeValues.attribute',
-            'inspections.images'
+            'inspections.images',
+            'trainings',
         ]);
 
         $attributeValues = $material->attributeValues

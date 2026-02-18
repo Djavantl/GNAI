@@ -3,9 +3,11 @@
 namespace App\Models\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\ConservationState;
+use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -14,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccessibleEducationalMaterial extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Auditable;
 
     protected $table = 'accessible_educational_materials';
 
@@ -24,7 +26,6 @@ class AccessibleEducationalMaterial extends Model
         'asset_code',
         'quantity',
         'quantity_available',
-        'requires_training',
         'conservation_state',
         'notes',
         'status_id',
@@ -32,8 +33,7 @@ class AccessibleEducationalMaterial extends Model
     ];
 
     protected $casts = [
-        'requires_training'  => 'boolean',
-        'is_active'          => 'boolean',
+        'is_active' => 'boolean',
         'conservation_state' => ConservationState::class,
     ];
 
@@ -47,6 +47,11 @@ class AccessibleEducationalMaterial extends Model
     public function loans(): MorphMany
     {
         return $this->morphMany(Loan::class, 'loanable');
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
     }
 
     public function type(): BelongsTo
@@ -157,6 +162,78 @@ class AccessibleEducationalMaterial extends Model
         }
 
         return $query;
+    }
+
+    // Auditoria
+
+    public static function getAuditLabels(): array
+    {
+        return [
+            'name' => 'Nome do Material',
+            'asset_code' => 'Código de Patrimônio',
+            'quantity' => 'Quantidade',
+            'conservation_state' => 'Estado de Conservação',
+            'status_id' => 'Status',
+            'type_id' => 'Tipo',
+            'is_active' => 'Cadastro Ativo',
+            'deficiencies' => 'Público-Alvo',
+            'trainings' => 'Treinamentos',
+            'attributes' => 'Características Técnicas',
+            'accessibility_features' => 'Recursos de Acessibilidade',
+        ];
+    }
+
+    public static function formatAuditValue(string $field, $value): ?string
+    {
+        // --- Características Técnicas (Atributos Dinâmicos) ---
+        if ($field === 'attributes' && is_array($value)) {
+            $attributeNames = \App\Models\InclusiveRadar\TypeAttribute::whereIn('id', array_keys($value))
+                ->pluck('name', 'id')
+                ->toArray();
+
+            $formatted = [];
+            foreach ($value as $id => $val) {
+                // Buscamos o nome e aplicamos o ucfirst para garantir a primeira letra maiúscula
+                $name = $attributeNames[$id] ?? "Atributo #$id";
+                $label = mb_convert_case($name, MB_CASE_TITLE, "UTF-8");
+
+                $formatted[] = "{$label}: {$val}";
+            }
+
+            return !empty($formatted) ? implode(' | ', $formatted) : 'Nenhuma';
+        }
+
+        // --- Público-Alvo ---
+        if ($field === 'deficiencies' && is_array($value)) {
+            return Deficiency::whereIn('id', $value)
+                ->pluck('name')
+                ->join(', ') ?: 'Nenhuma';
+        }
+
+        // --- Treinamentos ---
+        if ($field === 'trainings' && is_array($value)) {
+            return Training::whereIn('id', $value)
+                ->pluck('title')
+                ->join(', ') ?: 'Nenhum';
+        }
+
+        // --- Recursos de Acessibilidade ---
+        if ($field === 'accessibility_features' && is_array($value)) {
+            return AccessibilityFeature::whereIn('id', $value)
+                ->pluck('name')
+                ->join(', ') ?: 'Nenhum';
+        }
+
+        // --- Relacionamentos Diretos (ID para Nome) ---
+        if ($field === 'type_id') {
+            return ResourceType::find($value)?->name ?? "ID: $value";
+        }
+
+        if ($field === 'status_id') {
+            return ResourceStatus::find($value)?->name ?? "ID: $value";
+        }
+
+        return null;
     }
 
 }

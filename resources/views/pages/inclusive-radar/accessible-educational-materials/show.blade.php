@@ -77,6 +77,103 @@
                 @endif
             </x-show.info-item>
 
+            {{-- SEÇÃO X: TREINAMENTOS E CAPACITAÇÕES --}}
+            <x-forms.section title="Treinamentos e Capacitações" />
+
+            <div class="col-12 mt-4">
+                <div class="px-4 mb-4">
+
+                    @if($material->trainings->count() > 0)
+
+                        <div class="p-0 border rounded bg-white shadow-sm overflow-hidden">
+                            <x-table.table :headers="['Título', 'Status', 'Ações']">
+
+                                @foreach($material->trainings as $training)
+                                    <tr>
+
+                                        {{-- TÍTULO --}}
+                                        <x-table.td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-chalkboard-teacher text-purple me-2"></i>
+                                                <span class="fw-bold text-dark">
+                                        {{ $training->title }}
+                                    </span>
+                                            </div>
+                                        </x-table.td>
+
+                                        {{-- STATUS --}}
+                                        <x-table.td>
+                                <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold">
+                                    {{ $training->is_active ? 'Ativo' : 'Inativo' }}
+                                </span>
+                                        </x-table.td>
+
+                                        {{-- AÇÕES --}}
+                                        <x-table.td>
+                                            <x-table.actions>
+
+                                                <x-buttons.link-button
+                                                    :href="route('inclusive-radar.trainings.show', $training)"
+                                                    variant="info"
+                                                >
+                                                    <i class="fas fa-eye"></i>
+                                                </x-buttons.link-button>
+
+                                                <x-buttons.link-button
+                                                    :href="route('inclusive-radar.trainings.edit', $training)"
+                                                    variant="warning"
+                                                >
+                                                    <i class="fas fa-edit"></i>
+                                                </x-buttons.link-button>
+
+                                            </x-table.actions>
+                                        </x-table.td>
+
+                                    </tr>
+                                @endforeach
+
+                            </x-table.table>
+                        </div>
+
+                        {{-- BOTÃO ADICIONAR --}}
+                        <div class="text-end mt-3">
+                            <x-buttons.link-button
+                                :href="route('inclusive-radar.trainings.create', [
+                        'type' => 'material',
+                        'id' => $material->id
+                    ])"
+                                variant="primary"
+                                class="btn-sm shadow-sm"
+                            >
+                                <i class="fas fa-plus me-1"></i>
+                                Adicionar Treinamento
+                            </x-buttons.link-button>
+                        </div>
+
+                    @else
+
+                        {{-- ESTADO VAZIO --}}
+                        <div class="text-center py-5 border rounded bg-light border-dashed">
+                            <i class="fas fa-chalkboard-teacher fa-3x mb-3 text-muted opacity-20"></i>
+
+                            <p class="text-muted italic mb-3">
+                                Nenhum treinamento cadastrado para este material.
+                            </p>
+
+                            <x-buttons.link-button
+                                :href="route('inclusive-radar.trainings.create', [
+                                    'type' => 'accessible_educational_material',
+                                    'id' => $material->id
+                                ])"
+                                variant="primary"
+                            >
+                                Adicionar Primeiro Treinamento
+                            </x-buttons.link-button>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             {{-- SEÇÃO 4: Histórico de Vistorias --}}
             <x-forms.section title="Histórico de Vistorias" />
             <div class="col-12 mb-4 px-4">
@@ -108,11 +205,7 @@
 
             {{-- Linha 2: Requer Treinamento | Ativo no Sistema --}}
             <div class="row g-3 mb-3">
-                <x-show.info-item label="Requer Treinamento" column="col-md-6" isBox="true">
-                    {{ $material->requires_training ? 'Sim' : 'Não' }}
-                </x-show.info-item>
-
-                <x-show.info-item label="Ativo no Sistema" column="col-md-6" isBox="true">
+                <x-show.info-item label="Ativo no Sistema" column="col-md-12" isBox="true">
                     {{ $material->is_active ? 'Sim' : 'Não' }}
                 </x-show.info-item>
             </div>
@@ -130,7 +223,6 @@
                 </x-show.info-item>
             </div>
 
-            {{-- Rodapé de Ações --}}
             {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small d-flex align-items-center">
@@ -151,6 +243,9 @@
                         <i class="fas fa-file-pdf"></i> Gerar PDF
                     </x-buttons.link-button>
 
+                    <a href="{{ route('inclusive-radar.accessible-educational-materials.logs', $material) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-history"></i> Logs
+                    </a>
                     {{-- Excluir Recurso --}}
                     <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}"
                           method="POST"
