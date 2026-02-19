@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SpecializedEducationalSupport\StudentRequest;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\SpecializedEducationalSupport\Semester;
 use App\Services\SpecializedEducationalSupport\StudentService;
 use Illuminate\Http\Request;
 
@@ -21,17 +22,20 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $students = $this->service->index($request->all());
+        $semesters = Semester::orderByDesc('year')
+        ->orderByDesc('term')
+        ->get(['id', 'label']);
 
         if ($request->ajax()) {
             return view(
                 'pages.specialized-educational-support.students.partials.table',
-                compact('students')
+                compact('students','semesters')
             )->render();
         }
 
         return view(
             'pages.specialized-educational-support.students.index',
-            compact('students')
+            compact('students','semesters')
         );
     }
 

@@ -11,30 +11,11 @@ class StudentService
 {
     public function index(array $filters = [])
     {
-        $query = Student::with('person')
-            ->orderBy('created_at', 'desc');
-
-        if (!empty($filters['name'])) {
-            $query->whereHas('person', fn($q) =>
-                $q->where('name', 'like', "{$filters['name']}%")
-            );
-        }
-
-        if (!empty($filters['email'])) {
-            $query->whereHas('person', fn($q) =>
-                $q->where('email', 'like', "%{$filters['email']}%")
-            );
-        }
-
-        if (!empty($filters['registration'])) {
-            $query->where('registration', 'like', "%{$filters['registration']}%");
-        }
-
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
-
-        return $query->paginate(10)->withQueryString();
+        return Student::with('person')
+            ->globalSearch($filters['q'] ?? null)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function show(Student $student): Student

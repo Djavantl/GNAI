@@ -4,9 +4,12 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Traits\GlobalSearchable;
 
 class Professional extends Model
-{
+{   
+    use GlobalSearchable;
+    
     protected $fillable = [
         'person_id',
         'position_id',
@@ -15,6 +18,17 @@ class Professional extends Model
         'status',
     ];
 
+    protected $searchable = [
+        'person.document',
+        'person.name',
+        'person.email',
+        'status',
+    ];
+
+    protected $searchAliases = [
+        'ativo' => ['active'],
+        'inativo' => ['inactive'],
+    ];
 
     public function person(): BelongsTo
     {

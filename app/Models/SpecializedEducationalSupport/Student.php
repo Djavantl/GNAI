@@ -3,9 +3,12 @@
 namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\GlobalSearchable;
 
 class Student extends Model
 {
+    use GlobalSearchable;
+
     protected $fillable = [
         'person_id',
         'registration',
@@ -15,6 +18,21 @@ class Student extends Model
         'education_level',
         'modality',
         'notes',
+    ];
+
+    protected array $searchable = [
+        'registration',
+        'status',
+        'person.name',
+        'person.email',
+    ];
+
+    protected array $searchAliases = [
+        'ativo' => ['active'],
+        'trancado' => ['locked'],
+        'concluido' => ['completed'],
+        'concluído' => ['completed'],
+        'evadido' => ['dropped'],
     ];
 
 

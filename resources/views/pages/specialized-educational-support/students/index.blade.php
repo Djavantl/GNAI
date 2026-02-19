@@ -23,21 +23,18 @@
         </x-buttons.link-button>
     </div>
 
-    {{-- Seção de Filtros --}}
-    <x-table.filters
-        data-dynamic-filter
-        data-target="#students-table"
-        :fields="[
-        ['name' => 'name', 'label' => 'Nome', 'placeholder' => 'Digite o nome'],
-        ['name' => 'email', 'label' => 'E-mail', 'placeholder' => 'Digite o e-mail'],
-        ['name' => 'registration', 'label' => 'Matrícula', 'placeholder' => 'Digite a matrícula'],
-    ]"
+    <x-ui.search
+        url="{{ route('specialized-educational-support.students.index') }}"
+        placeholder="Buscar por nome, email, matrícula, status..."
+        :semester="true"
+        :semesters="$semesters"
+        target="#students-table"
     />
 
     <div id="students-table">
         @include('pages.specialized-educational-support.students.partials.table')
     </div>
     @push('scripts')
-        @vite('resources/js/components/dynamicFilters.js')
+        @vite('resources/js/components/search-filter.js')
     @endpush
 @endsection

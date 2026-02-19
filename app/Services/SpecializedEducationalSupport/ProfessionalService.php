@@ -11,11 +11,14 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfessionalService
 {
-    public function index()
+    public function index(array $filters = [])
     {
-        return Professional::with(['person', 'position'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        return Professional::with('person')
+
+            ->globalSearch($filters['q'] ?? null)
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function show(Professional $professional){

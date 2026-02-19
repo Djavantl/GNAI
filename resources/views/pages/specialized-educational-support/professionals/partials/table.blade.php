@@ -1,0 +1,57 @@
+<x-table.table :headers="['Nome', 'Documento', 'Cargo', 'Status', 'Ações']" 
+:records="$professionals" 
+>
+@foreach($professionals as $professional)
+    <tr>
+        <x-table.td>
+            <div class="name-with-photo">
+                <img src="{{ $professional->person->photo_url }}" class="avatar-table">
+                <span class="fw-bold text-purple-dark">{{ $professional->person->name }}</span>
+            </div>
+        </x-table.td>
+        <x-table.td>{{ $professional->person->document }}</x-table.td>
+        <x-table.td>{{ $professional->position->name }}</x-table.td>
+        <x-table.td>
+            @php
+                $statusColor = $professional->status === 'active' ? 'success' : 'danger';
+                $statusLabel = $professional->status === 'active' ? 'Ativo' : 'Inativo';
+            @endphp
+            
+            <span class="text-{{ $statusColor }} fw-bold">
+                {{ $statusLabel }}
+            </span>
+        </x-table.td>
+
+        <x-table.td>
+            <x-table.actions>
+                <x-buttons.link-button 
+                    :href="route('specialized-educational-support.professionals.show', $professional)"
+                    variant="info"
+                >
+                    ver
+                </x-buttons.link-button>
+
+                <x-buttons.link-button 
+                    :href="route('specialized-educational-support.professionals.edit', $professional)"
+                    variant="warning"
+                >
+                    Editar
+                </x-buttons.link-button>
+
+                <form action="{{ route('specialized-educational-support.professionals.destroy', $professional) }}"
+                    method="POST">
+                    @csrf
+                    @method('DELETE')
+
+                    <x-buttons.submit-button 
+                        variant="danger"
+                        onclick="return confirm('Deseja remover este profissional?')"
+                    >
+                        Excluir
+                    </x-buttons.submit-button>
+                </form>
+            </x-table.actions>
+        </x-table.td>
+    </tr>
+@endforeach
+</x-table.table>

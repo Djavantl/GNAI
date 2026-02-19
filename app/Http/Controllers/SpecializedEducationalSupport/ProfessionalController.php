@@ -8,6 +8,8 @@ use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Position;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Services\SpecializedEducationalSupport\ProfessionalService;
+use App\Models\SpecializedEducationalSupport\Semester;
+use Illuminate\Http\Request;
 
 class ProfessionalController extends Controller
 {
@@ -18,13 +20,24 @@ class ProfessionalController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $professionals = $this->service->index();
+        $professionals = $this->service->index($request->all());
+
+        $semesters = Semester::orderByDesc('year')
+            ->orderByDesc('term')
+            ->get(['id', 'label']);
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.professionals.partials.table',
+                compact('professionals', 'semesters')
+            )->render();
+        }
 
         return view(
             'pages.specialized-educational-support.professionals.index',
-            compact('professionals')
+            compact('professionals', 'semesters')
         );
     }
 
