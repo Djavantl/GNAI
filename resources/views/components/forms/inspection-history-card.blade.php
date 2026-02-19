@@ -21,23 +21,19 @@
             <div class="col-md-7 border-end pe-4">
                 <div class="pt-3">
                     @if($isBarrier)
-                        {{-- SE FOR BARREIRA: Sempre mostra Status da Barreira (mesmo se for 'initial') --}}
-                        <label class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
+                        <span class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
                             Status da Barreira
-                        </label>
+                        </span>
                         <div class="d-flex align-items-center gap-2">
-                            {{-- Aqui usamos o campo 'status' do Model Inspection (que é o BarrierStatus Enum) --}}
                             <span class="fw-bold text-purple-dark fs-5 {{ $inspection->status?->color()}}">
                                 {{ $inspection->status?->label() ?? 'Identificada' }}
                             </span>
                         </div>
                     @else
-                        {{-- SE NÃO FOR BARREIRA (TA, MPA, etc): Mostra Estado de Conservação --}}
-                        <label class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
+                        <span class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
                             Estado de Conservação
-                        </label>
+                        </span>
                         <div class="d-flex align-items-center gap-2">
-                            {{-- Aqui usamos o campo 'state' do Model Inspection (que é o ConservationState Enum) --}}
                             <span class="fw-bold text-purple-dark fs-5">
                                 {{ $inspection->state?->label() ?? '---' }}
                             </span>
@@ -47,9 +43,9 @@
 
                 @if($inspection->description)
                     <div class="mt-3">
-                        <label class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
+                        <span class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
                             Parecer Técnico
-                        </label>
+                        </span>
                         <p class="history-description-text mb-0" style="font-size: 0.85rem; color: #666;">
                             {{ $inspection->description }}
                         </p>
@@ -60,17 +56,19 @@
             {{-- Lado Direito: Imagens --}}
             <div class="col-md-5 ps-md-4">
                 <div class="pt-3">
-                    <label class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
+                    <span class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
                         Evidências Visuais
-                    </label>
+                    </span>
 
                     @if($inspection->images && $inspection->images->count() > 0)
                         <div class="d-flex flex-wrap gap-2 pt-1">
                             @foreach($inspection->images as $img)
                                 <div class="position-relative d-inline-block" style="width:70px; height:70px;">
+                                    {{-- Removido o atributo title daqui --}}
                                     <a href="{{ asset('storage/' . $img->path) }}" target="_blank">
                                         <img src="{{ asset('storage/' . $img->path) }}"
                                              class="rounded border shadow-sm"
+                                             alt="Foto de evidência da vistoria"
                                              style="width:100%; height:100%; object-fit:cover;">
                                     </a>
                                 </div>

@@ -28,8 +28,10 @@
 
         @auth
             @if(auth()->user()->is_admin)
+
                 <li class="menu-divider">Configurações do Sistema</li>
 
+                {{-- ===== AEE ===== --}}
                 <li>
                     <a href="{{ route('specialized-educational-support.deficiencies.index') }}"
                        class="{{ request()->routeIs('specialized-educational-support.deficiencies.*') ? 'active' : '' }}">
@@ -69,6 +71,73 @@
                         <span class="text">Disciplinas</span>
                     </a>
                 </li>
+
+                {{-- ===== RADAR INCLUSIVO – ADMIN ===== --}}
+
+                <li>
+                    <a href="{{ route('inclusive-radar.resource-types.index') }}"
+                       class="{{ request()->routeIs('resource-types.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-diagram-3"></i></span>
+                        <span class="text">Tipos de Recursos</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('inclusive-radar.type-attributes.index') }}"
+                       class="{{ request()->routeIs('type-attributes.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-input-cursor-text"></i></span>
+                        <span class="text">Atributos</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('inclusive-radar.type-attribute-assignments.index') }}"
+                       class="{{ request()->routeIs('type-attribute-assignments.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-link-45deg"></i></span>
+                        <span class="text">Vincular Atributos</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('inclusive-radar.barrier-categories.index') }}"
+                       class="{{ request()->routeIs('barrier-categories.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-grid"></i></span>
+                        <span class="text">Categorias de Barreiras</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('inclusive-radar.accessibility-features.index') }}"
+                       class="{{ request()->routeIs('accessibility-features.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-universal-access"></i></span>
+                        <span class="text">Recursos de Acessibilidade</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('inclusive-radar.resource-statuses.index') }}"
+                       class="{{ request()->routeIs('resource-statuses.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-toggle-on"></i></span>
+                        <span class="text">Status de Recursos</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('inclusive-radar.institutions.index') }}"
+                       class="{{ request()->routeIs('institutions.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-building-fill"></i></span>
+                        <span class="text">Instituições</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('inclusive-radar.locations.index') }}"
+                       class="{{ request()->routeIs('locations.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-geo-alt"></i></span>
+                        <span class="text">Localizações</span>
+                    </a>
+                </li>
+
             @endif
         @endauth
 
@@ -101,7 +170,7 @@
         @endcan
 
 
-        
+
         <li>
             <a href="{{ route('specialized-educational-support.pei.all') }}"
             class="{{ request()->is('peis*') ? 'active' : '' }}">
@@ -109,7 +178,7 @@
                 <span class="text">PEIs</span>
             </a>
         </li>
-       
+
 
 
         @can('session.index')
@@ -187,26 +256,15 @@
         </li>
         @endcan
 
-        @can('institutions.index')
-        <li>
-            <a href="{{ route('inclusive-radar.institutions.index') }}"
-               class="{{ request()->routeIs('inclusive-radar.institutions.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-building"></i></span>
-                <span class="text">Instituições</span>
-            </a>
-        </li>
+        @can('training.index')
+            <li>
+                <a href="{{ route('inclusive-radar.trainings.index') }}"
+                   class="{{ request()->routeIs('trainings.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="bi bi-mortarboard-fill"></i></span>
+                    <span class="text">Treinamentos</span>
+                </a>
+            </li>
         @endcan
-
-        @can('locations.index')
-        <li>
-            <a href="{{ route('inclusive-radar.locations.index') }}"
-               class="{{ request()->routeIs('inclusive-radar.locations.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-geo-alt"></i></span>
-                <span class="text">Localizações</span>
-            </a>
-        </li>
-        @endcan
-
 
         <li class="menu-divider">Outros</li>
 

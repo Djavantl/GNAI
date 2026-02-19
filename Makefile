@@ -12,6 +12,9 @@ art:
 migrate:
 	docker compose exec app php artisan migrate
 
+seed:
+	docker-compose exec app php artisan migrate:fresh --seed
+
 # Isso impede que o 'make' confunda os comandos com arquivos
 %:
 	@:

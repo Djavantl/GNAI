@@ -1,22 +1,20 @@
-@props([
-    'label',
-    'value' => null,
-    'column' => 'col-md-6',
-    'isBox' => false // Nova prop para ativar a borda
-])
+@props(['label', 'value' => null, 'column' => 'col-md-6', 'isBox' => false])
 
 <div {{ $attributes->merge(['class' => $column . ' mb-4 px-4']) }}>
-    <label class="d-block fw-bold text-title small mb-1" style="text-transform: uppercase;">
+    {{-- Título visual do campo (escondido para leitores de tela para evitar repetição) --}}
+    <span class="d-block fw-bold text-title small mb-1 text-uppercase" aria-hidden="true">
         {{ $label }}
-    </label>
+    </span>
 
-    @if($isBox)
-        <div class="custom-display-box">
-            {{ $slot->isNotEmpty() ? $slot : ($value ?? '---') }}
-        </div>
-    @else
-        <div class="text-base" style="color: var(--text-purple-dark); font-size: 1.05rem;">
-            {{ $slot->isNotEmpty() ? $slot : ($value ?? '---') }}
-        </div>
-    @endif
+    @php
+        $displayValue = $slot->isNotEmpty() ? $slot : ($value ?? '---');
+        $plainTextValue = strip_tags($displayValue);
+    @endphp
+
+    <div class="{{ $isBox ? 'custom-display-box' : 'text-base' }}"
+         style="{{ !$isBox ? 'color: var(--text-purple-dark); font-size: 1.05rem;' : '' }}"
+         role="text"
+         aria-label="{{ $label }}: {{ $plainTextValue }}">
+        {{ $displayValue }}
+    </div>
 </div>

@@ -1,12 +1,20 @@
 @props([
     'href',
     'variant' => 'primary',
+    'size' => 'md',
+    'label' => null
 ])
+
+@php
+    $sizeClass = $size !== 'md' ? $size : '';
+    $classes = "btn-action {$variant} {$sizeClass}";
+@endphp
 
 <a
     href="{{ $href }}"
     {{ $attributes->merge([
-        'class' => "btn btn-sm btn-action {$variant} align-items-center"
+        'class' => $classes,
+        'aria-label' => $label
     ]) }}
 >
     {{ $slot }}

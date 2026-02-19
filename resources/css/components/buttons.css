@@ -30,6 +30,7 @@
     padding: 0 1rem;
 
     font-size: var(--btn-font-size);
+    line-height: 1;
     border-radius: var(--btn-radius);
     border: 1px solid transparent;
 
@@ -39,6 +40,12 @@
 
     user-select: none;
     white-space: nowrap;
+}
+
+.btn-action i {
+    display: flex;
+    align-items: center;
+    line-height: 0;
 }
 
 /* ===============================
@@ -93,6 +100,21 @@
 }
 .btn-action.secondary:hover {
     background-color: #b5b2b2;
+}
+
+/* ===============================
+   VARIAÇÃO LOGS (SECONDARY OUTLINE)
+================================ */
+.btn-action.secondary-outline {
+    background-color: transparent;
+    color: #6c757d; /* Um cinza intermediário para leitura */
+    border-color: #6a6a6a;
+}
+
+.btn-action.secondary-outline:hover {
+    background-color: #6a6a6a;
+    color: #fff; /* Inverte para branco no hover */
+    border-color: #6a6a6a;
 }
 
 /* ===============================

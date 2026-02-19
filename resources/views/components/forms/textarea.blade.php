@@ -23,6 +23,7 @@
         rows="{{ $rows }}"
         placeholder="{{ $placeholder }}"
         {{ $required ? 'required' : '' }}
+        aria-label="{{ $label }}"
         {{ $attributes->merge(['class' => 'form-control custom-input' . ($errors->has($name) ? ' is-invalid' : '')]) }}
     >{{ old($name, $value) }}</textarea>
 

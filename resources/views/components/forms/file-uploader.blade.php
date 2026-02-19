@@ -69,20 +69,43 @@
 </div>
 
 <script>
-    // Mantém os arquivos selecionados temporariamente
+    // 1. Mantém os arquivos selecionados temporariamente no estado do JS
     window.selectedFiles_{{ $name }} = [];
+
+    /**
+     * Sincroniza o array de arquivos do JavaScript com o input HTML real.
+     * Sem isso, o Laravel não recebe os arquivos no request.
+     */
+    function syncInputFiles(listId) {
+        const input = document.getElementById('input-' + listId);
+        const dataTransfer = new DataTransfer();
+
+        window.selectedFiles_{{ $name }}.forEach(file => {
+            dataTransfer.items.add(file);
+        });
+
+        // Injeta a lista de arquivos de volta no input que será enviado pelo formulário
+        input.files = dataTransfer.files;
+    }
 
     function handleFileSelection(input, listId) {
         const files = Array.from(input.files);
 
-        // Adiciona arquivos à lista global
-        window.selectedFiles_{{ $name }} = window.selectedFiles_{{ $name }}.concat(files);
+        // Se NÃO for múltiplo, limpa a lista anterior antes de adicionar o novo
+        if (!{{ $multiple ? 'true' : 'false' }}) {
+            window.selectedFiles_{{ $name }} = [];
+        }
 
-        // Atualiza preview
+        // Adiciona os novos arquivos selecionados à nossa lista global
+        files.forEach(file => {
+            window.selectedFiles_{{ $name }}.push(file);
+        });
+
+        // 1. Sincroniza o input real com a lista (importante!)
+        syncInputFiles(listId);
+
+        // 2. Atualiza a interface visual para o usuário
         updateFileListPreview(listId);
-
-        // Limpa input para permitir re-seleção
-        input.value = '';
     }
 
     function updateFileListPreview(listId) {
@@ -91,10 +114,14 @@
 
         window.selectedFiles_{{ $name }}.forEach((file, index) => {
             const div = document.createElement('div');
-            div.className = 'd-flex gap-2 mb-1 align-items-center';
+            div.className = 'd-flex gap-2 mb-1 align-items-center animate__animated animate__fadeIn';
 
             div.innerHTML = `
-                <span class="flex-grow-1 text-truncate">${file.name}</span>
+                <div class="flex-grow-1 p-2 bg-light border rounded text-truncate">
+                    <i class="fas fa-file-upload me-2 text-primary"></i>
+                    <small>${file.name}</small>
+                    <span class="badge bg-secondary ms-2">${(file.size / 1024).toFixed(1)} KB</span>
+                </div>
                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeSelectedFile(${index}, '${listId}')">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -105,14 +132,25 @@
     }
 
     function removeSelectedFile(index, listId) {
+        // Remove do array do JavaScript
         window.selectedFiles_{{ $name }}.splice(index, 1);
+
+        // Atualiza o input real e a interface
+        syncInputFiles(listId);
         updateFileListPreview(listId);
     }
 
-    // DELETE de arquivos existentes
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE de arquivos já existentes no servidor (Edit)
+    |--------------------------------------------------------------------------
+    */
     function deleteFile(button) {
         const url = button.getAttribute('data-url');
         const token = button.getAttribute('data-token');
+
+        // Desabilita o botão para evitar cliques múltiplos
+        button.disabled = true;
 
         fetch(url, {
             method: 'DELETE',
@@ -124,18 +162,20 @@
         })
             .then(response => {
                 if (response.ok) {
-                    button.closest('.existing-file-item').remove();
-                    showSuccessMessage('Arquivo removido com sucesso!');
+                    const item = button.closest('.existing-file-item');
+                    item.classList.add('animate__animated', 'animate__fadeOutRight');
+                    setTimeout(() => item.remove(), 500);
                 } else {
-                    return response.json().then(data => { throw new Error(data.message || 'Erro ao remover arquivo'); });
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Erro ao remover arquivo');
+                    });
                 }
             })
-            .catch(error => alert(error.message));
+            .catch(error => {
+                alert(error.message);
+                button.disabled = false;
+            });
 
         return false;
-    }
-
-    function showSuccessMessage(message) {
-        alert(message);
     }
 </script>

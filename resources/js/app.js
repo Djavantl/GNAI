@@ -13,7 +13,7 @@ class App {
     init() {
         this.initSidebar();
         this.initActiveMenu();
-        this.initMobileBehavior();
+        // this.initMobileBehavior();
         this.initDropdowns();
     }
 
