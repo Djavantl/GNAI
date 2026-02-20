@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
-use App\Exports\InclusiveRadar\AccessibleEducationalReportExport;
-use App\Exports\InclusiveRadar\AssistiveTechnologyReportExport;
+use App\Exports\InclusiveRadar\Reports\AccessibleEducationalReportExport;
+use App\Exports\InclusiveRadar\Reports\AssistiveTechnologyReportExport;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class ReportExport implements WithMultipleSheets

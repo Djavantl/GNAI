@@ -77,6 +77,7 @@
     </x-pdf.row>
 </x-pdf.table>
 
+{{-- Seção 4: Última Vistoria --}}
 <x-pdf.section-title title="4. Última Vistoria" />
 
 @php
@@ -86,49 +87,43 @@
 @endphp
 
 @if($lastInspection)
-    <x-pdf.table style="border: 1px solid #ccc; margin-bottom: 10px; border-radius: 4px;">
-
-        {{-- Linha 1: Data/Tipo | Estado | Status --}}
+    <x-pdf.table>
         <x-pdf.row>
+            {{-- Coluna 1 --}}
             <x-pdf.info-item
-                :label="$lastInspection->inspection_date->format('d/m/Y') . ' - ' . ($lastInspection->type?->label() ?? '---')"
-                :value="$lastInspection->description ?: 'Nada declarado.'"
+                label="Data e Descrição"
+                :value="$lastInspection->inspection_date->format('d/m/Y') . ' - ' . ($lastInspection->description ?: 'Sem descrição')"
+                colspan="1"
             />
+            {{-- Coluna 2 --}}
             <x-pdf.info-item
                 label="Estado de Conservação"
                 :value="$lastInspection->state?->label() ?? '---'"
+                colspan="1"
             />
         </x-pdf.row>
 
-        {{-- Linha 2: Todas as imagens da vistoria, suportando WebP --}}
-        @php
-            $inspectionImagesHtml = '';
-            if ($lastInspection->images->count() > 0) {
-                foreach ($lastInspection->images as $image) {
-                    $path = storage_path('app/public/' . $image->path);
-                    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-                    $pathToUse = $path;
-                    $inspectionImagesHtml .= '<div style="display:inline-block; width:48%; margin:1%; vertical-align:top;">
-                        <img src="' . $pathToUse . '" style="width:100%; height:auto;"/>
-                    </div>';
-                }
-            } else {
-                $inspectionImagesHtml = 'Sem imagem.';
-            }
-        @endphp
+        <x-pdf.row>
+            <td colspan="2" style="padding: 10px; border: 1px solid #ccc;">
+                <span class="label" style="display: block; margin-bottom: 8px;">Imagens da Vistoria</span>
 
-        <x-pdf.info-item
-            label="Imagens da Vistoria"
-            colspan="3"
-            :value="$inspectionImagesHtml"
-            :isHtml="true"
-        />
-
+                <div style="width: 100%; display: block; clear: both;">
+                    @if($lastInspection->images->count() > 0)
+                        @foreach($lastInspection->images as $image)
+                            @php
+                                $path = storage_path('app/public/' . $image->path);
+                            @endphp
+                            <div style="display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; vertical-align: top; background: #f9f9f9;">
+                                <img src="{{ $path }}" style="width: 100%; height: auto; display: block; margin: 0 auto;">
+                            </div>
+                        @endforeach
+                    @else
+                        <span class="value">Nenhuma imagem registrada.</span>
+                    @endif
+                </div>
+            </td>
+        </x-pdf.row>
     </x-pdf.table>
 @else
     <x-pdf.text-area label="Última Vistoria" :value="'Nenhuma vistoria registrada.'" />
 @endif
-
-<x-pdf.pages />
-</body>
-</html>

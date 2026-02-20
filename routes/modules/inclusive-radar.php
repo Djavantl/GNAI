@@ -199,6 +199,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [AssistiveTechnologyController::class, 'generatePdf'])
         ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
 
+    Route::get('/assistive-technologies/{assistiveTechnology}/excel', [AssistiveTechnologyController::class, 'exportExcel'])
+        ->name('assistive-technologies.excel')->middleware('can:assistive-technology.excel');
+
+
     Route::get('/assistive-technologies/{assistiveTechnology}/logs', [AssistiveTechnologyLogController::class, 'index'])
         ->name('assistive-technologies.logs')
         ->middleware('can:assistive-technology.logs');
@@ -292,6 +296,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/trainings/{training}', [TrainingController::class, 'destroy'])
         ->name('trainings.destroy')->middleware('can:training.destroy');
+
+    Route::get('/trainings/{training}/pdf', [TrainingController::class, 'generatePdf'])
+        ->name('trainings.pdf')->middleware('can:training.pdf');
+
+    Route::get('/trainings/{training}/excel', [TrainingController::class, 'exportExcel'])
+        ->name('trainings.excel')->middleware('can:training.export');
 
 
     // ------------------- EMPRÉSTIMOS -------------------

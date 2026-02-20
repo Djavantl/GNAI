@@ -11,7 +11,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <header>
             <h2 class="text-title">Nova Tecnologia Assistiva</h2>
             <p class="text-muted mb-0">Cadastre novos equipamentos e realize a vistoria inicial para garantir a prontidão do recurso.</p>
@@ -36,7 +36,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome da Tecnologia / Equipamento *"
+                    label="Nome da Tecnologia *"
                     required
                     placeholder="Ex: Cadeira de Rodas Motorizada"
                     :value="old('name')"

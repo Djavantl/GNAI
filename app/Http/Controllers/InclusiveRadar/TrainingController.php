@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Http\Controllers\Concerns\ResolvesBackRoute;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\TrainingRequest;
+use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\Training;
 use App\Models\InclusiveRadar\TrainingFile;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Services\InclusiveRadar\TrainingService;
-use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TrainingController extends Controller
 {
+    use ResolvesBackRoute;
+
     public function __construct(
         protected TrainingService $service
     ) {}
@@ -45,17 +49,27 @@ class TrainingController extends Controller
 
     public function create(Request $request): View
     {
-        $technologies = AssistiveTechnology::active(true)->orderBy('name')->get();
-        $materials = AccessibleEducationalMaterial::active(true)->orderBy('name')->get();
+        $technologies = AssistiveTechnology::active(true)
+            ->orderBy('name')
+            ->get();
+
+        $materials = AccessibleEducationalMaterial::active(true)
+            ->orderBy('name')
+            ->get();
 
         $preSelectedType = $request->query('type');
-        $preSelectedId = $request->query('id');
+        $preSelectedId   = $request->query('id');
+
+        $backRoute = $this->resolveBackRoute($request,
+            'inclusive-radar.trainings.index'
+        );
 
         return view('pages.inclusive-radar.trainings.create', compact(
             'technologies',
             'materials',
             'preSelectedType',
-            'preSelectedId'
+            'preSelectedId',
+            'backRoute'
         ));
     }
 
@@ -68,16 +82,21 @@ class TrainingController extends Controller
             ->with('success', 'Treinamento criado com sucesso!');
     }
 
-    public function show(Training $training): View
+    public function show(Request $request, Training $training): View
     {
         $training->load([
             'trainable',
             'files',
         ]);
 
+        $backRoute = $this->resolveBackRoute(
+            $request,
+            'inclusive-radar.trainings.index'
+        );
+
         return view(
             'pages.inclusive-radar.trainings.show',
-            compact('training')
+            compact('training', 'backRoute')
         );
     }
 
@@ -149,5 +168,31 @@ class TrainingController extends Controller
             return redirect()->back()->with('error', 'Erro ao remover arquivo: ' . $e->getMessage());
         }
     }
+
+    public function generatePdf(Training $training)
+    {
+        $training->load([
+            'trainable',
+            'files',
+        ]);
+
+        $pdf = Pdf::loadView(
+            'pages.inclusive-radar.trainings.pdf',
+            compact('training')
+        )
+            ->setPaper('a4', 'portrait')
+            ->setOption(['enable_php' => true]);
+
+        return $pdf->stream("Training_{$training->title}.pdf");
+    }
+
+    public function exportExcel(Training $training)
+    {
+        return Excel::download(
+            new \App\Exports\InclusiveRadar\Items\TrainingExport(collect([$training]), "Treinamento: {$training->title}"),
+            "Treinamento_{$training->title}_" . now()->format('d_m_Y') . ".xlsx"
+        );
+    }
+
 
 }

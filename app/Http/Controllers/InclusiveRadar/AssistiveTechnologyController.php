@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Exports\InclusiveRadar\Items\AssistiveTechnologyExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AssistiveTechnologyRequest;
 use App\Models\InclusiveRadar\AssistiveTechnology;
@@ -11,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AssistiveTechnologyController extends Controller
 {
@@ -149,6 +151,25 @@ class AssistiveTechnologyController extends Controller
             ->setOption(['enable_php' => true]);
 
         return $pdf->stream("TA_{$assistiveTechnology->name}.pdf");
+    }
+
+    public function exportExcel(AssistiveTechnology $assistiveTechnology)
+    {
+        $assistiveTechnology->load([
+            'type',
+            'deficiencies',
+            'inspections.images'
+        ]);
+
+
+        return Excel::download(
+            new AssistiveTechnologyExport(
+                collect([$assistiveTechnology]),
+                $assistiveTechnology->name,
+                $assistiveTechnology->is_active ? 'Ativo' : 'Inativo'
+            ),
+            'TA_'.$assistiveTechnology->name.'.xlsx'
+        );
     }
 
     public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection)

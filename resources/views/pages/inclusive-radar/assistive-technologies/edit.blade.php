@@ -12,7 +12,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Tecnologia Assistiva</h2>
             <p class="text-muted">Atualizando informações de: <strong>{{ $assistiveTechnology->name }}</strong></p>
@@ -38,7 +38,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome da Tecnologia / Equipamento *"
+                    label="Nome da Tecnologia *"
                     required
                     :value="old('name', $assistiveTechnology->name)"
                 />
@@ -91,7 +91,7 @@
                                             <span class="fw-bold text-dark">{{ $training->title }}</span>
                                         </x-table.td>
                                         <x-table.td>
-                                            <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold">
+                                            <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
                                                 {{ $training->is_active ? 'Ativo' : 'Inativo' }}
                                             </span>
                                         </x-table.td>
@@ -102,14 +102,7 @@
                                                     variant="info"
                                                     label="Visualizar treinamento: {{ $training->title }}"
                                                 >
-                                                    <i class="fas fa-eye"></i>
-                                                </x-buttons.link-button>
-                                                <x-buttons.link-button
-                                                    :href="route('inclusive-radar.trainings.edit', $training)"
-                                                    variant="warning"
-                                                    label="Editar treinamento: {{ $training->title }}"
-                                                >
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-eye"></i> Ver
                                                 </x-buttons.link-button>
                                             </x-table.actions>
                                         </x-table.td>
@@ -244,7 +237,7 @@
             </div>
 
             <div class="col-md-12 mb-4 mt-4">
-                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo *</span>
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo (Deficiências Atendidas) *</span>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     @foreach($deficiencies->sortBy('name') as $def)
                         <x-forms.checkbox

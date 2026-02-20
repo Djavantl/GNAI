@@ -12,7 +12,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <header>
             <h2 class="text-title">Detalhes da Tecnologia Assistiva</h2>
             <p class="text-muted mb-0">Visualize as informações cadastrais, histórico de vistorias e gestão do equipamento.</p>
@@ -83,17 +83,14 @@
                                             </div>
                                         </x-table.td>
                                         <x-table.td>
-                                            <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold">
+                                            <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
                                                 {{ $training->is_active ? 'Ativo' : 'Inativo' }}
                                             </span>
                                         </x-table.td>
                                         <x-table.td>
                                             <x-table.actions>
                                                 <x-buttons.link-button :href="route('inclusive-radar.trainings.show', $training)" variant="info">
-                                                    <i class="fas fa-eye"></i>
-                                                </x-buttons.link-button>
-                                                <x-buttons.link-button :href="route('inclusive-radar.trainings.edit', $training)" variant="warning">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-eye"></i> Ver
                                                 </x-buttons.link-button>
                                             </x-table.actions>
                                         </x-table.td>
@@ -139,8 +136,14 @@
                         {{ $assistiveTechnology->resourceStatus->name ?? '---' }}
                     </span>
                 </x-show.info-item>
-                <x-show.info-item label="Ativo no Sistema" column="col-md-12" isBox="true" :value="$assistiveTechnology->is_active ? 'Sim' : 'Não'" />
-                <x-show.info-item label="Público-Alvo" column="col-md-12" isBox="true">
+
+                <x-show.info-item label="Status no Sistema" column="col-md-12" isBox="true">
+                    <span class="text-{{ $assistiveTechnology->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
+                        {{ $assistiveTechnology->is_active ? 'Ativo' : 'Inativo' }}
+                    </span>
+                </x-show.info-item>
+
+                <x-show.info-item label="Público-alvo (Deficiências Atendidas) *" column="col-md-12" isBox="true">
                     <div class="tag-container" role="list">
                         @forelse($assistiveTechnology->deficiencies->sortBy('name') as $deficiency)
                             <x-show.tag color="light" role="listitem">{{ $deficiency->name }}</x-show.tag>
@@ -155,7 +158,8 @@
             <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID: #{{ $assistiveTechnology->id }}
-                    <x-buttons.pdf-button :href="route('inclusive-radar.assistive-technologies.pdf', $assistiveTechnology)" class="ms-3" />
+                    <x-buttons.pdf-button :href="route('inclusive-radar.assistive-technologies.pdf', $assistiveTechnology)" class="ms-1" />
+                    <x-buttons.excel-button :href="route('inclusive-radar.assistive-technologies.excel', $assistiveTechnology)" class="ms-1"/>
                 </div>
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
                     <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.logs', $assistiveTechnology)" variant="secondary-outline">

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\InclusiveRadar;
+namespace App\Exports\InclusiveRadar\Reports;
 
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class AssistiveTechnologyReportExport implements
+class AccessibleEducationalReportExport implements
     FromCollection,
     WithHeadings,
     WithMapping,
@@ -34,7 +34,7 @@ class AssistiveTechnologyReportExport implements
 
     public function title(): string
     {
-        return 'Tecnologias Assistivas';
+        return 'Materiais Pedagógicos';
     }
 
     public function startCell(): string
@@ -51,7 +51,7 @@ class AssistiveTechnologyReportExport implements
     {
         return [
             'ID',
-            'Nome do Recurso',
+            'Nome do Material',
             'Tipo / Categoria',
             'Cód. Patrimônio',
             'Qtd. Total',
@@ -77,7 +77,7 @@ class AssistiveTechnologyReportExport implements
             $item->is_active ? 'Ativo' : 'Inativo',
             $item->requires_training ? 'Sim' : 'Não',
             $item->type?->is_digital ? 'Digital' : 'Físico',
-            $item->deficiencies->pluck('name')->implode(', ')
+            $item->deficiencies->pluck('name')->implode(', '),
         ];
     }
 
@@ -88,25 +88,15 @@ class AssistiveTechnologyReportExport implements
                 $sheet = $event->sheet;
                 $totalItems = $this->items->count();
 
-                // Ajustar largura do cabeçalho para todas as colunas
-                $sheet->getStyle('A5:K5')->applyFromArray([
-                    'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['argb' => '444444'],
-                    ],
-                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
-                ]);
-
-                // Título (A1)
+                // 1. Título (A1:K1)
                 $sheet->mergeCells('A1:K1');
-                $sheet->setCellValue('A1', 'Relatório de Tecnologias Assistivas');
+                $sheet->setCellValue('A1', 'Relatório de Materiais Pedagógicos Acessíveis');
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => ['bold' => true, 'size' => 14],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
                 ]);
 
-                // Filtros (A2)
+                // 2. Filtros (A2:K2)
                 $sheet->mergeCells('A2:K2');
                 $sheet->setCellValue('A2', 'Filtros: ' . $this->filterText);
                 $sheet->getStyle('A2')->applyFromArray([
@@ -114,17 +104,27 @@ class AssistiveTechnologyReportExport implements
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
                 ]);
 
-                // Resumo de Totais (A3)
+                // 3. Resumo de Totais (A3:K3)
                 $sheet->mergeCells('A3:K3');
-                $sheet->setCellValue('A3', "Total de Tecnologias: {$totalItems} | Gerado em: " . now()->format('d/m/Y H:i'));
+                $sheet->setCellValue('A3', "Total de Materiais: {$totalItems} | Gerado em: " . now()->format('d/m/Y H:i'));
                 $sheet->getStyle('A3')->applyFromArray([
                     'font' => ['bold' => true],
                     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
                 ]);
 
-                // Centralizar dados
+                // 4. Cabeçalho da Tabela (A5:K5)
+                $sheet->getStyle('A5:K5')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['argb' => '2E7D32'], // Verde escuro, mesmo padrão TA
+                    ],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+                ]);
+
+                // Centralizar dados específicos
                 $lastRow = $sheet->getHighestRow();
-                if ($lastRow >= 6) {
+                if($lastRow >= 6) {
                     $sheet->getStyle('A6:A'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     $sheet->getStyle('E6:J'.$lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }

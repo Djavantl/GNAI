@@ -42,13 +42,6 @@
                         <i class="fas fa-eye"></i> Ver
                     </x-buttons.link-button>
 
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.assistive-technologies.edit', $tech)"
-                        variant="warning"
-                    >
-                        <i class="fas fa-edit"></i> Editar
-                    </x-buttons.link-button>
-
                     <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $tech) }}"
                           method="POST" class="d-inline">
                         @csrf
