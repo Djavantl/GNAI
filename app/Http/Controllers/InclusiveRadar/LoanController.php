@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\LoanStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LoanRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,37 +21,25 @@ class LoanController extends Controller
 
     public function index(Request $request): View
     {
+        $studentName      = $request->student ?? null;
+        $professionalName = $request->professional ?? null;
+        $status           = $request->status ? LoanStatus::tryFrom($request->status) : null;
+        $itemName = $request->item ?? null;
 
-        $studentId      = $request->student_id ?? null;
-        $professionalId = $request->professional_id ?? null;
-        $status         = $request->status ?? null;
-        $startDate      = $request->start_date ?? null;
-        $endDate        = $request->end_date ?? null;
-
-        $loans = Loan::with([
-            'loanable',
-            'student.person',
-            'professional.person'
-        ])
-            ->byStudent($studentId)
-            ->byProfessional($professionalId)
-            ->when($status, fn($q) => $q->byStatus($status))
-            ->loanedBetween($startDate, $endDate)
+        $loans = Loan::with(['loanable', 'student.person', 'professional.person', 'user'])
+            ->student($studentName)
+            ->professional($professionalName)
+            ->item($itemName)
+            ->byStatus($status)
             ->orderByDesc('loan_date')
             ->paginate(10)
             ->withQueryString();
 
         if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.loans.partials.table',
-                compact('loans')
-            );
+            return view('pages.inclusive-radar.loans.partials.table', compact('loans'));
         }
 
-        return view(
-            'pages.inclusive-radar.loans.index',
-            compact('loans')
-        );
+        return view('pages.inclusive-radar.loans.index', compact('loans'));
     }
 
     public function create(): View
@@ -70,11 +59,14 @@ class LoanController extends Controller
             ->get()
             ->filter(fn($item) => $item->type?->is_digital || $item->quantity_available > 0);
 
+        $authUser = auth()->user();
+
         return view('pages.inclusive-radar.loans.create', [
             'students' => $students,
             'professionals' => $professionals,
             'assistive_technologies' => $assistiveTechnologies,
-            'educational_materials' => $educationalMaterials
+            'educational_materials' => $educationalMaterials,
+            'authUser' => $authUser,
         ]);
     }
 
@@ -99,12 +91,13 @@ class LoanController extends Controller
             'professional.person',
         ]);
 
+        $authUser = auth()->user();
+
         return view(
             'pages.inclusive-radar.loans.show',
-            compact('loan')
+            compact('loan', 'authUser')
         );
     }
-
 
     public function edit(Loan $loan): View
     {
@@ -113,10 +106,13 @@ class LoanController extends Controller
 
         $loan->load(['loanable', 'student.person', 'professional.person']);
 
+        $authUser = auth()->user();
+
         return view('pages.inclusive-radar.loans.edit', compact(
             'loan',
             'students',
-            'professionals'
+            'professionals',
+            'authUser'
         ));
     }
 
@@ -164,5 +160,4 @@ class LoanController extends Controller
 
         return $pdf->stream("Loan_{$loan->id}.pdf");
     }
-
 }

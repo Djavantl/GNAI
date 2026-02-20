@@ -15,7 +15,8 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     ResourceTypeController,
     TrainingController,
     TypeAttributeAssignmentController,
-    TypeAttributeController};
+    TypeAttributeController,
+    WaitlistController};
 
 /*
 |--------------------------------------------------------------------------
@@ -331,4 +332,30 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/loans/{loan}/pdf', [LoanController::class, 'generatePdf'])
         ->name('loans.pdf')->middleware('can:loan.pdf');
+
+    // ------------------- FILA DE ESPERA -------------------
+
+    Route::get('/waitlists', [WaitlistController::class, 'index'])
+        ->name('waitlists.index')->middleware('can:waitlist.index');
+
+    Route::get('/waitlists/create', [WaitlistController::class, 'create'])
+        ->name('waitlists.create')->middleware('can:waitlist.create');
+
+    Route::post('/waitlists/store', [WaitlistController::class, 'store'])
+        ->name('waitlists.store')->middleware('can:waitlist.store');
+
+    Route::get('/waitlists/{waitlist}', [WaitlistController::class, 'show'])
+        ->name('waitlists.show')->middleware('can:waitlist.show');
+
+    Route::get('/waitlists/{waitlist}/edit', [WaitlistController::class, 'edit'])
+        ->name('waitlists.edit')->middleware('can:waitlist.edit');
+
+    Route::put('/waitlists/{waitlist}', [WaitlistController::class, 'update'])
+        ->name('waitlists.update')->middleware('can:waitlist.update');
+
+    Route::delete('/waitlists/{waitlist}', [WaitlistController::class, 'destroy'])
+        ->name('waitlists.destroy')->middleware('can:waitlist.destroy');
+
+    Route::patch('/waitlists/{waitlist}/cancel', [WaitlistController::class, 'cancel'])
+        ->name('waitlists.cancel')->middleware('can:waitlist.cancel');
 });

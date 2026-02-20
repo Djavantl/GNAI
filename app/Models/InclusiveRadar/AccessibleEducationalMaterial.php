@@ -5,6 +5,7 @@ namespace App\Models\InclusiveRadar;
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Models\Waitlist;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Auditable;
@@ -47,6 +48,11 @@ class AccessibleEducationalMaterial extends Model
     public function loans(): MorphMany
     {
         return $this->morphMany(Loan::class, 'loanable');
+    }
+
+    public function waitlists(): MorphMany
+    {
+        return $this->morphMany(Waitlist::class, 'waitlistable');
     }
 
     public function logs(): MorphMany

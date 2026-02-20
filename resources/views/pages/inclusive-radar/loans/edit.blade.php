@@ -12,14 +12,15 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Registro de Empréstimo</h2>
             <p class="text-muted">Atualize prazos, status ou registre a devolução do recurso.</p>
         </div>
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID no Sistema</span>
-            <span class="badge bg-purple fs-6">{{ $loan->id }}</span>
+        <div>
+            <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -34,7 +35,6 @@
         </div>
     @endif
 
-    {{-- Alerta de Atraso --}}
     @if($loan->status === 'active' && $loan->due_date->isPast())
         <div class="alert alert-warning border-0 shadow-sm mb-4 d-flex align-items-center gap-3">
             <i class="fas fa-clock fa-spin fs-4"></i>
@@ -75,12 +75,13 @@
             </div>
 
             {{-- SEÇÃO 2: Responsáveis --}}
-            <x-forms.section title="Responsáveis e Beneficiário" />
+            <x-forms.section title="Beneficiário e Responsável" />
 
             <div class="col-md-6">
                 <x-forms.select
                     name="student_id"
-                    label="Estudante *"
+                    id="student_id"
+                    label="Estudante (Beneficiário)"
                     required
                     :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person->name . ' (' . $s->registration . ')'])"
                     :selected="old('student_id', $loan->student_id)"
@@ -90,11 +91,22 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="professional_id"
-                    label="Profissional Responsável *"
+                    id="professional_id"
+                    label="Profissional (Beneficiário)"
                     required
                     :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name])"
                     :selected="old('professional_id', $loan->professional_id)"
                 />
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.input
+                    name="user_id_display"
+                    label="Usuário Autenticado (Responsável)"
+                    :value="$authUser->name"
+                    disabled
+                />
+                <input type="hidden" name="user_id" value="{{ $authUser->id }}">
             </div>
 
             {{-- SEÇÃO 3: Prazos e Status --}}
@@ -103,7 +115,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="loan_date"
-                    label="Data de Saída"
+                    label="Data de Saída *"
                     type="datetime-local"
                     readonly
                     :value="old('loan_date', $loan->loan_date->format('Y-m-d\TH:i'))"
@@ -113,7 +125,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="due_date"
-                    label="Nova Previsão de Entrega"
+                    label="Previsão de Devolução *"
                     type="date"
                     :value="old('due_date', $loan->due_date->format('Y-m-d'))"
                 />
@@ -130,7 +142,6 @@
                 />
             </div>
 
-
             <div class="col-md-6">
                 <x-forms.input
                     name="return_date"
@@ -143,7 +154,7 @@
             <div class="col-md-12">
                 <x-forms.textarea
                     name="observation"
-                    label="Observações do Histórico"
+                    label="Observações / Estado do Item"
                     rows="3"
                     :value="old('observation', $loan->observation)"
                     placeholder="Relate o estado do item na entrega..."
@@ -162,16 +173,16 @@
                 @endif
 
                 <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
-                    <i class="fas fa-arrow-left"></i> Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save mr-2"></i> Atualizar Registro
+                    <i class="fas fa-save mr-2"></i> Salvar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
+
     @push('scripts')
         @vite('resources/js/pages/inclusive-radar/loans.js')
     @endpush

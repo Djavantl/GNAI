@@ -11,10 +11,15 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Registrar Novo Empréstimo</h2>
             <p class="text-muted">Vincule um recurso de acessibilidade a um estudante e defina os prazos de devolução.</p>
+        </div>
+        <div>
+            <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -42,6 +47,7 @@
                     id="loanable_type"
                     label="Tipo de Recurso *"
                     required
+                    aria-controls="loanable_id"
                     :options="[
                         'App\\Models\\InclusiveRadar\\AssistiveTechnology' => 'Tecnologia Assistiva',
                         'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial' => 'Material Pedagógico'
@@ -51,22 +57,24 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.select
-                    name="loanable_id"
-                    id="loanable_id"
-                    label="Item Específico *"
-                    required
-                    :options="['' => 'Selecione o tipo primeiro']"
-                />
+                <div aria-live="polite" id="loanable_id_container">
+                    <x-forms.select
+                        name="loanable_id"
+                        id="loanable_id"
+                        label="Item Específico *"
+                        required
+                        :options="['' => 'Selecione o tipo primeiro']"
+                    />
+                </div>
             </div>
 
             {{-- SEÇÃO 2: Envolvidos --}}
-            <x-forms.section title="Responsáveis e Beneficiário" />
+            <x-forms.section title="Beneficiário e Responsável" />
 
             <div class="col-md-6">
                 <x-forms.select
                     name="student_id"
-                    label="Estudante Beneficiário *"
+                    label="Estudante (Beneficiário)"
                     required
                     :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person->name . ' (' . $s->registration . ')'])"
                     :selected="old('student_id')"
@@ -76,11 +84,22 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="professional_id"
-                    label="Profissional Responsável *"
+                    label="Profissional (Beneficiário)"
                     required
                     :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name . ' - ' . $p->registration])"
                     :selected="old('professional_id')"
                 />
+            </div>
+
+            {{-- USUÁRIO AUTENTICADO --}}
+            <div class="col-md-12">
+                <x-forms.input
+                    name="user_id_display"
+                    label="Usuário Autenticado (Responsável)"
+                    :value="$authUser->name"
+                    disabled
+                />
+                <input type="hidden" name="user_id" value="{{ $authUser->id }}">
             </div>
 
             {{-- SEÇÃO 3: Prazos e Condições --}}
@@ -89,7 +108,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="loan_date"
-                    label="Data e Hora do Empréstimo *"
+                    label="Data de Saída *"
                     type="datetime-local"
                     required
                     :value="old('loan_date', now()->format('Y-m-d\TH:i'))"
@@ -124,13 +143,14 @@
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-handshake mr-2"></i> Confirmar Empréstimo
+                    <i class="fas fa-save me-1"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>
     </div>
 
+    {{-- Script para popular itens dinamicamente --}}
     <script>
         window.loanData = {
             items: {
@@ -140,6 +160,7 @@
             oldId: "{{ old('loanable_id') }}"
         };
     </script>
+
     @push('scripts')
         @vite('resources/js/pages/inclusive-radar/loans.js')
     @endpush

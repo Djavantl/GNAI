@@ -10,7 +10,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Materiais Pedagógicos Acessíveis</h2>
             <p class="text-muted text-base">

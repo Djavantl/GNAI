@@ -15,7 +15,6 @@
         ? $loan->status
         : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
 
-    // Se estiver ativo e com atraso, sobrescreve label
     if ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast()) {
         $statusLabel = 'Em Atraso';
     } else {
@@ -67,7 +66,7 @@
     <x-pdf.row>
         <x-pdf.info-item
             label="Nome"
-            :value="$loan->loanable->name ?? '---'"
+            :value="$loan->loanable->name ?? ($loan->loanable->title ?? '---')"
             colspan="2"
         />
 
@@ -81,15 +80,15 @@
     <x-pdf.row>
         <x-pdf.info-item
             label="Tipo"
-            :value="class_basename($loan->loanable_type) === 'AssistiveTechnology'
+            :value="$loan->loanable_type === 'App\Models\InclusiveRadar\AssistiveTechnology'
                 ? 'Tecnologia Assistiva'
-                : 'Material Pedagógico'"
+                : 'Material Educacional'"
             colspan="2"
         />
 
         <x-pdf.info-item
-            label="Categoria"
-            :value="$loan->loanable->type->name ?? '---'"
+            label="Quantidade"
+            :value="$loan->quantity ?? 1"
             colspan="2"
         />
     </x-pdf.row>
@@ -99,31 +98,45 @@
 <x-pdf.section-title title="3. Envolvidos" />
 
 <x-pdf.table>
+    {{-- Exibe apenas se for Estudante --}}
+    @if($loan->student_id)
+        <x-pdf.row>
+            <x-pdf.info-item
+                label="Estudante (Beneficiário)"
+                :value="$loan->student->person->name ?? '---'"
+                colspan="2"
+            />
+
+            <x-pdf.info-item
+                label="Matrícula"
+                :value="$loan->student->registration ?? '---'"
+                colspan="2"
+            />
+        </x-pdf.row>
+    @endif
+
+    {{-- Exibe apenas se for Profissional --}}
+    @if($loan->professional_id)
+        <x-pdf.row>
+            <x-pdf.info-item
+                label="Profissional (Beneficiário)"
+                :value="$loan->professional->person->name ?? '---'"
+                colspan="2"
+            />
+
+            <x-pdf.info-item
+                label="Registro"
+                :value="$loan->professional->registration ?? '---'"
+                colspan="2"
+            />
+        </x-pdf.row>
+    @endif
+
     <x-pdf.row>
         <x-pdf.info-item
-            label="Estudante"
-            :value="$loan->student->person->name ?? '---'"
-            colspan="2"
-        />
-
-        <x-pdf.info-item
-            label="Matrícula"
-            :value="$loan->student->registration ?? '---'"
-            colspan="2"
-        />
-    </x-pdf.row>
-
-    <x-pdf.row>
-        <x-pdf.info-item
-            label="Profissional Responsável"
-            :value="$loan->professional->person->name ?? '---'"
-            colspan="2"
-        />
-
-        <x-pdf.info-item
-            label="Registro"
-            :value="$loan->professional->registration ?? '---'"
-            colspan="2"
+            label="Usuário Autenticado (Responsável)"
+            :value="$loan->user->name ?? '---'"
+            colspan="4"
         />
     </x-pdf.row>
 </x-pdf.table>

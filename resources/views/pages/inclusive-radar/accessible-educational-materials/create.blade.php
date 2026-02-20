@@ -11,17 +11,28 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
+    {{-- Header alinhado com o estilo de TA --}}
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+        <header>
             <h2 class="text-title">Novo Material Pedagógico Acessível (MPA)</h2>
-            <p class="text-muted">Cadastre materiais adaptados e realize a vistoria inicial para controle de acervo.</p>
+            <p class="text-muted mb-0">Cadastre materiais adaptados e realize a vistoria inicial para controle de acervo.</p>
+        </header>
+        <div>
+            <x-buttons.link-button
+                :href="route('inclusive-radar.accessible-educational-materials.index')"
+                variant="secondary"
+                label="Cancelar cadastro e retornar à lista"
+            >
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
     <div class="mt-3">
         <x-forms.form-card action="{{ route('inclusive-radar.accessible-educational-materials.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-            {{-- SEÇÃO 1: Identificação do Recurso --}}
+            {{-- SEÇÃO 1: Identificação --}}
             <x-forms.section title="Identificação do Recurso" />
 
             <div class="col-md-12">
@@ -40,7 +51,7 @@
                     label="Descrição Detalhada"
                     rows="3"
                     :value="old('notes')"
-                    placeholder="Descreva as características principais do material..."
+                    placeholder="Descreva as características principais e finalidade do material..."
                 />
             </div>
 
@@ -52,6 +63,7 @@
                     required
                     :options="$resourceTypes->pluck('name', 'id')"
                     :resourceObjects="$resourceTypes"
+                    :selected="old('type_id')"
                 />
             </div>
 
@@ -63,20 +75,20 @@
                 />
             </div>
 
-            {{-- SEÇÃO 2: Especificações Técnicas --}}
+            {{-- SEÇÃO 2: Especificações Técnicas (Dinâmicas) --}}
             <div id="dynamic-attributes-container" style="display: none;">
                 <x-forms.section title="Especificações Técnicas" />
-                <div class="row g-0" id="dynamic-attributes">
-                    {{-- Preenchido via educational-materials.js --}}
+                <div class="row g-0" id="dynamic-attributes" aria-live="polite">
+                    {{-- Preenchido via JS --}}
                 </div>
             </div>
 
-            {{-- SEÇÃO 3: Recursos de Acessibilidade --}}
+            {{-- SEÇÃO 3: Recursos de Acessibilidade (Específico de MPA) --}}
             <x-forms.section title="Recursos de Acessibilidade" />
 
             <div class="col-md-12 mb-4">
-                <label class="form-label fw-bold text-purple-dark">Recursos presentes no material</label>
-                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">Recursos presentes no material</span>
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('accessibility_features') border-danger @enderror">
                     @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->orderBy('name', 'asc')->get() as $feature)
                         <x-forms.checkbox
                             name="accessibility_features[]"
@@ -84,21 +96,25 @@
                             :value="$feature->id"
                             :label="$feature->name"
                             class="mb-0"
-                            :checked="collect(old('accessibility_features'))->contains($feature->id)"
+                            :checked="is_array(old('accessibility_features')) && in_array($feature->id, old('accessibility_features'))"
                         />
                     @endforeach
                 </div>
+                @error('accessibility_features')
+                <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                @enderror
             </div>
 
-            {{-- SEÇÃO 4: Detalhes da Vistoria Inicial --}}
+            {{-- SEÇÃO 4: Vistoria --}}
             <x-forms.section title="Detalhes da Vistoria Inicial" />
 
             <div class="col-md-6">
                 <x-forms.select
                     name="inspection_type"
                     label="Tipo de Inspeção *"
+                    required
                     :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                    :selected="old('inspection_type')"
+                    :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
                 />
             </div>
 
@@ -107,6 +123,7 @@
                     name="inspection_date"
                     label="Data da Inspeção *"
                     type="date"
+                    required
                     :value="old('inspection_date', date('Y-m-d'))"
                 />
             </div>
@@ -115,6 +132,7 @@
                 <x-forms.select
                     name="conservation_state"
                     label="Estado de Conservação Inicial *"
+                    required
                     :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
                     :selected="old('conservation_state', 'novo')"
                 />
@@ -124,17 +142,16 @@
                 <x-forms.image-uploader
                     name="images[]"
                     label="Fotos Iniciais do Material"
-                    :existingImages="old('images', [])"
                 />
             </div>
 
             <div class="col-md-12">
                 <x-forms.textarea
                     name="inspection_description"
-                    label="Notas da nova atualização (Vistoria)"
+                    label="Parecer da Vistoria"
                     rows="3"
                     :value="old('inspection_description')"
-                    placeholder="Descreva as condições físicas do material na entrada (Vistoria Inicial)"
+                    placeholder="Descreva as condições físicas do material na entrada"
                 />
             </div>
 
@@ -146,6 +163,7 @@
                     name="quantity"
                     label="Quantidade Total *"
                     type="number"
+                    min="1"
                     id="quantity_input"
                     :value="old('quantity', 1)"
                 />
@@ -155,6 +173,7 @@
                 <x-forms.select
                     name="status_id"
                     label="Status do Recurso"
+                    required
                     :options="\App\Models\InclusiveRadar\ResourceStatus::where('is_active', true)->pluck('name', 'id')"
                     :selected="old('status_id')"
                 />
@@ -170,8 +189,8 @@
             </div>
 
             <div class="col-md-12 mb-4 mt-4">
-                <label class="form-label fw-bold text-purple-dark">Público-alvo *</label>
-                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo (Deficiências Atendidas) *</span>
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
                     @foreach($deficiencies->sortBy('name') as $def)
                         <x-forms.checkbox
                             name="deficiencies[]"
@@ -179,20 +198,23 @@
                             :value="$def->id"
                             :label="$def->name"
                             class="mb-0"
-                            :checked="collect(old('deficiencies'))->contains($def->id)"
+                            :checked="is_array(old('deficiencies')) && in_array($def->id, old('deficiencies'))"
                         />
                     @endforeach
                 </div>
+                @error('deficiencies')
+                <small class="text-danger mt-1 d-block">{{ $message }}</small>
+                @enderror
             </div>
 
-            {{-- BOTÕES --}}
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('inclusive-radar.accessible-educational-materials.index') }}" variant="secondary">
-                    <i class="fas fa-arrow-left"></i> Voltar para Listagem
+            {{-- BOTÕES DE AÇÃO --}}
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
+                <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.index')" variant="secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save mr-2"></i> Finalizar Cadastro
+                    <i class="fas fa-save me-1"></i> Finalizar Cadastro
                 </x-buttons.submit-button>
             </div>
 

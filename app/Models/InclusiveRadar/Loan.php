@@ -5,6 +5,7 @@ namespace App\Models\InclusiveRadar;
 use App\Enums\InclusiveRadar\LoanStatus;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,7 @@ class Loan extends Model
         'loanable_type',
         'student_id',
         'professional_id',
+        'user_id',
         'loan_date',
         'due_date',
         'return_date',
@@ -34,6 +36,10 @@ class Loan extends Model
         'return_date' => 'datetime',
         'status'      => LoanStatus::class,
     ];
+
+    // ------------------------------------------------------
+    // RELATIONSHIPS
+    // ------------------------------------------------------
 
     public function loanable(): MorphTo
     {
@@ -50,7 +56,14 @@ class Loan extends Model
         return $this->belongsTo(Professional::class, 'professional_id');
     }
 
-    // QUERY SCOPES - Loan
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // ------------------------------------------------------
+    // QUERY SCOPES
+    // ------------------------------------------------------
 
     public function scopeByStatus($query, ?LoanStatus $status)
     {
@@ -60,30 +73,68 @@ class Loan extends Model
         return $query;
     }
 
-    public function scopeByStudent($query, ?int $studentId)
+    /**
+     * Filtra pelo nome do estudante
+     */
+    public function scopeStudent($query, ?string $name)
     {
-        if (!is_null($studentId)) {
-            $query->where('student_id', $studentId);
-        }
+        if (!$name) return $query;
+
+        return $query->whereHas('student.person', function ($q) use ($name) {
+            $q->where('name', 'like', "%$name%");
+        });
+    }
+
+    /**
+     * Filtra pelo nome do profissional
+     */
+    public function scopeProfessional($query, ?string $name)
+    {
+        if (!$name) return $query;
+
+        return $query->whereHas('professional.person', function ($q) use ($name) {
+            $q->where('name', 'like', "%$name%");
+        });
+    }
+
+    public function scopeItem($query, ?string $name)
+    {
+        if (!$name) return $query;
+
+        $name = strtolower($name);
+
+        $query->where(function ($q) use ($name) {
+
+            $q->where('loanable_type', AssistiveTechnology::class)
+                ->whereHas('loanable', function ($q2) use ($name) {
+                    $q2->whereRaw('LOWER(name) LIKE ?', ["%$name%"]);
+                });
+
+
+            $q->orWhere(function ($q2) use ($name) {
+                $q2->where('loanable_type', AccessibleEducationalMaterial::class)
+                    ->whereHas('loanable', function ($q3) use ($name) {
+                        $q3->whereRaw('LOWER(name) LIKE ?', ["%$name%"]);
+                    });
+            });
+
+        });
+
         return $query;
     }
 
-    public function scopeByProfessional($query, ?int $professionalId)
+    public function scopeByUser($query, ?int $userId)
     {
-        if (!is_null($professionalId)) {
-            $query->where('professional_id', $professionalId);
+        if (!is_null($userId)) {
+            $query->where('user_id', $userId);
         }
         return $query;
     }
 
     public function scopeLoanedBetween($query, ?string $startDate, ?string $endDate)
     {
-        if ($startDate) {
-            $query->where('loan_date', '>=', $startDate);
-        }
-        if ($endDate) {
-            $query->where('loan_date', '<=', $endDate);
-        }
+        if ($startDate) $query->where('loan_date', '>=', $startDate);
+        if ($endDate)   $query->where('loan_date', '<=', $endDate);
         return $query;
     }
 

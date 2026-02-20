@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Enums\InclusiveRadar\ConservationState;
 
+use App\Models\Waitlist;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -96,6 +97,11 @@ class AssistiveTechnology extends Model
     public function loans(): MorphMany
     {
         return $this->morphMany(Loan::class, 'loanable');
+    }
+
+    public function waitlists(): MorphMany
+    {
+        return $this->morphMany(Waitlist::class, 'waitlistable');
     }
 
     public function logs(): MorphMany

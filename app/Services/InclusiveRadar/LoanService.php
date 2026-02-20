@@ -2,7 +2,8 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Models\InclusiveRadar\{Loan, ResourceStatus, ResourceType};
+use App\Enums\InclusiveRadar\WaitlistStatus;
+use App\Models\InclusiveRadar\{Loan, ResourceStatus, ResourceType, Waitlist};
 use App\Enums\InclusiveRadar\LoanStatus;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -22,14 +23,17 @@ class LoanService
         return DB::transaction(function () use ($data) {
             $item = $data['loanable_type']::lockForUpdate()->findOrFail($data['loanable_id']);
             $data['loanable_type'] = $item->getMorphClass();
-
             $this->validateNewLoan($item, $data);
-
             $this->handleStockDecrement($item);
 
             $data['status'] = $data['status'] ?? LoanStatus::ACTIVE->value;
+            $data['user_id'] = $data['user_id'] ?? auth()->id();
 
-            return Loan::create($data);
+            $loan = Loan::create($data);
+
+            $this->fulfillWaitlistIfExists($item, $data['student_id'] ?? null, $data['professional_id'] ?? null);
+
+            return $loan;
         });
     }
 
@@ -252,5 +256,28 @@ class LoanService
     public function getOverdueLoans(): Collection
     {
         return Loan::overdue()->with(['student.person', 'loanable'])->get();
+    }
+
+    /**
+     * Verifica se o beneficiário (aluno ou profissional) possui fila de espera
+     * para o recurso que está sendo emprestado e marca como atendida (fulfilled).
+     */
+    private function fulfillWaitlistIfExists($item, ?int $studentId, ?int $professionalId): void
+    {
+        $query = Waitlist::where('waitlistable_id', $item->id)
+            ->where('waitlistable_type', $item->getMorphClass())
+            ->where('status', WaitlistStatus::WAITING->value);
+
+        if ($studentId) {
+            $query->where('student_id', $studentId);
+        } elseif ($professionalId) {
+            $query->where('professional_id', $professionalId);
+        }
+
+        $waitlist = $query->first();
+
+        if ($waitlist) {
+            $waitlist->update(['status' => WaitlistStatus::FULFILLED->value]);
+        }
     }
 }

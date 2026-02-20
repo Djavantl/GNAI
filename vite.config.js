@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/js/pages/inclusive-radar/loans.js',
                 'resources/js/components/dynamicFilters.js',
                 'resources/js/pages/inclusive-radar/file-uploader.js',
+                'resources/js/pages/inclusive-radar/waitlists.js',
             ],
             refresh: true,
         }),

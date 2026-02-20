@@ -256,6 +256,16 @@
         </li>
         @endcan
 
+        @can('waitlist.index')
+            <li>
+                <a href="{{ route('inclusive-radar.waitlists.index') }}"
+                   class="{{ request()->routeIs('waitlists.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="bi bi-hourglass-split"></i></span>
+                    <span class="text">Fila de Espera</span>
+                </a>
+            </li>
+        @endcan
+
         @can('training.index')
             <li>
                 <a href="{{ route('inclusive-radar.trainings.index') }}"

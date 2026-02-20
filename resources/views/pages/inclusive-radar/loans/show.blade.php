@@ -12,20 +12,24 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes do Empréstimo</h2>
             <p class="text-muted">Visualize as informações do empréstimo, prazos e histórico do recurso.</p>
         </div>
 
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID no Sistema</span>
-            <span class="badge bg-purple fs-6">{{ $loan->id }}</span>
+        <div>
+            <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+            <x-buttons.link-button :href="route('inclusive-radar.loans.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
     {{-- Alerta de Atraso --}}
-    @if($loan->status === 'active' && $loan->due_date->isPast())
+    @if($loan->status->value === 'active' && $loan->due_date->isPast())
         <div class="alert alert-warning border-0 shadow-sm mb-4 d-flex align-items-center gap-3">
             <i class="fas fa-clock fa-spin fs-4"></i>
             <div>
@@ -38,51 +42,48 @@
     <div class="mt-3">
         <div class="custom-table-card bg-white shadow-sm">
 
-            {{-- SEÇÃO 1: Recurso Emprestado --}}
+            {{-- SEÇÃO 1: Recurso Emprestado (Estilo Edit/Create) --}}
             <x-forms.section title="Recurso Emprestado" />
-            <div class="row g-3 mb-4">
-                <x-show.info-item label="Nome do Recurso" column="col-md-6" isBox="true">
-                    {{ $loan->loanable->name ?? ($loan->loanable->title ?? 'Item não identificado') }}
-                </x-show.info-item>
 
-                <x-show.info-item label="Patrimônio / Código" column="col-md-6" isBox="true">
-                    {{ $loan->loanable->asset_code ?? 'N/A' }}
-                </x-show.info-item>
-
-                <x-show.info-item label="Tipo de Recurso" column="col-md-6" isBox="true">
-                    {{ $loan->loanable_type === 'App\Models\InclusiveRadar\AssistiveTechnology' ? 'Tecnologia Assistiva' : 'Material Educacional' }}
-                </x-show.info-item>
-
-                <x-show.info-item label="Quantidade Emprestada" column="col-md-6" isBox="true">
-                    {{ $loan->quantity ?? 1 }}
-                </x-show.info-item>
+            <div class="col-md-12 mb-4 px-4">
+                <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
+                    <div class="bg-purple-dark text-white p-3 rounded shadow-sm" style="background-color: #4c1d95;">
+                        <i class="fas {{ $loan->loanable_type === 'App\Models\InclusiveRadar\AssistiveTechnology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold text-purple-dark">
+                            {{ $loan->loanable->name ?? ($loan->loanable->title ?? ($loan->loanable->description ?? 'Item não identificado')) }}
+                        </h5>
+                        <small class="text-muted text-uppercase">Patrimônio: {{ $loan->loanable->asset_code ?? 'N/A' }}</small>
+                    </div>
+                </div>
             </div>
 
-            {{-- SEÇÃO 2: Responsáveis --}}
-            <x-forms.section title="Responsáveis e Beneficiário" />
-            <div class="row g-3 mb-4">
-                <x-show.info-item label="Estudante" column="col-md-6" isBox="true">
+            {{-- SEÇÃO 2: Responsáveis e Usuário --}}
+            <x-forms.section title="Beneficiário e Responsável" />
+            <div class="row g-3 mb-4 px-4">
+                <x-show.info-item label="Estudante (Beneficiário)" column="col-md-6" isBox="true">
                     {{ $loan->student->person->name ?? '---' }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Profissional Responsável" column="col-md-6" isBox="true">
+                <x-show.info-item label="Profissional (Beneficiário)" column="col-md-6" isBox="true">
                     {{ $loan->professional->person->name ?? '---' }}
+                </x-show.info-item>
+
+                <x-show.info-item label="Usuário Autenticado (Responsável)" column="col-md-12" isBox="true">
+                    {{ $loan->user->name ?? '---' }}
                 </x-show.info-item>
             </div>
 
             {{-- SEÇÃO 3: Datas e Status --}}
             <x-forms.section title="Prazos e Observações" />
-            <div class="row g-3 mb-4">
-                <x-show.info-item label="Data do Empréstimo" column="col-md-6" isBox="true">
+            <div class="row g-3 mb-4 px-4">
+                <x-show.info-item label="Data de Saída" column="col-md-6" isBox="true">
                     {{ $loan->loan_date->format('d/m/Y H:i') }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Data Prevista de Devolução" column="col-md-6" isBox="true">
+                <x-show.info-item label="Previsão de Devolução" column="col-md-6" isBox="true">
                     {{ $loan->due_date->format('d/m/Y') }}
-                </x-show.info-item>
-
-                <x-show.info-item label="Data de Devolução Real" column="col-md-6" isBox="true">
-                    {{ $loan->return_date?->format('d/m/Y H:i') ?? 'Não devolvido' }}
                 </x-show.info-item>
 
                 @php
@@ -100,9 +101,13 @@
                 <x-show.info-item label="Status do Empréstimo" column="col-md-6" isBox="true">
                     {{ $statusLabel }}
                 </x-show.info-item>
+
+                <x-show.info-item label="Data Real da Devolução" column="col-md-6" isBox="true">
+                    {{ $loan->return_date?->format('d/m/Y H:i') ?? 'Não devolvido' }}
+                </x-show.info-item>
             </div>
 
-            <div class="row g-3 mb-4">
+            <div class="row g-3 mb-4 px-4">
                 <x-show.info-item label="Observações" column="col-md-12" isBox="true">
                     {{ $loan->observation ?? '---' }}
                 </x-show.info-item>
@@ -119,7 +124,6 @@
                 </div>
 
                 <div class="d-flex gap-3">
-
                     @if($loan->status->value === 'active')
                         <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" class="d-inline">
                             @csrf
@@ -130,18 +134,15 @@
                         </form>
                     @endif
 
-                    <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
-                        <i class="fas fa-edit"></i> Editar Registro
-                    </x-buttons.link-button>
-
                     <x-buttons.link-button :href="route('inclusive-radar.loans.index')" variant="secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>
 
         </div>
     </div>
+
     @push('scripts')
         @vite('resources/js/pages/inclusive-radar/loans.js')
     @endpush
