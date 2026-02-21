@@ -98,8 +98,15 @@
                     }
                 @endphp
 
+                @php
+                    $isOverdue = ($loan->status === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast());
+                    $statusColor = $isOverdue ? 'danger' : $loan->status->color();
+                @endphp
+
                 <x-show.info-item label="Status do Empréstimo" column="col-md-6" isBox="true">
-                    {{ $statusLabel }}
+                    <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-3">
+                        {{ $statusLabel }}
+                    </span>
                 </x-show.info-item>
 
                 <x-show.info-item label="Data Real da Devolução" column="col-md-6" isBox="true">
@@ -134,12 +141,22 @@
                         </form>
                     @endif
 
+                    <form action="{{ route('inclusive-radar.loans.destroy', $loan) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <x-buttons.submit-button
+                            variant="danger"
+                            onclick="return confirm('Deseja excluir este empréstimo?')"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
+
                     <x-buttons.link-button :href="route('inclusive-radar.loans.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>
-
         </div>
     </div>
 

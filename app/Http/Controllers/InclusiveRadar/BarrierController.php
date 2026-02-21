@@ -5,6 +5,7 @@ namespace App\Http\Controllers\InclusiveRadar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\BarrierRequest;
 use App\Models\InclusiveRadar\{Barrier, BarrierCategory, Inspection, Institution};
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\SpecializedEducationalSupport\{Deficiency, Professional, Student};
 use App\Services\InclusiveRadar\BarrierService;
 use Illuminate\Http\RedirectResponse;
@@ -148,4 +149,36 @@ class BarrierController extends Controller
         );
     }
 
+    public function generatePdf(Barrier $barrier)
+    {
+        $barrier->load([
+            'category', 'location', 'institution', 'deficiencies',
+            'inspections.images', 'registeredBy',
+            'affectedStudent.person', 'affectedProfessional.person'
+        ]);
+
+        $mapBase64 = null;
+        if ($barrier->latitude && $barrier->longitude) {
+            try {
+                $url = "https://staticmap.de/staticmap.php?center={$barrier->latitude},{$barrier->longitude}&zoom=16&size=700x350&markers={$barrier->latitude},{$barrier->longitude},red-pushpin";
+                $response = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(5)->get($url);
+                if ($response->successful()) {
+                    $mapBase64 = 'data:image/png;base64,' . base64_encode($response->body());
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Erro mapa PDF: " . $e->getMessage());
+            }
+        }
+
+        $pdf = Pdf::loadView('pages.inclusive-radar.barriers.pdf', compact('barrier', 'mapBase64'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'enable_php' => true,
+                'isRemoteEnabled' => true,
+                'isHtml5ParserEnabled' => true,
+                'chroot' => [public_path(), storage_path()],
+            ]);
+
+        return $pdf->stream("Barreira_{$barrier->id}.pdf");
+    }
 }

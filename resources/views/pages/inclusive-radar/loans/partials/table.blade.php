@@ -30,22 +30,15 @@
                         ? $loan->status
                         : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
 
-                    if ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast()) {
-                        $statusLabel = 'Em Atraso';
-                        $statusColor = 'danger';
-                    } else {
-                        $statusLabel = $currentStatus?->label() ?? $loan->status;
-                        $statusColor = match($currentStatus) {
-                            \App\Enums\InclusiveRadar\LoanStatus::ACTIVE   => 'success',
-                            \App\Enums\InclusiveRadar\LoanStatus::RETURNED => 'secondary',
-                            \App\Enums\InclusiveRadar\LoanStatus::LATE     => 'warning',
-                            \App\Enums\InclusiveRadar\LoanStatus::DAMAGED  => 'dark',
-                            default => 'secondary',
-                        };
-                    }
+                    $isOverdue = ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast());
+
+                    $statusLabel = $isOverdue ? 'Em Atraso' : ($currentStatus?->label() ?? $loan->status);
+                    $statusColor = $isOverdue ? 'danger' : $currentStatus->color();
                 @endphp
 
-                <span class="text-{{ $statusColor }} fw-bold">{{ $statusLabel }}</span>
+                <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-2">
+                    {{ $statusLabel }}
+                </span>
             </x-table.td>
 
             {{-- USUÁRIO RESPONSÁVEL --}}

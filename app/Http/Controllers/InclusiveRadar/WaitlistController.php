@@ -10,6 +10,7 @@ use App\Models\InclusiveRadar\Waitlist;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Services\InclusiveRadar\WaitlistService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -168,5 +169,29 @@ class WaitlistController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Solicitação cancelada com sucesso!');
+    }
+
+    public function generatePdf(Waitlist $waitlist)
+    {
+        $waitlist->load([
+            'waitlistable', // O item (TA ou Material)
+            'student.person',
+            'professional.person',
+            'user'
+        ]);
+
+        $pdf = Pdf::loadView(
+            'pages.inclusive-radar.waitlists.pdf',
+            compact('waitlist')
+        )
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'enable_php' => true,
+                'isRemoteEnabled' => true,
+                'isHtml5ParserEnabled' => true,
+                'chroot' => [public_path(), storage_path()],
+            ]);
+
+        return $pdf->stream("Fila_Espera_{$waitlist->id}.pdf");
     }
 }

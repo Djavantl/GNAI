@@ -17,190 +17,109 @@
 </div>
 
 {{-- 1. Identificação --}}
-<x-pdf.section-title title="1. Identificação do Material" />
-
+<x-pdf.section-title title="1. Identificação do Recurso" />
 <x-pdf.table>
     <x-pdf.row>
-        <x-pdf.info-item
-            label="Nome do Material"
-            :value="$material->name"
-            colspan="2"
-        />
-
-        <x-pdf.info-item
-            label="Categoria / Tipo"
-            :value="$material->type->name ?? '---'"
-            colspan="2"
-        />
+        <x-pdf.info-item label="Título do Material" :value="$material->name" colspan="2" />
+        <x-pdf.info-item label="Categoria / Tipo" :value="$material->type->name ?? '---'" colspan="2" />
     </x-pdf.row>
-
     <x-pdf.row>
-        <x-pdf.info-item
-            label="Patrimônio / Tombamento"
-            :value="$material->asset_code ?? '---'"
-            colspan="2"
-        />
-
-        <x-pdf.info-item
-            label="Quantidade"
-            :value="$material->quantity"
-            colspan="2"
-        />
+        <x-pdf.info-item label="Patrimônio / Tombamento" :value="$material->asset_code ?? '---'" colspan="2" />
+        <x-pdf.info-item label="Quantidade" :value="$material->quantity" colspan="2" />
     </x-pdf.row>
 </x-pdf.table>
+<x-pdf.text-area label="Descrição" :value="$material->notes" />
 
-<x-pdf.text-area
-    label="Descrição"
-    :value="$material->notes"
-/>
-
-
-{{--2. Especificações Técnicas--}}
+{{-- 2. Especificações Técnicas --}}
 @if(count($attributeValues) > 0)
     <x-pdf.section-title title="2. Especificações Técnicas" />
-
     <x-pdf.table>
-
-        @php
-            $chunks = collect($attributeValues)->chunk(3);
-        @endphp
-
+        @php $chunks = collect($attributeValues)->chunk(3); @endphp
         @foreach($chunks as $chunk)
-
             @php
                 $count = $chunk->count();
-
-                $colspan = match ($count) {
-                    1 => 3,
-                    2 => 1.5,
-                    default => 1
-                };
+                $colspan = match($count) { 1 => 3, 2 => 1.5, default => 1 };
             @endphp
-
             <x-pdf.row>
-
                 @foreach($chunk as $attributeId => $value)
-
                     @php
                         $attributeLabel = $material->attributeValues
-                            ->firstWhere('attribute_id', $attributeId)
-                            ?->attribute->label ?? '---';
+                            ->firstWhere('attribute_id', $attributeId)?->attribute->label ?? '---';
                     @endphp
-
-                    <x-pdf.info-item
-                        :label="$attributeLabel"
-                        :value="$value"
-                        :colspan="$colspan"
-                    />
+                    <x-pdf.info-item :label="$attributeLabel" :value="$value" :colspan="$colspan" />
                 @endforeach
             </x-pdf.row>
         @endforeach
     </x-pdf.table>
 @endif
 
-{{-- 3. Acessibilidade e Público --}}
-<x-pdf.section-title title="3. Acessibilidade e Público" />
-
+{{-- 3. Gestão e Público --}}
+<x-pdf.section-title title="3. Gestão e Público" />
 <x-pdf.table>
     <x-pdf.row>
-
-        <x-pdf.info-item
-            label="Público-Alvo"
-            :value="$material->deficiencies->pluck('name')->join(', ') ?: '---'"
-            colspan="2"
-        />
-
-        <x-pdf.info-item
-            label="Recursos de Acessibilidade"
-            :value="$material->accessibilityFeatures->pluck('name')->join(', ') ?: '---'"
-            colspan="2"
-        />
-
+        <x-pdf.info-item label="Público-Alvo" :value="$material->deficiencies->pluck('name')->join(', ') ?: '---'" colspan="2" />
+        <x-pdf.info-item label="Recursos de Acessibilidade" :value="$material->accessibilityFeatures->pluck('name')->join(', ') ?: '---'" colspan="2" />
     </x-pdf.row>
-
     <x-pdf.row>
-
-        <x-pdf.info-item
-            label="Status do Recurso"
-            :value="$material->resourceStatus->name ?? '---'"
-            colspan="2"
-        />
-
-        <x-pdf.info-item
-            label="Tipo"
-            :value="$material->type->name ?? '---'"
-            colspan="2"
-        />
-
+        <x-pdf.info-item label="Status do Recurso" :value="$material->resourceStatus->name ?? '---'" colspan="2" />
+        <x-pdf.info-item label="Tipo de Registro" :value="'Material Pedagógico'" colspan="2" />
     </x-pdf.row>
-
 </x-pdf.table>
 
-{{-- 4. Última Vistoria --}}
+{{-- 4. Última Vistoria (Padrão Unificado com Quebra de Página) --}}
 <x-pdf.section-title title="4. Última Vistoria" />
 
 @php
-    $lastInspection = $material->inspections
-        ->sortByDesc('inspection_date')
-        ->first();
+    $lastInspection = $material->inspections->sortByDesc('inspection_date')->first();
 @endphp
 
 @if($lastInspection)
-
-    <x-pdf.table style="border: 1px solid #ccc; margin-bottom: 10px; border-radius: 4px;">
-
+    {{-- Tabela para os dados textuais (Data e Estado) --}}
+    <x-pdf.table>
         <x-pdf.row>
             <x-pdf.info-item
-                :label="$lastInspection->inspection_date->format('d/m/Y') . ' - ' . ($lastInspection->type?->label() ?? '---')"
-                :value="$lastInspection->description ?: 'Nada declarado.'"
+                label="Data e Parecer"
+                :value="$lastInspection->inspection_date->format('d/m/Y') . ' - ' . ($lastInspection->description ?: 'Sem descrição')"
+                colspan="1"
             />
-
             <x-pdf.info-item
                 label="Estado de Conservação"
                 :value="$lastInspection->state?->label() ?? '---'"
+                colspan="1"
             />
         </x-pdf.row>
-
-
-        {{-- Imagens --}}
-        @php
-            $inspectionImagesHtml = '';
-
-            if ($lastInspection->images->count() > 0) {
-                foreach ($lastInspection->images as $image) {
-
-                    $path = storage_path('app/public/' . $image->path);
-
-                    $inspectionImagesHtml .= '
-                        <div style="display:inline-block; width:48%; margin:1%;">
-                            <img src="' . $path . '" style="width:100%; height:auto;" />
-                        </div>';
-                }
-            } else {
-                $inspectionImagesHtml = 'Sem imagem.';
-            }
-        @endphp
-
-        <x-pdf.info-item
-            label="Imagens da Vistoria"
-            colspan="3"
-            :value="$inspectionImagesHtml"
-            :isHtml="true"
-        />
-
     </x-pdf.table>
 
+    {{-- Container de Imagens FORA da tabela para permitir quebra de página fluida --}}
+    <div style="width: 100%; border: 1px solid #ccc; border-top: none; padding: 10px; background: #fff;">
+        <span class="label" style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 10px;">Imagens da Vistoria</span>
+
+        <div style="width: 100%;">
+            @if($lastInspection->images->count() > 0)
+                @foreach($lastInspection->images as $image)
+                    @php
+                        $path = storage_path('app/public/' . $image->path);
+                    @endphp
+                    {{-- O 'page-break-inside: avoid' impede que a imagem seja cortada entre páginas --}}
+                    <div style="display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; vertical-align: top; background: #f9f9f9; page-break-inside: avoid;">
+                        @if(file_exists($path))
+                            <img src="{{ $path }}" style="width: 100%; height: auto; display: block; margin: 0 auto;">
+                        @else
+                            <div style="padding: 20px; text-align: center; font-size: 8px; color: #999;">Imagem não encontrada</div>
+                        @endif
+                    </div>
+                @endforeach
+            @else
+                <span class="value">Nenhuma imagem registrada.</span>
+            @endif
+        </div>
+        {{-- Limpa o fluxo para não afetar elementos posteriores --}}
+        <div style="clear: both;"></div>
+    </div>
 @else
-
-    <x-pdf.text-area
-        label="Última Vistoria"
-        :value="'Nenhuma vistoria registrada.'"
-    />
-
+    <x-pdf.text-area label="Última Vistoria" :value="'Nenhuma vistoria registrada.'" />
 @endif
 
-
 <x-pdf.pages />
-
 </body>
 </html>

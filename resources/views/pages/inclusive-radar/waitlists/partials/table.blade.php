@@ -3,7 +3,16 @@
         <tr>
             {{-- ITEM --}}
             <x-table.td>
-                {{ $waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Item Removido') }}
+                @php
+                    $resourceRoute = match($waitlist->waitlistable_type) {
+                        'assistive_technology'            => route('inclusive-radar.assistive-technologies.show', $waitlist->waitlistable_id),
+                        'accessible_educational_material' => route('inclusive-radar.accessible-educational-materials.show', $waitlist->waitlistable_id),
+                        default                           => '#',
+                    };
+                @endphp
+                <a href="{{ $resourceRoute }}" class="text-purple-dark text-decoration-none" target="_blank">
+                    {{ $waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Item Removido') }}
+                </a>
             </x-table.td>
 
             {{-- BENEFICIÁRIO --}}
@@ -25,19 +34,12 @@
             <x-table.td>
                 @php
                     $currentStatus = \App\Enums\InclusiveRadar\WaitlistStatus::tryFrom($waitlist->status);
-
-                    $statusLabel = $currentStatus?->label() ?? $waitlist->status;
-
-                    $statusColor = match($currentStatus) {
-                        \App\Enums\InclusiveRadar\WaitlistStatus::WAITING   => 'primary',
-                        \App\Enums\InclusiveRadar\WaitlistStatus::NOTIFIED  => 'info',
-                        \App\Enums\InclusiveRadar\WaitlistStatus::FULFILLED => 'success',
-                        \App\Enums\InclusiveRadar\WaitlistStatus::CANCELLED => 'secondary',
-                        default => 'secondary',
-                    };
+                    $statusColor = $currentStatus?->color() ?? 'secondary';
                 @endphp
 
-                <span class="text-{{ $statusColor }} fw-bold">{{ $statusLabel }}</span>
+                <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-2">
+                    {{ $currentStatus?->label() ?? $waitlist->status }}
+                </span>
             </x-table.td>
 
             {{-- USUÁRIO RESPONSÁVEL --}}

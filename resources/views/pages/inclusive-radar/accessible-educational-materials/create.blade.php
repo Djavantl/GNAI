@@ -11,17 +11,16 @@
         ]" />
     </div>
 
-    {{-- Header alinhado com o estilo de TA --}}
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <header>
             <h2 class="text-title">Novo Material Pedagógico Acessível (MPA)</h2>
-            <p class="text-muted mb-0">Cadastre materiais adaptados e realize a vistoria inicial para controle de acervo.</p>
+            <p class="text-muted mb-0">Cadastre materiais adaptados e realize a vistoria inicial para garantir a prontidão do recurso.</p>
         </header>
         <div>
             <x-buttons.link-button
                 :href="route('inclusive-radar.accessible-educational-materials.index')"
                 variant="secondary"
-                label="Cancelar cadastro e retornar à lista"
+                label="Cancelar edição e voltar para a lista"
             >
                 <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>
@@ -32,7 +31,6 @@
         <x-forms.form-card action="{{ route('inclusive-radar.accessible-educational-materials.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            {{-- SEÇÃO 1: Identificação --}}
             <x-forms.section title="Identificação do Recurso" />
 
             <div class="col-md-12">
@@ -40,8 +38,8 @@
                     name="name"
                     label="Título do Material *"
                     required
-                    :value="old('name')"
                     placeholder="Ex: Livro em Braille, Maquete Tátil..."
+                    :value="old('name')"
                 />
             </div>
 
@@ -50,8 +48,8 @@
                     name="notes"
                     label="Descrição Detalhada"
                     rows="3"
+                    placeholder="Descreva as principais características e finalidade do item"
                     :value="old('notes')"
-                    placeholder="Descreva as características principais e finalidade do material..."
                 />
             </div>
 
@@ -75,17 +73,14 @@
                 />
             </div>
 
-            {{-- SEÇÃO 2: Especificações Técnicas (Dinâmicas) --}}
+            {{-- Container para Atributos Dinâmicos --}}
             <div id="dynamic-attributes-container" style="display: none;">
                 <x-forms.section title="Especificações Técnicas" />
-                <div class="row g-0" id="dynamic-attributes" aria-live="polite">
-                    {{-- Preenchido via JS --}}
-                </div>
+                <div class="row g-0" id="dynamic-attributes" aria-live="polite"></div>
             </div>
 
-            {{-- SEÇÃO 3: Recursos de Acessibilidade (Específico de MPA) --}}
+            {{-- Recursos de Acessibilidade --}}
             <x-forms.section title="Recursos de Acessibilidade" />
-
             <div class="col-md-12 mb-4">
                 <span class="d-block form-label fw-bold text-purple-dark mb-3">Recursos presentes no material</span>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('accessibility_features') border-danger @enderror">
@@ -105,7 +100,6 @@
                 @enderror
             </div>
 
-            {{-- SEÇÃO 4: Vistoria --}}
             <x-forms.section title="Detalhes da Vistoria Inicial" />
 
             <div class="col-md-6">
@@ -113,7 +107,8 @@
                     name="inspection_type"
                     label="Tipo de Inspeção *"
                     required
-                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
+                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
                     :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
                 />
             </div>
@@ -123,7 +118,6 @@
                     name="inspection_date"
                     label="Data da Inspeção *"
                     type="date"
-                    required
                     :value="old('inspection_date', date('Y-m-d'))"
                 />
             </div>
@@ -131,31 +125,30 @@
             <div class="col-md-6" id="conservation_container">
                 <x-forms.select
                     name="conservation_state"
-                    label="Estado de Conservação Inicial *"
+                    label="Estado de Conservação *"
                     required
                     :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                    :selected="old('conservation_state', 'novo')"
+                    :selected="old('conservation_state')"
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.image-uploader
                     name="images[]"
-                    label="Fotos Iniciais do Material"
+                    label="Fotos de Evidência"
                 />
             </div>
 
             <div class="col-md-12">
                 <x-forms.textarea
                     name="inspection_description"
-                    label="Parecer da Vistoria"
+                    label="Parecer Técnico / Descrição da Vistoria"
                     rows="3"
+                    placeholder="Descreva as condições físicas e funcionais do item na entrada"
                     :value="old('inspection_description')"
-                    placeholder="Descreva as condições físicas do material na entrada"
                 />
             </div>
 
-            {{-- SEÇÃO 5: Gestão e Público --}}
             <x-forms.section title="Gestão e Público" />
 
             <div class="col-md-6" id="quantity_container">
@@ -163,9 +156,9 @@
                     name="quantity"
                     label="Quantidade Total *"
                     type="number"
-                    min="1"
                     id="quantity_input"
                     :value="old('quantity', 1)"
+                    min="1"
                 />
             </div>
 
@@ -174,7 +167,7 @@
                     name="status_id"
                     label="Status do Recurso"
                     required
-                    :options="\App\Models\InclusiveRadar\ResourceStatus::where('is_active', true)->pluck('name', 'id')"
+                    :options="\App\Models\InclusiveRadar\ResourceStatus::active()->forEducationalMaterial()->pluck('name', 'id')"
                     :selected="old('status_id')"
                 />
             </div>
@@ -183,7 +176,7 @@
                 <x-forms.checkbox
                     name="is_active"
                     label="Ativar no Sistema"
-                    description="Material visível para empréstimos imediatamente"
+                    description="Fica disponível para visualização e empréstimos"
                     :checked="old('is_active', true)"
                 />
             </div>
@@ -207,17 +200,16 @@
                 @enderror
             </div>
 
-            {{-- BOTÕES DE AÇÃO --}}
+            {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
                 <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.index')" variant="secondary">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save me-1"></i> Finalizar Cadastro
+                    <i class="fas fa-save me-1"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 

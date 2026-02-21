@@ -1,4 +1,4 @@
-<x-table.table :headers="['Nome', 'Categoria', 'Relator', 'Prioridade', 'Status', 'Ações']">
+<x-table.table :headers="['Nome', 'Categoria', 'Relator', 'Prioridade', 'Status', 'Ações']" :records="$barriers">
     @forelse($barriers as $barrier)
         <tr>
             {{-- NOME --}}
@@ -15,23 +15,23 @@
                 @endif
             </x-table.td>
 
-            {{-- PRIORIDADE --}}
+            {{-- PRIORIDADE - Com Badge conforme solicitado --}}
             <x-table.td>
-                <span class="text-{{ $barrier->priority?->color() ?? 'secondary' }} fw-bold">
+                @php $prioColor = $barrier->priority?->color() ?? 'secondary'; @endphp
+                <span class="badge bg-{{ $prioColor }}-subtle text-{{ $prioColor }}-emphasis border px-2">
                     {{ $barrier->priority?->label() ?? '-' }}
                 </span>
             </x-table.td>
 
-            {{-- STATUS --}}
+            {{-- STATUS - Com Badge conforme solicitado --}}
             <x-table.td>
-                @php $status = $barrier->latestStatus(); @endphp
-                @if($status)
-                    <span class="text-{{ $status->color() }} fw-bold">
-                        {{ $status->label() }}
-                    </span>
-                @else
-                    <span class="text-secondary fw-bold">Pendente</span>
-                @endif
+                @php
+                    $status = $barrier->latestStatus();
+                    $statusColor = $status ? $status->color() : 'secondary';
+                @endphp
+                <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-2">
+                    {{ $status ? $status->label() : 'Pendente' }}
+                </span>
             </x-table.td>
 
             {{-- AÇÕES --}}
@@ -42,13 +42,6 @@
                         variant="info"
                     >
                         <i class="fas fa-eye"></i> Ver
-                    </x-buttons.link-button>
-
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.barriers.edit', $barrier)"
-                        variant="warning"
-                    >
-                        <i class="fas fa-edit"></i> Editar
                     </x-buttons.link-button>
 
                     <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}" method="POST" class="d-inline">
@@ -72,7 +65,7 @@
 </x-table.table>
 
 @if(method_exists($barriers, 'hasPages') && $barriers->hasPages())
-    <div class="mt-4">
+    <div class="mt-4 px-3">
         {{ $barriers->links() }}
     </div>
 @endif

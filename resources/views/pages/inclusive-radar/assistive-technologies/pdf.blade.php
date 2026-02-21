@@ -87,6 +87,7 @@
 @endphp
 
 @if($lastInspection)
+    {{-- Tabela para os dados textuais --}}
     <x-pdf.table>
         <x-pdf.row>
             {{-- Coluna 1 --}}
@@ -102,28 +103,33 @@
                 colspan="1"
             />
         </x-pdf.row>
-
-        <x-pdf.row>
-            <td colspan="2" style="padding: 10px; border: 1px solid #ccc;">
-                <span class="label" style="display: block; margin-bottom: 8px;">Imagens da Vistoria</span>
-
-                <div style="width: 100%; display: block; clear: both;">
-                    @if($lastInspection->images->count() > 0)
-                        @foreach($lastInspection->images as $image)
-                            @php
-                                $path = storage_path('app/public/' . $image->path);
-                            @endphp
-                            <div style="display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; vertical-align: top; background: #f9f9f9;">
-                                <img src="{{ $path }}" style="width: 100%; height: auto; display: block; margin: 0 auto;">
-                            </div>
-                        @endforeach
-                    @else
-                        <span class="value">Nenhuma imagem registrada.</span>
-                    @endif
-                </div>
-            </td>
-        </x-pdf.row>
     </x-pdf.table>
+
+    {{-- Container de Imagens FORA da tabela para permitir quebra de página (Page Break) --}}
+    <div style="width: 100%; border: 1px solid #ccc; border-top: none; padding: 10px; background: #fff;">
+        <span class="label" style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 10px;">Imagens da Vistoria</span>
+
+        <div style="width: 100%;">
+            @if($lastInspection->images->count() > 0)
+                @foreach($lastInspection->images as $image)
+                    @php
+                        // Mantendo seu padrão de storage_path
+                        $path = storage_path('app/public/' . $image->path);
+                    @endphp
+                    <div style="display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; vertical-align: top; background: #f9f9f9; page-break-inside: avoid;">
+                        @if(file_exists($path))
+                            <img src="{{ $path }}" style="width: 100%; height: auto; display: block; margin: 0 auto;">
+                        @else
+                            <div style="padding: 20px; text-align: center; font-size: 8px; color: #999;">Imagem não encontrada</div>
+                        @endif
+                    </div>
+                @endforeach
+            @else
+                <span class="value">Nenhuma imagem registrada.</span>
+            @endif
+        </div>
+        <div style="clear: both;"></div>
+    </div>
 @else
     <x-pdf.text-area label="Última Vistoria" :value="'Nenhuma vistoria registrada.'" />
 @endif

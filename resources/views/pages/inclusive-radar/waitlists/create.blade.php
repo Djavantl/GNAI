@@ -11,13 +11,18 @@
     ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Nova Solicitação de Fila</h2>
             <p class="text-muted">
                 Registre um estudante ou profissional na fila para um recurso indisponível. <br>
                 <strong>Importante:</strong> selecione apenas um: aluno ou profissional.
             </p>
+        </div>
+        <div>
+            <x-buttons.link-button href="{{ route('inclusive-radar.waitlists.index') }}" variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -116,11 +121,11 @@
             {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.waitlists.index') }}" variant="secondary">
-                    <i class="fas fa-arrow-left"></i> Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-clock mr-2"></i> Registrar na Fila
+                    <i class="fas fa-save me-1"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

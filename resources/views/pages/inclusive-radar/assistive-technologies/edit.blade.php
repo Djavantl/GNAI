@@ -19,9 +19,9 @@
         </div>
         <div>
             <x-buttons.link-button
-                :href="route('inclusive-radar.assistive-technologies.index')"
+                :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)"
                 variant="secondary"
-                label="Cancelar edição e voltar para a lista de tecnologias"
+                label="Cancelar edição e voltar para os detalhes da tecnologia"
             >
                 <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>
@@ -253,9 +253,9 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button
-                    :href="route('inclusive-radar.assistive-technologies.index')"
+                    :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)"
                     variant="secondary"
-                    label="Cancelar e voltar"
+                    label="Cancelar edição e voltar para os detalhes da tecnologia"
                 >
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>

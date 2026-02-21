@@ -12,35 +12,60 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes da Fila de Espera</h2>
             <p class="text-muted">Visualize informações da solicitação, status e histórico do recurso.</p>
         </div>
 
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID no Sistema</span>
-            <span class="badge bg-purple fs-6">{{ $waitlist->id }}</span>
+        <div>
+            <x-buttons.link-button :href="route('inclusive-radar.waitlists.edit', $waitlist)" variant="warning">
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+
+            <x-buttons.link-button :href="route('inclusive-radar.waitlists.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
     <div class="mt-3">
         <div class="custom-table-card bg-white shadow-sm">
 
-            {{-- SEÇÃO 1: Recurso --}}
+            {{-- SEÇÃO 1: Recurso Solicitado --}}
             <x-forms.section title="Recurso Solicitado" />
-            <div class="row g-3 mb-4">
-                <x-show.info-item label="Nome do Recurso" column="col-md-6" isBox="true">
-                    {{ $waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Item não identificado') }}
-                </x-show.info-item>
 
-                <x-show.info-item label="Tipo de Recurso" column="col-md-6" isBox="true">
-                    {{ $waitlist->waitlistable_type === 'assistive_technology' ? 'Tecnologia Assistiva' : 'Material Educacional' }}
-                </x-show.info-item>
+            <div class="col-md-12 mb-4 px-4">
+                <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
+                    <div class="bg-purple-dark text-white p-3 rounded shadow-sm" style="background-color: #4c1d95;">
+                        <i class="fas {{ $waitlist->waitlistable_type === 'assistive_technology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
+                    </div>
 
-                <x-show.info-item label="Quantidade Disponível" column="col-md-6" isBox="true">
-                    {{ $waitlist->waitlistable->quantity_available ?? 'N/A' }}
-                </x-show.info-item>
+                    <div>
+                        <h5 class="mb-0 fw-bold">
+                            @php
+                                $type = $waitlist->waitlistable_type;
+                                $id = $waitlist->waitlistable_id;
+
+                                // Lógica de rota usando os aliases do MorphMap
+                                $resourceRoute = match($type) {
+                                    'assistive_technology'            => route('inclusive-radar.assistive-technologies.show', $id),
+                                    'accessible_educational_material' => route('inclusive-radar.accessible-educational-materials.show', $id),
+                                    default                           => '#',
+                                };
+                            @endphp
+
+                            <a href="{{ $resourceRoute }}"
+                               class="text-purple-dark text-decoration-none hover-underline"
+                               target="_blank"
+                               aria-label="Ver detalhes do recurso: {{ $waitlist->waitlistable->name }} (abre em nova aba)">
+                                {{ $waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Recurso') }}
+                                <i class="fas fa-external-link-alt ms-1" aria-hidden="true" style="font-size: 0.70rem;"></i>
+                            </a>
+                        </h5>
+                        <small class="text-muted text-uppercase">Patrimônio: {{ $waitlist->waitlistable->asset_code ?? 'N/A' }}</small>
+                    </div>
+                </div>
             </div>
 
             {{-- SEÇÃO 2: Beneficiário e Usuário --}}
@@ -70,10 +95,14 @@
                     $currentStatus = $waitlist->status instanceof \App\Enums\InclusiveRadar\WaitlistStatus
                         ? $waitlist->status
                         : \App\Enums\InclusiveRadar\WaitlistStatus::tryFrom($waitlist->status);
+
+                    $statusColor = $currentStatus?->color() ?? 'secondary';
                 @endphp
 
                 <x-show.info-item label="Status da Solicitação" column="col-md-6" isBox="true">
-                    {{ $currentStatus?->label() ?? $waitlist->status }}
+                    <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-3 py-2">
+                        {{ $currentStatus?->label() ?? $waitlist->status }}
+                    </span>
                 </x-show.info-item>
             </div>
 
@@ -89,28 +118,36 @@
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $waitlist->id }}
+                    <x-buttons.pdf-button :href="route('inclusive-radar.waitlists.pdf', $waitlist)" class="ms-1" />
                 </div>
 
-                <div class="d-flex gap-3">
-                    <x-buttons.link-button :href="route('inclusive-radar.waitlists.edit', $waitlist)" variant="warning">
-                        <i class="fas fa-edit"></i> Editar Solicitação
-                    </x-buttons.link-button>
+                @if($currentStatus === \App\Enums\InclusiveRadar\WaitlistStatus::WAITING)
+                    <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PATCH')
+                        <x-buttons.submit-button
+                            variant="danger"
+                            onclick="return confirm('Deseja cancelar esta solicitação?')"
+                        >
+                            <i class="fas fa-times"></i> Cancelar
+                        </x-buttons.submit-button>
+                    </form>
+                @endif
 
-                    @if($currentStatus === \App\Enums\InclusiveRadar\WaitlistStatus::WAITING)
-                        <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('PATCH')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja cancelar esta solicitação?')"
-                            >
-                                <i class="fas fa-times"></i> Cancelar Solicitação
-                            </x-buttons.submit-button>
-                        </form>
-                    @endif
+                <div class="d-flex gap-3">
+                    <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <x-buttons.submit-button
+                            variant="danger"
+                            onclick="return confirm('Deseja excluir esta solicitação?')"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
 
                     <x-buttons.link-button :href="route('inclusive-radar.waitlists.index')" variant="secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>

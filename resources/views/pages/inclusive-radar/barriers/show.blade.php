@@ -11,7 +11,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes da Barreira</h2>
             <p class="text-muted">
@@ -19,9 +19,14 @@
                 <strong>{{ $barrier->name }}</strong>
             </p>
         </div>
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID do Registro</span>
-            <span class="badge bg-purple fs-6">#{{ $barrier->id }}</span>
+        <div>
+            <x-buttons.link-button :href="route('inclusive-radar.barriers.edit', $barrier)" variant="warning">
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+
+            <x-buttons.link-button :href="route('inclusive-radar.barriers.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -82,7 +87,10 @@
                         </x-show.info-item>
 
                         <x-show.info-item label="Prioridade" column="col-6" isBox="true">
-                            {{ $barrier->priority?->label() ?? 'Não definida' }}
+                            @php $prioColor = $barrier->priority?->color() ?? 'secondary'; @endphp
+                            <span class="badge bg-{{ $prioColor }}-subtle text-{{ $prioColor }}-emphasis border px-3">
+                                {{ $barrier->priority?->label() ?? 'Não definida' }}
+                            </span>
                         </x-show.info-item>
 
                         <x-show.info-item label="Categoria" column="col-6" isBox="true">
@@ -150,7 +158,9 @@
                         </x-show.info-item>
 
                         <x-show.info-item label="Status no Sistema" column="col-6" isBox="true">
-                            {{ $barrier->is_active ? 'Ativo' : 'Inativo' }}
+                            <span class="text-{{ $barrier->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
+                                {{ $barrier->is_active ? 'Ativo' : 'Inativo' }}
+                            </span>
                         </x-show.info-item>
                     </div>
                     <x-show.info-item label="Coordenadas" column="col-12" isBox="true">
@@ -205,29 +215,22 @@
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $barrier->id }}
+                    <x-buttons.pdf-button :href="route('inclusive-radar.barriers.pdf', $barrier)" class="ms-1" />
                 </div>
 
                 <div class="d-flex gap-3">
-{{--                    <x-buttons.link-button :href="route('', $barrier)" target="_blank" variant="primary">--}}
-{{--                        Gerar PDF--}}
-{{--                    </x-buttons.link-button>--}}
-
                     <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}"
                           method="POST"
                           onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do recurso. Confirmar?')">
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir Recurso
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
 
-                    <x-buttons.link-button :href="route('inclusive-radar.barriers.edit', $barrier)" variant="warning">
-                        <i class="fas fa-edit"></i> Editar Recurso
-                    </x-buttons.link-button>
-
                     <x-buttons.link-button :href="route('inclusive-radar.barriers.index')" variant="secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>

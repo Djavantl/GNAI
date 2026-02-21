@@ -178,20 +178,12 @@
             {{-- Rodapé de Ações (Igual ao da TA) --}}
             <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
                 <div class="text-muted small">
-                    <i class="fas fa-fingerprint me-1" aria-hidden="true"></i> ID: #{{ $training->id }}
+                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $training->id }}
                     <x-buttons.pdf-button :href="route('inclusive-radar.trainings.pdf', $training)" class="ms-1" />
                     <x-buttons.excel-button :href="route('inclusive-radar.trainings.excel', $training)" class="ms-1" />
                 </div>
 
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão do treinamento">
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.trainings.index')"
-                        variant="secondary-outline"
-                        label="Voltar para a listagem"
-                    >
-                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
-                    </x-buttons.link-button>
-
                     <form action="{{ route('inclusive-radar.trainings.destroy', $training) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente este treinamento?')">
                         @csrf @method('DELETE')
                         <x-buttons.submit-button variant="danger" label="Excluir este treinamento">
@@ -200,11 +192,11 @@
                     </form>
 
                     <x-buttons.link-button
-                        :href="route('inclusive-radar.trainings.edit', $training)"
-                        variant="warning"
-                        label="Editar treinamento"
+                        href="{{ route('inclusive-radar.trainings.index') }}"
+                        variant="secondary"
+                        label="Voltar para a lista de treinamentos"
                     >
-                        <i class="fas fa-edit" aria-hidden="true"></i> Editar
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </footer>

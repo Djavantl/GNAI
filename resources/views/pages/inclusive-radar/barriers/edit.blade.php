@@ -12,10 +12,20 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Barreira de Acessibilidade</h2>
             <p class="text-muted">Atualizando informações de: <strong>{{ $barrier->name }}</strong></p>
+        </div>
+
+        <div>
+            <x-buttons.link-button
+                :href="route('inclusive-radar.barriers.show', $barrier)"
+                variant="secondary"
+                label="Cancelar edição e voltar para os detalhes da barreira"
+            >
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -324,16 +334,17 @@
             {{-- FOOTER / BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4 bg-white">
                 <x-buttons.link-button
-                    href="{{ route('inclusive-radar.barriers.index') }}"
+                    :href="route('inclusive-radar.barriers.show', $barrier)"
                     variant="secondary"
+                    label="Cancelar edição e voltar para os detalhes da barreira"
                 >
-                    <i class="fas fa-arrow-left"></i> Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
                 <x-buttons.submit-button
                     type="submit"
                     class="btn-action new submit"
                 >
-                    <i class="fas fa-save mr-2"></i> Salvar Alterações
+                    <i class="fas fa-save mr-2"></i> Salvar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

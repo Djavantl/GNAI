@@ -99,15 +99,11 @@
                             </x-table.table>
                         </div>
                     @else
-                        <div class="text-center py-5 border rounded bg-light border-dashed" role="status">
-                            <p class="text-muted italic mb-0">Nenhum treinamento cadastrado para este recurso.</p>
+                        <div class="text-center py-5 border rounded bg-light border-dashed">
+                            <i class="fas fa-chalkboard-teacher fa-3x mb-3 text-muted opacity-20"></i>
+                            <p class="text-muted italic mb-3">Nenhum treinamento cadastrado.</p>
                         </div>
                     @endif
-                    <div class="text-end mt-3">
-                        <x-buttons.link-button :href="route('inclusive-radar.trainings.create', ['type' => 'assistive_technology', 'id' => $assistiveTechnology->id])" variant="primary" class="btn-sm">
-                            <i class="fas fa-plus me-1"></i> Adicionar Treinamento
-                        </x-buttons.link-button>
-                    </div>
                 </div>
             </div>
 
@@ -143,7 +139,7 @@
                     </span>
                 </x-show.info-item>
 
-                <x-show.info-item label="Público-alvo (Deficiências Atendidas) *" column="col-md-12" isBox="true">
+                <x-show.info-item label="Público-alvo (Deficiências Atendidas)" column="col-md-12" isBox="true">
                     <div class="tag-container" role="list">
                         @forelse($assistiveTechnology->deficiencies->sortBy('name') as $deficiency)
                             <x-show.tag color="light" role="listitem">{{ $deficiency->name }}</x-show.tag>
@@ -156,8 +152,8 @@
 
             {{-- Rodapé de Ações --}}
             <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
-                <div class="text-muted small">
-                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID: #{{ $assistiveTechnology->id }}
+                <div class="text-muted small d-flex align-items-center">
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $assistiveTechnology->id }}
                     <x-buttons.pdf-button :href="route('inclusive-radar.assistive-technologies.pdf', $assistiveTechnology)" class="ms-1" />
                     <x-buttons.excel-button :href="route('inclusive-radar.assistive-technologies.excel', $assistiveTechnology)" class="ms-1"/>
                 </div>

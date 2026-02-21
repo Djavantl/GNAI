@@ -162,7 +162,7 @@
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit" aria-label="Salvar novo treinamento">
-                    <i class="fas fa-save me-1" aria-hidden="true"></i> Cadastrar Treinamento
+                    <i class="fas fa-save me-1" aria-hidden="true"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

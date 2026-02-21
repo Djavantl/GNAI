@@ -21,7 +21,7 @@
         </header>
         <div>
             <x-buttons.link-button
-                href="{{ route('inclusive-radar.trainings.index') }}"
+                href="{{ route('inclusive-radar.trainings.show', $training) }}"
                 variant="secondary"
                 label="Cancelar edição e retornar à lista de treinamentos"
             >
@@ -168,11 +168,11 @@
             {{-- Botões de ação com espaçamento e borda padrão TA --}}
             <div class="col-md-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button
-                    href="{{ route('inclusive-radar.trainings.index') }}"
+                    href="{{ route('inclusive-radar.trainings.show', $training) }}"
                     variant="secondary"
-                    label="Voltar para a listagem"
+                    label="Cancelar edição e retornar à lista de treinamentos"
                 >
-                    <i class="fas fa-arrow-left me-1" aria-hidden="true"></i> Voltar
+                    <i class="fas fa-times" aria-hidden="true"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button
@@ -180,7 +180,7 @@
                     class="btn-action new submit"
                     label="Salvar alterações do treinamento"
                 >
-                    <i class="fas fa-save me-1" aria-hidden="true"></i> Salvar Alterações
+                    <i class="fas fa-save me-1" aria-hidden="true"></i> Salvar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

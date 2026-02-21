@@ -231,6 +231,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('barriers.toggle')->middleware('can:barrier.toggle');
     Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])
         ->name('barriers.destroy')->middleware('can:barrier.destroy');
+    Route::get('/barriers/{barrier}/pdf', [BarrierController::class, 'generatePdf'])
+        ->name('barriers.pdf')->middleware('can:barrier.pdf');
 
     // ------------------- MATERIAIS PEDAGÓGICOS ACESSÍVEIS -------------------
     Route::get('/accessible-educational-materials', [AccessibleEducationalMaterialController::class, 'index'])
@@ -358,4 +360,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::patch('/waitlists/{waitlist}/cancel', [WaitlistController::class, 'cancel'])
         ->name('waitlists.cancel')->middleware('can:waitlist.cancel');
+
+    Route::get('/waitlists/{waitlist}/pdf', [WaitlistController::class, 'generatePdf'])
+        ->name('waitlists.pdf')->middleware('can:waitlist.pdf');
 });

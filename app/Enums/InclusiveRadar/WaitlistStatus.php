@@ -18,4 +18,14 @@ enum WaitlistStatus: string
             self::CANCELLED => 'Cancelado',
         };
     }
+
+    public function color(): string
+    {
+        return match($this) {
+            self::WAITING   => 'warning',
+            self::NOTIFIED  => 'info',
+            self::FULFILLED => 'success',
+            self::CANCELLED => 'danger',
+        };
+    }
 }
