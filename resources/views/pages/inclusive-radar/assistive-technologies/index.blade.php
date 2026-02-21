@@ -19,50 +19,46 @@
             :href="route('inclusive-radar.assistive-technologies.create')"
             variant="new"
         >
-            Nova Tecnologia
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    <x-table.filters
+    {{-- 🔎 Filtros (versão limpa e moderna) --}}
+    <x-table.filters.form
         data-dynamic-filter
         data-target="#assistive-technologies-table"
         :fields="[
         [
             'name' => 'name',
-            'label' => 'Nome',
-            'placeholder' => 'Digite o nome'
+            'placeholder' => 'Filtrar por nome...'
         ],
         [
             'name' => 'type',
-            'label' => 'Tipo',
-            'placeholder' => 'Digite o tipo'
+            'placeholder' => 'Filtrar por tipo...'
         ],
         [
             'name' => 'is_digital',
-            'label' => 'Natureza',
             'type' => 'select',
             'options' => [
-                '' => 'Todos',
+                '' => 'Natureza (Todos)',
                 '1' => 'Digital',
                 '0' => 'Físico',
             ]
         ],
         [
             'name' => 'is_active',
-            'label' => 'Status',
             'type' => 'select',
             'options' => [
-                '' => 'Todos',
+                '' => 'Status (Todos)',
                 '1' => 'Ativo',
                 '0' => 'Inativo'
             ]
         ],
         [
             'name' => 'available',
-            'label' => 'Disponibilidade',
             'type' => 'select',
             'options' => [
-                '' => 'Todos',
+                '' => 'Disponibilidade (Todos)',
                 '1' => 'Disponível',
                 '0' => 'Indisponível'
             ]

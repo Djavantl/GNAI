@@ -178,7 +178,7 @@
             {{-- Rodapé de Ações (Igual ao da TA) --}}
             <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
                 <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $training->id }}
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $training->id }}
                     <x-buttons.pdf-button :href="route('inclusive-radar.trainings.pdf', $training)" class="ms-1" />
                     <x-buttons.excel-button :href="route('inclusive-radar.trainings.excel', $training)" class="ms-1" />
                 </div>

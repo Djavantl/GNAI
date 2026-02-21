@@ -8,6 +8,7 @@ use App\Models\InclusiveRadar\BarrierCategory;
 use App\Services\InclusiveRadar\BarrierCategoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class BarrierCategoryController extends Controller
 {
@@ -15,11 +16,18 @@ class BarrierCategoryController extends Controller
         protected BarrierCategoryService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View|string
     {
-        $categories = BarrierCategory::with('barriers')
+        $categories = BarrierCategory::withCount('barriers')
+            ->filterName($request->name)
+            ->filterActive($request->is_active)
             ->orderBy('name')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view('pages.inclusive-radar.barrier-categories.partials.table', compact('categories'))->render();
+        }
 
         return view(
             'pages.inclusive-radar.barrier-categories.index',

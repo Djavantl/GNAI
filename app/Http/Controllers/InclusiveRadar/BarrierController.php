@@ -9,6 +9,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\SpecializedEducationalSupport\{Deficiency, Professional, Student};
 use App\Services\InclusiveRadar\BarrierService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class BarrierController extends Controller
@@ -17,17 +18,36 @@ class BarrierController extends Controller
         protected BarrierService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
+        $name = trim($request->name ?? '');
+
         $barriers = Barrier::with([
             'category',
             'location',
             'deficiencies',
             'inspections.images',
             'registeredBy'
-        ])->latest()->get();
+        ])
+            ->when($name, fn ($q) => $q->name($name))
+            ->when($request->category, fn ($q) => $q->category($request->category))
+            ->when($request->priority, fn ($q) => $q->priority($request->priority))
+            ->when($request->status, fn ($q) => $q->status($request->status))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('pages.inclusive-radar.barriers.index', compact('barriers'));
+        if ($request->ajax()) {
+            return view(
+                'pages.inclusive-radar.barriers.partials.table',
+                compact('barriers')
+            );
+        }
+
+        return view(
+            'pages.inclusive-radar.barriers.index',
+            compact('barriers')
+        );
     }
 
     public function create(): View

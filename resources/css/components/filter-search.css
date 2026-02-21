@@ -1,32 +1,45 @@
-/* ===== Search Field Global ===== */
+/* =========================================
+   SEARCH & DYNAMIC FILTERS - MODERN STYLE
+========================================= */
 
+/* Wrapper */
 .search-wrapper {
     margin: 1.5rem 0;
 }
 
-.search-label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-purple-dark);
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.02em;
+/* Layout dos filtros */
+.search-filters-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: nowrap; /* NÃO quebra no desktop */
 }
 
-.search-box {
-    position: relative;
-    width: 100%;
-    max-width: 520px;
+/* Grupo individual */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;        /* flexível */
+    min-width: 160px;      /* menor que antes */
 }
+
+/* Grupo específico para botão */
+.filter-group--auto {
+    flex: 0 0 auto;
+    min-width: unset;
+}
+
+/* ================= INPUT ================= */
 
 .search-input {
     width: 100%;
-    padding: 0.85rem 1.2rem 0.85rem 3rem;
+    height: 42px; /* menor */
+    padding: 0 1rem; /* menos padding lateral */
     border-radius: 999px;
     border: 1px solid #e0e4f1;
     background: #ffffff;
     font-family: var(--font-family-base);
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.2s ease;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
@@ -41,43 +54,93 @@
     box-shadow: 0 0 0 3px rgba(77, 68, 181, 0.15);
 }
 
-.search-icon {
-    position: absolute;
-    left: 1.1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--primary-color);
-    font-size: 1.05rem;
-    pointer-events: none;
-}
-
-.search-filters-row {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    flex-wrap: wrap;
-}
+/* ================= SELECT ================= */
 
 .semester-filter {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
 
-    padding: 0.65rem 2.4rem 0.65rem 0.9rem;
-    border-radius: 10px;
-    border: 1px solid #dde3f7;
+    font-weight: 600;
+    width: 100%;
+    height: 42px; /* menor */
+    padding: 0 2.4rem 0 1rem;
+    border-radius: 999px;
+    border: 1px solid #e0e4f1;
     background: #ffffff;
     font-family: var(--font-family-base);
-    font-size: 0.95rem;
-    min-width: 180px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+
     background-image: url("../images/icons/select-down.svg");
     background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 14px;
+    background-position: right 0.8rem center;
+    background-size: 12px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--primary-color);
 }
 
 .semester-filter:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(77, 68, 181, 0.15);
+}
+
+/* ================= BOTÃO LIMPAR ================= */
+
+.filter-clear-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 42px; /* menor */
+    padding: 0 1.2rem;
+    border-radius: 999px;
+    border: 1px solid #e0e4f1;
+    background: #ffffff;
+    font-family: var(--font-family-base);
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: var(--text-purple-dark);
+    white-space: nowrap;
+
+    flex: 0 0 auto;
+}
+
+.filter-clear-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+/* ================= RESPONSIVO ================= */
+
+@media (max-width: 1024px) {
+    .search-filters-row {
+        flex-wrap: wrap; /* pode quebrar aqui */
+    }
+
+    .filter-group {
+        flex: 1 1 48%;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-group {
+        flex: 1 1 100%;
+    }
+
+    .filter-group--auto {
+        flex: 1 1 100%;
+    }
+
+    .filter-clear-btn {
+        width: 100%;
+    }
 }

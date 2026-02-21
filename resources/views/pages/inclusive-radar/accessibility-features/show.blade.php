@@ -12,14 +12,19 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes do Recurso de Acessibilidade</h2>
             <p class="text-muted">Visualize as informações cadastrais e status do recurso: <strong>{{ $feature->name }}</strong></p>
         </div>
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID no Sistema</span>
-            <span class="badge bg-purple fs-6">{{ $feature->id }}</span>
+        <div>
+            <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.edit', $feature)" variant="warning">
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+
+            <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -49,16 +54,19 @@
             {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
-                    ID do Sistema: #{{ $feature->id }}
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $feature->id }}
                 </div>
 
                 <div class="d-flex gap-3">
-                    <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.edit', $feature)" variant="warning">
-                        <i class="fas fa-edit"></i> Editar Recurso
-                    </x-buttons.link-button>
+                    <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
+                        @csrf @method('DELETE')
+                        <x-buttons.submit-button variant="danger">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
 
                     <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.index')" variant="secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>

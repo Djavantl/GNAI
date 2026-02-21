@@ -10,85 +10,54 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Tipos de Recursos</h2>
-            <p class="text-muted">Definição de categorias e naturezas para Tecnologias e Materiais.</p>
+            <p class="text-muted text-base">Definição de categorias e naturezas para Tecnologias e Materiais.</p>
         </div>
         <x-buttons.link-button
             :href="route('inclusive-radar.resource-types.create')"
             variant="new"
         >
-            Novo Tipo
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    <x-table.table :headers="['Nome do Tipo', 'Natureza', 'Finalidade', 'Status', 'Ações']">
-        @forelse($resourceTypes as $type)
-            <tr>
-                {{-- NOME: Texto direto --}}
-                <x-table.td>{{ $type->name ?? 'N/A' }}</x-table.td>
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#resource-types-table"
+        :fields="[
+        [
+            'name' => 'name',
+            'placeholder' => 'Filtrar por nome...'
+        ],
+        [
+            'name' => 'is_digital',
+            'type' => 'select',
+            'options' => [
+                '' => 'Natureza (Todos)',
+                '1' => 'Digital',
+                '0' => 'Físico',
+            ]
+        ],
+        [
+            'name' => 'is_active',
+            'type' => 'select',
+            'options' => [
+                '' => 'Status (Todos)',
+                '1' => 'Ativo',
+                '0' => 'Inativo'
+            ]
+        ],
+    ]"
+    />
 
-                {{-- NATUREZA: Texto simples --}}
-                <x-table.td>
-                    {{ $type->is_digital ? 'Digital' : 'Físico' }}
-                </x-table.td>
+    {{-- Tabela --}}
+    <div id="resource-types-table">
+        @include('pages.inclusive-radar.resource-types.partials.table')
+    </div>
 
-                {{-- FINALIDADE: Texto direto separado por barra --}}
-                <x-table.td>
-                    @php
-                        $apps = [];
-                        if($type->for_assistive_technology) $apps[] = 'Tecnologia Assistiva';
-                        if($type->for_educational_material) $apps[] = 'Materiais Pedagógicos Acessíveis';
-                    @endphp
-                    {{ count($apps) > 0 ? implode(' / ', $apps) : 'N/A' }}
-                </x-table.td>
-
-                {{-- STATUS: Padronizado com Students --}}
-                <x-table.td>
-                    @php
-                        $statusColor = $type->is_active ? 'success' : 'danger';
-                        $statusLabel = $type->is_active ? 'Ativo' : 'Inativo';
-                    @endphp
-                    <span class="text-{{ $statusColor }} fw-bold">
-                        {{ $statusLabel }}
-                    </span>
-                </x-table.td>
-
-                {{-- AÇÕES: Apenas Editar e Excluir --}}
-                <x-table.td>
-                    <x-table.actions>
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.resource-types.show', $type)"
-                            variant="info"
-                        >
-                            <i class="fas fa-eye"></i> Ver
-                        </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.resource-types.edit', $type)"
-                            variant="warning"
-                        >
-                            <i class="fas fa-edit"></i> Editar
-                        </x-buttons.link-button>
-
-                        <form action="{{ route('inclusive-radar.resource-types.destroy', $type) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Tem certeza que deseja remover este tipo?')"
-                            >
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center text-muted py-4">Nenhum tipo de recurso cadastrado.</td>
-            </tr>
-        @endforelse
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

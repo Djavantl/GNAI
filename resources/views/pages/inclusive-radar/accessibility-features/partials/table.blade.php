@@ -27,13 +27,6 @@
                         <i class="fas fa-eye"></i> Ver
                     </x-buttons.link-button>
 
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.accessibility-features.edit', $feature)"
-                        variant="warning"
-                    >
-                        <i class="fas fa-edit"></i> Editar
-                    </x-buttons.link-button>
-
                     <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}"
                           method="POST"
                           class="d-inline">

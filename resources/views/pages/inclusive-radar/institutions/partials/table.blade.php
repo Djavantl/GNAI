@@ -36,13 +36,6 @@
                         <i class="fas fa-eye"></i> Ver
                     </x-buttons.link-button>
 
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.institutions.edit', $inst)"
-                        variant="warning"
-                    >
-                        <i class="fas fa-edit"></i> Editar
-                    </x-buttons.link-button>
-
                     <form action="{{ route('inclusive-radar.institutions.destroy', $inst) }}"
                           method="POST"
                           class="d-inline">

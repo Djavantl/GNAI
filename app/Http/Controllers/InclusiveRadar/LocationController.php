@@ -9,6 +9,7 @@ use App\Models\InclusiveRadar\Institution;
 use App\Services\InclusiveRadar\LocationService;
 use App\Services\InclusiveRadar\OpenStreetMapService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class LocationController extends Controller
@@ -18,11 +19,19 @@ class LocationController extends Controller
         protected OpenStreetMapService $osmService
     ) {}
 
-    public function index(): View
+    public function index(Request $request)
     {
-        $locations = Location::with(['institution', 'barriers'])
+        $locations = Location::with(['institution'])
+            ->filterName($request->name)
+            ->filterInstitution($request->institution_name)
+            ->filterActive($request->is_active)
             ->orderBy('name')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view('pages.inclusive-radar.locations.partials.table', compact('locations'))->render();
+        }
 
         return view(
             'pages.inclusive-radar.locations.index',

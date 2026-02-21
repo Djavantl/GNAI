@@ -10,76 +10,53 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Pontos de Referência</h2>
-            <p class="text-muted">Gerencie os prédios, salas e locais específicos dentro de cada instituição.</p>
+            <p class="text-muted text-base">
+                Gerencie os prédios, salas e locais específicos dentro de cada instituição.
+            </p>
         </div>
+
         <x-buttons.link-button
             :href="route('inclusive-radar.locations.create')"
             variant="new"
         >
-            Novo Ponto
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    <x-table.table :headers="['Nome', 'Instituição', 'Tipo', 'Status', 'Ações']">
-        @forelse($locations as $loc)
-            <tr>
-                {{-- NOME --}}
-                <x-table.td>{{ $loc->name ?? 'N/A' }}</x-table.td>
+    {{-- 🔎 Filtros (versão limpa e moderna) --}}
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#locations-table"
+        :fields="[
+            [
+                'name' => 'name',
+                'placeholder' => 'Filtrar por nome do local...'
+            ],
+            [
+                'name' => 'institution_name',
+                'placeholder' => 'Filtrar por instituição...'
+            ],
+            [
+                'name' => 'is_active',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    '1' => 'Ativo',
+                    '0' => 'Inativo'
+                ]
+            ],
+        ]"
+    />
 
-                {{-- INSTITUIÇÃO --}}
-                <x-table.td>{{ $loc->institution->name ?? 'N/A' }}</x-table.td>
+    {{-- 📋 Tabela --}}
+    <div id="locations-table">
+        @include('pages.inclusive-radar.locations.partials.table')
+    </div>
 
-                {{-- TIPO --}}
-                <x-table.td>{{ $loc->type ?? 'N/A' }}</x-table.td>
-
-                {{-- STATUS --}}
-                <x-table.td>
-                    @php
-                        $statusColor = $loc->is_active ? 'success' : 'danger';
-                        $statusLabel = $loc->is_active ? 'Ativo' : 'Inativo';
-                    @endphp
-                    <span class="text-{{ $statusColor }} fw-bold">
-                        {{ $statusLabel }}
-                    </span>
-                </x-table.td>
-
-                {{-- AÇÕES --}}
-                <x-table.td>
-                    <x-table.actions>
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.locations.show', $loc)"
-                            variant="info"
-                        >
-                            <i class="fas fa-eye"></i> Ver
-                        </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.locations.edit', $loc)"
-                            variant="warning"
-                        >
-                            <i class="fas fa-edit"></i> Editar
-                        </x-buttons.link-button>
-
-                        <form action="{{ route('inclusive-radar.locations.destroy', $loc) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja remover este ponto de referência?')"
-                            >
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center text-muted py-4">Nenhum ponto de referência cadastrado.</td>
-            </tr>
-        @endforelse
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

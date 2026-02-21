@@ -11,10 +11,15 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Nova Instituição Base</h2>
             <p class="text-muted">Defina o ponto central e as informações da sede para o mapa de barreiras.</p>
+        </div>
+        <div>
+            <x-buttons.link-button href="{{ route('inclusive-radar.institutions.index') }}" variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -129,11 +134,11 @@
             {{-- BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.institutions.index') }}" variant="secondary">
-                    <i class="fas fa-arrow-left"></i> Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save mr-2"></i> Salvar Instituição
+                    <i class="fas fa-save mr-2"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
 

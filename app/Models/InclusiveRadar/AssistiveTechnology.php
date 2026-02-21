@@ -6,7 +6,6 @@ use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Enums\InclusiveRadar\ConservationState;
 
-use App\Models\Waitlist;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

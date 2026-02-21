@@ -18,8 +18,13 @@
             <p class="text-muted">Visualize as informações cadastrais e configurações do atributo: <strong>{{ $typeAttribute->label }}</strong></p>
         </div>
         <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID do Registro</span>
-            <span class="badge bg-purple fs-6">#{{ $typeAttribute->id }}</span>
+            <x-buttons.link-button :href="route('inclusive-radar.type-attributes.edit', $typeAttribute)" variant="warning">
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+
+            <x-buttons.link-button :href="route('inclusive-radar.type-attributes.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -67,7 +72,7 @@
             {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $typeAttribute->id }}
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $typeAttribute->id }}
                 </div>
 
                 <div class="d-flex gap-3">
@@ -77,16 +82,12 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir Atributo
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
 
-                    <x-buttons.link-button :href="route('inclusive-radar.type-attributes.edit', $typeAttribute)" variant="warning">
-                        <i class="fas fa-edit"></i> Editar Atributo
-                    </x-buttons.link-button>
-
                     <x-buttons.link-button :href="route('inclusive-radar.type-attributes.index')" variant="secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>

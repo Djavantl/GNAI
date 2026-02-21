@@ -22,56 +22,51 @@
             :href="route('inclusive-radar.accessible-educational-materials.create')"
             variant="new"
         >
-            Novo Material
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
     {{-- FILTROS --}}
-    <x-table.filters
+    <x-table.filters.form
         data-dynamic-filter
         data-target="#materials-table"
         :fields="[
-            [
-                'name' => 'name',
-                'label' => 'Nome',
-                'placeholder' => 'Digite o nome'
-            ],
-            [
-                'name' => 'type',
-                'label' => 'Tipo',
-                'placeholder' => 'Digite o tipo'
-            ],
-            [
-                'name' => 'is_digital',
-                'label' => 'Natureza',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Todos',
-                    '1' => 'Digital',
-                    '0' => 'Físico',
-                ]
-            ],
-            [
-                'name' => 'is_active',
-                'label' => 'Status',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Todos',
-                    '1' => 'Ativo',
-                    '0' => 'Inativo'
-                ]
-            ],
-            [
-                'name' => 'available',
-                'label' => 'Disponibilidade',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Todos',
-                    '1' => 'Disponível',
-                    '0' => 'Indisponível'
-                ]
-            ],
-        ]"
+        [
+            'name' => 'name',
+            'placeholder' => 'Filtrar por nome...'
+        ],
+        [
+            'name' => 'type',
+            'placeholder' => 'Filtrar por tipo...'
+        ],
+        [
+            'name' => 'is_digital',
+            'type' => 'select',
+            'options' => [
+                '' => 'Natureza (Todos)',
+                '1' => 'Digital',
+                '0' => 'Físico',
+            ]
+        ],
+        [
+            'name' => 'is_active',
+            'type' => 'select',
+            'options' => [
+                '' => 'Status (Todos)',
+                '1' => 'Ativo',
+                '0' => 'Inativo'
+            ]
+        ],
+        [
+            'name' => 'available',
+            'type' => 'select',
+            'options' => [
+                '' => 'Disponibilidade (Todos)',
+                '1' => 'Disponível',
+                '0' => 'Indisponível'
+            ]
+        ],
+    ]"
     />
 
     {{-- TABELA --}}

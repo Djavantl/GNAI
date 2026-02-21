@@ -19,31 +19,28 @@
             :href="route('inclusive-radar.trainings.create')"
             variant="new"
         >
-            Novo Treinamento
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    {{-- Filtros --}}
-    <x-table.filters
+    <x-table.filters.form
         data-dynamic-filter
         data-target="#trainings-table"
         :fields="[
-            [
-                'name' => 'title',
-                'label' => 'Nome',
-                'placeholder' => 'Digite o nome do treinamento'
-            ],
-            [
-                'name' => 'is_active',
-                'label' => 'Status',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Todos',
-                    '1' => 'Ativo',
-                    '0' => 'Inativo'
-                ]
-            ],
-        ]"
+        [
+            'name' => 'title',
+            'placeholder' => 'Filtrar por nome do treinamento...'
+        ],
+        [
+            'name' => 'is_active',
+            'type' => 'select',
+            'options' => [
+                '' => 'Status (Todos)',
+                '1' => 'Ativo',
+                '0' => 'Inativo'
+            ]
+        ],
+    ]"
     />
 
     {{-- Tabela --}}

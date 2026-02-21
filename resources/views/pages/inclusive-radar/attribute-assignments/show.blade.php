@@ -12,14 +12,19 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes do Tipo e Atributos</h2>
             <p class="text-muted">Visualize os campos técnicos vinculados a este tipo de recurso.</p>
         </div>
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID do Tipo</span>
-            <span class="badge bg-purple fs-6">#{{ $assignment->id }}</span>
+        <div>
+            <x-buttons.link-button :href="route('inclusive-radar.type-attribute-assignments.edit', $assignment)" variant="warning">
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+
+            <x-buttons.link-button :href="route('inclusive-radar.type-attribute-assignments.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -66,7 +71,7 @@
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 {{-- ID do Sistema --}}
                 <div class="text-muted small d-flex align-items-center">
-                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $assignment->id }}
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $assignment->id }}
                 </div>
 
                 {{-- Ações --}}
@@ -78,18 +83,13 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Limpar Vínculos
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
 
-                    {{-- Editar Vínculos --}}
-                    <x-buttons.link-button :href="route('inclusive-radar.type-attribute-assignments.edit', $assignment)" variant="warning">
-                        <i class="fas fa-edit"></i> Editar Vínculos
-                    </x-buttons.link-button>
-
                     {{-- Voltar para Lista --}}
                     <x-buttons.link-button :href="route('inclusive-radar.type-attribute-assignments.index')" variant="secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>

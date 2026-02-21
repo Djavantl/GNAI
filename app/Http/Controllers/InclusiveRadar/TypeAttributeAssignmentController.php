@@ -10,6 +10,7 @@ use App\Models\InclusiveRadar\TypeAttribute;
 use App\Services\InclusiveRadar\TypeAttributeAssignmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class TypeAttributeAssignmentController extends Controller
 {
@@ -20,16 +21,26 @@ class TypeAttributeAssignmentController extends Controller
         $this->service = $service;
     }
 
-    public function index(): View
+    public function index(Request $request)
     {
-        $assignments = TypeAttributeAssignment::with(['type', 'attribute'])
-            ->get()
-            ->sortBy(fn($a) => $a->type->name);
+        $resourceTypes = ResourceType::whereHas('attributes')
+            ->filterName($request->type_name)
+            ->filterDigital($request->is_digital)
+            ->filterActive($request->is_active)
+            ->with('attributes')
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
 
-        return view(
-            'pages.inclusive-radar.attribute-assignments.index',
-            compact('assignments')
-        );
+        if ($request->ajax()) {
+            return view('pages.inclusive-radar.attribute-assignments.partials.table', [
+                'groupedAssignments' => $resourceTypes
+            ])->render();
+        }
+
+        return view('pages.inclusive-radar.attribute-assignments.index', [
+            'groupedAssignments' => $resourceTypes
+        ]);
     }
 
     public function create(): View

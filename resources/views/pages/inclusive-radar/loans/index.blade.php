@@ -20,36 +20,31 @@
             :href="route('inclusive-radar.loans.create')"
             variant="new"
         >
-            Novo Empréstimo
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    {{-- Filtros Dinâmicos --}}
-    <x-table.filters
+    <x-table.filters.form
         data-dynamic-filter
         data-target="#loans-table"
         :fields="[
         [
             'name' => 'item',
-            'label' => 'Item',
-            'placeholder' => 'Digite o nome do item'
+            'placeholder' => 'Filtrar por item...'
         ],
         [
             'name' => 'student',
-            'label' => 'Aluno',
-            'placeholder' => 'Digite o nome do aluno'
+            'placeholder' => 'Filtrar por aluno...'
         ],
         [
             'name' => 'professional',
-            'label' => 'Profissional',
-            'placeholder' => 'Digite o nome do profissional'
+            'placeholder' => 'Filtrar por profissional...'
         ],
         [
             'name' => 'status',
-            'label' => 'Status',
             'type' => 'select',
             'options' => [
-                '' => 'Todos',
+                '' => 'Status (Todos)',
                 'active' => 'Ativo',
                 'returned' => 'Devolvido',
                 'late' => 'Em atraso',

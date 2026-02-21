@@ -214,7 +214,7 @@
             {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $barrier->id }}
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $barrier->id }}
                     <x-buttons.pdf-button :href="route('inclusive-radar.barriers.pdf', $barrier)" class="ms-1" />
                 </div>
 

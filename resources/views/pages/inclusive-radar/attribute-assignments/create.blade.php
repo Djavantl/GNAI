@@ -11,10 +11,15 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Configurar Atributos por Tipo</h2>
             <p class="text-muted">Defina quais campos técnicos estarão disponíveis para cada categoria de recurso.</p>
+        </div>
+        <div>
+            <x-buttons.link-button href="{{ route('inclusive-radar.type-attribute-assignments.index') }}" variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -83,11 +88,11 @@
             {{-- Botões de Ação --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.type-attribute-assignments.index') }}" variant="secondary">
-                    <i class="fas fa-arrow-left"></i> Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar Configuração
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save mr-2"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

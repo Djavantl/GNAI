@@ -27,4 +27,17 @@ class BarrierCategory extends Model
     {
         return $this->hasMany(Barrier::class);
     }
+
+    public function scopeFilterName($query, ?string $name)
+    {
+        return $name ? $query->where('name', 'like', "%{$name}%") : $query;
+    }
+
+    public function scopeFilterActive($query, $isActive)
+    {
+        if (!is_null($isActive) && $isActive !== '') {
+            $query->where('is_active', $isActive == '1');
+        }
+        return $query;
+    }
 }

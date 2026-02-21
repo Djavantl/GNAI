@@ -8,6 +8,7 @@ use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -128,5 +129,43 @@ class Barrier extends Model
             'id',
             'id'
         )->where('inspectable_type', static::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes para Filtros
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeName(Builder $query, ?string $value): Builder
+    {
+        return $query->when($value, function (Builder $q) use ($value) {
+            $q->where('name', 'like', "%{$value}%");
+        });
+    }
+
+    public function scopeCategory(Builder $query, ?string $value): Builder
+    {
+        return $query->when($value, function (Builder $q) use ($value) {
+            $q->whereHas('category', function (Builder $sub) use ($value) {
+                $sub->where('name', 'like', "%{$value}%");
+            });
+        });
+    }
+
+    public function scopePriority(Builder $query, ?string $value): Builder
+    {
+        return $query->when($value, function (Builder $q) use ($value) {
+            $q->where('priority', $value);
+        });
+    }
+
+    public function scopeStatus(Builder $query, ?string $value): Builder
+    {
+        return $query->when($value, function (Builder $q) use ($value) {
+            $q->whereHas('inspections', function (Builder $sub) use ($value) {
+                $sub->where('status', $value);
+            });
+        });
     }
 }

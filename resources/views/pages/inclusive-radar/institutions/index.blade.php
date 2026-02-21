@@ -22,36 +22,32 @@
             :href="route('inclusive-radar.institutions.create')"
             variant="new"
         >
-            Nova Instituição
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    {{-- 🔎 FILTROS --}}
-    <x-table.filters
+    <x-table.filters.form
         data-dynamic-filter
         data-target="#institutions-table"
         :fields="[
-            [
-                'name' => 'name',
-                'label' => 'Nome',
-                'placeholder' => 'Digite o nome'
-            ],
-            [
-                'name' => 'location',
-                'label' => 'Cidade / Estado',
-                'placeholder' => 'Digite cidade ou estado'
-            ],
-            [
-                'name' => 'is_active',
-                'label' => 'Status',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Todos',
-                    '1' => 'Ativo',
-                    '0' => 'Inativo'
-                ]
-            ],
-        ]"
+        [
+            'name' => 'name',
+            'placeholder' => 'Filtrar por nome...'
+        ],
+        [
+            'name' => 'location',
+            'placeholder' => 'Filtrar por cidade ou estado...'
+        ],
+        [
+            'name' => 'is_active',
+            'type' => 'select',
+            'options' => [
+                '' => 'Status (Todos)',
+                '1' => 'Ativo',
+                '0' => 'Inativo'
+            ]
+        ],
+    ]"
     />
 
     {{-- 📋 TABELA --}}

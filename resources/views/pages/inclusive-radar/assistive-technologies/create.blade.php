@@ -182,7 +182,7 @@
             {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
                 <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.index')" variant="secondary">
-                    <i class="fas fa-arrow-left"></i> Voltar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">

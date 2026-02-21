@@ -12,7 +12,7 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes do Ponto de Referência</h2>
             <p class="text-muted">
@@ -21,9 +21,20 @@
             </p>
         </div>
 
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID do Registro</span>
-            <span class="badge bg-purple fs-6">#{{ $location->id }}</span>
+        <div>
+            <x-buttons.link-button
+                :href="route('inclusive-radar.locations.edit', $location)"
+                variant="warning"
+            >
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+
+            <x-buttons.link-button
+                :href="route('inclusive-radar.locations.index')"
+                variant="secondary"
+            >
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -101,8 +112,7 @@
             <div class="col-12 border-top d-flex justify-content-between align-items-center bg-light no-print mt-4 p-4">
 
                 <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i>
-                    ID do Sistema: #{{ $location->id }}
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $location->id }}
                 </div>
 
                 <div class="d-flex gap-3">
@@ -119,17 +129,10 @@
                     </form>
 
                     <x-buttons.link-button
-                        :href="route('inclusive-radar.locations.edit', $location)"
-                        variant="warning"
-                    >
-                        <i class="fas fa-edit"></i> Editar Local
-                    </x-buttons.link-button>
-
-                    <x-buttons.link-button
                         :href="route('inclusive-radar.locations.index')"
                         variant="secondary"
                     >
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
 
                 </div>

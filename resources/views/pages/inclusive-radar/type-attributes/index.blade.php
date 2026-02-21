@@ -7,86 +7,57 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Atributos de Recursos' => route('inclusive-radar.type-attributes.index'),
-            'Cadastrar' => null
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Atributos de Recursos</h2>
-            <p class="text-muted">Gerencie campos dinâmicos para detalhamento técnico dos recursos.</p>
+            <p class="text-muted text-base">Gerencie campos dinâmicos para detalhamento técnico dos recursos.</p>
         </div>
         <x-buttons.link-button
             :href="route('inclusive-radar.type-attributes.create')"
             variant="new"
         >
-            Novo Atributo
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    <x-table.table :headers="['Rótulo / Nome', 'Obrigatório', 'Status', 'Ações']">
-        @forelse($attributes as $attr)
-            <tr>
-                {{-- RÓTULO / NOME --}}
-                <x-table.td>
-                    {{ $attr->label ?? 'N/A' }}
-                    <small class="text-muted d-block">{{ $attr->name }}</small>
-                </x-table.td>
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#type-attributes-table"
+        :fields="[
+        [
+            'name' => 'label',
+            'placeholder' => 'Filtrar por rótulo...'
+        ],
+        [
+            'name' => 'is_required',
+            'type' => 'select',
+            'options' => [
+                '' => 'Obrigatório (Todos)',
+                '1' => 'Sim',
+                '0' => 'Não',
+            ]
+        ],
+        [
+            'name' => 'is_active',
+            'type' => 'select',
+            'options' => [
+                '' => 'Status (Todos)',
+                '1' => 'Ativo',
+                '0' => 'Inativo'
+            ]
+        ],
+    ]"
+    />
 
-                {{-- OBRIGATÓRIO --}}
-                <x-table.td>
-                    @if($attr->is_required)
-                        <span class="text-warning fw-bold">Sim</span>
-                    @else
-                        <span class="text-muted">Não</span>
-                    @endif
-                </x-table.td>
+    {{-- Tabela --}}
+    <div id="type-attributes-table">
+        @include('pages.inclusive-radar.type-attributes.partials.table')
+    </div>
 
-                {{-- STATUS: Padrão Students --}}
-                <x-table.td>
-                    @php
-                        $statusColor = $attr->is_active ? 'success' : 'danger';
-                        $statusLabel = $attr->is_active ? 'Ativo' : 'Inativo';
-                    @endphp
-                    <span class="text-{{ $statusColor }} fw-bold">
-                        {{ $statusLabel }}
-                    </span>
-                </x-table.td>
-
-                {{-- AÇÕES --}}
-                <x-table.td>
-                    <x-table.actions>
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.type-attributes.show', $attr)"
-                            variant="info"
-                        >
-                            <i class="fas fa-eye"></i> Ver
-                        </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('inclusive-radar.type-attributes.edit', $attr)"
-                            variant="warning"
-                        >
-                            <i class="fas fa-edit"></i> Editar
-                        </x-buttons.link-button>
-
-                        <form action="{{ route('inclusive-radar.type-attributes.destroy', $attr) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Tem certeza que deseja remover este atributo?')"
-                            >
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="4" class="text-center text-muted py-4">Nenhum atributo personalizado cadastrado.</td>
-            </tr>
-        @endforelse
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

@@ -8,6 +8,7 @@ use App\Models\InclusiveRadar\ResourceType;
 use App\Services\InclusiveRadar\ResourceTypeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class ResourceTypeController extends Controller
 {
@@ -15,14 +16,21 @@ class ResourceTypeController extends Controller
         protected ResourceTypeService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request)
     {
-        $resourceTypes = ResourceType::orderBy('name')->get();
+        $resourceTypes = ResourceType::query()
+            ->filterName($request->name)
+            ->filterDigital($request->is_digital)
+            ->filterActive($request->is_active)
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
 
-        return view(
-            'pages.inclusive-radar.resource-types.index',
-            compact('resourceTypes')
-        );
+        if ($request->ajax()) {
+            return view('pages.inclusive-radar.resource-types.partials.table', compact('resourceTypes'))->render();
+        }
+
+        return view('pages.inclusive-radar.resource-types.index', compact('resourceTypes'));
     }
 
     public function create(): View

@@ -11,10 +11,15 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Novo Recurso de Acessibilidade</h2>
             <p class="text-muted">Cadastre novos recursos e serviços que promovem a acessibilidade no ambiente escolar.</p>
+        </div>
+        <div>
+            <x-buttons.link-button href="{{ route('inclusive-radar.accessibility-features.index') }}" variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -56,11 +61,11 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.accessibility-features.index') }}" variant="secondary">
-                    <i class="fas fa-arrow-left"></i> Voltar para Listagem
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Finalizar Cadastro
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save mr-2"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
 

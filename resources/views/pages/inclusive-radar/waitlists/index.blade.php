@@ -20,38 +20,34 @@
             :href="route('inclusive-radar.waitlists.create')"
             variant="new"
         >
-            Nova Solicitação
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
-    {{-- Filtros Dinâmicos --}}
-    <x-table.filters
+    <x-table.filters.form
         data-dynamic-filter
         data-target="#waitlists-table"
         :fields="[
-            [
-                'name' => 'student',
-                'label' => 'Aluno',
-                'placeholder' => 'Digite o nome do aluno'
-            ],
-            [
-                'name' => 'professional',
-                'label' => 'Profissional',
-                'placeholder' => 'Digite o nome do profissional'
-            ],
-            [
-                'name' => 'status',
-                'label' => 'Status',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Todos',
-                    'waiting' => 'Em espera',
-                    'notified' => 'Notificado',
-                    'fulfilled' => 'Atendido',
-                    'cancelled' => 'Cancelado',
-                ]
-            ],
-        ]"
+        [
+            'name' => 'student',
+            'placeholder' => 'Filtrar por aluno...'
+        ],
+        [
+            'name' => 'professional',
+            'placeholder' => 'Filtrar por profissional...'
+        ],
+        [
+            'name' => 'status',
+            'type' => 'select',
+            'options' => [
+                '' => 'Status (Todos)',
+                'waiting' => 'Em espera',
+                'notified' => 'Notificado',
+                'fulfilled' => 'Atendido',
+                'cancelled' => 'Cancelado',
+            ]
+        ],
+    ]"
     />
 
     {{-- Tabela de Fila de Espera --}}

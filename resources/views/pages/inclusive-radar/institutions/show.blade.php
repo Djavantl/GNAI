@@ -12,7 +12,7 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes da Instituição</h2>
             <p class="text-muted">
@@ -21,9 +21,14 @@
             </p>
         </div>
 
-        <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">ID do Registro</span>
-            <span class="badge bg-purple fs-6">#{{ $institution->id }}</span>
+        <div>
+            <x-buttons.link-button :href="route('inclusive-radar.institutions.edit', $institution)" variant="warning">
+                <i class="fas fa-edit"></i> Editar
+            </x-buttons.link-button>
+
+            <x-buttons.link-button :href="route('inclusive-radar.institutions.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
         </div>
     </div>
 
@@ -106,16 +111,21 @@
             {{-- RODAPÉ DE AÇÕES --}}
             <div class="col-12 border-top d-flex justify-content-between align-items-center bg-light no-print mt-4 p-4">
                 <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i> ID do Sistema: #{{ $institution->id }}
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $institution->id }}
                 </div>
 
                 <div class="d-flex gap-3">
-                    <x-buttons.link-button :href="route('inclusive-radar.institutions.edit', $institution)" variant="warning">
-                        <i class="fas fa-edit"></i> Editar Instituição
-                    </x-buttons.link-button>
-
+                    <form action="{{ route('inclusive-radar.institutions.destroy', $institution) }}"
+                          method="POST"
+                          onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do recurso. Confirmar?')">
+                        @csrf
+                        @method('DELETE')
+                        <x-buttons.submit-button variant="danger">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
                     <x-buttons.link-button :href="route('inclusive-radar.institutions.index')" variant="secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar para Lista
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>

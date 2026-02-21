@@ -7,6 +7,7 @@ use App\Http\Requests\InclusiveRadar\TypeAttributeRequest;
 use App\Models\InclusiveRadar\TypeAttribute;
 use App\Services\InclusiveRadar\TypeAttributeService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TypeAttributeController extends Controller
@@ -15,9 +16,19 @@ class TypeAttributeController extends Controller
         protected TypeAttributeService $service
     ) {}
 
-    public function index(): View
+    public function index(Request $request)
     {
-        $attributes = TypeAttribute::orderBy('label')->get();
+        $attributes = TypeAttribute::query()
+            ->filterLabel($request->label)
+            ->filterRequired($request->is_required)
+            ->filterActive($request->is_active)
+            ->orderBy('label')
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view('pages.inclusive-radar.type-attributes.partials.table', compact('attributes'))->render();
+        }
 
         return view('pages.inclusive-radar.type-attributes.index', compact('attributes'));
     }

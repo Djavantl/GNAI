@@ -38,4 +38,38 @@ class TypeAttribute extends Model
             'type_id'
         )->withTimestamps();
     }
+
+    // No seu Model TypeAttribute
+
+    /**
+     * Filtra pelo Rótulo (Label) do atributo
+     */
+    public function scopeFilterLabel($query, ?string $label)
+    {
+        return $label
+            ? $query->where('label', 'like', "%{$label}%")
+            : $query;
+    }
+
+    /**
+     * Filtra se o campo é obrigatório ou não
+     */
+    public function scopeFilterRequired($query, $isRequired)
+    {
+        if (!is_null($isRequired) && $isRequired !== '') {
+            $query->where('is_required', $isRequired == '1');
+        }
+        return $query;
+    }
+
+    /**
+     * Filtra se o atributo está ativo ou inativo
+     */
+    public function scopeFilterActive($query, $isActive)
+    {
+        if (!is_null($isActive) && $isActive !== '') {
+            $query->where('is_active', $isActive == '1');
+        }
+        return $query;
+    }
 }

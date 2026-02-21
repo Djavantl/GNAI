@@ -10,7 +10,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Recursos de Acessibilidade</h2>
             <p class="text-muted text-base">
@@ -22,31 +22,29 @@
             :href="route('inclusive-radar.accessibility-features.create')"
             variant="new"
         >
-            Novo Recurso
+            <i class="fas fa-plus"></i> Adicionar
         </x-buttons.link-button>
     </div>
 
     {{-- FILTROS --}}
-    <x-table.filters
+    <x-table.filters.form
         data-dynamic-filter
         data-target="#features-table"
         :fields="[
-            [
-                'name' => 'name',
-                'label' => 'Nome',
-                'placeholder' => 'Digite o nome'
-            ],
-            [
-                'name' => 'is_active',
-                'label' => 'Status',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Todos',
-                    '1' => 'Ativo',
-                    '0' => 'Inativo'
-                ]
-            ],
-        ]"
+        [
+            'name' => 'name',
+            'placeholder' => 'Filtrar por nome...'
+        ],
+        [
+            'name' => 'is_active',
+            'type' => 'select',
+            'options' => [
+                '' => 'Status (Todos)',
+                '1' => 'Ativo',
+                '0' => 'Inativo'
+            ]
+        ],
+    ]"
     />
 
     {{-- TABELA --}}
