@@ -15,6 +15,7 @@ use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Inspection;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\Paginator;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
@@ -43,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
             'accessible_educational_material' => AccessibleEducationalMaterial::class,
             'barrier'                         => Barrier::class,
             'inspection'                      => Inspection::class,
+            'user' => User::class,
         ]);
 
         // --- SISTEMA DE PERMISSÕES ---

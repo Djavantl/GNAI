@@ -6,13 +6,15 @@ use App\Models\SpecializedEducationalSupport\Pendency;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\Priority;
+use App\Notifications\NewPendencyNotification;
+use App\Notifications\PendencyCompletedNotification;
 
 class PendencyService
 {
     //criar
     public function create(array $data): Pendency
     {
-        return Pendency::create([
+        $pendency = Pendency::create([
             'created_by'   => Auth::id(),
             'assigned_to'  => $data['assigned_to'],
             'title'        => $data['title'],
@@ -21,6 +23,16 @@ class PendencyService
             'due_date'     => $data['due_date'] ?? null,
             'is_completed' => false,
         ]);
+
+        // ----- notificar o profissional/usuário associado -----
+        // assumindo que assignedProfessional->user existe
+        $assignedProfessional = $pendency->assignedProfessional;
+        if ($assignedProfessional && $assignedProfessional->user) {
+            $user = $assignedProfessional->user;
+            $user->notify(new NewPendencyNotification($pendency));
+        }
+
+        return $pendency;
     }
 
     //pegar todas
@@ -93,6 +105,13 @@ class PendencyService
     public function markAsCompleted(Pendency $pendency): Pendency
     {
         $pendency->markAsCompleted();
+
+        // notificar quem criou
+        if ($pendency->creator) {
+            $pendency->creator->notify(
+                new PendencyCompletedNotification($pendency)
+            );
+        }
 
         return $pendency;
     }

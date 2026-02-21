@@ -180,6 +180,49 @@ class App {
     }
 }
 
+document.addEventListener('click', function(e) {
+    const el = e.target.closest('.notify-item');
+    if (!el) return;
+
+    e.preventDefault();
+
+    const id = el.dataset.id;
+    const href = el.getAttribute('href');
+
+    // marcar como lida
+    axios.post(`/notifications/${id}/read`)
+        .then(() => {
+            // reduzir contador visualmente
+            const badge = document.getElementById('notif-count');
+            if (badge) {
+                const value = parseInt(badge.textContent) - 1;
+                if (value <= 0) badge.remove();
+                else badge.textContent = value;
+            }
+            // redirecionar ao link da notificação
+            if (href && href !== '#') window.location = href;
+        })
+        .catch((err) => {
+            console.error(err);
+            // mesmo se falhar, podemos ir ao link
+            if (href && href !== '#') window.location = href;
+        });
+});
+
+document.addEventListener('click', function(e) {
+    const item = e.target.closest('.notify-item');
+    if (!item) return;
+
+    e.preventDefault();
+
+    const id = item.dataset.id;
+    const url = item.getAttribute('href');
+
+    axios.post(`/notifications/${id}/read`)
+        .then(() => window.location = url)
+        .catch(() => window.location = url);
+});
+
 // Inicializar app quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();

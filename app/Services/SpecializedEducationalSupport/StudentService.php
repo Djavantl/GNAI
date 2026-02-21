@@ -12,11 +12,17 @@ class StudentService
     public function index(array $filters = [])
     {
         return Student::query()
-            ->select('students.*') 
+            ->select('students.*')
             ->join('people', 'people.id', '=', 'students.person_id')
             ->with('person')
-            ->globalSearch($filters['q'] ?? null)
-            ->orderBy('people.name', 'asc') 
+
+            ->name($filters['name'] ?? null)
+            ->email($filters['email'] ?? null)
+            ->registration($filters['registration'] ?? null)
+            ->status($filters['status'] ?? null)
+            // ->semester($filters['semester'] ?? null)
+
+            ->orderBy('people.name', 'asc')
             ->paginate(10)
             ->withQueryString();
     }

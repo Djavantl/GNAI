@@ -26,6 +26,14 @@
         </li>
         @endcan
 
+        <li>
+            <a href="{{ route('notifications.index') }}"
+                class="{{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fa fa-regular fa-bell"></i></span>
+                <span class="text">Notificações</span>
+            </a>
+        </li>
+
         @auth
             @if(auth()->user()->is_admin)
 
@@ -173,7 +181,7 @@
 
         <li>
             <a href="{{ route('specialized-educational-support.pei.all') }}"
-            class="{{ request()->is('peis*') ? 'active' : '' }}">
+            class="{{ request()->routeIs('specialized-educational-support.pei.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-file-text"></i></span>
                 <span class="text">PEIs</span>
             </a>
@@ -206,7 +214,7 @@
         @can('pendency.index')
         <li>
             <a href="{{ route('specialized-educational-support.pendencies.index') }}"
-            class="{{ request()->is('pendencias*') ? 'active' : '' }}">
+            class="{{ request()->routeis('specialized-educational-support.pendencies.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-exclamation-triangle"></i></span>
                 <span class="text">Pendências</span>
             </a>

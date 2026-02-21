@@ -13,6 +13,24 @@ use Illuminate\Validation\ValidationException;
 class SessionService
 {
     
+    public function index(array $filters = [])
+    {
+        return Session::query()
+            ->with([
+                'students.person',
+                'professional.person',
+                'sessionRecord'
+            ])
+
+            ->student($filters['student'] ?? null)
+            ->professional($filters['professional'] ?? null)
+            ->type($filters['type'] ?? null)
+            ->status($filters['status'] ?? null)
+            
+            ->orderByDesc('session_date')
+            ->paginate(10)
+            ->withQueryString();
+    }
 
     //email
 

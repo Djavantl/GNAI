@@ -1,0 +1,30 @@
+/* Estilização do botão circular */
+.btn-notif-circle {
+    background-color: white !important; /* Círculo branco */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out; /* Suaviza o aumento de escala */
+    border: none;
+    padding: 0;
+}
+
+/* Cor do ícone (Pega a cor da sua Navbar Custom) */
+.btn-notif-circle i {
+    color: var(--navbar-bg-color, #000); /* Substitua pelo código da cor da sua navbar se não usar variável */
+    font-size: 1.2rem;
+}
+
+/* Efeito de Hover: Aumenta a escala */
+.btn-notif-circle:hover {
+    transform: scale(1.15); /* Aumenta 15% */
+    background-color: #f8f9fa !important; /* Um branco levemente acinzentado no hover */
+}
+
+/* Garante que o dropdown não quebre o alinhamento */
+.dropdown-toggle::after {
+    display: none !important; /* Remove a setinha se ela aparecer no sino */
+}

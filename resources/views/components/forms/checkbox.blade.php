@@ -4,7 +4,8 @@
     'value' => 1,
     'checked' => false,
     'description' => null,
-    'id' => null
+    'id' => null,
+    'required' => false
 ])
 
 @php
@@ -22,7 +23,12 @@
     >
 
     <label class="form-check-label" for="{{ $checkboxId }}">
-        <span class="fw-bold text-purple-dark">{{ $label }}</span>
+        <span class="fw-bold text-purple-dark">
+            {{ $label }}
+            @if($required)
+                <span class="text-danger">*</span>
+            @endif
+        </span>
 
         @if($description)
             <small class="d-block text-muted" style="font-size: 0.75rem;">

@@ -22,9 +22,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $students = $this->service->index($request->all());
-        $semesters = Semester::orderByDesc('year')
-        ->orderByDesc('term')
-        ->get(['id', 'label']);
+        $semesters = $this->semesters();
 
         if ($request->ajax()) {
             return view(

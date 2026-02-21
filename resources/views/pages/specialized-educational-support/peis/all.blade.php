@@ -100,8 +100,22 @@
                             variant="info"
                             title="Ver Detalhes"
                         >
-                            Ver
+                           <i class="fas fa-eye" aria-hidden="true"></i> Ver
                         </x-buttons.link-button>
+                        <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
+                            method="POST"
+                            class="d-inline">
+                            @csrf
+                            @method('DELETE')
+
+                            <x-buttons.submit-button 
+                                variant="danger"
+                                onclick="return confirm('Deseja remover este pei?')"
+                                aria-label="Excluir pei do sistema"
+                            >
+                            <i class="fas fa-trash" aria-hidden="true"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
 
                     </x-table.actions>
                 </x-table.td>

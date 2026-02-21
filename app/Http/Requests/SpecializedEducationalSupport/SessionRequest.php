@@ -29,7 +29,7 @@ class SessionRequest extends FormRequest
             'start_time'   => ['required', 'date_format:H:i'],
             'end_time'     => ['nullable', 'date_format:H:i', 'after:start_time'],
             'type' => ['required', 'string', 'max:100'],
-            'location' => ['nullable', 'string', 'max:255'],
+            'location' => ['required', 'string', 'max:255'],
             'session_objective' => ['required', 'string'],
             'status' => ['sometimes'],
         ];

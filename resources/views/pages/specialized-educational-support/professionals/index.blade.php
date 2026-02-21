@@ -23,11 +23,50 @@
         </x-buttons.link-button>
     </div>
 
-    <x-ui.search
-        :url="route('specialized-educational-support.professionals.index')"
-        target="#professionals-table"
-        :semester="true"
-        :semesters="$semesters"
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#professionals-table"
+        :fields="[
+            [
+                'name' => 'name',
+                'placeholder' => 'Nome do Profissional...'
+            ],
+            [
+                'name' => 'email',
+                'placeholder' => 'Email...'
+            ],
+            [
+                'name' => 'position',
+                'type' => 'select',
+                'options' => ['' => 'Cargo (Todos)'] +
+                    collect($positions)
+                        ->mapWithKeys(fn($position) => [
+                            $position->id => $position->name
+                        ])
+                        ->toArray()
+            ],
+            [
+                'name' => 'status',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    'active' => 'Ativo',
+                    'locked' => 'Trancado',
+                    'completed' => 'Concluído',
+                    'dropped' => 'Evadido',
+                ]
+            ],
+            [
+                'name' => 'semester',
+                'type' => 'select',
+                'options' => ['' => 'Semestre (Todos)'] +
+                    collect($semesters)
+                        ->mapWithKeys(fn($semester) => [
+                            $semester->id => $semester->label
+                        ])
+                        ->toArray()
+            ],
+        ]"
     />
 
 
@@ -37,6 +76,6 @@
 
     
     @push('scripts')
-        @vite('resources/js/components/search-filter.js')
+        @vite('resources/js/components/dynamicFilters.js')
     @endpush
 @endsection

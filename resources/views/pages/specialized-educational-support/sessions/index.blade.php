@@ -25,95 +25,59 @@
                 :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
             >
-                Nova Sessão
+               <i class="fas fa-plus" aria-hidden="true"></i>  Nova Sessão
             </x-buttons.link-button>
         </div>
     </div>
 
-    <x-table.table :headers="['Data', 'Aluno', 'Profissional', 'Tipo', 'Status', 'Ações']">
-    @forelse(collect($sessions) as $session)
-        <tr>
-            <x-table.td>{{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</x-table.td>
-            <x-table.td>
-                @forelse($session->students ?? [] as $student)
-                    <div>{{ $student->person->name }}</div>
-                @empty
-                    <span class="text-muted">Sem alunos</span>
-                @endforelse
-            </x-table.td>
-            <x-table.td>{{ $session->professional->person->name }}</x-table.td>
-            <x-table.td>{{ $session->type }}</x-table.td>
-            <x-table.td>
-                @php
-                    // Mapeando cores para os diferentes status de sessão
-                    $statusColor = match($session->status) {
-                        'scheduled' => 'info',
-                        'completed' => 'success',
-                        'canceled'  => 'danger',
-                        default     => 'warning'
-                    };
-                    $statusLabel = ucfirst($session->status);
-                @endphp
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#sessions-table"
+        :fields="[
+            [
+                'name' => 'student',
+                'type' => 'select',
+                'options' => ['' => 'Aluno (Todos)'] +
+                    collect($students)->mapWithKeys(fn($s) => [
+                        $s->id => $s->person->name ?? 'Aluno'
+                    ])->toArray()
+            ],
+            [
+                'name' => 'professional',
+                'type' => 'select',
+                'options' => ['' => 'Profissional (Todos)'] +
+                    collect($professionals)->mapWithKeys(fn($p) => [
+                        $p->id => $p->person->name ?? 'Profissional'
+                    ])->toArray()
+            ],
+            [
+                'name' => 'type',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Tipo (Todos)',
+                    'individual' => 'Individual',
+                    'group' => 'Grupo',
+                ]
+            ],
+            [
+                'name' => 'status',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    'scheduled' => 'Agendada',
+                    'completed' => 'Realizada',
+                    'canceled' => 'Cancelada',
+                ]
+            ],
+        ]"
+    />
 
-                <span class="text-{{ $statusColor }} fw-bold">
-                    {{ $statusLabel }}
-                </span>
-            </x-table.td>
+    <div id="sessions-table">
+        @include('pages.specialized-educational-support.sessions.partials.table')
+    </div>
 
-            <x-table.td>
-                <x-table.actions>
-                    {{-- Ver Sessão --}}
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.sessions.show', $session)"
-                        variant="info"
-                    >
-                        Ver
-                    </x-buttons.link-button>
-
-                    {{-- Editar Sessão --}}
-                    @if($session->status !== 'cancelled' && $session->status !== 'Cancelado')
-                        <x-buttons.link-button :href="route('specialized-educational-support.sessions.edit', $session->id)" variant="warning">
-                            Editar Sessão
-                        </x-buttons.link-button>
-                    @endif
-
-                    {{-- Lógica do Registro --}}
-                    @if($session->sessionRecord)
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
-                            variant="dark"
-                        >
-                            Ver Registro
-                        </x-buttons.link-button>
-                    @else
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.session-records.create', $session->id)"
-                            variant="new"
-                        >
-                            Criar Registro
-                        </x-buttons.link-button>
-                    @endif
-
-                    {{-- Excluir --}}
-                    <form action="{{ route('specialized-educational-support.sessions.destroy', $session) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Mover para lixeira?')"
-                        >
-                            Excluir
-                        </x-buttons.submit-button>
-                    </form>
-                </x-table.actions>
-            </x-table.td>
-        </tr>
-    @empty
-            <tr>
-                <td colspan="6" class="text-center text-muted py-5">
-                    Nenhuma sessão cadastrada.
-                </td>
-            </tr>
-    @endforelse
-    </x-table.table>
+    
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

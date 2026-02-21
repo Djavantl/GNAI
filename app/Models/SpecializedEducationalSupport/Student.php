@@ -7,6 +7,7 @@ use App\Models\Traits\GlobalSearchable;
 use App\Models\Traits\Auditable; 
 use App\Models\AuditLog;       
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Student extends Model
 {
@@ -176,4 +177,53 @@ class Student extends Model
             'dropped'   => 'Evadido',
         ];
     }
+
+    // Buscar por nome, email ou matrícula
+    public function scopeName(Builder $query, ?string $term): Builder
+    {
+        if (!$term) return $query;
+
+        return $query->whereHas('person', fn($q) =>
+            $q->where('name', 'like', "{$term}%")
+        );
+    }
+
+    public function scopeRegistration(Builder $query, ?string $term): Builder
+    {
+        if (!$term) return $query;
+
+        return $query->where('registration', 'like', "%{$term}%");
+    }
+
+    public function scopeEmail(Builder $query, ?string $term): Builder
+    {
+        if (!$term) return $query;
+
+        return $query->whereHas('person', fn($q) =>
+            $q->where('email', 'like', "%{$term}%")
+        );
+    }
+
+    // Filtrar por status do aluno
+    public function scopeStatus(Builder $query, ?string $status): Builder
+    {
+        if (!is_null($status) && $status !== '') {
+            $query->where('status', $status);
+        }
+
+        return $query;
+    }
+
+
+    // // Filtrar por semestre
+    // public function scopeSemester(Builder $query, $semesterId): Builder
+    // {
+    //     if (!is_null($semesterId) && $semesterId !== '') {
+    //         $query->whereHas('person', fn($q) =>
+    //             $q->where('semester_id', $semesterId)
+    //         );
+    //     }
+
+    //     return $query;
+    // }
 }

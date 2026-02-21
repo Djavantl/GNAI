@@ -101,13 +101,14 @@
             <x-forms.section title="Detalhes do Atendimento" />
 
             <div class="col-md-6">
-                <x-forms.input name="location" label="Local" :value="old('location')" />
+                <x-forms.input name="location" label="Local" :value="old('location')" required/>
             </div>
 
             <div class="col-md-12">
                 <x-forms.textarea
                     name="session_objective"
                     label="Objetivo da Sessão"
+                    required
                     rows="3"
                     :value="old('session_objective')"
                 />

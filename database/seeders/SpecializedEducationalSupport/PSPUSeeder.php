@@ -43,7 +43,7 @@ class PSPUSeeder extends Seeder
                 'document' => '33333333333',
                 'birth_date' => '2010-07-20',
                 'gender' => 'male',
-                'email' => 'djvnsala4@gmail.com',
+                'email' => 'djvnsala5@gmail.com',
             ]),
 
             // professionals

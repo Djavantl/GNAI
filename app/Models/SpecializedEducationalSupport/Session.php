@@ -4,6 +4,7 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 
 class Session extends Model
 {
@@ -57,5 +58,41 @@ class Session extends Model
         return $query->where('professional_id', $professionalId);
     }
 
-    
+    public function scopeStudent(Builder $query, $studentId): Builder
+    {
+        if (!is_null($studentId) && $studentId !== '') {
+            $query->whereHas('students', fn($q) =>
+                $q->where('students.id', $studentId)
+            );
+        }
+
+        return $query;
+    }
+
+    public function scopeProfessional(Builder $query, $professionalId): Builder
+    {
+        if (!is_null($professionalId) && $professionalId !== '') {
+            $query->where('professional_id', $professionalId);
+        }
+
+        return $query;
+    }
+
+    public function scopeType(Builder $query, $type): Builder
+    {
+        if (!is_null($type) && $type !== '') {
+            $query->where('type', $type);
+        }
+
+        return $query;
+    }
+
+    public function scopeStatus(Builder $query, $status): Builder
+    {
+        if (!is_null($status) && $status !== '') {
+            $query->where('status', $status);
+        }
+
+        return $query;
+    }
 }

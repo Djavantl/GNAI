@@ -20,19 +20,31 @@ class SessionController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $sessions = Session::with([
-            'students.person',
-            'professional.person'
-        ])->get(); 
+        $sessions = $this->service->index($request->all());
+
+        $students = Student::with('person')
+            ->orderBy('id')
+            ->get(['id','person_id']);
+
+        $professionals = Professional::with('person')
+            ->orderBy('id')
+            ->get(['id','person_id']);
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.sessions.partials.table',
+                compact('sessions', 'students', 'professionals')
+            )->render();
+        }
 
         return view(
             'pages.specialized-educational-support.sessions.index',
-            compact('sessions')
+            compact('sessions', 'students', 'professionals')
         );
     }
-
+    
     public function create()
     {
         $students = Student::all();

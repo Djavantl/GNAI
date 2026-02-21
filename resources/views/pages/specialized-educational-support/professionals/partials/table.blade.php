@@ -1,5 +1,5 @@
 <x-table.table 
-    :headers="['Nome', 'Documento', 'Cargo', 'Status', 'Ações']" 
+    :headers="['Nome', 'Email', 'Cargo', 'Status', 'Ações']" 
     :records="$professionals" 
     aria-label="Tabela de profissionais do suporte educacional"
 >
@@ -15,7 +15,7 @@
             </div>
         </x-table.td>
         
-        <x-table.td>{{ $professional->person->document }}</x-table.td>
+        <x-table.td>{{ $professional->person->email }}</x-table.td>
         <x-table.td>{{ $professional->position->name }}</x-table.td>
         
         <x-table.td>
