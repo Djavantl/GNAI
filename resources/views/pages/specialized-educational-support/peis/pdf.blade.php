@@ -78,8 +78,13 @@
      <x-pdf.section-title title="1. IDENTIFICAÇÃO DO PLANO" />
     <x-pdf.table>
         <x-pdf.row>
-             <x-pdf.info-item label="CURSO" :value="$pei->course->name" colspan="2" /> 
-             <x-pdf.info-item label="STATUS DO PLANO" :value="$pei->is_finished ?  'FINALIZADO' : 'EM ANDAMENTO'" colspan="2" /> 
+             <x-pdf.info-item label="CURSO" :value="$pei->course->name" colspan="2" />
+             <x-pdf.info-item label="DISCIPLINA" :value="$pei->discipline->name" colspan="2" /> 
+             
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="VERSÃO" :value="$pei->version ??  '---'" colspan="2" /> 
+            <x-pdf.info-item label="STATUS DO PLANO" :value="$pei->is_finished ?  'FINALIZADO' : 'EM ANDAMENTO'" colspan="2" />   
         </x-pdf.row>
         <x-pdf.row>
              <x-pdf.info-item label="PROFISSIONAL RESPONSÁVEL (AEE)" :value="$pei->professional->person->name ??  '---'" colspan="4" /> 

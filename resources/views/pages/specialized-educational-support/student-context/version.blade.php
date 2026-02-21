@@ -8,16 +8,15 @@
         'Alunos' => route('specialized-educational-support.students.index'),
         $student->person->name => route('specialized-educational-support.students.show', $student),
         'Contextos' => route('specialized-educational-support.student-context.index', $student),
-        'Contexto #' . $studentContext->id => route('specialized-educational-support.student-context.show', $studentContext),
-        'Editar' => null
+        'Novo Contexto v' . ($studentContext->version + 1) => null
     ]" />
 </div>
 
 <div class="d-flex justify-content-between mb-3 align-items-center">
     <div>
-        <h2 class="text-title">Editar Contexto Educacional</h2>
+        <h2 class="text-title">Nova Versão do Contexto</h2>
         <p class="text-muted">
-            Atualize as observações sobre o comportamento e desenvolvimento do aluno(a) {{ $student->person->name }}.
+            Registre uma versão atualizada (v{{ $studentContext->version + 1 }}) preservando os registros anteriores de {{ $student->person->name }}.
         </p>
     </div>
 
@@ -29,16 +28,17 @@
 </div>
 
 <x-forms.form-card
-    action="{{ route('specialized-educational-support.student-context.update', $studentContext) }}"
+    action="{{ route('specialized-educational-support.student-context.store-new-version', $student) }}"
     method="POST">
 
     @csrf
-    @method('PUT')
+    <input type="hidden" name="student_id" value="{{ $student->id }}">
 
-    {{-- ================= IDENTIFICAÇÃO DO ALUNO (SOMENTE LEITURA) ================= --}}
+    {{-- ================= IDENTIFICAÇÃO DO ALUNO E DEFICIÊNCIAS ================= --}}
     <x-forms.section title="Identificação do Aluno" />
 
     <div class="row g-2 px-4 pb-3">
+        {{-- MINI PERFIL --}}
         <div class="col-md-12">
             <div class="card p-3 border-light bg-soft-info">
                 <div class="d-flex align-items-center gap-3">
@@ -49,10 +49,7 @@
                     <div>
                         <strong class="d-block">{{ $student->person->name }}</strong>
                         <span class="small text-muted d-block">
-                            Matrícula: {{ $student->registration ?? '—' }}
-                        </span>
-                        <span class="small text-muted">
-                            Status:
+                            Matrícula: {{ $student->registration ?? '—' }} | Status: 
                             @if($student->status === 'active')
                                 <span class="text-success fw-semibold">ATIVO</span>
                             @else
@@ -63,26 +60,21 @@
                 </div>
             </div>
         </div>
-        {{-- DEFICIÊNCIAS --}}
-        <div class="col-md-12 border-top pt-4 ">
 
+        {{-- DEFICIÊNCIAS --}}
+        <div class="col-md-12 border-top pt-4">
             <div class="row g-2">
                 @forelse($student->deficiencies as $def)
                     <div class="col-md-6">
                         <div class="card p-3 border-light bg-soft-info">
-                            <strong class="d-block">
-                                {{ $def->deficiency->name ?? '—' }}
-                            </strong>
-                            <span class="small text-muted">
-                                GRAU: {{ $def->severity ?? '—' }}
-                            </span>
+                            <strong class="d-block">{{ $def->deficiency->name ?? '—' }}</strong>
+                            <span class="small text-muted">GRAU: {{ $def->severity ?? '—' }}</span>
                         </div>
                     </div>
                 @empty
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="card p-3 border-light bg-soft-info text-muted">
-                            Nenhuma deficiência registrada para
-                            {{ $student->person->name ?? 'este aluno' }}.
+                            Nenhuma deficiência registrada para este aluno.
                         </div>
                     </div>
                 @endforelse
@@ -91,16 +83,16 @@
     </div>
 
     {{-- ================= HISTÓRICO EDUCACIONAL ================= --}}
-    <x-forms.section title="Histórico e Necessidades Educacionais" />
+    <x-forms.section title="Histórico e Necessidades" />
 
     <div class="row px-4 pb-3">
-        <div class="col-md-12">
+        <div class="col-md-12 mb-3">
             <x-forms.textarea
                 name="history"
-                label="Histórico do Aluno"
+                label="Histórico do Aluno *"
                 rows="3"
                 required
-                placeholder="Descreva o histórico educacional do aluno"
+                placeholder="Descreva o histórico educacional"
                 :value="old('history', $studentContext->history)"
             />
         </div>
@@ -108,7 +100,7 @@
         <div class="col-md-12">
             <x-forms.textarea
                 name="specific_educational_needs"
-                label="Necessidades Educacionais Específicas"
+                label="Necessidades Educacionais Específicas *"
                 rows="3"
                 required
                 placeholder="Descreva as necessidades educacionais específicas"
@@ -184,14 +176,14 @@
             <x-forms.select name="shows_aggressive_behavior" label="Comportamento Agressivo"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('shows_aggressive_behavior', $studentContext->shows_aggressive_behavior)"
-                aria-label="Indicar se possui comportamento agressivo" />
+                aria-label="Apresenta comportamento agressivo" />
         </div>
 
         <div class="col-md-6">
             <x-forms.select name="shows_withdrawn_behavior" label="Comportamento Retraído"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('shows_withdrawn_behavior', $studentContext->shows_withdrawn_behavior)"
-                aria-label="Indicar se possui comportamento retraído" />
+                aria-label="Apresenta comportamento retraído" />
         </div>
 
         <div class="col-md-12">
@@ -215,28 +207,28 @@
             <x-forms.select name="needs_mobility_support" label="Apoio de Mobilidade"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('needs_mobility_support', $studentContext->needs_mobility_support)"
-                aria-label="Indicar necessidade de apoio de mobilidade" />
+                aria-label="Necessita apoio de mobilidade" />
         </div>
 
         <div class="col-md-4">
             <x-forms.select name="needs_communication_support" label="Apoio de Comunicação"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('needs_communication_support', $studentContext->needs_communication_support)"
-                aria-label="Indicar necessidade de apoio de comunicação" />
+                aria-label="Necessita apoio de comunicação" />
         </div>
 
         <div class="col-md-6">
             <x-forms.select name="needs_pedagogical_adaptation" label="Adaptação Pedagógica"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('needs_pedagogical_adaptation', $studentContext->needs_pedagogical_adaptation)"
-                aria-label="Indicar necessidade de adaptação pedagógica" />
+                aria-label="Necessita adaptação pedagógica" />
         </div>
 
         <div class="col-md-6">
             <x-forms.select name="uses_assistive_technology" label="Tecnologia Assistiva"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('uses_assistive_technology', $studentContext->uses_assistive_technology)"
-                aria-label="Indicar uso de tecnologia assistiva" />
+                aria-label="Utiliza tecnologia assistiva" />
         </div>
     </div>
 
@@ -248,14 +240,14 @@
             <x-forms.select name="has_medical_report" label="Possui Laudo Médico"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('has_medical_report', $studentContext->has_medical_report)"
-                aria-label="Indicar se possui laudo médico" />
+                aria-label="Possui laudo médico" />
         </div>
 
         <div class="col-md-6">
             <x-forms.select name="uses_medication" label="Usa Medicação"
                 :options="[1=>'Sim', 0=>'Não']"
                 :selected="old('uses_medication', $studentContext->uses_medication)"
-                aria-label="Indicar se faz uso de medicação" />
+                aria-label="Faz uso de medicação" />
         </div>
 
         <div class="col-md-12">
@@ -270,22 +262,22 @@
     <div class="row g-2 px-4 pb-3">
         <div class="col-md-6">
             <x-forms.textarea name="strengths" label="Pontos Fortes" rows="4"
-                :value="old('strengths', $studentContext->strengths)" />
+                :value="old('strengths', $studentContext->strengths)" aria-label="Pontos fortes" />
         </div>
 
         <div class="col-md-6">
             <x-forms.textarea name="difficulties" label="Dificuldades" rows="4"
-                :value="old('difficulties', $studentContext->difficulties)" />
+                :value="old('difficulties', $studentContext->difficulties)" aria-label="Dificuldades" />
         </div>
 
         <div class="col-md-6">
             <x-forms.textarea name="recommendations" label="Recomendações" rows="4"
-                :value="old('recommendations', $studentContext->recommendations)" />
+                :value="old('recommendations', $studentContext->recommendations)" aria-label="Recomendações" />
         </div>
 
         <div class="col-md-6">
             <x-forms.textarea name="general_observation" label="Observação Geral" rows="4"
-                :value="old('general_observation', $studentContext->general_observation)" />
+                :value="old('general_observation', $studentContext->general_observation)" aria-label="Observação geral" />
         </div>
     </div>
 
@@ -297,7 +289,7 @@
             <i class="fas fa-times"></i> Cancelar
         </x-buttons.link-button>
 
-        <x-buttons.submit-button type="submit" class="btn-action update submit">
+        <x-buttons.submit-button type="submit" class="btn-action new submit">
             <i class="fas fa-save"></i> Salvar
         </x-buttons.submit-button>
     </div>

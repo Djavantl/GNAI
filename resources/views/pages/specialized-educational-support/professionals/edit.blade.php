@@ -10,11 +10,14 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Profissional</h2>
             <p class="text-muted">Atualize as informações do profissional e seu vínculo com a instituição.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.show', $professional) }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -23,23 +26,12 @@
 
             <x-forms.section title="Dados da Pessoa" />
 
-            <div class="col-md-12 mb-4">
-                <label class="form-label fw-bold d-block">Foto do Profissional</label>
-                <div class="photo-preview-container">
-                    <img src="{{ $professional->person->photo_url }}" class="img-preview mb-2" id="preview">
-                </div>
-                <input type="file" name="photo" class="form-control" accept="image/*">
-                
-                @if($professional->person->photo)
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="remove_photo" value="1" id="removePhoto">
-                        <label class="form-check-label text-danger" for="removePhoto">
-                            <i class="bi bi-trash"></i> Remover foto atual
-                        </label>
-                    </div>
-                @endif
-            </div>
-
+            <x-forms.photo-upload
+                name="photo"
+                label="Foto do Profissional"
+                :current="$professional->person->photo_url"
+            />
+            
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
@@ -132,16 +124,6 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input 
-                    name="entry_date" 
-                    label="Entrada *" 
-                    type="date" 
-                    required 
-                    :value="old('entry_date', $professional->entry_date)" 
-                />
-            </div>
-
-            <div class="col-md-6">
                 <x-forms.select
                     name="status"
                     label="Status"
@@ -152,15 +134,18 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.index') }}" variant="secondary">
-                    Cancelar
+                <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.show', $professional) }}" variant="secondary">
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-sync mr-2"></i> Atualizar Profissional
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>
     </div>
 @endsection
+@push('scripts')
+    @vite(['resources/js/components/photos.js'])
+@endpush

@@ -22,11 +22,6 @@ class StudentContextRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Dados gerais da avaliação
-            'evaluation_type' => ['required','in:initial,periodic_review,pei_review,specific_demand'],
-            'is_current' => ['sometimes', 'boolean'],
-            'evaluated_by_professional_id' => ['nullable','exists:professionals,id'],
-
             // Histórico educacional
             'history' => ['required', 'string'],
 
@@ -66,6 +61,7 @@ class StudentContextRequest extends FormRequest
             'difficulties' => ['nullable', 'string'],
             'recommendations' => ['nullable', 'string'],
             'general_observation' => ['nullable', 'string'],
+            'finalize_version' => ['sometimes']
         ];
     }
 }

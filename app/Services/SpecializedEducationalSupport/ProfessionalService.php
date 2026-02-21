@@ -13,10 +13,12 @@ class ProfessionalService
 {
     public function index(array $filters = [])
     {
-        return Professional::with('person')
-
+        return Professional::query()
+            ->select('professionals.*') 
+            ->join('people', 'people.id', '=', 'professionals.person_id')
+            ->with('person')
             ->globalSearch($filters['q'] ?? null)
-            ->orderByDesc('created_at')
+            ->orderBy('people.name', 'asc') 
             ->paginate(10)
             ->withQueryString();
     }
@@ -35,6 +37,7 @@ class ProfessionalService
             if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
                 $data['photo'] = $data['photo']->store('photos', 'public');
             }
+            $data['entry_date'] = now()->format('Y-m-d'); 
 
             // 2. Cria a Pessoa vinculando a foto
             $person = Person::create([
@@ -54,7 +57,7 @@ class ProfessionalService
                 'position_id'  => $data['position_id'],
                 'registration' => $data['registration'],
                 'entry_date'   => $data['entry_date'],
-                'status'       => $data['status'] ?? 'active',
+                'status'       => 'active',
             ]);
 
             // 4. Cria o Usuário de acesso
@@ -110,7 +113,6 @@ class ProfessionalService
             $professional->update([
                 'position_id'  => $data['position_id'],
                 'registration' => $data['registration'],
-                'entry_date'   => $data['entry_date'],
                 'status'       => $data['status'] ?? $professional->status,
             ]);
 

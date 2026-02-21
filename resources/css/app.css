@@ -9,6 +9,7 @@
 @import './auth/login.css';
 @import "./components/filter-search.css";
 @import "./components/filters.css";
+@import "./components/photo-upload.css";
 @import "./components/logs.css";
 @import "./pages/session-records.css";
 
@@ -342,6 +343,8 @@ body {
 .sidebar-menu {
     padding-bottom: 80px; /* Espaço para o rodapé da sidebar */
 }
+
+.bg-soft-info { background-color: #eef0f3; }
 
 /* Ajuste fino para melhor visualização em telas menores */
 @media (max-height: 600px) {

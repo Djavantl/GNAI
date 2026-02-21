@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use App\Http\Controllers\SpecializedEducationalSupport\{
     StudentDeficienciesController,
     PersonController,
@@ -175,35 +176,54 @@ Route::middleware(['auth'])->group(function () {
     | 4. STUDENT CONTEXT
     |--------------------------------------------------------------------------
     */
-    Route::get('student-context/{student}/index', [StudentContextController::class, 'index'])
-        ->name('student-context.index')->middleware('can:student-context.index');
 
-    Route::get('student-context/{student_context}/show', [StudentContextController::class, 'show'])
-        ->name('student-context.show')->middleware('can:student-context.show');
+    Route::get('student-context/{student}/index', [StudentContextController::class, 'index'])
+        ->name('student-context.index')
+        ->middleware('can:student-context.index');
+
+    Route::get('student-context/{studentContext}/show', [StudentContextController::class, 'show'])
+        ->name('student-context.show')
+        ->middleware('can:student-context.show');
 
     Route::get('student-context/{student}/show_current', [StudentContextController::class, 'showCurrent'])
-        ->name('student-context.show-current')->middleware('can:student-context.show-current');
-
-    Route::post('student-context/{student_context}/set_current', [StudentContextController::class, 'setCurrent'])
-        ->name('student-context.set-current')->middleware('can:student-context.set-current');
+        ->name('student-context.show-current');
+        // ->middleware('can:student-context.show-current');
 
     Route::get('student-context/{student}/create', [StudentContextController::class, 'create'])
-        ->name('student-context.create')->middleware('can:student-context.create');
+        ->name('student-context.create')
+        ->middleware('can:student-context.create');
 
     Route::post('student-context/{student}/store', [StudentContextController::class, 'store'])
-        ->name('student-context.store')->middleware('can:student-context.store');
+        ->name('student-context.store')
+        ->middleware('can:student-context.store');
 
-    Route::get('student-context/{student_context}/edit', [StudentContextController::class, 'edit'])
-        ->name('student-context.edit')->middleware('can:student-context.edit');
+    Route::get('student-context/{studentContext}/edit', [StudentContextController::class, 'edit'])
+        ->name('student-context.edit')
+        ->middleware('can:student-context.edit');
 
-    Route::put('student-context/{student_context}', [StudentContextController::class, 'update'])
-        ->name('student-context.update')->middleware('can:student-context.update');
+    Route::put('student-context/{studentContext}', [StudentContextController::class, 'update'])
+        ->name('student-context.update')
+        ->middleware('can:student-context.update');
 
-    Route::delete('student-context/{student_context}', [StudentContextController::class, 'destroy'])
-        ->name('student-context.destroy')->middleware('can:student-context.destroy');
+    Route::delete('student-context/{studentContext}', [StudentContextController::class, 'destroy'])
+        ->name('student-context.destroy')
+        ->middleware('can:student-context.destroy');
 
-    Route::get('/student-context/{student_context}/pdf', [StudentContextController::class, 'generatePdf'])
-        ->name('student-context.pdf')->middleware('can:student-context.pdf');
+    Route::get('student-context/{student}/new-version', [StudentContextController::class, 'makeNewVersion'])
+        ->name('student-context.new-version')
+        ->middleware('can:student-context.create');
+
+    Route::post('student-context/{student}/store-new-version', [StudentContextController::class, 'storeNewVersion'])
+        ->name('student-context.store-new-version')
+        ->middleware('can:student-context.create');
+
+    Route::post('student-context/{studentContext}/restore', [StudentContextController::class, 'restoreVersion'])
+        ->name('student-context.restore')
+        ->middleware('can:student-context.update');
+
+    Route::get('student-context/{studentContext}/pdf', [StudentContextController::class, 'generatePdf'])
+        ->name('student-context.pdf')
+        ->middleware('can:student-context.pdf');
 
 
     /*
@@ -335,14 +355,17 @@ Route::middleware(['auth'])->group(function () {
     | 8. STUDENT COURSES
     |--------------------------------------------------------------------------
     */
-    Route::get('/student-courses', [StudentCourseController::class, 'create'])
+    Route::get('/student-courses/{student}/create', [StudentCourseController::class, 'create']) 
         ->name('student-courses.create')->middleware('can:student-course.create');
 
-    Route::post('/student-courses/store', [StudentCourseController::class, 'store'])
+    Route::post('/student-courses/store/{student}', [StudentCourseController::class, 'store'])
         ->name('student-courses.store')->middleware('can:student-course.store');
 
     Route::get('/students/{student}/history', [StudentCourseController::class, 'index'])
         ->name('student-courses.history')->middleware('can:student-course.history');
+
+    Route::get('student-courses/{studentCourse}', [StudentCourseController::class, 'show'])
+        ->name('student-courses.show');
 
     Route::get('/student-courses/{studentCourse}/edit', [StudentCourseController::class, 'edit'])
         ->name('student-courses.edit')->middleware('can:student-course.edit');
@@ -419,6 +442,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::patch('/peis/{pei}/finish', [PeiController::class, 'finish'])
         ->name('pei.finish');
+
+    Route::post('peis/{pei}/version', [PeiController::class, 'createVersion'])
+        ->name('pei.version.newVersion');
+   
+    Route::post('peis/{pei}/make-current', [PeiController::class, 'makeCurrent'])
+        ->name('pei.makeCurrent');
 
     Route::get('/peis/{pei}/pdf', [PeiController::class, 'generatePdf'])
         ->name('pei.pdf');
@@ -558,4 +587,14 @@ Route::middleware(['auth'])->group(function () {
         
     Route::get('/student-documents/{student_document}/view', [StudentDocumentController::class, 'show'])
     ->name('student-documents.view');
+
+    /*
+    |--------------------------------------------------------------------------
+    | 13. Student Logs
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('students/{student}/logs', [StudentLogController::class, 'index'])->name('students.logs.index');
+    Route::get('students/{student}/logs/pdf', [StudentLogController::class, 'generatePdf'])->name('students.logs.pdf');
+
 });

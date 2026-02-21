@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
 @section('content')
 
@@ -10,11 +10,15 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Novo Profissional</h2>
             <p class="text-muted">Cadastre os dados pessoais e funcionais do novo profissional no sistema.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.index') }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
+
     </div>
 
     <div class="mt-3">
@@ -22,12 +26,11 @@
             
             <x-forms.section title="Dados da Pessoa" />
 
-            <div class="col-md-12 mb-3">
-                <label class="form-label fw-bold">Foto do Profissional</label>
-                <input type="file" name="photo" class="form-control" accept="image/*">
-                <small class="text-muted">Formatos aceitos: JPG, PNG. Máximo 2MB.</small>
-            </div>
-
+            <x-forms.photo-upload
+                name="photo"
+                label="Foto do Profissional"
+            />
+            
             <div class="col-md-6">
                 <x-forms.input name="name" label="Nome *" required :value="old('name')" />
             </div>
@@ -55,11 +58,11 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="phone" label="Telefone" :value="old('phone')" />
+                <x-forms.input name="email" label="Email *" type="email" required :value="old('email')" />
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="email" label="Email *" type="email" required :value="old('email')" />
+                <x-forms.input name="phone" label="Telefone" :value="old('phone')" />
             </div>
 
             <div class="col-md-12">
@@ -81,29 +84,20 @@
                 <x-forms.input name="registration" label="Matrícula *" required :value="old('registration')" />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.input name="entry_date" label="Entrada *" type="date" required :value="old('entry_date')" />
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.select
-                    name="status"
-                    label="Status"
-                    :options="['active' => 'Ativo', 'inactive' => 'Inativo']"
-                    :value="old('status', 'active')"
-                />
-            </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.index') }}" variant="secondary">
-                    Voltar
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar Profissional
+                <x-buttons.submit-button type="submit" class="btn-action new submit ">
+                    <i class="fas fa-save"></i> Salvar 
                 </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>
     </div>
 @endsection
+@push('scripts')
+    @vite(['resources/js/components/photos.js'])
+@endpush

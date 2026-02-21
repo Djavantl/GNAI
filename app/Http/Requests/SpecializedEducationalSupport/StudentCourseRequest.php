@@ -22,11 +22,9 @@ class StudentCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'student_id'   => 'required|exists:students,id',
             'course_id'    => 'required|exists:courses,id',
             'academic_year'=> 'required|digits:4',
             'is_current'   => 'boolean',
-            'status'       => 'required|string|max:50',
         ];
     }
 }

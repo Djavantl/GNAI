@@ -11,14 +11,15 @@ function createStudentRow(selectedId = '') {
     const div = document.createElement('div');
     div.className = 'd-flex align-items-center gap-2 mb-2 student-row animate__animated animate__fadeIn';
     
-    let options = '<option value="">Selecione um aluno...</option>';
+    // Deixamos a primeira opção vazia para o Select2 assumir o placeholder
+    let options = '<option value=""></option>'; 
     list.forEach(s => {
         options += `<option value="${s.id}" ${s.id == selectedId ? 'selected' : ''}>${s.name}</option>`;
     });
 
     div.innerHTML = `
         <div class="flex-grow-1">
-            <select name="student_ids[]" class="form-select custom-input student-select-item" required>
+            <select name="student_ids[]" class="form-select custom-input student-select-item select-search" required>
                 ${options}
             </select>
         </div>
@@ -27,15 +28,27 @@ function createStudentRow(selectedId = '') {
         </button>
     `;
 
+    // --- MÁGICA DO SELECT2 AQUI ---
+    const select = div.querySelector('select');
+    
+    // O Select2 precisa que o elemento esteja "quase" no DOM ou usa um timeout
+    setTimeout(() => {
+        initSelectSearch(select);
+    }, 0);
+    // ------------------------------
+
     div.querySelector('.remove-student-btn').onclick = function() {
         if (document.querySelectorAll('.student-row').length > 1) {
+            $(select).select2('destroy'); // Opcional: destrói a instância antes de remover
             div.remove();
             updateRemoveButtonsVisibility();
             loadSchedule();
         }
     };
 
-    div.querySelector('select').onchange = loadSchedule;
+    // No Select2, o evento de mudança deve ser monitorado via jQuery ou disparado manualmente
+    $(select).on('change', loadSchedule);
+
     setTimeout(updateRemoveButtonsVisibility, 0);
     return div;
 }

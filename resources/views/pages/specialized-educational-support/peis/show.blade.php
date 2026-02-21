@@ -15,10 +15,24 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="text-title">Plano Educacional Individualizado</h2>
-            <p class="text-muted">Visualização completa do plano.</p>
+            <p class="text-muted">Visualize o Plano educacional individualizado e todas suas informações.</p>
         </div>
 
         <div class="d-flex gap-2">
+         
+            @if($pei->is_finished)
+                <form 
+                    action="{{ route('specialized-educational-support.pei.version.newVersion', $pei) }}" 
+                    method="POST"
+                    onsubmit="return confirm('Será criada uma nova versão baseada neste PEI. Deseja continuar?')"
+                >
+                    @csrf
+
+                    <x-buttons.submit-button type="submit" class="btn-action new">
+                        <i class="fas fa-plus"></i> Nova Versão
+                    </x-buttons.submit-button>
+                </form>
+            @endif
 
             <x-buttons.link-button 
                 :href="route('specialized-educational-support.pei-evaluation.index', $pei)" 
@@ -65,12 +79,17 @@
 
             <x-show.info-item label="Curso" 
                 :value="$pei->course->name" 
-                column="col-md-6" 
+                column="col-md-4" 
                 isBox="true" />
 
             <x-show.info-item label="Disciplina" 
                 :value="$pei->discipline->name" 
-                column="col-md-6" 
+                column="col-md-4" 
+                isBox="true" />
+
+            <x-show.info-item label="Versão" 
+                :value="$pei->version" 
+                column="col-md-4" 
                 isBox="true" />
 
             <x-show.info-item label="Docente" 
@@ -93,8 +112,8 @@
                 label="Contexto Pedagógico" 
                 column="col-md-12" 
                 isBox="true">
-                <a href="{{ route('specialized-educational-support.student-context.show', $pei->student_context_id) }}" 
-                    class="text-primary fw-bold small" 
+                <a href="{{ route('specialized-educational-support.student-context.pdf', $pei->student_context_id) }}" 
+                    class="text-purple-dark fw-bold small" 
                     target="_blank">
                         <i class="fas fa-external-link-alt me-1"></i> Ver Contexto
                 </a>

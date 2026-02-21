@@ -19,7 +19,7 @@
             :href="route('specialized-educational-support.students.create')"
             variant="new"
         >
-             Adicionar Aluno
+            <i class="fas fa-plus"></i>Adicionar
         </x-buttons.link-button>
     </div>
 

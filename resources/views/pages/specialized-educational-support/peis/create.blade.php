@@ -25,25 +25,28 @@
             @csrf
             <input type="hidden" name="student_id" value="{{ $student->id }}">
             
-            <x-forms.section title="Vínculo Acadêmico" />
+            <x-forms.section title="Dados Acadêmicos" />
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="course_id"
-                    label="Curso *"
-                    required
-                    :options="$courses ?? []" 
-                    :value="old('course_id')"
-                />
-            </div>
+            <input type="hidden" name="student_id" value="{{ $student->id }}">
+
+            <x-show.info-item 
+                label="Curso Vinculado"
+                column="col-md-6"
+                isBox="true"
+            >
+                <strong>{{ $course->name }}</strong>
+            </x-show.info-item>
+
+            <input type="hidden" name="course_id" value="{{ $course->id }}">
 
             <div class="col-md-6">
                 <x-forms.select
                     name="discipline_id"
-                    label="Componente Curricular (Disciplina) *"
+                    label="Disciplina *"
                     required
-                    :options="$disciplines ?? []"
-                    :value="old('discipline_id')"
+                    :options="$disciplines"
+                    :selected="old('discipline_id')"
+                    aria-label="Selecione a disciplina do curso atual"
                 />
             </div>
 
@@ -70,7 +73,12 @@
                         <i class="fas fa-info-circle fa-2x me-3"></i>
                         <div>
                             <strong>Contexto Atual Identificado:</strong><br>
-                            Baseado na avaliação de {{ $currentContext->created_at->format('d/m/Y') }}.
+                            Baseado na avaliação de {{ $currentContext->created_at->format('d/m/Y') }}.<br>
+                            <a href="{{ route('specialized-educational-support.student-context.pdf', $currentContext) }}" 
+                                class="text-purple-dark fw-bold small" 
+                                target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i> Ver Contexto
+                            </a>
                         </div>
                         <input type="hidden" name="student_context_id" value="{{ $currentContext->id }}">
                     </div>

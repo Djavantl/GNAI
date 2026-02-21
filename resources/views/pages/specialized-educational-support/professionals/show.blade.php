@@ -24,7 +24,7 @@
             </x-buttons.link-button>
 
             <x-buttons.link-button :href="route('specialized-educational-support.professionals.index')" variant="secondary">
-                Voltar
+               <i class="fas fa-arrow-left "></i>  Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -37,9 +37,14 @@
 
             <div class="col-12 d-flex justify-content-center py-4 bg-light mb-4 border-bottom">
                 <div class="text-center">
-                    <img src="{{ $professional->person->photo_url }}" class="avatar-show">
-                    <h4 class="mt-3 text-title mb-0">{{ $professional->person->name }}</h4>
-                    <span class="badge bg-primary">Profissional</span>
+
+                    <img src="{{ $professional->person->photo_url }}"
+                        class="avatar-show-lg">
+
+                    <h4 class="mt-3 text-title mb-0">
+                        {{ $professional->person->name }}
+                    </h4>
+
                 </div>
             </div>
             
@@ -78,9 +83,9 @@
 
             <x-show.info-item label="Status" column="col-md-3" isBox="true">
                 @if($professional->status === 'active')
-                    <span class="text-success fw-bold"><i class="fas fa-user-check"></i> ATIVO</span>
+                    <span class="text-success fw-bold">ATIVO</span>
                 @else
-                    <span class="text-danger fw-bold"><i class="fas fa-user-slash"></i> INATIVO</span>
+                    <span class="text-danger fw-bold">INATIVO</span>
                 @endif
             </x-show.info-item>
 
@@ -105,12 +110,12 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt me-1"></i> Remover Profissional
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
 
-                    <x-buttons.link-button :href="route('specialized-educational-support.professionals.edit', $professional->id)" variant="warning">
-                        <i class="fas fa-edit me-1"></i> Editar Dados
+                    <x-buttons.link-button :href="route('specialized-educational-support.professionals.index')" variant="secondary">
+                        <i class="fas fa-arrow-left "></i>  Voltar
                     </x-buttons.link-button>
                 </div>
             </div>

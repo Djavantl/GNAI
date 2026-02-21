@@ -62,7 +62,7 @@
                 :href="route('specialized-educational-support.student-documents.index', $student)"
                 variant="warning"
                 class="btn-sm">
-                <i class="fas fa-folder-open"></i> Gerenciar Documentos
+                <i class="fas fa-folder-open"></i> Gerenciar
             </x-buttons.link-button>
         </div>
 

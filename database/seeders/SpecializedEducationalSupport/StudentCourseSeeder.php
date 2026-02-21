@@ -28,7 +28,6 @@ class StudentCourseSeeder extends Seeder
                 'course_id' => $courseInfo->id,
                 'academic_year' => date('Y'),
                 'is_current' => true,
-                'status' => 'active',
             ]);
         }
 
@@ -38,7 +37,6 @@ class StudentCourseSeeder extends Seeder
                 'course_id' => $courseInfo->id,
                 'academic_year' => date('Y'),
                 'is_current' => true,
-                'status' => 'active',
             ]);
         }
 
@@ -48,7 +46,6 @@ class StudentCourseSeeder extends Seeder
                 'course_id' => $courseAdm->id,
                 'academic_year' => date('Y'),
                 'is_current' => true,
-                'status' => 'active',
             ]);
         }
 

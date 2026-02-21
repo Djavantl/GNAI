@@ -10,11 +10,14 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
-            <h2 class="text-title">Editar Aluno</h2>
+            <h2 class="text-title">Editar {{$student->person->name}}</h2>
             <p class="text-muted">Atualize as informações cadastrais e acadêmicas do estudante.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.students.show', $student) }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -23,24 +26,14 @@
 
             <x-forms.section title="Dados Pessoais" />
 
-            <div class="col-md-12 mb-4">
-                <label class="form-label fw-bold d-block">Foto do Aluno</label>
-                <div class="photo-preview-container">
-                    <img src="{{ $student->person->photo_url }}" class="img-preview mb-2" id="preview">
-                </div>
-                <input type="file" name="photo" class="form-control" accept="image/*">
-                
-                @if($student->person->photo)
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="remove_photo" value="1" id="removePhoto">
-                        <label class="form-check-label text-danger" for="removePhoto">
-                            <i class="bi bi-trash"></i> Remover foto atual
-                        </label>
-                    </div>
-                @endif
-            </div>
+            <x-forms.photo-upload
+                name="photo"
+                label="Foto do Aluno"
+                :current="$student->person->photo_url"
+            />
+            
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
                     label="Nome Completo *" 
@@ -49,7 +42,7 @@
                 />
             </div>
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
                     label="Documento *" 
@@ -132,8 +125,8 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.students.index') }}" variant="secondary">
-                    Cancelar
+                <x-buttons.link-button href="{{ route('specialized-educational-support.students.show', $student) }}" variant="secondary">
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
@@ -144,3 +137,6 @@
         </x-forms.form-card>
     </div>
 @endsection
+@push('scripts')
+    @vite(['resources/js/components/photos.js'])
+@endpush

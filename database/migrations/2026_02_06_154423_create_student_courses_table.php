@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->year('academic_year');
             $table->boolean('is_current')->default(true);
-            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

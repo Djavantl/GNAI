@@ -10,13 +10,16 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <h2 class="text-title">Profissionais</h2>
-        <x-buttons.link-button 
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+        <div>
+            <h2 class="text-title mb-0">Profissionais</h2>
+            <p class="text-muted">Gerencie os profissionais e seus documentos de apoio especializado.</p>
+        </div>
+        <x-buttons.link-button
             :href="route('specialized-educational-support.professionals.create')"
             variant="new"
         >
-             Novo Profissional
+            <i class="fas fa-plus"></i>Adicionar
         </x-buttons.link-button>
     </div>
 

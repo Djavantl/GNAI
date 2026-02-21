@@ -15,6 +15,12 @@ migrate:
 seed:
 	docker-compose exec app php artisan migrate:fresh --seed
 
+perm:
+	sudo chown -R $USER:$USER .
+
+make:
+	docker compose exec app php artisan make:migration $(filter-out $@,$(MAKECMDGOALS))
+
 # Isso impede que o 'make' confunda os comandos com arquivos
 %:
 	@:

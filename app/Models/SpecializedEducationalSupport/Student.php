@@ -4,6 +4,9 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\GlobalSearchable;
+use App\Models\Traits\Auditable; 
+use App\Models\AuditLog;       
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Student extends Model
 {
@@ -34,6 +37,52 @@ class Student extends Model
         'concluído' => ['completed'],
         'evadido' => ['dropped'],
     ];
+
+    /**
+     * Relacionamento de Logs
+     */
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    /**
+     * Nomes amigáveis para os campos na auditoria
+     */
+    public static function getAuditLabels(): array
+    {
+        return [
+            'person_id'       => 'Pessoa/Usuário',
+            'registration'    => 'Matrícula',
+            'student_code'    => 'Código do Aluno',
+            'entry_date'      => 'Data de Ingresso',
+            'status'          => 'Status Acadêmico',
+            'education_level' => 'Nível de Escolaridade',
+            'modality'        => 'Modalidade',
+            'notes'           => 'Observações',
+        ];
+    }
+
+    /**
+     * Formatação de valores específicos para exibição no log
+     */
+    public static function formatAuditValue(string $field, $value): ?string
+    {
+        if ($field === 'status') {
+            return self::statusOptions()[$value] ?? $value;
+        }
+
+        if ($field === 'person_id') {
+            // Tenta buscar o nome da pessoa para não mostrar apenas o ID
+            return \App\Models\SpecializedEducationalSupport\Person::find($value)?->name ?? "ID: $value";
+        }
+
+        if ($field === 'entry_date' && $value) {
+            return \Carbon\Carbon::parse($value)->format('d/m/Y');
+        }
+
+        return null; // Se retornar null, o sistema usa o valor original
+    }
 
 
     // Relacionamentos
@@ -104,20 +153,16 @@ class Student extends Model
             Course::class,
             'student_courses'
         )
-        ->withPivot(['academic_year', 'is_current', 'status'])
+        ->withPivot(['academic_year', 'is_current'])
         ->withTimestamps();
     }
 
     // Curso atual do aluno
     public function currentCourse()
     {
-        return $this->belongsToMany(
-            Course::class,
-            'student_courses'
-        )
-        ->wherePivot('is_current', true)
-        ->withPivot(['academic_year', 'status'])
-        ->withTimestamps();
+        return $this->hasOne(StudentCourse::class)
+            ->where('is_current', true)
+            ->with('course');
     }
 
     // Helpers

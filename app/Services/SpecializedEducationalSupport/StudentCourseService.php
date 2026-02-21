@@ -3,7 +3,7 @@
 namespace App\Services\SpecializedEducationalSupport;
 
 use App\Models\SpecializedEducationalSupport\StudentCourse;
-use App\Models\Student;
+use App\Models\SpecializedEducationalSupport\Student;
 use Illuminate\Support\Facades\DB;
 
 class StudentCourseService
@@ -22,22 +22,21 @@ class StudentCourseService
     /**
      * Matricula um aluno (e lida com o histórico/curso atual)
      */
-    public function enroll(array $data): StudentCourse
+    public function enroll(Student $student, array $data): StudentCourse
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($student, $data) {
             // Se for marcado como atual, desativamos o anterior
             if ($data['is_current'] ?? true) {
-                StudentCourse::where('student_id', $data['student_id'])
+                StudentCourse::where('student_id', $student->id)
                     ->where('is_current', true)
                     ->update(['is_current' => false]);
             }
 
             return StudentCourse::create([
-                'student_id'    => $data['student_id'],
+                'student_id'    => $student->id,
                 'course_id'     => $data['course_id'],
                 'academic_year' => $data['academic_year'],
-                'is_current'    => $data['is_current'] ?? true,
-                'status'        => $data['status'] ?? 'active',
+                'is_current'    => $data['is_current'] ?? false, 
             ]);
         });
     }

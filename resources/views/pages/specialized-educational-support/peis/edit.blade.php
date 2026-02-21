@@ -29,25 +29,24 @@
 
             <x-forms.section title="Vínculo Acadêmico" />
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="course_id"
-                    label="Curso *"
-                    required
-                    :options="$courses ?? []" 
-                    :value="old('course_id', $pei->course_id)"
-                    :selected="old('course_id', $pei->course_id)"
-                />
-            </div>
+            <x-show.info-item 
+                label="Curso Vinculado"
+                column="col-md-6"
+                isBox="true"
+            >
+                <strong>{{ $course->name }}</strong>
+            </x-show.info-item>
 
-            <div class="col-md-6">
+            <input type="hidden" name="course_id" value="{{ $course->id }}">
+
+           <div class="col-md-6">
                 <x-forms.select
                     name="discipline_id"
                     label="Componente Curricular (Disciplina) *"
                     required
-                    :options="$disciplines ?? []"
-                    :value="old('discipline_id', $pei->discipline_id)"
+                    :options="$disciplines"
                     :selected="old('discipline_id', $pei->discipline_id)"
+                    aria-label="Selecionar disciplina do curso {{ $course->name }}"
                 />
             </div>
 
@@ -55,9 +54,9 @@
                 <x-forms.input
                     name="teacher_name"
                     label="Nome do Docente Responsável *"
-                    placeholder="Digite o nome do professor"
                     required
                     :value="old('teacher_name', $pei->teacher_name)"
+                    aria-label="Nome do professor responsável pelo PEI"
                 />
             </div>
 
@@ -79,16 +78,6 @@
                     {{-- O contexto geralmente não muda em um PEI já iniciado para manter o histórico --}}
                     <input type="hidden" name="student_context_id" value="{{ $pei->student_context_id }}">
                 </div>
-            </div>
-
-            <x-forms.section title="Status do Plano" />
-
-            <div class="col-md-6">
-                <x-forms.checkbox 
-                    name="is_finished" 
-                    label="Finalizar Plano (Impede novas edições de objetivos/metodologias)" 
-                    :checked="old('is_finished', $pei->is_finished)" 
-                />
             </div>
 
             <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4 mt-4">

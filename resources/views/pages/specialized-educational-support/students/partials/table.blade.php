@@ -13,12 +13,12 @@
             </x-table.td>
             <x-table.td>{{ $student->person->email }}</x-table.td>
             <x-table.td>{{ $student->registration }}</x-table.td>
-            <x-table.td>
+            <x-table.td >
                 @php
                     $statusColor = $student->status === 'active' ? 'success' : 'danger';
                     $statusLabel = $student->status === 'active' ? 'Ativo' : 'Inativo';
                 @endphp
-                <span class="badge bg-light-{{ $statusColor }} text-{{ $statusColor }} px-3">
+                <span class="text-{{ $statusColor }} text-uppercase fw-bold">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>

@@ -12,8 +12,11 @@
 <div class="d-flex justify-content-between mb-3">
     <div>
         <h2 class="text-title">Prontuário de {{$student->person->name}}</h2>
-        <p class="text-muted">Insira as informações pessoais e acadêmicas para registrar o novo estudante no sistema.</p>
+        <p class="text-muted">Visualize o ecossistema completo do aluno: desde informações cadastrais até o histórico detalhado de interações, atendimentos e evoluções no sistema.</p>
     </div>
+    <x-buttons.link-button :href="route('specialized-educational-support.students.index')" variant="secondary">
+        <i class="fas fa-arrow-left "></i> Voltar 
+    </x-buttons.link-button>
 </div>
 
 <div class="card shadow-sm border-0">

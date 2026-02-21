@@ -14,18 +14,20 @@
         <h2 class="text-title mb-0">Pendências</h2>
 
         <div class="d-flex gap-2">
-            <x-buttons.link-button 
-                :href="route('specialized-educational-support.pendencies.create')" 
-                variant="new">
-                Nova Pendência
-            </x-buttons.link-button>
-
             <x-buttons.link-button
                 :href="route('specialized-educational-support.pendencies.my')"
                 variant="info"
             >
                 <i class="fas fa-user-check me-1"></i> Minhas Pendências
             </x-buttons.link-button>
+            
+            <x-buttons.link-button 
+                :href="route('specialized-educational-support.pendencies.create')" 
+                variant="new">
+               <i class="fas fa-plus" aria-hidden="true"></i> Adicionar
+            </x-buttons.link-button>
+
+            
         </div>
     </div>
 
@@ -60,17 +62,13 @@
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button :href="route('specialized-educational-support.pendencies.show', $pendency)" variant="info">
-                            Ver
-                        </x-buttons.link-button>
-
-                        <x-buttons.link-button :href="route('specialized-educational-support.pendencies.edit', $pendency)" variant="warning">
-                            Editar
+                           <i class="fas fa-eye" aria-hidden="true"></i> ver
                         </x-buttons.link-button>
 
                         <form action="{{ route('specialized-educational-support.pendencies.destroy', $pendency) }}" method="POST" onsubmit="return confirm('Deseja excluir esta pendência?')">
                             @csrf
                             @method('DELETE')
-                            <x-buttons.submit-button variant="danger">Excluir</x-buttons.submit-button>
+                            <x-buttons.submit-button variant="danger"><i class="fas fa-trash" aria-hidden="true"></i> Excluir</x-buttons.submit-button>
                         </form>
                     </x-table.actions>
                 </x-table.td>

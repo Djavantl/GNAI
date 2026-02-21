@@ -17,7 +17,7 @@ use App\Models\SpecializedEducationalSupport\SpecificObjective;
 use App\Models\SpecializedEducationalSupport\ContentProgrammatic;
 use App\Models\SpecializedEducationalSupport\Methodology;
 use App\Services\SpecializedEducationalSupport\PeiService;
-use App\Enums\SpecializedEducationalSupport\ObjectiveStatus;
+use App\Enums\SpecializedEducationalSupport\ObjectiveStatus; 
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PeiController extends Controller
@@ -54,30 +54,68 @@ class PeiController extends Controller
 
     public function create(Student $student)
     {
-        $courses = Course::orderBy('name')->pluck('name', 'id');
-        $disciplines = Discipline::orderBy('name')->pluck('name', 'id');
+        $studentCourse = $student->currentCourse()->first();
+        if(!$studentCourse){
+           return redirect()->back()->with('error','Este aluno não possui matrícula vigente');
+        }
+
+        $course = $studentCourse->course;
+
+        $disciplines = $course->disciplines()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->pluck('name', 'disciplines.id');
+
         $currentContext = $student->contexts()->where('is_current', true)->first();
         $semester = Semester::current();
-        
-        return view('pages.specialized-educational-support.peis.create', compact('student', 'currentContext', 'courses', 'disciplines', 'semester'));
+
+        return view(
+            'pages.specialized-educational-support.peis.create',
+            compact(
+                'student',
+                'studentCourse',
+                'course',
+                'disciplines',
+                'currentContext',
+                'semester'
+            )
+        );
     }
 
     public function store(PeiRequest $request)
-    {
-        $pei = $this->service->create($request->validated());
+    {   try {
+            $pei = $this->service->create($request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'PEI gerado com sucesso. Agora você pode adicionar os objetivos e metodologias.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'PEI gerado com sucesso. Agora você pode adicionar os objetivos e metodologias.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function edit(Pei $pei)
     {
-        $courses = Course::orderBy('name')->pluck('name', 'id');
-        $disciplines = Discipline::orderBy('name')->pluck('name', 'id');
         $student = $pei->student;
+        $studentCourse = $student->currentCourse()->firstOrFail();
+        $course = $studentCourse->course;
 
-        return view('pages.specialized-educational-support.peis.edit', compact('pei', 'student', 'courses', 'disciplines'));
+        $disciplines = $course->disciplines()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->pluck('name', 'disciplines.id');
+
+        return view(
+            'pages.specialized-educational-support.peis.edit',
+            compact(
+                'pei',
+                'student',
+                'course',
+                'disciplines'
+            )
+        );
     }
 
     public function update(Pei $pei, PeiRequest $request)
@@ -106,6 +144,26 @@ class PeiController extends Controller
         return redirect()
             ->route('specialized-educational-support.pei.show', $pei)
             ->with('success', 'PEI finalizado com sucesso.');
+    }
+
+    public function makeCurrent(Pei $pei)
+    {
+        $this->service->makeCurrent($pei);
+
+        return back()->with('success', 'Versão definida como atual.');
+    }
+
+    public function createVersion(Pei $pei)
+    {
+        try {
+            $new = $this->service->createVersion($pei);
+
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $new)
+                ->with('success', 'Nova versão criada com sucesso.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     // --- Métodos para Tabelas Auxiliares (Chamados via modal ou formulário na tela Show) ---
@@ -287,10 +345,24 @@ class PeiController extends Controller
 
     public function generatePdf(Pei $pei)
     {
-        $pei->load(['student.person', 'studentContext', 'specificObjectives', 'contentProgrammatic', 'methodologies']);
-        
-        $pdf = Pdf::loadView('pages.specialized-educational-support.peis.pdf', compact('pei'))
-                ->setPaper('a4', 'portrait');
+        if (! $pei->is_finished) {
+            return redirect()
+                ->back()
+                ->with('error', 'Somente PEIs finalizados podem gerar PDF.');
+        }
+
+        $pei->load([
+            'student.person',
+            'studentContext',
+            'specificObjectives',
+            'contentProgrammatic',
+            'methodologies',
+            'discipline'
+        ]);
+
+        $pdf = app('dompdf.wrapper')
+            ->loadView('pages.specialized-educational-support.peis.pdf', compact('pei'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream("PEI_{$pei->student->person->name}_{$pei->discipline->name}.pdf");
     }

@@ -77,7 +77,7 @@
                 :href="route('specialized-educational-support.pei.index', $student)"
                 variant="warning"
                 class="btn-sm">
-                <i class="fas fa-edit"></i> Gerenciar PEIs
+                <i class="fas fa-folder-open"></i> Gerenciar
             </x-buttons.link-button>
         </div>
 

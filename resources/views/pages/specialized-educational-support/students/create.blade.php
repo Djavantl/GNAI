@@ -12,9 +12,12 @@
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Cadastrar Novo Aluno</h2>
+            <h2 class="text-title">Cadastrar Aluno</h2>
             <p class="text-muted">Insira as informações pessoais e acadêmicas para registrar o novo estudante no sistema.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.students.index') }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -22,13 +25,12 @@
             
             <x-forms.section title="Dados Pessoais" />
 
-            <div class="col-md-12 mb-3">
-                <label class="form-label fw-bold">Foto do Aluno</label>
-                <input type="file" name="photo" class="form-control" accept="image/*">
-                <small class="text-muted">Formatos aceitos: JPG, PNG. Máximo 2MB.</small>
-            </div>
+            <x-forms.photo-upload
+                name="photo"
+                label="Foto do Aluno"
+            />
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
                     label="Nome Completo *" 
@@ -37,7 +39,7 @@
                 />
             </div>
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
                     label="Documento *" 
@@ -108,26 +110,19 @@
                 />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.input 
-                    name="entry_date" 
-                    label="Data de Ingresso *" 
-                    type="date" 
-                    required 
-                    :value="old('entry_date')" 
-                />
-            </div>
-
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.students.index') }}" variant="secondary">
-                    Voltar
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i>Salvar
                 </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>
     </div>
+    @push('scripts')
+        @vite(['resources/js/components/photos.js'])
+    @endpush
 @endsection

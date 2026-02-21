@@ -57,10 +57,10 @@ class StudentController extends Controller
 
     public function store(StudentRequest $request)
     {
-        $this->service->create($request->validated());
+        $student = $this->service->create($request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.students.index')
+            ->route('specialized-educational-support.students.show', $student)
             ->with('success', 'Aluno cadastrado com sucesso.');
     }
 
@@ -72,10 +72,10 @@ class StudentController extends Controller
 
     public function update(StudentRequest $request, Student $student)
     {
-        $this->service->update($student, $request->validated());
+        $student = $this->service->update($student, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.students.index')
+            ->route('specialized-educational-support.students.show', $student)
             ->with('success', 'Aluno atualizado com sucesso.');
     }
 

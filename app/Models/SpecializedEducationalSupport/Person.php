@@ -5,17 +5,15 @@ namespace App\Models\SpecializedEducationalSupport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Traits\Auditable; // 1. Importar a Trait
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\AuditLog;
 
 class Person extends Model
 {
-    use HasFactory;
+    // 2. Adicionar a Trait Auditable aqui
+    use HasFactory, Auditable;
 
-    /**
-     * O Laravel usa a convenção de plural em inglês.
-     * Como seu Model é 'Person', ele já buscará a tabela 'people' automaticamente.
-     */
-
-    // 1. Campos que podem ser preenchidos via formulário
     protected $fillable = [
         'name',
         'document',
@@ -27,11 +25,50 @@ class Person extends Model
         'photo',
     ];
 
-    // 2. Conversão de tipos (Casting)
     protected $casts = [
-        'birth_date' => 'date', // Transforma a string do banco em um objeto Carbon (Data)
+        'birth_date' => 'date',
     ];
 
+    /**
+     * Relacionamento com Logs de Auditoria
+     */
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    /**
+     * Labels para o relatório de auditoria
+     */
+    public static function getAuditLabels(): array
+    {
+        return [
+            'name'       => 'Nome Completo',
+            'document'   => 'CPF/Documento',
+            'birth_date' => 'Data de Nascimento',
+            'gender'     => 'Gênero',
+            'email'      => 'E-mail',
+            'phone'      => 'Telefone',
+            'address'    => 'Endereço',
+            'photo'      => 'Foto de Perfil',
+        ];
+    }
+
+    /**
+     * Formatação de valores para o Log
+     */
+    public static function formatAuditValue(string $field, $value): ?string
+    {
+        if ($field === 'gender') {
+            return self::genderOptions()[$value] ?? $value;
+        }
+
+        if ($field === 'birth_date' && $value) {
+            return \Carbon\Carbon::parse($value)->format('d/m/Y');
+        }
+
+        return null;
+    }
     /**
      * 3. Helper para as opções de Gênero (opcional, mas recomendado)
      * Isso ajuda você a listar as opções no formulário e exibir o nome correto.

@@ -3,7 +3,8 @@
     'label' => null,
     'type' => 'text',
     'value' => '',
-    'placeholder' => ''
+    'placeholder' => '',
+    'required' => false
 ])
 
 @php
@@ -14,6 +15,9 @@
     @if($label)
         <label for="{{ $cleanId }}" class="form-label fw-bold text-purple-dark">
             {{ $label }}
+            @if($required)
+                <span class="text-danger">*</span>
+            @endif
         </label>
     @endif
 

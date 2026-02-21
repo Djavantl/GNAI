@@ -66,11 +66,6 @@ class StudentRequest extends FormRequest
                 Rule::unique('students', 'registration')->ignore($studentId),
             ],
 
-            'entry_date' => [
-                'required',
-                'date'
-            ],
-
             'status' => [
                 'sometimes',
                 'in:active,locked,completed,dropped'

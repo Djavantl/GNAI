@@ -20,23 +20,36 @@ class StudentCourseController extends Controller
 
     public function index(Student $student)
     {
-        $history = $this->service->getHistoryByStudent($student->id);
-        return view('pages.specialized-educational-support.student-courses.index', compact('student', 'history'));
+        $studentCourses = $this->service->getHistoryByStudent($student->id);
+        return view('pages.specialized-educational-support.student-courses.index', compact('student', 'studentCourses'));
     }
 
-    public function create()
+    public function show(StudentCourse $studentCourse)
     {
-        $students = Student::with('person')->get();
+        $studentCourse->load([
+            'student.person',
+            'course.disciplines',
+            'logs.user'
+        ]);
+
+        return view(
+            'pages.specialized-educational-support.student-courses.show',
+            compact('studentCourse')
+        );
+    }
+    public function create(Student $student)
+    {
         $courses = Course::where('is_active', true)->orderBy('name')->get();
-        return view('pages.specialized-educational-support.student-courses.create', compact('students', 'courses'));
+    
+        return view('pages.specialized-educational-support.student-courses.create', compact('student', 'courses'));
     }
 
-    public function store(StudentCourseRequest $request)
+    public function store(Student $student, StudentCourseRequest $request)
     {
-        $this->service->enroll($request->validated());
+        $this->service->enroll($student, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.students.index')
+            ->route('specialized-educational-support.student-courses.history', $student)
             ->with('success', 'Matrícula realizada com sucesso.');
     }
 
@@ -51,16 +64,17 @@ class StudentCourseController extends Controller
         $this->service->updateEnrollment($studentCourse, $request->validated());
 
         return redirect()
-            ->back()
+            ->route('specialized-educational-support.student-courses.show', $studentCourse)
             ->with('success', 'Dados da matrícula atualizados.');
     }
 
     public function destroy(StudentCourse $studentCourse)
     {
+        $student = $studentCourse->student_id;
         $this->service->deleteEnrollment($studentCourse);
 
         return redirect()
-            ->back()
+            ->route('specialized-educational-support.student-courses.history', $student)
             ->with('success', 'Registro de histórico removido.');
     }
 }

@@ -15,14 +15,31 @@
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Histórico de Contextos</h2>
-            <p class="text-muted">Aluno: {{ $student->person->name }}</p>
+            <p class="text-muted">Veja o histórico completo das características comportamentais observadas do aluno(a) {{ $student->person->name }}.</p>
         </div>
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.student-context.create', $student->id)"
-            variant="new"
-        >
-            Novo Contexto
-        </x-buttons.link-button>
+        @can('student-context.create')
+            @if($contexts->isEmpty())
+
+                {{-- Primeiro contexto --}}
+                <x-buttons.link-button
+                    href="{{ route('specialized-educational-support.student-context.create', $student->id) }}"
+                    class="btn-action new">
+                    <i class="fas fa-plus"></i>
+                    Adicionar Contexto
+                </x-buttons.link-button>
+
+            @else
+
+                {{-- Nova versão --}}
+                <x-buttons.link-button
+                    href="{{ route('specialized-educational-support.student-context.new-version', $student->id) }}"
+                    class="btn-action new">
+                    <i class="fas fa-plus"></i>
+                    Nova Versão
+                </x-buttons.link-button>
+
+            @endif
+        @endcan
     </div>
 
     <div class="card mb-4 border-0 shadow-sm">
@@ -58,16 +75,15 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <x-table.table :headers="['Data / Horário', 'Tipo de Avaliação', 'Status', 'Ações']">
+    <x-table.table :headers="['Data', 'Versão','Tipo de Avaliação', 'Status', 'Ações']">
         @forelse($contexts as $context)
             <tr class="{{ $context->is_current ? 'table-success' : '' }}">
                 <x-table.td>
-                    <strong>{{ $context->created_at->format('d/m/Y') }}</strong><br>
-                    <small class="text-muted">{{ $context->created_at->format('H:i') }}</small>
+                    <strong>{{ $context->created_at->format('d/m/Y') }}</strong>
+                </x-table.td>
+
+                <x-table.td >
+                   <strong> v{{ $context->version }}</strong>
                 </x-table.td>
 
                 <x-table.td>
@@ -93,33 +109,17 @@
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button
-                            :href="route('specialized-educational-support.student-context.show', $context->id)"
+                            :href="route('specialized-educational-support.student-context.show', $context)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye" aria-hidden="true"></i> Ver
                         </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.student-context.edit', $context->id)"
-                            variant="warning"
-                        >
-                            Editar
-                        </x-buttons.link-button>
-
-                        @if(!$context->is_current)
-                            <form action="{{ route('specialized-educational-support.student-context.set-current', $context->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                <x-buttons.submit-button variant="secondary" onclick="return confirm('Definir este contexto como atual?')">
-                                    Ativar
-                                </x-buttons.submit-button>
-                            </form>
-                        @endif
 
                         <form action="{{ route('specialized-educational-support.student-context.destroy', $context->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este registro permanentemente?')">
-                                Excluir
+                                <i class="fas fa-trash" aria-hidden="true"></i>Excluir
                             </x-buttons.submit-button>
                         </form>
                     </x-table.actions>
@@ -137,10 +137,10 @@
 
     <div class="mt-4">
         <x-buttons.link-button
-            :href="route('specialized-educational-support.students.index')"
+            :href="route('specialized-educational-support.students.show', $student)"
             variant="secondary"
         >
-            <i class="fas fa-chevron-left mr-1"></i> Voltar para Alunos
+            <i class="fas fa-arrow-left"></i> Voltar
         </x-buttons.link-button>
     </div>
 @endsection

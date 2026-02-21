@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('title', 'Agendar Nova Sessão')
+
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
@@ -39,6 +41,7 @@
                     label="Profissional"
                     required
                     :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name ?? 'Sem Nome'])"
+                    search="true"
                 />
             </div>
 

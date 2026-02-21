@@ -57,7 +57,7 @@
                 :href="route('specialized-educational-support.guardians.index', $student)"
                 variant="warning"
                 class="btn-sm">
-                <i class="fas fa-edit"></i> Editar Responsáveis
+                <i class="fas fa-folder-open"></i> Gerenciar
             </x-buttons.link-button>
         </div>
     </div>

@@ -20,11 +20,25 @@ class Pei extends Model
         'teacher_name',
         'student_context_id',
         'is_finished',
+        'version',
+        'is_current',
     ];
 
     protected $casts = [
         'is_finished' => 'boolean',
     ];
+
+    public function scopeCurrent($query)
+    {
+        return $q->where('is_current', true);
+    }
+
+    public function scopeForContext($query, $studentId, $courseId, $disciplineId)
+    {
+        return $query->where('student_id', $studentId)
+            ->where('course_id', $courseId)
+            ->where('discipline_id', $disciplineId);
+    }
 
     /**
      * Relacionamentos Principais

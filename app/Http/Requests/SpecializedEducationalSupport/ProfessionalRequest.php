@@ -70,16 +70,6 @@ class ProfessionalRequest extends FormRequest
                     ->ignore($professional?->id),
             ],
 
-            'entry_date' => [
-                'required',
-                'date',
-            ],
-
-            'status' => [
-                'required',
-                'in:active,inactive',
-            ],
-
             // Cargo
 
             'position_id' => [

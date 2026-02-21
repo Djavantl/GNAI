@@ -21,16 +21,9 @@
             :href="route('specialized-educational-support.pei.create', $student->id)"
             variant="new"
         >
-            Novo PEI
+            <i class="fas fa-plus" aria-hidden="true"></i> Adicionar
         </x-buttons.link-button>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <x-table.table :headers="['Semestre', 'Componente Curricular', 'Docente Responsável', 'Status', 'Ações']">
         @forelse($peis as $pei)
@@ -67,8 +60,22 @@
                             :href="route('specialized-educational-support.pei.show', $pei->id)"
                             variant="info"
                         >
-                            <i class="fas fa-eye"></i>
+                            <i class="fas fa-eye" aria-hidden="true"></i> ver
                         </x-buttons.link-button>
+                        <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
+                            method="POST"
+                            class="d-inline">
+                            @csrf
+                            @method('DELETE')
+
+                            <x-buttons.submit-button 
+                                variant="danger"
+                                onclick="return confirm('Deseja remover este pei?')"
+                                aria-label="Excluir pei do sistema"
+                            >
+                            <i class="fas fa-trash" aria-hidden="true"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
                     </x-table.actions>
                 </x-table.td>
             </tr>
@@ -87,7 +94,7 @@
             :href="route('specialized-educational-support.students.show', $student)"
             variant="secondary"
         >
-            <i class="fas fa-chevron-left mr-1"></i> Voltar para Aluno
+            <i class="fas fa-arrow-left"></i> Voltar para Aluno
         </x-buttons.link-button>
     </div>
 @endsection

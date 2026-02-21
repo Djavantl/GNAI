@@ -9,6 +9,8 @@ use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentContext;
 use App\Services\SpecializedEducationalSupport\StudentContextService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\SpecializedEducationalSupport\Professional;
+use Throwable;
 
 class StudentContextController extends Controller
 {
@@ -25,12 +27,12 @@ class StudentContextController extends Controller
         return view('pages.specialized-educational-support.student-context.index', compact('student', 'contexts'));
     }
 
-    public function show(StudentContext $student_context)
+    public function show(StudentContext $studentContext)
     {
-        $student = $student_context->student;
-        $context = $this->service->show($student_context);
+        $student = $studentContext->student;
+        $studentContext = $this->service->show($studentContext);
         $deficiencies = $student->deficiencies;
-        return view('pages.specialized-educational-support.student-context.show', compact('student', 'context', 'deficiencies'));
+        return view('pages.specialized-educational-support.student-context.show', compact('student', 'studentContext', 'deficiencies'));
     }
 
     public function showCurrent(Student $student)
@@ -45,66 +47,156 @@ class StudentContextController extends Controller
 
     public function create(Student $student)
     {
+        $exists = StudentContext::where('student_id', $student->id)->exists();
+
+        if ($exists) {
+            return redirect()
+                ->back()
+                ->with('error', 'Este aluno já possui contexto. Use "Nova Versão".');
+        }
+
         $deficiencies = $student->deficiencies;
-        return view('pages.specialized-educational-support.student-context.create', compact('student','deficiencies' ));
+        $professionals = Professional::with('person')->get();
+
+        return view(
+            'pages.specialized-educational-support.student-context.create',
+            compact('student', 'deficiencies', 'professionals')
+        );
     }
 
     public function store(Student $student, StudentContextRequest $request)
     {
-        $this->service->create($student, $request->validated());
+        try {
+            $this->service->create($student, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.student-context.index', $student)
-            ->with('success', 'Contexto do aluno cadastrado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.student-context.index', $student)
+                ->with('success', 'Contexto do aluno cadastrado com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao criar contexto.');
+        }
     }
 
-    public function edit(StudentContext $student_context)
+    public function edit(StudentContext $studentContext)
     {
-        $student = $student_context->student;
+        if(!$studentContext->is_current){
+            return redirect()
+                ->route('specialized-educational-support.student-context.show', $studentContext)
+                ->with('error', 'Não é possível editar um contexto que não é atual.');
+        }
+
+        $student = $studentContext->student;
         $deficiencies = $student->deficiencies;
-        return view('pages.specialized-educational-support.student-context.edit', compact('student_context', 'deficiencies', 'student'));
+        $professionals = Professional::with('person')->get();
+
+        return view(
+            'pages.specialized-educational-support.student-context.edit',
+            compact(
+                'studentContext',
+                'student',
+                'deficiencies',
+                'professionals',
+            )
+        );
     }
 
-    public function update(StudentContext $student_context, StudentContextRequest $request)
+    public function update(StudentContext $studentContext, StudentContextRequest $request)
     {
-        $student = $student_context->student;
-        $this->service->update($student_context, $request->validated());
+        try {
+            $studentContext = $this->service->update($studentContext, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.student-context.index', $student)
-            ->with('success', 'Contexto do aluno atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.student-context.show', $studentContext)
+                ->with('success', 'Contexto salvo com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar contexto.');
+        }
     }
 
-    public function setCurrent(StudentContext $student_context)
+    public function makeNewVersion(Student $student)
     {
-        $student = $student_context->student;
+        try {
+            $studentContext = $this->service->makeNewVersion($student);
 
-        $this->service->setCurrent($student_context);
+            $deficiencies = $student->deficiencies;
+            $professionals = Professional::with('person')->get();
 
-        return redirect()
-            ->route('specialized-educational-support.student-context.show', $student)
-            ->with('success', 'Contexto definido como atual.');
+            return view(
+                'pages.specialized-educational-support.student-context.version',
+                compact('studentContext', 'student', 'deficiencies', 'professionals')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao gerar nova versão.');
+        }
     }
 
-    public function destroy(StudentContext $student_context)
+    public function storeNewVersion(Student $student, StudentContextRequest $request)
     {
-        $student = $student_context->student;
-        $this->service->delete($student_context);
+        try {
+            $newContext = $this->service->createNewVersion(
+                $student,
+                $request->validated()
+            );
 
-        return redirect()
-            ->route('specialized-educational-support.student-context.show', $student)
-            ->with('success', 'Contexto do aluno removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.student-context.show', $newContext)
+                ->with('success', 'Nova versão criada e definida como atual.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao salvar nova versão.');
+        }
     }
 
-    public function generatePdf($student_context)
+    public function restoreVersion(StudentContext $studentContext)
     {
-        $context = StudentContext::with(['student.person'])->findOrFail($student_context);
-        $student = $context->student;
+        try {
+            $newContext = $this->service->restoreVersion($studentContext);
 
-        $pdf = Pdf::loadView('pages.specialized-educational-support.student-context.pdf', compact('context', 'student'))
+            return redirect()
+                ->route('specialized-educational-support.student-context.show', $newContext)
+                ->with('success', 'Contexto restaurado e definido como atual.');
+
+        } catch (Throwable $e) {
+           return $this->handleException($e, 'Erro ao restaurar versão.');
+        }
+    }
+
+    public function destroy(StudentContext $studentContext)
+    {
+        try {
+            $student = $studentContext->student;
+
+            $this->service->delete($studentContext);
+
+            return redirect()
+                ->route('specialized-educational-support.student-context.index', $student)
+                ->with('success', 'Contexto do aluno removido com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao excluir contexto.');
+        }
+    }
+
+    public function generatePdf($studentContext)
+    {
+        try {
+            $context = StudentContext::with(['student.person'])->findOrFail($studentContext);
+            $student = $context->student;
+
+            $pdf = Pdf::loadView(
+                    'pages.specialized-educational-support.student-context.pdf',
+                    compact('context', 'student')
+                )
                 ->setPaper('a4', 'portrait')
-                ->setOption(['enable_php' => true]); 
+                ->setOption(['enable_php' => true]);
 
-        return $pdf->stream("Contexto_{$student->person->name}.pdf");
+            return $pdf->stream("Contexto_{$student->person->name}.pdf");
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao gerar pdf.');
+        }
     }
 }

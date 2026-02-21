@@ -46,6 +46,20 @@ services:
       interval: 5s
       retries: 5
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma_laravel
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db        # Deve ser igual ao nome do serviço de banco acima
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD} # Facilita o login automático
+    ports:
+      - '8081:80'
+   
+
   # Nginx
   nginx:
     image: nginx:alpine
