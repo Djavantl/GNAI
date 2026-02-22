@@ -35,7 +35,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome exibido *"
+                    label="Nome exibido"
                     required
                     :value="old('name', $resourceStatus->name)"
                     placeholder="Ex: Disponível, Em Manutenção, Extraviado..."
@@ -88,7 +88,7 @@
 
             {{-- Aplicabilidade: Estilo Público-alvo TA --}}
             <div class="col-md-12 mb-4">
-                <label class="form-label fw-bold text-purple-dark">Este tipo se aplica a: *</label>
+                <label class="form-label fw-bold text-purple-dark">Este tipo se aplica a:</label>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     <x-forms.checkbox
                         name="for_assistive_technology"

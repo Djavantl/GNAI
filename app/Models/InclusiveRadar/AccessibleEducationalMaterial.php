@@ -5,7 +5,6 @@ namespace App\Models\InclusiveRadar;
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\Waitlist;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Auditable;
@@ -100,6 +99,13 @@ class AccessibleEducationalMaterial extends Model
         return $this->morphMany(Inspection::class, 'inspectable')
             ->with('images')
             ->orderByDesc('inspection_date')
+            ->orderByDesc('created_at');
+    }
+    
+    public function maintenances(): MorphMany
+    {
+        return $this->morphMany(Maintenance::class, 'maintainable')
+            ->with('inspection')
             ->orderByDesc('created_at');
     }
 

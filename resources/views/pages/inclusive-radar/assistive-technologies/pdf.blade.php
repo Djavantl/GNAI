@@ -5,9 +5,57 @@
     <title>Relatório - {{ $assistiveTechnology->name }}</title>
     <style>
         {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
+        body { font-family: sans-serif; }
+
+        /* Estilos para o layout inteligente de imagens */
+        .inspection-images {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-top: none;
+            padding: 10px;
+            background: #fff;
+        }
+        .image-container {
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+            background-color: #f9f9f9;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            border: 1px solid #eee;
+        }
+        .image-container.wide {
+            width: 100%;
+            height: 300px;
+        }
+        .image-container.tall {
+            width: 100%;
+            height: 700px;
+            page-break-before: always;
+            page-break-after: always;
+        }
+        .image-container.square {
+            width: 100%;
+            height: 400px;
+        }
+        .image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 200px;
+            font-size: 10px;
+            color: #999;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+            text-align: center;
+            padding-top: 80px;
+        }
     </style>
 </head>
 <body>
+
 <div class="header">
     <h2>Ficha de Tecnologia Assistiva</h2>
     <p><strong>Nome:</strong> {{ $assistiveTechnology->name }}</p>
@@ -33,34 +81,19 @@
 @if(count($attributeValues) > 0)
     <x-pdf.section-title title="2. Especificações Técnicas" />
     <x-pdf.table>
-        @php
-            $chunks = collect($attributeValues)->chunk(3);
-        @endphp
-
+        @php $chunks = collect($attributeValues)->chunk(3); @endphp
         @foreach($chunks as $chunk)
-
             @php
                 $count = $chunk->count();
-
-                $colspan = match($count) {
-                    1 => 3,
-                    2 => 1.5,
-                    default => 1
-                };
+                $colspan = match($count) { 1 => 3, 2 => 1.5, default => 1 };
             @endphp
-
             <x-pdf.row>
                 @foreach($chunk as $attributeId => $value)
                     @php
                         $attributeLabel = $assistiveTechnology->attributeValues
                             ->firstWhere('attribute_id', $attributeId)?->attribute->label ?? '---';
                     @endphp
-
-                    <x-pdf.info-item
-                        :label="$attributeLabel"
-                        :value="$value"
-                        :colspan="$colspan"
-                    />
+                    <x-pdf.info-item :label="$attributeLabel" :value="$value" :colspan="$colspan" />
                 @endforeach
             </x-pdf.row>
         @endforeach
@@ -77,26 +110,21 @@
     </x-pdf.row>
 </x-pdf.table>
 
-{{-- Seção 4: Última Vistoria --}}
+{{-- Seção 4: Última Vistoria Estilo MPA --}}
 <x-pdf.section-title title="4. Última Vistoria" />
 
 @php
-    $lastInspection = $assistiveTechnology->inspections
-        ->sortByDesc('inspection_date')
-        ->first();
+    $lastInspection = $assistiveTechnology->inspections->sortByDesc('inspection_date')->first();
 @endphp
 
 @if($lastInspection)
-    {{-- Tabela para os dados textuais --}}
     <x-pdf.table>
         <x-pdf.row>
-            {{-- Coluna 1 --}}
             <x-pdf.info-item
                 label="Data e Descrição"
-                :value="$lastInspection->inspection_date->format('d/m/Y') . ' - ' . ($lastInspection->description ?: 'Sem descrição')"
+                :value="($lastInspection->inspection_date ? $lastInspection->inspection_date->format('d/m/Y') : '---') . ' - ' . ($lastInspection->description ?: 'Sem descrição')"
                 colspan="1"
             />
-            {{-- Coluna 2 --}}
             <x-pdf.info-item
                 label="Estado de Conservação"
                 :value="$lastInspection->state?->label() ?? '---'"
@@ -105,31 +133,70 @@
         </x-pdf.row>
     </x-pdf.table>
 
-    {{-- Container de Imagens FORA da tabela para permitir quebra de página (Page Break) --}}
-    <div style="width: 100%; border: 1px solid #ccc; border-top: none; padding: 10px; background: #fff;">
+    <div class="inspection-images">
         <span class="label" style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 10px;">Imagens da Vistoria</span>
 
-        <div style="width: 100%;">
-            @if($lastInspection->images->count() > 0)
-                @foreach($lastInspection->images as $image)
+        @if($lastInspection->images->count() > 0)
+            @foreach($lastInspection->images as $image)
+                @php
+                    $base64 = '';
+                    $dimensions = null;
+                    if (Storage::disk('public')->exists($image->path)) {
+                        $imagePath = Storage::disk('public')->path($image->path);
+                        $imageData = Storage::disk('public')->get($image->path);
+                        $src = @imagecreatefromstring($imageData);
+
+                        if ($src !== false) {
+                            $origWidth = imagesx($src);
+                            $origHeight = imagesy($src);
+                            $dimensions = [$origWidth, $origHeight];
+
+                            // Redimensionamento para otimizar o tamanho do PDF
+                            $maxSize = 1000;
+                            if ($origWidth > $origHeight) {
+                                $newWidth = $maxSize;
+                                $newHeight = (int) round($origHeight * $maxSize / $origWidth);
+                            } else {
+                                $newHeight = $maxSize;
+                                $newWidth = (int) round($origWidth * $maxSize / $origHeight);
+                            }
+
+                            $resized = imagecreatetruecolor($newWidth, $newHeight);
+                            imagecopyresampled($resized, $src, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+
+                            ob_start();
+                            imagejpeg($resized, null, 80);
+                            $base64 = 'data:image/jpeg;base64,' . base64_encode(ob_get_clean());
+
+                            imagedestroy($src);
+                            imagedestroy($resized);
+                        }
+                    }
+                @endphp
+
+                @if($base64 && $dimensions)
                     @php
-                        // Mantendo seu padrão de storage_path
-                        $path = storage_path('app/public/' . $image->path);
+                        $ratio = $dimensions[0] / $dimensions[1];
+                        if ($ratio > 1.5) { $imageClass = 'wide'; }
+                        elseif ($ratio < 0.67) { $imageClass = 'tall'; }
+                        else { $imageClass = 'square'; }
                     @endphp
-                    <div style="display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; vertical-align: top; background: #f9f9f9; page-break-inside: avoid;">
-                        @if(file_exists($path))
-                            <img src="{{ $path }}" style="width: 100%; height: auto; display: block; margin: 0 auto;">
-                        @else
-                            <div style="padding: 20px; text-align: center; font-size: 8px; color: #999;">Imagem não encontrada</div>
-                        @endif
-                    </div>
-                @endforeach
-            @else
-                <span class="value">Nenhuma imagem registrada.</span>
-            @endif
-        </div>
-        <div style="clear: both;"></div>
+
+                    <div class="image-container {{ $imageClass }}" style="background-image: url('{{ $base64 }}');"></div>
+                @else
+                    <div class="image-placeholder">Arquivo não encontrado ou formato inválido</div>
+                @endif
+            @endforeach
+        @else
+            <div style="padding-left: 10px;">
+                <span style="font-size: 10px; color: #666;">Nenhuma imagem registrada.</span>
+            </div>
+        @endif
     </div>
 @else
     <x-pdf.text-area label="Última Vistoria" :value="'Nenhuma vistoria registrada.'" />
 @endif
+
+<x-pdf.pages />
+</body>
+</html>

@@ -38,7 +38,6 @@ class AssistiveTechnologyRequest extends FormRequest
             ],
             'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
             'is_active' => 'sometimes|boolean',
-            'status_id' => 'nullable|exists:resource_statuses,id',
             'notes' => 'nullable|string',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',

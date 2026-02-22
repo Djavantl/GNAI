@@ -36,7 +36,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Título do Material *"
+                    label="Título do Material"
                     required
                     placeholder="Ex: Livro em Braille, Maquete Tátil..."
                     :value="old('name')"
@@ -56,7 +56,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="type_id"
-                    label="Categoria / Tipo *"
+                    label="Categoria / Tipo"
                     id="type_id"
                     required
                     :options="$resourceTypes->pluck('name', 'id')"
@@ -105,10 +105,11 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="inspection_type"
-                    label="Tipo de Inspeção *"
+                    label="Tipo de Inspeção"
                     required
                     :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
-                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    ->filter(fn($item) => $item !== \App\Enums\InclusiveRadar\InspectionType::MAINTENANCE)
+                    ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
                     :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
                 />
             </div>
@@ -116,7 +117,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="inspection_date"
-                    label="Data da Inspeção *"
+                    label="Data da Inspeção"
                     type="date"
                     :value="old('inspection_date', date('Y-m-d'))"
                 />
@@ -125,7 +126,7 @@
             <div class="col-md-6" id="conservation_container">
                 <x-forms.select
                     name="conservation_state"
-                    label="Estado de Conservação *"
+                    label="Estado de Conservação"
                     required
                     :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
                     :selected="old('conservation_state')"
@@ -154,7 +155,7 @@
             <div class="col-md-6" id="quantity_container">
                 <x-forms.input
                     name="quantity"
-                    label="Quantidade Total *"
+                    label="Quantidade Total"
                     type="number"
                     id="quantity_input"
                     :value="old('quantity', 1)"
@@ -162,14 +163,18 @@
                 />
             </div>
 
+            @php
+                $availableStatus = \App\Models\InclusiveRadar\ResourceStatus::where('code', 'available')->first();
+            @endphp
+
             <div class="col-md-6">
-                <x-forms.select
-                    name="status_id"
+                <x-forms.input
+                    name="status_display"
                     label="Status do Recurso"
-                    required
-                    :options="\App\Models\InclusiveRadar\ResourceStatus::active()->forEducationalMaterial()->pluck('name', 'id')"
-                    :selected="old('status_id')"
+                    :value="$availableStatus->name ?? 'Disponível'"
+                    disabled
                 />
+                <input type="hidden" name="status_id" :value="$availableStatus->id ?? ''">
             </div>
 
             <div class="col-md-6">
@@ -182,7 +187,7 @@
             </div>
 
             <div class="col-md-12 mb-4 mt-4">
-                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo (Deficiências Atendidas) *</span>
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo (Deficiências Atendidas)</span>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
                     @foreach($deficiencies->sortBy('name') as $def)
                         <x-forms.checkbox

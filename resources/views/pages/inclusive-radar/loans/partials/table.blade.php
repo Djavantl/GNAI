@@ -1,4 +1,7 @@
-<x-table.table :headers="['Item', 'Beneficiário', 'Prazo Entrega', 'Status', 'Usuário', 'Ações']">
+<x-table.table
+    :headers="['Item', 'Beneficiário', 'Prazo Entrega', 'Status', 'Usuário', 'Ações']"
+    :records="$loans"
+>
     @forelse($loans as $loan)
         <tr>
             {{-- ITEM --}}
@@ -42,9 +45,7 @@
             </x-table.td>
 
             {{-- USUÁRIO RESPONSÁVEL --}}
-            <x-table.td>
-                {{ $loan->user->name ?? '—' }}
-            </x-table.td>
+            <x-table.td>{{ $loan->user->name ?? '—' }}</x-table.td>
 
             {{-- AÇÕES --}}
             <x-table.td>

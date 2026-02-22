@@ -5,6 +5,58 @@
     <title>Relatório - {{ $material->name }}</title>
     <style>
         {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
+        body { font-family: sans-serif; }
+        /* Estilos adicionais para o layout de imagens */
+        .inspection-images {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-top: none;
+            padding: 10px;
+            background: #fff;
+        }
+        .image-container {
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+        .image-container.wide {
+            width: 100%;
+            height: 300px;
+            background-color: #f9f9f9;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            border: 1px solid #eee;
+        }
+        .image-container.tall {
+            width: 100%;
+            height: 700px;
+            background-color: #f9f9f9;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            border: 1px solid #eee;
+            page-break-before: always;
+            page-break-after: always;
+        }
+        .image-container.square {
+            width: 100%;
+            height: 400px;
+            background-color: #f9f9f9;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            border: 1px solid #eee;
+        }
+        .image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            font-size: 10px;
+            color: #999;
+            background: #f9f9f9;
+        }
     </style>
 </head>
 <body>
@@ -66,7 +118,7 @@
     </x-pdf.row>
 </x-pdf.table>
 
-{{-- 4. Última Vistoria (Padrão Unificado com Quebra de Página) --}}
+{{-- 4. Última Vistoria --}}
 <x-pdf.section-title title="4. Última Vistoria" />
 
 @php
@@ -79,7 +131,7 @@
         <x-pdf.row>
             <x-pdf.info-item
                 label="Data e Parecer"
-                :value="$lastInspection->inspection_date->format('d/m/Y') . ' - ' . ($lastInspection->description ?: 'Sem descrição')"
+                :value="($lastInspection->inspection_date ? $lastInspection->inspection_date->format('d/m/Y') : '---') . ' - ' . ($lastInspection->description ?: 'Sem descrição')"
                 colspan="1"
             />
             <x-pdf.info-item
@@ -90,31 +142,97 @@
         </x-pdf.row>
     </x-pdf.table>
 
-    {{-- Container de Imagens FORA da tabela para permitir quebra de página fluida --}}
-    <div style="width: 100%; border: 1px solid #ccc; border-top: none; padding: 10px; background: #fff;">
+    {{-- Container de imagens --}}
+    <div class="inspection-images">
         <span class="label" style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 10px;">Imagens da Vistoria</span>
 
-        <div style="width: 100%;">
-            @if($lastInspection->images->count() > 0)
-                @foreach($lastInspection->images as $image)
+        @if($lastInspection->images->count() > 0)
+            @foreach($lastInspection->images as $image)
+                @php
+                    $base64 = '';
+                    $dimensions = null;
+                    $imagePath = Storage::disk('public')->path($image->path);
+                    if (Storage::disk('public')->exists($image->path)) {
+                        // Carrega a imagem original
+                        $imageData = Storage::disk('public')->get($image->path);
+                        // Cria uma imagem GD a partir dos dados
+                        $src = @imagecreatefromstring($imageData);
+                        if ($src !== false) {
+                            // Obtém dimensões originais
+                            $origWidth = imagesx($src);
+                            $origHeight = imagesy($src);
+                            $dimensions = [$origWidth, $origHeight];
+
+                            // Define tamanho máximo para redimensionamento
+                            $maxSize = 1200; // pixels
+
+                            // Calcula novas dimensões mantendo proporção
+                            if ($origWidth > $origHeight) {
+                                // Imagem larga
+                                $newWidth = $maxSize;
+                                $newHeight = (int) round($origHeight * $maxSize / $origWidth);
+                            } else {
+                                // Imagem alta ou quadrada
+                                $newHeight = $maxSize;
+                                $newWidth = (int) round($origWidth * $maxSize / $origHeight);
+                            }
+
+                            // Cria uma nova imagem redimensionada
+                            $resized = imagecreatetruecolor($newWidth, $newHeight);
+                            imagecopyresampled($resized, $src, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+
+                            // Captura a imagem redimensionada em formato JPEG com qualidade 80
+                            ob_start();
+                            imagejpeg($resized, null, 80);
+                            $imageDataResized = ob_get_clean();
+
+                            // Libera memória
+                            imagedestroy($src);
+                            imagedestroy($resized);
+
+                            // Codifica em base64
+                            $base64 = 'data:image/jpeg;base64,' . base64_encode($imageDataResized);
+                        } else {
+                            // Falha ao criar imagem, tenta usar a original (pode ser muito grande)
+                            // Como fallback, converte a original para base64 (pode não funcionar)
+                            $extension = pathinfo($image->path, PATHINFO_EXTENSION);
+                            $base64 = 'data:image/' . $extension . ';base64,' . base64_encode($imageData);
+                            // Tenta obter dimensões com getimagesize (pode falhar em arquivos muito grandes)
+                            $dimensions = @getimagesize($imagePath);
+                        }
+                    }
+                @endphp
+
+                @if($base64 && $dimensions)
                     @php
-                        $path = storage_path('app/public/' . $image->path);
+                        $width = $dimensions[0];
+                        $height = $dimensions[1];
+                        $ratio = $width / $height;
+
+                        // Define classes com base na proporção original
+                        if ($ratio > 1.5) {
+                            $imageClass = 'wide';
+                        } elseif ($ratio < 0.67) {
+                            $imageClass = 'tall';
+                        } else {
+                            $imageClass = 'square';
+                        }
                     @endphp
-                    {{-- O 'page-break-inside: avoid' impede que a imagem seja cortada entre páginas --}}
-                    <div style="display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; vertical-align: top; background: #f9f9f9; page-break-inside: avoid;">
-                        @if(file_exists($path))
-                            <img src="{{ $path }}" style="width: 100%; height: auto; display: block; margin: 0 auto;">
-                        @else
-                            <div style="padding: 20px; text-align: center; font-size: 8px; color: #999;">Imagem não encontrada</div>
-                        @endif
+
+                    <div class="image-container {{ $imageClass }}" style="background-image: url('{{ $base64 }}');">
+                        {{-- Conteúdo vazio --}}
                     </div>
-                @endforeach
-            @else
-                <span class="value">Nenhuma imagem registrada.</span>
-            @endif
-        </div>
-        {{-- Limpa o fluxo para não afetar elementos posteriores --}}
-        <div style="clear: both;"></div>
+                @else
+                    <div class="image-placeholder" style="height: 200px; margin-bottom: 10px;">
+                        Arquivo não encontrado ou formato inválido
+                    </div>
+                @endif
+            @endforeach
+        @else
+            <div style="padding-left: 10px;">
+                <span style="font-size: 10px; color: #666;">Nenhuma imagem registrada.</span>
+            </div>
+        @endif
     </div>
 @else
     <x-pdf.text-area label="Última Vistoria" :value="'Nenhuma vistoria registrada.'" />

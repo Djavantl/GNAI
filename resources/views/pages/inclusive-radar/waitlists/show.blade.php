@@ -121,20 +121,20 @@
                     <x-buttons.pdf-button :href="route('inclusive-radar.waitlists.pdf', $waitlist)" class="ms-1" />
                 </div>
 
-                @if($currentStatus === \App\Enums\InclusiveRadar\WaitlistStatus::WAITING)
-                    <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('PATCH')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Deseja cancelar esta solicitação?')"
-                        >
-                            <i class="fas fa-times"></i> Cancelar
-                        </x-buttons.submit-button>
-                    </form>
-                @endif
-
                 <div class="d-flex gap-3">
+                    @if($currentStatus === \App\Enums\InclusiveRadar\WaitlistStatus::WAITING)
+                        <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja cancelar esta solicitação?')"
+                            >
+                                <i class="fas fa-times"></i> Cancelar
+                            </x-buttons.submit-button>
+                        </form>
+                    @endif
+
                     <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')

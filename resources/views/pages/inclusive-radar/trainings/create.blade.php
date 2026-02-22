@@ -52,7 +52,7 @@
                 <x-forms.select
                     name="trainable_type"
                     id="trainable_type"
-                    label="Tipo de Recurso *"
+                    label="Tipo de Recurso"
                     required
                     aria-required="true"
                     aria-description="Selecione se o treinamento é para uma Tecnologia Assistiva ou Material Pedagógico"
@@ -68,7 +68,7 @@
                 <x-forms.select
                     name="trainable_id"
                     id="trainable_id"
-                    label="Item Específico *"
+                    label="Item Específico"
                     required
                     aria-required="true"
                     aria-live="polite"
@@ -81,7 +81,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="title"
-                    label="Título do Treinamento *"
+                    label="Título do Treinamento"
                     required
                     aria-required="true"
                     placeholder="Ex: Capacitação de Software de Acessibilidade"

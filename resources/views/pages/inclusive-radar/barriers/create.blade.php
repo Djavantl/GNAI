@@ -39,7 +39,7 @@
                         <div class="col-md-6">
                             <label for="institution_select"
                                    class="form-label fw-bold text-purple-dark italic">
-                                Campus / Unidade <span class="text-danger">*</span>
+                                Campus / Unidade <span class="text-danger"></span>
                             </label>
                             <select name="institution_id"
                                     id="institution_select"
@@ -175,7 +175,7 @@
 
                 {{-- Deficiências Relacionadas --}}
                 <div class="col-md-12 mb-4 px-4">
-                    <label class="form-label fw-bold text-purple-dark">Deficiências Relacionadas *</label>
+                    <label class="form-label fw-bold text-purple-dark">Deficiências Relacionadas</label>
                     <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light max-h-40 overflow-y-auto custom-scrollbar">
                         @foreach($deficiencies as $def)
                             <x-forms.checkbox

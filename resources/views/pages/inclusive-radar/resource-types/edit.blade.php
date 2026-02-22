@@ -34,7 +34,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome do Tipo *"
+                    label="Nome do Tipo"
                     required
                     :value="old('name', $resourceType->name)"
                     placeholder="Ex: Teclados Adaptados, Softwares de Leitura..."
@@ -66,7 +66,7 @@
 
             {{-- Aplicabilidade: Estilo Público-alvo TA (Box Cinza Horizontal) --}}
             <div class="col-md-12 mb-4 mt-4">
-                <label class="form-label fw-bold text-purple-dark">Este tipo se aplica a: *</label>
+                <label class="form-label fw-bold text-purple-dark">Este tipo se aplica a:</label>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     <x-forms.checkbox
                         name="for_assistive_technology"

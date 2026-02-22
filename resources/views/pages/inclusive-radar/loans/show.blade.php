@@ -42,7 +42,7 @@
     <div class="mt-3">
         <div class="custom-table-card bg-white shadow-sm">
 
-            {{-- SEÇÃO 1: Recurso Emprestado (Estilo Edit/Create) --}}
+            {{-- SEÇÃO 1: Recurso Emprestado --}}
             <x-forms.section title="Recurso Emprestado" />
 
             <div class="col-md-12 mb-4 px-4">
@@ -96,9 +96,7 @@
                     } else {
                         $statusLabel = $currentStatus?->label() ?? $loan->status;
                     }
-                @endphp
 
-                @php
                     $isOverdue = ($loan->status === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast());
                     $statusColor = $isOverdue ? 'danger' : $loan->status->color();
                 @endphp
@@ -131,14 +129,11 @@
                 </div>
 
                 <div class="d-flex gap-3">
+                    {{-- BOTÃO DE DEVOLUÇÃO ABRE MODAL --}}
                     @if($loan->status->value === 'active')
-                        <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('PATCH')
-                            <x-buttons.submit-button variant="success" onclick="return confirm('Confirmar a devolução?')">
-                                <i class="fas fa-undo"></i> Devolver
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button type="button" variant="success" data-bs-toggle="modal" data-bs-target="#returnLoanModal">
+                            <i class="fas fa-undo"></i> Devolver
+                        </x-buttons.submit-button>
                     @endif
 
                     <form action="{{ route('inclusive-radar.loans.destroy', $loan) }}" method="POST" class="d-inline">
@@ -159,6 +154,36 @@
             </div>
         </div>
     </div>
+
+    {{-- MODAL DE DEVOLUÇÃO --}}
+    <x-modal id="returnLoanModal" size="md">
+        @slot('header')
+            Confirmar Devolução
+        @endslot
+
+        <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" id="returnLoanForm">
+            @csrf
+            @method('PATCH')
+
+            <div class="modal-body px-0 py-3">
+                <p class="mb-3">Deseja realmente realizar a devolução deste item?</p>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="is_damaged" id="is_damaged">
+                    <label class="form-check-label fw-semibold" for="is_damaged">
+                        Item devolvido com avaria
+                    </label>
+                </div>
+            </div>
+        </form>
+
+        @slot('footer')
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-success" onclick="document.getElementById('returnLoanForm').submit()">
+                Devolver
+            </button>
+        @endslot
+    </x-modal>
 
     @push('scripts')
         @vite('resources/js/pages/inclusive-radar/loans.js')

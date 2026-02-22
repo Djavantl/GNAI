@@ -48,7 +48,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-purple-dark italic">
-                                Campus / Unidade *
+                                Campus / Unidade
                             </label>
                             <select name="institution_id"
                                     id="institution_select"
@@ -107,7 +107,7 @@
                         <div class="col-md-8">
                             <x-forms.input
                                 name="name"
-                                label="Nome *"
+                                label="Nome"
                                 required
                                 :value="old('name', $barrier->name)"
                             />
@@ -116,7 +116,7 @@
                             <x-forms.input
                                 type="date"
                                 name="identified_at"
-                                label="Data *"
+                                label="Data"
                                 required
                                 :value="old('identified_at', $barrier->identified_at?->format('Y-m-d') ?? now()->format('Y-m-d'))"
                             />
@@ -132,7 +132,7 @@
                         <div class="col-md-6">
                             <x-forms.select
                                 name="barrier_category_id"
-                                label="Categoria *"
+                                label="Categoria"
                                 required
                                 :options="$categories->pluck('name', 'id')"
                                 :selected="old('barrier_category_id', $barrier->barrier_category_id)"
@@ -144,7 +144,7 @@
                 <div class="col-md-12 mb-3 px-4 mt-3">
                     <x-forms.textarea
                         name="description"
-                        label="Descrição *"
+                        label="Descrição"
                         required
                         rows="3"
                         :value="old('description', $barrier->description)"
@@ -221,7 +221,7 @@
 
                 {{-- Deficiências Relacionadas --}}
                 <div class="col-md-12 mb-4 px-4">
-                    <label class="form-label fw-bold text-purple-dark">Deficiências *</label>
+                    <label class="form-label fw-bold text-purple-dark">Deficiências</label>
                     <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light max-h-40 overflow-y-auto custom-scrollbar">
                         @foreach($deficiencies as $def)
                             <x-forms.checkbox
@@ -295,7 +295,7 @@
                                 <div class="col-md-6">
                                     <x-forms.select
                                         name="status"
-                                        label="Status *"
+                                        label="Status"
                                         :options="collect(\App\Enums\InclusiveRadar\BarrierStatus::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])"
                                         :selected="old('status', $barrier->latestStatus()?->value)"
                                     />
@@ -304,7 +304,7 @@
                                     <x-forms.input
                                         type="date"
                                         name="inspection_date"
-                                        label="Data da Vistoria *"
+                                        label="Data da Vistoria"
                                         :value="old('inspection_date', now()->format('Y-m-d'))"
                                     />
                                 </div>

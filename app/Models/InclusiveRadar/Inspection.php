@@ -32,13 +32,20 @@ class Inspection extends Model
         'type' => InspectionType::class,
     ];
 
+    /**
+     * Relação polimórfica com TA ou MPA
+     */
     public function inspectable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * Imagens da inspeção
+     */
     public function images(): HasMany
     {
         return $this->hasMany(InspectionImage::class, 'inspection_id');
     }
+
 }

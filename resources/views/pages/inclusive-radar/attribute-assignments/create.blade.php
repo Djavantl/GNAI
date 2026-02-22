@@ -33,7 +33,7 @@
             <div class="col-md-12">
                 <x-forms.select
                     name="type_id"
-                    label="Para qual Tipo de Recurso deseja configurar atributos? *"
+                    label="Para qual Tipo de Recurso deseja configurar atributos?"
                     id="type_id"
                     required
                     :options="$types->mapWithKeys(fn($type) => [

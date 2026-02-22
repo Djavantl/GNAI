@@ -38,7 +38,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome da Tecnologia *"
+                    label="Nome da Tecnologia"
                     required
                     :value="old('name', $assistiveTechnology->name)"
                 />
@@ -57,7 +57,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="type_id"
-                    label="Categoria / Tipo *"
+                    label="Categoria / Tipo"
                     id="type_id"
                     required
                     :options="$resourceTypes->pluck('name', 'id')"
@@ -164,17 +164,22 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="inspection_type"
-                    label="Tipo de Inspeção *"
+                    label="Tipo de Inspeção"
+                    required
                     :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
-                        ->filter(fn($type) => $type !== \App\Enums\InclusiveRadar\InspectionType::INITIAL)
+                        ->filter(fn($type) => !in_array($type, [
+                            \App\Enums\InclusiveRadar\InspectionType::INITIAL,
+                            \App\Enums\InclusiveRadar\InspectionType::MAINTENANCE
+                        ]))
                         ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :selected="old('inspection_type', $inspection->type->value ?? $inspection->type)"
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.input
                     name="inspection_date"
-                    label="Data da Inspeção *"
+                    label="Data da Inspeção"
                     type="date"
                     :value="date('Y-m-d')"
                 />
@@ -183,7 +188,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="conservation_state"
-                    label="Estado de Conservação Atual *"
+                    label="Estado de Conservação Atual"
                     :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
                     :selected="$assistiveTechnology->conservation_state->value"
                 />
@@ -211,7 +216,7 @@
                 @php $activeLoans = $assistiveTechnology->loans()->whereIn('status', ['active', 'late'])->count(); @endphp
                 <x-forms.input
                     name="quantity"
-                    label="Quantidade Total *"
+                    label="Quantidade Total"
                     type="number"
                     :value="old('quantity', $assistiveTechnology->quantity)"
                     :min="$activeLoans"
@@ -219,12 +224,13 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.select
-                    name="status_id"
+                <x-forms.input
+                    name="status_display"
                     label="Status do Recurso"
-                    :options="\App\Models\InclusiveRadar\ResourceStatus::where('is_active', true)->pluck('name', 'id')"
-                    :selected="$assistiveTechnology->status_id"
+                    :value="$assistiveTechnology->resourceStatus?->name ?? 'Desconhecido'"
+                    disabled
                 />
+                <input type="hidden" name="status_id" :value="$assistiveTechnology->status_id">
             </div>
 
             <div class="col-md-6">
@@ -237,7 +243,7 @@
             </div>
 
             <div class="col-md-12 mb-4 mt-4">
-                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo (Deficiências Atendidas) *</span>
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo (Deficiências Atendidas)</span>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     @foreach($deficiencies->sortBy('name') as $def)
                         <x-forms.checkbox

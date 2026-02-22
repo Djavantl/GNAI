@@ -81,6 +81,13 @@ class AssistiveTechnology extends Model
             ->orderByDesc('created_at');
     }
 
+    public function maintenances(): MorphMany
+    {
+        return $this->morphMany(Maintenance::class, 'maintainable')
+            ->with('inspection')
+            ->orderByDesc('created_at');
+    }
+
     public function allImages(): HasManyThrough
     {
         return $this->hasManyThrough(

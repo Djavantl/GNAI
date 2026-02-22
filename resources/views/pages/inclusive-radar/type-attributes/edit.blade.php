@@ -35,7 +35,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="label"
-                    label="Rótulo de Exibição (Label) *"
+                    label="Rótulo de Exibição (Label)"
                     required
                     :value="old('label', $typeAttribute->label)"
                     placeholder="Ex: Versão do Software"
@@ -64,7 +64,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="field_type"
-                    label="Tipo de Dado *"
+                    label="Tipo de Dado"
                     required
                     :options="[
                         'string' => 'Texto Curto (String)',

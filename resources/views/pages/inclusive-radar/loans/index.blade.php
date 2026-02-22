@@ -44,11 +44,11 @@
             'name' => 'status',
             'type' => 'select',
             'options' => [
-                '' => 'Status (Todos)',
-                'active' => 'Ativo',
-                'returned' => 'Devolvido',
-                'late' => 'Em atraso',
-                'damaged' => 'Danificado',
+                ''        => 'Status (Todos)',
+                'active'  => 'Ativo (Com o Beneficiário)',
+                'returned'=> 'Devolvido (No prazo)',
+                'late'    => 'Devolvido (Com atraso)',
+                'damaged' => 'Devolvido (Com avaria)',
             ]
         ],
     ]"
