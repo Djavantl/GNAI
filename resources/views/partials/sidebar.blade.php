@@ -2,7 +2,7 @@
     <ul class="sidebar-menu">
         <li>
             <a href="{{ route('dashboard') }}"
-               class="{{ request()->routeIs('auth.dashboard') ? 'active' : '' }}">
+               class="{{ request()->is('auth/dashboard') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-speedometer2"></i></span>
                 <span class="text">Dashboard</span>
             </a>
@@ -19,7 +19,7 @@
         @can('report.reports.index')
         <li>
             <a href="{{ route('report.reports.index') }}"
-               class="{{ request()->is('relatorios*') ? 'active' : '' }}">
+               class="{{ request()->routeIs('report.reports*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-bar-chart"></i></span>
                 <span class="text">Relatórios</span>
             </a>
@@ -31,6 +31,14 @@
                 class="{{ request()->routeIs('notifications.*') ? 'active' : '' }}">
                 <span class="icon"><i class="fa fa-regular fa-bell"></i></span>
                 <span class="text">Notificações</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('backup.backups.index') }}"
+                class="{{ request()->routeIs('backup.backups.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-cloud-download"></i></span>
+                <span class="text">Backups</span>
             </a>
         </li>
 
