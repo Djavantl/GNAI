@@ -231,27 +231,34 @@ Route::middleware(['auth'])->group(function () {
     | 5. STUDENT DEFICIENCIES
     |--------------------------------------------------------------------------
     */
-    Route::get('student-deficiencies/{student}', [StudentDeficienciesController::class, 'index'])
-        ->name('student-deficiencies.index')->middleware('can:student-deficiency.index');
 
-    Route::get('student-deficiencies/{student_deficiency}/show', [StudentDeficienciesController::class, 'show'])
-        ->name('student-deficiencies.show')->middleware('can:student-deficiency.show');
+    Route::get('students/{student}/deficiencies', [StudentDeficienciesController::class, 'index'])
+        ->name('student-deficiencies.index')
+        ->middleware('can:student-deficiency.index');
 
-    Route::get('student-deficiencies/{student}/create', [StudentDeficienciesController::class, 'create'])
-        ->name('student-deficiencies.create')->middleware('can:student-deficiency.create');
+    Route::get('students/{student}/deficiencies/create', [StudentDeficienciesController::class, 'create'])
+        ->name('student-deficiencies.create')
+        ->middleware('can:student-deficiency.create');
 
-    Route::post('student-deficiencies/{student}', [StudentDeficienciesController::class, 'store'])
-        ->name('student-deficiencies.store')->middleware('can:student-deficiency.store');
+    Route::post('students/{student}/deficiencies', [StudentDeficienciesController::class, 'store'])
+        ->name('student-deficiencies.store')
+        ->middleware('can:student-deficiency.store');
 
-    Route::get('student-deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])
-        ->name('student-deficiencies.edit')->middleware('can:student-deficiency.edit');
+    Route::get('students/{student}/deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'show'])
+        ->name('student-deficiencies.show')
+        ->middleware('can:student-deficiency.show');
 
-    Route::put('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])
-        ->name('student-deficiencies.update')->middleware('can:student-deficiency.update');
+    Route::get('students/{student}/deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])
+        ->name('student-deficiencies.edit')
+        ->middleware('can:student-deficiency.edit');
 
-    Route::delete('student-deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])
-        ->name('student-deficiencies.destroy')->middleware('can:student-deficiency.destroy');
+    Route::put('students/{student}/deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])
+        ->name('student-deficiencies.update')
+        ->middleware('can:student-deficiency.update');
 
+    Route::delete('students/{student}/deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])
+        ->name('student-deficiencies.destroy')
+        ->middleware('can:student-deficiency.destroy');
 
     /*
     |--------------------------------------------------------------------------

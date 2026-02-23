@@ -19,65 +19,39 @@
             :href="route('specialized-educational-support.positions.create')"
             variant="new"
         >
-            Novo Cargo
+            <i class="fas fa-plus"></i>Adicionar
         </x-buttons.link-button>
     </div>
 
-    <x-table.table :headers="['Cargo', 'Ativo', 'Ações']">
-        @foreach($position as $item)
-            <tr>
-                
-                
-                <x-table.td><strong>{{ $item->name }}</strong></x-table.td>
-                
-              
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#positions-table"
+        :fields="[
+            [
+                'name' => 'name',
+                'placeholder' => 'Buscar por nome...'
+            ],
+            [
+                'name' => 'description',
+                'placeholder' => 'Descrição...'
+            ],
+            [
+                'name' => 'is_active',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    1 => 'Ativo',
+                    0 => 'Inativo'
+                ]
+            ]
+        ]"
+    />
 
-                <x-table.td>
-                    @if($item->is_active)
-                        <span class="text-success font-weight-bold">SIM
-                    @else
-                        <span class="text-danger font-weight-bold">NÃO</span>
-                    @endif
-                </x-table.td>
+    <div id="positions-table">
+        @include('pages.specialized-educational-support.positions.partials.table')
+    </div>
 
-                <x-table.td>
-                    <x-table.actions>
-
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.positions.show', $item)"
-                            variant="info"
-                        >
-                            ver
-                        </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.positions.edit', $item)"
-                            variant="warning"
-                        >
-                            Editar
-                        </x-buttons.link-button>
-
-                        <form action="{{ route('specialized-educational-support.positions.deactivate', $item) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('PATCH')
-                            <x-buttons.submit-button variant="dark">
-                                Ativar/Desativar
-                            </x-buttons.submit-button>
-                        </form>
-
-                        <form action="{{ route('specialized-educational-support.positions.destroy', $item) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja excluir este cargo?')"
-                            >
-                                Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @endforeach
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

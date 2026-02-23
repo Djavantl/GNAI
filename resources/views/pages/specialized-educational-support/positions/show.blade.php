@@ -19,11 +19,11 @@
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button :href="route('specialized-educational-support.positions.edit', $position->id)" variant="warning">
-                <i class="fas fa-edit"></i> Editar Cargo
+                <i class="fas fa-edit"></i> Editar 
             </x-buttons.link-button>
 
             <x-buttons.link-button :href="route('specialized-educational-support.positions.index')" variant="secondary">
-                Voltar
+               <i class="fas fa-arrow-left"></i> Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -57,6 +57,25 @@
                 {{ $position->description ?? 'Nenhuma descrição detalhada foi fornecida para este cargo.' }}
             </x-show.info-textarea>
 
+            {{-- SEÇÃO: PERMISSÕES --}}
+            <x-forms.section title="Permissões Vinculadas ao Cargo" />
+
+            <div class="row g-3 mb-4">
+                <x-show.info-item label="Permissões Vinculadas" column="col-md-12" isBox="true">
+                    @if($position->permissions->isNotEmpty())
+                        <div class="tag-container">
+                            @foreach($position->permissions as $permission)
+                                <x-show.tag color="light">
+                                    {{ $permission->name }}
+                                </x-show.tag>
+                            @endforeach
+                        </div>
+                    @else
+                        ---
+                    @endif
+                </x-show.info-item>
+            </div>
+
             {{-- RODAPÉ --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
@@ -71,13 +90,9 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt me-1"></i> Remover Cargo
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-
-                    <x-buttons.link-button :href="route('specialized-educational-support.positions.edit', $position->id)" variant="warning">
-                        <i class="fas fa-edit me-1"></i> Editar Informações
-                    </x-buttons.link-button>
                 </div>
             </div>
         </div>

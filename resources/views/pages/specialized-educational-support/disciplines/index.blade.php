@@ -13,41 +13,35 @@
     <div class="d-flex justify-content-between mb-3">
         <h2 class="text-title">Disciplinas</h2>
         <x-buttons.link-button :href="route('specialized-educational-support.disciplines.create')" variant="new">
-             <i class="fas fa-plus me-1"></i> Adicionar Disciplina
+            <i class="fas fa-plus"></i> Adicionar Disciplina
         </x-buttons.link-button>
     </div>
 
-    <x-table.table :headers="['Nome', 'Status', 'Ações']">
-    @foreach($disciplines as $discipline)
-        <tr>
-            <x-table.td>
-                <span class="fw-bold text-purple-dark">{{ $discipline->name }}</span>
-            </x-table.td>
-            <x-table.td>
-                <span class="text-{{ $discipline->is_active ? 'success' : 'danger' }} fw-bold">
-                    <i class="fas fa-{{ $discipline->is_active ? 'check' : 'times' }}-circle me-1"></i>
-                    {{ $discipline->is_active ? 'Ativo' : 'Inativo' }}
-                </span>
-            </x-table.td>
-            <x-table.td>
-                <x-table.actions>
-                    <x-buttons.link-button :href="route('specialized-educational-support.disciplines.show', $discipline)" variant="info">
-                        Ver
-                    </x-buttons.link-button>
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#disciplines-table"
+        :fields="[
+            [
+                'name' => 'name',
+                'placeholder' => 'Nome da disciplina...'
+            ],
+            [
+                'name' => 'is_active',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    1 => 'Ativo',
+                    0 => 'Inativo'
+                ]
+            ]
+        ]"
+    />
 
-                    <x-buttons.link-button :href="route('specialized-educational-support.disciplines.edit', $discipline)" variant="warning">
-                        Editar
-                    </x-buttons.link-button>
+    <div id="disciplines-table">
+        @include('pages.specialized-educational-support.disciplines.partials.table')
+    </div>
 
-                    <form action="{{ route('specialized-educational-support.disciplines.destroy', $discipline) }}" method="POST">
-                        @csrf @method('DELETE')
-                        <x-buttons.submit-button variant="danger" onclick="return confirm('Deseja excluir esta disciplina?')">
-                            Excluir
-                        </x-buttons.submit-button>
-                    </form>
-                </x-table.actions>
-            </x-table.td>
-        </tr>
-    @endforeach
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

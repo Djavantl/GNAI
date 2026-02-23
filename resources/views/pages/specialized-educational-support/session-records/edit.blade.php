@@ -18,6 +18,9 @@
                 Registro #{{ $sessionRecord->id }} • Sessão #{{ $sessionRecord->attendance_session_id }}
             </p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.session-records.show', $sessionRecord) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <x-forms.form-card action="{{ route('specialized-educational-support.session-records.update', $sessionRecord) }}" method="POST">
@@ -28,7 +31,7 @@
         <x-forms.section title="Informações Gerais da Execução" />
         
         <div class="col-md-6">
-            <x-forms.input name="duration" label="Duração *" placeholder="Ex: 50 minutos" required :value="old('duration', $sessionRecord->duration)" />
+            <x-forms.input name="duration" label="Duração" placeholder="Ex: 50 minutos" required :value="old('duration', $sessionRecord->duration)" />
         </div>
 
         <div class="col-md-12">
@@ -94,7 +97,8 @@
                                     <div class="col-md-12" id="absence_fields_{{ $index }}" style="display: none;">
                                         <x-forms.textarea 
                                             name="evaluations[{{ $index }}][absence_reason]" 
-                                            label="Motivo da Ausência *" 
+                                            label="Motivo da Ausência" 
+                                            required
                                             rows="2" 
                                             :value="old('evaluations.'.$index.'.absence_reason', $evaluation->absence_reason)"
                                         />
@@ -131,14 +135,13 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4 mt-4">
+        <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
             <x-buttons.link-button href="{{ route('specialized-educational-support.session-records.show', $sessionRecord) }}" variant="secondary">
-                Cancelar
+                <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>
 
-            <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                <i class="fas fa-sync mr-2"></i> Atualizar Registro
+            <x-buttons.submit-button type="submit" class="btn-action new submit ">
+                <i class="fas fa-save"></i> Salvar
             </x-buttons.submit-button>
         </div>
     </x-forms.form-card>

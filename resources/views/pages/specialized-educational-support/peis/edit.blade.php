@@ -19,6 +19,9 @@
             <h2 class="text-title">Editar PEI: {{ $student->person->name }}</h2>
             <p class="text-muted">Atualize as informações básicas e o vínculo docente do plano.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei->id) }}" variant="secondary">
+            <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -80,31 +83,18 @@
                 </div>
             </div>
 
-            <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4 mt-4">
-                <div>
-                    <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei->id) }}" variant="secondary">
-                        Voltar para Detalhes
-                    </x-buttons.link-button>
-                </div>
+            <div class="col-12 d-flex justify-content-end border-t pt-4 px-4 pb-4 mt-4">
 
-                <div class="d-flex gap-3">
-                    <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                        Atualizar PEI
-                    </x-buttons.submit-button>
-                </div>
+                <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei->id) }}" variant="secondary">
+                   <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+                </x-buttons.link-button>
+
+                <x-buttons.submit-button type="submit" class="btn-action new submit ms-3">
+                    <i class="fas fa-save" aria-hidden="true"></i> Salvar
+                </x-buttons.submit-button>
+
             </div>
 
         </x-forms.form-card>
-
-        {{-- Formulário de exclusão separado seguindo o seu modelo --}}
-        <div class="mt-3 px-4 pb-4">
-            <form action="{{ route('specialized-educational-support.pei.destroy', $pei->id) }}" method="POST" onsubmit="return confirm('ATENÇÃO: Isso excluirá o PEI e TODAS as metas/metodologias vinculadas. Deseja continuar?')">
-                @csrf
-                @method('DELETE')
-                <x-buttons.submit-button type="submit" variant="danger">
-                    Excluir PEI
-                </x-buttons.submit-button>
-            </form>
-        </div>
     </div>
 @endsection

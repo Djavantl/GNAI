@@ -4,13 +4,14 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\Auditable; // Importar a Trait
-use App\Models\AuditLog;        // Importar o Log
+use App\Models\Traits\Auditable; 
+use App\Models\AuditLog;        
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class StudentDeficiencies extends Model
+class StudentDeficiencies extends Pivot
 {
-    use HasFactory, Auditable; // Adicionar Auditable aqui
+    use HasFactory, Auditable; 
 
     protected $table = 'students_deficiencies';
 
@@ -21,6 +22,8 @@ class StudentDeficiencies extends Model
         'uses_support_resources',
         'notes',
     ];
+ 
+    public $incrementing = true;
 
     /**
      * Relacionamento com Logs de Auditoria
@@ -78,5 +81,24 @@ class StudentDeficiencies extends Model
     public function deficiency()
     {
         return $this->belongsTo(Deficiency::class);
+    }
+
+    // Scopes para Filtros
+    public function scopeDeficiencyId($query, ?int $deficiencyId)
+    {
+        if (!$deficiencyId) return $query;
+        return $query->where('deficiency_id', $deficiencyId);
+    }
+
+    public function scopeSeverity($query, ?string $severity)
+    {
+        if (!$severity) return $query;
+        return $query->where('severity', $severity);
+    }
+
+    public function scopeUsesSupportResources($query, $uses)
+    {
+        if ($uses === null || $uses === '') return $query;
+        return $query->where('uses_support_resources', (bool) $uses);
     }
 }

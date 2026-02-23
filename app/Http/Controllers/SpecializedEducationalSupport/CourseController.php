@@ -7,6 +7,7 @@ use App\Models\SpecializedEducationalSupport\Course;
 use App\Http\Requests\SpecializedEducationalSupport\CourseRequest;
 use App\Models\SpecializedEducationalSupport\Discipline;
 use App\Services\SpecializedEducationalSupport\CourseService;
+use Illuminate\Http\Request;
 
 
 class CourseController extends Controller
@@ -18,9 +19,14 @@ class CourseController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $courses = $this->service->index();
+        $courses = $this->service->index($request->all());
+
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.courses.partials.table', compact('courses'))->render();
+        }
+
         return view('pages.specialized-educational-support.courses.index', compact('courses'));
     }
 

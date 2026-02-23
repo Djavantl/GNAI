@@ -67,8 +67,8 @@
                 @forelse($student->deficiencies as $def)
                     <div class="col-md-6">
                         <div class="card p-3 border-light bg-soft-info">
-                            <strong class="d-block">{{ $def->deficiency->name ?? '—' }}</strong>
-                            <span class="small text-muted">GRAU: {{ $def->severity ?? '—' }}</span>
+                            <strong class="d-block">{{ $def->name ?? '—' }}</strong>
+                            <span class="small text-muted">GRAU: {{ $def->pivot->severity ?? '—' }}</span>
                         </div>
                     </div>
                 @empty

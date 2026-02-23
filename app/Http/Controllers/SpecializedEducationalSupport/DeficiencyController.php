@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SpecializedEducationalSupport\DeficiencyRequest;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\SpecializedEducationalSupport\DeficiencyService;
+use Illuminate\Http\Request;
 
 class DeficiencyController extends Controller
 {
@@ -16,11 +17,15 @@ class DeficiencyController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $deficiency = $this->service->index();
+        $deficiencies = $this->service->index($request->all());
 
-        return view('pages.specialized-educational-support.deficiencies.index', compact('deficiency'));
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.deficiencies.partials.table', compact('deficiencies'))->render();
+        }
+
+        return view('pages.specialized-educational-support.deficiencies.index', compact('deficiencies'));
     }
 
      public function show(Deficiency $deficiency)

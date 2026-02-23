@@ -9,7 +9,15 @@
         ]" />
     </div>
 
-    <h2 class="text-title">Cadastrar Novo Curso</h2>
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+        <div>
+            <h2 class="text-title">Cadastrar novo curso</h2>
+            <p class="text-muted">Atualize as informações do profissional e seu vínculo com a instituição.</p>
+        </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.courses.index') }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
+    </div>
 
     <x-forms.form-card action="{{ route('specialized-educational-support.courses.store') }}" method="POST">
         <x-forms.section title="Dados do Curso" />
@@ -35,8 +43,8 @@
         </div>
 
         <div class="col-12 d-flex justify-content-end gap-3 pt-4 px-4 pb-4">
-            <x-buttons.link-button href="{{ route('specialized-educational-support.courses.index') }}" variant="secondary">Cancelar</x-buttons.link-button>
-            <x-buttons.submit-button type="submit" class="btn-action new submit px-5">Salvar Curso</x-buttons.submit-button>
+            <x-buttons.link-button href="{{ route('specialized-educational-support.courses.index') }}" variant="secondary"><i class="fas fa-times"></i>Cancelar</x-buttons.link-button>
+            <x-buttons.submit-button type="submit" class="btn-action new submit"><i class="fas fa-save"></i>Salvar</x-buttons.submit-button>
         </div>
     </x-forms.form-card>
 @endsection

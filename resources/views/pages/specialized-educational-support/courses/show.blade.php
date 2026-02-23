@@ -16,7 +16,7 @@
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button :href="route('specialized-educational-support.courses.edit', $course)" variant="warning">
-                <i class="fas fa-edit"></i> Editar Curso
+                <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
             <x-buttons.link-button :href="route('specialized-educational-support.courses.index')" variant="secondary">
                 Voltar

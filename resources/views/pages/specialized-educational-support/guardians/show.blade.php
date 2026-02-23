@@ -20,11 +20,11 @@
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button :href="route('specialized-educational-support.guardians.edit', [$guardian->student_id, $guardian->id])" variant="warning">
-                Editar Responsável
+                <i class="fas fa-edit"></i> Editar 
             </x-buttons.link-button>
 
-            <x-buttons.link-button :href="route('specialized-educational-support.students.show', $guardian->student_id)" variant="secondary">
-                Voltar ao Aluno
+            <x-buttons.link-button :href="route('specialized-educational-support.guardians.index', $guardian->student_id)" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar 
             </x-buttons.link-button>
         </div>
     </div>
@@ -104,7 +104,7 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-user-minus me-1"></i> Remover Vínculo
+                            <i class="fas fa-trash"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
 

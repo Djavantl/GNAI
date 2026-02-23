@@ -13,6 +13,9 @@
             <h2 class="text-title">Criar Nova Pendência</h2>
             <p class="text-muted">Registre uma nova pendência e direcione-a a um profissional responsável.</p>
         </div>
+         <x-buttons.link-button href="{{ route('specialized-educational-support.pendencies.index') }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -74,11 +77,11 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.pendencies.index') }}" variant="secondary">
-                    Voltar
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save me-2"></i> Salvar
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

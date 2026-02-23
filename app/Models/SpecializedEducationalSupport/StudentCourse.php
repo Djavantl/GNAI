@@ -68,4 +68,22 @@ class StudentCourse extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    // Scopes para Filtros
+    public function scopeCourseId($query, ?int $courseId)
+    {
+        if (!$courseId) return $query;
+        return $query->where('course_id', $courseId);
+    }
+
+    public function scopeAcademicYear($query, ?string $year)
+    {
+        if (!$year) return $query;
+        return $query->where('academic_year', 'like', "%{$year}%");
+    }
+
+    public function scopeIsCurrent($query, $isCurrent)
+    {
+        if ($isCurrent === null || $isCurrent === '') return $query;
+        return $query->where('is_current', (bool) $isCurrent);
+    }
 }

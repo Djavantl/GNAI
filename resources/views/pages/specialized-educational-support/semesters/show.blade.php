@@ -19,11 +19,11 @@
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button :href="route('specialized-educational-support.semesters.edit', $semester->id)" variant="warning">
-                <i class="fas fa-edit"></i> Editar Semestre
+                <i class="fas fa-edit"></i> Editar 
             </x-buttons.link-button>
 
             <x-buttons.link-button :href="route('specialized-educational-support.semesters.index')" variant="secondary">
-                Voltar
+                <i class="fas fa-arrow-left"></i>Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -90,13 +90,9 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt me-1"></i> Remover Período
+                            <i class="fas fa-trash-alt me-1"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-
-                    <x-buttons.link-button :href="route('specialized-educational-support.semesters.edit', $semester->id)" variant="warning">
-                        <i class="fas fa-edit me-1"></i> Alterar Datas
-                    </x-buttons.link-button>
                 </div>
             </div>
         </div>

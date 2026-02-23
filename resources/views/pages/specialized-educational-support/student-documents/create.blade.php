@@ -31,7 +31,7 @@
             <div class="col-md-12 mb-3">
                 <x-forms.input 
                     name="title" 
-                    label="Título do Documento *" 
+                    label="Título do Documento " 
                     placeholder="Ex: Laudo Médico Psicológico 2024"
                     required 
                     :value="old('title')" 
@@ -41,7 +41,7 @@
             <div class="col-md-6 mb-3">
                 <x-forms.select
                     name="type"
-                    label="Tipo de Documento *"
+                    label="Tipo de Documento "
                     required
                     :options="$types"  {{-- Variável limpa vinda do Controller --}}
                     :value="old('type', $document->type->value ?? '')"
@@ -65,11 +65,11 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.student-documents.index', $student) }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-times" aria-hidden="true"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-upload mr-2"></i> Realizar Upload
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-upload "></i> Realizar Upload
                 </x-buttons.submit-button>
             </div>
 

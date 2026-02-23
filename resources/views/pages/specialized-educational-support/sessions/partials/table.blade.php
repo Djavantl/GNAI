@@ -1,4 +1,5 @@
-<x-table.table :headers="['Data', 'Aluno', 'Profissional', 'Tipo', 'Status', 'Ações']">
+<x-table.table :headers="['Data', 'Aluno', 'Profissional', 'Tipo', 'Status', 'Ações']"
+:records="$sessions">
 @forelse($sessions as $session)
     <tr>
         <x-table.td>{{ ($session->session_date)->format('d/m/Y') }}</x-table.td>

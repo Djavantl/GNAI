@@ -12,7 +12,15 @@
         ]" />
     </div>
 
-    <h2 class="text-title">Editar Curso: {{ $course->name }}</h2>
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+        <div>
+            <h2 class="text-title">Editar o curso {{ $course->name }}</h2>
+            <p class="text-muted">Atualize as informações do profissional e seu vínculo com a instituição.</p>
+        </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.courses.show', $course) }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
+    </div>
 
     <x-forms.form-card action="{{ route('specialized-educational-support.courses.update', $course) }}" method="POST">
         @method('PUT')
@@ -47,9 +55,9 @@
             />
         </div>
 
-        <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4">
-            <x-buttons.link-button href="{{ route('specialized-educational-support.courses.index') }}" variant="secondary">Cancelar</x-buttons.link-button>
-            <x-buttons.submit-button type="submit">Atualizar Curso</x-buttons.submit-button>
+        <div class="col-12 d-flex justify-content-end border-t pt-4 px-4 pb-4">
+            <x-buttons.link-button class="me-3" href="{{ route('specialized-educational-support.courses.show', $course) }}" variant="secondary"><i class="fas fa-times"></i>Cancelar</x-buttons.link-button>
+            <x-buttons.submit-button type="submit"><i class="fas fa-save"></i>Salvar</x-buttons.submit-button>
         </div>
     </x-forms.form-card>
 @endsection

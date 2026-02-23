@@ -17,6 +17,9 @@
             <h2 class="text-title">Editar Documento</h2>
             <p class="text-muted">Atualize as informações do studentDocumento ou substitua o arquivo anexado.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.student-documents.index', $studentDocument->student_id) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -70,11 +73,11 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.student-documents.index', $studentDocument->student_id) }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-sync mr-2"></i> Atualizar Documento
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

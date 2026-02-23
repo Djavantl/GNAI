@@ -8,6 +8,7 @@ use App\Models\SpecializedEducationalSupport\Student;
 use App\Http\Requests\SpecializedEducationalSupport\StudentCourseRequest;
 use App\Models\SpecializedEducationalSupport\StudentCourse;
 use App\Services\SpecializedEducationalSupport\StudentCourseService;
+use Illuminate\Http\Request;
 
 class StudentCourseController extends Controller
 {
@@ -18,10 +19,29 @@ class StudentCourseController extends Controller
         $this->service = $service;
     }
 
-    public function index(Student $student)
+    public function index(Request $request, Student $student)
     {
-        $studentCourses = $this->service->getHistoryByStudent($student->id);
-        return view('pages.specialized-educational-support.student-courses.index', compact('student', 'studentCourses'));
+
+        $studentCourses = $this->service->getHistoryByStudent($student->id, $request->all());
+
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.student-courses.partials.table', 
+                compact('student', 'studentCourses')
+            )->render();
+        }
+
+        $filterCourses = Course::whereHas('studentCourses', function ($query) use ($student) {
+            $query->where('student_id', $student->id);
+        })
+        ->orderBy('name')
+        ->pluck('name', 'id')
+        ->toArray();
+
+        return view('pages.specialized-educational-support.student-courses.index', [
+            'student' => $student,
+            'studentCourses' => $studentCourses,
+            'courses' => $filterCourses 
+        ]);
     }
 
     public function show(StudentCourse $studentCourse)

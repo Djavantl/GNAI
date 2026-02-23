@@ -75,11 +75,16 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-
+                <x-buttons.link-button
+                    href="{{ route('specialized-educational-support.student-courses.show', $studentCourse) }}"
+                    variant="secondary"
+                    aria-label="Cancelar edição da matrícula">
+                    <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+                </x-buttons.link-button>
                 <x-buttons.submit-button
                     type="submit"
                     aria-label="Salvar alterações da matrícula">
-                    <i class="fas fa-save" aria-hidden="true"></i> Atualizar Matrícula
+                    <i class="fas fa-save" aria-hidden="true"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

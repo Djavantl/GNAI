@@ -16,6 +16,9 @@
             <h2 class="text-title">Cadastrar Responsável</h2>
             <p class="text-muted">Aluno: <strong>{{ $student->person->name }}</strong></p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.guardians.index', $student) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -26,7 +29,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome Completo *" 
+                    label="Nome Completo " 
                     required 
                     :value="old('name')" 
                 />
@@ -35,7 +38,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="CPF/Documento *" 
+                    label="CPF/Documento " 
                     required 
                     :value="old('document')" 
                 />
@@ -45,7 +48,7 @@
                 <x-forms.input 
                     type="date" 
                     name="birth_date" 
-                    label="Data de Nascimento *" 
+                    label="Data de Nascimento " 
                     required 
                     :value="old('birth_date')" 
                 />
@@ -55,6 +58,7 @@
                 <x-forms.select
                     name="gender"
                     label="Gênero"
+                    required
                     :options="[
                         'male' => 'Masculino',
                         'female' => 'Feminino',
@@ -71,7 +75,7 @@
                 <x-forms.input 
                     type="email" 
                     name="email" 
-                    label="E-mail *" 
+                    label="E-mail " 
                     required 
                     :value="old('email')" 
                 />
@@ -82,13 +86,14 @@
                     name="phone" 
                     label="Telefone" 
                     :value="old('phone')" 
+                    required
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.select
                     name="relationship"
-                    label="Parentesco / Vínculo *"
+                    label="Parentesco / Vínculo "
                     required
                     :options="[
                         'father' => 'Pai',
@@ -113,11 +118,11 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.guardians.index', $student) }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar Responsável
+                <x-buttons.submit-button type="submit" class="btn-action new submit ">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

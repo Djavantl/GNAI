@@ -17,84 +17,64 @@
             <h2 class="text-title">Histórico de PEIs</h2>
             <p class="text-muted">Aluno: {{ $student->person->name }}</p>
         </div>
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.pei.create', $student->id)"
-            variant="new"
-        >
-            <i class="fas fa-plus" aria-hidden="true"></i> Adicionar
-        </x-buttons.link-button>
+        <div>
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.students.show', $student)"
+                variant="secondary"
+            >
+                <i class="fas fa-arrow-left"></i> Voltar para Aluno
+            </x-buttons.link-button>
+            <x-buttons.link-button class="ms-3"
+                :href="route('specialized-educational-support.pei.create', $student->id)"
+                variant="new"
+            >
+                <i class="fas fa-plus" aria-hidden="true"></i> Adicionar
+            </x-buttons.link-button>
+        </div>
     </div>
 
-    <x-table.table :headers="['Semestre', 'Componente Curricular', 'Docente Responsável', 'Status', 'Ações']">
-        @forelse($peis as $pei)
-            <tr>
-                <x-table.td>
-                    <strong>{{ $pei->semester->label ?? 'N/A' }}</strong><br>
-                    <small class="text-muted">Criado em: {{ $pei->created_at->format('d/m/Y') }}</small>
-                </x-table.td>
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#peis-index-table"
+        :fields="[
+            [
+                'name' => 'semester_id',
+                'type' => 'select',
+                'options' => ['' => 'Semestre (Todos)'] +
+                    collect($semesters)->mapWithKeys(fn($s) => [
+                        $s->id => $s->label
+                    ])->toArray()
+            ],
+            [
+                'name' => 'discipline_id',
+                'type' => 'select',
+                'options' => ['' => 'Disciplina (Todas)'] +
+                    collect($disciplines)->mapWithKeys(fn($d) => [
+                        $d->id => $d->name
+                    ])->toArray()
+            ],
+            [
+                'name' => 'version',
+                'placeholder' => 'Versão...'
+            ],
+            [
+                'name' => 'is_finished',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    '0' => 'Em andamento',
+                    '1' => 'Finalizado',
+                ]
+            ],
+        ]"
+    />
 
-                <x-table.td>
-                    <span>{{ $pei->discipline->name ?? 'Não informada' }}</span><br>
-                    <small class="text-muted">{{ $pei->course->name ?? '' }}</small>
-                </x-table.td>
-
-                <x-table.td>
-                    {{ $pei->teacher_name }}
-                </x-table.td>
-
-                <x-table.td>
-                    @if($pei->is_finished)
-                        <span class="badge bg-success">
-                            <i class="fas fa-check-circle me-1"></i> Finalizado
-                        </span>
-                    @else
-                        <span class="badge bg-warning text-dark">
-                            <i class="fas fa-clock me-1"></i> Em andamento
-                        </span>
-                    @endif
-                </x-table.td>
-
-                <x-table.td>
-                    <x-table.actions>
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.pei.show', $pei->id)"
-                            variant="info"
-                        >
-                            <i class="fas fa-eye" aria-hidden="true"></i> ver
-                        </x-buttons.link-button>
-                        <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
-                            method="POST"
-                            class="d-inline">
-                            @csrf
-                            @method('DELETE')
-
-                            <x-buttons.submit-button 
-                                variant="danger"
-                                onclick="return confirm('Deseja remover este pei?')"
-                                aria-label="Excluir pei do sistema"
-                            >
-                            <i class="fas fa-trash" aria-hidden="true"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center text-muted py-5">
-                    <i class="fas fa-clipboard-list d-block mb-2" style="font-size: 2rem;"></i>
-                    Nenhum PEI registrado para este aluno nas disciplinas atuais.
-                </td>
-            </tr>
-        @endforelse
-    </x-table.table>
-
-    <div class="mt-4">
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.students.show', $student)"
-            variant="secondary"
-        >
-            <i class="fas fa-arrow-left"></i> Voltar para Aluno
-        </x-buttons.link-button>
+    <div id="peis-index-table">
+        @include('pages.specialized-educational-support.peis.partials.table')
     </div>
+
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
+
 @endsection

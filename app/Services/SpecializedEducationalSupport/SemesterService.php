@@ -10,13 +10,20 @@ class SemesterService
     /**
      * Listar todos os semestres
      */
-    public function index()
+    public function index(array $filters = [])
     {
-        return Semester::orderBy('year', 'desc')
-            ->orderBy('term', 'desc')
-            ->get();
-    }
+        return Semester::query()
+            ->year($filters['year'] ?? null)
+            ->term($filters['term'] ?? null)
+            ->label($filters['label'] ?? null)
+            ->current($filters['is_current'] ?? null)
 
+            ->orderByDesc('year')
+            ->orderByDesc('term')
+
+            ->paginate(10)
+            ->withQueryString();
+    }
     /**
      * Criar semestre
      */

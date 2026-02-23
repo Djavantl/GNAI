@@ -17,6 +17,9 @@
             <h2 class="text-title">Editar Responsável</h2>
             <p class="text-muted">Editando vínculo de: <strong>{{ $guardian->person->name }}</strong></p>
         </div>
+         <x-buttons.link-button href="{{ route('specialized-educational-support.guardians.show', $guardian) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -110,18 +113,14 @@
                 />
             </div>
 
-            <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4">
-                <div>
-                    <x-buttons.link-button href="{{ route('specialized-educational-support.guardians.index', $student) }}" variant="secondary">
-                        Voltar
-                    </x-buttons.link-button>
-                </div>
+            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+                <x-buttons.link-button href="{{ route('specialized-educational-support.guardians.show', $guardian) }}" variant="secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </x-buttons.link-button>
 
-                <div class="d-flex gap-3">
-                    <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                        <i class="fas fa-sync mr-2"></i> Atualizar Responsável
-                    </x-buttons.submit-button>
-                </div>
+                <x-buttons.submit-button type="submit" class="btn-action new submit ">
+                    <i class="fas fa-save"></i> Salvar
+                </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>

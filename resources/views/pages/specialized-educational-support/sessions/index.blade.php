@@ -15,13 +15,6 @@
         <h2 class="text-title">Sessões de Atendimento</h2>
         <div class="d-flex gap-2">
             <x-buttons.link-button
-                :href="route('specialized-educational-support.session-records.index')"
-                variant="dark"
-            >
-                Registros
-            </x-buttons.link-button>
-
-            <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
             >

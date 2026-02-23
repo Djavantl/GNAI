@@ -11,6 +11,7 @@ use App\Enums\SpecializedEducationalSupport\StudentDocumentType;
 use App\Models\SpecializedEducationalSupport\Semester;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 
 class StudentDocumentController extends Controller
@@ -22,10 +23,37 @@ class StudentDocumentController extends Controller
         $this->service = $service;
     }
 
-    public function index(Student $student)
+    public function index(Student $student, Request $request)
     {
-        $documents = $this->service->index($student);
-        return view('pages.specialized-educational-support.student-documents.index', compact('student', 'documents'));
+        $documents = $this->service->getByStudent($student, $request->all());
+
+        $semesters = Semester::query()
+            ->orderByDesc('year')
+            ->orderByDesc('term')
+            ->get()
+            ->pluck('label', 'id')
+            ->prepend('Semestre (Todos)', '');
+
+        $types = collect(StudentDocumentType::labels())
+            ->prepend('Tipo (Todos)', '')
+            ->toArray();
+
+        $versions = StudentDocument::where('student_id', $student->id)
+            ->orderByDesc('version')
+            ->pluck('version', 'version')
+            ->prepend('Versão (Todas)', '');
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.student-documents.partials.table',
+                compact('documents', 'student')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.student-documents.index',
+            compact('documents', 'student', 'semesters', 'versions', 'types')
+        );
     }
 
     public function show(StudentDocument $studentDocument)

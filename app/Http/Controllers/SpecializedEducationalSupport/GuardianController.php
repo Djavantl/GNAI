@@ -20,10 +20,27 @@ class GuardianController extends Controller
         $this->service = $service;
     }
 
-    public function index(Student $student)
+    public function index(Request $request, Student $student)
     {
-        $guardians = $this->service->listByStudent($student->id);
-        return view('pages.specialized-educational-support.guardians.index', compact('student', 'guardians'));
+        $guardians = $this->service->getByStudent($student, $request->all());
+
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.guardians.partials.table', 
+                compact('student', 'guardians')
+            )->render();
+        }
+
+        // Pega os parentescos já cadastrados para este aluno para popular o select
+        $relationships = Guardian::where('student_id', $student->id)
+            ->distinct()
+            ->pluck('relationship', 'relationship')
+            ->toArray();
+
+        return view('pages.specialized-educational-support.guardians.index', [
+            'student' => $student,
+            'guardians' => $guardians,
+            'relationships' => $relationships
+        ]);
     }
 
     public function show(Guardian $guardian)

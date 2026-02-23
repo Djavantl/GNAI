@@ -11,43 +11,31 @@ class StudentCourseSeeder extends Seeder
 {
     public function run(): void
     {
-
-        $alu1 = Student::where('registration', 'ALU001')->first();
-        $alu2 = Student::where('registration', 'ALU002')->first();
-        $alu3 = Student::where('registration', 'ALU003')->first();
-
-
+        // Pegamos os cursos disponíveis
         $courseInfo = Course::where('name', 'Técnico em Informática')->first();
         $courseAdm  = Course::where('name', 'Técnico em Administração')->first();
-
-
-
-        if ($alu1 && $courseInfo) {
-            StudentCourse::create([
-                'student_id' => $alu1->id,
-                'course_id' => $courseInfo->id,
-                'academic_year' => date('Y'),
-                'is_current' => true,
-            ]);
+        
+        // Se não existirem, pegamos os dois primeiros que encontrar
+        if (!$courseInfo || !$courseAdm) {
+            $courses = Course::limit(2)->get();
+            $courseInfo = $courses->first();
+            $courseAdm = $courses->last();
         }
 
-        if ($alu2 && $courseInfo) {
-            StudentCourse::create([
-                'student_id' => $alu2->id,
-                'course_id' => $courseInfo->id,
-                'academic_year' => date('Y'),
-                'is_current' => true,
-            ]);
-        }
+        $students = Student::all();
 
-        if ($alu3 && $courseAdm) {
-            StudentCourse::create([
-                'student_id' => $alu3->id,
-                'course_id' => $courseAdm->id,
-                'academic_year' => date('Y'),
-                'is_current' => true,
-            ]);
-        }
+        foreach ($students as $index => $student) {
+            // Alterna entre Informática e Administração baseado no ID (par/ímpar)
+            $courseId = ($index % 2 == 0) ? $courseInfo->id : $courseAdm->id;
 
+            // Evita duplicados caso a seeder rode duas vezes
+            StudentCourse::updateOrCreate(
+                ['student_id' => $student->id, 'course_id' => $courseId],
+                [
+                    'academic_year' => 2026,
+                    'is_current' => true,
+                ]
+            );
+        }
     }
 }

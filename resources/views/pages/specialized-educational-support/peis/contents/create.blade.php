@@ -28,7 +28,7 @@
             <div class="col-md-12">
                 <x-forms.input 
                     name="title" 
-                    label="Título do Conteúdo / Tópico *" 
+                    label="Título do Conteúdo / Tópico " 
                     required 
                     placeholder="Ex: Geometria Analítica - Estudo da Reta"
                     :value="old('title')" 
@@ -50,8 +50,8 @@
                     <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save"></i> Salvar Adaptação
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

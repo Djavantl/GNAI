@@ -23,6 +23,12 @@
                 Semestre do PEI: {{ $pei->semester->label }}
             </p>
         </div>
+        <x-buttons.link-button
+            href="{{ route('specialized-educational-support.pei-evaluation.index', $pei) }}"
+            variant="secondary"
+        >
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -37,7 +43,7 @@
             <div class="col-md-12">
                 <x-forms.textarea
                     name="evaluation_instruments"
-                    label="Instrumentos de Avaliação Utilizados *"
+                    label="Instrumentos de Avaliação Utilizados "
                     placeholder="Ex: observação pedagógica, atividades adaptadas, avaliação oral..."
                     required
                 />
@@ -46,7 +52,7 @@
             <div class="col-md-12 mt-3">
                 <x-forms.textarea
                     name="parecer"
-                    label="Parecer Descritivo *"
+                    label="Parecer Descritivo "
                     placeholder="Descreva o desempenho do estudante considerando os objetivos do PEI..."
                     required
                 />
@@ -55,7 +61,7 @@
             <div class="col-md-12 mt-3">
                 <x-forms.textarea
                     name="successful_proposals"
-                    label="Estratégias com Êxito *"
+                    label="Estratégias com Êxito "
                     placeholder="Quais metodologias e adaptações funcionaram melhor?"
                     required
                 />
@@ -97,11 +103,11 @@
                     href="{{ route('specialized-educational-support.pei-evaluation.index', $pei) }}"
                     variant="secondary"
                 >
-                    Cancelar
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button class="btn-action new submit px-5">
-                    <i class="fas fa-save mr-2"></i> Registrar Avaliação
+                <x-buttons.submit-button class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

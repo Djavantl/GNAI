@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Permission;
+use App\Models\SpecializedEducationalSupport\Position;
 
 class PermissionSeeder extends Seeder
 {
@@ -176,6 +177,30 @@ class PermissionSeeder extends Seeder
 
         foreach ($permissions as $p) {
             Permission::firstOrCreate(['slug' => $p['slug']], ['name' => $p['name']]);
+        }
+
+        // 2. Atribuir todas as permissões ao Professor AEE
+        $professorAee = Position::where('name', 'Professor AEE')->first();
+
+        if ($professorAee) {
+            // Pegamos os IDs de todas as permissões criadas acima
+            $allPermissionIds = Permission::pluck('id')->toArray();
+            
+            // Sincroniza sem remover as existentes (ou use sync para resetar)
+            // Se o seu model Position tiver a relação permissions():
+            if (method_exists($professorAee, 'permissions')) {
+                $professorAee->permissions()->sync($allPermissionIds);
+            } else {
+                // Caso você não tenha o relacionamento no model, inserimos via DB na tabela pivô
+                $pivotData = array_map(function($id) use ($professorAee) {
+                    return [
+                        'position_id' => $professorAee->id,
+                        'permission_id' => $id,
+                    ];
+                }, $allPermissionIds);
+
+                \Illuminate\Support\Facades\DB::table('position_permission')->insertOrIgnore($pivotData);
+            }
         }
     }
 }

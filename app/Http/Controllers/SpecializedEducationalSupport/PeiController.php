@@ -29,18 +29,56 @@ class PeiController extends Controller
         $this->service = $service;
     }
 
-    public function all()
+    public function all(Request $request)
     {
-        $peis = Pei::with(['student.person', 'discipline', 'semester', 'course'])->get();
-        $semester = Semester::current();
-        
-        return view('pages.specialized-educational-support.peis.all', compact('peis', 'semester'));
+        $peis = $this->service->all($request->all());
+
+        $students = Student::with('person')
+            ->orderBy('id')
+            ->get();
+
+        $semesters = Semester::orderByDesc('year')
+            ->orderByDesc('term')
+            ->get(['id', 'label']);
+
+        $disciplines = Discipline::orderBy('name')
+            ->get(['id', 'name']);
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.peis.partials.table-all',
+                compact('peis')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.peis.all',
+            compact('peis', 'students', 'semesters', 'disciplines')
+        );
     }
 
-    public function index(Student $student)
+    public function index(Student $student, Request $request)
     {
-        $peis = $this->service->index($student);
-        return view('pages.specialized-educational-support.peis.index', compact('student', 'peis'));
+        $peis = $this->service->all($request->all());
+
+        $semesters = Semester::orderByDesc('year')
+            ->orderByDesc('term')
+            ->get(['id', 'label']);
+
+        $disciplines = Discipline::orderBy('name')
+            ->get(['id', 'name']);
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.peis.partials.table',
+                compact('peis')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.peis.index',
+            compact('peis', 'student', 'semesters', 'disciplines')
+        );
     }
 
     public function show(Pei $pei)

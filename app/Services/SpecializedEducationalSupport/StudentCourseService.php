@@ -11,12 +11,17 @@ class StudentCourseService
     /**
      * Lista o histórico de cursos de um aluno específico
      */
-    public function getHistoryByStudent(int $studentId)
+    public function getHistoryByStudent(int $studentId, array $filters = [])
     {
-        return StudentCourse::with('course')
+        return StudentCourse::query()
+            ->with('course')
             ->where('student_id', $studentId)
+            ->courseId($filters['course_id'] ?? null)
+            ->academicYear($filters['academic_year'] ?? null)
+            ->isCurrent($filters['is_current'] ?? null)
             ->orderBy('academic_year', 'desc')
-            ->get();
+            ->paginate(10) 
+            ->withQueryString();
     }
 
     /**
@@ -62,5 +67,5 @@ class StudentCourseService
     public function deleteEnrollment(StudentCourse $studentCourse): void
     {
         $studentCourse->delete();
-    }
+    } 
 }

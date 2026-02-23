@@ -44,11 +44,6 @@ class Pendency extends Model
         return $query->where('is_completed', false);
     }
 
-    public function scopeCompleted($query)
-    {
-        return $query->where('is_completed', true);
-    }
-
     public function getCreatedAtFormattedAttribute()
     {
         return $this->created_at
@@ -75,6 +70,34 @@ class Pendency extends Model
         $this->update([
             'is_completed' => true,
         ]);
+    }
+
+    public function scopeTitle($query, ?string $term)
+    {
+        if (!$term) return $query;
+
+        return $query->where('title', 'like', "%{$term}%");
+    }
+
+    public function scopeAssignedTo($query, ?int $professionalId)
+    {
+        if (!$professionalId) return $query;
+
+        return $query->where('assigned_to', $professionalId);
+    }
+
+    public function scopePriority($query, ?string $priority)
+    {
+        if (!$priority) return $query;
+
+        return $query->where('priority', $priority);
+    }
+
+    public function scopeCompleted($query, $isCompleted)
+    {
+        if ($isCompleted === null || $isCompleted === '') return $query;
+
+        return $query->where('is_completed', (bool) $isCompleted);
     }
 
 }

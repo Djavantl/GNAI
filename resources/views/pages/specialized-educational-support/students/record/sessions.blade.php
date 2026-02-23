@@ -92,9 +92,9 @@
             <div class="d-flex gap-2">
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.students.sessions.index', $student->id)"
-                    variant="primary"
+                    variant="warning"
                     class="btn-sm">
-                    <i class="fas fa-history me-1"></i> Ver Histórico Completo
+                    <i class="fas fa-folder-open"></i> Gerenciar Sessões
                 </x-buttons.link-button>
             </div>
         </div>

@@ -21,15 +21,34 @@ class StudentContextController extends Controller
         $this->service = $service;
     }
 
-    public function index(Student $student)
+    public function index(Student $student, Request $request)
     {
-        $contexts = $this->service->index($student);
-        return view('pages.specialized-educational-support.student-context.index', compact('student', 'contexts'));
+        $contexts = $this->service->getByStudent($student, $request->all());
+
+        $semesters = \App\Models\SpecializedEducationalSupport\Semester::query()
+            ->orderByDesc('year')
+            ->orderByDesc('term')
+            ->get()
+            ->pluck('label', 'id')
+            ->prepend('Semestre (Todos)', '');
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.student-context.partials.table',
+                compact('contexts', 'student')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.student-context.index',
+            compact('contexts', 'student', 'semesters')
+        );
     }
 
     public function show(StudentContext $studentContext)
     {
         $student = $studentContext->student;
+        $student->load('deficiencies');
         $studentContext = $this->service->show($studentContext);
         $deficiencies = $student->deficiencies;
         return view('pages.specialized-educational-support.student-context.show', compact('student', 'studentContext', 'deficiencies'));
@@ -38,10 +57,12 @@ class StudentContextController extends Controller
     public function showCurrent(Student $student)
     {
         $context = $this->service->showCurrent($student);
-        $deficiencies = $student->deficiencies;
+
+        $student->load('deficiencies');
+
         return view(
             'pages.specialized-educational-support.student-context.show',
-            compact('student', 'context', 'deficiencies')
+            compact('student', 'context')
         );
     }
 
@@ -54,7 +75,7 @@ class StudentContextController extends Controller
                 ->back()
                 ->with('error', 'Este aluno já possui contexto. Use "Nova Versão".');
         }
-
+        $student->load('deficiencies');
         $deficiencies = $student->deficiencies;
         $professionals = Professional::with('person')->get();
 
@@ -87,6 +108,7 @@ class StudentContextController extends Controller
         }
 
         $student = $studentContext->student;
+        $student->load('deficiencies');
         $deficiencies = $student->deficiencies;
         $professionals = Professional::with('person')->get();
 
@@ -120,12 +142,12 @@ class StudentContextController extends Controller
         try {
             $studentContext = $this->service->makeNewVersion($student);
 
-            $deficiencies = $student->deficiencies;
+            $student->load('deficiencies');
             $professionals = Professional::with('person')->get();
 
             return view(
                 'pages.specialized-educational-support.student-context.version',
-                compact('studentContext', 'student', 'deficiencies', 'professionals')
+                compact('studentContext', 'student', 'professionals')
             );
 
         } catch (Throwable $e) {
@@ -183,7 +205,11 @@ class StudentContextController extends Controller
     public function generatePdf($studentContext)
     {
         try {
-            $context = StudentContext::with(['student.person'])->findOrFail($studentContext);
+            $context = StudentContext::with([
+                'student.person',
+                'student.deficiencies'
+            ])->findOrFail($studentContext);
+
             $student = $context->student;
 
             $pdf = Pdf::loadView(

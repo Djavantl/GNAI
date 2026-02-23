@@ -15,6 +15,9 @@
             <h2 class="text-title">Editar Deficiência</h2>
             <p class="text-muted">Atualizando informações de: <strong>{{ $deficiency->name }}</strong></p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.deficiencies.show', $deficiency) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -68,16 +71,16 @@
                 />
             </div>
 
-            <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4">
+            <div class="col-12 d-flex justify-content-end border-t pt-4 px-4 pb-4">
                 <div>
-                    <x-buttons.link-button href="{{ route('specialized-educational-support.deficiencies.index') }}" variant="secondary">
-                        Voltar
+                    <x-buttons.link-button class="me-3" href="{{ route('specialized-educational-support.deficiencies.show', $deficiency) }}" variant="secondary">
+                        <i class="fas fa-times"></i> Cancelar
                     </x-buttons.link-button>
                 </div>
 
                 <div class="d-flex gap-3">
-                    <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                        <i class="fas fa-sync mr-2"></i> Salvar Alterações
+                    <x-buttons.submit-button type="submit" class="btn-action new submit">
+                        <i class="fas fa-save"></i> Salvar
                     </x-buttons.submit-button>
                 </div>
             </div>

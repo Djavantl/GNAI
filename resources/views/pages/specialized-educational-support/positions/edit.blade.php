@@ -15,6 +15,9 @@
             <h2 class="text-title">Editar Cargo</h2>
             <p class="text-muted">Alterando informações do cargo: <strong>{{ $position->name }}</strong></p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.positions.show', $position) }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -101,12 +104,12 @@
                 @endforeach
             </div>
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.positions.index') }}" variant="secondary">
-                    Cancelar
+                <x-buttons.link-button href="{{ route('specialized-educational-support.positions.show', $position) }}" variant="secondary">
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save mr-2"></i> Salvar Cargo
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

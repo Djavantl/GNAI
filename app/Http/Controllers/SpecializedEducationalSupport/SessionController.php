@@ -100,10 +100,33 @@ class SessionController extends Controller
     }
 
     // 1. Index filtrada por Aluno
-    public function indexByStudent(Student $student)
+    public function indexByStudent(Student $student, Request $request)
     {
-        $sessions = $this->service->getSessionsByStudent($student->id);
-        return view('pages.specialized-educational-support.sessions.student-index', compact('sessions', 'student'));
+        $sessions = Session::query()
+            ->with(['professional.person', 'students.person', 'sessionRecord'])
+            ->student($student->id) // fixa o aluno
+            ->professional($request->professional ?? null)
+            ->type($request->type ?? null)
+            ->status($request->status ?? null)
+            ->orderByDesc('session_date')
+            ->paginate(10)
+            ->withQueryString();
+
+        $professionals = Professional::with('person')
+            ->orderBy('id')
+            ->get(['id','person_id']);
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.sessions.partials.table-student',
+                compact('sessions', 'student')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.sessions.student-index',
+            compact('sessions', 'student', 'professionals')
+        );
     }
 
     // 2. Create com Aluno Fixo

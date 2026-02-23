@@ -21,112 +21,55 @@
         {{-- O botão de "Novo" geralmente não fica aqui pois o PEI exige partir de um aluno específico --}}
     </div>
 
-    <div class="card mb-4 border-0 shadow-sm">
-        <div class="card-body bg-light rounded">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h6 class="text-uppercase text-muted small fw-bold mb-2">Estatísticas do Semestre</h6>
-                    <div class="d-flex gap-4">
-                        <div>
-                            <small class="d-block text-muted">Total de Planos:</small>
-                            <span class="fw-bold fs-5">{{ $peis->count() }}</span>
-                        </div>
-                        <div>
-                            <small class="d-block text-muted">Estudantes com PEI:</small>
-                            <span class="fw-bold fs-5">{{ $peis->unique('student_id')->count() }}</span>
-                        </div>
-                        <div>
-                            <small class="d-block text-muted">Aguardando Finalização:</small>
-                            <span class="fw-bold fs-5 text-warning">{{ $peis->where('is_finished', false)->count() }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <div class="text-muted small">
-                         Semestre Letivo: <br>
-                        <span class="fw-bold">{{ $semester->label ?? 'Vigente' }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#peis-table"
+        :fields="[
+            [
+                'name' => 'student_id',
+                'type' => 'select',
+                'options' => ['' => 'Estudante (Todos)'] +
+                    collect($students)->mapWithKeys(fn($s) => [
+                        $s->id => $s->person->name
+                    ])->toArray()
+            ],
+            [
+                'name' => 'semester_id',
+                'type' => 'select',
+                'options' => ['' => 'Semestre (Todos)'] +
+                    collect($semesters)->mapWithKeys(fn($s) => [
+                        $s->id => $s->label
+                    ])->toArray()
+            ],
+            [
+                'name' => 'discipline_id',
+                'type' => 'select',
+                'options' => ['' => 'Disciplina (Todas)'] +
+                    collect($disciplines)->mapWithKeys(fn($d) => [
+                        $d->id => $d->name
+                    ])->toArray()
+            ],
+            [
+                'name' => 'version',
+                'placeholder' => 'Versão...'
+            ],
+            [
+                'name' => 'is_finished',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    '0' => 'Em andamento',
+                    '1' => 'Finalizado',
+                ]
+            ],
+        ]"
+    />
+
+    <div id="peis-table">
+        @include('pages.specialized-educational-support.peis.partials.table-all')
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success border-0 shadow-sm">{{ session('success') }}</div>
-    @endif
-
-    <x-table.table :headers="['Estudante', 'Semestre', 'Componente Curricular', 'Docente', 'Status', 'Ações']">
-        @forelse($peis as $pei)
-            <tr>
-                <x-table.td>
-                    <div class="d-flex align-items-center">
-                        
-                        <div>
-                            <strong class="d-block">{{ $pei->student->person->name }}</strong>
-                            <small class="text-muted">Matrícula: {{ $pei->student->registration }}</small>
-                        </div>
-                    </div>
-                </x-table.td>
-
-                <x-table.td>
-                    <strong>{{ $pei->semester->label ?? 'N/A' }}</strong>
-                </x-table.td>
-
-                <x-table.td>
-                    <span class="fw-bold">{{ $pei->discipline->name ?? 'N/A' }}</span><br>
-                    <small class="text-muted">{{ $pei->course->name ?? '' }}</small>
-                </x-table.td>
-
-                <x-table.td>
-                    {{ $pei->teacher_name }}
-                </x-table.td>
-
-                <x-table.td>
-                    @if($pei->is_finished)
-                        <span class=" text-success ">
-                           FINALIZADO
-                        </span>
-                    @else
-                        <span class=" text-warning ">
-                            EM ABERTO
-                        </span>
-                    @endif
-                </x-table.td>
-
-                <x-table.td>
-                    <x-table.actions>
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.pei.show', $pei->id)"
-                            variant="info"
-                            title="Ver Detalhes"
-                        >
-                           <i class="fas fa-eye" aria-hidden="true"></i> Ver
-                        </x-buttons.link-button>
-                        <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
-                            method="POST"
-                            class="d-inline">
-                            @csrf
-                            @method('DELETE')
-
-                            <x-buttons.submit-button 
-                                variant="danger"
-                                onclick="return confirm('Deseja remover este pei?')"
-                                aria-label="Excluir pei do sistema"
-                            >
-                            <i class="fas fa-trash" aria-hidden="true"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
-
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="text-center text-muted py-5">
-                    <i class="fas fa-search d-block mb-2" style="font-size: 2rem;"></i>
-                    Nenhum PEI encontrado no sistema.
-                </td>
-            </tr>
-        @endforelse
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

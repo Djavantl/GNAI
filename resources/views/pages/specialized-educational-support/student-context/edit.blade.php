@@ -71,10 +71,10 @@
                     <div class="col-md-6">
                         <div class="card p-3 border-light bg-soft-info">
                             <strong class="d-block">
-                                {{ $def->deficiency->name ?? '—' }}
+                                {{ $def->name ?? '—' }}
                             </strong>
                             <span class="small text-muted">
-                                GRAU: {{ $def->severity ?? '—' }}
+                                GRAU: {{ $def->pivot->severity ?? '—' }}
                             </span>
                         </div>
                     </div>

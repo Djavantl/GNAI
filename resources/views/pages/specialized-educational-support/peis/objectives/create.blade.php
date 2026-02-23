@@ -29,7 +29,7 @@
             <div class="col-md-12">
                 <x-forms.textarea 
                     name="description" 
-                    label="Descrição do Objetivo *" 
+                    label="Descrição do Objetivo" 
                     rows="3" 
                     required 
                     placeholder="Ex: Identificar e aplicar fórmulas de equações do 2º grau com auxílio de material concreto."
@@ -40,7 +40,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="status"
-                    label="Status Inicial *"
+                    label="Status Inicial"
                     required
                     :options="$statuses"
                     :value="old('statuses')"
@@ -62,8 +62,8 @@
                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save"></i> Salvar Objetivo
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar 
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

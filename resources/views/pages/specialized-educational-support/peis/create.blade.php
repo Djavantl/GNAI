@@ -18,6 +18,9 @@
             <h2 class="text-title">Gerar Novo PEI: {{ $student->person->name }}</h2>
             <p class="text-muted">Inicie o Plano Educacional Individualizado vinculando-o a uma disciplina.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.pei.index', $student->id) }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -42,7 +45,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="discipline_id"
-                    label="Disciplina *"
+                    label="Disciplina "
                     required
                     :options="$disciplines"
                     :selected="old('discipline_id')"
@@ -53,7 +56,7 @@
             <div class="col-md-6 mt-3">
                 <x-forms.input
                     name="teacher_name"
-                    label="Nome do Docente Responsável *"
+                    label="Nome do Docente Responsável "
                     placeholder="Digite o nome do professor"
                     required
                     :value="old('teacher_name')"
@@ -92,12 +95,12 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.pei.index', $student->id) }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
                 {{-- Removida a lógica ternária de dentro do componente para evitar erro de parse --}}
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-arrow-right mr-2"></i> Gerar Base do PEI
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

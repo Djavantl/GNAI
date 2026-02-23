@@ -11,6 +11,21 @@ use App\Notifications\PendencyCompletedNotification;
 
 class PendencyService
 {
+    public function index(array $filters = [])
+    {
+        return Pendency::query()
+            ->with(['assignedProfessional.person', 'creator'])
+
+            ->title($filters['title'] ?? null)
+            ->assignedTo($filters['assigned_to'] ?? null)
+            ->priority($filters['priority'] ?? null)
+            ->completed($filters['is_completed'] ?? null)
+
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+    }
+
     //criar
     public function create(array $data): Pendency
     {
@@ -49,7 +64,7 @@ class PendencyService
         return Pendency::with(['creator', 'assignedProfessional'])
             ->findOrFail($id);
     }
-
+ 
     //pegar de um profissional
     public function getByProfessional(int $professionalId): Collection
     {
@@ -61,11 +76,21 @@ class PendencyService
     }
 
     //pegar as propias
-    public function getMyPendencies(): Collection
+    public function getMyPendencies(array $filters = [])
     {
         $professionalId = Auth::user()->professional->id;
 
-        return $this->getByProfessional($professionalId);
+        return Pendency::query()
+            ->with(['assignedProfessional.person', 'creator'])
+            ->where('assigned_to', $professionalId)
+
+            ->title($filters['title'] ?? null)
+            ->priority($filters['priority'] ?? null)
+            ->completed($filters['is_completed'] ?? null)
+
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
     }
 
     //pegar pendentes

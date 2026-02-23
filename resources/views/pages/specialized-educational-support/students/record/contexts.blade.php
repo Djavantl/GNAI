@@ -55,7 +55,7 @@
                 :href="route('specialized-educational-support.student-context.index', $student)"
                 variant="warning"
                 class="btn-sm">
-                <i class="fas fa-folder-open"></i> Gerenciar
+                <i class="fas fa-folder-open"></i> Gerenciar Contextos
             </x-buttons.link-button>
         </div>
 

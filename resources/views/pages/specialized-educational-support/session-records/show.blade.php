@@ -20,24 +20,13 @@
             </p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('specialized-educational-support.session-records.pdf', $sessionRecord) }}" target="_blank" class="btn-action primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-                <i class="fas fa-file-pdf"></i> Gerar PDF
-            </a>    
 
             <x-buttons.link-button :href="route('specialized-educational-support.session-records.edit', $sessionRecord)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
 
-            <form action="{{ route('specialized-educational-support.session-records.destroy', $sessionRecord) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este registro e todas as avaliações individuais vinculadas?')">
-                    <i class="fas fa-trash"></i> Excluir
-                </x-buttons.submit-button>
-            </form>
-
             <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id)" variant="secondary">
-                Voltar
+                <i class="fas fa-arrow-left"></i> Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -146,13 +135,26 @@
                 </div>
             </div>
 
-            {{-- Rodapé --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <small class="text-muted italic">
-                    Criado em: {{ $sessionRecord->created_at->format('d/m/Y H:i') }} | 
-                    Atualizado: {{ $sessionRecord->updated_at->format('d/m/Y H:i') }}
-                </small>
-            </div>
+            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
+                <div class="text-muted small d-flex align-items-center">
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $sessionRecord->id }}
+
+                    <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.session-records.pdf', $sessionRecord)" />
+
+                </div>
+                <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
+                    
+                    <form action="{{ route('specialized-educational-support.session-records.destroy', $sessionRecord) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
+                        @csrf @method('DELETE')
+                        <x-buttons.submit-button variant="danger">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
+                    <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id)" variant="secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </x-buttons.link-button>
+                </div>
+            </footer>
         </div>
     </div>
 @endsection

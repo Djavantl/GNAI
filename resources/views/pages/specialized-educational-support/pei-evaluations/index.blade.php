@@ -21,13 +21,22 @@
                 • Semestre: {{ $pei->semester->label ?? 'N/A' }}
             </p>
         </div>
+        <div>
+            <x-buttons.link-button
+                class="me-3"
+                :href="route('specialized-educational-support.pei.show', $pei)"
+                variant="secondary"
+            >
+                <i class="fas fa-arrow-left"></i> Voltar para PEI
+            </x-buttons.link-button>
 
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.pei-evaluation.create', $pei)"
-            variant="new"
-        >
-            Nova Avaliação
-        </x-buttons.link-button>
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.pei-evaluation.create', $pei)"
+                variant="new"
+            >
+                <i class="fas fa-plus"></i> Nova Avaliação
+            </x-buttons.link-button>
+        </div>
     </div>
 
     @if(session('success'))
@@ -64,15 +73,15 @@
                             :href="route('specialized-educational-support.pei-evaluation.show', $evaluation)"
                             variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
 
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.pei-evaluation.edit', $evaluation)"
-                            variant="warning"
-                        >
-                            Editar
-                        </x-buttons.link-button>
+                        <form action="{{ route('specialized-educational-support.pei-evaluation.destroy', $evaluation) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
+                            @csrf @method('DELETE')
+                            <x-buttons.submit-button variant="danger">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
 
                     </x-table.actions>
                 </x-table.td>
@@ -87,13 +96,4 @@
             </tr>
         @endforelse
     </x-table.table>
-
-    <div class="mt-4">
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.pei.show', $pei)"
-            variant="secondary"
-        >
-            <i class="fas fa-chevron-left mr-1"></i> Voltar para PEI
-        </x-buttons.link-button>
-    </div>
 @endsection

@@ -16,9 +16,27 @@ class StudentContextService
 
     // mostrar todos contextos dos alunos
 
-    public function index(Student $student)
+    public function getByStudent(Student $student, array $filters = [])
     {
-        return StudentContext::where('student_id', $student->id)->orderBy('version', 'desc')->get();
+        return StudentContext::query()
+            ->with(['semester'])
+            ->where('student_id', $student->id)
+
+            ->when($filters['semester_id'] ?? null, fn($q, $v) =>
+                $q->where('semester_id', $v)
+            )
+
+            ->when(isset($filters['is_current']) && $filters['is_current'] !== '',
+                fn($q) => $q->where('is_current', (bool) $filters['is_current'])
+            )
+
+            ->when($filters['evaluation_type'] ?? null, fn($q, $v) =>
+                $q->where('evaluation_type', $v)
+            )
+
+            ->orderByDesc('version')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     // mostra contexto específico

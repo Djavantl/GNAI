@@ -95,4 +95,39 @@ class Pei extends Model
     {
         return $this->hasMany(PeiEvaluation::class, 'pei_id');
     }
+
+    public function scopeStudent($query, ?int $studentId)
+    {
+        if (!$studentId) return $query;
+
+        return $query->where('student_id', $studentId);
+    }
+
+    public function scopeSemester($query, ?int $semesterId)
+    {
+        if (!$semesterId) return $query;
+
+        return $query->where('semester_id', $semesterId);
+    }
+
+    public function scopeDiscipline($query, ?int $disciplineId)
+    {
+        if (!$disciplineId) return $query;
+
+        return $query->where('discipline_id', $disciplineId);
+    }
+
+    public function scopeFinished($query, $isFinished)
+    {
+        if ($isFinished === null || $isFinished === '') return $query;
+
+        return $query->where('is_finished', (bool) $isFinished);
+    }
+
+    public function scopeVersion($query, ?string $version)
+    {
+        if (!$version) return $query;
+
+        return $query->where('version', $version);
+    }
 }

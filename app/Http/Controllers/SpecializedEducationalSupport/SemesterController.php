@@ -19,11 +19,21 @@ class SemesterController extends Controller
     /**
      * Listar semestres
      */
-    public function index()
+    public function index(Request $request)
     {
-        $semesters = $this->service->index();
+        $semesters = $this->service->index($request->all());
 
-        return view('pages.specialized-educational-support.semesters.index', compact('semesters'));
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.semesters.partials.table',
+                compact('semesters')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.semesters.index',
+            compact('semesters')
+        );
     }
 
     public function show(Semester $semester)

@@ -11,6 +11,7 @@
             'Deficiências' => null
         ]" />
     </div>
+
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Deficiências do Aluno</h2>
@@ -18,87 +19,57 @@
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button
-                :href="route('specialized-educational-support.students.index')"
+                :href="route('specialized-educational-support.students.show', $student)"
                 variant="secondary"
             >
-                Voltar
+                <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
             </x-buttons.link-button>
 
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-deficiencies.create', $student)"
                 variant="new"
             >
-                Nova Deficiência
+                <i class="fas fa-plus" aria-hidden="true"></i> Adicionar
             </x-buttons.link-button>
         </div>
     </div>
 
-    <x-table.table :headers="['Deficiência', 'Severidade', 'Recursos de Apoio', 'Ações']">
-        @forelse($deficiencies as $deficiency)
-            <tr>
-                <x-table.td>
-                    <strong>{{ $deficiency->deficiency->name }}</strong>
-                </x-table.td>
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#student-deficiencies-table"
+        :fields="[
+            [
+                'name' => 'deficiency_id',
+                'type' => 'select',
+                'options' => ['' => 'Deficiência (Todas)'] + $filterDeficiencies
+            ],
+            [
+                'name' => 'severity',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Severidade (Todas)',
+                    'mild' => 'Leve',
+                    'moderate' => 'Moderada',
+                    'severe' => 'Severa',
+                ]
+            ],
+            [
+                'name' => 'uses_support_resources',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Recurso de Apoio (Todos)',
+                    '1' => 'Usa Recurso',
+                    '0' => 'Não usa',
+                ]
+            ],
+        ]"
+    />
 
-                <x-table.td >
-                    @php
-                        $severityLabels = ['mild' => 'Leve', 'moderate' => 'Moderada', 'severe' => 'Severa'];
-                        $severityColors = ['mild' => 'success', 'moderate' => 'warning', 'severe' => 'danger'];
-                    @endphp
-                    @if($deficiency->severity)
-                        <span class="badge bg-{{ $severityColors[$deficiency->severity] }} text-uppercase" style="font-size: 0.75rem;">
-                            {{ $severityLabels[$deficiency->severity] }}
-                        </span>
-                    @else
-                        <span class="text-muted small">Não informada</span>
-                    @endif
-                </x-table.td>
+    <div id="student-deficiencies-table">
+        @include('pages.specialized-educational-support.student-deficiencies.partials.table')
+    </div>
 
-                <x-table.td >
-                    @if($deficiency->uses_support_resources)
-                        <span class="text-success font-weight-bold">SIM</span>
-                    @else
-                        <span class="text-muted">NÃO</span>
-                    @endif
-                </x-table.td>
-
-
-                <x-table.td>
-                    <x-table.actions>
-                        {{-- Botão Ver solicitado --}}
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.student-deficiencies.show', $deficiency)"
-                            variant="secondary"
-                        >
-                            Ver
-                        </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.student-deficiencies.edit', $deficiency)"
-                            variant="warning"
-                        >
-                            Editar
-                        </x-buttons.link-button>
-
-                        <form action="{{ route('specialized-educational-support.student-deficiencies.destroy', $deficiency) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja remover esta deficiência do registro do aluno?')"
-                            >
-                                Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center text-muted py-5">
-                    Nenhuma deficiência cadastrada para este aluno.
-                </td>
-            </tr>
-        @endforelse
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

@@ -5,6 +5,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Sessões' => route('specialized-educational-support.sessions.index'),
+            'Sessão #' . $session->id => route('specialized-educational-support.sessions.show', $session),
             'Editar' => null
         ]" />
     </div>
@@ -14,6 +15,9 @@
             <h2 class="text-title">Editar Sessão #{{ $session->id }}</h2>
             <p class="text-muted">Ajuste os dados de agendamento, local ou objetivo desta sessão.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.show', $session) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -112,12 +116,12 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.index') }}" variant="secondary">
-                    Cancelar
+                <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.show', $session) }}" variant="secondary">
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action btn-warning px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar Alterações
+                <x-buttons.submit-button type="submit" class="btn-action btn-warning">
+                    <i class="fas fa-save"></i> Salvar 
                 </x-buttons.submit-button>
             </div>
 

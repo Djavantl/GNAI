@@ -18,7 +18,7 @@
                 :href="route('specialized-educational-support.pendencies.my')"
                 variant="info"
             >
-                <i class="fas fa-user-check me-1"></i> Minhas Pendências
+                <i class="fas fa-user-check"></i> Minhas Pendências
             </x-buttons.link-button>
             
             <x-buttons.link-button 
@@ -31,48 +31,49 @@
         </div>
     </div>
 
-    <x-table.table :headers="['Título','Profissional','Prioridade','Vencimento','Concluída','Ações']">
-        @foreach($pendencies as $pendency)
-            <tr>
-                <x-table.td>{{ $pendency->title }}</x-table.td>
+    <x-table.filters.form
+        data-dynamic-filter
+        data-target="#pendencies-table"
+        :fields="[
+            [
+                'name' => 'title',
+                'placeholder' => 'Buscar por título...'
+            ],
+            [
+                'name' => 'assigned_to',
+                'type' => 'select',
+                'options' => ['' => 'Profissional (Todos)'] +
+                    collect($professionals)->mapWithKeys(fn($p) => [
+                        $p->id => $p->person->name
+                    ])->toArray()
+            ],
+            [
+                'name' => 'priority',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Prioridade (Todas)',
+                    'low' => 'Baixa',
+                    'medium' => 'Média',
+                    'high' => 'Alta',
+                ]
+            ],
+            [
+                'name' => 'is_completed',
+                'type' => 'select',
+                'options' => [
+                    '' => 'Status (Todos)',
+                    '0' => 'Pendentes',
+                    '1' => 'Concluídas',
+                ]
+            ],
+        ]"
+    />
 
-                <x-table.td>
-                    {{-- tenta exibir nome do profissional, fallback para id --}}
-                    {{ optional(\App\Models\SpecializedEducationalSupport\Professional::find($pendency->assigned_to))->person->name ?? ('#' . $pendency->assigned_to) }}
-                </x-table.td>
+    <div id="pendencies-table">
+        @include('pages.specialized-educational-support.pendencies.partials.table')
+    </div>
 
-                <x-table.td>
-                   <span class="text-{{ $pendency->priority->color() }} fw-bold">
-                        {{ $pendency->priority->label() }}
-                    </span>
-                </x-table.td>
-
-                <x-table.td>
-                    {{ $pendency->due_date ? \Carbon\Carbon::parse($pendency->due_date)->format('d/m/Y') : '—' }}
-                </x-table.td>
-
-                <x-table.td>
-                    @if($pendency->is_completed)
-                        <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Sim</span>
-                    @else
-                        <span class="text-danger fw-bold"><i class="fas fa-times-circle me-1"></i>Não</span>
-                    @endif
-                </x-table.td>
-
-                <x-table.td>
-                    <x-table.actions>
-                        <x-buttons.link-button :href="route('specialized-educational-support.pendencies.show', $pendency)" variant="info">
-                           <i class="fas fa-eye" aria-hidden="true"></i> ver
-                        </x-buttons.link-button>
-
-                        <form action="{{ route('specialized-educational-support.pendencies.destroy', $pendency) }}" method="POST" onsubmit="return confirm('Deseja excluir esta pendência?')">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button variant="danger"><i class="fas fa-trash" aria-hidden="true"></i> Excluir</x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @endforeach
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

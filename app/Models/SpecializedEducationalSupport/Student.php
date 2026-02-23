@@ -124,7 +124,15 @@ class Student extends Model
 
     public function deficiencies()
     {
-        return $this->hasMany(StudentDeficiencies::class, 'student_id');
+        return $this->belongsToMany(Deficiency::class, 'students_deficiencies')
+            ->using(StudentDeficiencies::class) // pivot model
+            ->withPivot([
+                'id',
+                'severity',
+                'uses_support_resources',
+                'notes'
+            ])
+            ->withTimestamps();
     }
 
     public function peis()

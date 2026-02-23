@@ -28,7 +28,7 @@
             <div class="col-md-12">
                 <x-forms.textarea 
                     name="description" 
-                    label="Descrição da Metodologia *" 
+                    label="Descrição da Metodologia " 
                     rows="4" 
                     required 
                     placeholder="Ex: Utilização de mapas mentais, tempo estendido para avaliações e mediação constante."
@@ -52,8 +52,8 @@
                     <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-save"></i> Salvar Estratégia
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

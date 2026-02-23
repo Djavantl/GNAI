@@ -41,13 +41,11 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <x-table.table :headers="['Data / Horário', 'Alunos na Sessão', 'Duração', 'Status/Obs', 'Ações']">
+    <x-table.table :headers="['Data', 'Alunos na Sessão', 'Duração',  'Ações']">
         @forelse($sessionRecords as $record)
             <tr>
                 <x-table.td>
-                    {{-- Corrigido: Pegando a data da sessão vinculada --}}
-                    <strong>{{ $record->attendanceSession->session_date->format('d/m/Y') }}</strong><br>
-                    <small class="text-muted">{{ $record->attendanceSession->start_time }}</small>
+                    {{ $record->attendanceSession->session_date->format('d/m/Y') }}
                 </x-table.td>
 
                 <x-table.td>
@@ -62,48 +60,23 @@
                                 @endif
                             </div>
                         @endforeach
-                        <small class="text-muted">Sessão #{{ $record->attendance_session_id }}</small>
                     @else
                         <span class="text-warning small">Nenhum aluno avaliado</span>
                     @endif
                 </x-table.td>
 
-                <x-table.td class="text-center">
-                    <span class="badge bg-info text-dark" style="font-size: 0.8rem;">
-                        <i class="far fa-clock mr-1"></i> {{ $record->duration }}
-                    </span>
-                </x-table.td>
-
-                <x-table.td>
-                    <div class="small text-muted">
-                        {{-- Mostra observação geral ou resumo --}}
-                        <strong>Obs:</strong> {{ Str::limit($record->general_observations ?? 'Sem observações gerais.', 50) }}
-                    </div>
+                <x-table.td >
+                        {{ $record->duration }}    
                 </x-table.td>
 
                 <x-table.td>
                     <x-table.actions>
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.session-records.show', $record)"
-                            variant="primary"
+                            variant="info"
                         >
-                            Ver
+                            <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.session-records.edit', $record)"
-                            variant="warning"
-                        >
-                            Editar
-                        </x-buttons.link-button>
-
-                        <form action="{{ route('specialized-educational-support.session-records.destroy', $record) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este registro e todas as avaliações individuais vinculadas?')">
-                                Excluir
-                            </x-buttons.submit-button>
-                        </form>
                     </x-table.actions>
                 </x-table.td>
             </tr>
@@ -117,14 +90,4 @@
         @endforelse
     </x-table.table>
 
-    <div class="mt-4 d-flex justify-content-between align-items-center">
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.sessions.index')"
-            variant="secondary"
-        >
-            <i class="fas fa-chevron-left mr-1"></i> Voltar para Sessões
-        </x-buttons.link-button>
-        
-        <span class="text-muted small">Total: {{ $sessionRecords->count() }} registro(s)</span>
-    </div>
 @endsection

@@ -20,11 +20,11 @@
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button :href="route('specialized-educational-support.deficiencies.edit', $deficiency->id)" variant="warning">
-                <i class="fas fa-edit"></i> Editar Cadastro
+                <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
 
             <x-buttons.link-button :href="route('specialized-educational-support.deficiencies.index')" variant="secondary">
-                Voltar
+                <i class="fas fa-arrow-left"></i> Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -76,13 +76,9 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            Excluir Registro
+                            <i class="fas fa-trash"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-
-                    <x-buttons.link-button :href="route('specialized-educational-support.deficiencies.edit', $deficiency->id)" variant="warning">
-                        Editar Informações
-                    </x-buttons.link-button>
                 </div>
             </div>
         </div>

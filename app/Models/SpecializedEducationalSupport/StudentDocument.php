@@ -96,4 +96,32 @@ class StudentDocument extends Model
     {
         return $this->belongsTo(Professional::class, 'uploaded_by');
     }
+
+    public function scopeSemester($query, $semesterId)
+    {
+        if (!$semesterId) return $query;
+
+        return $query->where('semester_id', $semesterId);
+    }
+
+    public function scopeVersion($query, $version)
+    {
+        if (!$version) return $query;
+
+        return $query->where('version', $version);
+    }
+
+    public function scopeType($query, $type)
+    {
+        if (!$type) return $query;
+
+        return $query->where('type', $type);
+    }
+
+    public function scopeTitle($query, $term)
+    {
+        if (!$term) return $query;
+
+        return $query->where('title', 'like', "%{$term}%");
+    }
 }

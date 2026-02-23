@@ -53,7 +53,7 @@
                     <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
                     <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>

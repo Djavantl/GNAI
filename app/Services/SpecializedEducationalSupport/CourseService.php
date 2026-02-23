@@ -6,11 +6,15 @@ use Illuminate\Support\Facades\DB;
 
 class CourseService
 {
-    public function index()
+    public function index(array $filters = [])
     {
-        return Course::withCount('disciplines')
-            ->orderBy('name', 'asc')
-            ->get();
+        return Course::query()
+            ->name($filters['name'] ?? null)
+            ->active($filters['is_active'] ?? null)
+            ->withCount(['disciplines', 'studentCourses']) // Útil para mostrar métricas na lista
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function show(Course $course)

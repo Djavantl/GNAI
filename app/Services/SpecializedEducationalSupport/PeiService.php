@@ -21,14 +21,46 @@ class PeiService
         $this->semesterService = $semesterService;
     }
 
+
+    public function all(array $filters = [])
+    {
+        return Pei::query()
+            ->with([
+                'student.person',
+                'semester',
+                'discipline'
+            ])
+
+            ->student($filters['student_id'] ?? null)
+            ->semester($filters['semester_id'] ?? null)
+            ->discipline($filters['discipline_id'] ?? null)
+            ->finished($filters['is_finished'] ?? null)
+            ->version($filters['version'] ?? null)
+
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+    }
+
     /**
      * Lista todos os PEIs de um estudante específico.
      */
-    public function index(Student $student): Collection
+    public function index(array $filters = [])
     {
-        return Pei::where('student_id', $student->id)
-            ->with(['discipline', 'semester'])
-            ->get();
+        return Pei::query()
+            ->with([
+                'student.person',
+                'semester',
+                'discipline'
+            ])
+            ->semester($filters['semester_id'] ?? null)
+            ->discipline($filters['discipline_id'] ?? null)
+            ->finished($filters['is_finished'] ?? null)
+            ->version($filters['version'] ?? null)
+
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
     }
 
     /**

@@ -28,7 +28,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="deficiency_id"
-                    label="Deficiência *"
+                    label="Deficiência"
                     required
                     :options="$deficienciesList->pluck('name', 'id')"
                     :value="old('deficiency_id')"
@@ -39,6 +39,7 @@
                 <x-forms.select
                     name="severity"
                     label="Severidade"
+                    required
                     :options="[
                         'mild' => 'Leve',
                         'moderate' => 'Moderada',
@@ -49,6 +50,7 @@
             </div>
 
             <div class="col-md-12 mt-2">
+                <input type="hidden" name="uses_support_resources" value="0">
                 <x-forms.checkbox 
                     name="uses_support_resources" 
                     label="Utiliza recursos de apoio" 

@@ -32,13 +32,13 @@
                         <i class="fas fa-plus"></i> Nova Versão
                     </x-buttons.submit-button>
                 </form>
-            @endif
 
-            <x-buttons.link-button 
-                :href="route('specialized-educational-support.pei-evaluation.index', $pei)" 
-                variant="info">
-                <i class="fas fa-clipboard-check"></i> Avaliações
-            </x-buttons.link-button>
+                <x-buttons.link-button 
+                    :href="route('specialized-educational-support.pei-evaluation.index', $pei)" 
+                    variant="info">
+                    <i class="fas fa-clipboard-check"></i> Avaliações
+                </x-buttons.link-button>
+            @endif
 
             @if(!$pei->is_finished)
                 <x-buttons.link-button 
@@ -251,28 +251,39 @@
 
             </div>
 
+            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
+                <div class="text-muted small d-flex align-items-center">
+                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $pei->id }}
+                    {{-- Botão de PDF --}}
+                    @if($pei->is_finished)
+                        <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.pei.pdf', $pei->id)" />
+                    @endif
+                </div>
+                <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
+                    {{-- Botão de Finalizar --}}
+                    @if(!$pei->is_finished)
+                        <form method="POST"
+                            action="{{ route('specialized-educational-support.pei.finish', $pei->id) }}"
+                            onsubmit="return confirm('Após finalizar, o plano não poderá mais ser editado. Confirmar?')">
+                            @csrf
+                            @method('PATCH')
 
-            {{-- ================= RODAPÉ ================= --}}
-           <div class="col-12 border-top p-4 d-flex justify-content-end gap-3">
-
-                {{-- Botão de PDF --}}
-                <x-buttons.pdf-button :href="route('specialized-educational-support.pei.pdf', $pei->id)" />
-
-                {{-- Botão de Finalizar --}}
-                @if(!$pei->is_finished)
-                    <form method="POST"
-                        action="{{ route('specialized-educational-support.pei.finish', $pei->id) }}"
-                        onsubmit="return confirm('Após finalizar, o plano não poderá mais ser editado. Confirmar?')">
-                        @csrf
-                        @method('PATCH')
-
-                        <x-buttons.submit-button variant="success">
-                            <i class="fas fa-check"></i> Finalizar Plano
+                            <x-buttons.submit-button variant="success">
+                                <i class="fas fa-check"></i> Finalizar Plano
+                            </x-buttons.submit-button>
+                        </form>
+                    @endif
+                    <form action="{{ route('specialized-educational-support.pei.finish', $pei->id) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
+                        @csrf @method('DELETE')
+                        <x-buttons.submit-button variant="danger">
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-                @endif
-
-            </div>
+                    <x-buttons.link-button :href="route('specialized-educational-support.pei.finish', $pei->id)" variant="secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </x-buttons.link-button>
+                </div>
+            </footer>
 
         </div>
     </div>
