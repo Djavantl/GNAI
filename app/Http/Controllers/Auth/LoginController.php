@@ -28,17 +28,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            if ($user->is_admin) {
-                return redirect()
-                    ->route('dashboard')
+            if ($user->is_admin || $user->professional_id || $user->teacher_id) {
+                return redirect()->route('dashboard')
                     ->with('success', 'Login realizado com sucesso.');
             }
 
-            if (isset($user->role) && $user->role === 'professional' && $user->professional_id) {
-                return redirect()
-                    ->route('dashboard')
-                    ->with('success', 'Login realizado com sucesso.');
-            }
 
             Auth::logout();
             return back()->with('error', 'Usuário sem permissão de acesso.');

@@ -36,7 +36,6 @@
                 <x-buttons.link-button 
                     :href="route('specialized-educational-support.professionals.show', $professional)"
                     variant="info"
-                    {{-- Melhorando a descrição: O leitor dirá exatamente QUEM o usuário vai ver --}}
                     aria-label="Visualizar prontuário de {{ $professional->person->name }}"
                 >
                 <i class="fas fa-eye" aria-hidden="true"></i> ver
@@ -51,7 +50,6 @@
                     <x-buttons.submit-button 
                         variant="danger"
                         onclick="return confirm('Deseja remover este profissional?')"
-                        {{-- Contexto é tudo: avisar quem está sendo excluído --}}
                         aria-label="Excluir profissional {{ $professional->person->name }} do sistema"
                     >
                        <i class="fas fa-trash" aria-hidden="true"></i> Excluir

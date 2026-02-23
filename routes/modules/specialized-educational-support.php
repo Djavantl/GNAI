@@ -22,6 +22,7 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     PeiController,
     PeiEvaluationController,
     StudentDocumentController,
+    TeacherController,
 
 };
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
@@ -169,6 +170,46 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/professionals/{professional}', [ProfessionalController::class, 'destroy'])
         ->name('professionals.destroy')->middleware('can:professional.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | 4. TEACHERS (PROFESSORES)
+    |--------------------------------------------------------------------------
+    */
+    // Gestão Global de Permissões (Deve vir antes das rotas com parâmetro ID)
+    Route::get('/teachers/permissions', [TeacherController::class, 'permissions'])
+        ->name('teachers.permissions')->middleware('can:teacher.permissions');
+
+    Route::put('/teachers/permissions/update', [TeacherController::class, 'updatePermissions'])
+        ->name('teachers.permissions.update')->middleware('can:teacher.permissions.update');
+
+    // CRUD Professores
+    Route::get('/teachers', [TeacherController::class, 'index'])
+        ->name('teachers.index')->middleware('can:teacher.index');
+
+    Route::get('/teachers/{teacher}/show', [TeacherController::class, 'show'])
+        ->name('teachers.show')->middleware('can:teacher.show');
+
+    Route::get('/teachers/create', [TeacherController::class, 'create'])
+        ->name('teachers.create')->middleware('can:teacher.create');
+
+    Route::post('/teachers/store', [TeacherController::class, 'store'])
+        ->name('teachers.store')->middleware('can:teacher.store');
+
+    Route::get('/teachers/{teacher}/edit', [TeacherController::class, 'edit'])
+        ->name('teachers.edit')->middleware('can:teacher.edit');
+
+    Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])
+        ->name('teachers.update')->middleware('can:teacher.update');
+
+    Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])
+        ->name('teachers.destroy')->middleware('can:teacher.destroy');
+
+    Route::get('/teachers/{teacher}/disciplines', [TeacherController::class, 'disciplines'])
+        ->name('teachers.disciplines')->middleware('can:teacher.edit');
+
+    Route::put('/teachers/{teacher}/disciplines', [TeacherController::class, 'updateDisciplines'])
+        ->name('teachers.disciplines.update')->middleware('can:teacher.edit');
 
 
     /*

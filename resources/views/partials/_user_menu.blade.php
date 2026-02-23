@@ -1,4 +1,4 @@
-{{-- 👤 Partials: Menu do Usuário --}}
+
 <style>
     /* Botão Principal */
     .btn-user-profile {
@@ -61,7 +61,6 @@
         
         <div class="user-info-text me-2 d-none d-sm-block">
             <span class="user-name">
-                {{-- Nome curto como estava antes --}}
                 {{ Str::words(Auth::user()?->name ?? 'Convidado', 1, '') }}
             </span>
             <span class="user-role text-white-50">
