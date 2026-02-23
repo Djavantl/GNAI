@@ -39,7 +39,8 @@ class InspectionService
 
             if (!empty($data['images'])) {
                 foreach ($data['images'] as $image) {
-                    $path = $image->store('inspections', 'public');
+
+                    $path = $image->store("inspections/{$inspection->id}", 'public');
 
                     $inspection->images()->create([
                         'path'          => $path,
@@ -112,8 +113,17 @@ class InspectionService
             $images = $inspection->images;
 
             if ($images->isNotEmpty()) {
+
                 $paths = $images->pluck('path')->toArray();
+
                 Storage::disk('public')->delete($paths);
+
+                $directory = "inspections/{$inspection->id}";
+
+                if (Storage::disk('public')->exists($directory)) {
+                    Storage::disk('public')->deleteDirectory($directory);
+                }
+
                 $inspection->images()->delete();
             }
 

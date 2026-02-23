@@ -1,0 +1,90 @@
+/* ===============================
+   MODAL PERSONALIZADO CORRIGIDO
+   ============================== */
+
+/* Backdrop com a cor primária e transparência */
+.modal-backdrop.show {
+    opacity: 0.6;
+    background-color: #5c5b5c;
+}
+
+/* Dialog – Centralização e margens */
+.modal-dialog {
+    margin: 1.75rem auto;
+    display: flex;
+    align-items: center;
+}
+
+/* Conteúdo do modal – O "coração" do arredondamento */
+.modal-content {
+    border: none !important;
+    border-radius: 2rem !important; /* Arredondamento grande solicitado */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden !important; /* Corta o header e footer para obedecerem ao radius */
+    background-color: #fff;
+}
+
+/* Cabeçalho – Cor roxa e ajuste de quinas */
+.modal-header {
+    background-color: #4D44B5 !important; /* var(--text-purple-dark) */
+    color: white !important;
+    border-bottom: none !important;
+    padding: 1.5rem 2rem !important; /* Padding maior para combinar com o radius */
+    align-items: center;
+    border-top-left-radius: 2rem !important; /* Reforço para navegadores antigos */
+    border-top-right-radius: 2rem !important;
+}
+
+.modal-header .modal-title {
+    font-family: var(--font-family-heading);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.4;
+}
+
+/* Botão fechar (close) branco */
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    background-size: 0.8em;
+    margin: 0; /* Remove margens negativas do Bootstrap */
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+/* Corpo do modal */
+.modal-body {
+    padding: 2rem !important; /* Aumentado para não "esmagar" o texto na curva */
+    font-family: var(--font-family-base);
+    color: #212529;
+}
+
+/* Rodapé – Cor cinza sutil */
+.modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding: 1.25rem 2rem !important;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background-color: #f3f2f2 !important;
+    border-bottom-left-radius: 2rem !important;
+    border-bottom-right-radius: 2rem !important;
+}
+
+/* Ajuste para telas pequenas - Reduz o radius para não comer muito espaço */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        min-height: calc(100% - 1rem);
+    }
+    .modal-content {
+        border-radius: 1.25rem !important;
+    }
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1.25rem !important;
+    }
+}

@@ -168,20 +168,27 @@
             <div class="modal-body px-0 py-3">
                 <p class="mb-3">Deseja realmente realizar a devolução deste item?</p>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="is_damaged" id="is_damaged">
-                    <label class="form-check-label fw-semibold" for="is_damaged">
-                        Item devolvido com avaria
-                    </label>
-                </div>
+                <x-forms.checkbox
+                    name="is_damaged"
+                    label="Item devolvido com avaria"
+                />
             </div>
         </form>
 
         @slot('footer')
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-success" onclick="document.getElementById('returnLoanForm').submit()">
-                Devolver
-            </button>
+            <x-buttons.link-button
+                variant="secondary"
+                data-bs-dismiss="modal"
+            >
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
+
+            <x-buttons.submit-button
+                variant="success"
+                onclick="document.getElementById('returnLoanForm').submit()"
+            >
+                <i class="fas fa-undo"></i> Devolver
+            </x-buttons.submit-button>
         @endslot
     </x-modal>
 

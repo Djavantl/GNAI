@@ -10,7 +10,6 @@ services:
     restart: unless-stopped
     volumes:
       - .:/var/www
-      - ./vendor:/var/www/vendor
       - ./docker/php/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
     ports:
       - "9000:9000"
@@ -58,7 +57,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD} # Facilita o login automático
     ports:
       - '8081:80'
-   
+
 
   # Nginx
   nginx:

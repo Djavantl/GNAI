@@ -41,9 +41,7 @@ class TrainingService
     public function delete(Training $training): void
     {
         DB::transaction(function () use ($training) {
-
             $this->deleteFiles($training);
-
             $training->delete();
         });
     }
@@ -98,11 +96,9 @@ class TrainingService
             return;
         }
 
-        $this->ensureDirectoryExists();
-
         foreach ($data['files'] as $uploadedFile) {
 
-            $path = $uploadedFile->store('trainings', 'public');
+            $path = $uploadedFile->store("trainings/{$training->id}", 'public');
 
             $training->files()->create([
                 'path' => $path,
@@ -113,17 +109,18 @@ class TrainingService
         }
     }
 
-    private function ensureDirectoryExists(): void
-    {
-        if (!Storage::disk('public')->exists('trainings')) {
-            Storage::disk('public')->makeDirectory('trainings');
-        }
-    }
-
     private function deleteFiles(Training $training): void
     {
         foreach ($training->files as $file) {
+            if (Storage::disk('public')->exists($file->path)) {
+                Storage::disk('public')->delete($file->path);
+            }
             $file->delete();
+        }
+
+        $directory = "trainings/{$training->id}";
+        if (Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->deleteDirectory($directory);
         }
     }
 

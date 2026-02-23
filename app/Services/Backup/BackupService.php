@@ -15,17 +15,20 @@ class BackupService {
         $this->disk = Storage::disk('local');
     }
 
-    public function generate() {
+    public function generate()
+    {
         try {
             Artisan::call('backup:run', [
                 '--disable-notifications' => true
             ]);
 
-            $files = $this->disk->allFiles('GNAI');
+            $backupFolder = config('backup.backups.name');
+
+            $files = $this->disk->allFiles($backupFolder);
 
             $latestFile = collect($files)
-                ->filter(fn($file) => str_ends_with($file, '.zip'))
-                ->sortByDesc(fn($file) => $this->disk->lastModified($file))
+                ->filter(fn ($file) => str_ends_with($file, '.zip'))
+                ->sortByDesc(fn ($file) => $this->disk->lastModified($file))
                 ->first();
 
             if ($latestFile) {
@@ -38,7 +41,7 @@ class BackupService {
                 ]);
             }
 
-            throw new \Exception("Comando executado, mas o arquivo ZIP não foi encontrado na pasta GNAI.");
+            throw new \Exception("Comando executado, mas o arquivo ZIP não foi encontrado na pasta {$backupFolder}.");
 
         } catch (\Exception $e) {
             Log::error("Erro no BackupService: " . $e->getMessage());

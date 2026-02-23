@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Backup\Backup;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\SpecializedEducationalSupport\Professional;
@@ -43,6 +45,11 @@ class User extends Authenticatable
     public function getNameAttribute()
     {
         return $this->professional?->person?->name ?? $this->attributes['name'];
+    }
+
+    public function backups(): HasMany
+    {
+        return $this->hasMany(Backup::class);
     }
 
     // Atalho para pegar a foto da Person vinculada
