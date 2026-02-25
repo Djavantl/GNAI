@@ -35,8 +35,7 @@
         {{-- STEP 1 --}}
         <div class="step-pill-item {{ $currentStep == 1 ? 'is-active' : '' }}">
             @if($barrier)
-                <a href="{{ route('inclusive-radar.barriers.stage1.edit', $barrier) }}" class="step-pill-link {{ $step1Completed ? 'is-completed' : '' }}">
-                    @else
+                <a href="{{ route('inclusive-radar.barriers.show', $barrier) }}" class="step-pill-link {{ $step1Completed ? 'is-completed' : '' }}">                    @else
                         <div class="step-pill-link">
                             @endif
                             <div class="step-pill-icon">

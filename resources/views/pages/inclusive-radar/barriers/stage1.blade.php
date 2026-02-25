@@ -175,14 +175,17 @@
 
                     <x-forms.section title="4. Vistoria Inicial" />
                     <div class="px-4 pb-4">
-                        <div class="row g-3">
+                        <div class="row g-2">
+
                             <div class="col-md-6">
                                 <x-forms.select
-                                    name="status"
-                                    id="status_select"
-                                    label="Status Inicial"
-                                    :options="collect(\App\Enums\InclusiveRadar\BarrierStatus::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])"
-                                    :selected="old('status', 'identified')"
+                                    name="inspection_type"
+                                    label="Tipo de Inspeção"
+                                    required
+                                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
+                                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                                    :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
+                                    disabled
                                 />
                             </div>
 
@@ -191,6 +194,20 @@
                                     name="images[]"
                                     label="Fotos da Barreira"
                                     :existingImages="old('images', [])"
+                                />
+                            </div>
+
+                            <div class="col-md-6">
+                                <x-forms.select
+                                    name="status"
+                                    id="status_select"
+                                    label="Status da Barreira"
+                                    :options="[
+                                        \App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->value
+                                            => \App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->label()
+                                    ]"
+                                    :selected="\App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->value"
+                                    disabled
                                 />
                             </div>
 

@@ -23,8 +23,11 @@ class FormManager {
         this.identificationFields = document.getElementById('identification_fields');
         this.personSelects = document.getElementById('person_selects');
         this.manualPersonData = document.getElementById('manual_person_data');
+        this.affectedStudentSelect = document.querySelector('select[name="affected_student_id"]');
+        this.affectedProfessionalSelect = document.querySelector('select[name="affected_professional_id"]');
         this.affectedPersonNameInput = document.querySelector('input[name="affected_person_name"]');
         this.affectedPersonRoleInput = document.querySelector('input[name="affected_person_role"]');
+
 
         this.init();
     }
@@ -252,12 +255,21 @@ class FormManager {
         }
     }
 
-    clearManualPersonFields() {
+    clearPersonFields() {
+        // Limpa inputs manuais
         if (this.affectedPersonNameInput) {
             this.affectedPersonNameInput.value = '';
         }
         if (this.affectedPersonRoleInput) {
             this.affectedPersonRoleInput.value = '';
+        }
+
+        // Limpa selects de estudante/profissional
+        if (this.affectedStudentSelect) {
+            this.affectedStudentSelect.value = '';
+        }
+        if (this.affectedProfessionalSelect) {
+            this.affectedProfessionalSelect.value = '';
         }
     }
 
@@ -265,7 +277,7 @@ class FormManager {
         const isAnonymous = this.isAnonymousCheck.checked;
         const notApplicable = this.notApplicableCheck.checked;
 
-        console.log('Toggle Person Fields:', { isAnonymous, notApplicable });
+        console.log('Toggle Person Fields:', {isAnonymous, notApplicable});
 
         // REGRA 1: Se "Relato Anônimo" estiver marcado
         if (isAnonymous) {
@@ -284,8 +296,8 @@ class FormManager {
                 this.notApplicableCheck.checked = false;
             }
 
-            // Limpa campos manuais
-            this.clearManualPersonFields();
+            // Limpa todos os campos da pessoa impactada
+            this.clearPersonFields();
         }
         // REGRA 2: Se "Relato Anônimo" NÃO estiver marcado
         else {
@@ -310,6 +322,10 @@ class FormManager {
                 if (this.manualPersonData) {
                     this.manualPersonData.classList.remove('d-none');
                 }
+
+                // Limpa selects de estudante/profissional
+                if (this.affectedStudentSelect) this.affectedStudentSelect.value = '';
+                if (this.affectedProfessionalSelect) this.affectedProfessionalSelect.value = '';
             }
             // REGRA 2b: Se "Relato Geral" NÃO estiver marcado
             else {
@@ -321,9 +337,10 @@ class FormManager {
                 // Esconde campos para digitar nome e cargo
                 if (this.manualPersonData) {
                     this.manualPersonData.classList.add('d-none');
-                    // Limpa campos manuais
-                    this.clearManualPersonFields();
                 }
+
+                // Limpa inputs manuais
+                this.clearPersonFields();
             }
         }
     }
@@ -359,8 +376,8 @@ class BarrierMap {
         }
 
         // Elementos de entrada
-        this.latInput = document.getElementById('lat');
-        this.lngInput = document.getElementById('lng');
+        this.latInput = document.getElementById('latitude');
+        this.lngInput = document.getElementById('longitude');
         this.institutionSelect = document.getElementById('institution_select');
         this.noLocationCheckbox = document.getElementById('no_location');
 
