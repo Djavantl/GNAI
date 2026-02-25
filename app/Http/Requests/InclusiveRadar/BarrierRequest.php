@@ -26,7 +26,7 @@ class BarrierRequest extends FormRequest
             'barrier_category_id' => 'required|exists:barrier_categories,id',
             'priority' => [
                 'required',
-                Rule::in(['low', 'medium', 'high', 'critical']),
+                Rule::in(['low', 'medium', 'high', 'critical', 'urgent']),
             ],
             'location_id' => 'nullable|exists:locations,id',
             'latitude' => 'nullable|numeric',

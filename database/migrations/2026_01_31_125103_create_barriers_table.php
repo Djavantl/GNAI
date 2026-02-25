@@ -89,17 +89,51 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->string('location_specific_details')->nullable();
-            $table->boolean('not_applicable')->default(false);
             $table->string('affected_person_name')->nullable();
             $table->string('affected_person_role')->nullable();
             $table->boolean('is_anonymous')->default(false);
             $table->string('priority')->default('medium');
             $table->date('identified_at');
-            $table->date('resolved_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 
+        Schema::create('barrier_stages', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('barrier_id')->constrained('barriers')->cascadeOnDelete();
+            $table->unsignedTinyInteger('step_number');
+            $table->string('status')->default('identified');
+
+            // Usuários
+            $table->foreignId('started_by_user_id')->nullable()->constrained('users')->nullOnDelete(); // Etapa 1
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete(); // Etapas 2-4
+            $table->foreignId('validator_id')->nullable()->constrained('users')->nullOnDelete(); // Etapa 4
+
+            // Campos comuns
+            $table->text('observation')->nullable();
+            $table->timestamp('completed_at')->nullable();
+
+            // Etapa 2
+            $table->text('analyst_notes')->nullable();
+            $table->text('justificativa_encerramento')->nullable();
+
+            // Etapa 3
+            $table->text('action_plan_description')->nullable();
+            $table->date('intervention_start_date')->nullable();
+            $table->date('estimated_completion_date')->nullable();
+            $table->decimal('estimated_cost', 12, 2)->nullable();
+
+            // Etapa 4
+            $table->decimal('actual_cost', 12, 2)->nullable();
+            $table->dateTime('resolution_date')->nullable();
+            $table->text('delay_justification')->nullable();
+            $table->text('resolution_summary')->nullable();
+            $table->string('effectiveness_level')->nullable();
+            $table->text('maintenance_instructions')->nullable();
+
+            $table->timestamps();
+            $table->unique(['barrier_id', 'step_number']);
+        });
 
         Schema::create('barrier_deficiency', function (Blueprint $table) {
             $table->id();
@@ -121,6 +155,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('barrier_deficiency');
+        Schema::dropIfExists('barrier_stages');
         Schema::dropIfExists('barriers');
         Schema::dropIfExists('locations');
         Schema::dropIfExists('institutions');

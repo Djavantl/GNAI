@@ -2,9 +2,13 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\{BarrierStatus, InspectionType};
+use App\Enums\Priority;
 use App\Models\InclusiveRadar\Barrier;
-use Illuminate\Support\Facades\{Auth, DB};
+use App\Models\InclusiveRadar\BarrierStage;
+use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Enums\InclusiveRadar\InspectionType;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class BarrierService
 {
@@ -12,130 +16,216 @@ class BarrierService
         protected InspectionService $inspectionService
     ) {}
 
-    // Ações principais (públicas)
-
-    public function store(array $data): Barrier
+    /*
+    |--------------------------------------------------------------------------
+    | ETAPA 1 – IDENTIFICADA (O Antigo "Create")
+    |--------------------------------------------------------------------------
+    */
+    public function storeStage1(array $data, int $userId): Barrier
     {
-        return DB::transaction(
-            fn() => $this->persist(new Barrier(), $data)
-        );
+        return DB::transaction(function () use ($data, $userId) {
+            // 1. Cria a Barreira com todos os campos da Etapa 1
+            $barrier = Barrier::create($data);
+
+            if (isset($data['deficiencies'])) {
+                $barrier->deficiencies()->sync($data['deficiencies']);
+            }
+
+            // 2. Cria o registro da Etapa 1
+            $barrier->stages()->create([
+                'step_number'        => 1,
+                'status'             => BarrierStatus::IDENTIFIED,
+                'started_by_user_id' => $userId,
+                'completed_at'       => now(), // Já nasce concluída para liberar a Etapa 2
+            ]);
+
+            // 3. Vistoria Inicial Obrigatória
+            $this->inspectionService->createForModel($barrier, [
+                'status'          => BarrierStatus::IDENTIFIED->value,
+                'inspection_date' => $data['inspection_date'] ?? now(),
+                'type'            => InspectionType::INITIAL->value,
+                'description'     => $data['description'],
+                'images'          => $data['images'] ?? [],
+            ]);
+
+            return $barrier->fresh();
+        });
     }
 
-    public function update(Barrier $barrier, array $data): Barrier
+    /*
+    |--------------------------------------------------------------------------
+    | ETAPA 2 – EM ANÁLISE
+    |--------------------------------------------------------------------------
+    */
+    public function storeStage2(Barrier $barrier, array $data, int $userId): BarrierStage
     {
-        return DB::transaction(
-            fn() => $this->persist($barrier, $data)
-        );
+        return DB::transaction(function () use ($barrier, $data, $userId) {
+            $this->checkStageAvailability($barrier, 2);
+
+            // Se o usuário clicou em "Não se Aplica" (Encerramento)
+            if (isset($data['not_applicable']) && $data['not_applicable'] == true) {
+                return $this->handleNotApplicable($barrier, $data, $userId);
+            }
+
+            // Atualiza campos permitidos na análise (Refinamento)
+            $this->updateBarrierFromAnalysis($barrier, $data);
+
+            // Cria a Etapa 2 e finaliza
+            $stage2 = $barrier->stages()->create([
+                'step_number'        => 2,
+                'status'             => BarrierStatus::UNDER_ANALYSIS,
+                'started_by_user_id' => $userId,
+                'completed_at'       => now(),
+                'analyst_notes'      => $data['analyst_notes'] ?? null,
+            ]);
+
+            // Vistoria opcional de análise
+            $this->createOptionalInspection($barrier, $data, BarrierStatus::UNDER_ANALYSIS);
+
+            return $stage2;
+        });
     }
 
-    public function toggleActive(Barrier $barrier): Barrier
+    /*
+    |--------------------------------------------------------------------------
+    | ETAPA 3 – EM TRATAMENTO
+    |--------------------------------------------------------------------------
+    */
+    public function storeStage3(Barrier $barrier, array $data, int $userId): BarrierStage
     {
-        $barrier->update(['is_active' => !$barrier->is_active]);
+        return DB::transaction(function () use ($barrier, $data, $userId) {
+            $this->checkStageAvailability($barrier, 3);
 
-        return $barrier->fresh();
+            $stage3 = $barrier->stages()->create([
+                'step_number'               => 3,
+                'status'                    => BarrierStatus::IN_PROGRESS,
+                'started_by_user_id'        => $userId,
+                'completed_at'              => now(),
+                'action_plan_description'   => $data['action_plan_description'],
+                'intervention_start_date'   => $data['intervention_start_date'],
+                'estimated_completion_date' => $data['estimated_completion_date'],
+                'estimated_cost'            => $data['estimated_cost'],
+            ]);
+
+            $this->inspectionService->createForModel($barrier, [
+                'status'          => BarrierStatus::IN_PROGRESS->value,
+                'inspection_date' => now(),
+                'type'            => InspectionType::PERIODIC->value,
+                'description'     => 'Plano de tratamento iniciado.',
+                'images'          => $data['images'] ?? [],
+            ]);
+
+            return $stage3;
+        });
     }
 
-    public function delete(Barrier $barrier): void
+    /*
+    |--------------------------------------------------------------------------
+    | ETAPA 4 – RESOLVIDA
+    |--------------------------------------------------------------------------
+    */
+    public function storeStage4(Barrier $barrier, array $data, int $userId): BarrierStage
     {
-        DB::transaction(fn() => $barrier->delete());
+        return DB::transaction(function () use ($barrier, $data, $userId) {
+            $this->checkStageAvailability($barrier, 4);
+
+            $lastStage = $barrier->stages()->where('step_number', 3)->first();
+
+            // Valida atraso
+            if ($lastStage && $data['resolution_date'] > $lastStage->estimated_completion_date) {
+                if (empty($data['delay_justification'])) {
+                    throw new Exception('Justificativa de atraso é obrigatória.');
+                }
+            }
+
+            $stage4 = $barrier->stages()->create([
+                'step_number'              => 4,
+                'status'                   => BarrierStatus::RESOLVED,
+                'started_by_user_id'       => $userId,
+                'completed_at'             => now(),
+                'actual_cost'              => $data['actual_cost'],
+                'resolution_date'          => $data['resolution_date'],
+                'delay_justification'      => $data['delay_justification'] ?? null,
+                'resolution_summary'       => $data['resolution_summary'],
+                'effectiveness_level'      => $data['effectiveness_level'],
+                'validator_id'             => $userId, // Quem encerrou
+                'maintenance_instructions' => $data['maintenance_instructions'] ?? null,
+            ]);
+
+            $this->inspectionService->createForModel($barrier, [
+                'status'          => BarrierStatus::RESOLVED->value,
+                'inspection_date' => $data['resolution_date'],
+                'type'            => InspectionType::PERIODIC->value,
+                'description'     => 'Barreira resolvida e validada.',
+                'images'          => $data['images'] ?? [],
+            ]);
+
+            return $stage4;
+        });
     }
 
-    // Regras internas (protegidas)
+    /*
+    |--------------------------------------------------------------------------
+    | AUXILIARES DE REGRA DE NEGÓCIO
+    |--------------------------------------------------------------------------
+    */
 
-    protected function persist(Barrier $barrier, array $data): Barrier
+    private function checkStageAvailability(Barrier $barrier, int $requestedStep): void
     {
-        $data = $this->sanitizeReporterData($data);
-        $data = $this->prepareData($barrier, $data);
-
-        $barrier->fill($data)->save();
-
-        $this->syncRelations($barrier, $data);
-        $this->handleInspectionLog($barrier, $data);
-
-        return $barrier->fresh([
-            'category',
-            'location',
-            'deficiencies'
-        ]);
-    }
-
-    protected function prepareData(Barrier $barrier, array $data): array
-    {
-        if (!$barrier->exists && Auth::check()) {
-            $data['registered_by_user_id'] = Auth::id();
+        if ($barrier->stages()->where('step_number', $requestedStep)->exists()) {
+            throw new Exception("A Etapa {$requestedStep} já foi preenchida e não pode ser editada.");
         }
 
-        if (!empty($data['no_location'])) {
-            $data['location_id'] = null;
+        // Garante que a etapa anterior existe
+        if ($requestedStep > 1 && !$barrier->stages()->where('step_number', $requestedStep - 1)->exists()) {
+            throw new Exception("Você não pode pular para a Etapa {$requestedStep} sem concluir a anterior.");
         }
-
-        return $data;
     }
 
-    protected function sanitizeReporterData(array $data): array
+    private function updateBarrierFromAnalysis(Barrier $barrier, array $data): void
     {
-        $allReporterFields = [
-            'affected_student_id'      => null,
-            'affected_professional_id' => null,
-            'affected_person_name'     => null,
-            'affected_person_role'     => null,
-            'is_anonymous'             => false,
-            'not_applicable'           => false,
+        $fillable = [
+            'description'         => $data['description'] ?? $barrier->description,
+            'barrier_category_id' => $data['barrier_category_id'] ?? $barrier->barrier_category_id,
+            'priority'            => isset($data['priority']) ? Priority::from($data['priority']) : $barrier->priority,
         ];
 
-        if (!empty($data['is_anonymous'])) {
-            return array_merge($data, $allReporterFields, ['is_anonymous' => true]);
+        // Se não for anônimo, permite refinar os afetados
+        if (!$barrier->is_anonymous) {
+            $fillable['affected_student_id']      = $data['affected_student_id'] ?? $barrier->affected_student_id;
+            $fillable['affected_professional_id'] = $data['affected_professional_id'] ?? $barrier->affected_professional_id;
+            $fillable['affected_person_name']     = $data['affected_person_name'] ?? $barrier->affected_person_name;
+            $fillable['affected_person_role']     = $data['affected_person_role'] ?? $barrier->affected_person_role;
         }
 
-        if (!empty($data['not_applicable'])) {
-            return array_merge($data, $allReporterFields, [
-                'not_applicable'       => true,
-                'affected_person_name' => $data['affected_person_name'] ?? null,
-                'affected_person_role' => $data['affected_person_role'] ?? null,
+        $barrier->update($fillable);
+    }
+
+    private function handleNotApplicable(Barrier $barrier, array $data, int $userId): BarrierStage
+    {
+        if (empty($data['justificativa_encerramento'])) {
+            throw new Exception('Justificativa é obrigatória para encerrar como não aplicável.');
+        }
+
+        return $barrier->stages()->create([
+            'step_number'                => 2,
+            'status'                     => BarrierStatus::NOT_APPLICABLE,
+            'started_by_user_id'         => $userId,
+            'completed_at'               => now(),
+            'justificativa_encerramento' => $data['justificativa_encerramento'],
+        ]);
+    }
+
+    protected function createOptionalInspection(Barrier $barrier, array $data, BarrierStatus $status): void
+    {
+        if (!empty($data['inspection_description']) || !empty($data['images'])) {
+            $this->inspectionService->createForModel($barrier, [
+                'status'          => $status->value,
+                'inspection_date' => now(),
+                'type'            => InspectionType::PERIODIC->value,
+                'description'     => $data['inspection_description'] ?? 'Vistoria técnica de análise.',
+                'images'          => $data['images'] ?? [],
             ]);
         }
-
-        return array_merge($data, [
-            'is_anonymous'         => false,
-            'not_applicable'       => false,
-            'affected_person_name' => $data['affected_person_name'] ?? null,
-            'affected_person_role' => $data['affected_person_role'] ?? null,
-        ]);
-    }
-
-    protected function syncRelations(Barrier $barrier, array $data): void
-    {
-        if (isset($data['deficiencies'])) {
-            $barrier->deficiencies()->sync($data['deficiencies']);
-        }
-    }
-
-    protected function handleInspectionLog(Barrier $barrier, array $data): void
-    {
-        $isUpdate = $barrier->wasRecentlyCreated === false;
-        $oldStatus = $isUpdate ? $barrier->latestStatus()?->value : null;
-        $newStatus = $data['status'] ?? $oldStatus ?? BarrierStatus::IDENTIFIED->value;
-
-        $statusChanged = $isUpdate && $newStatus !== $oldStatus;
-        $hasInteraction = filled($data['inspection_description'] ?? null) || !empty($data['images']);
-
-        if (in_array($newStatus, [BarrierStatus::RESOLVED->value, BarrierStatus::NOT_APPLICABLE->value])) {
-            $barrier->update(['resolved_at' => $barrier->resolved_at ?? now()]);
-        } else {
-            $barrier->update(['resolved_at' => null]);
-        }
-
-        if ($isUpdate && !$statusChanged && !$hasInteraction) {
-            return;
-        }
-
-        $this->inspectionService->createForModel($barrier, [
-            'state'           => null,
-            'status'          => $newStatus,
-            'inspection_date' => $data['inspection_date'] ?? now(),
-            'type'            => $data['inspection_type'] ?? ($isUpdate ? InspectionType::PERIODIC->value : InspectionType::INITIAL->value),
-            'description'     => $data['inspection_description'] ?? ($isUpdate ? null : 'Registro inicial da barreira.'),
-            'images'          => $data['images'] ?? [],
-        ]);
     }
 }
