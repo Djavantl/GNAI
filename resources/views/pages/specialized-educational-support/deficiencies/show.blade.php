@@ -46,11 +46,11 @@
             <x-show.info-item label="Status no Sistema" column="col-md-12" isBox="true">
                 @if($deficiency->is_active)
                     <span class="text-success fw-bold">
-                        <i class="fas fa-toggle-on me-1"></i> ATIVA
+                         ATIVA
                     </span>
                 @else
                     <span class="text-muted fw-bold">
-                        <i class="fas fa-toggle-off me-1"></i> INATIVA
+                        INATIVA
                     </span>
                 @endif
             </x-show.info-item>

@@ -9,17 +9,17 @@
             <x-table.td>{{ $session->professional->person->name }}</x-table.td>
             
             <x-table.td>
-                <span class="badge bg-light text-dark border">
-                    {{ $session->type === 'group' ? 'Grupo' : 'Individual' }}
-                </span>
+             
+                {{ $session->type === 'group' ? 'Grupo' : 'Individual' }}
+                
             </x-table.td>
 
             <x-table.td>
                 @php
                     $statusValue = strtolower($session->status);
                     $statusColor = match($statusValue) {
-                        'scheduled', 'agendado' => 'info',
-                        'completed', 'realizado' => 'success',
+                        'scheduled', 'agendado' => 'warning',
+                        'realized', 'realizado' => 'success',
                         'canceled', 'cancelled', 'cancelado' => 'danger',
                         default => 'warning'
                     };

@@ -42,9 +42,16 @@
             <x-forms.section title="Detalhamento da Meta" />
 
             <x-show.info-item 
+                label="Título do Objetivo" 
+                :value="$specific_objective->title" 
+                column="col-md-6" 
+                isBox="true" 
+            />
+
+            <x-show.info-item 
                 label="Descrição do Objetivo" 
                 :value="$specific_objective->description" 
-                column="col-md-12" 
+                column="col-md-6" 
                 isBox="true" 
             />
 
@@ -71,16 +78,6 @@
                 column="col-md-12" 
                 isBox="true" 
             />
-
-            <div class="col-md-6 px-4 py-3">
-                <small class="text-muted d-block">Criado em:</small>
-                <span class="fw-bold">{{ $specific_objective->created_at->format('d/m/Y H:i') }}</span>
-            </div>
-
-            <div class="col-md-6 px-4 py-3">
-                <small class="text-muted d-block">Última Atualização:</small>
-                <span class="fw-bold">{{ $specific_objective->updated_at->format('d/m/Y H:i') }}</span>
-            </div>
 
             {{-- ================= RODAPÉ / AÇÕES ================= --}}
             <div class="col-12 border-top p-4 d-flex justify-content-end">

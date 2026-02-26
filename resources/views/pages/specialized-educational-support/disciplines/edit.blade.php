@@ -27,7 +27,7 @@
             <x-forms.section title="Dados da Disciplina" />
 
             <div class="col-md-12">
-                <x-forms.input name="name" label="Nome da Disciplina *" required :value="old('name', $discipline->name)" />
+                <x-forms.input name="name" label="Nome da Disciplina " required :value="old('name', $discipline->name)" />
             </div>
 
             <div class="col-md-12">

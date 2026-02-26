@@ -54,16 +54,6 @@
                 isBox="true" 
             />
 
-            <div class="col-md-6 px-4 py-3">
-                <small class="text-muted d-block">Criado em:</small>
-                <span class="fw-bold">{{ $content_programmatic->created_at->format('d/m/Y H:i') }}</span>
-            </div>
-
-            <div class="col-md-6 px-4 py-3">
-                <small class="text-muted d-block">Última Atualização:</small>
-                <span class="fw-bold">{{ $content_programmatic->updated_at->format('d/m/Y H:i') }}</span>
-            </div>
-
             <div class="col-12 border-top p-4 d-flex justify-content-end">
                 @if(!$pei->is_finished)
                     <form method="POST" 

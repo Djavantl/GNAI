@@ -41,7 +41,10 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-4">Nenhum responsável cadastrado para este aluno.</td>
+                <td colspan="6" class="text-center text-muted fw-bold py-5">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhum responsável do aluno encontrado.
+                </td>
             </tr>
         @endforelse
     </x-table.table>

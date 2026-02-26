@@ -27,7 +27,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="title"
-                    label="Título *"
+                    label="Título "
                     required
                     :value="old('title')"
                 />
@@ -44,7 +44,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="assigned_to"
-                    label="Profissional Responsável *"
+                    label="Profissional Responsável "
                     :options="$professionals
                         ->mapWithKeys(fn($professional) => [
                             $professional->id => $professional->person->name
@@ -58,7 +58,7 @@
             <div class="col-md-3">
                 <x-forms.select
                     name="priority"
-                    label="Prioridade *"
+                    label="Prioridade "
                     :options="$priorities"
                     :value="old('priority')"
                     required

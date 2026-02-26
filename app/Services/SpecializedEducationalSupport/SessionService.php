@@ -147,7 +147,7 @@ class SessionService
                 'type'              => $data['type'],
                 'location'          => $data['location'] ?? null,
                 'session_objective' => $data['session_objective'],
-                'status'            => 'Agendado',
+                'status'            => 'Agendada',
             ]);
 
             $session->students()->sync($data['student_ids']);
@@ -161,7 +161,7 @@ class SessionService
     public function cancel(Session $session, string $reason): Session
     {
         $session->update([
-            'status' => 'cancelled', // Verifique se no seu banco é 'cancelled' ou 'Cancelado'
+            'status' => 'Cancelada', 
             'cancellation_reason' => $reason
         ]);
 

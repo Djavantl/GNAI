@@ -1,5 +1,5 @@
 <x-table.table :headers="['Nome', 'Status', 'Ações']">
-@foreach($disciplines as $discipline)
+@forelse($disciplines as $discipline)
     <tr>
         <x-table.td>
             <span class="fw-bold text-purple-dark">{{ $discipline->name }}</span>
@@ -25,5 +25,12 @@
             </x-table.actions>
         </x-table.td>
     </tr>
-@endforeach
+@empty
+    <tr>
+        <td colspan="4" class="text-center text-muted py-5">
+            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+            Nenhuma disciplina encontrada.
+        </td>
+    </tr>
+@endforelse
 </x-table.table>

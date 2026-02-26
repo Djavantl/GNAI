@@ -1,6 +1,6 @@
 <x-table.table :headers="['Data', 'Versão','Tipo de Avaliação', 'Status', 'Ações']">
         @forelse($contexts as $context)
-            <tr class="{{ $context->is_current ? 'table-success' : '' }}">
+            <tr>
                 <x-table.td>
                     <strong>{{ $context->created_at->format('d/m/Y') }}</strong>
                 </x-table.td>
@@ -50,9 +50,9 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-5">
-                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2rem;"></i>
-                    Nenhum contexto registrado para este aluno.
+                <td colspan="6" class="text-center text-muted fw-bold py-5">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhum contexto do aluno encontrado.
                 </td>
             </tr>
         @endforelse

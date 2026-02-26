@@ -35,7 +35,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome *" 
+                    label="Nome " 
                     required 
                     :value="old('name', $professional->person->name)" 
                 />
@@ -44,7 +44,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="Documento *" 
+                    label="Documento " 
                     required 
                     :value="old('document', $professional->person->document)" 
                 />
@@ -53,7 +53,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="birth_date" 
-                    label="Nascimento *" 
+                    label="Nascimento " 
                     type="date" 
                     required 
                     :value="old('birth_date', optional($professional->person->birth_date)->format('Y-m-d'))" 
@@ -72,6 +72,7 @@
                     ]"
                     :value="old('gender', $professional->person->gender)"
                     :selected="old('gender', $professional->person->gender)"
+                    required
                 />
             </div>
 
@@ -86,7 +87,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="email" 
-                    label="Email *" 
+                    label="Email " 
                     type="email" 
                     required 
                     :value="old('email', $professional->person->email)" 
@@ -106,7 +107,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="position_id"
-                    label="Cargo *"
+                    label="Cargo "
                     required
                     :options="$positions->pluck('name', 'id')"
                     :value="old('position_id', $professional->position_id)"
@@ -117,7 +118,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="registration" 
-                    label="Matrícula *" 
+                    label="Matrícula " 
                     required 
                     :value="old('registration', $professional->registration)" 
                 />

@@ -41,4 +41,9 @@ class Discipline extends Model
             $q->where('courses.id', $courseId);
         });
     }
+
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class); 
+    }
 }

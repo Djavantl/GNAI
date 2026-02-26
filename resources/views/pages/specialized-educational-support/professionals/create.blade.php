@@ -32,15 +32,15 @@
             />
             
             <div class="col-md-6">
-                <x-forms.input name="name" label="Nome *" required :value="old('name')" />
+                <x-forms.input name="name" label="Nome " required :value="old('name')" />
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="document" label="Documento *" required :value="old('document')" />
+                <x-forms.input name="document" label="Documento " required :value="old('document')" />
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="birth_date" label="Nascimento *" type="date" required :value="old('birth_date')" />
+                <x-forms.input name="birth_date" label="Nascimento " type="date" required :value="old('birth_date')" />
             </div>
 
             <div class="col-md-6">
@@ -54,11 +54,12 @@
                         'other' => 'Outro'
                     ]"
                     :value="old('gender', 'not_specified')"
+                    required
                 />
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="email" label="Email *" type="email" required :value="old('email')" />
+                <x-forms.input name="email" label="Email " type="email" required :value="old('email')" />
             </div>
 
             <div class="col-md-6">
@@ -74,14 +75,14 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="position_id"
-                    label="Cargo *"
+                    label="Cargo "
                     required
                     :options="$positions->pluck('name', 'id')"
                 />
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="registration" label="Matrícula *" required :value="old('registration')" />
+                <x-forms.input name="registration" label="Matrícula " required :value="old('registration')" />
             </div>
 
 

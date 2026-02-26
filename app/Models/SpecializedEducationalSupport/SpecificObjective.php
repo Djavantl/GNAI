@@ -9,6 +9,7 @@ class SpecificObjective extends Model
 {
     protected $fillable = [
         'pei_id', 
+        'title',
         'description', 
         'status', 
         'observations_progress'

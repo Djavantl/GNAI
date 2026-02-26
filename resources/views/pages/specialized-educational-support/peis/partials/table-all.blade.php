@@ -67,8 +67,8 @@
     @empty
         <tr>
             <td colspan="6" class="text-center text-muted py-5">
-                <i class="fas fa-search d-block mb-2" style="font-size: 2rem;"></i>
-                Nenhum PEI encontrado no sistema.
+                <i class="fas fa-folder-open d-block mb-2" style="font-size: 2rem;"></i>
+                Nenhum PEI do aluno encontrado no sistema.
             </td>
         </tr>
     @endforelse

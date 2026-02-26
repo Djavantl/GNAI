@@ -1,4 +1,4 @@
-<section id="contexts" class="mb-5 bg-soft-info rounded shadow-sm">
+<section id="contexts" class="mb-5 rounded shadow-sm">
 
     <x-forms.section title="Contexto Atual" class="m-0" />
 
@@ -46,7 +46,10 @@
             </div>
         @else
             <div class="alert alert-light border border-dashed text-center">
-                No current evaluation context found.
+                <div class="text-center text-muted fw-bold py-5">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhum contexto atual do aluno encontrado.
+                </div>
             </div>
         @endif
 

@@ -17,19 +17,6 @@ class NotificationController extends Controller
         return view('pages.notifications.index', compact('notifications'));
     }
 
-    // public function markAsRead(string $id)
-    // {
-    //     $notification = auth()
-    //         ->user()
-    //         ->notifications()
-    //         ->where('id', $id)
-    //         ->firstOrFail();
-
-    //     $notification->markAsRead();
-
-    //     return back();
-    // }
-
     public function markAllAsRead()
     {
         auth()->user()
@@ -53,17 +40,22 @@ class NotificationController extends Controller
         return response()->json($notifications);
     }
 
-    // marca uma notificação específica como lida
+    // marca uma notificação específica como lida 
     public function markAsRead($id)
     {
-        $notification = auth()->user()->notifications()->where('id', $id)->first();
+        $notification = auth()->user()
+            ->notifications()
+            ->where('id', $id)
+            ->first();
 
         if (! $notification) {
-            return response()->json(['error' => 'Notificação não encontrada.'], 404);
+            return back()->with('error', 'Notificação não encontrada.');
         }
 
         $notification->markAsRead();
 
-        return response()->json(['success' => true]);
+        return redirect()
+            ->route('notifications.index')
+            ->with('success', 'Notificação marcada como lida.');
     }
 }

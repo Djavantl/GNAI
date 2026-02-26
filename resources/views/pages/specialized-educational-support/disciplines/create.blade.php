@@ -25,7 +25,7 @@
             <x-forms.section title="Informações Básicas" />
 
             <div class="col-md-12">
-                <x-forms.input name="name" label="Nome da Disciplina *" required :value="old('name')" />
+                <x-forms.input name="name" label="Nome da Disciplina " required :value="old('name')" />
             </div>
 
             <div class="col-md-12">

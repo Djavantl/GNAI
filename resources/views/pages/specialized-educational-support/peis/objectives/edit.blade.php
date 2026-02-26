@@ -28,6 +28,16 @@
 
             <x-forms.section title="Detalhamento da Meta" />
 
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="title" 
+                    label="Título do Objetivo" 
+                    required 
+                    placeholder="Ex: ..."
+                    :value="old('title', $specific_objective->title)" 
+                />
+            </div>
+
             <div class="col-md-12">
                 <x-forms.textarea 
                     name="description" 

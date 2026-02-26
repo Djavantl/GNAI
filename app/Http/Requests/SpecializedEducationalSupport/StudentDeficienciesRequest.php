@@ -3,6 +3,7 @@
 namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StudentDeficienciesRequest extends FormRequest
 {
@@ -13,18 +14,20 @@ class StudentDeficienciesRequest extends FormRequest
 
     public function rules(): array
     {
+        $student = $this->route('student');
+        $studentId = $student instanceof \App\Models\SpecializedEducationalSupport\Student
+            ? $student->id
+            : $student;
+
         return [
-            'deficiency_id' => ['required', 'exists:deficiencies,id'],
+            'deficiency_id' => [
+                'required',
+                Rule::unique('students_deficiencies')
+                    ->where('student_id', $studentId),
+            ],
             'severity' => ['nullable', 'in:mild,moderate,severe'],
             'uses_support_resources' => ['boolean'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
-    }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'uses_support_resources' => $this->has('uses_support_resources'),
-        ]);
     }
 }

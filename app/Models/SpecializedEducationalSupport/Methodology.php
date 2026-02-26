@@ -8,6 +8,7 @@ class Methodology extends Model
 {
     protected $fillable = [
         'pei_id', 
+        'title',
         'description', 
         'resources_used'
     ];

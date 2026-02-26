@@ -1,11 +1,11 @@
-<section id="guardians" class="mb-5 bg-soft-info rounded shadow-sm">
+<section id="guardians" class="mb-5  rounded shadow-sm">
 
     <x-forms.section title="Responsáveis" class="m-0" />
 
     <div class="pb-3 ps-3 pe-3">
         <div class="row g-3">
             @forelse($student->guardians as $g)
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <div class="card border-0 bg-white shadow-sm">
                         <div class="card-body">
 
@@ -46,7 +46,10 @@
             @empty
                 <div class="col-12">
                     <div class="alert alert-light border border-dashed text-center">
-                        Sem responsáveis registrados.
+                        <div  class="text-center text-muted fw-bold py-5">
+                            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                            Nenhum responsável do aluno encontrado.
+                        </div>
                     </div>
                 </div>
             @endforelse

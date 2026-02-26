@@ -1,5 +1,5 @@
 {{-- DADOS GERAIS --}}
-<section id="dados-gerais" class="mb-5 bg-soft-info rounded shadow-sm">
+<section id="dados-gerais" class="mb-5  rounded shadow-sm">
     
     <x-forms.section title="Dados Pessoais"  />
     <div class="pb-3 ps-3 pe-3">

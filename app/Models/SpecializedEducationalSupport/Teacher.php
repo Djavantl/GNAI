@@ -18,6 +18,11 @@ class Teacher extends Model
         return $this->belongsToMany(Discipline::class);
     }
 
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'teacher_courses')->withTimestamps();
+    }
+
     public function scopeName($query, ?string $term)
     {
         if (!$term) return $query;

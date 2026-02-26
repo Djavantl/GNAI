@@ -1,5 +1,5 @@
 {{-- PEIs --}}
-<section id="peis" class="mb-5 bg-soft-info rounded shadow-sm">
+<section id="peis" class="mb-5  rounded shadow-sm">
 
     <x-forms.section title="PEIs (Plano de Ensino Individualizado)" class="m-0" />
 
@@ -62,8 +62,9 @@
 
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center py-4 text-muted">
-                            Nenhum PEI encontrado para este aluno.
+                        <td colspan="5" class="text-center text-muted fw-bold py-5">
+                            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                            Nenhum PEI encontrado.
                         </td>
                     </tr>
                 @endforelse

@@ -41,9 +41,16 @@
             <x-forms.section title="Detalhamento Técnico" />
 
             <x-show.info-item 
+                label="Título da Metodologia" 
+                :value="$methodology->title" 
+                column="col-md-6" 
+                isBox="true" 
+            />
+
+            <x-show.info-item 
                 label="Descrição da Metodologia" 
                 :value="$methodology->description" 
-                column="col-md-12" 
+                column="col-md-6" 
                 isBox="true" 
             />
 
@@ -53,16 +60,6 @@
                 column="col-md-12" 
                 isBox="true" 
             />
-
-            <div class="col-md-6 px-4 py-3">
-                <small class="text-muted d-block">Criado em:</small>
-                <span class="fw-bold">{{ $methodology->created_at->format('d/m/Y H:i') }}</span>
-            </div>
-
-            <div class="col-md-6 px-4 py-3">
-                <small class="text-muted d-block">Última Atualização:</small>
-                <span class="fw-bold">{{ $methodology->updated_at->format('d/m/Y H:i') }}</span>
-            </div>
 
             <div class="col-12 border-top p-4 d-flex justify-content-end">
                 @if(!$pei->is_finished)

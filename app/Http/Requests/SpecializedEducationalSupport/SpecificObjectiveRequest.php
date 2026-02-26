@@ -23,6 +23,7 @@ class SpecificObjectiveRequest extends FormRequest
     {
         return [
             'pei_id' => ['required', 'exists:peis,id'],
+            'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:1000'],
             'status' => ['required', new Enum(ObjectiveStatus::class)],
             'observations_progress' => ['nullable', 'string', 'max:1000'],

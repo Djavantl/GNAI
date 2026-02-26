@@ -32,10 +32,6 @@
                 <x-forms.input name="term" label="Período (Ex: 1 ou 2)" type="number" :value="old('term', 1)" min="1" required />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.input name="label" label="Rótulo Exibido" placeholder="Ex: 2026.1" :value="old('label')" />
-            </div>
-
             <x-forms.section title="Duração do Semestre" />
 
             <div class="col-md-6">

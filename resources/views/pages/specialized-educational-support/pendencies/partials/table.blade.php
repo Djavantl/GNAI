@@ -1,6 +1,6 @@
 <x-table.table :headers="['Título','Profissional','Prioridade','Vencimento','Concluída','Ações']"
 :records="$pendencies">
-@foreach($pendencies as $pendency)
+@forelse($pendencies as $pendency)
     <tr>
         <x-table.td>{{ $pendency->title }}</x-table.td>
 
@@ -42,6 +42,13 @@
             </x-table.actions>
         </x-table.td>
     </tr>
-@endforeach
+@empty
+    <tr>
+        <td colspan="6" class="text-center text-muted py-5">
+            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+            Nenhuma pendência encontrada.
+        </td>
+    </tr>
+@endforelse
 </x-table.table>
 

@@ -13,10 +13,11 @@ class Pei extends Model
 
     protected $fillable = [
         'student_id',
-        'professional_id',
+        'creator_id',
         'semester_id',
         'course_id',
         'discipline_id',
+        'teacher_id',
         'teacher_name',
         'student_context_id',
         'is_finished',
@@ -27,6 +28,40 @@ class Pei extends Model
     protected $casts = [
         'is_finished' => 'boolean',
     ];
+
+    // Relacionamento com o professor do sistema
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
+    public function getTeacherDisplayNameAttribute(): string
+    {
+        if ($this->teacher_id && $this->teacher) {
+            return $this->teacher->person->name ?? 'Professor s/ Nome';
+        }
+
+        return $this->teacher_name ?? 'Não informado';
+    }
+
+    public function creator(): BelongsTo
+    {
+        // Aponta para o model User usando a nova coluna creator_id
+        return $this->belongsTo(\App\Models\User::class, 'creator_id');
+    }
+
+    /**
+     * Retorna o nome de quem criou o PEI (seja profissional ou professor)
+     * Uso no Blade: {{ $pei->creator_name }}
+     */
+    public function getCreatorNameAttribute(): string
+    {
+        if ($this->creator) {
+            return $this->creator->name; 
+        }
+
+        return 'Sistema/Desconhecido';
+    }
 
     public function scopeCurrent($query)
     {
@@ -129,5 +164,19 @@ class Pei extends Model
         if (!$version) return $query;
 
         return $query->where('version', $version);
+    }
+
+    public function scopeVisibleToUser($query, $user)
+    {
+        // só aplica a regra se for professor
+        if (!$user->teacher_id) {
+            return $query;
+        }
+
+        return $query->whereIn('discipline_id', function ($q) use ($user) {
+            $q->select('discipline_id')
+            ->from('discipline_teacher')
+            ->where('teacher_id', $user->teacher_id);
+        });
     }
 }

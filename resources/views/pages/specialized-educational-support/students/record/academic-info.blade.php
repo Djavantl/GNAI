@@ -1,5 +1,5 @@
 {{-- INFORMAÇÕES ESCOLARES & CURSOS --}}
-<section id="informacoes-escolares" class="mb-5  bg-soft-info rounded shadow-sm">
+<section id="informacoes-escolares" class="mb-5  rounded shadow-sm">
     <x-forms.section title="Informações Escolares e Cursos" />
     <div class="pb-3 ps-3 pe-3">
         <div class="row g-3 mt-1">
@@ -30,7 +30,10 @@
                     </div>
                 </div>
             @empty
-                <div class="alert alert-light border border-dashed text-center py-3">Nenhum curso registrado.</div>
+                <div class="text-center text-muted fw-bold py-5">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhuma curso ativo do aluno encontrado.
+                </div>
             @endforelse
         </div>
          {{-- BOTÃO GERENCIAR --}}

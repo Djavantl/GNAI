@@ -51,7 +51,7 @@
 
             {{-- Container de Alunos Dinâmico --}}
             <div class="col-md-6 mb-4">
-                <label class="form-label fw-bold text-purple-dark">Alunos Participantes <span class="text-danger">*</span></label>
+                <label class="form-label fw-bold text-purple-dark">Alunos Participantes <span class="text-danger"></span></label>
                 <div id="students-container" data-students="{{ $students->map(fn($s) => ['id' => $s->id, 'name' => $s->person->name])->toJson() }}"></div>
                 <div class="d-flex justify-content-start" >
                 <button type="button" id="add-student-btn" class="btn btn-sm btn-success mt-2 mb-3 d-none">

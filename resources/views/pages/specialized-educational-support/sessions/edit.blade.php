@@ -58,10 +58,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="session_date" 
-                    label="Data da Sessão *" 
+                    label="Data da Sessão " 
                     type="date" 
                     required 
-                    :value="old('session_date', $session->session_date)" 
+                    :value="old('session_date', optional($session->session_date)->format('Y-m-d'))"
                 />
             </div>
 
@@ -70,16 +70,16 @@
                     <div class="col-6">
                         <x-forms.select 
                             name="start_time" 
-                            label="Início *" 
+                            label="Início " 
                             required 
                             :options="$startTimes" 
-                            :selected="old('start_time', $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '')" 
+                            :selected="old('start_time', $session->start_time ? \Carbon\Carbon::parse($session->start_time)->format('H:i') : '')"
                         />
                     </div>
                     <div class="col-6">
                         <x-forms.select 
                             name="end_time" 
-                            label="Fim *" 
+                            label="Fim " 
                             required
                             :options="$endTimes" 
                            :selected="old('end_time', $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '')" 
@@ -103,6 +103,7 @@
                     name="location" 
                     label="Local" 
                     :value="old('location', $session->location)" 
+                    required
                 />
             </div>
 
@@ -112,6 +113,7 @@
                     label="Objetivo da Sessão"
                     rows="3"
                     :value="old('session_objective', $session->session_objective)"
+                    required
                 />
             </div>
 

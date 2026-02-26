@@ -1,4 +1,5 @@
-<x-table.table :headers="['Semestre', 'Componente Curricular', 'Docente Responsável', 'Status', 'Ações']">
+<x-table.table :headers="['Semestre', 'Componente Curricular', 'Docente Responsável', 'Status', 'Ações']"
+:records="$peis">
         @forelse($peis as $pei)
             <tr>
                 <x-table.td>
@@ -55,8 +56,8 @@
         @empty
             <tr>
                 <td colspan="5" class="text-center text-muted py-5">
-                    <i class="fas fa-clipboard-list d-block mb-2" style="font-size: 2rem;"></i>
-                    Nenhum PEI registrado para este aluno nas disciplinas atuais.
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2rem;"></i>
+                    Nenhum PEI do aluno encontrado no sistema.
                 </td>
             </tr>
         @endforelse

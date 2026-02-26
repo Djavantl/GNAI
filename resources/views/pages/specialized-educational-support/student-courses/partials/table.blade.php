@@ -41,8 +41,9 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" class="text-center py-4 text-muted">
-                    Nenhum curso alocado para esse aluno.
+                <td colspan="6" class="text-center text-muted fw-bold py-5">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhum curso do aluno encontrado.
                 </td>
             </tr>
         @endforelse

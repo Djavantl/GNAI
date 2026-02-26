@@ -7,6 +7,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
             'Documentos' => route('specialized-educational-support.student-documents.index', $student),
             'Cadastrar' => null
         ]" />
@@ -58,7 +59,7 @@
             <x-forms.section title="Arquivo" />
 
             <div class="col-md-12 mb-4">
-                <label class="form-label fw-bold">Selecionar Arquivo *</label>
+                <label class="form-label fw-bold">Selecionar Arquivo </label>
                 <input type="file" name="file" class="form-control" required accept=".pdf,.doc,.docx,.jpg,.png">
                 <small class="text-muted">Formatos aceitos: PDF, DOC, DOCX, JPG ou PNG. Tamanho máximo: 10MB.</small>
             </div>

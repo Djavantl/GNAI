@@ -7,7 +7,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
-            'Prontuário do Aluno' => route('specialized-educational-support.students.show', $student),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
             'Matrículas' => null
         ]" />
     </div>

@@ -3,7 +3,7 @@
     :records="$teachers" 
     aria-label="Tabela de professores"
 >
-@foreach($teachers as $teacher)
+@forelse($teachers as $teacher)
     <tr>
         <x-table.td>
             <div class="name-with-photo">
@@ -49,5 +49,12 @@
             </x-table.actions>
         </x-table.td>
     </tr>
-@endforeach
+@empty
+    <tr>
+        <td colspan="4" class="text-center text-muted fw-bold py-5">
+            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+            Nenhum aluno encontrado.
+        </td>
+    </tr>
+@endforelse
 </x-table.table>

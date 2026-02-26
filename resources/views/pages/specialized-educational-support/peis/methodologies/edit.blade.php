@@ -29,6 +29,16 @@
             <x-forms.section title="Estratégias e Recursos" />
 
             <div class="col-md-12">
+                <x-forms.input 
+                    name="title" 
+                    label="Título da Metodologia" 
+                    required 
+                    placeholder="Ex: Equações de 2º Grau"
+                    :value="old('title', $methodology->title)" 
+                />
+            </div>
+
+            <div class="col-md-12">
                 <x-forms.textarea 
                     name="description" 
                     label="Descrição da Metodologia" 

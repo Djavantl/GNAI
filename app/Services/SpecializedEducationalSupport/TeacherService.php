@@ -110,6 +110,15 @@ class TeacherService
                 'registration' => $data['registration'],
             ]);
 
+            $user = User::where('teacher_id', $teacher->id)->first();
+
+            if ($user) {
+                $user->update([
+                    'name' => $person->name,
+                    'email' => $person->email,
+                ]);
+            }
+
             return $teacher;
         });
     }
@@ -174,6 +183,17 @@ class TeacherService
             
             // Se você quiser registrar um log ou atualizar um timestamp de 'última alteração' 
             // no professor, faria aqui dentro também.
+        });
+    }
+
+    public function syncGrade(Teacher $teacher, array $courseIds, array $disciplineIds): void
+    {
+        DB::transaction(function () use ($teacher, $courseIds, $disciplineIds) {
+            // Sincroniza os cursos vinculados
+            $teacher->courses()->sync($courseIds);
+            
+            // Sincroniza as disciplinas selecionadas
+            $teacher->disciplines()->sync($disciplineIds);
         });
     }
 }

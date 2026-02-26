@@ -65,12 +65,13 @@
                 />
             </div>
 
-            <div class="col-md-6 mt-5">
-                <input type="hidden" name="uses_support_resources" value="0">
-                <x-forms.checkbox 
-                    name="uses_support_resources" 
-                    label="Utiliza recursos de apoio" 
-                    :checked="old('uses_support_resources', $student_deficiency->uses_support_resources)" 
+            <div class="col-md-6">
+                <x-forms.select
+                    name="uses_support_resources"
+                    label="Utiliza recursos de apoio"
+                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para esta deficiência"
+                    :options="[1 => 'Sim', 0 => 'Não']"
+                    :selected="old('uses_support_resources', $student_deficiency->uses_support_resources)" 
                 />
             </div>
 

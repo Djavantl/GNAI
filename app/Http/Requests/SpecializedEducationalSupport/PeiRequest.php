@@ -21,12 +21,15 @@ class PeiRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isProfessor = auth()->user() && auth()->user()->teacher_id !== null;
+        
         return [
             'student_id' => 'required|exists:students,id',
-            'course_id' => 'required|exists:courses,id',
             'discipline_id' => 'required|exists:disciplines,id',
-            'teacher_name' => 'required|string|max:255',
-            'student_context_id' => 'required|exists:student_contexts,id',
+            'teacher_name' => $isProfessor ? 'nullable|string|max:255' : 'required|string|max:255',
+            'teacher_id' => 'nullable|exists:teachers,id',
+            'course_id' => 'nullable|exists:courses,id',
+            'student_context_id' => 'nullable|exists:student_contexts,id',
         ];
     }
 }

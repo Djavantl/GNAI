@@ -11,17 +11,28 @@ class StudentService
 {
     public function index(array $filters = [])
     {
-        return Student::query()
+        $query = Student::query()
             ->select('students.*')
             ->join('people', 'people.id', '=', 'students.person_id')
-            ->with('person')
+            ->with(['person', 'currentCourse']);
 
+        if (auth()->user()->teacher_id) {
+            $teacherId = auth()->user()->teacher_id;
+
+            $query->whereHas('courses', function ($q) use ($teacherId) {
+                $q->whereIn('courses.id', function ($sub) use ($teacherId) {
+                    $sub->select('course_id')
+                        ->from('teacher_courses')
+                        ->where('teacher_id', $teacherId);
+                });
+            });
+        }
+
+        return $query
             ->name($filters['name'] ?? null)
             ->email($filters['email'] ?? null)
             ->registration($filters['registration'] ?? null)
             ->status($filters['status'] ?? null)
-            // ->semester($filters['semester'] ?? null)
-
             ->orderBy('people.name', 'asc')
             ->paginate(10)
             ->withQueryString();
@@ -29,12 +40,17 @@ class StudentService
 
     public function show(Student $student): Student
     {
+        $user = auth()->user();
+
         return $student->load([
             'person',
             'guardians',
             'currentContext',
             'deficiencies',
-            'peis',
+            'peis' => fn ($query) =>
+            $query->visibleToUser(auth()->user())
+                ->with(['semester', 'discipline'])
+                ->latest(),
             'studentCourses',
             'courses',
             'currentCourse',

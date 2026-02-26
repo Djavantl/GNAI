@@ -1,5 +1,5 @@
 {{-- DEFICIÊNCIAS --}}
-<section id="deficiencias" class="mb-5 bg-soft-info rounded shadow-sm">
+<section id="deficiencias" class="mb-5  rounded shadow-sm">
     <x-forms.section title="Deficiências" />
 
     <div class="pb-3 ps-3 pe-3">
@@ -30,8 +30,9 @@
                     </div>
                 </div>
             @empty
-                <div class="text-muted ps-3">
-                    Nenhuma deficiência registrada.
+                <div class="text-center text-muted fw-bold py-5">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhuma deficiência do aluno encontrada.
                 </div>
             @endforelse
         </div>

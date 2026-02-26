@@ -31,6 +31,7 @@ return new class extends Migration
             $table->boolean('uses_support_resources')->default(false);
 
             $table->text('notes')->nullable();
+            $table->unique(['student_id', 'deficiency_id']);
 
             $table->timestamps(); 
         });

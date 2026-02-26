@@ -51,8 +51,9 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-5">
-                    Nenhuma deficiência cadastrada para este aluno.
+                <td colspan="6" class="text-center text-muted fw-bold py-5">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhuma deficiência do aluno encontrada.
                 </td>
             </tr>
         @endforelse

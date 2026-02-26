@@ -25,7 +25,7 @@ class SessionRecord extends Model
      */
     public function attendanceSession(): BelongsTo
     {
-        return $this->belongsTo(Session::class, 'attendance_session_id');
+        return $this->belongsTo(Session::class, 'attendance_session_id')->withTrashed();
     }
 
     /**

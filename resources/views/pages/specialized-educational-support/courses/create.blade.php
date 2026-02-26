@@ -22,7 +22,7 @@
     <x-forms.form-card action="{{ route('specialized-educational-support.courses.store') }}" method="POST">
         <x-forms.section title="Dados do Curso" />
         <div class="col-md-12">
-            <x-forms.input name="name" label="Nome do Curso *" required :value="old('name')" />
+            <x-forms.input name="name" label="Nome do Curso " required :value="old('name')" />
         </div>
         <div class="col-md-12">
             <x-forms.textarea name="description" label="Descrição" :value="old('description')" />

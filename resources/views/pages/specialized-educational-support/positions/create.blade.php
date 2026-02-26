@@ -27,20 +27,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome do Cargo *" 
+                    label="Nome do Cargo " 
                     required 
                     placeholder="Ex: Professor AEE, Psicólogo..."
                     :value="old('name')" 
-                />
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.select
-                    name="is_active"
-                    label="Status *"
-                    required
-                    :options="['1' => 'Ativo', '0' => 'Inativo']"
-                    :value="old('is_active', '1')"
                 />
             </div>
 

@@ -89,7 +89,7 @@
         <div class="col-md-12 mb-3">
             <x-forms.textarea
                 name="history"
-                label="Histórico do Aluno *"
+                label="Histórico do Aluno "
                 rows="3"
                 required
                 placeholder="Descreva o histórico educacional"
@@ -100,7 +100,7 @@
         <div class="col-md-12">
             <x-forms.textarea
                 name="specific_educational_needs"
-                label="Necessidades Educacionais Específicas *"
+                label="Necessidades Educacionais Específicas "
                 rows="3"
                 required
                 placeholder="Descreva as necessidades educacionais específicas"

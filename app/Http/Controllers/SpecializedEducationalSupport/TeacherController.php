@@ -129,7 +129,7 @@ class TeacherController extends Controller
 
     public function disciplines(Teacher $teacher)
     {
-        $teacher->load('person', 'disciplines');
+        $teacher->load(['person', 'disciplines', 'courses']);
 
         $courses = Course::with(['disciplines' => function ($q) {
                 $q->where('is_active', true)->orderBy('name');
@@ -139,10 +139,12 @@ class TeacherController extends Controller
             ->get();
 
         $selectedDisciplinesIds = $teacher->disciplines->pluck('id')->toArray();
+        // Adicione esta linha para pegar os cursos atuais do professor
+        $selectedCoursesIds = $teacher->courses->pluck('id')->toArray();
 
         return view(
             'pages.specialized-educational-support.teachers.disciplines',
-            compact('teacher', 'courses', 'selectedDisciplinesIds')
+            compact('teacher', 'courses', 'selectedDisciplinesIds', 'selectedCoursesIds')
         );
     }
 
@@ -152,14 +154,21 @@ class TeacherController extends Controller
     public function updateDisciplines(Request $request, Teacher $teacher)
     {
         $request->validate([
+            'courses'       => 'array',
+            'courses.*'     => 'exists:courses,id',
             'disciplines'   => 'array',
             'disciplines.*' => 'exists:disciplines,id'
         ]);
 
-        $this->service->syncDisciplines($teacher, $request->disciplines ?? []);
+        // Chamamos o novo método do Service que salva ambos
+        $this->service->syncGrade(
+            $teacher, 
+            $request->courses ?? [], 
+            $request->disciplines ?? []
+        );
 
         return redirect()
             ->route('specialized-educational-support.teachers.show', $teacher)
-            ->with('success', 'Grade curricular atualizada com sucesso!');
+            ->with('success', 'Grade curricular (cursos e disciplinas) atualizada com sucesso!');
     }
 }

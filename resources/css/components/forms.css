@@ -294,3 +294,14 @@ form .row .row [class*="col-"] {
 .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
     height: 3rem !important;
 }
+
+.custom-input{
+    border-color: #b6accf !important; /* roxo base */
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.custom-input:focus {
+    border-color: #7c3aed !important; /* roxo mais forte no foco */
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+    outline: none;
+}

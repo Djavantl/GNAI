@@ -27,7 +27,7 @@
 
         <x-forms.section title="Informações Básicas" />
         <div class="col-md-12">
-            <x-forms.input name="name" label="Nome do Curso *" required :value="old('name', $course->name)" />
+            <x-forms.input name="name" label="Nome do Curso " required :value="old('name', $course->name)" />
         </div>
 
         <x-forms.section title="Grade Curricular (Selecione as Disciplinas)" />
@@ -49,7 +49,7 @@
         <div class="col-md-6">
             <x-forms.select
                 name="is_active"
-                label="Status do Curso *"
+                label="Status do Curso "
                 :options="[1 => 'Ativo', 0 => 'Inativo']"
                 :selected="old('is_active', $course->is_active)"
             />

@@ -21,6 +21,7 @@ class MethodologyRequest extends FormRequest
     {
         return [
             'pei_id' => ['required', 'exists:peis,id'],
+            'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'resources_used' => ['nullable', 'string'],
         ];

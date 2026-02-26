@@ -5,7 +5,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Sessões' => route('specialized-educational-support.sessions.index'),
-            $session->professional->person->name => null
+            'Sessão #' . $session->id => null
         ]" />
     </div>
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -14,26 +14,10 @@
             <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
         </div>
         <div class="d-flex gap-2">
-             {{-- Lógica do Registro --}}
-            @if($session->sessionRecord)
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
-                    variant="info"
-                    
-                >
-                    <i class="fas fa-eye" aria-hidden="true"></i>  Ver Registro
-                </x-buttons.link-button>
-            @else
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.session-records.create', $session->id)"
-                    variant="new"
-                >
-                    <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro
-                </x-buttons.link-button>
-            @endif
+            
             @if($session->status !== 'cancelled' && $session->status !== 'Cancelado')
                 <x-buttons.link-button :href="route('specialized-educational-support.sessions.edit', $session->id)" variant="warning">
-                   <i class="fas fa-edit" aria-hidden="true"></i>  Editar Sessão
+                   <i class="fas fa-edit" aria-hidden="true"></i>  Editar 
                 </x-buttons.link-button>
             @endif
             <x-buttons.link-button :href="route('specialized-educational-support.sessions.index')" variant="secondary">
@@ -58,9 +42,18 @@
             
             <x-show.info-item label="Profissional" :value="$session->professional->person->name" column="col-md-6" isBox="true"/>
             
-            <x-show.info-item label="Status" column="col-md-6">
-                <span class="badge" style="background-color: var(--primary-color);">
-                    {{ strtoupper($session->status) }}
+            <x-show.info-item label="Status" column="col-md-6" isBox="true">
+                @php
+                    $statusValue = strtolower($session->status);
+                    $statusColor = match($statusValue) {
+                        'agendada', 'agendado' => 'warning',
+                        'realizada', 'realizado' => 'success',
+                        'cancelada', 'cancelled', 'cancelado' => 'danger',
+                        default => 'warning'
+                    };
+                @endphp
+                <span class="text-{{ $statusColor }} fw-bold">
+                    {{ ucfirst($session->status) }}
                 </span>
             </x-show.info-item>
 
@@ -123,10 +116,27 @@
 
             {{-- Rodapé do Card --}}
             <div class="col-12 border-top p-4  d-flex justify-content-end gap-3">
-                @if($session->status !== 'cancelled' && $session->status !== 'Cancelado')
+                @if($session->status !== 'Cancelada' && $session->status !== 'Realizada')
                     <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelSessao" type="button">
                         <i class="fas fa-times" aria-hidden="true"></i> Cancelar Sessão
                     </x-buttons.submit-button>
+                @endif
+                 {{-- Lógica do Registro --}}
+                @if($session->sessionRecord)
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
+                        variant="info"
+                        
+                    >
+                        <i class="fas fa-eye" aria-hidden="true"></i>  Ver Registro
+                    </x-buttons.link-button>
+                @else
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.session-records.create', $session->id)"
+                        variant="new"
+                    >
+                        <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro
+                    </x-buttons.link-button>
                 @endif
                
                  <form action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}" method="POST">

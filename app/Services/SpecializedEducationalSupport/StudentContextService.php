@@ -217,10 +217,11 @@ class StudentContextService
     {
         $user = Auth::user();
 
-        if (!$user || !$user->professional_id) {
-            throw new \Exception('Usuário autenticado não possui profissional vinculado.');
-        }
+        // if (!$user || !$user->professional_id) {
+        //     throw new \Exception('Usuário autenticado não possui profissional vinculado.');
+        // }
 
+        // return $user->professional_id;
         return $user->professional_id;
     }
 }

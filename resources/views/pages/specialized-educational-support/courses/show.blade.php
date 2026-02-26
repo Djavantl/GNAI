@@ -19,7 +19,7 @@
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
             <x-buttons.link-button :href="route('specialized-educational-support.courses.index')" variant="secondary">
-                Voltar
+                <i class="fas fa-arrow-left"></i>Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -57,6 +57,28 @@
                         @endforeach
                     </ul>
                 @endif
+            </div>
+        </div>
+        {{-- RODAPÉ DE AÇÕES --}}
+        <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
+            <div class="text-muted small">
+                <i class="fas fa-id-badge me-1"></i>
+                Curso ID: #{{ $course->id }} | Sistema GNAI 2026
+            </div>
+
+            <div class="d-flex gap-3">
+        
+                <form
+                    action="{{ route('specialized-educational-support.courses.destroy', $course) }}"
+                    method="POST"
+                    onsubmit="return confirm('Excluir este curso?')">
+                    @csrf
+                    @method('DELETE')
+
+                    <x-buttons.submit-button variant="danger">
+                       <i class="fas fa-trash"></i>  Excluir
+                    </x-buttons.submit-button>
+                </form>
             </div>
         </div>
     </div>

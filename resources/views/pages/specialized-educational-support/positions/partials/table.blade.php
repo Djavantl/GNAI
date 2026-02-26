@@ -1,5 +1,5 @@
 <x-table.table :headers="['Cargo', 'Ativo', 'Ações']">
-        @foreach($positions as $item)
+    @forelse($positions as $item)
             <tr> 
                 <x-table.td><strong>{{ $item->name }}</strong></x-table.td>
 
@@ -42,5 +42,12 @@
                     </x-table.actions>
                 </x-table.td>
             </tr>
-        @endforeach
+    @empty
+        <tr>
+            <td colspan="3" class="text-center text-muted py-5">
+                <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                Nenhum cargo encontrado.
+            </td>
+        </tr>
+    @endforelse
     </x-table.table>

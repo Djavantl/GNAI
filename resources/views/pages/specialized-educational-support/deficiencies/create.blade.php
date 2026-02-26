@@ -26,7 +26,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome da Deficiência *" 
+                    label="Nome da Deficiência " 
                     required 
                     :value="old('name')" 
                 />
@@ -38,16 +38,6 @@
                     label="Código CID" 
                     placeholder="Ex: F84.0"
                     :value="old('cid_code')" 
-                />
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.select
-                    name="is_active"
-                    label="Status *"
-                    required
-                    :options="['1' => 'Ativa', '0' => 'Inativa']"
-                    :value="old('is_active', '1')"
                 />
             </div>
 

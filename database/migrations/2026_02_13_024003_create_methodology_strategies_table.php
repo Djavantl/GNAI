@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('methodologies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pei_id')->constrained('peis')->onDelete('cascade');
+            $table->string('title'); 
             $table->text('description'); 
             $table->text('resources_used')->nullable(); 
             $table->timestamps();

@@ -36,7 +36,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome Completo *" 
+                    label="Nome Completo " 
                     required 
                     :value="old('name', $student->person->name)" 
                 />
@@ -45,7 +45,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="Documento *" 
+                    label="Documento " 
                     required 
                     :value="old('document', $student->person->document)" 
                 />
@@ -54,7 +54,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="birth_date" 
-                    label="Data de Nascimento *" 
+                    label="Data de Nascimento " 
                     type="date" 
                     required 
                     :value="old('birth_date', optional($student->person->birth_date)->format('Y-m-d'))" 
@@ -79,7 +79,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="email" 
-                    label="E-mail *" 
+                    label="E-mail " 
                     type="email" 
                     required 
                     :value="old('email', $student->person->email)" 
@@ -108,7 +108,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="registration" 
-                    label="Matrícula *" 
+                    label="Matrícula " 
                     required 
                     :value="old('registration', $student->registration)" 
                 />
@@ -117,7 +117,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="entry_date" 
-                    label="Data de Ingresso *" 
+                    label="Data de Ingresso " 
                     type="date" 
                     required 
                     :value="old('entry_date', $student->entry_date)" 

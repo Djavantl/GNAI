@@ -14,18 +14,16 @@
         <x-table.td>{{ $session->type }}</x-table.td>
         <x-table.td>
             @php
-                // Mapeando cores para os diferentes status de sessão
-                $statusColor = match($session->status) {
-                    'scheduled' => 'info',
-                    'completed' => 'success',
-                    'canceled'  => 'danger',
-                    default     => 'warning'
+                $statusValue = strtolower($session->status);
+                $statusColor = match($statusValue) {
+                    'agendada', 'agendado' => 'warning',
+                    'realizada', 'realizado' => 'success',
+                    'cancelada', 'cancelled', 'cancelado' => 'danger',
+                    default => 'warning'
                 };
-                $statusLabel = ucfirst($session->status);
             @endphp
-
             <span class="text-{{ $statusColor }} fw-bold">
-                {{ $statusLabel }}
+                {{ ucfirst($session->status) }}
             </span>
         </x-table.td>
 
@@ -54,10 +52,11 @@
         </x-table.td>
     </tr>
 @empty
-        <tr>
-            <td colspan="6" class="text-center text-muted py-5">
-                Nenhuma sessão cadastrada.
-            </td>
-        </tr>
+    <tr>
+        <td colspan="6" class="text-center text-muted fw-bold py-5">
+            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+            Nenhuma sessão encontrada.
+        </td>
+    </tr>
 @endforelse
 </x-table.table>

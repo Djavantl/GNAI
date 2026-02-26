@@ -83,7 +83,7 @@
         @empty
             <tr>
                 <td colspan="5" class="text-center text-muted py-5">
-                    <i class="fas fa-notes-medical d-block mb-2" style="font-size: 2.5rem; color: #dee2e6;"></i>
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
                     Nenhum registro de sessão encontrado.
                 </td>
             </tr>

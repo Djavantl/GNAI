@@ -34,10 +34,6 @@
                 <x-forms.input name="term" label="Período" type="number" :value="old('term', $semester->term)" required />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.input name="label" label="Rótulo" :value="old('label', $semester->label)" />
-            </div>
-
             <x-forms.section title="Duração do Semestre" />
 
             <div class="col-md-6">

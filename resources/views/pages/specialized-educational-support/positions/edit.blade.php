@@ -29,7 +29,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome do Cargo *" 
+                    label="Nome do Cargo " 
                     required 
                     :value="old('name', $position->name)" 
                 />
@@ -38,7 +38,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="is_active"
-                    label="Status *"
+                    label="Status "
                     required
                     :options="['1' => 'Ativo', '0' => 'Inativo']"
                     :value="old('is_active', $position->is_active)"

@@ -7,8 +7,10 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
             'Documentos' => route('specialized-educational-support.student-documents.index', $studentDocument->student_id),
-            'Editar Documento' => null
+            $studentDocument->title => null,
+            'Editar' => null
         ]" />
     </div>
 
@@ -31,7 +33,7 @@
             <div class="col-md-12 mb-3">
                 <x-forms.input 
                     name="title" 
-                    label="Título do Documento *" 
+                    label="Título do Documento " 
                     required 
                     :value="old('title', $studentDocument->title)" 
                 />
@@ -40,7 +42,7 @@
            <div class="col-md-6 mb-3">
                 <x-forms.select
                     name="type"
-                    label="Tipo de Documento *"
+                    label="Tipo de Documento "
                     required
                     :options="$types" 
                     :selected="$studentDocument->type->value"
@@ -76,7 +78,7 @@
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
                     <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>

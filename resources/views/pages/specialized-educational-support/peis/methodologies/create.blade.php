@@ -25,6 +25,16 @@
 
             <x-forms.section title="Estratégia Pedagógica" />
 
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="title" 
+                    label="Título da Metodologia" 
+                    required 
+                    placeholder="Ex: Geometria Analítica - Estudo da Reta"
+                    :value="old('title')" 
+                />
+            </div>
+
             <div class="col-md-12">
                 <x-forms.textarea 
                     name="description" 

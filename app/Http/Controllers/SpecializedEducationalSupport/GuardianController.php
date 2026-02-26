@@ -57,10 +57,10 @@ class GuardianController extends Controller
 
     public function store(GuardianRequest $request, Student $student)
     {
-        $this->service->create($student, $request->validated());
+        $guardian = $this->service->create($student, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.students.index')
+            ->route('specialized-educational-support.guardians.show', $guardian)
             ->with('success', 'Responsável vinculado com sucesso.');
     }
 
@@ -75,10 +75,10 @@ class GuardianController extends Controller
 
     public function update(GuardianRequest $request, Student $student, Guardian $guardian)
     {
-        $this->service->update($guardian, $request->validated());
+        $guardian = $this->service->update($guardian, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.guardians.index', $student->id)
+            ->route('specialized-educational-support.guardians.show', $guardian)
             ->with('success', 'Dados do responsável atualizados com sucesso.');
     }
     

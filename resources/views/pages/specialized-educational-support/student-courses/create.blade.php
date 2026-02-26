@@ -6,7 +6,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
-            'Prontuário do Aluno' => route('specialized-educational-support.students.show', $student),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
             'Matrículas' => route('specialized-educational-support.student-courses.history', $student),
             'Cadastrar' => null
         ]" />
@@ -48,7 +48,7 @@
             <div class="col-md-6">
                 <x-forms.select 
                     name="course_id" 
-                    label="Curso / Série *" 
+                    label="Curso / Série " 
                     required
                     aria-label="Selecionar curso ou série"
                     :options="$courses->pluck('name', 'id')->toArray()" 
@@ -58,27 +58,19 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="academic_year" 
-                    label="Ano Letivo *" 
+                    label="Ano Letivo " 
                     type="number" 
                     required
                     aria-label="Ano letivo"
                     :value="old('academic_year', date('Y'))" />
             </div>
 
-            <div class="col-md-6 d-flex align-items-center pt-4">
-                <div class="form-check">
-                    <input 
-                        class="form-check-input" 
-                        type="checkbox" 
-                        name="is_current" 
-                        value="1" 
-                        id="is_current" 
-                        checked
-                        aria-label="Definir como curso atual">
-                    <label class="form-check-label" for="is_current">
-                        Definir como Curso Atual
-                    </label>
-                </div>
+            <div class="col-md-6">
+                <x-forms.select
+                    name="is_current"
+                    label="Curso atual "
+                    :options="[1 => 'Ativo', 0 => 'Inativo']"
+                />
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">

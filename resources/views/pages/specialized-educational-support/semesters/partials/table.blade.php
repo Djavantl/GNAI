@@ -63,7 +63,8 @@
         @empty
             <tr>
                 <td colspan="4" class="text-center text-muted py-5">
-                    Nenhum semestre cadastrado.
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                    Nenhum semestre encontrado.
                 </td>
             </tr>
         @endforelse

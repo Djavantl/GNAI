@@ -33,7 +33,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome Completo *" 
+                    label="Nome Completo " 
                     required 
                     :value="old('name')" 
                 />
@@ -42,7 +42,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="Documento *" 
+                    label="Documento " 
                     required 
                     :value="old('document')" 
                 />
@@ -51,7 +51,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="birth_date" 
-                    label="Data de Nascimento *" 
+                    label="Data de Nascimento " 
                     type="date" 
                     required 
                     :value="old('birth_date')" 
@@ -69,13 +69,14 @@
                         'not_specified' => 'Não informado'
                     ]"
                     :value="old('gender', 'not_specified')"
+                    required
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.input 
                     name="email" 
-                    label="E-mail *" 
+                    label="E-mail " 
                     type="email" 
                     required 
                     :value="old('email')" 
@@ -104,7 +105,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="registration" 
-                    label="Matrícula *" 
+                    label="Matrícula " 
                     required 
                     :value="old('registration')" 
                 />

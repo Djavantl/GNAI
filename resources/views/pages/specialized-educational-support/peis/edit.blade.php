@@ -45,7 +45,7 @@
            <div class="col-md-6">
                 <x-forms.select
                     name="discipline_id"
-                    label="Componente Curricular (Disciplina) *"
+                    label="Componente Curricular (Disciplina) "
                     required
                     :options="$disciplines"
                     :selected="old('discipline_id', $pei->discipline_id)"
@@ -56,7 +56,7 @@
             <div class="col-md-6 mt-3">
                 <x-forms.input
                     name="teacher_name"
-                    label="Nome do Docente Responsável *"
+                    label="Nome do Docente Responsável "
                     required
                     :value="old('teacher_name', $pei->teacher_name)"
                     aria-label="Nome do professor responsável pelo PEI"

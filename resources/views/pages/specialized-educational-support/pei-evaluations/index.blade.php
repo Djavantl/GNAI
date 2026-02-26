@@ -90,7 +90,7 @@
         @empty
             <tr>
                 <td colspan="5" class="text-center text-muted py-5">
-                    <i class="fas fa-clipboard-check d-block mb-2" style="font-size: 2rem;"></i>
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 2rem;"></i>
                     Nenhuma avaliação registrada para este PEI.
                 </td>
             </tr>

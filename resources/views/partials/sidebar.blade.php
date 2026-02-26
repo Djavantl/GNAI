@@ -185,6 +185,14 @@
         </li>
         @endcan
 
+        <li>
+            <a href="{{ route('specialized-educational-support.teachers.index') }}"
+               class="{{ request()->routeIs('specialized-educational-support.teachers.*') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-mortarboard"></i></span>
+                <span class="text">Professores</span>
+            </a>
+        </li>
+
 
 
         <li>

@@ -8,7 +8,7 @@
             <x-table.td>
                 <div class="name-with-photo">
                     <img src="{{ $student->person->photo_url }}" class="avatar-table" alt="Foto">
-                    <span class="fw-bold text-purple-dark">{{ $student->person->name }}</span>
+                    <span class="fw-bold ">{{ $student->person->name }}</span>
                 </div>
             </x-table.td>
             <x-table.td>{{ $student->person->email }}</x-table.td>
@@ -50,8 +50,9 @@
         </tr>
     @empty
         <tr>
-            <td colspan="6" class="text-center py-4 text-muted">
-                Nenhum aluno encontrado para a busca realizada.
+            <td colspan="6" class="text-center text-muted fw-bold py-5">
+                <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                Nenhum aluno encontrado.
             </td>
         </tr>
     @endforelse

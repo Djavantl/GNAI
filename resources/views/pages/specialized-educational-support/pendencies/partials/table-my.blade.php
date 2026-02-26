@@ -45,9 +45,9 @@
         </tr>
     @empty
         <tr>
-            <td colspan="5" class="text-center text-muted py-4">
-                <i class="fas fa-check-circle me-1"></i>
-                Nenhuma pendência atribuída a você no momento.
+            <td colspan="6" class="text-center text-muted py-5">
+                <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                Nenhuma pendência encontrada para você.
             </td>
         </tr>
     @endforelse

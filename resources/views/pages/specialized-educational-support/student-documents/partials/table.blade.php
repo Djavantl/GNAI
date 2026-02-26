@@ -1,5 +1,5 @@
 <x-table.table :headers="['Título', 'Tipo', 'Semestre', 'Versão', 'Tamanho', 'Data de Upload', 'Ações']">
-    @foreach($documents as $document)
+    @forelse($documents as $document)
         <tr>
             <x-table.td>
                 <span class="fw-bold text-purple-dark">{{ $document->title }}</span>
@@ -80,13 +80,12 @@
                 </x-table.actions>
             </x-table.td>
         </tr>
-    @endforeach
-
-    @if($documents->isEmpty())
+    @empty
         <tr>
-            <td colspan="7" class="text-center py-4 text-muted">
-                Nenhum documento encontrado para este aluno.
+            <td colspan="7" class="text-center text-muted fw-bold py-5">
+                <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                Nenhum documento do aluno encontrado.
             </td>
         </tr>
-    @endif
+    @endforelse
 </x-table.table>

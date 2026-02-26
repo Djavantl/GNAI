@@ -17,8 +17,10 @@ use App\Models\SpecializedEducationalSupport\SpecificObjective;
 use App\Models\SpecializedEducationalSupport\ContentProgrammatic;
 use App\Models\SpecializedEducationalSupport\Methodology;
 use App\Services\SpecializedEducationalSupport\PeiService;
+use App\Models\User;
 use App\Enums\SpecializedEducationalSupport\ObjectiveStatus; 
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class PeiController extends Controller
 {
@@ -59,7 +61,7 @@ class PeiController extends Controller
 
     public function index(Student $student, Request $request)
     {
-        $peis = $this->service->all($request->all());
+        $peis = $this->service->index($student, $request->all());
 
         $semesters = Semester::orderByDesc('year')
             ->orderByDesc('term')
@@ -67,6 +69,8 @@ class PeiController extends Controller
 
         $disciplines = Discipline::orderBy('name')
             ->get(['id', 'name']);
+ 
+            
 
         if ($request->ajax()) {
             return view(
@@ -92,41 +96,60 @@ class PeiController extends Controller
 
     public function create(Student $student)
     {
+        // 1. Validação de Matrícula
         $studentCourse = $student->currentCourse()->first();
-        if(!$studentCourse){
-           return redirect()->back()->with('error','Este aluno não possui matrícula vigente');
+        if (!$studentCourse) {
+            return redirect()->back()->with('error', 'Este aluno não possui matrícula vigente');
         }
 
         $course = $studentCourse->course;
-
-        $disciplines = $course->disciplines()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->pluck('name', 'disciplines.id');
-
+        $user = auth()->user();
+        
+        // 2. Dados comuns a ambos os fluxos
         $currentContext = $student->contexts()->where('is_current', true)->first();
         $semester = Semester::current();
 
-        return view(
-            'pages.specialized-educational-support.peis.create',
-            compact(
-                'student',
-                'studentCourse',
-                'course',
-                'disciplines',
-                'currentContext',
-                'semester'
-            )
-        );
+        // 3. Lógica de Disciplinas (Inicia com as disciplinas do curso do aluno)
+        $disciplinesQuery = $course->disciplines()->where('is_active', true);
+
+        // Se for Professor
+        if ($user->teacher_id) {
+            $disciplinesQuery->whereHas('teachers', function ($query) use ($user) {
+                $query->where('teachers.id', $user->teacher_id);
+            });
+
+            $disciplines = $disciplinesQuery->orderBy('name')->pluck('name', 'disciplines.id');
+
+            return view('pages.specialized-educational-support.peis.create-teacher', compact(
+                'student', 'studentCourse', 'course', 'disciplines', 'currentContext', 'semester'
+            ));
+        }
+
+        // 4. Fluxo para Profissional/Admin 
+        $disciplines = $disciplinesQuery->orderBy('name')->pluck('name', 'disciplines.id');
+
+        return view('pages.specialized-educational-support.peis.create', compact(
+            'student', 'studentCourse', 'course', 'disciplines', 'currentContext', 'semester'
+        ));
     }
 
     public function store(PeiRequest $request)
-    {   try {
-            $pei = $this->service->create($request->validated());
+    {   
+        try {
+            $user = auth()->user();
+
+            // Se o usuário tem um teacher_id, usamos o método específico de professor
+            if ($user && $user->teacher_id) {
+                $pei = $this->service->createAsTeacher($request->validated());
+            } else {
+                // Caso contrário, segue o fluxo administrativo padrão
+                $pei = $this->service->create($request->validated());
+            }
 
             return redirect()
                 ->route('specialized-educational-support.pei.show', $pei)
                 ->with('success', 'PEI gerado com sucesso. Agora você pode adicionar os objetivos e metodologias.');
+
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -261,9 +284,12 @@ class PeiController extends Controller
 
     public function destroyObjective(SpecificObjective $specific_objective)
     {
+        $pei = $specific_objective->pei;
         $this->service->deleteObjective($specific_objective);
 
-        return back()->with('success', 'Objetivo removido.');
+        return redirect()
+            ->route('specialized-educational-support.pei.show', $pei)
+            ->with('success', 'Objetivo removido.');
     }
 
     // Tela para criar Conteúdo Programático
@@ -319,9 +345,12 @@ class PeiController extends Controller
 
     public function destroyContent(ContentProgrammatic $content_programmatic)
     {
+        $pei = $content_programmatic->pei;
         $this->service->deleteContent($content_programmatic);
 
-        return back()->with('success', 'Conteúdo removido.');
+        return redirect()
+            ->route('specialized-educational-support.pei.show', $pei)
+            ->with('success', 'Conteúdo removido.');
     }
 
     // Tela para criar Metodologia
@@ -376,9 +405,12 @@ class PeiController extends Controller
     }
     public function destroyMethodology(Methodology $methodology)
     {
+        $pei = $methodology->pei;
         $this->service->deleteMethodology($methodology);
 
-        return back()->with('success', 'Metodologia removida.');
+        return redirect()
+            ->route('specialized-educational-support.pei.show', $pei)
+            ->with('success', 'Metodologia removida.');
     }
 
     public function generatePdf(Pei $pei)

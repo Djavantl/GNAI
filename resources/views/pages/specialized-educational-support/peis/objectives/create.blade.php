@@ -26,14 +26,13 @@
 
             <x-forms.section title="Detalhamento da Meta" />
 
-            <div class="col-md-12">
-                <x-forms.textarea 
-                    name="description" 
-                    label="Descrição do Objetivo" 
-                    rows="3" 
+            <div class="col-md-6">
+                <x-forms.input 
+                    name="title" 
+                    label="Título do Objetivo" 
                     required 
-                    placeholder="Ex: Identificar e aplicar fórmulas de equações do 2º grau com auxílio de material concreto."
-                    :value="old('description')" 
+                    placeholder="Ex: ..."
+                    :value="old('title')" 
                 />
             </div>
 
@@ -46,6 +45,19 @@
                     :value="old('statuses')"
                 />
             </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea 
+                    name="description" 
+                    label="Descrição do Objetivo" 
+                    rows="3" 
+                    required 
+                    placeholder="Ex: Identificar e aplicar fórmulas de equações do 2º grau com auxílio de material concreto."
+                    :value="old('description')" 
+                />
+            </div>
+
+            
 
             <div class="col-md-12">
                 <x-forms.textarea 

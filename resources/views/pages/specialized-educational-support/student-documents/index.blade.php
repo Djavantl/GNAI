@@ -7,6 +7,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
             'Documentos' => null
         ]" />
     </div>
@@ -25,8 +26,6 @@
         </x-buttons.link-button>
     </div>
 
-    :x-table.filters.form
-    
      <x-table.filters.form
         data-dynamic-filter
         data-target="#documents-table"

@@ -28,7 +28,7 @@ class CourseService
             $course = Course::create([
                 'name'        => $data['name'],
                 'description' => $data['description'] ?? null,
-                'is_active'   => $data['is_active'],
+                'is_active'   => true,
             ]);
 
             if (!empty($data['discipline_ids'])) {

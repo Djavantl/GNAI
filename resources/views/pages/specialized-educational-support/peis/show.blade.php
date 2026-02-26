@@ -8,7 +8,7 @@
             'Alunos' => route('specialized-educational-support.students.index'),
             $pei->student->person->name => route('specialized-educational-support.students.show', $pei->student),
             'PEIs' => route('specialized-educational-support.pei.index', $pei->student),
-            'Plano #' . $pei->id => null
+            'PEI #' . $pei->id => null
         ]" />
     </div>
 
@@ -67,8 +67,8 @@
                 column="col-md-4" 
                 isBox="true" />
 
-            <x-show.info-item label="Profissional Responsável" 
-                :value="$pei->professional->person->name" 
+            <x-show.info-item label="Responsável" 
+                :value="$pei->creator_name" 
                 column="col-md-4" 
                 isBox="true" />
             
@@ -93,7 +93,7 @@
                 isBox="true" />
 
             <x-show.info-item label="Docente" 
-                :value="$pei->teacher_name" 
+                :value="$pei->teacher_display_name" 
                 column="col-md-6" 
                 isBox="true" />
 
@@ -124,42 +124,19 @@
             <x-forms.section title="Objetivos Específicos" />
 
             <div class="col-12 px-4 pb-4">
-
                 <div class="d-flex justify-content-end mb-3">
                     @if(!$pei->is_finished)
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.pei.objective.create', $pei->id)"
                             variant="new">
-                            <i class="fas fa-plus"></i>Adicionar Objetivo
+                            <i class="fas fa-plus"></i> Adicionar Objetivo
                         </x-buttons.link-button>
                     @endif
                 </div>
 
-                <x-table.table :headers="['Descrição', 'Status', '']">
-                    @forelse($pei->specificObjectives as $obj)
-                        <tr>
-                            <x-table.td>{{ $obj->description }}</x-table.td>
-                            <x-table.td>{{ $obj->status->label() }}</x-table.td>
-    
-                            <x-table.td>
-                                @if(!$pei->is_finished)
-                                    <x-table.actions class="d-flex justify-content-end">
-                                        <x-buttons.link-button href="{{ route('specialized-educational-support.pei.objective.show', $obj) }}" variant="info">
-                                           <i class="fas fa-eye"></i> Ver
-                                        </x-buttons.link-button>
-                                        
-                                    </x-table.actions>
-                                @endif
-                            </x-table.td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">
-                                Nenhum objetivo cadastrado.
-                            </td>
-                        </tr>
-                    @endforelse
-                </x-table.table>
+                <div id="objectives-index-table">
+                    @include('pages.specialized-educational-support.peis.objectives.partials.table')
+                </div>
 
             </div>
 
@@ -168,42 +145,19 @@
             <x-forms.section title="Conteúdo Programático" />
 
             <div class="col-12 px-4 pb-4">
-
                 <div class="d-flex justify-content-end mb-3">
                     @if(!$pei->is_finished)
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.pei.content.create', $pei->id)"
                             variant="new">
-                           <i class="fas fa-plus"></i> Adicionar Conteúdo
+                            <i class="fas fa-plus"></i> Adicionar Conteúdo
                         </x-buttons.link-button>
                     @endif
                 </div>
 
-                <x-table.table :headers="['Título', 'Descrição', '']">
-                    @forelse($pei->contentProgrammatic as $content)
-                        <tr>
-                            <x-table.td>{{ $content->title }}</x-table.td>
-                            <x-table.td>{{ $content->description ?? '---' }}</x-table.td>
-                            <x-table.td>
-                                @if(!$pei->is_finished)
-                                    <x-table.actions class="d-flex justify-content-end">
-                                        <x-buttons.link-button href="{{ route('specialized-educational-support.pei.content.show', $content) }}" variant="info">
-                                            <i class="fas fa-eye"></i>Ver
-                                        </x-buttons.link-button>
-
-                                        
-                                    </x-table.actions>
-                                @endif
-                            </x-table.td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="text-center py-4 text-muted">
-                                Nenhum conteúdo cadastrado.
-                            </td>
-                        </tr>
-                    @endforelse
-                </x-table.table>
+                <div id="contents-index-table">
+                    @include('pages.specialized-educational-support.peis.contents.partials.table')
+                </div>
 
             </div>
 
@@ -212,42 +166,20 @@
             <x-forms.section title="Metodologias" />
 
             <div class="col-12 px-4 pb-4">
-
                 <div class="d-flex justify-content-end mb-3">
                     @if(!$pei->is_finished)
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.pei.methodology.create', $pei->id)"
                             variant="new">
-                           <i class="fas fa-plus"></i> Adicionar Metodologia
+                            <i class="fas fa-plus"></i> Adicionar Metodologia
                         </x-buttons.link-button>
                     @endif
                 </div>
 
-                <x-table.table :headers="['Descrição', 'Recursos Utilizados', '']">
-                    @forelse($pei->methodologies as $method)
-                        <tr>
-                            <x-table.td>{{ $method->description }}</x-table.td>
-                            <x-table.td>{{ $method->resources_used ?? '---' }}</x-table.td>
-                            <x-table.td>
-                                @if(!$pei->is_finished)
-                                    <x-table.actions class="d-flex justify-content-end">
-                                        <x-buttons.link-button href="{{ route('specialized-educational-support.pei.methodology.show', $method) }}" variant="info">
-                                            <i class="fas fa-eye"></i>Ver
-                                        </x-buttons.link-button>
-
-                                    
-                                    </x-table.actions>
-                                @endif
-                            </x-table.td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="text-center py-4 text-muted">
-                                Nenhuma metodologia cadastrada.
-                            </td>
-                        </tr>
-                    @endforelse
-                </x-table.table>
+                
+                <div id="methodologies-index-table">
+                    @include('pages.specialized-educational-support.peis.methodologies.partials.table')
+                </div>
 
             </div>
 
@@ -279,7 +211,7 @@
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-                    <x-buttons.link-button :href="route('specialized-educational-support.pei.finish', $pei->id)" variant="secondary">
+                    <x-buttons.link-button :href="route('specialized-educational-support.pei.index', $pei->student->id)" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>

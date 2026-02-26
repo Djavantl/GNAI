@@ -6,14 +6,14 @@
             'Home' => route('dashboard'),
             'Professores' => route('specialized-educational-support.teachers.index'),
             $teacher->person->name => route('specialized-educational-support.teachers.show', $teacher),
-            'Disciplinas' => null
+            'Grade Curricular' => null
         ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Disciplinas de {{ $teacher->person->name }}</h2>
-            <p class="text-muted">Selecione as disciplinas que este professor leciona na instituição.</p>
+            <h2 class="text-title">Grade Curricular: {{ $teacher->person->name }}</h2>
+            <p class="text-muted">Selecione as disciplinas. O vínculo com os cursos será atualizado automaticamente.</p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.teachers.show', $teacher) }}" variant="secondary">
             <i class="fas fa-times"></i> Cancelar
@@ -21,42 +21,45 @@
     </div>
 
     <div class="mt-3">
+        {{-- Mudamos a rota para a que salva ambos (syncGrade) --}}
         <x-forms.form-card action="{{ route('specialized-educational-support.teachers.disciplines.update', $teacher) }}" method="POST">
             @method('PUT')
             
-            <x-forms.section title="Grade Curricular do Professor" />
+            <x-forms.section title="Atribuição de Disciplinas por Curso" />
 
             <div class="col-12">
-                <div class="alert alert-info border-0 shadow-sm mb-4">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Dica:</strong> Você pode selecionar disciplinas por curso inteiro.
-                </div>
-
                 @forelse($courses as $course)
                     @if($course->disciplines->count())
-                    <div class="border rounded mb-4 overflow-hidden shadow-sm">
+                    <div class="border rounded mb-4 overflow-hidden shadow-sm course-card" data-course-id="{{ $course->id }}">
 
                         {{-- Cabeçalho do Curso --}}
-                        <div class="d-flex justify-content-between align-items-center px-4 py-3"
-                            style="background-color: #f8f9fc; border-bottom: 1px solid #e3e6f0;">
-                            <h6 class="mb-0 fw-bold text-purple-dark">
-                                <i class="fas fa-folder me-2"></i>{{ $course->name }}
-                            </h6>
+                        <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-light border-bottom">
+                            <div>
+                                <h6 class="mb-0 fw-bold text-purple-dark text-uppercase">
+                                    <i class="fas fa-graduation-cap me-2"></i>{{ $course->name }}
+                                </h6>
+                                <small class="text-muted">Selecione as disciplinas deste curso</small>
+                            </div>
 
-                            <x-forms.checkbox
-                                name="check_all_course_{{ $course->id }}"
-                                id="check-all-course-{{ $course->id }}"
-                                label="Selecionar Curso"
-                                class="check-all-course"
-                                data-course="{{ $course->id }}"
-                            />
+                            <div class="d-flex align-items-center gap-3">
+                                {{-- Campo Hidden para enviar o ID do curso se houver disciplinas marcadas --}}
+                                <input type="hidden" name="courses[]" value="{{ $course->id }}" class="course-id-input" @disabled(!array_intersect($course->disciplines->pluck('id')->toArray(), $selectedDisciplinesIds))>
+                                
+                                <x-forms.checkbox
+                                    name="check_all_course_{{ $course->id }}"
+                                    id="check-all-course-{{ $course->id }}"
+                                    label="Marcar Todas"
+                                    class="check-all-course"
+                                    data-course="{{ $course->id }}"
+                                />
+                            </div>
                         </div>
 
-                        {{-- Disciplinas do Curso --}}
-                        <div class="px-4 py-3 bg-soft-info">
+                        {{-- Disciplinas --}}
+                        <div class="px-4 py-3 bg-white">
                             <div class="row">
                                 @foreach($course->disciplines as $discipline)
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-3 mb-2">
                                         <x-forms.checkbox
                                             name="disciplines[]"
                                             :value="$discipline->id"
@@ -66,22 +69,15 @@
                                             :checked="in_array($discipline->id, old('disciplines', $selectedDisciplinesIds))"
                                             :label="$discipline->name"
                                         />
-
-                                        @if($discipline->description)
-                                            <small class="text-muted d-block ms-4">
-                                                {{ Str::limit($discipline->description, 40) }}
-                                            </small>
-                                        @endif
                                     </div>
                                 @endforeach
                             </div>
                         </div>
-
                     </div>
                     @endif
                 @empty
-                    <div class="text-center py-4">
-                        <p class="text-muted">Nenhum curso com disciplinas ativas encontrado.</p>
+                    <div class="alert alert-warning text-center">
+                        Nenhum curso ou disciplina disponível para atribuição.
                     </div>
                 @endforelse
             </div>
@@ -92,7 +88,7 @@
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save"></i> Atualizar Grade do Professor
+                    <i class="fas fa-save"></i> Salvar Grade Curricular
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>
@@ -101,6 +97,15 @@
     @push('scripts')
    <script>
     document.addEventListener('DOMContentLoaded', function () {
+        
+        function updateCourseInput(courseId) {
+            const card = document.querySelector(`.course-card[data-course-id="${courseId}"]`);
+            const hiddenInput = card.querySelector('.course-id-input');
+            const anyChecked = card.querySelectorAll('.discipline-checkbox input:checked').length > 0;
+            
+            // Se tiver disciplina marcada, habilita o input hidden do curso para ele ser enviado no array courses[]
+            hiddenInput.disabled = !anyChecked;
+        }
 
         document.addEventListener('change', function (e) {
             if (e.target.type !== 'checkbox') return;
@@ -108,16 +113,31 @@
             const wrapper = e.target.closest('.custom-checkbox-wrapper');
             if (!wrapper) return;
 
+            // Lógica de "Selecionar Todas" do curso
             if (wrapper.classList.contains('check-all-course')) {
                 const courseId = wrapper.dataset.course;
                 const checked = e.target.checked;
 
                 document.querySelectorAll(
-                    '.discipline-checkbox[data-course="'+courseId+'"] input'
-                ).forEach(cb => cb.checked = checked);
+                    `.discipline-checkbox[data-course="${courseId}"] input`
+                ).forEach(cb => {
+                    cb.checked = checked;
+                });
+                updateCourseInput(courseId);
+            }
+
+            // Lógica individual da disciplina
+            if (wrapper.classList.contains('discipline-checkbox')) {
+                const courseId = wrapper.dataset.course;
+                updateCourseInput(courseId);
+                
+                // Atualiza o "Check All" se necessário
+                const allCbs = document.querySelectorAll(`.discipline-checkbox[data-course="${courseId}"] input`);
+                const allChecked = Array.from(allCbs).every(c => c.checked);
+                const checkAll = document.querySelector(`#check-all-course-${courseId} input`);
+                if(checkAll) checkAll.checked = allChecked;
             }
         });
-
     });
     </script>
     @endpush

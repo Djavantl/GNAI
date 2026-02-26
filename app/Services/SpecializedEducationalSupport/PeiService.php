@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\SpecializedEducationalSupport\SemesterService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth; 
+use App\Models\User;
 
 class PeiService
 {
@@ -24,19 +25,32 @@ class PeiService
 
     public function all(array $filters = [])
     {
-        return Pei::query()
+        $user = auth()->user();
+
+        $query = Pei::query()
             ->with([
                 'student.person',
                 'semester',
                 'discipline'
-            ])
+            ]);
 
+        // Se for professor → apenas disciplinas dele
+        if ($user->teacher_id) {
+            $teacher = $user->teacher;
+
+            $query->whereIn('discipline_id', function ($q) use ($teacher) {
+                $q->select('discipline_id')
+                ->from('discipline_teacher') // tabela pivot teacher ↔ discipline
+                ->where('teacher_id', $teacher->id);
+            });
+        }
+
+        return $query
             ->student($filters['student_id'] ?? null)
             ->semester($filters['semester_id'] ?? null)
             ->discipline($filters['discipline_id'] ?? null)
             ->finished($filters['is_finished'] ?? null)
             ->version($filters['version'] ?? null)
-
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -45,24 +59,20 @@ class PeiService
     /**
      * Lista todos os PEIs de um estudante específico.
      */
-    public function index(array $filters = [])
+    public function index(Student $student, array $filters = [])
     {
         return Pei::query()
-            ->with([
-                'student.person',
-                'semester',
-                'discipline'
-            ])
+            ->where('student_id', $student->id)
+            ->visibleToUser(auth()->user())
+            ->with(['student.person', 'semester', 'discipline'])
             ->semester($filters['semester_id'] ?? null)
             ->discipline($filters['discipline_id'] ?? null)
             ->finished($filters['is_finished'] ?? null)
             ->version($filters['version'] ?? null)
-
             ->latest()
             ->paginate(10)
             ->withQueryString();
     }
-
     /**
      * Mostra os detalhes de um PEI com todas as suas tabelas auxiliares.
      */
@@ -83,35 +93,62 @@ class PeiService
     public function create(array $data): Pei
     {
         return DB::transaction(function () use ($data) {
-
-            $student = Student::findOrFail($data['student_id']);
-            $studentCourse = $student->currentCourse()->firstOrFail();
-
-            // garante consistência: course_id vem da matrícula atual
-            $data['course_id'] = $studentCourse->course_id;
-            $data['semester_id'] = $this->semesterService->getCurrent()?->id ?? null;
-
-            if (! $data['semester_id']) {
-                throw new \Exception('Não há semestre atual definido.');
-            }
-
-            // Verifica se já existe algum PEI (qualquer versão) para esse aluno/curso/disciplina
-            $exists = Pei::where('student_id', $data['student_id'])
-                ->where('course_id', $data['course_id'])
-                ->where('discipline_id', $data['discipline_id'])
-                ->exists();
-
-            if ($exists) {
-                throw new \Exception('Já existe um PEI para esse aluno/curso/disciplina. Use a funcionalidade "Nova Versão".');
-            }
-
-            $data['professional_id'] = Auth::id();
-            $data['is_finished'] = false;
-            $data['version'] = 1;
-            $data['is_current'] = false;
-
-            return Pei::create($data);
+            $data['creator_id'] = Auth::id();
+            
+            return $this->prepareAndSavePei($data);
         });
+    }
+
+    public function createAsTeacher(array $data): Pei
+    {
+        return DB::transaction(function () use ($data) {
+            $user = auth()->user();
+            
+            if (!$user->teacher_id) {
+                throw new \Exception('Usuário não possui perfil de professor vinculado.');
+            }
+
+            // Vincula o ID do professor e o nome (para histórico/redundância se desejar)
+            $data['teacher_id'] = $user->teacher_id;
+            $data['creator_id'] = $user->id;
+            
+            // Opcional: Salvar o nome do professor também na coluna de string 
+            // para manter compatibilidade com as listagens que usam teacher_name
+            $data['teacher_name'] = $user->person->name ?? $user->name;
+
+            return $this->prepareAndSavePei($data);
+        });
+    }
+
+    private function prepareAndSavePei(array $data): Pei
+    {
+        $student = Student::findOrFail($data['student_id']);
+        $studentCourse = $student->currentCourse()->firstOrFail();
+
+        // Dados automáticos do sistema
+        $data['course_id'] = $studentCourse->course_id;
+        $data['semester_id'] = $this->semesterService->getCurrent()?->id;
+        $data['student_context_id'] = $student->contexts()->where('is_current', true)->first()?->id;
+
+        if (!$data['semester_id']) {
+            throw new \Exception('Não há semestre atual definido.');
+        }
+
+        // Validação de duplicidade (considerando curso e disciplina)
+        $exists = Pei::where('student_id', $data['student_id'])
+            ->where('course_id', $data['course_id'])
+            ->where('discipline_id', $data['discipline_id'])
+            ->exists();
+
+        if ($exists) {
+            throw new \Exception('Já existe um PEI para este aluno nesta disciplina. Use a funcionalidade "Nova Versão".');
+        }
+
+        $data['is_finished'] = false;
+        $data['version'] = 1;
+        $data['is_current'] = false;
+
+        return Pei::create($data);
     }
 
     public function createVersion(Pei $pei): Pei
@@ -134,19 +171,22 @@ class PeiService
             // desativa versão corrente anterior
             $pei->update(['is_current' => false]);
 
-
+            $user = auth()->user();
             // replica campos básicos
             $new = Pei::create([
                 'student_id' => $pei->student_id,
-                'professional_id' => Auth::id(), 
+                'teacher_id' => Auth::id(), 
                 'semester_id' => $pei->semester_id,
                 'course_id' => $pei->course_id,
                 'discipline_id' => $pei->discipline_id,
-                'teacher_name' => $pei->teacher_name,
+                'teacher_id'      => $pei->teacher_id, 
+                'teacher_name'    => $pei->teacher_name,
                 'student_context_id' => $studentContext->id,
                 'is_finished' => false,
                 'version' => ($pei->version ?? 1) + 1,
                 'is_current' => false,
+                'creator_id' => $user->id,
+                
             ]);
 
             // copiar objetivos
@@ -264,7 +304,8 @@ class PeiService
 
     public function deleteObjective(SpecificObjective $objective): void
     {
-        if ($pei->is_finished) {
+        
+        if ($objective->pei->is_finished) {
             throw new \Exception('PEI finalizado: não é possível excluir objetivos.');
         }
 
@@ -306,7 +347,7 @@ class PeiService
      */
     public function deleteContent(ContentProgrammatic $content): void
     {
-        if ($pei->is_finished) {
+        if ($content->pei->is_finished) {
             throw new \Exception('PEI finalizado: não é possível excluir conteúdos.');
         }
 
