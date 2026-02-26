@@ -2,80 +2,120 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
+use App\Models\InclusiveRadar\AssistiveTechnology;
+use App\Models\InclusiveRadar\ResourceType;
+use App\Models\InclusiveRadar\ResourceStatus;
+use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Enums\InclusiveRadar\ConservationState;
+use App\Models\InclusiveRadar\Inspection;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 class AssistiveTechnologySeeder extends Seeder
 {
     public function run(): void
     {
-        $now = Carbon::now();
-        $statusId = DB::table('resource_statuses')->first()->id ?? 1;
-        $deficiencies = DB::table('deficiencies')->pluck('id', 'name');
+        // Obtém os tipos de tecnologia assistiva (físicas e digitais)
+        $types = ResourceType::where('for_assistive_technology', true)->get();
 
-        // 1. Cadeira de Rodas (Física)
-        $typeCadeira = DB::table('resource_types')->where('name', 'Cadeira de Rodas')->first();
-        $ta1Id = DB::table('assistive_technologies')->insertGetId([
-            'name' => 'Cadeira de Rodas Motorizada X1',
-            'description' => 'Cadeira com comando por joystick e bateria recarregável.',
-            'type_id' => $typeCadeira->id,
-            'asset_code' => 'TA-CAD-001',
-            'quantity' => 2,
-            'quantity_available' => 2,
-            'conservation_state' => 'novo',
-            'status_id' => $statusId,
-            'created_at' => $now,
-        ]);
+        if ($types->isEmpty()) {
+            $this->command->error('Nenhum tipo de tecnologia assistiva encontrado. Execute ResourceTypeSeeder primeiro.');
+            return;
+        }
 
-        // Atributos da Cadeira
-        $this->seedAttributes($ta1Id, 'assistive_technology', [
-            'marca' => 'Freedom',
-            'modelo' => 'X1-Motor',
-            'peso_kg' => '45',
-            'capacidade_kg' => '120'
-        ]);
+        // Obtém o status "Disponível"
+        $availableStatus = ResourceStatus::where('code', 'available')->first();
+        if (!$availableStatus) {
+            $this->command->error('Status "available" não encontrado. Execute ResourceStatusSeeder primeiro.');
+            return;
+        }
 
-        // 2. NVDA (Digital)
-        $typeNvda = DB::table('resource_types')->where('name', 'NVDA')->first();
-        $ta2Id = DB::table('assistive_technologies')->insertGetId([
-            'name' => 'Software NVDA 2024.1',
-            'description' => 'Leitor de tela gratuito e de código aberto.',
-            'type_id' => $typeNvda->id,
-            'asset_code' => 'TA-SOFT-001',
-            'quantity' => 50,
-            'quantity_available' => 50,
-            'conservation_state' => 'novo',
-            'status_id' => $statusId,
-            'created_at' => $now,
-        ]);
+        // Obtém algumas deficiências para associar (opcional)
+        $deficiencies = Deficiency::inRandomOrder()->limit(5)->get();
 
-        $this->seedAttributes($ta2Id, 'assistive_technology', [
-            'versao' => '2024.1',
-            'sistema_operacional' => 'Windows 10/11',
-            'licenca' => 'GPLv2'
-        ]);
+        // Obtém um usuário para associar às inspeções
+        $user = User::first();
+        if (!$user) {
+            $this->command->error('Nenhum usuário encontrado. Crie um usuário antes de executar este seeder.');
+            return;
+        }
 
-        // Vínculos com Deficiências
-        DB::table('assistive_technology_deficiency')->insert([
-            ['assistive_technology_id' => $ta1Id, 'deficiency_id' => $deficiencies['Física'] ?? 1],
-            ['assistive_technology_id' => $ta2Id, 'deficiency_id' => $deficiencies['Visual'] ?? 2],
-        ]);
-    }
+        // Lista de 15 nomes sugestivos
+        $technologyNames = [
+            'Cadeira de Rodas Motorizada',
+            'Andador com Suporte de Tronco',
+            'Bengala Longa Dobrável',
+            'Lupa Eletrônica de Mesa',
+            'Teclado Adaptado com Colmeia',
+            'Mouse Adaptado Trackball',
+            'Software Leitor de Tela (NVDA)',
+            'Software Ampliador de Tela (Virtual Vision)',
+            'Comunicador Alternativo Prancha de Símbolos',
+            'Punção para Escrita Braille',
+            'Reglete de Mesa',
+            'Órtese de Punho e Polegar',
+            'Prótese Transtibial',
+            'Acionador de Pressão por Sopro',
+            'Ponteira de Cabeça para Digitação',
+        ];
 
-    private function seedAttributes($resourceId, $type, $values)
-    {
-        foreach ($values as $attrName => $val) {
-            $attr = DB::table('type_attributes')->where('name', $attrName)->first();
-            if ($attr) {
-                DB::table('resource_attribute_values')->insert([
-                    'resource_id' => $resourceId,
-                    'resource_type' => $type,
-                    'attribute_id' => $attr->id,
-                    'value' => $val,
-                    'created_at' => now()
+        $namesToUse = array_slice($technologyNames, 0, 15);
+
+        foreach ($namesToUse as $index => $name) {
+            $type = $types->random();
+            $conservation = ConservationState::cases()[array_rand(ConservationState::cases())];
+
+            $technology = AssistiveTechnology::create([
+                'name'                => $name,
+                'description'         => "Tecnologia assistiva: {$name}. Recurso disponível para empréstimo.",
+                'type_id'             => $type->id,
+                'asset_code'          => 'TA-' . str_pad($index + 1, 4, '0', STR_PAD_LEFT),
+                'quantity'            => 1,
+                'quantity_available'  => 1,
+                'conservation_state'  => $conservation->value,
+                'notes'               => 'Item cadastrado via seeder com estoque unitário.',
+                'status_id'           => $availableStatus->id,
+                'is_active'           => true,
+            ]);
+
+            if ($deficiencies->isNotEmpty()) {
+                $technology->deficiencies()->sync(
+                    $deficiencies->random(rand(1, min(3, $deficiencies->count())))->pluck('id')
+                );
+            }
+
+            // Define um status válido para o enum BarrierStatus (se a model Inspection tiver cast)
+            // Opções: 'identified', 'under_analysis', 'in_progress', 'resolved', 'not_applicable'
+            $inspectionStatus = 'identified'; // ou 'not_applicable' se preferir
+
+            // Cria a primeira inspeção
+            Inspection::create([
+                'inspectable_id'   => $technology->id,
+                'inspectable_type' => AssistiveTechnology::class,
+                'state'            => $conservation->value,
+                'status'           => $inspectionStatus,
+                'type'             => 'initial',
+                'inspection_date'  => Carbon::now()->subDays(rand(0, 30)),
+                'description'      => "Inspeção inicial de cadastro da tecnologia {$technology->name}.",
+                'user_id'          => $user->id,
+            ]);
+
+            // Opcional: segunda inspeção para simular histórico
+            if (rand(0, 1)) {
+                Inspection::create([
+                    'inspectable_id'   => $technology->id,
+                    'inspectable_type' => AssistiveTechnology::class,
+                    'state'            => $conservation->value,
+                    'status'           => $inspectionStatus,
+                    'type'             => 'periodic',
+                    'inspection_date'  => Carbon::now()->subDays(rand(1, 60)),
+                    'description'      => "Inspeção periódica de rotina.",
+                    'user_id'          => $user->id,
                 ]);
             }
         }
+
+        $this->command->info('15 tecnologias assistivas criadas com sucesso, todas com estoque 1 e disponíveis.');
     }
 }

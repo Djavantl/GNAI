@@ -1,71 +1,120 @@
-<x-table.table :headers="['Nome', 'Categoria', 'Relator', 'Prioridade', 'Status', 'Ações']" :records="$barriers">
+<x-table.table :headers="['Barreira', 'Categoria', 'Prioridade', 'Status Atual', 'Data Ident.', 'Ações']" :records="$barriers">
+
     @forelse($barriers as $barrier)
+
+        @php
+            $status = $barrier->currentStatus();
+
+            // Se a barreira for não aplicável ou já concluída, não há próxima etapa
+            $nextStep = $barrier->isClosedOrNotApplicable() ? null : $barrier->nextStep();
+
+            $actionRoute = null;
+            $actionLabel = '';
+            $actionIcon = '';
+
+            if ($nextStep) {
+                $actionRoute = route("inclusive-radar.barriers.stage{$nextStep}", $barrier);
+
+                $actionLabel = match($nextStep) {
+                    2 => 'Analisar',
+                    3 => 'Planejar',
+                    4 => 'Resolver',
+                    default => 'Avançar'
+                };
+
+                $actionIcon = match($nextStep) {
+                    2 => 'fa-microscope',
+                    3 => 'fa-clipboard-list',
+                    4 => 'fa-check-double',
+                    default => 'fa-arrow-right'
+                };
+            }
+        @endphp
+
         <tr>
-            {{-- NOME --}}
-            <x-table.td>{{ $barrier->name }}</x-table.td>
+            {{-- BARREIRA --}}
+            <x-table.td>
+                <span class="fw-bold text-dark">{{ $barrier->name }}</span>
+                <br>
+                <small class="text-muted">
+                    {{ $barrier->institution?->name }}
+                </small>
+            </x-table.td>
 
             {{-- CATEGORIA --}}
-            <x-table.td>{{ $barrier->category?->name ?? '-' }}</x-table.td>
-
-            {{-- RELATOR --}}
             <x-table.td>
-                {{ $barrier->is_anonymous ? 'Anônimo' : ($barrier->registeredBy?->name ?? 'Sistema') }}
-                @if($barrier->affected_person_role)
-                    <small class="text-muted d-block">{{ $barrier->affected_person_role }}</small>
+                {{ $barrier->category?->name ?? 'Não definida' }}
+            </x-table.td>
+
+            {{-- PRIORIDADE --}}
+            <x-table.td>
+                <span class="badge bg-{{ $barrier->priority->color() }}">
+                    {{ $barrier->priority->label() }}
+                </span>
+            </x-table.td>
+
+            {{-- STATUS --}}
+            <x-table.td>
+                @if($status)
+                    <span class="text-{{ $status->color() }} fw-bold">
+                        {{ $status->label() }}
+                    </span>
+                @else
+                    <span class="text-muted">Sem status</span>
                 @endif
             </x-table.td>
 
-            {{-- PRIORIDADE - Com Badge conforme solicitado --}}
+            {{-- DATA --}}
             <x-table.td>
-                @php $prioColor = $barrier->priority?->color() ?? 'secondary'; @endphp
-                <span class="badge bg-{{ $prioColor }}-subtle text-{{ $prioColor }}-emphasis border px-2">
-                    {{ $barrier->priority?->label() ?? '-' }}
-                </span>
-            </x-table.td>
-
-            {{-- STATUS - Com Badge conforme solicitado --}}
-            <x-table.td>
-                @php
-                    $status = $barrier->latestStatus();
-                    $statusColor = $status ? $status->color() : 'secondary';
-                @endphp
-                <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-2">
-                    {{ $status ? $status->label() : 'Pendente' }}
-                </span>
+                {{ optional($barrier->identified_at)->format('d/m/Y') }}
             </x-table.td>
 
             {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
+                    {{-- VER --}}
                     <x-buttons.link-button
                         :href="route('inclusive-radar.barriers.show', $barrier)"
                         variant="info"
+                        title="Ver Detalhes"
                     >
-                        <i class="fas fa-eye"></i> Ver
+                        <i class="fas fa-eye"></i>
                     </x-buttons.link-button>
 
-                    <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}" method="POST" class="d-inline">
+                    {{-- PRÓXIMA ETAPA --}}
+                    @if($actionRoute)
+                        <x-buttons.link-button
+                            :href="$actionRoute"
+                            variant="primary"
+                            title="{{ $actionLabel }}"
+                        >
+                            <i class="fas {{ $actionIcon }}"></i>
+                            {{ $actionLabel }}
+                        </x-buttons.link-button>
+                    @endif
+
+                    {{-- EXCLUIR --}}
+                    <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}"
+                          method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button
                             variant="danger"
-                            onclick="return confirm('Deseja remover este relato?')"
+                            onclick="return confirm('Deseja remover esta barreira?')"
                         >
-                            <i class="fas fa-trash-alt"></i> Excluir
+                            <i class="fas fa-trash-alt"></i>
                         </x-buttons.submit-button>
                     </form>
                 </x-table.actions>
             </x-table.td>
         </tr>
+
     @empty
         <tr>
-            <td colspan="6" class="text-center text-muted py-4">Nenhuma barreira identificada até o momento.</td>
+            <td colspan="6" class="text-center text-muted py-4">
+                Nenhuma barreira encontrada.
+            </td>
         </tr>
     @endforelse
-</x-table.table>
 
-@if(method_exists($barriers, 'hasPages') && $barriers->hasPages())
-    <div class="mt-4 px-3">
-        {{ $barriers->links() }}
-    </div>
-@endif
+</x-table.table>

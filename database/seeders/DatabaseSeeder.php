@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\InclusiveRadar\InstitutionSeeder;
 use Database\Seeders\InclusiveRadar\LoanSeeder;
+use Database\Seeders\InclusiveRadar\LocationSeeder;
 use Illuminate\Database\Seeder;
 use Database\Seeders\SpecializedEducationalSupport\SemesterSeeder;
 use Database\Seeders\SpecializedEducationalSupport\StudentContextSeeder;
@@ -65,8 +67,9 @@ class DatabaseSeeder extends Seeder
             PeiSeeder::class,
             AttendanceSessionSeeder::class,
             TeacherSeeder::class,
-            
-            
+            InstitutionSeeder::class,
+            LocationSeeder::class,
+            AssistiveTechnologySeeder::class,
         ]);
     }
 }
