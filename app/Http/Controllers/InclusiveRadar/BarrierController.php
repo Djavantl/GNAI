@@ -4,10 +4,11 @@ namespace App\Http\Controllers\InclusiveRadar;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\BarrierRequest;
-use App\Http\Requests\InclusiveRadar\BarrierStageRequest;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\BarrierCategory;
+use App\Models\InclusiveRadar\Inspection;
 use App\Models\InclusiveRadar\Institution;
+use App\Models\InclusiveRadar\Location;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
@@ -30,18 +31,29 @@ class BarrierController extends Controller
      */
     public function index(Request $request): View
     {
-        $name = trim($request->name ?? '');
-
-        $barriers = Barrier::with(['category', 'institution', 'stages'])
-            ->name($name ?: null)
+        $barriers = Barrier::with([
+            'category',
+            'institution',
+            'inspections'
+        ])
+            ->name($request->name)
             ->category($request->category)
             ->priority($request->priority)
-            ->when($request->status, function ($q) use ($request) {
-                return $q->whereHas('stages', function ($sub) use ($request) {
+
+            ->when($request->status, function ($query) use ($request) {
+
+                $query->whereHas('inspections', function ($sub) use ($request) {
                     $sub->where('status', $request->status)
-                        ->whereRaw('step_number = (select max(step_number) from barrier_stages where barrier_id = barriers.id)');
+                        ->whereRaw('inspection_date = (
+                        select max(inspection_date)
+                        from inspections
+                        where inspectable_id = barriers.id
+                        and inspectable_type = ?
+                    )', [Barrier::class]);
                 });
+
             })
+
             ->orderByDesc('created_at')
             ->paginate(10)
             ->withQueryString();
@@ -58,19 +70,26 @@ class BarrierController extends Controller
      */
     public function create(): View
     {
-        $institutions = Institution::orderBy('name')->get();
+        $institutions = Institution::with('locations')->orderBy('name')->get();
         $categories = BarrierCategory::orderBy('name')->get();
         $deficiencies = Deficiency::orderBy('name')->get();
-
         $students = Student::with('person')->get();
         $professionals = Professional::with('person')->get();
+
+        $selectedInstitution = old('institution_id')
+            ? $institutions->firstWhere('id', old('institution_id'))
+            : null;
+
+        $barrier = new Barrier();
 
         return view('pages.inclusive-radar.barriers.stage1', compact(
             'institutions',
             'categories',
             'deficiencies',
             'students',
-            'professionals'
+            'professionals',
+            'barrier',
+            'selectedInstitution'
         ));
     }
 
@@ -90,6 +109,24 @@ class BarrierController extends Controller
         }
     }
 
+    public function stage1(Barrier $barrier): View
+    {
+        $institutions = Institution::orderBy('name')->get();
+        $categories = BarrierCategory::orderBy('name')->get();
+        $deficiencies = Deficiency::orderBy('name')->get();
+        $students = Student::with('person')->get();
+        $professionals = Professional::with('person')->get();
+
+        return view('pages.inclusive-radar.barriers.stage1', compact(
+            'institutions',
+            'categories',
+            'deficiencies',
+            'students',
+            'professionals',
+            'barrier'
+        ));
+    }
+
     /**
      * Exibição Detalhada (Timeline/Show)
      */
@@ -100,9 +137,7 @@ class BarrierController extends Controller
             'institution',
             'location',
             'deficiencies',
-            'stages.starter',
-            'stages.user',
-            'inspections.images'
+            'inspections.images',
         ]);
 
         return view('pages.inclusive-radar.barriers.show', compact('barrier'));
@@ -113,15 +148,18 @@ class BarrierController extends Controller
      */
     public function stage2(Barrier $barrier): View
     {
+        $deficiencies = Deficiency::all();
+
         $barrier->load(['deficiencies', 'inspections.images']);
-        return view('pages.inclusive-radar.barriers.stage2', compact('barrier'));
+        return view('pages.inclusive-radar.barriers.stage2', compact('barrier', 'deficiencies'));
     }
 
     /**
      * ETAPA 2 – Salvar Análise
      */
-    public function saveStage2(Barrier $barrier, BarrierStageRequest $request): RedirectResponse
+    public function saveStage2(Barrier $barrier, BarrierRequest $request): RedirectResponse
     {
+
         try {
             $this->service->storeStage2($barrier, $request->validated(), Auth::id());
             return redirect()->route('inclusive-radar.barriers.index')
@@ -142,7 +180,7 @@ class BarrierController extends Controller
     /**
      * ETAPA 3 – Salvar Plano de Tratamento
      */
-    public function saveStage3(Barrier $barrier, BarrierStageRequest $request): RedirectResponse
+    public function saveStage3(Barrier $barrier, BarrierRequest $request): RedirectResponse
     {
         try {
             $this->service->storeStage3($barrier, $request->validated(), Auth::id());
@@ -164,7 +202,7 @@ class BarrierController extends Controller
     /**
      * ETAPA 4 – Salvar Resolução e Encerrar
      */
-    public function saveStage4(Barrier $barrier, BarrierStageRequest $request): RedirectResponse
+    public function saveStage4(Barrier $barrier, BarrierRequest $request): RedirectResponse
     {
         try {
             $this->service->storeStage4($barrier, $request->validated(), Auth::id());
@@ -187,5 +225,21 @@ class BarrierController extends Controller
         } catch (Exception $e) {
             return back()->with('error', 'Erro ao remover: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Exibe os detalhes de uma inspeção específica vinculada à barreira
+     */
+    public function showInspection(Barrier $barrier, Inspection $inspection): View
+    {
+        abort_if(
+            $inspection->inspectable_id !== $barrier->id ||
+            $inspection->inspectable_type !== 'barrier',
+            403
+        );
+
+        $inspection->load(['images', 'inspectable']);
+
+        return view('pages.inclusive-radar.barriers.inspections.show', compact('barrier', 'inspection'));
     }
 }

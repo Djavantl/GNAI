@@ -40,52 +40,74 @@
 
                 <div class="px-4">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <x-forms.input
-                                name="institution_display"
-                                label="Instituição (Campus)"
-                                :value="$barrier->institution?->name ?? 'N/A'"
-                                disabled
-                            />
+                        <div class="row g-3">
+                            {{-- Instituição --}}
+                            <div class="col-md-6">
+                                <x-forms.input
+                                    name="institution_display"
+                                    label="Instituição (Campus)"
+                                    :value="$barrier->institution?->name ?? 'N/A'"
+                                    disabled
+                                />
+                            </div>
+
+                            {{-- Local --}}
+                            <div class="col-md-6">
+                                <x-forms.input
+                                    name="location_display"
+                                    label="Ponto de Referência"
+                                    :value="$barrier->location?->name ?? 'N/A'"
+                                    disabled
+                                />
+                            </div>
+
+                            <div class="col-md-12">
+                                <x-forms.input
+                                    name="name_display"
+                                    label="Título do Relato"
+                                    :value="$barrier->name"
+                                    disabled
+                                />
+                            </div>
+
+                            <div class="col-md-6">
+                                <x-forms.input
+                                    name="category_display"
+                                    label="Categoria"
+                                    :value="$barrier->category?->name ?? 'Não categorizada'"
+                                    disabled
+                                />
+                            </div>
+
+                            <div class="col-md-6">
+                                <x-forms.select name="priority" label="Prioridade" :options="collect(App\Enums\Priority::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()])->toArray()" :selected="old('priority', 'medium')" />
+                            </div>
+
+                            {{-- Nome do Impactado --}}
+                            <div class="col-md-6">
+                                <x-forms.input
+                                    name="affected_person_display"
+                                    label="Pessoa Impactada"
+                                    :value="$barrier->is_anonymous ? 'Contribuidor Anônimo' : ($barrier->affected_person_name ?? ($barrier->affectedStudent?->person?->name ?? ($barrier->affectedProfessional?->person?->name ?? 'Não identificado')))"
+                                    disabled
+                                />
+                            </div>
+
+                            {{-- Papel/Cargo --}}
+                            <div class="col-md-6">
+                                <x-forms.input
+                                    name="affected_role_display"
+                                    label="Cargo / Papel"
+                                    :value="$barrier->is_anonymous ? 'N/A' : ($barrier->affected_person_role ?? ($barrier->affected_student_id ? 'Estudante' : ($barrier->affected_professional_id ? 'Profissional/Servidor' : 'N/A')))"
+                                    disabled
+                                />
+                            </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <x-forms.input
-                                name="location_display"
-                                label="Ponto de Referência"
-                                :value="$barrier->location?->name ?? 'N/A'"
-                                disabled
-                            />
-                        </div>
+                        <input type="hidden" name="status" id="status_hidden" value="{{ \App\Enums\InclusiveRadar\BarrierStatus::UNDER_ANALYSIS->value }}">                        <input type="hidden" name="completed_at" value="{{ now()->format('Y-m-d H:i:s') }}">
 
-                        <div class="col-md-12">
-                            <x-forms.input
-                                name="name_display"
-                                label="Título do Relato"
-                                :value="$barrier->name"
-                                disabled
-                            />
-                        </div>
-
-                        <div class="col-md-6">
-                            <x-forms.input
-                                name="category_display"
-                                label="Categoria"
-                                :value="$barrier->category?->name ?? 'Não categorizada'"
-                                disabled
-                            />
-                        </div>
-
-                        <div class="col-md-6">
-                            <x-forms.input
-                                name="priority_display"
-                                label="Prioridade"
-                                :value="$barrier->priority?->label() ?? 'Não definida'"
-                                disabled
-                            />
-                        </div>
-
-                        <div class="col-md-12">
+                        {{-- Segue para a Descrição do Relatante --}}
+                        <div class="col-md-12 mt-3">
                             <x-forms.textarea
                                 name="description_display"
                                 label="Descrição do Relatante"
@@ -93,6 +115,26 @@
                                 rows="4"
                                 disabled
                             />
+                            <input type="hidden" name="description" value="{{ $barrier->description }}">
+                        </div>
+
+                        {{-- Abaixo dos campos de Cargo / Papel --}}
+                        <div class="col-md-12 mt-3 mb-4">
+                            <label class="form-label fw-bold text-purple-dark italic">Deficiências Relacionadas (Público Afetado)</label>
+                            <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light max-h-40 overflow-y-auto custom-scrollbar shadow-sm mb-2">
+                                @foreach($deficiencies as $def)
+                                    <x-forms.checkbox
+                                        name="deficiencies[]"
+                                        id="def_{{ $def->id }}"
+                                        :value="$def->id"
+                                        :label="$def->name"
+                                        {{-- Verifica old() primeiro, depois o que já está salvo no banco --}}
+                                        :checked="in_array($def->id, old('deficiencies', $barrier->deficiencies->pluck('id')->toArray()))"
+                                        class="mb-0"
+                                    />
+                                @endforeach
+                            </div>
+                            <small class="text-muted">Marque ou desmarque as deficiências afetadas por esta barreira.</small>
                         </div>
                     </div>
                 </div>
@@ -176,20 +218,33 @@
                             </div>
 
                             <div class="col-md-6">
-                                <x-forms.image-uploader
-                                    name="images[]"
-                                    label="Novas Fotos da Análise"
-                                    :existingImages="old('images', [])"
+                                <x-forms.input
+                                    name="inspection_date"
+                                    label="Data da Inspeção"
+                                    type="date"
+                                    :value="old('inspection_date', date('Y-m-d'))"
                                 />
                             </div>
 
                             <div class="col-md-6">
                                 <x-forms.select
-                                    name="status_display"
+                                    id="status_display_input" {{-- Adicionado ID aqui --}}
+                                name="status_display"
                                     label="Status da Barreira"
-                                    :options="[\App\Enums\InclusiveRadar\BarrierStatus::UNDER_ANALYSIS->value => \App\Enums\InclusiveRadar\BarrierStatus::UNDER_ANALYSIS->label()]"
+                                    :options="[
+                                        \App\Enums\InclusiveRadar\BarrierStatus::UNDER_ANALYSIS->value => \App\Enums\InclusiveRadar\BarrierStatus::UNDER_ANALYSIS->label(),
+                                        \App\Enums\InclusiveRadar\BarrierStatus::NOT_APPLICABLE->value => \App\Enums\InclusiveRadar\BarrierStatus::NOT_APPLICABLE->label()
+                                    ]"
                                     :selected="\App\Enums\InclusiveRadar\BarrierStatus::UNDER_ANALYSIS->value"
                                     disabled
+                                />
+                            </div>
+
+                            <div class="col-md-6">
+                                <x-forms.image-uploader
+                                    name="images[]"
+                                    label="Novas Fotos da Análise"
+                                    :existingImages="old('images', [])"
                                 />
                             </div>
 
@@ -223,12 +278,44 @@
 
 @push('scripts')
     <script>
-        document.getElementById('not_applicable')?.addEventListener('change', function() {
-            const wrapper = document.getElementById('justification_wrapper');
-            if(this.checked) {
-                wrapper.classList.remove('d-none');
-            } else {
-                wrapper.classList.add('d-none');
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Inicializa o Mapa (reutilizando sua classe)
+            if (typeof BarrierMap === 'function') {
+                window.barrierMapInstance = new BarrierMap({
+                    mapId: 'barrier-map',
+                    lat: {{ $barrier->latitude ?? -15.8475 }},
+                    lng: {{ $barrier->longitude ?? -47.9125 }},
+                    zoom: 18,
+                    isEditMode: true,
+                    barrier: @json($barrier)
+                });
+            }
+
+            // 2. Lógica específica da Etapa 2 (Parecer e Status)
+            const notApplicableCheck = document.getElementById('not_applicable');
+            const justificationWrapper = document.getElementById('justification_wrapper');
+            const statusHidden = document.querySelector('input[name="status"]');
+            const statusDisplay = document.querySelector('select[name="status_display"]');
+
+            if (notApplicableCheck) {
+                notApplicableCheck.addEventListener('change', function() {
+                    const isChecked = this.checked;
+
+                    // Toggle da visualização da justificativa
+                    if (justificationWrapper) {
+                        justificationWrapper.classList.toggle('d-none', !isChecked);
+                        // Opcional: tornar o campo obrigatório via JS se marcado
+                        const textarea = justificationWrapper.querySelector('textarea');
+                        if(textarea) textarea.required = isChecked;
+                    }
+
+                    // Troca os valores dos Enums dinamicamente
+                    const statusUnderAnalysis = "{{ \App\Enums\InclusiveRadar\BarrierStatus::UNDER_ANALYSIS->value }}";
+                    const statusNotApplicable = "{{ \App\Enums\InclusiveRadar\BarrierStatus::NOT_APPLICABLE->value }}";
+
+                    if (statusHidden) statusHidden.value = isChecked ? statusNotApplicable : statusUnderAnalysis;
+                    if (statusDisplay) statusDisplay.value = isChecked ? statusNotApplicable : statusUnderAnalysis;
+                });
             }
         });
     </script>

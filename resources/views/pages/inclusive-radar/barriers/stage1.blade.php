@@ -63,6 +63,7 @@
                             </label>
                             <select name="location_id" id="location_select" class="form-select custom-input shadow-sm">
                                 <option value="">Selecione...</option>
+                                {{-- As options serão preenchidas via JavaScript --}}
                             </select>
                         </div>
                     </div>
@@ -165,7 +166,7 @@
                         {{-- Inputs de Lat/Lng escondidos ou para conferência --}}
                         <div class="row px-4 mt-2">
                             <div class="col-6">
-                                <x-forms.input name="latitude" id="lat" label="Latitude" readonly :value="old('latitude')" />
+                                <x-forms.input name="latitude" id="lat" label="Latitude" readonly :value="old('lat')" />
                             </div>
                             <div class="col-6">
                                 <x-forms.input name="longitude" id="lng" label="Longitude" readonly :value="old('longitude')" />
@@ -173,53 +174,68 @@
                         </div>
                     </div>
 
-                    <x-forms.section title="4. Vistoria Inicial" />
-                    <div class="px-4 pb-4">
-                        <div class="row g-2">
+                    <div class="mt-3">
+                        <x-forms.section title="4. Vistoria Inicial" />
 
-                            <div class="col-md-6">
-                                <x-forms.select
-                                    name="inspection_type"
-                                    label="Tipo de Inspeção"
-                                    required
-                                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
-                                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                                    :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
-                                    disabled
-                                />
-                            </div>
+                        <div class="px-4">
+                            <div class="row g-3">
+                                {{-- Tipo de Inspeção --}}
+                                <div class="col-md-6">
+                                    <x-forms.select
+                                        name="inspection_type"
+                                        label="Tipo de Inspeção"
+                                        required
+                                        :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
+                                            ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                                        :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
+                                        disabled
+                                    />
+                                </div>
 
-                            <div class="col-md-6">
-                                <x-forms.image-uploader
-                                    name="images[]"
-                                    label="Fotos da Barreira"
-                                    :existingImages="old('images', [])"
-                                />
-                            </div>
+                                <div class="col-md-6">
+                                    <x-forms.input
+                                        name="inspection_date"
+                                        label="Data da Inspeção"
+                                        type="date"
+                                        :value="old('inspection_date', date('Y-m-d'))"
+                                    />
+                                </div>
 
-                            <div class="col-md-6">
-                                <x-forms.select
-                                    name="status"
-                                    id="status_select"
-                                    label="Status da Barreira"
-                                    :options="[
-                                        \App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->value
-                                            => \App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->label()
-                                    ]"
-                                    :selected="\App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->value"
-                                    disabled
-                                />
-                            </div>
+                                {{-- Status da Barreira --}}
+                                <div class="col-md-6">
+                                    <x-forms.select
+                                        name="status"
+                                        id="status_select"
+                                        label="Status da Barreira"
+                                        :options="[
+                                            \App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->value
+                                                => \App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->label()
+                                        ]"
+                                        :selected="\App\Enums\InclusiveRadar\BarrierStatus::IDENTIFIED->value"
+                                        disabled
+                                    />
+                                </div>
 
-                            <div class="col-md-12">
-                                <x-forms.textarea
-                                    name="inspection_description"
-                                    id="inspection_description"
-                                    label="Notas da Vistoria"
-                                    rows="3"
-                                    placeholder="Descreva o estado atual do local ou observações técnicas..."
-                                    :value="old('inspection_description')"
-                                />
+                                {{-- Upload de Imagens --}}
+                                <div class="col-md-6">
+                                    <x-forms.image-uploader
+                                        name="images[]"
+                                        label="Fotos da Barreira"
+                                        :existingImages="old('images', [])"
+                                    />
+                                </div>
+
+                                {{-- Notas da Vistoria --}}
+                                <div class="col-md-12">
+                                    <x-forms.textarea
+                                        name="inspection_description"
+                                        id="inspection_description"
+                                        label="Notas da Vistoria"
+                                        rows="3"
+                                        placeholder="Descreva o estado atual do local ou observações técnicas..."
+                                        :value="old('inspection_description')"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -245,23 +261,19 @@
 
     @push('scripts')
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            window.institutionsData = @json($institutions);
+            window.oldLocationId = "{{ old('location_id') }}";
+
+            window.barrierMapConfig = {
+                mapId: 'map-barrier',
+                lat: -14.235,
+                lng: -51.9253,
+                zoom: 5,
+                isEditMode: false,
+                institution: @json($selectedInstitution)
+            };
+        </script>
+        @@vite('resources/js/pages/inclusive-radar/barriers.js')
     @endpush
-
-    <script>
-        window.institutionsData = @json($institutions);
-        window.oldLocationId = "{{ old('location_id') }}";
-
-        // Lógica para alternar campos de pessoa impactada
-        document.getElementById('not_applicable')?.addEventListener('change', function() {
-            const personSelects = document.getElementById('person_selects');
-            const manualData = document.getElementById('manual_person_data');
-            if(this.checked) {
-                personSelects.classList.add('d-none');
-                manualData.classList.remove('d-none');
-            } else {
-                personSelects.classList.remove('d-none');
-                manualData.classList.add('d-none');
-            }
-        });
-    </script>
 @endsection

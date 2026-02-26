@@ -213,55 +213,61 @@ Route::middleware(['auth'])->group(function () {
     )->name('assistive-technologies.logs.pdf')
     ->middleware('can:assistive-technology.logs.pdf');
 
-
     // ------------------- BARREIRAS (RADAR INCLUSIVO) -------------------
 
     // Dashboard e Listagem Principal
-        Route::get('/barriers', [BarrierController::class, 'index'])
-            ->name('barriers.index')->middleware('can:barrier.index');
+    Route::get('/barriers', [BarrierController::class, 'index'])
+        ->name('barriers.index')->middleware('can:barrier.index');
 
-    // Etapa 1 – Formulário de Criação/Identificação
-        Route::get('/barriers/create', [BarrierController::class, 'create'])
-            ->name('barriers.create')->middleware('can:barrier.create');
+    // Etapa 1 – Formulário de Criação (novo)
+    Route::get('/barriers/create', [BarrierController::class, 'create'])
+        ->name('barriers.create')->middleware('can:barrier.create');
 
-    // Etapa 1 – Salvar Identificação (Cria o registro e fecha Stage 1)
-        Route::post('/barriers/store', [BarrierController::class, 'store'])
-            ->name('barriers.store')->middleware('can:barrier.create');
+    // Etapa 1 – Salvar Identificação (cria nova barreira)
+    Route::post('/barriers/store', [BarrierController::class, 'store'])
+        ->name('barriers.store')->middleware('can:barrier.create');
+
+    // Etapa 1 – Formulário de Edição (quando já existe barreira)
+    Route::get('/barriers/{barrier}/stage1', [BarrierController::class, 'stage1'])
+        ->name('barriers.stage1')->middleware('can:barrier.stage1');
 
     // Detalhes da Barreira (Timeline/Show)
-        Route::get('/barriers/{barrier}', [BarrierController::class, 'show'])
-            ->name('barriers.show')->middleware('can:barrier.show');
+    Route::get('/barriers/{barrier}', [BarrierController::class, 'show'])
+        ->name('barriers.show')->middleware('can:barrier.show');
 
     // --- FLUXO DE ETAPAS POSTERIORES ---
 
     // Etapa 2 – Análise (Mostrar e Salvar)
-        Route::get('/barriers/{barrier}/stage2', [BarrierController::class, 'stage2'])
-            ->name('barriers.stage2')->middleware('can:barrier.stage2');
+    Route::get('/barriers/{barrier}/stage2', [BarrierController::class, 'stage2'])
+        ->name('barriers.stage2')->middleware('can:barrier.stage2');
 
-        Route::patch('/barriers/{barrier}/stage2', [BarrierController::class, 'saveStage2'])
-            ->name('barriers.saveStage2')->middleware('can:barrier.stage2');
+    Route::patch('/barriers/{barrier}/stage2', [BarrierController::class, 'saveStage2'])
+        ->name('barriers.saveStage2')->middleware('can:barrier.stage2');
 
     // Etapa 3 – Tratamento (Mostrar e Salvar)
-        Route::get('/barriers/{barrier}/stage3', [BarrierController::class, 'stage3'])
-            ->name('barriers.stage3')->middleware('can:barrier.stage3');
+    Route::get('/barriers/{barrier}/stage3', [BarrierController::class, 'stage3'])
+        ->name('barriers.stage3')->middleware('can:barrier.stage3');
 
-        Route::patch('/barriers/{barrier}/stage3', [BarrierController::class, 'saveStage3'])
-            ->name('barriers.saveStage3')->middleware('can:barrier.stage3');
+    Route::patch('/barriers/{barrier}/stage3', [BarrierController::class, 'saveStage3'])
+        ->name('barriers.saveStage3')->middleware('can:barrier.stage3');
 
     // Etapa 4 – Resolução (Mostrar e Salvar)
-        Route::get('/barriers/{barrier}/stage4', [BarrierController::class, 'stage4'])
-            ->name('barriers.stage4')->middleware('can:barrier.stage4');
+    Route::get('/barriers/{barrier}/stage4', [BarrierController::class, 'stage4'])
+        ->name('barriers.stage4')->middleware('can:barrier.stage4');
 
-        Route::patch('/barriers/{barrier}/stage4', [BarrierController::class, 'saveStage4'])
-            ->name('barriers.saveStage4')->middleware('can:barrier.stage4');
+    Route::patch('/barriers/{barrier}/stage4', [BarrierController::class, 'saveStage4'])
+        ->name('barriers.saveStage4')->middleware('can:barrier.stage4');
+
+    // Inspeção específica
+    Route::get('barriers/{barrier}/inspection/{inspection}', [BarrierController::class, 'showInspection'])
+        ->name('barriers.inspection.show')->middleware('can:barrier.inspection.show');
 
     // --- UTILITÁRIOS ---
+    Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])
+        ->name('barriers.destroy')->middleware('can:barrier.delete');
 
-        Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])
-            ->name('barriers.destroy')->middleware('can:barrier.delete');
-
-        Route::get('/barriers/{barrier}/pdf', [BarrierController::class, 'generatePdf'])
-            ->name('barriers.pdf')->middleware('can:barrier.pdf');
+    Route::get('/barriers/{barrier}/pdf', [BarrierController::class, 'generatePdf'])
+        ->name('barriers.pdf')->middleware('can:barrier.pdf');
 
     // ------------------- MATERIAIS PEDAGÓGICOS ACESSÍVEIS -------------------
     Route::get('/accessible-educational-materials', [AccessibleEducationalMaterialController::class, 'index'])
