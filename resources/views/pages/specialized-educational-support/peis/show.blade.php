@@ -205,7 +205,7 @@
                             </x-buttons.submit-button>
                         </form>
                     @endif
-                    <form action="{{ route('specialized-educational-support.pei.finish', $pei->id) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
+                    <form action="{{ route('specialized-educational-support.pei.destroy', $pei->id) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
                         @csrf @method('DELETE')
                         <x-buttons.submit-button variant="danger">
                             <i class="fas fa-trash-alt"></i> Excluir

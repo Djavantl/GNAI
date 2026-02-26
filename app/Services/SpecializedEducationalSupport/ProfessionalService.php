@@ -14,15 +14,17 @@ class ProfessionalService
     public function index(array $filters = [])
     {
         return Professional::query()
+            ->select('professionals.*')
+            ->join('people', 'people.id', '=', 'professionals.person_id')
             ->with(['person', 'position'])
-
+        
             ->name($filters['name'] ?? null)
             ->email($filters['email'] ?? null)
             ->position($filters['position'] ?? null)
             ->semester($filters['semester'] ?? null)
             ->status($filters['status'] ?? null)
 
-            ->orderBy('id', 'desc')
+            ->orderBy('people.name')
             ->paginate(10)
             ->withQueryString();
     }

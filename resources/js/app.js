@@ -3,6 +3,8 @@ import './pages/messages.js';
 import './pages/inclusive-radar/type-attributes.js';
 import './pages/specialized-educational-support/session.js';
 import './components/search-filter.js';
+import './utils/cpf.js';
+import './utils/phone.js';
 
 // App principal - Sidebar e Navbar
 class App {

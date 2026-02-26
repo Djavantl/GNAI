@@ -13,7 +13,7 @@
                 </x-table.td>
 
                 <x-table.td>
-                    {{ $pei->teacher_name }}
+                    {{ $pei->teacher_display_name }}
                 </x-table.td>
 
                 <x-table.td>

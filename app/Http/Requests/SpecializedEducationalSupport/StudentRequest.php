@@ -4,6 +4,7 @@ namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Rules\Cpf;
 
 class StudentRequest extends FormRequest
 {
@@ -30,9 +31,10 @@ class StudentRequest extends FormRequest
             'document' => [
                 'required',
                 'string',
+                new Cpf, 
                 Rule::unique('people', 'document')->ignore($personId),
             ],
-
+            
             'birth_date' => [
                 'required',
                 'date'

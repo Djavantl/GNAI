@@ -7,7 +7,7 @@
 <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
     <div class="table-responsive">
         <table {{ $attributes->merge(['class' => $tableClass . ' w-100']) }}>
-            <thead class="bg-light">
+            <thead>
                 <tr>
                     @foreach($headers as $header)
                         <x-table.th :class="$header['class'] ?? null">

@@ -153,53 +153,59 @@ class PeiService
 
     public function createVersion(Pei $pei): Pei
     {
-        if (! $pei->is_finished) {
+        if (!$pei->is_finished) {
             throw new \Exception('Só é possível criar nova versão a partir de um PEI finalizado.');
         }
 
         return DB::transaction(function () use ($pei) {
-
-            
             $student = $pei->student;
-
             $studentContext = $student->currentContext()->first();
 
             if (!$studentContext) {
-                throw new \Exception('Este aluno não possui um contexto Contexto atual definido.');
+                throw new \Exception('Este aluno não possui um Contexto atual definido.');
             }
 
-            // desativa versão corrente anterior
+            // Desativa versão corrente anterior
             $pei->update(['is_current' => false]);
 
             $user = auth()->user();
-            // replica campos básicos
+
+            // Lógica para Professor vs Admin/Outros
+            $teacherId = $pei->teacher_id;
+            $teacherName = $pei->teacher_name;
+
+            if ($user->teacher_id) {
+                // Se o usuário logado for professor, ele assume a autoria da nova versão
+                $teacherId = $user->teacher_id;
+                $teacherName = null; // Apaga o nome textual para usar o relacionamento
+            }
+
+            // Replica campos básicos para a nova versão
             $new = Pei::create([
-                'student_id' => $pei->student_id,
-                'teacher_id' => Auth::id(), 
-                'semester_id' => $pei->semester_id,
-                'course_id' => $pei->course_id,
-                'discipline_id' => $pei->discipline_id,
-                'teacher_id'      => $pei->teacher_id, 
-                'teacher_name'    => $pei->teacher_name,
+                'student_id'         => $pei->student_id,
+                'semester_id'        => $pei->semester_id,
+                'course_id'          => $pei->course_id,
+                'discipline_id'      => $pei->discipline_id,
+                'teacher_id'         => $teacherId, 
+                'teacher_name'       => $teacherName,
                 'student_context_id' => $studentContext->id,
-                'is_finished' => false,
-                'version' => ($pei->version ?? 1) + 1,
-                'is_current' => false,
-                'creator_id' => $user->id,
-                
+                'is_finished'        => false,
+                'version'            => ($pei->version ?? 1) + 1,
+                'is_current'         => false,
+                'creator_id'         => $user->id,
             ]);
 
-            // copiar objetivos
+            // Copiar objetivos
             foreach ($pei->specificObjectives as $obj) {
                 $new->specificObjectives()->create($obj->replicate()->toArray());
             }
 
-            // copiar conteúdos
+            // Copiar conteúdos
             foreach ($pei->contentProgrammatic as $c) {
                 $new->contentProgrammatic()->create($c->replicate()->toArray());
             }
 
-            // copiar metodologias
+            // Copiar metodologias
             foreach ($pei->methodologies as $m) {
                 $new->methodologies()->create($m->replicate()->toArray());
             }
@@ -213,6 +219,10 @@ class PeiService
      */
     public function update(Pei $pei, array $data): Pei
     {
+        if ($pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador deste PEI pode edita-lo.');
+        }
+
         if ($pei->is_finished) {
             throw new \Exception('PEI finalizado não pode ser alterado. Crie nova versão se precisar.');
         }
@@ -255,6 +265,10 @@ class PeiService
      */
     public function finish(Pei $pei): Pei
     {
+        if ($pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador do PEI pode finaliza-lo');
+        }
+
         DB::transaction(function () use ($pei) {
             $pei->update(['is_finished' => true]);
             $this->setAsCurrent($pei);
@@ -268,6 +282,10 @@ class PeiService
      */
     public function delete(Pei $pei): void
     {
+        if ($pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador deste PEI pode excluí-lo.');
+        }
+
         DB::transaction(function () use ($pei) {
             $pei->delete();
         });
@@ -304,7 +322,10 @@ class PeiService
 
     public function deleteObjective(SpecificObjective $objective): void
     {
-        
+        if ($objective->pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador do PEI pode excluir este objetivo.');
+        }
+
         if ($objective->pei->is_finished) {
             throw new \Exception('PEI finalizado: não é possível excluir objetivos.');
         }
@@ -317,6 +338,10 @@ class PeiService
      */
     public function addContent(Pei $pei, array $data): ContentProgrammatic
     {
+        if ($content->pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador do PEI pode excluir este conteúdo.');
+        }
+
         if ($pei->is_finished) {
             throw new \Exception('PEI finalizado: não é possível adicionar conteúdos.');
         }
@@ -331,6 +356,10 @@ class PeiService
      */
     public function updateContent(ContentProgrammatic $content, array $data): ContentProgrammatic
     {
+        if ($methodology->pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador do PEI pode excluir esta metodologia.');
+        }
+
         if ($content->pei->is_finished) {
             throw new \Exception('PEI finalizado: não é possível alterar conteúdos.');
         }

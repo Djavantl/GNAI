@@ -44,7 +44,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="Documento " 
+                    label="Documento "
+                    class="cpf-mask"
+                    maxlength="14"  
+                    placeholder="000.000.000-00" 
                     required 
                     :value="old('document', $professional->person->document)" 
                 />
@@ -79,7 +82,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="phone" 
-                    label="Telefone" 
+                    label="Telefone"
+                    class="phone-mask" 
+                    maxlength="15" 
+                    placeholder="(00) 00000-0000" 
                     :value="old('phone', $professional->person->phone)" 
                 />
             </div>

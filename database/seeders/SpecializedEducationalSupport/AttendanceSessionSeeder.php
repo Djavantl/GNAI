@@ -25,7 +25,7 @@ class AttendanceSessionSeeder extends Seeder
 
         foreach ($students as $student) {
             // Gerar 15 sessões para cada aluno
-            for ($i = 0; $i < 15; $i++) {
+            for ($i = 0; $i < 2; $i++) {
                 
                 // Lógica de datas: 10 sessões no passado e 5 no futuro
                 // Subtrai de 1 a 10 semanas ou soma de 1 a 5 semanas

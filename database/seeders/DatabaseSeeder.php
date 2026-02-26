@@ -21,6 +21,7 @@ use Database\Seeders\SpecializedEducationalSupport\DisciplineSeeder;
 use Database\Seeders\SpecializedEducationalSupport\PeiSeeder;
 use Database\Seeders\SpecializedEducationalSupport\ProfessionalSeeder;
 use Database\Seeders\SpecializedEducationalSupport\AttendanceSessionSeeder;
+use Database\Seeders\SpecializedEducationalSupport\TeacherSeeder;
 use Database\Seeders\InclusiveRadar\BarrierCategorySeeder;
 use Database\Seeders\InclusiveRadar\ResourceTypeSeeder;
 use Database\Seeders\InclusiveRadar\TypeAttributeSeeder;
@@ -63,6 +64,7 @@ class DatabaseSeeder extends Seeder
             DisciplineSeeder::class,
             PeiSeeder::class,
             AttendanceSessionSeeder::class,
+            TeacherSeeder::class,
             
             
         ]);

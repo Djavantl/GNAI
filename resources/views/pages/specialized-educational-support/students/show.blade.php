@@ -16,9 +16,12 @@
         <p class="text-muted">Visualize o ecossistema completo e histórico detalhado do aluno.</p>
     </div>
     <div class="d-flex gap-2">
-        <x-buttons.link-button :href="route('specialized-educational-support.students.edit', $student)" variant="warning">
-            <i class="fas fa-edit"></i> Editar Cadastro
-        </x-buttons.link-button>
+        {{-- Permissão para EDITAR o cadastro do aluno --}}
+        @can('student.update')
+            <x-buttons.link-button :href="route('specialized-educational-support.students.edit', $student)" variant="warning">
+                <i class="fas fa-edit"></i> Editar Cadastro
+            </x-buttons.link-button>
+        @endcan
 
         <x-buttons.link-button :href="route('specialized-educational-support.students.index')" variant="secondary">
             <i class="fas fa-arrow-left"></i> Voltar
@@ -47,21 +50,40 @@
             </div>
         </div>
 
+        {{-- Dados básicos e Acadêmicos (Geralmente vinculados à view do estudante) --}}
         @include('pages.specialized-educational-support.students.record.personal-data')
         
         @include('pages.specialized-educational-support.students.record.academic-info')
 
-        @include('pages.specialized-educational-support.students.record.deficiencies')
+        {{-- Seção de Deficiências --}}
+        @can('student-deficiency.view')
+            @include('pages.specialized-educational-support.students.record.deficiencies')
+        @endcan
 
-        @include('pages.specialized-educational-support.students.record.guardians')
+        {{-- Seção de Responsáveis --}}
+        @can('guardian.view')
+            @include('pages.specialized-educational-support.students.record.guardians')
+        @endcan
 
-        @include('pages.specialized-educational-support.students.record.contexts')
+        {{-- Seção de Contextos --}}
+        @can('student-context.view')
+            @include('pages.specialized-educational-support.students.record.contexts')
+        @endcan
             
-        @include('pages.specialized-educational-support.students.record.peis')
+        {{-- Seção de PEIs --}}
+        @can('pei.view')
+            @include('pages.specialized-educational-support.students.record.peis')
+        @endcan
             
-        @include('pages.specialized-educational-support.students.record.documents')
+        {{-- Seção de Documentos --}}
+        @can('student-document.view')
+            @include('pages.specialized-educational-support.students.record.documents')
+        @endcan
             
-        @include('pages.specialized-educational-support.students.record.sessions')
+        {{-- Seção de Sessões --}}
+        @can('session.view')
+            @include('pages.specialized-educational-support.students.record.sessions')
+        @endcan
         
 
         {{-- RODAPÉ DE AÇÕES --}}
@@ -71,16 +93,16 @@
             </div>
             
             <div class="d-flex gap-3">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.students.logs.index', $student) }}" variant="info">
-                    <i class="fas fa-history"></i> Logs
-                </x-buttons.link-button>
-
-                <form action="{{ route('specialized-educational-support.students.destroy', $student) }}" method="POST" onsubmit="return confirm('Excluir este aluno?')">
-                    @csrf @method('DELETE')
-                    <x-buttons.submit-button variant="danger">
-                        <i class="fas fa-trash-alt"></i> Excluir
-                    </x-buttons.submit-button>
-                </form>
+                {{-- Logs (Conforme solicitado, sem middleware específico, mas pode-se usar student.view) --}}
+                {{-- Permissão para EXCLUIR o aluno --}}
+                @can('student.delete')
+                    <form action="{{ route('specialized-educational-support.students.destroy', $student) }}" method="POST" onsubmit="return confirm('Excluir este aluno?')">
+                        @csrf @method('DELETE')
+                        <x-buttons.submit-button variant="danger">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
+                @endcan
             </div>
         </div>
     </div>

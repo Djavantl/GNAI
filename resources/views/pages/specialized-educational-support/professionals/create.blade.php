@@ -36,7 +36,14 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="document" label="Documento " required :value="old('document')" />
+                <x-forms.input 
+                    name="document" 
+                    label="Documento " 
+                    required 
+                    :value="old('document')" 
+                    class="cpf-mask"
+                    maxlength="14"  
+                    placeholder="000.000.000-00"/>
             </div>
 
             <div class="col-md-6">
@@ -63,7 +70,13 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="phone" label="Telefone" :value="old('phone')" />
+                <x-forms.input 
+                    name="phone" 
+                    label="Telefone" 
+                    :value="old('phone')" 
+                    class="phone-mask" 
+                    maxlength="15" 
+                    placeholder="(00) 00000-0000"/>
             </div>
 
             <div class="col-md-12">

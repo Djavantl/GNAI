@@ -181,30 +181,44 @@ class PeiController extends Controller
 
     public function update(Pei $pei, PeiRequest $request)
     {
-        $this->service->update($pei, $request->validated());
+        try {
+            $this->service->update($pei, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Dados básicos do PEI atualizados com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Dados básicos do PEI atualizados com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function destroy(Pei $pei)
     {
-        $student = $pei->student;
-        $this->service->delete($pei);
+        try {
+            $student = $pei->student;
+            $this->service->delete($pei);
 
-        return redirect()
-            ->route('specialized-educational-support.pei.index', $student)
-            ->with('success', 'PEI removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.index', $student)
+                ->with('success', 'PEI removido com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function finish(Pei $pei)
     {
-        $this->service->finish($pei);
+        try {
+            $this->service->finish($pei);
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'PEI finalizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'PEI finalizado com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function makeCurrent(Pei $pei)
@@ -273,23 +287,30 @@ class PeiController extends Controller
 
     public function updateObjective(SpecificObjective $specific_objective, SpecificObjectiveRequest $request)
     {
+        try {
+            $pei = $specific_objective->pei;
+            $this->service->updateObjective($specific_objective, $request->validated());
 
-        $pei = $specific_objective->pei;
-        $this->service->updateObjective($specific_objective, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Dados do objetivo atualizados com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Dados do objetivo atualizados com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function destroyObjective(SpecificObjective $specific_objective)
     {
-        $pei = $specific_objective->pei;
-        $this->service->deleteObjective($specific_objective);
+        try {
+            $pei = $specific_objective->pei;
+            $this->service->deleteObjective($specific_objective);
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Objetivo removido.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Objetivo removido.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     // Tela para criar Conteúdo Programático
@@ -316,12 +337,16 @@ class PeiController extends Controller
 
     public function updateContent(ContentProgrammatic $content_programmatic, ContentProgrammaticRequest $request)
     {
-        $pei = $content_programmatic->pei;
-        $this->service->updateContent($content_programmatic, $request->validated());
+        try {
+            $pei = $content_programmatic->pei;
+            $this->service->updateContent($content_programmatic, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Conteúdo programático atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Conteúdo programático atualizado com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function createContent(Pei $pei)
@@ -345,12 +370,16 @@ class PeiController extends Controller
 
     public function destroyContent(ContentProgrammatic $content_programmatic)
     {
-        $pei = $content_programmatic->pei;
-        $this->service->deleteContent($content_programmatic);
+        try {
+            $pei = $content_programmatic->pei;
+            $this->service->deleteContent($content_programmatic);
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Conteúdo removido.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Conteúdo removido.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     // Tela para criar Metodologia
@@ -377,12 +406,16 @@ class PeiController extends Controller
 
     public function updateMethodology(Methodology $methodology, MethodologyRequest $request)
     {
-        $pei = $methodology->pei;
-        $this->service->updateMethodology($methodology, $request->validated());
+        try {
+            $pei = $methodology->pei;
+            $this->service->updateMethodology($methodology, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Metodologia atualizada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Metodologia atualizada com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
     
     public function createMethodology(Pei $pei)
@@ -405,12 +438,16 @@ class PeiController extends Controller
     }
     public function destroyMethodology(Methodology $methodology)
     {
-        $pei = $methodology->pei;
-        $this->service->deleteMethodology($methodology);
+        try {
+            $pei = $methodology->pei;
+            $this->service->deleteMethodology($methodology);
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Metodologia removida.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Metodologia removida.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function generatePdf(Pei $pei)

@@ -32,7 +32,7 @@
                     <i class="fas fa-eye" aria-hidden="true"></i> ver
                 </x-buttons.link-button>
 
-                <form action="{{ route('specialized-educational-support.teachers.destroy', $teacher) }}"
+                <!-- <form action="{{ route('specialized-educational-support.teachers.destroy', $teacher) }}"
                     method="POST"
                     class="d-inline">
                     @csrf
@@ -45,7 +45,7 @@
                     >
                        <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
-                </form>
+                </form> -->
             </x-table.actions>
         </x-table.td>
     </tr>

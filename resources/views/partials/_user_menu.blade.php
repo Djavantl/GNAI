@@ -64,7 +64,14 @@
                 {{ Str::words(Auth::user()?->name ?? 'Convidado', 1, '') }}
             </span>
             <span class="user-role text-white-50">
-                {{ Auth::user()->professional?->position?->name ?? 'Membro' }}
+                @if (Auth::user()->professional)
+                    {{ Auth::user()->professional?->position?->name }}
+                @elseif (Auth::user()->teacher)
+                    Professor
+                @else
+                    Admin
+                @endif
+                
             </span>
         </div>
 
@@ -75,7 +82,7 @@
 
     <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="border-radius: 4px; min-width: 200px;">
         <li>
-            <a class="dropdown-item py-2" href="#">
+            <a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
                 <i class="bi bi-person me-2 text-muted"></i> Perfil
             </a>
         </li>

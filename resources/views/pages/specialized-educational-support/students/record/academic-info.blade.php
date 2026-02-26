@@ -5,7 +5,11 @@
         <div class="row g-3 mt-1">
             <x-show.info-item label="Status Atual" column="col-md-6" isBox="true">
                 <span class="{{ $student->status === 'active' ? 'text-success' : 'text-danger' }} fw-bold">
-                    <i class="fas fa-circle small me-1"></i> {{ strtoupper($student->status) }}
+                    @if($student->status === 'active')
+                        <span class="badge bg-success">ATIVO</span>
+                    @else
+                        <span class="badge bg-danger">{{ strtoupper($student->status) }}</span>
+                    @endif
                 </span>
             </x-show.info-item>
             <x-show.info-item label="Data de Ingresso" column="col-md-6" isBox="true">

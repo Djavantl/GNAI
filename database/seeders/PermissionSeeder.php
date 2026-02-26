@@ -15,95 +15,125 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            // Students
-            ['name' => 'Visualizar Alunos (lista)', 'slug' => 'student.index'],
-            ['name' => 'Visualizar Aluno (show)', 'slug' => 'student.show'],
-            ['name' => 'Criar Aluno (form)', 'slug' => 'student.create'],
-            ['name' => 'Salvar Aluno', 'slug' => 'student.store'],
-            ['name' => 'Editar Aluno (form)', 'slug' => 'student.edit'],
-            ['name' => 'Atualizar Aluno', 'slug' => 'student.update'],
-            ['name' => 'Excluir Aluno', 'slug' => 'student.destroy'],
+            // --- ADMINISTRAÇÃO / CADASTROS ---
+    
+            // Pessoas
+            ['name' => 'Visualizar Pessoas', 'slug' => 'people.view'],
+            ['name' => 'Criar Pessoa',      'slug' => 'people.create'],
+            ['name' => 'Editar Pessoa',     'slug' => 'people.update'],
+            ['name' => 'Excluir Pessoa',    'slug' => 'people.delete'],
 
-            // Guardians
-            ['name' => 'Visualizar Responsáveis (lista)', 'slug' => 'guardian.index'],
-            ['name' => 'Visualizar Responsável (show)', 'slug' => 'guardian.show'],
-            ['name' => 'Criar Responsável (form)', 'slug' => 'guardian.create'],
-            ['name' => 'Salvar Responsável', 'slug' => 'guardian.store'],
-            ['name' => 'Editar Responsável (form)', 'slug' => 'guardian.edit'],
-            ['name' => 'Atualizar Responsável', 'slug' => 'guardian.update'],
-            ['name' => 'Excluir Responsável', 'slug' => 'guardian.destroy'],
+            // Deficiências
+            ['name' => 'Visualizar Deficiências', 'slug' => 'deficiency.view'],
+            ['name' => 'Criar Deficiência',      'slug' => 'deficiency.create'],
+            ['name' => 'Editar Deficiência',     'slug' => 'deficiency.update'],
+            ['name' => 'Excluir Deficiência',    'slug' => 'deficiency.delete'],
 
-            // Professionals
-            ['name' => 'Visualizar Profissionais (lista)', 'slug' => 'professional.index'],
-            ['name' => 'Visualizar Profissional (show)', 'slug' => 'professional.show'],
-            ['name' => 'Criar Profissional (form)', 'slug' => 'professional.create'],
-            ['name' => 'Salvar Profissional', 'slug' => 'professional.store'],
-            ['name' => 'Editar Profissional (form)', 'slug' => 'professional.edit'],
-            ['name' => 'Atualizar Profissional', 'slug' => 'professional.update'],
-            ['name' => 'Excluir Profissional', 'slug' => 'professional.destroy'],
+            // Cargos (Positions)
+            ['name' => 'Visualizar Cargos', 'slug' => 'position.view'],
+            ['name' => 'Criar Cargo',      'slug' => 'position.create'],
+            ['name' => 'Editar Cargo',     'slug' => 'position.update'],
+            ['name' => 'Excluir Cargo',    'slug' => 'position.delete'],
 
-            // Student Context (contexto do aluno)
-            ['name' => 'Visualizar Contextos do Aluno (lista)', 'slug' => 'student-context.index'],
-            ['name' => 'Visualizar Contexto do Aluno (show)', 'slug' => 'student-context.show'],
-            ['name' => 'Visualizar Contexto Atual do Aluno', 'slug' => 'student-context.show-current'],
-            ['name' => 'Definir Contexto Atual do Aluno', 'slug' => 'student-context.set-current'],
-            ['name' => 'Criar Contexto do Aluno (form)', 'slug' => 'student-context.create'],
-            ['name' => 'Salvar Contexto do Aluno', 'slug' => 'student-context.store'],
-            ['name' => 'Editar Contexto do Aluno (form)', 'slug' => 'student-context.edit'],
-            ['name' => 'Atualizar Contexto do Aluno', 'slug' => 'student-context.update'],
-            ['name' => 'Excluir Contexto do Aluno', 'slug' => 'student-context.destroy'],
-            ['name' => 'Gerar PDF do Contexto do Aluno', 'slug' => 'student-context.pdf'],
+            // Semestres
+            ['name' => 'Visualizar Semestres', 'slug' => 'semester.view'],
+            ['name' => 'Criar Semestre',      'slug' => 'semester.create'],
+            ['name' => 'Editar Semestre',     'slug' => 'semester.update'],
+            ['name' => 'Excluir Semestre',    'slug' => 'semester.delete'],
 
-            // Student Deficiencies (deficiências do aluno)
-            ['name' => 'Visualizar Deficiências do Aluno (lista)', 'slug' => 'student-deficiency.index'],
-            ['name' => 'Visualizar Deficiência do Aluno (show)', 'slug' => 'student-deficiency.show'],
-            ['name' => 'Criar Deficiência (form)', 'slug' => 'student-deficiency.create'],
-            ['name' => 'Salvar Deficiência', 'slug' => 'student-deficiency.store'],
-            ['name' => 'Editar Deficiência (form)', 'slug' => 'student-deficiency.edit'],
-            ['name' => 'Atualizar Deficiência', 'slug' => 'student-deficiency.update'],
-            ['name' => 'Excluir Deficiência', 'slug' => 'student-deficiency.destroy'],
+            // Cursos
+            ['name' => 'Visualizar Cursos', 'slug' => 'course.view'],
+            ['name' => 'Criar Curso',      'slug' => 'course.create'],
+            ['name' => 'Editar Curso',     'slug' => 'course.update'],
+            ['name' => 'Excluir Curso',    'slug' => 'course.delete'],
 
-            // Sessions (sessões de atendimento)
-            ['name' => 'Visualizar Sessões (lista)', 'slug' => 'session.index'],
-            ['name' => 'Criar Sessão (form)', 'slug' => 'session.create'],
-            ['name' => 'Salvar Sessão', 'slug' => 'session.store'],
-            ['name' => 'Visualizar Sessão (show)', 'slug' => 'session.show'],
-            ['name' => 'Editar Sessão (form)', 'slug' => 'session.edit'],
-            ['name' => 'Atualizar Sessão', 'slug' => 'session.update'],
-            ['name' => 'Excluir Sessão', 'slug' => 'session.destroy'],
-            ['name' => 'Restaurar Sessão (withTrashed)', 'slug' => 'session.restore'],
-            ['name' => 'Excluir Definitivamente Sessão (force delete)', 'slug' => 'session.force-delete'],
+            // Disciplinas
+            ['name' => 'Visualizar Disciplinas', 'slug' => 'discipline.view'],
+            ['name' => 'Criar Disciplina',      'slug' => 'discipline.create'],
+            ['name' => 'Editar Disciplina',     'slug' => 'discipline.update'],
+            ['name' => 'Excluir Disciplina',    'slug' => 'discipline.delete'],
 
-            // Session Records (registros de sessão)
-            ['name' => 'Visualizar Registros de Sessão (lista)', 'slug' => 'session-record.index'],
-            ['name' => 'Criar Registro de Sessão (form)', 'slug' => 'session-record.create'],
-            ['name' => 'Salvar Registro de Sessão', 'slug' => 'session-record.store'],
-            ['name' => 'Visualizar Registro de Sessão (show)', 'slug' => 'session-record.show'],
-            ['name' => 'Editar Registro de Sessão (form)', 'slug' => 'session-record.edit'],
-            ['name' => 'Atualizar Registro de Sessão', 'slug' => 'session-record.update'],
-            ['name' => 'Excluir Registro de Sessão', 'slug' => 'session-record.destroy'],
-            ['name' => 'Restaurar Registro de Sessão (withTrashed)', 'slug' => 'session-record.restore'],
-            ['name' => 'Excluir Definitivamente Registro de Sessão (force delete)', 'slug' => 'session-record.force-delete'],
-            ['name' => 'Gerar PDF do Registro de Sessão', 'slug' => 'session-record.pdf'],
+            // --- GESTÃO ESCOLAR / ATENDIMENTO ---
 
-            // Student Courses (matrícula / histórico)
-            ['name' => 'Criar Matrícula (form)', 'slug' => 'student-course.create'],
-            ['name' => 'Salvar Matrícula', 'slug' => 'student-course.store'],
-            ['name' => 'Visualizar Histórico do Aluno', 'slug' => 'student-course.history'],
-            ['name' => 'Editar Matrícula (form)', 'slug' => 'student-course.edit'],
-            ['name' => 'Atualizar Matrícula', 'slug' => 'student-course.update'],
-            ['name' => 'Excluir Matrícula', 'slug' => 'student-course.destroy'],
+            // Alunos
+            ['name' => 'Visualizar Alunos', 'slug' => 'student.view'],
+            ['name' => 'Criar Aluno',      'slug' => 'student.create'],
+            ['name' => 'Editar Aluno',     'slug' => 'student.update'],
+            ['name' => 'Excluir Aluno',    'slug' => 'student.delete'],
 
-            // Pendencies (pendências)
-            ['name' => 'Visualizar Pendências (lista)', 'slug' => 'pendency.index'],
-            ['name' => 'Visualizar Pendência (show)', 'slug' => 'pendency.show'],
-            ['name' => 'Criar Pendência (form)', 'slug' => 'pendency.create'],
-            ['name' => 'Salvar Pendência', 'slug' => 'pendency.store'],
-            ['name' => 'Editar Pendência (form)', 'slug' => 'pendency.edit'],
-            ['name' => 'Atualizar Pendência', 'slug' => 'pendency.update'],
-            ['name' => 'Excluir Pendência', 'slug' => 'pendency.destroy'],
-            ['name' => 'Minhas Pendências (apenas do usuário)', 'slug' => 'pendency.my'],
-            ['name' => 'Marcar Pendência como Concluída', 'slug' => 'pendency.complete'],
+            // Responsáveis (Guardians)
+            ['name' => 'Visualizar Responsáveis', 'slug' => 'guardian.view'],
+            ['name' => 'Criar Responsável',      'slug' => 'guardian.create'],
+            ['name' => 'Editar Responsável',     'slug' => 'guardian.update'],
+            ['name' => 'Excluir Responsável',    'slug' => 'guardian.delete'],
+
+            // Profissionais
+            ['name' => 'Visualizar Profissionais', 'slug' => 'professional.view'],
+            ['name' => 'Criar Profissional',      'slug' => 'professional.create'],
+            ['name' => 'Editar Profissional',     'slug' => 'professional.update'],
+            ['name' => 'Excluir Profissional',    'slug' => 'professional.delete'],
+
+            // Professores
+            ['name' => 'Visualizar Professores', 'slug' => 'teacher.view'],
+            ['name' => 'Criar Professor',      'slug' => 'teacher.create'],
+            ['name' => 'Editar Professor',     'slug' => 'teacher.update'],
+            ['name' => 'Excluir Professor',    'slug' => 'teacher.delete'],
+
+            // Contexto do Aluno (Prontuário/Versões)
+            ['name' => 'Visualizar Contexto do Aluno', 'slug' => 'student-context.view'],
+            ['name' => 'Criar Contexto do Aluno',      'slug' => 'student-context.create'],
+            ['name' => 'Editar Contexto do Aluno',     'slug' => 'student-context.update'],
+            ['name' => 'Excluir Contexto do Aluno',    'slug' => 'student-context.delete'],
+
+            // Deficiências do Aluno (Vínculo)
+            ['name' => 'Visualizar Deficiências do Aluno', 'slug' => 'student-deficiency.view'],
+            ['name' => 'Criar Deficiência do Aluno',      'slug' => 'student-deficiency.create'],
+            ['name' => 'Editar Deficiência do Aluno',     'slug' => 'student-deficiency.update'],
+            ['name' => 'Excluir Deficiência do Aluno',    'slug' => 'student-deficiency.delete'],
+
+            // Sessões/Atendimentos
+            ['name' => 'Visualizar Sessões', 'slug' => 'session.view'],
+            ['name' => 'Criar Sessão',      'slug' => 'session.create'],
+            ['name' => 'Editar Sessão',     'slug' => 'session.update'],
+            ['name' => 'Excluir Sessão',    'slug' => 'session.delete'],
+
+            // Registros de Sessão (Evolução)
+            ['name' => 'Visualizar Registros de Sessão', 'slug' => 'session-record.view'],
+            ['name' => 'Criar Registro de Sessão',      'slug' => 'session-record.create'],
+            ['name' => 'Editar Registro de Sessão',     'slug' => 'session-record.update'],
+            ['name' => 'Excluir Registro de Sessão',    'slug' => 'session-record.delete'],
+
+            // Histórico/Cursos do Aluno
+            ['name' => 'Visualizar Cursos do Aluno', 'slug' => 'student-course.view'],
+            ['name' => 'Criar Curso do Aluno',      'slug' => 'student-course.create'],
+            ['name' => 'Editar Curso do Aluno',     'slug' => 'student-course.update'],
+            ['name' => 'Excluir Curso do Aluno',    'slug' => 'student-course.delete'],
+
+            // Pendências
+            ['name' => 'Visualizar Pendências', 'slug' => 'pendency.view'],
+            ['name' => 'Criar Pendência',      'slug' => 'pendency.create'],
+            ['name' => 'Editar Pendência',     'slug' => 'pendency.update'],
+            ['name' => 'Excluir Pendência',    'slug' => 'pendency.delete'],
+
+            // PEI (Plano Educacional Individualizado)
+            ['name' => 'Visualizar PEI', 'slug' => 'pei.view'],
+            ['name' => 'Criar PEI',      'slug' => 'pei.create'],
+            ['name' => 'Editar PEI',     'slug' => 'pei.update'],
+            ['name' => 'Excluir PEI',    'slug' => 'pei.delete'],
+
+            // Avaliações do PEI
+            ['name' => 'Visualizar Avaliação PEI', 'slug' => 'pei-evaluation.view'],
+            ['name' => 'Criar Avaliação PEI',      'slug' => 'pei-evaluation.create'],
+            ['name' => 'Editar Avaliação PEI',     'slug' => 'pei-evaluation.update'],
+            ['name' => 'Excluir Avaliação PEI',    'slug' => 'pei-evaluation.delete'],
+
+            // Documentos do Aluno
+            ['name' => 'Visualizar Documentos', 'slug' => 'student-document.view'],
+            ['name' => 'Criar Documento',      'slug' => 'student-document.create'],
+            ['name' => 'Editar Documento',     'slug' => 'student-document.update'],
+            ['name' => 'Excluir Documento',    'slug' => 'student-document.delete'],
+
+            // --- RADAAAAR ---
 
             // Radar Inclusivo – Tecnologias Assistivas
 

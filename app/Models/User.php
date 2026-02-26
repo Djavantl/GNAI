@@ -58,10 +58,12 @@ class User extends Authenticatable
         return $this->hasMany(Backup::class);
     }
 
-    // Atalho para pegar a foto da Person vinculada
     public function getPhotoUrlAttribute()
     {
-        return $this->professional?->person?->photo_url ?? asset('images/default-user.jpg');
+        $photoUrl = $this->professional?->person?->photo_url 
+                ?? $this->teacher?->person?->photo_url;
+
+        return $photoUrl ?? asset('images/default-user.jpg');
     }
 
     public function hasPermission(string $permissionSlug): bool
