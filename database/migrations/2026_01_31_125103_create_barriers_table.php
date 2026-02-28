@@ -55,21 +55,13 @@ return new class extends Migration
         Schema::create('barriers', function (Blueprint $table) {
             $table->id();
 
-            /*
-            |--------------------------------------------------------------------------
-            | CONTROLE DE ETAPA
-            |--------------------------------------------------------------------------
-            */
-            $table->unsignedTinyInteger('step_number')->default(1);
-            $table->string('status')->default('identified');
-
-            /*
-            |--------------------------------------------------------------------------
-            | IDENTIFICAÇÃO (STEP 1)
-            |--------------------------------------------------------------------------
-            */
             $table->string('name');
             $table->text('description')->nullable();
+
+            $table->foreignId('registered_by_user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
 
             $table->foreignId('institution_id')
                 ->constrained('institutions')
@@ -97,74 +89,17 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->string('location_specific_details')->nullable();
+            $table->boolean('not_applicable')->default(false);
             $table->string('affected_person_name')->nullable();
             $table->string('affected_person_role')->nullable();
             $table->boolean('is_anonymous')->default(false);
             $table->string('priority')->default('medium');
             $table->date('identified_at');
-
-            /*
-            |--------------------------------------------------------------------------
-            | USUÁRIOS DO FLUXO
-            |--------------------------------------------------------------------------
-            */
-            $table->foreignId('started_by_user_id')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
-
-            $table->foreignId('user_id')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
-
-            $table->foreignId('validator_id')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
-
-            /*
-            |--------------------------------------------------------------------------
-            | CAMPOS GERAIS DO FLUXO
-            |--------------------------------------------------------------------------
-            */
-            $table->text('observation')->nullable();
-            $table->timestamp('completed_at')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | STEP 2 - ANÁLISE
-            |--------------------------------------------------------------------------
-            */
-            $table->text('analyst_notes')->nullable();
-            $table->text('justificativa_encerramento')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | STEP 3 - PLANO DE AÇÃO
-            |--------------------------------------------------------------------------
-            */
-            $table->text('action_plan_description')->nullable();
-            $table->date('intervention_start_date')->nullable();
-            $table->date('estimated_completion_date')->nullable();
-            $table->decimal('estimated_cost', 12, 2)->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | STEP 4 - RESOLUÇÃO
-            |--------------------------------------------------------------------------
-            */
-            $table->decimal('actual_cost', 12, 2)->nullable();
-            $table->dateTime('resolution_date')->nullable();
-            $table->text('delay_justification')->nullable();
-            $table->text('resolution_summary')->nullable();
-            $table->string('effectiveness_level')->nullable();
-            $table->text('maintenance_instructions')->nullable();
-
+            $table->date('resolved_at')->nullable();
             $table->boolean('is_active')->default(true);
-
             $table->timestamps();
         });
+
 
         Schema::create('barrier_deficiency', function (Blueprint $table) {
             $table->id();
@@ -186,7 +121,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('barrier_deficiency');
-        Schema::dropIfExists('barrier_stages');
         Schema::dropIfExists('barriers');
         Schema::dropIfExists('locations');
         Schema::dropIfExists('institutions');
