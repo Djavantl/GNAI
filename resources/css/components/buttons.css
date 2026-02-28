@@ -2,7 +2,7 @@
    VARIÁVEIS DE BOTÕES
 ================================ */
 :root {
-    --btn-radius: 1.4rem;
+    --btn-radius: 10px; /* antes era 1.4rem */
     --btn-height: 2.5rem;
     --btn-font-size: .85rem;
     --btn-transition: background-color .15s ease, color .15s ease, border-color .15s ease;

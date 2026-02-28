@@ -5,6 +5,7 @@ import './pages/specialized-educational-support/session.js';
 import './components/search-filter.js';
 import './utils/cpf.js';
 import './utils/phone.js';
+import './partials/sidebar.js';
 
 // App principal - Sidebar e Navbar
 class App {

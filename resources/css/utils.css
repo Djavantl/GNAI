@@ -1,0 +1,11 @@
+/* utils.css — classes utilitárias e pequenos trechos avulsos */
+
+.text-purple-light {
+  word-break: break-word;
+  white-space: pre-line;
+  /* essa classe no seu original só tinha word-break e pre-line */
+}
+
+.italic { font-style: italic; }
+
+/* repetidos já removidos: keep only one declaration for .sidebar-menu earlier (em base/sidebar) */

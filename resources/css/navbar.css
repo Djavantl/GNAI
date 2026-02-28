@@ -1,0 +1,29 @@
+/* navbar.css */
+
+.navbar-custom {
+  background-color: var(--primary-color) !important;
+  height: var(--navbar-height);
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-current-width);
+  right: 0;
+  z-index: 1001;
+  padding: 0 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  transition: left 0.3s ease;
+}
+
+.navbar-logo {
+  height: 40px;        /* tamanho padrão */
+  width: auto;         /* mantém proporção */
+  max-height: 100%;    /* nunca ultrapassa a navbar */
+  object-fit: contain; /* evita distorção */
+}
+
+/* Responsividade (mostra/oculta o toggler) */
+@media (max-width: 768px) {
+  .navbar-toggler { display: block !important; }
+}
+@media (min-width: 769px) {
+  .navbar-toggler { display: none !important; }
+}

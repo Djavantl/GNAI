@@ -1,0 +1,53 @@
+/* base.css — regras globais, tipografia e animações */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--body-bg);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* pequenas utilidades globais */
+.text-title{
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  font-family: var(--font-family-heading) !important;
+  color: #303972 !important;
+}
+
+.text-base {
+  font-family: var(--font-family-base) !important;
+}
+
+/* animações */
+.page-transition {
+  margin-top: 1.5rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* pequenos ajustes reusáveis */
+.bg-soft-info { background-color: var(--bg-soft-info); }
+
+/* Scrollbar global específico para sidebar fica em sidebar.css */
+
+/* Garante espaço no final da sidebar para rodapé */
+.sidebar-menu { padding-bottom: 80px; }
+
+/* Ajuste fino para telas pequenas (altura) */
+@media (max-height: 600px) {
+  .sidebar-header { padding: 0.5rem; }
+  .sidebar-menu a { padding: 0.5rem 1rem; font-size: 0.9rem; }
+  .sidebar-footer { padding: 0.5rem; }
+}

@@ -1,0 +1,90 @@
+/* stepper.css */
+
+.stepper-wrapper {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stepper { gap: 1rem; }
+
+.step-link {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-width: 90px;
+}
+
+.step.disabled .step-link {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.step-indicator {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: background-color 0.3s, border-color 0.3s;
+  border: 2px solid transparent;
+}
+
+.step.active .step-number {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.step.completed .step-number {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+
+.connector {
+  height: 4px;
+  background: transparent;
+  flex: 1;
+  position: relative;
+  min-width: 30px;
+}
+
+.connector-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #e9ecef;
+  border-radius: 4px;
+}
+
+.connector-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--bs-success);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  width: 0;
+}
+
+.connector-progress.completed { width: 100% !important; }
+
+/* Responsividade do stepper */
+@media (max-width: 576px) {
+  .step-label, .step-status { font-size: 0.75rem; }
+  .step-indicator { width: 32px; height: 32px; }
+  .step-number { width: 32px; height: 32px; font-size: 1rem; }
+}

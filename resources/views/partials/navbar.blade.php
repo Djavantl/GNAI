@@ -1,12 +1,18 @@
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
     <div class="container-fluid">
-        <button class="navbar-toggler" type="button" onclick="toggleSidebar()">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
         <a class="navbar-brand me-auto" href="#">
-            <i class="bi bi-layers-half me-2"></i>
-            <span class="fw-bold">GNAI</span>
+            <button id="sidebarToggle" class="btn btn-fw text-white p-0 me-3" type="button">
+                <i class="bi bi-list fs-3"></i>
+            </button>
+            @php
+                $institution = \App\Models\InclusiveRadar\Institution::first();
+            @endphp
+            <span class="fw-bold">
+                @if($institution)
+                    {{$institution->name}}
+                @endif
+            </span>
         </a>
 
         <div class="d-flex align-items-center">

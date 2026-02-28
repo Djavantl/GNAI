@@ -1,5 +1,11 @@
 <aside class="sidebar">
+    <div class="sidebar-header">
+        <img src="{{ asset('images/logo2.png') }}" class="sidebar-logo" alt="Logo">
+        <span class="sidebar-title">NAI</span>
+    </div>
+
     <ul class="sidebar-menu">
+        
         <li>
             <a href="{{ route('dashboard') }}"
                class="{{ request()->is('auth/dashboard') ? 'active' : '' }}">

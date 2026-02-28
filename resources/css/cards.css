@@ -1,0 +1,20 @@
+/* cards.css */
+
+.card-custom {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1rem;
+}
+
+.card-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-color-medium));
+  color: white;
+  border: none;
+}
