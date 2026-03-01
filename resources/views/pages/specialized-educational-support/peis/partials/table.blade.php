@@ -9,12 +9,12 @@
 
                 <x-table.td>
                     @if($pei->is_finished)
-                        <span class="badge bg-success">
-                            <i class="fas fa-check-circle me-1"></i> Finalizado
+                        <span class=" text-success ">
+                            FINALIZADO
                         </span>
                     @else
-                        <span class="badge bg-warning text-dark">
-                            <i class="fas fa-clock me-1"></i> Em andamento
+                        <span class=" text-warning ">
+                            EM ABERTO
                         </span>
                     @endif
                 </x-table.td>

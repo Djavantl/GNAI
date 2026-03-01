@@ -12,51 +12,58 @@
         ]" />
     </div>
 
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Responsáveis — {{ $student->person->name }}"
+            subtitle="Gerenciamento de vínculos familiares e contatos de emergência."
+        >
+            <div class="d-flex gap-2">
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.students.show', $student)"
+                    variant="secondary"
+                >
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </x-buttons.link-button>
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
-            <h2 class="text-title">Responsáveis — {{ $student->person->name }}</h2>
-            <p class="text-muted">Gerenciamento de vínculos familiares e contatos de emergência.</p>
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.guardians.create', $student)"
+                    variant="new"
+                    title="Adicionar responsável"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            </div>
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#guardians-table"
+                :fields="[
+                    [
+                        'name' => 'name',
+                        'placeholder' => 'Nome do responsável...'
+                    ],
+                    [
+                        'name' => 'email',
+                        'placeholder' => 'E-mail...'
+                    ],
+                    [
+                        'name' => 'relationship',
+                        'type' => 'select',
+                        'options' => ['' => 'Parentesco (Todos)'] + $relationships
+                    ],
+                ]"
+            />
         </div>
-        <div class="d-flex gap-2 align-items-start">
-            <x-buttons.link-button
-                :href="route('specialized-educational-support.students.show', $student)"
-                variant="secondary"
-            >
-                <i class="fas fa-arrow-left"></i> Voltar
-            </x-buttons.link-button>
 
-            <x-buttons.link-button
-                :href="route('specialized-educational-support.guardians.create', $student)"
-                variant="new"
-            >
-               <i class="fas fa-plus"></i> Adicionar
-            </x-buttons.link-button>
+        {{-- TABELA --}}
+        <div id="guardians-table" class="p-3">
+            @include('pages.specialized-educational-support.guardians.partials.table')
         </div>
-    </div>
-
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#guardians-table"
-        :fields="[
-            [
-                'name' => 'name',
-                'placeholder' => 'Nome do responsável...'
-            ],
-            [
-                'name' => 'email',
-                'placeholder' => 'E-mail...'
-            ],
-            [
-                'name' => 'relationship',
-                'type' => 'select',
-                'options' => ['' => 'Parentesco (Todos)'] + $relationships
-            ],
-        ]"
-    />
-
-    <div id="guardians-table">
-        @include('pages.specialized-educational-support.guardians.partials.table')
     </div>
 
     @push('scripts')

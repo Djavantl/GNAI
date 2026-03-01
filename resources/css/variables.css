@@ -1,6 +1,6 @@
 :root{
   /* Paleta / cores (mesmos valores que você tinha) */
-  --primary-color: #4D44B5;
+  --primary-color: rgba(50, 43, 117, 0.9);
   --primary-color-medium: #6c63ff;
   --primary-color-light: #8a7fd4;
   --primary-color-dark: #3d35a5;

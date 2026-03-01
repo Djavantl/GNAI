@@ -40,7 +40,7 @@
 
     user-select: none;
     white-space: nowrap;
-    /* box-shadow: 6px 10px 10px rgba(0,0,0,0.3); */
+    box-shadow: 6px 10px 9px rgba(0,0,0,0.2);
 }
 
 .btn-action i {
@@ -52,12 +52,20 @@
 /* ===============================
    VARIAÇÕES SÓLIDAS
 ================================ */
-.btn-action.new,
+.btn-action.new {
+    background-color: var(--btn-success);
+    color: #fff;
+}
+
+.btn-action.new:hover {
+    background-color: #157347;
+}
+
 .btn-action.primary {
     background-color: var(--btn-primary);
     color: #fff;
 }
-.btn-action.new:hover,
+
 .btn-action.primary:hover {
     background-color: #332e8c;
 }

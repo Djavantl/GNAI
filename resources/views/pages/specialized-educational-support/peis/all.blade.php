@@ -10,55 +10,57 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
-            <h2 class="text-title">
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Listagem Geral de PEIs"
+            subtitle="Visualização consolidada de todos os planos e adaptações curriculares do campus."
+        />
 
-                Listagem Geral de PEIs
-            </h2>
-            <p class="text-muted">Visualização consolidada de todos os planos e adaptações curriculares do campus.</p>
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#peis-table"
+                :fields="[
+                    [
+                        'name' => 'student_id',
+                        'type' => 'select',
+                        'options' => ['' => 'Estudante (Todos)'] +
+                            collect($students)->mapWithKeys(fn($s) => [
+                                $s->id => $s->person->name
+                            ])->toArray()
+                    ],
+                    [
+                        'name' => 'semester_id',
+                        'type' => 'select',
+                        'options' => ['' => 'Semestre (Todos)'] +
+                            collect($semesters)->mapWithKeys(fn($s) => [
+                                $s->id => $s->label
+                            ])->toArray()
+                    ],
+                    [
+                        'name' => 'version',
+                        'placeholder' => 'Versão...'
+                    ],
+                    [
+                        'name' => 'is_finished',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Status (Todos)',
+                            '0' => 'Em andamento',
+                            '1' => 'Finalizado',
+                        ]
+                    ],
+                ]"
+            />
         </div>
-        {{-- O botão de "Novo" geralmente não fica aqui pois o PEI exige partir de um aluno específico --}}
-    </div>
 
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#peis-table"
-        :fields="[
-            [
-                'name' => 'student_id',
-                'type' => 'select',
-                'options' => ['' => 'Estudante (Todos)'] +
-                    collect($students)->mapWithKeys(fn($s) => [
-                        $s->id => $s->person->name
-                    ])->toArray()
-            ],
-            [
-                'name' => 'semester_id',
-                'type' => 'select',
-                'options' => ['' => 'Semestre (Todos)'] +
-                    collect($semesters)->mapWithKeys(fn($s) => [
-                        $s->id => $s->label
-                    ])->toArray()
-            ],
-            [
-                'name' => 'version',
-                'placeholder' => 'Versão...'
-            ],
-            [
-                'name' => 'is_finished',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Status (Todos)',
-                    '0' => 'Em andamento',
-                    '1' => 'Finalizado',
-                ]
-            ],
-        ]"
-    />
-
-    <div id="peis-table">
-        @include('pages.specialized-educational-support.peis.partials.table-all')
+        {{-- TABELA --}}
+        <div id="peis-table" class="p-3">
+            @include('pages.specialized-educational-support.peis.partials.table-all')
+        </div>
     </div>
 
     @push('scripts')

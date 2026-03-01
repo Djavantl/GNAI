@@ -13,59 +13,69 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h2 class="text-title">Sessões de Atendimento</h2>
-            <p class="text-muted">Histórico de atendimentos para: <strong>{{ $student->person->name }}</strong></p>
-        </div>
-        <div class="d-flex gap-2">
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
 
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Sessões de Atendimento — {{ $student->person->name }}"
+            subtitle="Histórico de atendimentos realizados para o aluno."
+        >
             <x-buttons.link-button
-                :href="route('specialized-educational-support.students.show', $student->id)"
+                :href="route('specialized-educational-support.students.show', $student)"
                 variant="secondary"
+                title="Voltar ao prontuário"
             >
-                <i class="fas fa-arrow-left" aria-hidden="true"></i>Voltar ao Prontuário
+                <i class="fas fa-arrow-left"></i>Voltar
             </x-buttons.link-button>
-        </div>
-    </div>
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#sessions-table"
-        :fields="[
-            [
-                'name' => 'professional',
-                'type' => 'select',
-                'options' => ['' => 'Profissional (Todos)'] +
-                    collect($professionals)->mapWithKeys(fn($p) => [
-                        $p->id => $p->person->name ?? 'Profissional'
-                    ])->toArray()
-            ],
-            [
-                'name' => 'type',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Tipo (Todos)',
-                    'individual' => 'Individual',
-                    'group' => 'Grupo',
-                ]
-            ],
-            [
-                'name' => 'status',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Status (Todos)',
-                    'scheduled' => 'Agendada',
-                    'realized' => 'Realizada',
-                    'canceled' => 'Cancelada',
-                ]
-            ],
-        ]"
-    />
+        </x-table.page-header>
 
-    <div id="sessions-table">
-        @include('pages.specialized-educational-support.sessions.partials.table-student')
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#sessions-table"
+                :fields="[
+                    [
+                        'name' => 'professional',
+                        'type' => 'select',
+                        'options' => ['' => 'Profissional (Todos)'] +
+                            collect($professionals)->mapWithKeys(fn($p) => [
+                                $p->id => $p->person->name ?? 'Profissional'
+                            ])->toArray()
+                    ],
+                    [
+                        'name' => 'type',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Tipo (Todos)',
+                            'individual' => 'Individual',
+                            'group' => 'Grupo',
+                        ]
+                    ],
+                    [
+                        'name' => 'status',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Status (Todos)',
+                            'scheduled' => 'Agendada',
+                            'realized' => 'Realizada',
+                            'canceled' => 'Cancelada',
+                        ]
+                    ],
+                ]"
+            />
+        </div>
+
+        {{-- TABELA --}}
+        <div id="sessions-table" class="p-3">
+            @include('pages.specialized-educational-support.sessions.partials.table-student')
+        </div>
+
     </div>
-   @push('scripts')
+
+    @push('scripts')
         @vite('resources/js/components/dynamicFilters.js')
     @endpush
+
 @endsection

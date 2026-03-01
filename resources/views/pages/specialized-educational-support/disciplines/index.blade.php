@@ -10,35 +10,49 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <h2 class="text-title">Disciplinas</h2>
-        <x-buttons.link-button :href="route('specialized-educational-support.disciplines.create')" variant="new">
-            <i class="fas fa-plus"></i> Adicionar Disciplina
-        </x-buttons.link-button>
-    </div>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Disciplinas"
+            subtitle="Gerencie as disciplinas cadastradas no sistema."
+        >
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.disciplines.create')"
+                variant="new"
+                title="Adicionar disciplina"
+            >
+                <i class="fas fa-plus"></i>
+            </x-buttons.link-button>
+        </x-table.page-header>
 
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#disciplines-table"
-        :fields="[
-            [
-                'name' => 'name',
-                'placeholder' => 'Nome da disciplina...'
-            ],
-            [
-                'name' => 'is_active',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Status (Todos)',
-                    1 => 'Ativo',
-                    0 => 'Inativo'
-                ]
-            ]
-        ]"
-    />
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#disciplines-table"
+                :fields="[
+                    [
+                        'name' => 'name',
+                        'placeholder' => 'Nome da disciplina...'
+                    ],
+                    [
+                        'name' => 'is_active',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Status (Todos)',
+                            1 => 'Ativo',
+                            0 => 'Inativo'
+                        ]
+                    ]
+                ]"
+            />
+        </div>
 
-    <div id="disciplines-table">
-        @include('pages.specialized-educational-support.disciplines.partials.table')
+        {{-- TABELA --}}
+        <div id="disciplines-table" class="p-3">
+            @include('pages.specialized-educational-support.disciplines.partials.table')
+        </div>
     </div>
 
     @push('scripts')

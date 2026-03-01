@@ -12,47 +12,63 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h2 class="text-title mb-0">Matrículas - {{ $student->person->name}} </h2>
-            <p class="text-muted mb-0">Gerencie as matrículas e o histórico acadêmico do aluno.</p>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Matrículas — {{ $student->person->name }}"
+            subtitle="Gerencie as matrículas e o histórico acadêmico do aluno."
+        >
+            <div class="d-flex gap-2">
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.students.show', $student)"
+                    variant="secondary"
+                >
+                    <i class="fas fa-arrow-left"></i>Voltar
+                </x-buttons.link-button>
+
+                <x-buttons.link-button 
+                    :href="route('specialized-educational-support.student-courses.create', $student)" 
+                    variant="new"
+                    title="Nova matrícula"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            </div>
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#student-courses-table"
+                :fields="[
+                    [
+                        'name' => 'course_id',
+                        'type' => 'select',
+                        'options' => ['' => 'Filtrar por Curso (Histórico)'] + $courses
+                    ],
+                    [
+                        'name' => 'academic_year',
+                        'placeholder' => 'Ano letivo'
+                    ],
+                    [
+                        'name' => 'is_current',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Status (Todos)',
+                            '1' => 'Curso Atual',
+                            '0' => 'Histórico Antigo',
+                        ]
+                    ],
+                ]"
+            />
         </div>
 
-        <x-buttons.link-button 
-            :href="route('specialized-educational-support.student-courses.create', $student)" 
-            variant="new"
-            aria-label="Adicionar nova matrícula">
-            <i class="fas fa-plus" aria-hidden="true"></i> Nova Matrícula
-        </x-buttons.link-button>
-    </div>
-
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#student-courses-table"
-        :fields="[
-            [
-                'name' => 'course_id',
-                'type' => 'select',
-                'options' => ['' => 'Filtrar por Curso (Histórico)'] + $courses
-            ],
-            [
-                'name' => 'academic_year',
-                'placeholder' => 'Ano letivo'
-            ],
-            [
-                'name' => 'is_current',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Status (Todos)',
-                    '1' => 'Curso Atual',
-                    '0' => 'Histórico Antigo',
-                ]
-            ],
-        ]"
-    />
-
-    <div id="student-courses-table">
-        @include('pages.specialized-educational-support.student-courses.partials.table')
+        {{-- TABELA --}}
+        <div id="student-courses-table" class="p-3">
+            @include('pages.specialized-educational-support.student-courses.partials.table')
+        </div>
     </div>
 
     @push('scripts')
