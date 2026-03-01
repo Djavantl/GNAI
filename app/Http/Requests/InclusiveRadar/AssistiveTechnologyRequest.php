@@ -5,7 +5,6 @@ namespace App\Http\Requests\InclusiveRadar;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-use App\Models\InclusiveRadar\ResourceType;
 use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ConservationState;
 
@@ -21,24 +20,31 @@ class AssistiveTechnologyRequest extends FormRequest
         $tech = $this->route('assistiveTechnology');
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
-        $isDigital = false;
-        if ($this->type_id) {
-            $isDigital = ResourceType::where('id', $this->type_id)
-                ->where('is_digital', true)
-                ->exists();
-        }
+        $isDigital = $this->boolean('is_digital');
 
         return [
+
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'type_id' => 'required|exists:resource_types,id',
-            'asset_code' => ['nullable', 'string', 'max:50',
+
+            'is_digital' => 'required|boolean',
+
+            'notes' => 'nullable|string',
+
+            'asset_code' => [
+                'nullable',
+                'string',
+                'max:50',
                 Rule::unique('assistive_technologies', 'asset_code')
                     ->ignore($tech?->id),
             ],
-            'quantity' => $isDigital ? 'nullable' : 'required|integer|min:0',
+
+            'quantity' => $isDigital
+                ? 'nullable|integer|min:0'
+                : 'required|integer|min:1',
+
+            'quantity_available' => 'nullable|integer|min:0',
+
             'is_active' => 'sometimes|boolean',
-            'notes' => 'nullable|string',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
 
@@ -46,19 +52,22 @@ class AssistiveTechnologyRequest extends FormRequest
                 $isUpdate ? 'nullable' : 'required',
                 new Enum(ConservationState::class),
             ],
+
             'inspection_type' => [
                 $isUpdate ? 'nullable' : 'required',
                 new Enum(InspectionType::class),
             ],
+
             'inspection_date' => [
                 'required',
                 'date',
                 'before_or_equal:today',
             ],
+
             'inspection_description' => 'nullable|string|max:1000',
+
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
-            'attributes' => 'nullable|array',
         ];
     }
 
@@ -68,6 +77,7 @@ class AssistiveTechnologyRequest extends FormRequest
 
         $this->merge([
             'is_active' => $this->boolean('is_active'),
+            'is_digital' => $this->boolean('is_digital'),
             'inspection_date' => $this->inspection_date ?? now()->format('Y-m-d'),
         ]);
 
@@ -81,8 +91,7 @@ class AssistiveTechnologyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'O nome da tecnologia assistiva é obrigatório.',
-            'type_id.required' => 'Selecione uma categoria/tipo de tecnologia.',
+            'name.required' => 'Informe o tipo da tecnologia assistiva.',
             'quantity.required' => 'Para recursos físicos, a quantidade é obrigatória.',
             'asset_code.unique' => 'O código patrimonial já está em uso.',
             'deficiencies.required' => 'Selecione pelo menos um público-alvo.',

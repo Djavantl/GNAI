@@ -15,58 +15,54 @@
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Tecnologia Assistiva</h2>
-            <p class="text-muted">Atualizando informações de: <strong>{{ $assistiveTechnology->name }}</strong></p>
+            <p class="text-muted">
+                Atualizando informações de:
+                <strong>{{ $assistiveTechnology->name }}</strong>
+            </p>
         </div>
-        <div>
-            <x-buttons.link-button
-                :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)"
-                variant="secondary"
-                label="Cancelar edição e voltar para os detalhes da tecnologia"
-            >
-                <i class="fas fa-times"></i> Cancelar
-            </x-buttons.link-button>
-        </div>
+
+        <x-buttons.link-button
+            :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)"
+            variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
-        <x-forms.form-card action="{{ route('inclusive-radar.assistive-technologies.update', $assistiveTechnology->id) }}" method="POST" enctype="multipart/form-data">
+        <x-forms.form-card
+            action="{{ route('inclusive-radar.assistive-technologies.update', $assistiveTechnology) }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
             @method('PUT')
             @csrf
 
+            {{-- IDENTIFICAÇÃO --}}
             <x-forms.section title="Identificação do Recurso" />
 
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome da Tecnologia"
+                    label="Tipo da Tecnologia"
                     required
                     :value="old('name', $assistiveTechnology->name)"
                 />
             </div>
 
-            <div class="col-md-12">
-                <x-forms.textarea
-                    name="description"
-                    label="Descrição Detalhada"
-                    rows="3"
-                    :value="old('description', $assistiveTechnology->description)"
-                    placeholder="Ex: Cadeira de rodas com motor revisado..."
+            <div class="col-md-6">
+                <x-forms.select
+                    name="is_digital"
+                    label="Natureza do Recurso"
+                    required
+                    :options="[
+                        0 => 'Recurso Físico',
+                        1 => 'Recurso Digital'
+                    ]"
+                    :selected="old('is_digital', $assistiveTechnology->is_digital)"
                 />
             </div>
 
             <div class="col-md-6">
-                <x-forms.select
-                    name="type_id"
-                    label="Categoria / Tipo"
-                    id="type_id"
-                    required
-                    :options="$resourceTypes->pluck('name', 'id')"
-                    :selected="$assistiveTechnology->type_id"
-                    :resourceObjects="$resourceTypes"
-                />
-            </div>
-
-            <div class="col-md-6" id="asset_code_container">
                 <x-forms.input
                     name="asset_code"
                     label="Patrimônio / Tombamento"
@@ -74,93 +70,55 @@
                 />
             </div>
 
-            <div id="dynamic-attributes-container" style="display: none;">
-                <x-forms.section title="Especificações Técnicas" />
-                <div class="row g-0" id="dynamic-attributes" aria-live="polite"></div>
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="notes"
+                    label="notes"
+                    rows="3"
+                    :value="old('notes', $assistiveTechnology->notes)"
+                />
             </div>
 
+            {{-- TREINAMENTOS --}}
             <x-forms.section title="Treinamentos e Capacitações" />
-            <div class="col-12 mt-4">
-                <div class="px-4 mb-4">
-                    @if($assistiveTechnology->trainings->count() > 0)
-                        <div class="p-0 border rounded bg-white shadow-sm overflow-hidden">
-                            <x-table.table :headers="['Título', 'Status', 'Ações']">
-                                @foreach($assistiveTechnology->trainings as $training)
-                                    <tr>
-                                        <x-table.td>
-                                            <span class="fw-bold text-dark">{{ $training->title }}</span>
-                                        </x-table.td>
-                                        <x-table.td>
-                                            <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
-                                                {{ $training->is_active ? 'Ativo' : 'Inativo' }}
-                                            </span>
-                                        </x-table.td>
-                                        <x-table.td>
-                                            <x-table.actions>
-                                                <x-buttons.link-button
-                                                    :href="route('inclusive-radar.trainings.show', $training)"
-                                                    variant="info"
-                                                    label="Visualizar treinamento: {{ $training->title }}"
-                                                >
-                                                    <i class="fas fa-eye"></i> Ver
-                                                </x-buttons.link-button>
-                                            </x-table.actions>
-                                        </x-table.td>
-                                    </tr>
-                                @endforeach
-                            </x-table.table>
-                        </div>
 
-                        <div class="text-end mt-3">
-                            <x-buttons.link-button
-                                :href="route('inclusive-radar.trainings.create', ['type' => 'assistive_technology', 'id' => $assistiveTechnology->id])"
-                                variant="primary"
-                                class="btn-sm shadow-sm"
-                                label="Adicionar novo treinamento"
-                            >
-                                <i class="fas fa-plus me-1"></i> Adicionar Treinamento
-                            </x-buttons.link-button>
-                        </div>
-                    @else
-                        <div class="text-center py-5 border rounded bg-light border-dashed">
-                            <i class="fas fa-chalkboard-teacher fa-3x mb-3 text-muted opacity-20"></i>
-                            <p class="text-muted italic mb-3">Nenhum treinamento cadastrado.</p>
+            <div class="col-12 mt-4 px-4 mb-4">
+                @if($assistiveTechnology->trainings->count() > 0)
+                    <div class="border rounded bg-white shadow-sm overflow-hidden">
+                        <x-table.table :headers="['Título', 'Status', 'Ações']">
+                            @foreach($assistiveTechnology->trainings as $training)
+                                <tr>
+                                    <x-table.td>
+                                        <strong>{{ $training->title }}</strong>
+                                    </x-table.td>
 
-                            <x-buttons.link-button
-                                :href="route('inclusive-radar.trainings.create', ['type' => 'assistive_technology', 'id' => $assistiveTechnology->id])"
-                                variant="primary"
-                                label="Cadastrar primeiro treinamento"
-                            >
-                                <i class="fas fa-plus me-1"></i> Adicionar Primeiro Treinamento
-                            </x-buttons.link-button>
-                        </div>
-                    @endif
-                </div>
+                                    <x-table.td>
+                                        <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
+                                            {{ $training->is_active ? 'Ativo' : 'Inativo' }}
+                                        </span>
+                                    </x-table.td>
+
+                                    <x-table.td>
+                                        <x-buttons.link-button
+                                            :href="route('inclusive-radar.trainings.show', $training)"
+                                            variant="info">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </x-buttons.link-button>
+                                    </x-table.td>
+                                </tr>
+                            @endforeach
+                        </x-table.table>
+                    </div>
+                @else
+                    <div class="text-center py-5 border rounded bg-light border-dashed">
+                        <p class="text-muted">Nenhum treinamento vinculado.</p>
+                    </div>
+                @endif
             </div>
 
-            <x-forms.section title="Histórico de Vistorias" />
-            <div class="col-12 mb-4 px-4">
-                <div class="history-timeline p-4 border rounded bg-light" style="max-height: 450px; overflow-y: auto;">
-                    @forelse($assistiveTechnology->inspections()->with('images')->latest('inspection_date')->get() as $inspection)
-                        <div
-                            class="inspection-link d-block mb-3"
-                            style="cursor:pointer;"
-                            onclick="window.location='{{ route('inclusive-radar.assistive-technologies.inspection.show', [$assistiveTechnology, $inspection]) }}'"
-                            role="link"
-                            aria-label="Vistoria de {{ $inspection->inspection_date->format('d/m/Y') }}"
-                        >
-                            <x-forms.inspection-history-card :inspection="$inspection" />
-                        </div>
-                    @empty
-                        <div class="text-center py-5 text-muted bg-white rounded border border-dashed">
-                            <i class="fas fa-history fa-3x mb-3 opacity-20"></i>
-                            <p class="fw-bold">Nenhum histórico encontrado.</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-
+            {{-- NOVA VISTORIA --}}
             <x-forms.section title="Nova Atualização de Estado / Vistoria" />
+
             <div class="col-md-6">
                 <x-forms.select
                     name="inspection_type"
@@ -172,7 +130,7 @@
                             \App\Enums\InclusiveRadar\InspectionType::MAINTENANCE
                         ]))
                         ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                    :selected="old('inspection_type', $inspection->type->value ?? $inspection->type)"
+                    :selected="old('inspection_type')"
                 />
             </div>
 
@@ -181,7 +139,7 @@
                     name="inspection_date"
                     label="Data da Inspeção"
                     type="date"
-                    :value="date('Y-m-d')"
+                    :value="old('inspection_date', date('Y-m-d'))"
                 />
             </div>
 
@@ -189,8 +147,9 @@
                 <x-forms.select
                     name="conservation_state"
                     label="Estado de Conservação Atual"
-                    :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                    :selected="$assistiveTechnology->conservation_state->value"
+                    :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())
+                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :selected="old('conservation_state', $assistiveTechnology->conservation_state?->value)"
                 />
             </div>
 
@@ -198,52 +157,44 @@
                 <x-forms.image-uploader
                     name="images[]"
                     label="Fotos de Evidência"
-                    ariaLabel="Escolher fotos para upload"
                 />
             </div>
 
             <div class="col-md-12">
                 <x-forms.textarea
                     name="inspection_description"
-                    label="Parecer Técnico / Descrição da Vistoria"
+                    label="Parecer Técnico"
                     rows="3"
-                    placeholder="Relate eventuais danos..."
                 />
             </div>
 
+            {{-- GESTÃO --}}
             <x-forms.section title="Gestão e Público" />
+
             <div class="col-md-6">
-                @php $activeLoans = $assistiveTechnology->loans()->whereIn('status', ['active', 'late'])->count(); @endphp
                 <x-forms.input
                     name="quantity"
                     label="Quantidade Total"
                     type="number"
                     :value="old('quantity', $assistiveTechnology->quantity)"
-                    :min="$activeLoans"
+                    min="0"
                 />
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.input
-                    name="status_display"
-                    label="Status do Recurso"
-                    :value="$assistiveTechnology->resourceStatus?->name ?? 'Desconhecido'"
-                    disabled
-                />
-                <input type="hidden" name="status_id" :value="$assistiveTechnology->status_id">
             </div>
 
             <div class="col-md-6">
                 <x-forms.checkbox
                     name="is_active"
                     label="Ativar no Sistema"
-                    description="Fica visível para empréstimos imediatamente"
+                    description="Disponível para visualização e empréstimos"
                     :checked="old('is_active', $assistiveTechnology->is_active)"
                 />
             </div>
 
             <div class="col-md-12 mb-4 mt-4">
-                <span class="d-block form-label fw-bold text-purple-dark mb-3">Público-alvo (Deficiências Atendidas)</span>
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">
+                    Público-alvo (Deficiências Atendidas)
+                </span>
+
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
                     @foreach($deficiencies->sortBy('name') as $def)
                         <x-forms.checkbox
@@ -257,39 +208,19 @@
                 </div>
             </div>
 
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+            {{-- AÇÕES --}}
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
                 <x-buttons.link-button
                     :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)"
-                    variant="secondary"
-                    label="Cancelar edição e voltar para os detalhes da tecnologia"
-                >
-                    <i class="fas fa-times"></i> Cancelar
+                    variant="secondary">
+                    Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button
-                    type="submit"
-                    class="btn-action new submit"
-                    label="Salvar as alterações deste recurso"
-                >
+                <x-buttons.submit-button type="submit">
                     <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
+
         </x-forms.form-card>
     </div>
-
-    <script>
-        window.currentAttributeValues = @json($attributeValues ?? []);
-
-        function deleteTraining(id) {
-            if (confirm('Deseja realmente excluir este treinamento?')) {
-                const form = document.getElementById('form-delete-training');
-                form.action = `/inclusive-radar/trainings/${id}`;
-                form.submit();
-            }
-        }
-    </script>
-
-    @push('scripts')
-        @vite('resources/js/pages/inclusive-radar/assistive-technologies.js')
-    @endpush
 @endsection

@@ -154,8 +154,8 @@
     <script>
         window.loanData = {
             items: {
-                'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies ?? []),
-                'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials ?? [])
+                'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies),
+                'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials)
             },
             oldId: "{{ old('loanable_id') }}"
         };

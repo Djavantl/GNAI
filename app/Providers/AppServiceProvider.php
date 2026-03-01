@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\InclusiveRadar\ResourceType;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -78,10 +77,6 @@ class AppServiceProvider extends ServiceProvider
         ], function ($view) {
             $view->with([
                 'deficiencies' => Deficiency::orderBy('name')->get(),
-                'resourceTypes' => ResourceType::active()
-                    ->forEducationalMaterial()
-                    ->orderBy('name')
-                    ->get(),
             ]);
         });
 
@@ -92,10 +87,6 @@ class AppServiceProvider extends ServiceProvider
         ], function ($view) {
             $view->with([
                 'deficiencies' => Deficiency::orderBy('name')->get(),
-                'resourceTypes' => ResourceType::active()
-                    ->forAssistiveTechnology()
-                    ->orderBy('name')
-                    ->get(),
             ]);
         });
     }

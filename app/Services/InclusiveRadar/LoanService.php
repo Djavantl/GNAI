@@ -4,7 +4,7 @@ namespace App\Services\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\MaintenanceStatus;
 use App\Enums\InclusiveRadar\WaitlistStatus;
-use App\Models\InclusiveRadar\{Loan, ResourceStatus, ResourceType, Waitlist};
+use App\Models\InclusiveRadar\{Loan, ResourceStatus, Waitlist};
 use App\Enums\InclusiveRadar\LoanStatus;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -148,21 +148,24 @@ class LoanService
     /**
      * REGISTRO DE SAÍDA (DECREMENTO DE ESTOQUE)
      * * IMPORTÂNCIA: Atualiza o saldo físico no momento do empréstimo.
-     * * LÓGICA: Se o estoque disponível chegar a zero, o status global do recurso
-     * é alterado para 'Em Uso' (in_use).
+     * * LÓGICA: Se o recurso não for digital, decrementa o estoque.
      */
     private function handleStockDecrement($item): void
     {
-        if (isset($item->type) && !$item->type->is_digital) {
-            if ($item->quantity_available <= 0) {
-                throw new \Exception('Não há unidades disponíveis em estoque.');
-            }
-            $item->decrement('quantity_available');
-            if ($item->quantity_available <= 0) {
-                $status = ResourceStatus::where('code', 'in_use')->first();
-                if ($status) {
-                    $item->update(['status_id' => $status->id]);
-                }
+        if ($item->is_digital) {
+            return;
+        }
+
+        if ($item->quantity_available <= 0) {
+            throw new \Exception('Não há unidades disponíveis em estoque.');
+        }
+
+        $item->decrement('quantity_available');
+
+        if ($item->quantity_available <= 0) {
+            $status = ResourceStatus::where('code', 'in_use')->first();
+            if ($status) {
+                $item->update(['status_id' => $status->id]);
             }
         }
     }
@@ -170,15 +173,15 @@ class LoanService
     /**
      * REGISTRO DE ENTRADA (INCREMENTO DE ESTOQUE)
      * * IMPORTÂNCIA: Reestabelece o saldo físico disponível.
-     * * LÓGICA: Ajusta o status do recurso para 'Disponível' ou 'Danificado'
-     * dependendo da integridade do item retornado.
      */
     private function handleStockIncrement($item, bool $isDamaged): void
     {
-        if ($item && isset($item->type) && !$item->type->is_digital) {
+        if ($item && !$item->is_digital) {
             $item->increment('quantity_available');
+
             $code = $isDamaged ? 'damaged' : 'available';
             $statusModel = ResourceStatus::where('code', $code)->first();
+
             if ($statusModel) {
                 $item->update(['status_id' => $statusModel->id]);
             }
@@ -193,15 +196,18 @@ class LoanService
      */
     public function calculateStockForLoan($item, array $data): array
     {
-        $type = ResourceType::find($data['type_id'] ?? $item->type_id);
+        $isDigital = $data['is_digital'] ?? $item->is_digital ?? false;
 
-        if ($type?->is_digital) {
+        if ($isDigital) {
             $data['quantity_available'] = null;
             return $data;
         }
 
         $total = (int) ($data['quantity'] ?? $item->quantity ?? 0);
-        $activeLoans = $item->exists ? $item->loans()->whereNull('return_date')->count() : 0;
+
+        $activeLoans = $item->exists
+            ? $item->loans()->whereNull('return_date')->count()
+            : 0;
 
         $data['quantity_available'] = $total - $activeLoans;
 
@@ -216,12 +222,22 @@ class LoanService
      * menor do que a quantidade de itens que já estão na rua com alunos ou profissionais.
      * Sem isso, o sistema poderia gerar um "estoque negativo" ou inconsistências matemáticas.
      */
+    /**
+     * VALIDAÇÃO DE INTEGRIDADE DE ESTOQUE
+     */
     public function validateStockAvailability($item, int $quantity): void
     {
-        if (!isset($item->type) || $item->type->is_digital) return;
+        if ($item->is_digital) {
+            return;
+        }
 
         $activeLoans = $item->exists
-            ? $item->loans()->whereIn('status', [LoanStatus::ACTIVE->value, LoanStatus::LATE->value])->count()
+            ? $item->loans()
+                ->whereIn('status', [
+                    LoanStatus::ACTIVE->value,
+                    LoanStatus::LATE->value
+                ])
+                ->count()
             : 0;
 
         if ($quantity < $activeLoans) {
@@ -255,6 +271,11 @@ class LoanService
      */
     private function validateResourceAvailability($item): void
     {
+
+        if ($item->is_digital) {
+            return;
+        }
+
         if ($item->resourceStatus?->blocks_loan) {
             throw ValidationException::withMessages([
                 'status' => "O recurso está com status '{$item->resourceStatus->name}', que bloqueia novos empréstimos."
@@ -269,18 +290,22 @@ class LoanService
      */
     private function checkActiveLoanPendency(array $data): void
     {
+
         $exists = Loan::where('loanable_id', $data['loanable_id'])
             ->where('loanable_type', $data['loanable_type'])
             ->whereNull('return_date')
-            ->where(fn($q) => !empty($data['student_id'])
-                ? $q->where('student_id', $data['student_id'])
-                : $q->where('professional_id', $data['professional_id'])
-            )
+            ->where(function($q) use ($data) {
+                if (!empty($data['student_id'])) {
+                    $q->where('student_id', $data['student_id']);
+                } else {
+                    $q->where('professional_id', $data['professional_id']);
+                }
+            })
             ->exists();
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'loanable_id' => 'Este beneficiário ainda possui uma pendência ativa deste recurso.'
+                'loanable_id' => 'Este beneficiário já possui um empréstimo ativo deste recurso.'
             ]);
         }
     }

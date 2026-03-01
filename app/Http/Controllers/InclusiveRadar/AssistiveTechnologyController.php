@@ -20,14 +20,23 @@ class AssistiveTechnologyController extends Controller
         protected AssistiveTechnologyService $service
     ) {}
 
+    /*
+    |--------------------------------------------------------------------------
+    | LISTAGEM
+    |--------------------------------------------------------------------------
+    */
+
     public function index(Request $request): View
     {
         $name = trim($request->name ?? '');
-        $assistiveTechnologies = AssistiveTechnology::with(['type','resourceStatus','deficiencies'])
+
+        $assistiveTechnologies = AssistiveTechnology::with([
+            'resourceStatus',
+            'deficiencies'
+        ])
             ->withCount('trainings')
             ->filterName($name ?: null)
             ->active($request->is_active)
-            ->byType($request->type)
             ->digital($request->is_digital)
             ->available($request->available)
             ->orderBy('name')
@@ -47,10 +56,22 @@ class AssistiveTechnologyController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | FORMULÁRIO DE CRIAÇÃO
+    |--------------------------------------------------------------------------
+    */
+
     public function create(): View
     {
         return view('pages.inclusive-radar.assistive-technologies.create');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ARMAZENAMENTO
+    |--------------------------------------------------------------------------
+    */
 
     public function store(AssistiveTechnologyRequest $request): RedirectResponse
     {
@@ -61,50 +82,58 @@ class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia assistiva criada com sucesso!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | VISUALIZAÇÃO
+    |--------------------------------------------------------------------------
+    */
+
     public function show(AssistiveTechnology $assistiveTechnology): View
     {
-
         $assistiveTechnology->load([
-            'type',
             'resourceStatus',
             'deficiencies',
             'inspections.images',
             'loans',
-            'attributeValues.attribute',
             'trainings',
         ]);
 
-        $attributeValues = $assistiveTechnology->attributeValues
-            ->pluck('value', 'attribute_id')
-            ->toArray();
-
         return view(
             'pages.inclusive-radar.assistive-technologies.show',
-            compact('assistiveTechnology', 'attributeValues')
+            compact('assistiveTechnology')
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMULÁRIO DE EDIÇÃO
+    |--------------------------------------------------------------------------
+    */
 
     public function edit(AssistiveTechnology $assistiveTechnology): View
     {
         $assistiveTechnology->load([
             'deficiencies',
             'inspections.images',
-            'attributeValues.attribute',
             'trainings',
         ]);
 
-        $attributeValues = $assistiveTechnology->attributeValues
-            ->pluck('value', 'attribute_id')
-            ->toArray();
-
         return view(
             'pages.inclusive-radar.assistive-technologies.edit',
-            compact('assistiveTechnology', 'attributeValues')
+            compact('assistiveTechnology')
         );
     }
 
-    public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | ATUALIZAÇÃO
+    |--------------------------------------------------------------------------
+    */
+
+    public function update(
+        AssistiveTechnologyRequest $request,
+        AssistiveTechnology $assistiveTechnology
+    ): RedirectResponse {
         $this->service->update($assistiveTechnology, $request->validated());
 
         return redirect()
@@ -112,12 +141,26 @@ class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ATIVAR / DESATIVAR
+    |--------------------------------------------------------------------------
+    */
+
     public function toggleActive(AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
         $this->service->toggleActive($assistiveTechnology);
 
-        return redirect()->back()->with('success', 'Status atualizado com sucesso!');
+        return redirect()
+            ->back()
+            ->with('success', 'Status atualizado com sucesso!');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXCLUSÃO
+    |--------------------------------------------------------------------------
+    */
 
     public function destroy(AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
@@ -128,62 +171,75 @@ class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia removida com sucesso!');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | GERAÇÃO DE PDF
+    |--------------------------------------------------------------------------
+    */
+
     public function generatePdf(AssistiveTechnology $assistiveTechnology)
     {
         $assistiveTechnology->load([
-            'type',
             'resourceStatus',
             'deficiencies',
-            'attributeValues.attribute',
             'inspections.images',
             'trainings',
         ]);
 
-        $attributeValues = $assistiveTechnology->attributeValues
-            ->pluck('value', 'attribute_id')
-            ->toArray();
-
         $pdf = Pdf::loadView(
             'pages.inclusive-radar.assistive-technologies.pdf',
-            compact('assistiveTechnology', 'attributeValues')
+            compact('assistiveTechnology')
         )
             ->setPaper('a4', 'portrait')
             ->setOption(['enable_php' => true]);
 
-        return $pdf->stream("TA_{$assistiveTechnology->name}.pdf");
+        return $pdf->stream("TA_{$assistiveTechnology->type}.pdf");
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXPORTAÇÃO EXCEL
+    |--------------------------------------------------------------------------
+    */
 
     public function exportExcel(AssistiveTechnology $assistiveTechnology)
     {
         $assistiveTechnology->load([
-            'type',
             'deficiencies',
             'inspections.images'
         ]);
 
-
         return Excel::download(
             new AssistiveTechnologyExport(
                 collect([$assistiveTechnology]),
-                $assistiveTechnology->name,
+                $assistiveTechnology->type,
                 $assistiveTechnology->is_active ? 'Ativo' : 'Inativo'
             ),
-            'TA_'.$assistiveTechnology->name.'.xlsx'
+            'TA_'.$assistiveTechnology->type.'.xlsx'
         );
     }
 
-    public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection)
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | VISUALIZAÇÃO DE INSPEÇÃO
+    |--------------------------------------------------------------------------
+    */
 
+    public function showInspection(
+        AssistiveTechnology $assistiveTechnology,
+        Inspection $inspection
+    ) {
         abort_if(
             $inspection->inspectable_id !== $assistiveTechnology->id ||
-            $inspection->inspectable_type !== 'assistive_technology',
+            $inspection->inspectable_type !== $assistiveTechnology->getMorphClass(),
             403
         );
 
         $inspection->load('images', 'inspectable');
 
-        return view('pages.inclusive-radar.assistive-technologies.inspections.show', compact('assistiveTechnology', 'inspection'));
+        return view(
+            'pages.inclusive-radar.assistive-technologies.inspections.show',
+            compact('assistiveTechnology', 'inspection')
+        );
     }
-
 }

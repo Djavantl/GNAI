@@ -5,34 +5,43 @@
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
-        'Home' => route('dashboard'),
-        'Manutenções' => route('inclusive-radar.maintenances.index'),
-    ]" />
+            'Home' => route('dashboard'),
+            'Manutenções' => route('inclusive-radar.maintenances.index'),
+        ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
-            <h2 class="text-title">Manutenções</h2>
-            <p class="text-muted">Gerenciamento das tecnologias assistivas com manutenção pendente ou concluída.</p>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Manutenções"
+            subtitle="Gerenciamento das tecnologias assistivas com manutenção pendente ou concluída."
+        >
+            {{-- Nenhum botão de ação adicional --}}
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#maintenances-table"
+                :fields="[
+                    ['name' => 'resource', 'placeholder' => 'Filtrar por recurso...'],
+                    ['name' => 'status', 'type' => 'select', 'options' => [
+                        ''        => 'Status (Todos)',
+                        'pending' => 'Pendente',
+                        'completed' => 'Concluída',
+                    ]],
+                ]"
+            />
         </div>
-    </div>
 
-    {{-- Filtros --}}
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#maintenances-table"
-        :fields="[
-        ['name' => 'resource', 'placeholder' => 'Filtrar por recurso...'],
-        ['name' => 'status', 'type' => 'select', 'options' => [
-            '' => 'Status (Todos)',
-            'pending' => 'Pendente',
-            'completed' => 'Concluída',
-        ]],
-    ]"
-    />
+        {{-- TABELA --}}
+        <div id="maintenances-table" class="p-3">
+            @include('pages.inclusive-radar.maintenances.partials.table')
+        </div>
 
-    <div id="maintenances-table">
-        @include('pages.inclusive-radar.maintenances.partials.table')
     </div>
 
     @push('scripts')

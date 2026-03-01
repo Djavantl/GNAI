@@ -10,46 +10,44 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
-            <h2 class="text-title">Recursos de Acessibilidade</h2>
-            <p class="text-muted text-base">
-                Gestão de serviços, adaptações e recursos promotores de acessibilidade.
-            </p>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Recursos de Acessibilidade"
+            subtitle="Gestão de serviços, adaptações e recursos promotores de acessibilidade."
+        >
+            {{-- Botão de ação --}}
+            <x-buttons.link-button
+                :href="route('inclusive-radar.accessibility-features.create')"
+                variant="new"
+            >
+                <i class="fas fa-plus"></i> Adicionar
+            </x-buttons.link-button>
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#features-table"
+                :fields="[
+                    ['name' => 'name', 'placeholder' => 'Filtrar por nome...'],
+                    ['name' => 'is_active', 'type' => 'select', 'options' => [
+                        '' => 'Status (Todos)',
+                        '1' => 'Ativo',
+                        '0' => 'Inativo'
+                    ]]
+                ]"
+            />
         </div>
 
-        <x-buttons.link-button
-            :href="route('inclusive-radar.accessibility-features.create')"
-            variant="new"
-        >
-            <i class="fas fa-plus"></i> Adicionar
-        </x-buttons.link-button>
-    </div>
+        {{-- TABELA --}}
+        <div id="features-table" class="p-3">
+            @include('pages.inclusive-radar.accessibility-features.partials.table')
+        </div>
 
-    {{-- FILTROS --}}
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#features-table"
-        :fields="[
-        [
-            'name' => 'name',
-            'placeholder' => 'Filtrar por nome...'
-        ],
-        [
-            'name' => 'is_active',
-            'type' => 'select',
-            'options' => [
-                '' => 'Status (Todos)',
-                '1' => 'Ativo',
-                '0' => 'Inativo'
-            ]
-        ],
-    ]"
-    />
-
-    {{-- TABELA --}}
-    <div id="features-table">
-        @include('pages.inclusive-radar.accessibility-features.partials.table')
     </div>
 
     @push('scripts')

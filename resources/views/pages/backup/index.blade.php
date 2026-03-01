@@ -10,53 +10,46 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
-            <h2 class="text-title">Gerenciamento de Backups</h2>
-            <p class="text-muted text-base">Visualize e administre as cópias de segurança do sistema.</p>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Gerenciamento de Backups"
+            subtitle="Visualize e administre as cópias de segurança do sistema."
+        >
+            {{-- Botão de ação --}}
+            <form action="{{ route('backup.backups.store') }}" method="POST" class="d-inline">
+                @csrf
+                <x-buttons.submit-button variant="new">
+                    <i class="fas fa-plus-circle"></i> Gerar Novo Backup
+                </x-buttons.submit-button>
+            </form>
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#backups-table"
+                action="{{ route('backup.backups.index') }}"
+                :fields="[
+                    ['name' => 'name', 'placeholder' => 'Filtrar por nome...', 'column' => 'col-md-5'],
+                    ['name' => 'status', 'type' => 'select', 'options' => [
+                        '' => 'Todos os Status',
+                        'success' => 'Sucesso',
+                        'failed' => 'Falha',
+                        'archived' => 'Arquivado'
+                    ], 'column' => 'col-md-3'],
+                    ['name' => 'user_id', 'type' => 'select', 'options' => $users->mapWithKeys(fn($u) => [$u->id => $u->name])->prepend('Todos os Responsáveis', ''), 'column' => 'col-md-4']
+                ]"
+            />
         </div>
 
-        <form action="{{ route('backup.backups.store') }}" method="POST">
-            @csrf
-            <x-buttons.submit-button variant="new">
-                <i class="fas fa-plus-circle"></i> Gerar Novo Backup
-            </x-buttons.submit-button>
-        </form>
-    </div>
-
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#backups-table"
-        action="{{ route('backup.backups.index') }}"
-        :fields="[
-        [
-            'name' => 'name',
-            'placeholder' => 'Filtrar por nome...',
-            'column' => 'col-md-5'
-        ],
-        [
-            'name' => 'status',
-            'type' => 'select',
-            'options' => [
-                '' => 'Todos os Status',
-                'success' => 'Sucesso',
-                'failed' => 'Falha',
-                'archived' => 'Arquivado'
-            ],
-            'column' => 'col-md-3'
-        ],
-        [
-            'name' => 'user_id',
-            'type' => 'select',
-            'options' => $users->mapWithKeys(fn($u) => [$u->id => $u->name])->prepend('Todos os Responsáveis', ''),
-            'column' => 'col-md-4'
-        ]
-    ]"
-    />
-
-    {{-- Tabela --}}
-    <div id="backups-table" class="mt-3">
-        @include('pages.backup.partials.table')
+        {{-- TABELA --}}
+        <div id="backups-table" class="p-3">
+            @include('pages.backup.partials.table')
+        </div>
     </div>
 
     <div class="mt-4 alert alert-info d-flex align-items-center border-0 shadow-sm" role="alert">

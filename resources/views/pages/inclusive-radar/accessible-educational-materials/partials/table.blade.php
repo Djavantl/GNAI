@@ -1,5 +1,5 @@
 <x-table.table
-    :headers="['Nome', 'Tipo', 'Natureza', 'Estoque', 'Status', 'Ações']"
+    :headers="['Nome', 'Natureza', 'Estoque', 'Status', 'Ações']"
     :records="$materials"
 >
     @forelse($materials as $material)
@@ -7,15 +7,14 @@
             {{-- NOME --}}
             <x-table.td>{{ $material->name }}</x-table.td>
 
-            {{-- TIPO --}}
-            <x-table.td>{{ $material->type?->name ?: 'Didático' }}</x-table.td>
-
             {{-- NATUREZA --}}
-            <x-table.td>{{ $material->type?->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
+            <x-table.td>
+                {{ $material->is_digital ? 'Digital' : 'Físico' }}
+            </x-table.td>
 
             {{-- ESTOQUE --}}
             <x-table.td>
-                @if($material->type?->is_digital)
+                @if($material->is_digital)
                     <span class="text-info fw-bold">Ilimitado</span>
                 @else
                     <span class="{{ ($material->quantity_available ?? 0) > 0 ? 'text-success' : 'text-danger' }} fw-medium">
@@ -28,7 +27,7 @@
             {{-- STATUS --}}
             <x-table.td>
                 @php
-                    $isUnavailable = !$material->type?->is_digital && (($material->quantity_available ?? 0) <= 0);
+                    $isUnavailable = !$material->is_digital && (($material->quantity_available ?? 0) <= 0);
                     $stColor = $isUnavailable ? 'danger' : ($material->is_active ? 'success' : 'secondary');
                     $stLabel = $isUnavailable ? 'Esgotado' : ($material->is_active ? 'Ativo' : 'Inativo');
                 @endphp
@@ -40,6 +39,7 @@
             {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
+                    {{-- Botão Ver --}}
                     <x-buttons.link-button
                         :href="route('inclusive-radar.accessible-educational-materials.show', $material)"
                         variant="info"
@@ -47,6 +47,7 @@
                         <i class="fas fa-eye"></i> Ver
                     </x-buttons.link-button>
 
+                    {{-- Botão Excluir --}}
                     <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}"
                           method="POST" class="d-inline">
                         @csrf

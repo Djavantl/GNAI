@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const selectedType = typeSelect.value;
 
-        // Se não houver tipo selecionado, desabilita o segundo e limpa
         if (!selectedType) {
             itemSelect.innerHTML = '<option value="">Selecione o tipo primeiro</option>';
             itemSelect.disabled = true;
@@ -18,24 +17,28 @@ document.addEventListener('DOMContentLoaded', function() {
         itemSelect.disabled = false;
         itemSelect.innerHTML = '<option value="">-- Selecione o item --</option>';
 
-        const availableItems = loanData.items[selectedType];
+        const availableItems = loanData.items[selectedType] || [];
 
-        if (availableItems && availableItems.length > 0) {
-            availableItems.forEach(item => {
+        // FILTRO DIGITAL: digitais sempre aparecem, físicos só se quantity_available > 0
+        const filteredItems = availableItems.filter(item => {
+            if (item.is_digital) return true;
+            return (item.quantity_available ?? 0) > 0;
+        });
+
+        if (filteredItems.length > 0) {
+            filteredItems.forEach(item => {
                 const option = document.createElement('option');
-                option.value = item.id.toString();
+                option.value = String(item.id);
                 const displayName = item.name || item.title || item.description || 'Item sem identificação';
                 const assetCode = item.asset_code || 'S/N';
                 option.text = `${displayName} (${assetCode})`;
 
-                if (option.value === loanData.oldId) {
+                if (String(item.id) === String(loanData.oldId)) {
                     option.selected = true;
                 }
+
                 itemSelect.appendChild(option);
             });
-
-            // Opcional: Anunciar via console ou log de acessibilidade que a lista foi carregada
-            console.log(`Carregados ${availableItems.length} itens.`);
         } else {
             itemSelect.innerHTML = '<option value="">Nenhum item disponível para este tipo</option>';
         }
@@ -43,11 +46,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (typeSelect) {
         typeSelect.addEventListener('change', updateItems);
-        // Inicializa (importante para o 'old input' do Laravel)
-        updateItems();
+        updateItems(); // Inicializa
     }
 
-    // --- SEÇÃO 2: Bloqueio Acessível ---
+    // --- BLOQUEIO STUDENT / PROFESSIONAL ---
     const studentSelect = document.getElementById('student_id');
     const professionalSelect = document.getElementById('professional_id');
 
@@ -58,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (primary.value) {
                 secondary.value = '';
                 secondary.disabled = true;
-                // Adicionamos uma dica visual/acessível
                 secondary.parentElement.style.opacity = '0.6';
             } else {
                 secondary.disabled = false;
@@ -70,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupToggle(studentSelect, professionalSelect);
     setupToggle(professionalSelect, studentSelect);
 
-    // Inicialização do estado de bloqueio
     if (studentSelect?.value) professionalSelect.disabled = true;
     if (professionalSelect?.value) studentSelect.disabled = true;
 });

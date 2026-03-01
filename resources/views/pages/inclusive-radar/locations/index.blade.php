@@ -10,50 +10,45 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
-            <h2 class="text-title">Pontos de Referência</h2>
-            <p class="text-muted text-base">
-                Gerencie os prédios, salas e locais específicos dentro de cada instituição.
-            </p>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Pontos de Referência"
+            subtitle="Gerencie os prédios, salas e locais específicos dentro de cada instituição."
+        >
+            {{-- Botão de ação --}}
+            <x-buttons.link-button
+                :href="route('inclusive-radar.locations.create')"
+                variant="new"
+            >
+                <i class="fas fa-plus"></i> Adicionar
+            </x-buttons.link-button>
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#locations-table"
+                :fields="[
+                    ['name' => 'name', 'placeholder' => 'Filtrar por nome do local...'],
+                    ['name' => 'institution_name', 'placeholder' => 'Filtrar por instituição...'],
+                    ['name' => 'is_active', 'type' => 'select', 'options' => [
+                        '' => 'Status (Todos)',
+                        '1' => 'Ativo',
+                        '0' => 'Inativo'
+                    ]]
+                ]"
+            />
         </div>
 
-        <x-buttons.link-button
-            :href="route('inclusive-radar.locations.create')"
-            variant="new"
-        >
-            <i class="fas fa-plus"></i> Adicionar
-        </x-buttons.link-button>
-    </div>
+        {{-- TABELA --}}
+        <div id="locations-table" class="p-3">
+            @include('pages.inclusive-radar.locations.partials.table')
+        </div>
 
-    {{-- 🔎 Filtros (versão limpa e moderna) --}}
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#locations-table"
-        :fields="[
-            [
-                'name' => 'name',
-                'placeholder' => 'Filtrar por nome do local...'
-            ],
-            [
-                'name' => 'institution_name',
-                'placeholder' => 'Filtrar por instituição...'
-            ],
-            [
-                'name' => 'is_active',
-                'type' => 'select',
-                'options' => [
-                    '' => 'Status (Todos)',
-                    '1' => 'Ativo',
-                    '0' => 'Inativo'
-                ]
-            ],
-        ]"
-    />
-
-    {{-- 📋 Tabela --}}
-    <div id="locations-table">
-        @include('pages.inclusive-radar.locations.partials.table')
     </div>
 
     @push('scripts')

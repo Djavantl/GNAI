@@ -10,49 +10,47 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
-            <h2 class="text-title">Fila de Espera</h2>
-            <p class="text-muted">Gerencie solicitações de recursos que estão indisponíveis para empréstimo.</p>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Fila de Espera"
+            subtitle="Gerencie solicitações de recursos que estão indisponíveis para empréstimo."
+        >
+            {{-- Botão de ação --}}
+            <x-buttons.link-button
+                :href="route('inclusive-radar.waitlists.create')"
+                variant="new"
+            >
+                <i class="fas fa-plus"></i> Adicionar
+            </x-buttons.link-button>
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#waitlists-table"
+                :fields="[
+                    ['name' => 'student', 'placeholder' => 'Filtrar por aluno...'],
+                    ['name' => 'professional', 'placeholder' => 'Filtrar por profissional...'],
+                    ['name' => 'status', 'type' => 'select', 'options' => [
+                        ''          => 'Status (Todos)',
+                        'waiting'   => 'Em espera',
+                        'notified'  => 'Notificado',
+                        'fulfilled' => 'Atendido',
+                        'cancelled' => 'Cancelado',
+                    ]],
+                ]"
+            />
         </div>
 
-        <x-buttons.link-button
-            :href="route('inclusive-radar.waitlists.create')"
-            variant="new"
-        >
-            <i class="fas fa-plus"></i> Adicionar
-        </x-buttons.link-button>
-    </div>
+        {{-- TABELA --}}
+        <div id="waitlists-table" class="p-3">
+            @include('pages.inclusive-radar.waitlists.partials.table')
+        </div>
 
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#waitlists-table"
-        :fields="[
-        [
-            'name' => 'student',
-            'placeholder' => 'Filtrar por aluno...'
-        ],
-        [
-            'name' => 'professional',
-            'placeholder' => 'Filtrar por profissional...'
-        ],
-        [
-            'name' => 'status',
-            'type' => 'select',
-            'options' => [
-                '' => 'Status (Todos)',
-                'waiting' => 'Em espera',
-                'notified' => 'Notificado',
-                'fulfilled' => 'Atendido',
-                'cancelled' => 'Cancelado',
-            ]
-        ],
-    ]"
-    />
-
-    {{-- Tabela de Fila de Espera --}}
-    <div id="waitlists-table">
-        @include('pages.inclusive-radar.waitlists.partials.table')
     </div>
 
     @push('scripts')

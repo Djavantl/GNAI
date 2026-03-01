@@ -1,7 +1,7 @@
 /* navbar.css */
 
 .navbar-custom {
-  background-color: var(--primary-color) !important;
+  background-color: #322B75;
   height: var(--navbar-height);
   position: fixed;
   top: 0;

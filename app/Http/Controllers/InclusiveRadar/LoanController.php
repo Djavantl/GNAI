@@ -77,38 +77,39 @@ class LoanController extends Controller
 
     public function create(): View
     {
-        $students = Student::with('person')
-            ->get()
-            ->sortBy('person.name');
-
-        $professionals = Professional::with('person')
-            ->get()
-            ->sortBy('person.name');
+        $students = Student::with('person')->get()->sortBy('person.name');
+        $professionals = Professional::with('person')->get()->sortBy('person.name');
 
         $assistiveTechnologies = AssistiveTechnology::where('is_active', true)
             ->whereHas('resourceStatus', fn($q) => $q->where('blocks_loan', false))
-            ->with('type')
             ->get()
-            ->filter(fn($item) =>
-                $item->type?->is_digital || $item->quantity_available > 0
-            );
+            ->filter(fn($item) => $item->is_digital || $item->quantity_available > 0)
+            ->map(fn($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'asset_code' => $item->asset_code ?? 'S/N',
+                'is_digital' => (bool)$item->is_digital,
+                'quantity_available' => $item->quantity_available,
+            ])->values();
 
         $educationalMaterials = AccessibleEducationalMaterial::where('is_active', true)
             ->whereHas('resourceStatus', fn($q) => $q->where('blocks_loan', false))
-            ->with('type')
             ->get()
-            ->filter(fn($item) =>
-                $item->type?->is_digital || $item->quantity_available > 0
-            );
-
-        $authUser = auth()->user();
+            ->filter(fn($item) => $item->is_digital || $item->quantity_available > 0)
+            ->map(fn($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'asset_code' => $item->asset_code ?? 'S/N',
+                'is_digital' => (bool)$item->is_digital,
+                'quantity_available' => $item->quantity_available,
+            ])->values();
 
         return view('pages.inclusive-radar.loans.create', [
-            'students'                 => $students,
-            'professionals'            => $professionals,
-            'assistive_technologies'   => $assistiveTechnologies,
-            'educational_materials'    => $educationalMaterials,
-            'authUser'                 => $authUser,
+            'students'               => $students,
+            'professionals'          => $professionals,
+            'assistive_technologies' => $assistiveTechnologies,
+            'educational_materials'  => $educationalMaterials,
+            'authUser'               => auth()->user(),
         ]);
     }
 
@@ -263,7 +264,7 @@ class LoanController extends Controller
     public function generatePdf(Loan $loan)
     {
         $loan->load([
-            'loanable.type',
+            'loanable',
             'student.person',
             'professional.person'
         ]);

@@ -10,42 +10,44 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
-            <h2 class="text-title">Categorias de Barreiras</h2>
-            <p class="text-muted text-base">Classificação para o mapeamento de acessibilidade e identificação de obstáculos.</p>
-        </div>
-        <x-buttons.link-button
-            :href="route('inclusive-radar.barrier-categories.create')"
-            variant="new"
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Categorias de Barreiras"
+            subtitle="Classificação para o mapeamento de acessibilidade e identificação de obstáculos."
         >
-            <i class="fas fa-plus"></i> Adicionar
-        </x-buttons.link-button>
-    </div>
+            {{-- Botão de ação --}}
+            <x-buttons.link-button
+                :href="route('inclusive-radar.barrier-categories.create')"
+                variant="new"
+            >
+                <i class="fas fa-plus"></i> Adicionar
+            </x-buttons.link-button>
+        </x-table.page-header>
 
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#barrier-categories-table"
-        :fields="[
-        [
-            'name' => 'name',
-            'placeholder' => 'Filtrar por nome da categoria...'
-        ],
-        [
-            'name' => 'is_active',
-            'type' => 'select',
-            'options' => [
-                '' => 'Status (Todos)',
-                '1' => 'Ativo',
-                '0' => 'Inativo'
-            ]
-        ],
-    ]"
-    />
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#barrier-categories-table"
+                :fields="[
+                    ['name' => 'name', 'placeholder' => 'Filtrar por nome da categoria...'],
+                    ['name' => 'is_active', 'type' => 'select', 'options' => [
+                        '' => 'Status (Todos)',
+                        '1' => 'Ativo',
+                        '0' => 'Inativo'
+                    ]]
+                ]"
+            />
+        </div>
 
-    {{-- Tabela --}}
-    <div id="barrier-categories-table">
-        @include('pages.inclusive-radar.barrier-categories.partials.table')
+        {{-- TABELA --}}
+        <div id="barrier-categories-table" class="p-3">
+            @include('pages.inclusive-radar.barrier-categories.partials.table')
+        </div>
+
     </div>
 
     @push('scripts')

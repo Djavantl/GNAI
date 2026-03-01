@@ -5,7 +5,7 @@
     </div>
 
     <ul class="sidebar-menu">
-        
+
         <li>
             <a href="{{ route('dashboard') }}"
                class="{{ request()->is('auth/dashboard') ? 'active' : '' }}">
@@ -95,30 +95,6 @@
                 </li>
 
                 {{-- ===== RADAR INCLUSIVO – ADMIN ===== --}}
-
-                <li>
-                    <a href="{{ route('inclusive-radar.resource-types.index') }}"
-                       class="{{ request()->routeIs('resource-types.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-diagram-3"></i></span>
-                        <span class="text">Tipos de Recursos</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('inclusive-radar.type-attributes.index') }}"
-                       class="{{ request()->routeIs('type-attributes.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-input-cursor-text"></i></span>
-                        <span class="text">Atributos</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('inclusive-radar.type-attribute-assignments.index') }}"
-                       class="{{ request()->routeIs('type-attribute-assignments.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-link-45deg"></i></span>
-                        <span class="text">Vincular Atributos</span>
-                    </a>
-                </li>
 
                 <li>
                     <a href="{{ route('inclusive-radar.accessibility-features.index') }}"

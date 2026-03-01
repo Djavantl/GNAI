@@ -10,16 +10,22 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
-            <h2 class="text-title">Status dos Recursos</h2>
-            <p class="text-muted text-base">Gerencie como os recursos são classificados e as regras de empréstimo.</p>
-        </div>
-    </div>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
 
-    {{-- Tabela --}}
-    <div id="resource-statuses-table">
-        @include('pages.inclusive-radar.resource-statuses.partials.table')
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Status dos Recursos"
+            subtitle="Gerencie como os recursos são classificados e as regras de empréstimo."
+        >
+            {{-- Nenhum botão de ação --}}
+        </x-table.page-header>
+
+        {{-- TABELA --}}
+        <div id="resource-statuses-table" class="p-3">
+            @include('pages.inclusive-radar.resource-statuses.partials.table')
+        </div>
+
     </div>
 
     @push('scripts')

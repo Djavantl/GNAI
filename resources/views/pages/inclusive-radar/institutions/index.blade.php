@@ -10,49 +10,45 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
-            <h2 class="text-title">Instituições Base</h2>
-            <p class="text-muted">
-                Gerencie os locais centrais onde o radar de acessibilidade opera.
-            </p>
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Instituições Base"
+            subtitle="Gerencie os locais centrais onde o radar de acessibilidade opera."
+        >
+            {{-- Botão de ação --}}
+            <x-buttons.link-button
+                :href="route('inclusive-radar.institutions.create')"
+                variant="new"
+            >
+                <i class="fas fa-plus"></i> Adicionar
+            </x-buttons.link-button>
+        </x-table.page-header>
+
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#institutions-table"
+                :fields="[
+                    ['name' => 'name', 'placeholder' => 'Filtrar por nome...'],
+                    ['name' => 'location', 'placeholder' => 'Filtrar por cidade ou estado...'],
+                    ['name' => 'is_active', 'type' => 'select', 'options' => [
+                        '' => 'Status (Todos)',
+                        '1' => 'Ativo',
+                        '0' => 'Inativo'
+                    ]]
+                ]"
+            />
         </div>
 
-        <x-buttons.link-button
-            :href="route('inclusive-radar.institutions.create')"
-            variant="new"
-        >
-            <i class="fas fa-plus"></i> Adicionar
-        </x-buttons.link-button>
-    </div>
+        {{-- TABELA --}}
+        <div id="institutions-table" class="p-3">
+            @include('pages.inclusive-radar.institutions.partials.table')
+        </div>
 
-    <x-table.filters.form
-        data-dynamic-filter
-        data-target="#institutions-table"
-        :fields="[
-        [
-            'name' => 'name',
-            'placeholder' => 'Filtrar por nome...'
-        ],
-        [
-            'name' => 'location',
-            'placeholder' => 'Filtrar por cidade ou estado...'
-        ],
-        [
-            'name' => 'is_active',
-            'type' => 'select',
-            'options' => [
-                '' => 'Status (Todos)',
-                '1' => 'Ativo',
-                '0' => 'Inativo'
-            ]
-        ],
-    ]"
-    />
-
-    {{-- 📋 TABELA --}}
-    <div id="institutions-table">
-        @include('pages.inclusive-radar.institutions.partials.table')
     </div>
 
     @push('scripts')

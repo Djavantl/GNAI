@@ -13,10 +13,7 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     Logs\AssistiveTechnologyLogController,
     MaintenanceController,
     ResourceStatusController,
-    ResourceTypeController,
     TrainingController,
-    TypeAttributeAssignmentController,
-    TypeAttributeController,
     WaitlistController};
 
 /*
@@ -25,59 +22,6 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-
-    // ------------------- TIPOS DE RECURSOS E ATRIBUTOS -------------------
-    Route::get('/resource-types', [ResourceTypeController::class, 'index'])
-        ->name('resource-types.index');
-    Route::get('/resource-types/create', [ResourceTypeController::class, 'create'])
-        ->name('resource-types.create');
-    Route::post('/resource-types/store', [ResourceTypeController::class, 'store'])
-        ->name('resource-types.store');
-    Route::get('/resource-types/{resourceType}', [ResourceTypeController::class, 'show'])
-        ->name('resource-types.show');
-    Route::get('/resource-types/{resourceType}/edit', [ResourceTypeController::class, 'edit'])
-        ->name('resource-types.edit');
-    Route::put('/resource-types/{resourceType}', [ResourceTypeController::class, 'update'])
-        ->name('resource-types.update');
-    Route::patch('/resource-types/{resourceType}/toggle', [ResourceTypeController::class, 'toggleActive'])
-        ->name('resource-types.toggle');
-    Route::delete('/resource-types/{resourceType}', [ResourceTypeController::class, 'destroy'])
-        ->name('resource-types.destroy');
-
-    Route::get('/type-attributes', [TypeAttributeController::class, 'index'])
-        ->name('type-attributes.index');
-    Route::get('/type-attributes/create', [TypeAttributeController::class, 'create'])
-        ->name('type-attributes.create');
-    Route::post('/type-attributes/store', [TypeAttributeController::class, 'store'])
-        ->name('type-attributes.store');
-    Route::get('/type-attributes/{typeAttribute}', [TypeAttributeController::class, 'show'])
-        ->name('type-attributes.show');
-    Route::get('/type-attributes/{typeAttribute}/edit', [TypeAttributeController::class, 'edit'])
-        ->name('type-attributes.edit');
-    Route::put('/type-attributes/{typeAttribute}', [TypeAttributeController::class, 'update'])
-        ->name('type-attributes.update');
-    Route::patch('/type-attributes/{typeAttribute}/toggle', [TypeAttributeController::class, 'toggleActive'])
-        ->name('type-attributes.toggle');
-    Route::delete('/type-attributes/{typeAttribute}', [TypeAttributeController::class, 'destroy'])
-        ->name('type-attributes.destroy');
-
-    Route::get('/type-attribute-assignments', [TypeAttributeAssignmentController::class, 'index'])
-        ->name('type-attribute-assignments.index');
-    Route::get('/type-attribute-assignments/create', [TypeAttributeAssignmentController::class, 'create'])
-        ->name('type-attribute-assignments.create');
-    Route::post('/type-attribute-assignments/store', [TypeAttributeAssignmentController::class, 'store'])
-        ->name('type-attribute-assignments.store');
-    Route::get('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'show'])
-        ->name('type-attribute-assignments.show');
-    Route::get('/type-attribute-assignments/{assignment}/edit', [TypeAttributeAssignmentController::class, 'edit'])
-        ->name('type-attribute-assignments.edit');
-    Route::put('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'update'])
-        ->name('type-attribute-assignments.update');
-    Route::delete('/type-attribute-assignments/{assignment}', [TypeAttributeAssignmentController::class, 'destroy'])
-        ->name('type-attribute-assignments.destroy');
-
-    Route::get('/resource-types/{resourceType}/attributes', [TypeAttributeAssignmentController::class, 'getAttributesByType'])
-        ->name('resource-types.attributes');
 
     // ------------------- BARREIRAS E CATEGORIAS -------------------
     Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])
