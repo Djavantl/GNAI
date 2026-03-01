@@ -187,46 +187,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/students/{student}/peis', [PeiController::class, 'index'])->name('pei.index')->middleware('can:pei.view');
     Route::get('/peis/{pei}/show', [PeiController::class, 'show'])->name('pei.show')->middleware('can:pei.view');
     Route::get('/students/{student}/peis/create', [PeiController::class, 'create'])->name('pei.create')->middleware('can:pei.create');
-    Route::post('/peis/store', [PeiController::class, 'store'])->name('pei.store')->middleware('can:pei.create');
+    Route::post('/peis/student/{student}/store', [PeiController::class, 'store'])->name('pei.store')->middleware('can:pei.create');
     Route::get('/peis/{pei}/edit', [PeiController::class, 'edit'])->name('pei.edit')->middleware('can:pei.update');
     Route::put('/peis/{pei}', [PeiController::class, 'update'])->name('pei.update')->middleware('can:pei.update');
     Route::delete('/peis/{pei}', [PeiController::class, 'destroy'])->name('pei.destroy')->middleware('can:pei.delete');
     Route::patch('/peis/{pei}/finish', [PeiController::class, 'finish'])->name('pei.finish')->middleware('can:pei.update');
     Route::post('peis/{pei}/version', [PeiController::class, 'createVersion'])->name('pei.version.newVersion')->middleware('can:pei.create');
-    Route::post('peis/{pei}/make-current', [PeiController::class, 'makeCurrent'])->name('pei.makeCurrent')->middleware('can:pei.update');
     Route::get('/peis/{pei}/pdf', [PeiController::class, 'generatePdf'])->name('pei.pdf')->middleware('can:pei.view');
 
-    // PEI Auxiliares (Objetivos, Conteúdos, Metodologias) - Agrupados na permissão PEI
-    Route::get('peis/objectives/{specific_objective}', [PeiController::class, 'showObjective'])->name('pei.objective.show')->middleware('can:pei.view');
-    Route::get('/peis/{pei}/objectives/create', [PeiController::class, 'createObjective'])->name('pei.objective.create')->middleware('can:pei.create');
-    Route::post('/peis/{pei}/objectives', [PeiController::class, 'storeObjective'])->name('pei.objective.store')->middleware('can:pei.create');
-    Route::get('/peis/objectives/{specific_objective}/edit', [PeiController::class, 'editObjective'])->name('pei.objective.edit')->middleware('can:pei.update');
-    Route::put('/peis/objectives/{specific_objective}/update', [PeiController::class, 'updateObjective'])->name('pei.objective.update')->middleware('can:pei.update');
-    Route::delete('/peis/objectives/{specific_objective}', [PeiController::class, 'destroyObjective'])->name('pei.objective.destroy')->middleware('can:pei.delete');
-
-    Route::get('peis/contents/{content_programmatic}', [PeiController::class, 'showContent'])->name('pei.content.show')->middleware('can:pei.view');
-    Route::get('/peis/{pei}/contents/create', [PeiController::class, 'createContent'])->name('pei.content.create')->middleware('can:pei.create');
-    Route::post('/peis/{pei}/contents', [PeiController::class, 'storeContent'])->name('pei.content.store')->middleware('can:pei.create');
-    Route::get('/peis/contents/{content_programmatic}/edit', [PeiController::class, 'editContent'])->name('pei.content.edit')->middleware('can:pei.update');
-    Route::put('/peis/contents/{content_programmatic}/update', [PeiController::class, 'updateContent'])->name('pei.content.update')->middleware('can:pei.update');
-    Route::delete('/peis/contents/{content_programmatic}', [PeiController::class, 'destroyContent'])->name('pei.content.destroy')->middleware('can:pei.delete');
-
-    Route::get('peis/methodologies/{methodology}', [PeiController::class, 'showMethodology'])->name('pei.methodology.show')->middleware('can:pei.view');
-    Route::get('/peis/{pei}/methodologies/create', [PeiController::class, 'createMethodology'])->name('pei.methodology.create')->middleware('can:pei.create');
-    Route::post('/peis/{pei}/methodologies', [PeiController::class, 'storeMethodology'])->name('pei.methodology.store')->middleware('can:pei.create');
-    Route::get('/peis/methodologies/{methodology}/edit', [PeiController::class, 'editMethodology'])->name('pei.methodology.edit')->middleware('can:pei.update');
-    Route::put('/peis/methodologies/{methodology}/update', [PeiController::class, 'updateMethodology'])->name('pei.methodology.update')->middleware('can:pei.update');
-    Route::delete('/peis/methodologies/{methodology}', [PeiController::class, 'destroyMethodology'])->name('pei.methodology.destroy')->middleware('can:pei.delete');
-
-    /* 12. PEI EVALUATIONS */
-    Route::get('/peis/{pei}/evaluations', [PeiEvaluationController::class, 'index'])->name('pei-evaluation.index')->middleware('can:pei-evaluation.view');
-    Route::get('/peis/{pei}/evaluations/create', [PeiEvaluationController::class, 'create'])->name('pei-evaluation.create')->middleware('can:pei-evaluation.create');
-    Route::post('/peis/{pei}/evaluations', [PeiEvaluationController::class, 'store'])->name('pei-evaluation.store')->middleware('can:pei-evaluation.create');
-    Route::get('/pei-evaluations/{pei_evaluation}/show', [PeiEvaluationController::class, 'show'])->name('pei-evaluation.show')->middleware('can:pei-evaluation.view');
-    Route::get('/pei-evaluations/{pei_evaluation}/edit', [PeiEvaluationController::class, 'edit'])->name('pei-evaluation.edit')->middleware('can:pei-evaluation.update');
-    Route::put('/pei-evaluations/{pei_evaluation}', [PeiEvaluationController::class, 'update'])->name('pei-evaluation.update')->middleware('can:pei-evaluation.update');
-    Route::delete('/pei-evaluations/{pei_evaluation}', [PeiEvaluationController::class, 'destroy'])->name('pei-evaluation.destroy')->middleware('can:pei-evaluation.delete');
-    Route::get('/pei-evaluations/{pei_evaluation}/pdf', [PeiEvaluationController::class, 'generatePdf'])->name('pei-evaluation.pdf')->middleware('can:pei-evaluation.view');
+    // Rotas de Adaptações de Disciplinas (PEI Discipline)
+    Route::get('/peis/{pei}/disciplines/create', [PeiController::class, 'createDiscipline'])->name('pei-discipline.create')->middleware('can:pei.create');
+    Route::post('/peis/{pei}/disciplines/store', [PeiController::class, 'storeDiscipline'])->name('pei-discipline.store')->middleware('can:pei.create');
+    Route::get('/peis/{pei}/disciplines/{peiDiscipline}/show', [PeiController::class, 'showDiscipline'])->name('pei-discipline.show')->middleware('can:pei.view')->scopeBindings();
+    Route::get('/peis/{pei}/disciplines/{peiDiscipline}/edit', [PeiController::class, 'editDiscipline'])->name('pei-discipline.edit')->middleware('can:pei.update')->scopeBindings();
+    Route::put('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'updateDiscipline'])->name('pei-discipline.update')->middleware('can:pei.update')->scopeBindings();
+    Route::delete('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'destroyDiscipline'])->name('pei-discipline.destroy')->middleware('can:pei.delete')->scopeBindings();
 
     /* 13. STUDENT DOCUMENTS */
     Route::get('/students/{student}/documents', [StudentDocumentController::class, 'index'])->name('student-documents.index')->middleware('can:student-document.view');

@@ -42,14 +42,6 @@
                     ])->toArray()
             ],
             [
-                'name' => 'discipline_id',
-                'type' => 'select',
-                'options' => ['' => 'Disciplina (Todas)'] +
-                    collect($disciplines)->mapWithKeys(fn($d) => [
-                        $d->id => $d->name
-                    ])->toArray()
-            ],
-            [
                 'name' => 'version',
                 'placeholder' => 'Versão...'
             ],

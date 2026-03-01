@@ -28,6 +28,7 @@
   /* se necessário para o passo que usa --bs-success etc, deixei referência */
   --bs-success: #198754;
   --bs-primary-rgb: 13,110,253;
+  
 }
 
 /* --- Valores dinâmicos (controlados via classes/body) --- */

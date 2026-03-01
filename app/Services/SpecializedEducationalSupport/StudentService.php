@@ -49,7 +49,7 @@ class StudentService
             'deficiencies',
             'peis' => fn ($query) =>
             $query->visibleToUser(auth()->user())
-                ->with(['semester', 'discipline'])
+                ->with(['semester'])
                 ->latest(),
             'studentCourses',
             'courses',

@@ -1,11 +1,14 @@
 .form-section-divider {
+    justify-content: center;
     background-color: #4D44B5;
     color: #ffffff;
     padding: 12px 0;
-    /* Removido as margens negativas */
+    border-radius: 10px;
     display: flex;
     align-items: center;
     width: 100%;
+    height: 4rem;
+    box-shadow: 6px 10px 10px rgba(0,0,0,0.2);
 }
 
 /* Garante que a primeira seção ignore o arredondamento do card pai se necessário */

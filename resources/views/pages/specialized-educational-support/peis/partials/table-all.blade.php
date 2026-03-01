@@ -1,4 +1,4 @@
-<x-table.table :headers="['Estudante', 'Semestre', 'Componente Curricular', 'Docente', 'Status', 'Ações']"
+<x-table.table :headers="['Estudante', 'Semestre', 'Status', 'Ações']"
 :records="$peis">
     @forelse($peis as $pei)
         <tr>
@@ -14,15 +14,6 @@
 
             <x-table.td>
                 <strong>{{ $pei->semester->label ?? 'N/A' }}</strong>
-            </x-table.td>
-
-            <x-table.td>
-                <span class="fw-bold">{{ $pei->discipline->name ?? 'N/A' }}</span><br>
-                <small class="text-muted">{{ $pei->course->name ?? '' }}</small>
-            </x-table.td>
-
-            <x-table.td>
-                {{ $pei->teacher_display_name }}
             </x-table.td>
 
             <x-table.td>

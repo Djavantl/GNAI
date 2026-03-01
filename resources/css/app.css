@@ -30,6 +30,7 @@
 @import "./components/messages.css";
 @import "./components/photos.css";
 @import "./components/show.css";
+@import "./components/collapsible-section.css";
 @import "./pages/errors.css";
 @import "./pages/sessions.css";
 @import "./auth/login.css";

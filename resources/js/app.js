@@ -6,6 +6,7 @@ import './components/search-filter.js';
 import './utils/cpf.js';
 import './utils/phone.js';
 import './partials/sidebar.js';
+import './components/collapsible-section';
 
 // App principal - Sidebar e Navbar
 class App {
