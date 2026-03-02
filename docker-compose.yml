@@ -1,5 +1,9 @@
+version: "3.9"
+
 services:
+  # ==============================
   # PHP-FPM Laravel
+  # ==============================
   app:
     build:
       context: .
@@ -24,7 +28,31 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
 
+  # ==============================
+  # Scheduler (NOVO - BACKUP AUTO)
+  # ==============================
+  scheduler:
+    build:
+      context: .
+      args:
+        - USER_ID=${UID:-1000}
+        - GROUP_ID=${GID:-1000}
+    container_name: gnai_scheduler
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+      php artisan backup:automatic &&
+      php artisan schedule:work
+      "
+
+  # ==============================
   # MySQL
+  # ==============================
   db:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
@@ -45,6 +73,9 @@ services:
       interval: 5s
       retries: 5
 
+  # ==============================
+  # phpMyAdmin
+  # ==============================
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma_laravel
@@ -52,14 +83,15 @@ services:
     depends_on:
       - db
     environment:
-      PMA_HOST: db        # Deve ser igual ao nome do serviço de banco acima
+      PMA_HOST: db
       PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD} # Facilita o login automático
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '8081:80'
+      - "8081:80"
 
-
+  # ==============================
   # Nginx
+  # ==============================
   nginx:
     image: nginx:alpine
     container_name: gnai_nginx
@@ -72,6 +104,9 @@ services:
     depends_on:
       - app
 
+  # ==============================
+  # Node (Vite)
+  # ==============================
   node:
     image: node:20-alpine
     container_name: gnai_node
