@@ -3,18 +3,12 @@
 namespace App\Http\Controllers\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\LoanStatus;
+use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LoanRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\InclusiveRadar\{
-    Loan,
-    AccessibleEducationalMaterial,
-    AssistiveTechnology
-};
-use App\Models\SpecializedEducationalSupport\{
-    Student,
-    Professional
-};
+use App\Models\InclusiveRadar\{Loan, AccessibleEducationalMaterial, AssistiveTechnology};
+use App\Models\SpecializedEducationalSupport\{Student, Professional};
 use App\Services\InclusiveRadar\LoanService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -81,28 +75,32 @@ class LoanController extends Controller
         $professionals = Professional::with('person')->get()->sortBy('person.name');
 
         $assistiveTechnologies = AssistiveTechnology::where('is_active', true)
-            ->whereHas('resourceStatus', fn($q) => $q->where('blocks_loan', false))
+            ->where('is_loanable', true)
             ->get()
-            ->filter(fn($item) => $item->is_digital || $item->quantity_available > 0)
+            ->filter(fn($item) => $item->status === ResourceStatus::AVAILABLE)
+            ->filter(fn($item) => $item->is_digital || ($item->quantity_available ?? 0) > 0)
             ->map(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'asset_code' => $item->asset_code ?? 'S/N',
                 'is_digital' => (bool)$item->is_digital,
                 'quantity_available' => $item->quantity_available,
-            ])->values();
+            ])
+            ->values();
 
         $educationalMaterials = AccessibleEducationalMaterial::where('is_active', true)
-            ->whereHas('resourceStatus', fn($q) => $q->where('blocks_loan', false))
+            ->where('is_loanable', true)
             ->get()
-            ->filter(fn($item) => $item->is_digital || $item->quantity_available > 0)
+            ->filter(fn($item) => $item->status === ResourceStatus::AVAILABLE)
+            ->filter(fn($item) => $item->is_digital || ($item->quantity_available ?? 0) > 0)
             ->map(fn($item) => [
                 'id' => $item->id,
                 'name' => $item->name,
                 'asset_code' => $item->asset_code ?? 'S/N',
                 'is_digital' => (bool)$item->is_digital,
                 'quantity_available' => $item->quantity_available,
-            ])->values();
+            ])
+            ->values();
 
         return view('pages.inclusive-radar.loans.create', [
             'students'               => $students,

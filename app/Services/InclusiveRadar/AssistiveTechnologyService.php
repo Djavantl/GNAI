@@ -2,12 +2,16 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Exceptions\InclusiveRadar\CannotChangeStatusWithActiveLoansException;
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
 use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\ResourceStatus;
+use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Service responsável pela gestão de recursos de Tecnologia Assistiva (TA).
+ */
 class AssistiveTechnologyService
 {
     public function __construct(
@@ -15,12 +19,9 @@ class AssistiveTechnologyService
         protected LoanService $loanService,
     ) {}
 
-    /*
-    |--------------------------------------------------------------------------
-    | CRUD
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * Cria um novo recurso de Tecnologia Assistiva.
+     */
     public function store(array $data): AssistiveTechnology
     {
         return DB::transaction(
@@ -28,6 +29,9 @@ class AssistiveTechnologyService
         );
     }
 
+    /**
+     * Atualiza um recurso de Tecnologia Assistiva existente.
+     */
     public function update(AssistiveTechnology $assistiveTechnology, array $data): AssistiveTechnology
     {
         return DB::transaction(
@@ -35,60 +39,80 @@ class AssistiveTechnologyService
         );
     }
 
+    /**
+     * Alterna a disponibilidade ativa/inativa do recurso no sistema.
+     */
     public function toggleActive(AssistiveTechnology $assistiveTechnology): AssistiveTechnology
     {
         return DB::transaction(function () use ($assistiveTechnology) {
             $assistiveTechnology->update([
                 'is_active' => !$assistiveTechnology->is_active
             ]);
-
             return $assistiveTechnology;
         });
     }
 
+    /**
+     * Remove o recurso, validando se não há pendências de empréstimo.
+     * * @throws CannotDeleteWithActiveLoansException
+     */
     public function delete(AssistiveTechnology $assistiveTechnology): void
     {
         DB::transaction(function () use ($assistiveTechnology) {
-
+            // Travas de segurança: impede a exclusão se houver itens que ainda não retornaram
             if ($assistiveTechnology->loans()->whereNull('return_date')->exists()) {
                 throw new CannotDeleteWithActiveLoansException();
             }
-
             $assistiveTechnology->delete();
         });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | PERSISTÊNCIA CENTRAL
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * Centraliza o fluxo de persistência, estoque e sincronização de relações.
+     */
     protected function persist(AssistiveTechnology $at, array $data): AssistiveTechnology
     {
-        $oldDeficiencies = $at->exists
-            ? $at->deficiencies()->pluck('deficiencies.id')->toArray()
-            : [];
+        // Captura do estado prévio para comparar mudanças e gerar logs de auditoria
+        [$oldDef, $oldTrainings] = $this->captureOriginalState($at);
 
+        // Valida se a quantidade atual suporta as regras de estoque definidas
         $data = $this->processStock($at, $data);
+
+        // Impede mudança de status (ex: para manutenção) se houver empréstimos ativos
+        $this->validateStatusChangeWithActiveLoans($at, $data);
 
         $this->saveModel($at, $data);
 
         $this->syncRelations($at, $data);
 
-        $this->logDeficiencyChanges($at, $data, $oldDeficiencies);
+        // Registra o histórico de alterações em deficiências e treinamentos
+        $this->logRelationChanges($at, $data, $oldDef, $oldTrainings);
 
+        // Gera automaticamente o registro de vistoria/inspeção técnica
         $this->runInspection($at, $data);
 
         return $this->loadFreshRelations($at);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ESTOQUE
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Obtém os IDs atuais das relações para detecção de mudanças (Auditoria).
+     */
+    private function captureOriginalState(AssistiveTechnology $at): array
+    {
+        $oldDeficiencies = $at->exists
+            ? $at->deficiencies()->pluck('deficiencies.id')->toArray()
+            : [];
 
+        $oldTrainings = $at->exists
+            ? $at->trainings()->pluck('id')->toArray()
+            : [];
+
+        return [$oldDeficiencies, $oldTrainings];
+    }
+
+    /**
+     * Processa a disponibilidade física do recurso de tecnologia assistiva.
+     */
     private function processStock(AssistiveTechnology $at, array $data): array
     {
         if (isset($data['quantity'])) {
@@ -98,87 +122,125 @@ class AssistiveTechnologyService
         return $this->loanService->calculateStockForLoan($at, $data);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SALVAMENTO
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * Persiste os dados básicos e garante o status inicial se necessário.
+     */
     private function saveModel(AssistiveTechnology $at, array $data): void
     {
-        if (!$at->exists && empty($data['status_id'])) {
-            $availableStatus = ResourceStatus::where('code', 'available')->first();
-            if ($availableStatus) {
-                $data['status_id'] = $availableStatus->id;
-            }
+        if (!$at->exists && empty($data['status'])) {
+            $data['status'] = ResourceStatus::AVAILABLE->value;
         }
 
         $at->fill($data)->save();
     }
 
+    /**
+     * Sincroniza vínculos de deficiências e reconstrói a lista de treinamentos.
+     */
     protected function syncRelations(AssistiveTechnology $at, array $data): void
     {
         if (isset($data['deficiencies'])) {
             $at->deficiencies()->sync($data['deficiencies']);
         }
+
+        if (!empty($data['trainings'])) {
+            // Removemos os antigos para reconstruir com as novas URLs e arquivos enviados
+            $at->trainings()->delete();
+
+            foreach ($data['trainings'] as $training) {
+                $t = $at->trainings()->create([
+                    'title'       => $training['title'],
+                    'description' => $training['description'] ?? null,
+                    'url'         => $training['url'] ?? null,
+                    'is_active'   => true
+                ]);
+
+                if (!empty($training['files'])) {
+                    foreach ($training['files'] as $file) {
+                        $path = $file->store('trainings', 'public');
+
+                        $t->files()->create([
+                            'path'          => $path,
+                            'original_name' => $file->getClientOriginalName(),
+                            'mime_type'     => $file->getMimeType(),
+                            'size'          => $file->getSize(),
+                        ]);
+                    }
+                }
+            }
+        }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | INSPEÇÃO
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Validação de integridade: evita inconsistência entre status do recurso e empréstimos.
+     * * @throws CannotChangeStatusWithActiveLoansException
+     */
+    private function validateStatusChangeWithActiveLoans(AssistiveTechnology $at, array $data): void
+    {
+        if (!$at->exists || !isset($data['status'])) return;
 
+        $hasActiveLoans = $at->loans()->whereNull('return_date')->exists();
+
+        if ($hasActiveLoans && $at->status->value != $data['status']) {
+            throw new CannotChangeStatusWithActiveLoansException();
+        }
+    }
+
+    /**
+     * Registra o log de inspeção técnica através do InspectionService.
+     */
     private function runInspection(AssistiveTechnology $at, array $data): void
     {
         $this->inspectionService->createInspectionForModel($at, $data);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FRESH LOAD
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * Recarrega o modelo com os relacionamentos atualizados para o retorno.
+     */
     private function loadFreshRelations(AssistiveTechnology $at): AssistiveTechnology
     {
-        return $at->fresh([
-            'resourceStatus',
-            'deficiencies',
-            'trainings'
-        ]);
+        return $at->fresh(['deficiencies', 'trainings']);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | AUDITORIA
-    |--------------------------------------------------------------------------
-    */
-
-    private function logDeficiencyChanges(AssistiveTechnology $at, array $data, array $oldDef): void
+    /**
+     * Analisa e registra o log de auditoria caso as relações tenham mudado.
+     */
+    private function logRelationChanges(AssistiveTechnology $at, array $data, array $oldDef, array $oldTrainings): void
     {
+        // Se o registro é novo, a auditoria de criação já cobre o histórico
         if ($at->wasRecentlyCreated) return;
 
         if (isset($data['deficiencies'])) {
-
             $newDef = array_map('intval', $data['deficiencies']);
-
-            sort($oldDef);
-            sort($newDef);
-
+            sort($oldDef); sort($newDef);
             if ($oldDef !== $newDef) {
-
-                AuditLog::create([
-                    'user_id' => auth()->id(),
-                    'action' => 'updated',
-                    'auditable_type' => $at->getMorphClass(),
-                    'auditable_id' => $at->id,
-                    'old_values' => ['deficiencies' => $oldDef],
-                    'new_values' => ['deficiencies' => $newDef],
-                    'ip_address' => request()?->ip(),
-                    'user_agent' => request()?->userAgent(),
-                ]);
+                $this->logRelationChange($at, 'deficiencies', $oldDef, $newDef);
             }
         }
+
+        if (isset($data['trainings'])) {
+            $newTrain = $at->trainings()->pluck('id')->toArray();
+            sort($oldTrainings); sort($newTrain);
+            if ($oldTrainings !== $newTrain) {
+                $this->logRelationChange($at, 'trainings', $oldTrainings, $newTrain);
+            }
+        }
+    }
+
+    /**
+     * Cria um registro de auditoria detalhando o estado antigo e o novo.
+     */
+    protected function logRelationChange(AssistiveTechnology $model, string $field, array $old, array $new): void
+    {
+        AuditLog::create([
+            'user_id'        => auth()->id(),
+            'action'         => 'updated',
+            'auditable_type' => $model->getMorphClass(),
+            'auditable_id'   => $model->id,
+            'old_values'     => [$field => $old],
+            'new_values'     => [$field => $new],
+            'ip_address'     => request()?->ip(),
+            'user_agent'     => request()?->userAgent(),
+        ]);
     }
 }

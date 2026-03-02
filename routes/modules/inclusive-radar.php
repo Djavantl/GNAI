@@ -11,8 +11,6 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     LocationController,
     Logs\AccessibleEducationalMaterialLogController,
     Logs\AssistiveTechnologyLogController,
-    MaintenanceController,
-    ResourceStatusController,
     TrainingController,
     WaitlistController};
 
@@ -93,18 +91,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('accessibility-features.toggle');
     Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])
         ->name('accessibility-features.destroy');
-
-    // ------------------- STATUS DE RECURSO -------------------
-    Route::get('/resource-statuses', [ResourceStatusController::class, 'index'])
-        ->name('resource-statuses.index');
-    Route::get('/resource-statuses/{resourceStatus}', [ResourceStatusController::class, 'show'])
-        ->name('resource-statuses.show');
-    Route::get('/resource-statuses/{resourceStatus}/edit', [ResourceStatusController::class, 'edit'])
-        ->name('resource-statuses.edit');
-    Route::put('/resource-statuses/{resourceStatus}', [ResourceStatusController::class, 'update'])
-        ->name('resource-statuses.update');
-    Route::patch('/resource-statuses/{resourceStatus}/toggle', [ResourceStatusController::class, 'toggleActive'])
-        ->name('resource-statuses.toggle');
 });
 
 /*
@@ -291,49 +277,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/loans/{loan}/pdf', [LoanController::class, 'generatePdf'])
         ->name('loans.pdf')->middleware('can:loan.pdf');
-
-    // Dashboard – lista manutenções
-    Route::get('/maintenances', [MaintenanceController::class, 'index'])
-        ->name('maintenances.index')
-        ->middleware('can:maintenance.index');
-
-    // Show – detalhes de uma manutenção
-    Route::get('/maintenances/{maintenance}', [MaintenanceController::class, 'show'])
-        ->name('maintenances.show')
-        ->middleware('can:maintenance.show');
-
-    // ===================== ETAPAS =====================
-
-    // Step 0 – abrir manutenção
-    Route::post('/maintenances/{assistiveTechnology}/open', [MaintenanceController::class, 'openMaintenanceRequest'])
-        ->name('maintenances.open')
-        ->middleware('can:maintenance.create');
-
-    // Etapa 1 – mostrar formulário
-    Route::get('/maintenances/{maintenance}/stage1', [MaintenanceController::class, 'stage1'])
-        ->name('maintenances.stage1')
-        ->middleware('can:maintenance.stage1');
-
-    // Etapa 1 – iniciar/concluir
-    Route::patch('/maintenances/{maintenance}/stage1', [MaintenanceController::class, 'saveStage1'])
-        ->name('maintenances.saveStage1')
-        ->middleware('can:maintenance.stage1');
-
-    // Etapa 2 – mostrar formulário
-    Route::get('/maintenances/{maintenance}/stage2', [MaintenanceController::class, 'stage2'])
-        ->name('maintenances.stage2')
-        ->middleware('can:maintenance.stage2');
-
-    // Etapa 2 – iniciar/concluir
-    Route::patch('/maintenances/{maintenance}/stage2', [MaintenanceController::class, 'saveStage2'])
-        ->name('maintenances.saveStage2')
-        ->middleware('can:maintenance.stage2');
-
-    // Gerar PDF
-    Route::get('/maintenances/{maintenance}/pdf', [MaintenanceController::class, 'generatePdf'])
-        ->name('maintenances.pdf')
-        ->middleware('can:maintenance.pdf');
-
 
     // ------------------- FILA DE ESPERA -------------------
 

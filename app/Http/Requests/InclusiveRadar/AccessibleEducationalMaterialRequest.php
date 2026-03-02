@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ConservationState;
+use App\Enums\InclusiveRadar\ResourceStatus;
 
 class AccessibleEducationalMaterialRequest extends FormRequest
 {
@@ -19,14 +20,16 @@ class AccessibleEducationalMaterialRequest extends FormRequest
     {
         $material = $this->route('material');
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
-
         $isDigital = $this->boolean('is_digital');
+        $isLoanable = $this->boolean('is_loanable');
 
         return [
 
             'name' => 'required|string|max:255',
 
             'is_digital' => 'required|boolean',
+
+            'is_loanable' => 'sometimes|boolean',
 
             'asset_code' => [
                 'nullable',
@@ -40,11 +43,18 @@ class AccessibleEducationalMaterialRequest extends FormRequest
                 ? 'nullable|integer|min:0'
                 : 'required|integer|min:1',
 
-            'quantity_available' => 'nullable|integer|min:0',
+            'quantity_available' => $isLoanable
+                ? 'nullable|integer|min:0'
+                : 'nullable',
 
             'is_active' => 'sometimes|boolean',
 
             'notes' => 'nullable|string',
+
+            'status' => [
+                $isUpdate ? 'nullable' : 'required',
+                new Enum(ResourceStatus::class),
+            ],
 
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
@@ -82,14 +92,46 @@ class AccessibleEducationalMaterialRequest extends FormRequest
         $this->merge([
             'is_active' => $this->boolean('is_active'),
             'is_digital' => $this->boolean('is_digital'),
+            'is_loanable' => $this->boolean('is_loanable'),
             'inspection_date' => $this->inspection_date ?? now()->format('Y-m-d'),
         ]);
+
+        if (!$this->boolean('is_loanable')) {
+            $this->merge([
+                'quantity_available' => 0,
+            ]);
+        }
 
         if (!$isUpdate) {
             $this->merge([
                 'inspection_type' => $this->inspection_type ?? InspectionType::INITIAL->value,
             ]);
         }
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+
+            if ($this->boolean('is_loanable') && (int)$this->quantity <= 0) {
+                $validator->errors()->add(
+                    'quantity',
+                    'Materiais emprestáveis devem ter quantidade maior que zero.'
+                );
+            }
+
+            if (
+                $this->boolean('is_loanable') &&
+                $this->quantity !== null &&
+                $this->quantity_available !== null &&
+                $this->quantity_available > $this->quantity
+            ) {
+                $validator->errors()->add(
+                    'quantity_available',
+                    'A quantidade disponível não pode ser maior que a quantidade total.'
+                );
+            }
+        });
     }
 
     public function messages(): array

@@ -37,7 +37,8 @@
                     $statusColor = $currentStatus?->color() ?? 'secondary';
                 @endphp
 
-                <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-2">
+                {{-- Status em texto puro, negrito e caixa alta para manter o padrão visual do sistema --}}
+                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $currentStatus?->label() ?? $waitlist->status }}
                 </span>
             </x-table.td>

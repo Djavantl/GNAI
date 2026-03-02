@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\DB;
 
 class InstitutionService
 {
-    public function store(array $data): Institution
+    public function store(array $data): ?Institution
     {
-        return DB::transaction(
-            fn () => Institution::create($data)
-        );
+        if (Institution::exists()) {
+            return null;
+        }
+
+        return DB::transaction(fn () => Institution::create($data));
     }
 
     public function update(Institution $institution, array $data): Institution

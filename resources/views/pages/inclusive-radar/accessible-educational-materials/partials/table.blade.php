@@ -15,9 +15,9 @@
             {{-- ESTOQUE --}}
             <x-table.td>
                 @if($material->is_digital)
-                    <span class="text-info fw-bold">Ilimitado</span>
+                    <span class="text-info fw-bold text-uppercase" style="font-size: 0.85rem;">Ilimitado</span>
                 @else
-                    <span class="{{ ($material->quantity_available ?? 0) > 0 ? 'text-success' : 'text-danger' }} fw-medium">
+                    <span class="{{ ($material->quantity_available ?? 0) > 0 ? 'text-success' : 'text-danger' }} fw-bold">
                         {{ $material->quantity_available ?? 0 }}
                     </span>
                     <span class="text-muted">/ {{ $material->quantity ?? 0 }}</span>
@@ -31,7 +31,9 @@
                     $stColor = $isUnavailable ? 'danger' : ($material->is_active ? 'success' : 'secondary');
                     $stLabel = $isUnavailable ? 'Esgotado' : ($material->is_active ? 'Ativo' : 'Inativo');
                 @endphp
-                <span class="text-{{ $stColor }} fw-bold">
+
+                {{-- Padronização TA: Texto colorido, negrito e em caixa alta --}}
+                <span class="text-{{ $stColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $stLabel }}
                 </span>
             </x-table.td>

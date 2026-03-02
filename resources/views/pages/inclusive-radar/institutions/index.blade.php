@@ -22,8 +22,9 @@
             <x-buttons.link-button
                 :href="route('inclusive-radar.institutions.create')"
                 variant="new"
+                title="Adicionar Instituição"
             >
-                <i class="fas fa-plus"></i> Adicionar
+                <i class="fas fa-plus"></i>
             </x-buttons.link-button>
         </x-table.page-header>
 

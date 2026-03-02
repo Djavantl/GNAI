@@ -3,12 +3,12 @@
 namespace App\Models\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\ConservationState;
+use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -33,7 +33,8 @@ class AccessibleEducationalMaterial extends Model
         'quantity',
         'quantity_available',
         'conservation_state',
-        'status_id',
+        'is_loanable',
+        'status',
         'is_active',
     ];
 
@@ -46,7 +47,9 @@ class AccessibleEducationalMaterial extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_digital' => 'boolean',
+        'is_loanable' => 'boolean',
         'conservation_state' => ConservationState::class,
+        'status' => ResourceStatus::class,
     ];
 
     /*
@@ -54,11 +57,6 @@ class AccessibleEducationalMaterial extends Model
     | RELACIONAMENTOS
     |--------------------------------------------------------------------------
     */
-
-    public function resourceStatus(): BelongsTo
-    {
-        return $this->belongsTo(ResourceStatus::class, 'status_id');
-    }
 
     public function deficiencies(): BelongsToMany
     {
@@ -80,14 +78,8 @@ class AccessibleEducationalMaterial extends Model
         );
     }
 
-    public function trainings(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Training::class,
-            'accessible_educational_material_training',
-            'accessible_educational_material_id',
-            'training_id'
-        );
+    public function trainings(): MorphMany {
+        return $this->morphMany(Training::class, 'trainable');
     }
 
     public function inspections(): MorphMany
@@ -95,13 +87,6 @@ class AccessibleEducationalMaterial extends Model
         return $this->morphMany(Inspection::class, 'inspectable')
             ->with('images')
             ->orderByDesc('inspection_date')
-            ->orderByDesc('created_at');
-    }
-
-    public function maintenances(): MorphMany
-    {
-        return $this->morphMany(Maintenance::class, 'maintainable')
-            ->with('inspection')
             ->orderByDesc('created_at');
     }
 
@@ -179,7 +164,7 @@ class AccessibleEducationalMaterial extends Model
             'asset_code' => 'Código de Patrimônio',
             'quantity' => 'Quantidade Total',
             'conservation_state' => 'Estado de Conservação',
-            'status_id' => 'Status do Recurso',
+            'status' => 'Status do Recurso',
             'is_active' => 'Cadastro Ativo',
             'deficiencies' => 'Público-Alvo',
             'trainings' => 'Treinamentos',
@@ -211,8 +196,12 @@ class AccessibleEducationalMaterial extends Model
             return $value ? 'Digital' : 'Físico';
         }
 
-        if ($field === 'status_id') {
-            return ResourceStatus::find($value)?->name ?? "ID: $value";
+        if ($field === 'status' && $value) {
+            return ResourceStatus::from($value)->label();
+        }
+
+        if ($field === 'conservation_state' && $value) {
+            return ConservationState::from($value)->label();
         }
 
         return null;

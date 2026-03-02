@@ -22,8 +22,9 @@
             <x-buttons.link-button
                 :href="route('inclusive-radar.loans.create')"
                 variant="new"
+                title="Adicionar Empréstimo"
             >
-                <i class="fas fa-plus"></i> Adicionar
+                <i class="fas fa-plus"></i>
             </x-buttons.link-button>
         </x-table.page-header>
 

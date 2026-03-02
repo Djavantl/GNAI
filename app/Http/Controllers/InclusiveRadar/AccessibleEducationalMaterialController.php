@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AccessibleEducationalMaterialRequest;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
@@ -28,16 +29,27 @@ class AccessibleEducationalMaterialController extends Controller
     {
         $name = trim($request->name ?? '');
 
-        $materials = AccessibleEducationalMaterial::with([
-            'resourceStatus',
+        $query = AccessibleEducationalMaterial::with([
             'deficiencies',
             'accessibilityFeatures',
         ])
             ->withCount('trainings')
             ->filterName($name ?: null)
             ->active($request->is_active)
-            ->digital($request->is_digital)
-            ->available($request->available)
+            ->digital($request->is_digital);
+
+        if ($request->filled('status')) {
+            $status = ResourceStatus::tryFrom($request->status);
+            if ($status) {
+                $query->where('status', $status->value);
+            }
+        }
+
+        if ($request->filled('available')) {
+            $query->where('status', ResourceStatus::AVAILABLE->value);
+        }
+
+        $materials = $query
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
@@ -63,7 +75,12 @@ class AccessibleEducationalMaterialController extends Controller
 
     public function create(): View
     {
-        return view('pages.inclusive-radar.accessible-educational-materials.create');
+        return view(
+            'pages.inclusive-radar.accessible-educational-materials.create',
+            [
+                'statuses' => ResourceStatus::cases(),
+            ]
+        );
     }
 
     public function store(AccessibleEducationalMaterialRequest $request): RedirectResponse
@@ -84,7 +101,6 @@ class AccessibleEducationalMaterialController extends Controller
     public function show(AccessibleEducationalMaterial $material): View
     {
         $material->load([
-            'resourceStatus',
             'deficiencies',
             'accessibilityFeatures',
             'inspections.images',
@@ -115,7 +131,10 @@ class AccessibleEducationalMaterialController extends Controller
 
         return view(
             'pages.inclusive-radar.accessible-educational-materials.edit',
-            compact('material')
+            [
+                'material' => $material,
+                'statuses' => ResourceStatus::cases(),
+            ]
         );
     }
 
@@ -125,10 +144,8 @@ class AccessibleEducationalMaterialController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function update(
-        AccessibleEducationalMaterialRequest $request,
-        AccessibleEducationalMaterial $material
-    ): RedirectResponse {
+    public function update(AccessibleEducationalMaterialRequest $request, AccessibleEducationalMaterial $material): RedirectResponse
+    {
         $this->service->update($material, $request->validated());
 
         return redirect()
@@ -138,7 +155,7 @@ class AccessibleEducationalMaterialController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | ATIVAR / DESATIVAR
+    | TOGGLE ACTIVE
     |--------------------------------------------------------------------------
     */
 
@@ -146,8 +163,7 @@ class AccessibleEducationalMaterialController extends Controller
     {
         $this->service->toggleActive($material);
 
-        return redirect()->back()
-            ->with('success', 'Status atualizado com sucesso!');
+        return back()->with('success', 'Status atualizado com sucesso!');
     }
 
     /*
@@ -174,7 +190,6 @@ class AccessibleEducationalMaterialController extends Controller
     public function generatePdf(AccessibleEducationalMaterial $material)
     {
         $material->load([
-            'resourceStatus',
             'deficiencies',
             'accessibilityFeatures',
             'inspections.images',
@@ -197,10 +212,8 @@ class AccessibleEducationalMaterialController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function showInspection(
-        AccessibleEducationalMaterial $material,
-        Inspection $inspection
-    ) {
+    public function showInspection(AccessibleEducationalMaterial $material, Inspection $inspection)
+    {
         abort_if(
             $inspection->inspectable_id !== $material->id ||
             $inspection->inspectable_type !== $material->getMorphClass(),

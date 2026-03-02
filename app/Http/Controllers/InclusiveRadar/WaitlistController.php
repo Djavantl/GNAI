@@ -21,9 +21,6 @@ class WaitlistController extends Controller
         protected WaitlistService $service
     ) {}
 
-    /**
-     * Listagem das filas de espera
-     */
     public function index(Request $request): View
     {
         $studentName      = $request->student ?? null;
@@ -59,22 +56,17 @@ class WaitlistController extends Controller
         );
     }
 
-    /**
-     * Formulário de criação
-     */
     public function create(): View
     {
         $students = Student::with('person')->get()->sortBy('person.name');
         $professionals = Professional::with('person')->get()->sortBy('person.name');
 
-        $assistive_technologies = AssistiveTechnology::with('resourceStatus')
-            ->get()
-            ->filter(fn($item) => $item->quantity_available <= 0 || ($item->resourceStatus?->blocks_loan ?? false))
+        $assistive_technologies = AssistiveTechnology::get()
+            ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
             ->sortBy('name');
 
-        $educational_materials = AccessibleEducationalMaterial::with('resourceStatus')
-            ->get()
-            ->filter(fn($item) => $item->quantity_available <= 0 || ($item->resourceStatus?->blocks_loan ?? false))
+        $educational_materials = AccessibleEducationalMaterial::get()
+            ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
             ->sortBy('name');
 
         $authUser = auth()->user();
@@ -85,9 +77,6 @@ class WaitlistController extends Controller
         );
     }
 
-    /**
-     * Armazena uma nova fila de espera
-     */
     public function store(WaitlistRequest $request): RedirectResponse
     {
         try {
@@ -103,29 +92,26 @@ class WaitlistController extends Controller
         }
     }
 
-    /**
-     * Exibe detalhes de uma fila
-     */
     public function show(Waitlist $waitlist): View
     {
         $waitlist->load(['waitlistable','student.person','professional.person','user']);
-
         $authUser = auth()->user();
 
         return view('pages.inclusive-radar.waitlists.show', compact('waitlist','authUser'));
     }
 
-    /**
-     * Formulário de edição
-     */
     public function edit(Waitlist $waitlist): View
     {
         $waitlist->load(['waitlistable','student.person','professional.person','user']);
 
         $students = Student::with('person')->get()->sortBy('person.name');
         $professionals = Professional::with('person')->get()->sortBy('person.name');
-        $assistive_technologies = AssistiveTechnology::orderBy('name')->get();
-        $educational_materials = AccessibleEducationalMaterial::orderBy('name')->get();
+
+        $assistive_technologies = AssistiveTechnology::get()
+            ->sortBy('name');
+
+        $educational_materials = AccessibleEducationalMaterial::get()
+            ->sortBy('name');
 
         $authUser = auth()->user();
 
@@ -135,9 +121,6 @@ class WaitlistController extends Controller
         );
     }
 
-    /**
-     * Atualiza uma fila de espera (incluindo observação)
-     */
     public function update(WaitlistRequest $request, Waitlist $waitlist): RedirectResponse
     {
         $this->service->update($waitlist, $request->validated());
@@ -147,9 +130,6 @@ class WaitlistController extends Controller
             ->with('success', 'Fila atualizada com sucesso!');
     }
 
-    /**
-     * Remove uma fila de espera
-     */
     public function destroy(Waitlist $waitlist): RedirectResponse
     {
         $this->service->delete($waitlist);
@@ -159,9 +139,6 @@ class WaitlistController extends Controller
             ->with('success', 'Solicitação removida com sucesso!');
     }
 
-    /**
-     * Cancela uma fila de espera
-     */
     public function cancel(Waitlist $waitlist): RedirectResponse
     {
         $this->service->cancel($waitlist);
@@ -174,7 +151,7 @@ class WaitlistController extends Controller
     public function generatePdf(Waitlist $waitlist)
     {
         $waitlist->load([
-            'waitlistable', // O item (TA ou Material)
+            'waitlistable',
             'student.person',
             'professional.person',
             'user'

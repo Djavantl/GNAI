@@ -62,7 +62,7 @@
                 />
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6" id="asset_code_container">
                 <x-forms.input
                     name="asset_code"
                     label="Patrimônio / Tombamento"
@@ -171,43 +171,70 @@
             {{-- GESTÃO --}}
             <x-forms.section title="Gestão e Público" />
 
-            <div class="col-md-6">
-                <x-forms.input
-                    name="quantity"
-                    label="Quantidade Total"
-                    type="number"
-                    :value="old('quantity', $assistiveTechnology->quantity)"
-                    min="0"
-                />
-            </div>
+            <div class="col-md-12 mb-4 mt-4 row d-flex justify-content-between">
+                {{-- Coluna da esquerda --}}
+                <div class="col-md-5 d-flex flex-column gap-3">
+                    <x-forms.input
+                        name="quantity"
+                        label="Quantidade Total"
+                        type="number"
+                        min="0"
+                        :value="old('quantity', $assistiveTechnology->quantity)"
+                    />
 
-            <div class="col-md-6">
-                <x-forms.checkbox
-                    name="is_active"
-                    label="Ativar no Sistema"
-                    description="Disponível para visualização e empréstimos"
-                    :checked="old('is_active', $assistiveTechnology->is_active)"
-                />
-            </div>
+                    <x-forms.checkbox
+                        name="is_loanable"
+                        label="Permitir Empréstimos"
+                        description="Marque se este recurso pode ser emprestado"
+                        :checked="old('is_loanable', $assistiveTechnology->is_loanable)"
+                    />
+                </div>
 
+                {{-- Coluna da direita --}}
+                <div class="col-md-5 d-flex flex-column gap-3">
+                    <x-forms.select
+                        name="status"
+                        label="Status do Recurso"
+                        :options="collect(\App\Enums\InclusiveRadar\ResourceStatus::cases())
+                            ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                        :selected="old('status', $assistiveTechnology->status?->value)"
+                    />
+
+                    <x-forms.checkbox
+                        name="is_active"
+                        label="Ativar no Sistema"
+                        description="Disponível para visualização e empréstimos"
+                        :checked="old('is_active', $assistiveTechnology->is_active)"
+                    />
+                </div>
+            </div>
+            {{-- DEFICIÊNCIAS --}}
             <div class="col-md-12 mb-4 mt-4">
                 <span class="d-block form-label fw-bold text-purple-dark mb-3">
                     Público-alvo (Deficiências Atendidas)
                 </span>
 
-                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light">
-                    @foreach($deficiencies->sortBy('name') as $def)
+                @php
+                    // Pega os IDs das deficiências selecionadas
+                    $selectedDeficiencies = old('deficiencies', $assistiveTechnology->deficiencies->pluck('id')->toArray());
+                @endphp
+
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
+                    @foreach(\App\Models\SpecializedEducationalSupport\Deficiency::where('is_active', true)->orderBy('name')->get() as $def)
                         <x-forms.checkbox
                             name="deficiencies[]"
                             id="def_{{ $def->id }}"
                             :value="$def->id"
                             :label="$def->name"
-                            :checked="in_array($def->id, old('deficiencies', $assistiveTechnology->deficiencies->pluck('id')->toArray()))"
+                            :checked="in_array($def->id, $selectedDeficiencies)"
                         />
                     @endforeach
                 </div>
-            </div>
 
+                @error('deficiencies')
+                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                @enderror
+            </div>
             {{-- AÇÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
                 <x-buttons.link-button
@@ -220,7 +247,7 @@
                     <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
+    @vite('resources/js/pages/inclusive-radar/assistive-technologies.js')
 @endsection

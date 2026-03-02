@@ -99,8 +99,9 @@
                     $statusColor = $currentStatus?->color() ?? 'secondary';
                 @endphp
 
+                {{-- Status da solicitação seguindo o padrão minimalista de TA: Negrito + Uppercase --}}
                 <x-show.info-item label="Status da Solicitação" column="col-md-6" isBox="true">
-                    <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-3 py-2">
+                    <span class="text-{{ $statusColor }} fw-bold text-uppercase">
                         {{ $currentStatus?->label() ?? $waitlist->status }}
                     </span>
                 </x-show.info-item>

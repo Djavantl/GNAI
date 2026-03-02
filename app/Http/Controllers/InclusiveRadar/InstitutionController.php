@@ -61,7 +61,14 @@ class InstitutionController extends Controller
             }
         }
 
-        $this->service->store($data);
+        $institution = $this->service->store($data);
+
+        if (!$institution) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Já existe uma instituição cadastrada.');
+        }
 
         return redirect()
             ->route('inclusive-radar.institutions.index')

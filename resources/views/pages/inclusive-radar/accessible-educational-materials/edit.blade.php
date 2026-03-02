@@ -6,11 +6,11 @@
     {{-- Breadcrumb --}}
     <div class="mb-5">
         <x-breadcrumb :items="[
-        'Home' => route('dashboard'),
-        'Materiais Pedagógicos Acessíveis' => route('inclusive-radar.accessible-educational-materials.index'),
-        $material->name => route('inclusive-radar.accessible-educational-materials.show', $material),
-        'Editar' => null
-    ]" />
+            'Home' => route('dashboard'),
+            'Materiais Pedagógicos Acessíveis' => route('inclusive-radar.accessible-educational-materials.index'),
+            $material->name => route('inclusive-radar.accessible-educational-materials.show', $material),
+            'Editar' => null
+        ]" />
     </div>
 
     {{-- Cabeçalho --}}
@@ -30,14 +30,15 @@
         </x-buttons.link-button>
     </div>
 
+    {{-- Formulário --}}
     <div class="mt-3">
         <x-forms.form-card
             action="{{ route('inclusive-radar.accessible-educational-materials.update', $material) }}"
             method="POST"
             enctype="multipart/form-data"
         >
-            @method('PUT')
             @csrf
+            @method('PUT')
 
             {{-- IDENTIFICAÇÃO --}}
             <x-forms.section title="Identificação do Recurso" />
@@ -84,10 +85,9 @@
             <x-forms.section title="Recursos de Acessibilidade" />
 
             <div class="col-md-12 mb-4">
-            <span class="d-block form-label fw-bold text-purple-dark mb-3">
-                Recursos presentes no material
-            </span>
-
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">
+                    Recursos presentes no material
+                </span>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('accessibility_features') border-danger @enderror">
                     @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->orderBy('name')->get() as $feature)
                         <x-forms.checkbox
@@ -118,9 +118,9 @@
                                         <strong>{{ $training->title }}</strong>
                                     </x-table.td>
                                     <x-table.td>
-                                    <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
-                                        {{ $training->is_active ? 'Ativo' : 'Inativo' }}
-                                    </span>
+                                        <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
+                                            {{ $training->is_active ? 'Ativo' : 'Inativo' }}
+                                        </span>
                                     </x-table.td>
                                     <x-table.td>
                                         <x-buttons.link-button
@@ -163,7 +163,7 @@
                     name="conservation_state"
                     label="Estado de Conservação Atual"
                     :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())
-                    ->mapWithKeys(fn($item)=>[$item->value=>$item->label()])"
+                        ->mapWithKeys(fn($item)=>[$item->value=>$item->label()])"
                     :selected="old('conservation_state', $material->conservation_state?->value)"
                 />
             </div>
@@ -190,45 +190,55 @@
                 $activeLoans = $material->loans()->whereIn('status',['active','late'])->count();
             @endphp
 
-            <div class="col-md-6" id="quantity_container">
-                <x-forms.input
-                    name="quantity"
-                    label="Quantidade Total"
-                    type="number"
-                    :value="old('quantity', $material->quantity)"
-                    :min="$activeLoans"
-                />
+            <div class="col-md-12 mb-4 mt-4 row d-flex justify-content-between">
+                {{-- Coluna da esquerda --}}
+                <div class="col-md-5 d-flex flex-column gap-3">
+                    <x-forms.input
+                        name="quantity"
+                        label="Quantidade Total"
+                        type="number"
+                        :value="old('quantity', $material->quantity)"
+                        :min="$activeLoans"
+                    />
 
-                @if($activeLoans > 0)
-                    <small class="text-danger fw-bold d-block mt-1">
-                        <i class="fas fa-lock"></i>
-                        {{ $activeLoans }} unidades em uso (não é possível reduzir)
-                    </small>
-                @endif
+                    @if($activeLoans > 0)
+                        <small class="text-danger fw-bold d-block mt-1">
+                            <i class="fas fa-lock"></i>
+                            {{ $activeLoans }} unidades em uso (não é possível reduzir)
+                        </small>
+                    @endif
+
+                    <x-forms.checkbox
+                        name="is_loanable"
+                        label="Permitir Empréstimos"
+                        description="Marque se este recurso pode ser emprestado"
+                        :checked="old('is_loanable', $material->is_loanable)"
+                    />
+                </div>
+
+                {{-- Coluna da direita --}}
+                <div class="col-md-5 d-flex flex-column gap-3">
+                    <x-forms.select
+                        name="status"
+                        label="Status do Recurso"
+                        :options="collect(\App\Enums\InclusiveRadar\ResourceStatus::cases())
+                            ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                        :selected="old('status', $material->status?->value)"
+                    />
+
+                    <x-forms.checkbox
+                        name="is_active"
+                        label="Ativar no Sistema"
+                        description="Disponível para visualização e empréstimos"
+                        :checked="old('is_active', $material->is_active)"
+                    />
+                </div>
             </div>
-
-            <div class="col-md-6">
-                <x-forms.input
-                    name="status_display"
-                    label="Status do Recurso"
-                    :value="$material->resourceStatus?->name"
-                    disabled
-                />
-                <input type="hidden" name="status_id" value="{{ $material->status_id }}">
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.checkbox
-                    name="is_active"
-                    label="Ativar no Sistema"
-                    :checked="old('is_active', $material->is_active)"
-                />
-            </div>
-
+            {{-- DEFICIÊNCIAS --}}
             <div class="col-md-12 mb-4 mt-4">
-            <span class="d-block form-label fw-bold text-purple-dark mb-3">
-                Público-alvo (Deficiências Atendidas)
-            </span>
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">
+                    Público-alvo (Deficiências Atendidas)
+                </span>
 
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
                     @foreach($deficiencies as $def)
@@ -259,7 +269,6 @@
                     <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 

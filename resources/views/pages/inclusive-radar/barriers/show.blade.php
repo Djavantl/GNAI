@@ -87,8 +87,11 @@
                         </x-show.info-item>
 
                         <x-show.info-item label="Prioridade" column="col-6" isBox="true">
-                            @php $prioColor = $barrier->priority?->color() ?? 'secondary'; @endphp
-                            <span class="badge bg-{{ $prioColor }}-subtle text-{{ $prioColor }}-emphasis border px-3">
+                            @php
+                                $prioColor = $barrier->priority?->color() ?? 'secondary';
+                            @endphp
+
+                            <span class="text-{{ $prioColor }} fw-bold text-uppercase">
                                 {{ $barrier->priority?->label() ?? 'Não definida' }}
                             </span>
                         </x-show.info-item>

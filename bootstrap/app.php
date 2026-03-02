@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\InclusiveRadar\CannotChangeStatusWithActiveLoansException;
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
 use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
 use Illuminate\Foundation\Application;
@@ -52,6 +53,21 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return back()->withErrors([
                 'delete' => $e->getMessage()
+            ]);
+        });
+
+        $exceptions->render(function (
+            CannotChangeStatusWithActiveLoansException $e,
+                                                       $request
+        ) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage()
+                ], 422);
+            }
+
+            return back()->withErrors([
+                'status_id' => $e->getMessage()
             ]);
         });
 

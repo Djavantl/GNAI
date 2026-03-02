@@ -22,8 +22,9 @@
             <x-buttons.link-button
                 :href="route('inclusive-radar.waitlists.create')"
                 variant="new"
+                title="Adicionar Fila de Espera"
             >
-                <i class="fas fa-plus"></i> Adicionar
+                <i class="fas fa-plus"></i>
             </x-buttons.link-button>
         </x-table.page-header>
 

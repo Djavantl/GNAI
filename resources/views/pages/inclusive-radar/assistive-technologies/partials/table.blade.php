@@ -12,9 +12,9 @@
             {{-- ESTOQUE --}}
             <x-table.td>
                 @if($tech->is_digital)
-                    <span class="text-info fw-bold">Ilimitado</span>
+                    <span class="text-info fw-bold text-uppercase" style="font-size: 0.85rem;">Ilimitado</span>
                 @else
-                    <span class="{{ $tech->quantity_available > 0 ? 'text-success' : 'text-danger' }} fw-medium">
+                    <span class="{{ $tech->quantity_available > 0 ? 'text-success' : 'text-danger' }} fw-bold">
                         {{ $tech->quantity_available ?? 0 }}
                     </span>
                     <span class="text-muted">/ {{ $tech->quantity ?? 0 }}</span>
@@ -28,7 +28,10 @@
                     $color = $isUnavailable ? 'danger' : ($tech->is_active ? 'success' : 'secondary');
                     $label = $isUnavailable ? 'Esgotado' : ($tech->is_active ? 'Ativo' : 'Inativo');
                 @endphp
-                <span class="text-{{ $color }} fw-bold">{{ $label }}</span>
+
+                <span class="text-{{ $color }} fw-bold text-uppercase" style="font-size: 0.85rem;">
+                    {{ $label }}
+                </span>
             </x-table.td>
 
             {{-- AÇÕES --}}

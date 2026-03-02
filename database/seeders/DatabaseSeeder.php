@@ -27,8 +27,6 @@ use Database\Seeders\InclusiveRadar\BarrierCategorySeeder;
 use Database\Seeders\InclusiveRadar\AccessibilityFeatureSeeder;
 use Database\Seeders\InclusiveRadar\AssistiveTechnologySeeder;
 use Database\Seeders\InclusiveRadar\AccessibleEducationalMaterialSeeder;
-use Database\Seeders\InclusiveRadar\ResourceStatusSeeder;
-
 
 class DatabaseSeeder extends Seeder
 {
@@ -40,8 +38,6 @@ class DatabaseSeeder extends Seeder
             PositionSeeder::class,
             BarrierCategorySeeder::class,
             AccessibilityFeatureSeeder::class,
-            ResourceStatusSeeder::class,
-            AssistiveTechnologySeeder::class,
             AccessibleEducationalMaterialSeeder::class,
             PSPUSeeder::class,
             StudentSeeder::class,

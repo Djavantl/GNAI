@@ -9,9 +9,8 @@
                 {{ $feature->name }}
             </x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
-                <span class="text-{{ $feature->is_active ? 'success' : 'secondary' }} fw-bold">
+                <span class="text-{{ $feature->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $feature->is_active ? 'Ativo' : 'Inativo' }}
                 </span>
             </x-table.td>

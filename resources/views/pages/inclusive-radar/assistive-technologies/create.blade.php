@@ -54,10 +54,7 @@
                     name="is_digital"
                     label="Natureza do Recurso"
                     required
-                    :options="[
-                        0 => 'Recurso Físico',
-                        1 => 'Recurso Digital'
-                    ]"
+                    :options="[0 => 'Recurso Físico', 1 => 'Recurso Digital']"
                     :selected="old('is_digital', 0)"
                 />
             </div>
@@ -132,8 +129,8 @@
 
             {{-- GESTÃO --}}
             <x-forms.section title="Gestão e Público" />
-
-            <div class="col-md-6">
+             {{-- Coluna da esquerda --}}
+            <div class="col-md-6 d-flex flex-column gap-3">
                 <x-forms.input
                     name="quantity"
                     label="Quantidade Total"
@@ -141,15 +138,25 @@
                     min="0"
                     :value="old('quantity', 1)"
                 />
+
+                <x-forms.checkbox
+                    name="is_loanable"
+                    label="Permitir Empréstimos"
+                    description="Marque se este recurso pode ser emprestado"
+                    :checked="old('is_loanable', true)"
+                />
             </div>
 
-            @php
-                $availableStatus = \App\Models\InclusiveRadar\ResourceStatus::where('code', 'available')->first();
-            @endphp
+            {{-- Coluna da direita --}}
+            <div class="col-md-6 d-flex flex-column gap-3">
+                <x-forms.select
+                    name="status"
+                    label="Status do Recurso"
+                    :options="collect(\App\Enums\InclusiveRadar\ResourceStatus::cases())
+                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :selected="old('status', \App\Enums\InclusiveRadar\ResourceStatus::AVAILABLE->value)"
+                />
 
-            <input type="hidden" name="status_id" value="{{ $availableStatus->id ?? '' }}">
-
-            <div class="col-md-6">
                 <x-forms.checkbox
                     name="is_active"
                     label="Ativar no Sistema"
@@ -157,7 +164,6 @@
                     :checked="old('is_active', true)"
                 />
             </div>
-
             {{-- DEFICIÊNCIAS --}}
             <div class="col-md-12 mb-4 mt-4">
                 <span class="d-block form-label fw-bold text-purple-dark mb-3">
@@ -196,4 +202,6 @@
             </div>
         </x-forms.form-card>
     </div>
+
+    @vite('resources/js/pages/inclusive-radar/assistive-technologies.js')
 @endsection

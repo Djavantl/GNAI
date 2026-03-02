@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Exports\InclusiveRadar\Items\AssistiveTechnologyExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AssistiveTechnologyRequest;
@@ -30,15 +31,22 @@ class AssistiveTechnologyController extends Controller
     {
         $name = trim($request->name ?? '');
 
-        $assistiveTechnologies = AssistiveTechnology::with([
-            'resourceStatus',
+        $query = AssistiveTechnology::with([
             'deficiencies'
         ])
             ->withCount('trainings')
             ->filterName($name ?: null)
             ->active($request->is_active)
-            ->digital($request->is_digital)
-            ->available($request->available)
+            ->digital($request->is_digital);
+
+        if ($request->filled('status')) {
+            $status = ResourceStatus::tryFrom($request->status);
+            if ($status) {
+                $query->where('status', $status->value);
+            }
+        }
+
+        $assistiveTechnologies = $query
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
@@ -58,18 +66,20 @@ class AssistiveTechnologyController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | FORMULÁRIO DE CRIAÇÃO
+    | CRIAÇÃO
     |--------------------------------------------------------------------------
     */
 
     public function create(): View
     {
-        return view('pages.inclusive-radar.assistive-technologies.create');
+        return view('pages.inclusive-radar.assistive-technologies.create', [
+            'statuses' => ResourceStatus::cases(),
+        ]);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | ARMAZENAMENTO
+    | STORE
     |--------------------------------------------------------------------------
     */
 
@@ -84,14 +94,13 @@ class AssistiveTechnologyController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | VISUALIZAÇÃO
+    | SHOW
     |--------------------------------------------------------------------------
     */
 
     public function show(AssistiveTechnology $assistiveTechnology): View
     {
         $assistiveTechnology->load([
-            'resourceStatus',
             'deficiencies',
             'inspections.images',
             'loans',
@@ -106,7 +115,7 @@ class AssistiveTechnologyController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | FORMULÁRIO DE EDIÇÃO
+    | EDIT
     |--------------------------------------------------------------------------
     */
 
@@ -120,20 +129,21 @@ class AssistiveTechnologyController extends Controller
 
         return view(
             'pages.inclusive-radar.assistive-technologies.edit',
-            compact('assistiveTechnology')
+            [
+                'assistiveTechnology' => $assistiveTechnology,
+                'statuses' => ResourceStatus::cases(),
+            ]
         );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | ATUALIZAÇÃO
+    | UPDATE
     |--------------------------------------------------------------------------
     */
 
-    public function update(
-        AssistiveTechnologyRequest $request,
-        AssistiveTechnology $assistiveTechnology
-    ): RedirectResponse {
+    public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse
+    {
         $this->service->update($assistiveTechnology, $request->validated());
 
         return redirect()
@@ -143,7 +153,7 @@ class AssistiveTechnologyController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | ATIVAR / DESATIVAR
+    | TOGGLE ACTIVE
     |--------------------------------------------------------------------------
     */
 
@@ -151,14 +161,12 @@ class AssistiveTechnologyController extends Controller
     {
         $this->service->toggleActive($assistiveTechnology);
 
-        return redirect()
-            ->back()
-            ->with('success', 'Status atualizado com sucesso!');
+        return back()->with('success', 'Status atualizado com sucesso!');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | EXCLUSÃO
+    | DELETE
     |--------------------------------------------------------------------------
     */
 
@@ -173,14 +181,13 @@ class AssistiveTechnologyController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | GERAÇÃO DE PDF
+    | PDF
     |--------------------------------------------------------------------------
     */
 
     public function generatePdf(AssistiveTechnology $assistiveTechnology)
     {
         $assistiveTechnology->load([
-            'resourceStatus',
             'deficiencies',
             'inspections.images',
             'trainings',
@@ -193,42 +200,35 @@ class AssistiveTechnologyController extends Controller
             ->setPaper('a4', 'portrait')
             ->setOption(['enable_php' => true]);
 
-        return $pdf->stream("TA_{$assistiveTechnology->type}.pdf");
+        return $pdf->stream("TA_{$assistiveTechnology->name}.pdf");
     }
 
     /*
     |--------------------------------------------------------------------------
-    | EXPORTAÇÃO EXCEL
+    | EXCEL
     |--------------------------------------------------------------------------
     */
 
     public function exportExcel(AssistiveTechnology $assistiveTechnology)
     {
-        $assistiveTechnology->load([
-            'deficiencies',
-            'inspections.images'
-        ]);
-
         return Excel::download(
             new AssistiveTechnologyExport(
                 collect([$assistiveTechnology]),
-                $assistiveTechnology->type,
-                $assistiveTechnology->is_active ? 'Ativo' : 'Inativo'
+                $assistiveTechnology->name,
+                $assistiveTechnology->status->label() // 🔥 usando enum
             ),
-            'TA_'.$assistiveTechnology->type.'.xlsx'
+            'TA_'.$assistiveTechnology->name.'.xlsx'
         );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | VISUALIZAÇÃO DE INSPEÇÃO
+    | INSPEÇÃO
     |--------------------------------------------------------------------------
     */
 
-    public function showInspection(
-        AssistiveTechnology $assistiveTechnology,
-        Inspection $inspection
-    ) {
+    public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection)
+    {
         abort_if(
             $inspection->inspectable_id !== $assistiveTechnology->id ||
             $inspection->inspectable_type !== $assistiveTechnology->getMorphClass(),

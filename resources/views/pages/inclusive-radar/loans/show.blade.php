@@ -101,8 +101,9 @@
                     $statusColor = $isOverdue ? 'danger' : $loan->status->color();
                 @endphp
 
+                {{-- Status dinâmico do contrato de empréstimo --}}
                 <x-show.info-item label="Status do Empréstimo" column="col-md-6" isBox="true">
-                    <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-3">
+                    <span class="text-{{ $statusColor }} fw-bold text-uppercase">
                         {{ $statusLabel }}
                     </span>
                 </x-show.info-item>

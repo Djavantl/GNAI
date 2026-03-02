@@ -105,14 +105,6 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('inclusive-radar.resource-statuses.index') }}"
-                       class="{{ request()->routeIs('resource-statuses.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-toggle-on"></i></span>
-                        <span class="text">Status de Recursos</span>
-                    </a>
-                </li>
-
-                <li>
                     <a href="{{ route('inclusive-radar.barrier-categories.index') }}"
                        class="{{ request()->routeIs('barrier-categories.*') ? 'active' : '' }}">
                         <span class="icon"><i class="bi bi-grid"></i></span>
@@ -254,16 +246,6 @@
                    class="{{ request()->routeIs('waitlists.*') ? 'active' : '' }}">
                     <span class="icon"><i class="bi bi-hourglass-split"></i></span>
                     <span class="text">Fila de Espera</span>
-                </a>
-            </li>
-        @endcan
-
-        @can('maintenance.index')
-            <li>
-                <a href="{{ route('inclusive-radar.maintenances.index') }}"
-                   class="{{ request()->routeIs('inclusive-radar.maintenances.*') ? 'active' : '' }}">
-                    <span class="icon"><i class="bi bi-tools"></i></span>
-                    <span class="text">Manutenções</span>
                 </a>
             </li>
         @endcan

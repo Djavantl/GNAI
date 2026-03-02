@@ -18,13 +18,14 @@
                 Cadastre materiais adaptados e realize a vistoria inicial.
             </p>
         </header>
-
-        <x-buttons.link-button
-            :href="route('inclusive-radar.accessible-educational-materials.index')"
-            variant="secondary"
-        >
-            <i class="fas fa-times"></i> Cancelar
-        </x-buttons.link-button>
+        <div>
+            <x-buttons.link-button
+                :href="route('inclusive-radar.accessible-educational-materials.index')"
+                variant="secondary"
+            >
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
+        </div>
     </div>
 
     <div class="mt-3">
@@ -58,7 +59,7 @@
                 />
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6" id="asset_code_container">
                 <x-forms.input
                     name="asset_code"
                     label="Patrimônio / Tombamento"
@@ -154,7 +155,7 @@
             {{-- GESTÃO --}}
             <x-forms.section title="Gestão e Público" />
 
-            <div class="col-md-6">
+            <div class="col-md-6 d-flex flex-column gap-3">
                 <x-forms.input
                     name="quantity"
                     label="Quantidade Total"
@@ -162,15 +163,24 @@
                     min="1"
                     :value="old('quantity', 1)"
                 />
+
+                <x-forms.checkbox
+                    name="is_loanable"
+                    label="Permitir Empréstimos"
+                    description="Marque se este material pode ser emprestado"
+                    :checked="old('is_loanable', true)"
+                />
             </div>
 
-            @php
-                $availableStatus = \App\Models\InclusiveRadar\ResourceStatus::where('code', 'available')->first();
-            @endphp
+            <div class="col-md-6 d-flex flex-column gap-3">
+                <x-forms.select
+                    name="status"
+                    label="Status do Recurso"
+                    :options="collect(\App\Enums\InclusiveRadar\ResourceStatus::cases())
+                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :selected="old('status', \App\Enums\InclusiveRadar\ResourceStatus::AVAILABLE->value)"
+                />
 
-            <input type="hidden" name="status_id" value="{{ $availableStatus->id ?? '' }}">
-
-            <div class="col-md-6">
                 <x-forms.checkbox
                     name="is_active"
                     label="Ativar no Sistema"
@@ -215,7 +225,8 @@
                     <i class="fas fa-save me-1"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
+
+    @vite('resources/js/pages/inclusive-radar/accessible-educational-materials.js')
 @endsection

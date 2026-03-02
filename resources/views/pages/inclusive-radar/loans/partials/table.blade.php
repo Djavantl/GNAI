@@ -33,13 +33,15 @@
                         ? $loan->status
                         : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
 
+                    // Regra de negócio: Mesmo que esteja Ativo, se a data passou, o status visual é "Atraso"
                     $isOverdue = ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast());
 
                     $statusLabel = $isOverdue ? 'Em Atraso' : ($currentStatus?->label() ?? $loan->status);
-                    $statusColor = $isOverdue ? 'danger' : $currentStatus->color();
+                    $statusColor = $isOverdue ? 'danger' : ($currentStatus?->color() ?? 'secondary');
                 @endphp
 
-                <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-2">
+                {{-- Padronização TA: Texto puro, negrito, colorido e em caixa alta --}}
+                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>

@@ -22,8 +22,9 @@
             <x-buttons.link-button
                 :href="route('inclusive-radar.accessibility-features.create')"
                 variant="new"
+                title="Adicionar Recursos de Acessibilidade"
             >
-                <i class="fas fa-plus"></i> Adicionar
+                <i class="fas fa-plus"></i>
             </x-buttons.link-button>
         </x-table.page-header>
 
