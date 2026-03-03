@@ -18,9 +18,20 @@ class StudentDocumentService
         $this->semesterService = $semesterService;
     }
 
-    public function index(Student $student)
+    public function getByStudent(Student $student, array $filters = [])
     {
-        return $student->documents()->latest()->get();
+        return StudentDocument::query()
+            ->where('student_id', $student->id)
+            ->with(['semester', 'professional'])
+
+            ->title($filters['title'] ?? null)
+            ->semester($filters['semester_id'] ?? null)
+            ->version($filters['version'] ?? null)
+            ->type($filters['type'] ?? null)
+
+            ->orderByDesc('version')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function create(Student $student, array $data): StudentDocument

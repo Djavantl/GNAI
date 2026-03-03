@@ -8,6 +8,7 @@ use App\Models\SpecializedEducationalSupport\SessionRecord;
 use App\Services\SpecializedEducationalSupport\SessionRecordService;
 use App\Http\Requests\SpecializedEducationalSupport\SessionRecordRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class SessionRecordController extends Controller
 {
@@ -45,10 +46,10 @@ class SessionRecordController extends Controller
 
     public function store(SessionRecordRequest $request)
     {
-        $this->service->create($request->validated());
+        $sessionRecord = $this->service->create($request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.sessions.show', $request->attendance_session_id)
+            ->route('specialized-educational-support.session-records.show', $sessionRecord)
             ->with('success', 'Registro da sessão criado com sucesso.');
     }
 

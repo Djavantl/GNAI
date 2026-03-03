@@ -20,10 +20,27 @@ class GuardianController extends Controller
         $this->service = $service;
     }
 
-    public function index(Student $student)
+    public function index(Request $request, Student $student)
     {
-        $guardians = $this->service->listByStudent($student->id);
-        return view('pages.specialized-educational-support.guardians.index', compact('student', 'guardians'));
+        $guardians = $this->service->getByStudent($student, $request->all());
+
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.guardians.partials.table', 
+                compact('student', 'guardians')
+            )->render();
+        }
+
+        // Pega os parentescos já cadastrados para este aluno para popular o select
+        $relationships = Guardian::where('student_id', $student->id)
+            ->distinct()
+            ->pluck('relationship', 'relationship')
+            ->toArray();
+
+        return view('pages.specialized-educational-support.guardians.index', [
+            'student' => $student,
+            'guardians' => $guardians,
+            'relationships' => $relationships
+        ]);
     }
 
     public function show(Guardian $guardian)
@@ -40,10 +57,10 @@ class GuardianController extends Controller
 
     public function store(GuardianRequest $request, Student $student)
     {
-        $this->service->create($student, $request->validated());
+        $guardian = $this->service->create($student, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.students.index')
+            ->route('specialized-educational-support.guardians.show', $guardian)
             ->with('success', 'Responsável vinculado com sucesso.');
     }
 
@@ -58,10 +75,10 @@ class GuardianController extends Controller
 
     public function update(GuardianRequest $request, Student $student, Guardian $guardian)
     {
-        $this->service->update($guardian, $request->validated());
+        $guardian = $this->service->update($guardian, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.guardians.index', $student->id)
+            ->route('specialized-educational-support.guardians.show', $guardian)
             ->with('success', 'Dados do responsável atualizados com sucesso.');
     }
     

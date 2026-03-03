@@ -8,11 +8,16 @@ use Illuminate\Support\Facades\DB;
 
 class DeficiencyService
 {
-    public function index()
+    public function index(array $filters = [])
     {
-        return Deficiency::orderBy('name')->get();
+        return Deficiency::query()
+            ->name($filters['name'] ?? null)
+            ->cid($filters['cid_code'] ?? null)
+            ->active($filters['is_active'] ?? null)
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
     }
-
 
     public function store(array $data): Deficiency
     {

@@ -24,20 +24,20 @@ class ProfessionalController extends Controller
     {
         $professionals = $this->service->index($request->all());
 
-        $semesters = Semester::orderByDesc('year')
-            ->orderByDesc('term')
-            ->get(['id', 'label']);
+        $semesters = $this->semesters();
+        $positions = Position::orderBy('name')
+            ->get(['id', 'name']);
 
         if ($request->ajax()) {
             return view(
                 'pages.specialized-educational-support.professionals.partials.table',
-                compact('professionals', 'semesters')
+                compact('professionals', 'semesters', 'positions')
             )->render();
         }
 
         return view(
             'pages.specialized-educational-support.professionals.index',
-            compact('professionals', 'semesters')
+            compact('professionals', 'semesters', 'positions')
         );
     }
 

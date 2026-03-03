@@ -7,8 +7,10 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
             'Documentos' => route('specialized-educational-support.student-documents.index', $studentDocument->student_id),
-            'Editar Documento' => null
+            $studentDocument->title => null,
+            'Editar' => null
         ]" />
     </div>
 
@@ -17,6 +19,9 @@
             <h2 class="text-title">Editar Documento</h2>
             <p class="text-muted">Atualize as informações do studentDocumento ou substitua o arquivo anexado.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.student-documents.index', $studentDocument->student_id) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -28,7 +33,7 @@
             <div class="col-md-12 mb-3">
                 <x-forms.input 
                     name="title" 
-                    label="Título do Documento *" 
+                    label="Título do Documento " 
                     required 
                     :value="old('title', $studentDocument->title)" 
                 />
@@ -37,7 +42,7 @@
            <div class="col-md-6 mb-3">
                 <x-forms.select
                     name="type"
-                    label="Tipo de Documento *"
+                    label="Tipo de Documento "
                     required
                     :options="$types" 
                     :selected="$studentDocument->type->value"
@@ -70,11 +75,11 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.student-documents.index', $studentDocument->student_id) }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-sync mr-2"></i> Atualizar Documento
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

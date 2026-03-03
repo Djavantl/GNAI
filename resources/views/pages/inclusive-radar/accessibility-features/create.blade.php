@@ -31,7 +31,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome do Recurso *"
+                    label="Nome do Recurso"
                     required
                     placeholder="Ex: Intérprete de Libras, Piso Podotátil, etc."
                     :value="old('name')"

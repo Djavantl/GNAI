@@ -56,4 +56,14 @@ class Training extends Model
     {
         return $query->where('is_active', $active);
     }
+
+    public function assistiveTechnologies()
+    {
+        return $this->belongsToMany(
+            AssistiveTechnology::class,
+            'assistive_technology_training',
+            'training_id',
+            'assistive_technology_id'
+        );
+    }
 }

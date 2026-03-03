@@ -76,6 +76,7 @@ class StudentContextSeeder extends Seeder
                 'difficulties' => 'Dificuldade de concentração prolongada.',
                 'recommendations' => 'Uso de atividades curtas e mediadas.',
                 'general_observation' => 'Contexto inicial do aluno.',
+                'version' => 1,
             ]);
 
             // Contexto atual
@@ -122,6 +123,7 @@ class StudentContextSeeder extends Seeder
                 'difficulties' => 'Ainda apresenta dificuldade em atividades longas.',
                 'recommendations' => 'Manter estratégias já aplicadas.',
                 'general_observation' => 'Contexto atual do aluno.',
+                'version' => 2,
             ]);
         }
     }

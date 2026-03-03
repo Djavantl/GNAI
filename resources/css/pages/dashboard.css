@@ -1,0 +1,77 @@
+/* Ajuste de altura para os containers dos gráficos */
+.chart-container {
+    position: relative;
+    height: 300px; /* Altura fixa para manter o layout estável */
+    width: 100%;
+}
+
+.card-custom {
+    transition: all 0.3s ease;
+}
+
+/* Bordas coloridas nos KPIs para facilitar a leitura rápida */
+.border-primary { border-color: var(--primary-color) !important; }
+.border-info { border-color: #6c63ff !important; }
+.border-success { border-color: #28c76f !important; }
+.border-warning { border-color: #ff9f43 !important; }
+
+.text-success { color: #28c76f !important; }
+.text-warning { color: #ff9f43 !important; }
+
+/* Dashboard Specific */
+.chart-container {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.card-custom {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.card-custom:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.text-title {
+    color: #303972 !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-color) !important;
+}
+
+/* Ajuste para ícones circulares nos cards */
+.rounded-circle {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text-danger { color: #ea5455 !important; }
+.text-success { color: #28c76f !important; }
+
+/* Efeito nos Cards do Dashboard */
+.card-custom {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+}
+
+/* Ajuste nos ícones redondos */
+.rounded-3 {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}

@@ -37,7 +37,7 @@
                 <div class="col-md-12 mb-3">
                     <label for="institution_select" class="form-label fw-bold text-purple-dark italic">
                         Instituição Base
-                        <span aria-hidden="true">*</span>
+                        <span aria-hidden="true"></span>
                         <span class="visually-hidden">(campo obrigatório)</span>
                     </label>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StudentCourseRequest extends FormRequest
 {
@@ -21,12 +22,19 @@ class StudentCourseRequest extends FormRequest
      */
     public function rules(): array
     {
+        $student = $this->route('student');
+        $studentId = $student instanceof \App\Models\SpecializedEducationalSupport\Student
+            ? $student->id
+            : $student;
         return [
-            'student_id'   => 'required|exists:students,id',
-            'course_id'    => 'required|exists:courses,id',
+            
+            'course_id' => [
+                'required',
+                Rule::unique('student_courses')
+                    ->where('student_id', $studentId),
+            ],
             'academic_year'=> 'required|digits:4',
             'is_current'   => 'boolean',
-            'status'       => 'required|string|max:50',
         ];
     }
 }

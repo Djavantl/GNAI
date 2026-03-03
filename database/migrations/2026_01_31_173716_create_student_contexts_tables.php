@@ -128,6 +128,9 @@ return new class extends Migration
 
             $table->text('general_observation')->nullable();
 
+            $table->unsignedInteger('version')->default(1);
+            $table->unique(['student_id', 'version']);
+
             $table->timestamps();
         });
 

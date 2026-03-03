@@ -3,15 +3,13 @@
 namespace App\Models\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\ConservationState;
+use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\Waitlist;
+use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\Auditable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -21,59 +19,44 @@ class AccessibleEducationalMaterial extends Model
 
     protected $table = 'accessible_educational_materials';
 
+    /*
+    |--------------------------------------------------------------------------
+    | FILLABLE
+    |--------------------------------------------------------------------------
+    */
+
     protected $fillable = [
         'name',
-        'type_id',
+        'is_digital',
+        'notes',
         'asset_code',
         'quantity',
         'quantity_available',
         'conservation_state',
-        'notes',
-        'status_id',
+        'is_loanable',
+        'status',
         'is_active',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | CASTS
+    |--------------------------------------------------------------------------
+    */
+
     protected $casts = [
         'is_active' => 'boolean',
+        'is_digital' => 'boolean',
+        'is_loanable' => 'boolean',
         'conservation_state' => ConservationState::class,
+        'status' => ResourceStatus::class,
     ];
 
-    // Relacionamentos
-
-    public function trainings(): MorphMany
-    {
-        return $this->morphMany(Training::class, 'trainable');
-    }
-
-    public function loans(): MorphMany
-    {
-        return $this->morphMany(Loan::class, 'loanable');
-    }
-
-    public function waitlists(): MorphMany
-    {
-        return $this->morphMany(Waitlist::class, 'waitlistable');
-    }
-
-    public function logs(): MorphMany
-    {
-        return $this->morphMany(AuditLog::class, 'auditable');
-    }
-
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(ResourceType::class, 'type_id');
-    }
-
-    public function resourceStatus(): BelongsTo
-    {
-        return $this->belongsTo(ResourceStatus::class, 'status_id');
-    }
-
-    public function attributeValues(): MorphMany
-    {
-        return $this->morphMany(ResourceAttributeValue::class, 'resource');
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONAMENTOS
+    |--------------------------------------------------------------------------
+    */
 
     public function deficiencies(): BelongsToMany
     {
@@ -95,6 +78,10 @@ class AccessibleEducationalMaterial extends Model
         );
     }
 
+    public function trainings(): MorphMany {
+        return $this->morphMany(Training::class, 'trainable');
+    }
+
     public function inspections(): MorphMany
     {
         return $this->morphMany(Inspection::class, 'inspectable')
@@ -103,19 +90,26 @@ class AccessibleEducationalMaterial extends Model
             ->orderByDesc('created_at');
     }
 
-    public function allImages(): HasManyThrough
+    public function loans(): MorphMany
     {
-        return $this->hasManyThrough(
-            InspectionImage::class,
-            Inspection::class,
-            'inspectable_id',
-            'inspection_id',
-            'id',
-            'id'
-        )->where('inspectable_type', static::class);
+        return $this->morphMany(Loan::class, 'loanable');
     }
 
-    // QUERY SCOPES
+    public function waitlists(): MorphMany
+    {
+        return $this->morphMany(Waitlist::class, 'waitlistable');
+    }
+
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
 
     public function scopeFilterName($query, ?string $name)
     {
@@ -135,25 +129,12 @@ class AccessibleEducationalMaterial extends Model
         return $query;
     }
 
-    public function scopeByType($query, $type)
-    {
-        if (!is_null($type) && $type !== '') {
-            $query->whereHas('type', function ($q) use ($type) {
-                $q->where('name', 'like', "%{$type}%");
-            });
-        }
-
-        return $query;
-    }
-
     public function scopeAvailable($query, $available)
     {
         if (!is_null($available) && $available !== '') {
-            if ($available == '1') {
-                $query->where('quantity_available', '>', 0);
-            } else {
-                $query->where('quantity_available', '<=', 0);
-            }
+            $available == '1'
+                ? $query->where('quantity_available', '>', 0)
+                : $query->where('quantity_available', '<=', 0);
         }
 
         return $query;
@@ -162,84 +143,67 @@ class AccessibleEducationalMaterial extends Model
     public function scopeDigital($query, $isDigital)
     {
         if (!is_null($isDigital) && $isDigital !== '') {
-            $query->whereHas('type', function ($q) use ($isDigital) {
-                $q->where('is_digital', $isDigital == '1');
-            });
+            $query->where('is_digital', $isDigital == '1');
         }
 
         return $query;
     }
 
-    // Auditoria
+    /*
+    |--------------------------------------------------------------------------
+    | AUDITORIA
+    |--------------------------------------------------------------------------
+    */
 
     public static function getAuditLabels(): array
     {
         return [
             'name' => 'Nome do Material',
+            'is_digital' => 'Material Digital',
+            'notes' => 'Descrição',
             'asset_code' => 'Código de Patrimônio',
-            'quantity' => 'Quantidade',
+            'quantity' => 'Quantidade Total',
             'conservation_state' => 'Estado de Conservação',
-            'status_id' => 'Status',
-            'type_id' => 'Tipo',
+            'status' => 'Status do Recurso',
             'is_active' => 'Cadastro Ativo',
             'deficiencies' => 'Público-Alvo',
             'trainings' => 'Treinamentos',
-            'attributes' => 'Características Técnicas',
             'accessibility_features' => 'Recursos de Acessibilidade',
         ];
     }
 
     public static function formatAuditValue(string $field, $value): ?string
     {
-        // --- Características Técnicas (Atributos Dinâmicos) ---
-        if ($field === 'attributes' && is_array($value)) {
-            $attributeNames = \App\Models\InclusiveRadar\TypeAttribute::whereIn('id', array_keys($value))
-                ->pluck('name', 'id')
-                ->toArray();
-
-            $formatted = [];
-            foreach ($value as $id => $val) {
-                // Buscamos o nome e aplicamos o ucfirst para garantir a primeira letra maiúscula
-                $name = $attributeNames[$id] ?? "Atributo #$id";
-                $label = mb_convert_case($name, MB_CASE_TITLE, "UTF-8");
-
-                $formatted[] = "{$label}: {$val}";
-            }
-
-            return !empty($formatted) ? implode(' | ', $formatted) : 'Nenhuma';
-        }
-
-        // --- Público-Alvo ---
         if ($field === 'deficiencies' && is_array($value)) {
             return Deficiency::whereIn('id', $value)
                 ->pluck('name')
                 ->join(', ') ?: 'Nenhuma';
         }
 
-        // --- Treinamentos ---
         if ($field === 'trainings' && is_array($value)) {
             return Training::whereIn('id', $value)
                 ->pluck('title')
                 ->join(', ') ?: 'Nenhum';
         }
 
-        // --- Recursos de Acessibilidade ---
         if ($field === 'accessibility_features' && is_array($value)) {
             return AccessibilityFeature::whereIn('id', $value)
                 ->pluck('name')
                 ->join(', ') ?: 'Nenhum';
         }
 
-        // --- Relacionamentos Diretos (ID para Nome) ---
-        if ($field === 'type_id') {
-            return ResourceType::find($value)?->name ?? "ID: $value";
+        if ($field === 'is_digital') {
+            return $value ? 'Digital' : 'Físico';
         }
 
-        if ($field === 'status_id') {
-            return ResourceStatus::find($value)?->name ?? "ID: $value";
+        if ($field === 'status' && $value) {
+            return ResourceStatus::from($value)->label();
+        }
+
+        if ($field === 'conservation_state' && $value) {
+            return ConservationState::from($value)->label();
         }
 
         return null;
     }
-
 }

@@ -33,13 +33,13 @@ class WaitlistRequest extends FormRequest
         }
 
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_merge($rules, [
+            $rules = [
                 'status' => [
                     'nullable',
                     Rule::in(['waiting','notified','fulfilled','cancelled']),
                 ],
                 'observation' => ['nullable','string'],
-            ]);
+            ];
         }
 
         return $rules;
@@ -54,18 +54,20 @@ class WaitlistRequest extends FormRequest
 
     public function withValidator($validator)
     {
-        $validator->after(function ($validator) {
-            $student = $this->input('student_id');
-            $professional = $this->input('professional_id');
+        if ($this->isMethod('POST')) {
+            $validator->after(function ($validator) {
+                $student = $this->input('student_id');
+                $professional = $this->input('professional_id');
 
-            if (empty($student) && empty($professional)) {
-                $validator->errors()->add('student_id', 'É necessário informar um aluno ou um profissional.');
-            }
+                if (empty($student) && empty($professional)) {
+                    $validator->errors()->add('student_id', 'É necessário informar um aluno ou um profissional.');
+                }
 
-            if (!empty($student) && !empty($professional)) {
-                $validator->errors()->add('student_id', 'Não é permitido informar aluno e profissional ao mesmo tempo.');
-            }
-        });
+                if (!empty($student) && !empty($professional)) {
+                    $validator->errors()->add('student_id', 'Não é permitido informar aluno e profissional ao mesmo tempo.');
+                }
+            });
+        }
     }
 
     public function messages(): array

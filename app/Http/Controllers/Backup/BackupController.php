@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backup;
 
 use App\Http\Controllers\Controller;
 use App\Models\Backup\Backup;
+use App\Models\User;
 use App\Services\Backup\BackupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,9 +16,25 @@ class BackupController extends Controller {
         $this->backupService = $backupService;
     }
 
-    public function index() {
-        $backups = Backup::with('user')->latest()->paginate(10);
-        return view('backup.index', compact('backups'));
+    public function index(Request $request)
+    {
+        $name = trim($request->name ?? '');
+
+        $users = User::whereHas('backups')->orderBy('name')->get();
+
+        $backups = Backup::with('user')
+            ->filterName($name ?: null)
+            ->byType($request->status)
+            ->byUser($request->user_id)
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->ajax()) {
+            return view('pages.backup.partials.table', compact('backups'));
+        }
+
+        return view('pages.backup.index', compact('backups', 'users'));
     }
 
     public function store(Request $request) {
@@ -29,9 +46,16 @@ class BackupController extends Controller {
         }
     }
 
+    public function show($id)
+    {
+        $backup = Backup::with('user')->findOrFail($id);
+
+        return view('pages.backup.show', compact('backup'));
+    }
+
     public function edit($id) {
         $backup = Backup::findOrFail($id);
-        return view('backup.edit', compact('backup'));
+        return view('pages.backup.edit', compact('backup'));
     }
 
     public function update(Request $request, $id) {

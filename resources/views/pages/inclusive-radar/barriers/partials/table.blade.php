@@ -15,21 +15,23 @@
                 @endif
             </x-table.td>
 
-            {{-- PRIORIDADE - Com Badge conforme solicitado --}}
             <x-table.td>
-                @php $prioColor = $barrier->priority?->color() ?? 'secondary'; @endphp
-                <span class="badge bg-{{ $prioColor }}-subtle text-{{ $prioColor }}-emphasis border px-2">
+                @php
+                    $prioColor = $barrier->priority?->color() ?? 'secondary';
+                @endphp
+
+                <span class="text-{{ $prioColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $barrier->priority?->label() ?? '-' }}
                 </span>
             </x-table.td>
 
-            {{-- STATUS - Com Badge conforme solicitado --}}
             <x-table.td>
                 @php
                     $status = $barrier->latestStatus();
                     $statusColor = $status ? $status->color() : 'secondary';
                 @endphp
-                <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}-emphasis border px-2">
+
+                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $status ? $status->label() : 'Pendente' }}
                 </span>
             </x-table.td>

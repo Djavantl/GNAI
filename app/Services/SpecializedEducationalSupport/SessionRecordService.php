@@ -25,7 +25,7 @@ class SessionRecordService
 
         return DB::transaction(function () use ($session, $data) {
 
-            $session->update(['status' => 'realized']);
+            $session->update(['status' => 'Realizada']);
 
             // 1. Cria o registro principal (o que o profissional fez)
             $sessionRecord = SessionRecord::create([

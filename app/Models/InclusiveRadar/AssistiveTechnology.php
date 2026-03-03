@@ -5,16 +5,13 @@ namespace App\Models\InclusiveRadar;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Enums\InclusiveRadar\ConservationState;
-
+use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\Auditable;
-
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class AssistiveTechnology extends Model
@@ -25,33 +22,30 @@ class AssistiveTechnology extends Model
 
     protected $fillable = [
         'name',
-        'description',
-        'type_id',
+        'is_digital',
+        'notes',
         'asset_code',
         'quantity',
         'quantity_available',
         'conservation_state',
-        'notes',
-        'status_id',
+        'is_loanable',
+        'status',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_digital' => 'boolean',
+        'is_loanable' => 'boolean',
         'conservation_state' => ConservationState::class,
+        'status' => ResourceStatus::class,
     ];
 
-    // Relacionamentos
-
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(ResourceType::class, 'type_id');
-    }
-
-    public function resourceStatus(): BelongsTo
-    {
-        return $this->belongsTo(ResourceStatus::class, 'status_id');
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONAMENTOS
+    |--------------------------------------------------------------------------
+    */
 
     public function deficiencies(): BelongsToMany
     {
@@ -63,14 +57,8 @@ class AssistiveTechnology extends Model
         );
     }
 
-    public function trainings(): MorphMany
-    {
+    public function trainings(): MorphMany {
         return $this->morphMany(Training::class, 'trainable');
-    }
-
-    public function attributeValues(): MorphMany
-    {
-        return $this->morphMany(ResourceAttributeValue::class, 'resource');
     }
 
     public function inspections(): MorphMany
@@ -79,18 +67,6 @@ class AssistiveTechnology extends Model
             ->with('images')
             ->orderByDesc('inspection_date')
             ->orderByDesc('created_at');
-    }
-
-    public function allImages(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            InspectionImage::class,
-            Inspection::class,
-            'inspectable_id',
-            'inspection_id',
-            'id',
-            'id'
-        )->where('inspectable_type', static::class);
     }
 
     public function loans(): MorphMany
@@ -108,7 +84,11 @@ class AssistiveTechnology extends Model
         return $this->morphMany(AuditLog::class, 'auditable');
     }
 
-    // Scopes
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
 
     public function scopeFilterName(Builder $query, ?string $name): Builder
     {
@@ -121,16 +101,6 @@ class AssistiveTechnology extends Model
     {
         if (!is_null($isActive) && $isActive !== '') {
             $query->where('is_active', $isActive == '1');
-        }
-        return $query;
-    }
-
-    public function scopeByType(Builder $query, $type): Builder
-    {
-        if (!is_null($type) && $type !== '') {
-            $query->whereHas('type', fn($q) =>
-            $q->where('name', 'like', "%{$type}%")
-            );
         }
         return $query;
     }
@@ -148,29 +118,30 @@ class AssistiveTechnology extends Model
     public function scopeDigital(Builder $query, $isDigital): Builder
     {
         if (!is_null($isDigital) && $isDigital !== '') {
-            $query->whereHas('type', fn($q) =>
-            $q->where('is_digital', $isDigital == '1')
-            );
+            $query->where('is_digital', $isDigital == '1');
         }
         return $query;
     }
 
-    // Auditoria
+    /*
+    |--------------------------------------------------------------------------
+    | AUDITORIA
+    |--------------------------------------------------------------------------
+    */
 
     public static function getAuditLabels(): array
     {
         return [
-            'name' => 'Nome da Tecnologia',
-            'description' => 'Descrição',
+            'name' => 'Tipo da Tecnologia',
+            'is_digital' => 'Tecnologia Digital',
+            'notes' => 'Descrição',
             'asset_code' => 'Código de Patrimônio',
             'quantity' => 'Quantidade Total',
             'conservation_state' => 'Estado de Conservação',
-            'status_id' => 'Status do Recurso',
-            'type_id' => 'Tipo de Recurso',
+            'status' => 'Status do Recurso',
             'is_active' => 'Cadastro Ativo',
             'deficiencies' => 'Público-Alvo (Deficiências)',
             'trainings' => 'Treinamentos',
-            'attributes' => 'Características Técnicas (Atributos)',
         ];
     }
 
@@ -188,23 +159,16 @@ class AssistiveTechnology extends Model
                 ->join(', ') ?: 'Nenhum';
         }
 
-        if ($field === 'attributes' && is_array($value)) {
-            $lines = [];
-            foreach ($value as $attrId => $val) {
-                $attrModel = TypeAttribute::find($attrId);
-                $label = $attrModel ? $attrModel->label : "Atributo #$attrId";
-                $prettyVal = ($val === "1" || $val === true) ? 'Sim' : (($val === "0" || $val === false) ? 'Não' : $val);
-                $lines[] = "<strong>{$label}:</strong> {$prettyVal}";
-            }
-            return implode('<br>', $lines);
+        if ($field === 'is_digital') {
+            return $value ? 'Digital' : 'Físico';
         }
 
-        if ($field === 'type_id') {
-            return ResourceType::find($value)?->name ?? "ID: $value";
+        if ($field === 'status' && $value) {
+            return ResourceStatus::from($value)->label();
         }
 
-        if ($field === 'status_id') {
-            return ResourceStatus::find($value)?->name ?? "ID: $value";
+        if ($field === 'conservation_state' && $value) {
+            return ConservationState::from($value)->label();
         }
 
         return null;

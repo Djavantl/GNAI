@@ -1,21 +1,20 @@
-<x-table.table :headers="['Nome', 'Tipo', 'Natureza', 'Estoque', 'Status', 'Ações']" :records="$assistiveTechnologies">
+<x-table.table :headers="['Nome', 'Natureza', 'Estoque', 'Status', 'Ações']" :records="$assistiveTechnologies">
     @forelse($assistiveTechnologies as $tech)
         <tr>
             {{-- NOME --}}
             <x-table.td>{{ $tech->name }}</x-table.td>
 
-            {{-- TIPO --}}
-            <x-table.td>{{ $tech->type?->name ?? 'Geral' }}</x-table.td>
-
             {{-- NATUREZA --}}
-            <x-table.td>{{ $tech->type?->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
+            <x-table.td>
+                {{ $tech->is_digital ? 'Digital' : 'Físico' }}
+            </x-table.td>
 
             {{-- ESTOQUE --}}
             <x-table.td>
-                @if($tech->type?->is_digital)
-                    <span class="text-info fw-bold">Ilimitado</span>
+                @if($tech->is_digital)
+                    <span class="text-info fw-bold text-uppercase" style="font-size: 0.85rem;">Ilimitado</span>
                 @else
-                    <span class="{{ $tech->quantity_available > 0 ? 'text-success' : 'text-danger' }} fw-medium">
+                    <span class="{{ $tech->quantity_available > 0 ? 'text-success' : 'text-danger' }} fw-bold">
                         {{ $tech->quantity_available ?? 0 }}
                     </span>
                     <span class="text-muted">/ {{ $tech->quantity ?? 0 }}</span>
@@ -25,11 +24,14 @@
             {{-- STATUS --}}
             <x-table.td>
                 @php
-                    $isUnavailable = !$tech->type?->is_digital && ($tech->quantity_available <= 0);
+                    $isUnavailable = !$tech->is_digital && ($tech->quantity_available <= 0);
                     $color = $isUnavailable ? 'danger' : ($tech->is_active ? 'success' : 'secondary');
                     $label = $isUnavailable ? 'Esgotado' : ($tech->is_active ? 'Ativo' : 'Inativo');
                 @endphp
-                <span class="text-{{ $color }} fw-bold">{{ $label }}</span>
+
+                <span class="text-{{ $color }} fw-bold text-uppercase" style="font-size: 0.85rem;">
+                    {{ $label }}
+                </span>
             </x-table.td>
 
             {{-- AÇÕES --}}
@@ -58,7 +60,9 @@
         </tr>
     @empty
         <tr>
-            <td colspan="6" class="text-center text-muted py-4">Nenhuma tecnologia cadastrada.</td>
+            <td colspan="5" class="text-center text-muted py-4">
+                Nenhuma tecnologia cadastrada.
+            </td>
         </tr>
     @endforelse
 </x-table.table>

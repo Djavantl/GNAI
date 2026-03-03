@@ -6,8 +6,10 @@ namespace App\Http\Controllers\SpecializedEducationalSupport;
 
 use App\Http\Controllers\Controller;
 use App\Models\SpecializedEducationalSupport\Discipline;
+use App\Models\SpecializedEducationalSupport\Course;
 use App\Http\Requests\SpecializedEducationalSupport\DisciplineRequest;
 use App\Services\SpecializedEducationalSupport\DisciplineService;
+use Illuminate\Http\Request;
 
 
 class DisciplineController extends Controller
@@ -19,10 +21,17 @@ class DisciplineController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $disciplines = $this->service->index();
-        return view('pages.specialized-educational-support.disciplines.index', compact('disciplines'));
+        $disciplines = $this->service->index($request->all());
+        
+        $courses = Course::orderBy('name')->pluck('name', 'id')->toArray();
+
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.disciplines.partials.table', compact('disciplines'))->render();
+        }
+
+        return view('pages.specialized-educational-support.disciplines.index', compact('disciplines', 'courses'));
     }
 
     public function show(Discipline $discipline)

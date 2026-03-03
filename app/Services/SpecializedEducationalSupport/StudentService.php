@@ -11,21 +11,46 @@ class StudentService
 {
     public function index(array $filters = [])
     {
-        return Student::with('person')
-            ->globalSearch($filters['q'] ?? null)
-            ->orderBy('created_at', 'desc')
+        $query = Student::query()
+            ->select('students.*')
+            ->join('people', 'people.id', '=', 'students.person_id')
+            ->with(['person', 'currentCourse']);
+
+        if (auth()->user()->teacher_id) {
+            $teacherId = auth()->user()->teacher_id;
+
+            $query->whereHas('courses', function ($q) use ($teacherId) {
+                $q->whereIn('courses.id', function ($sub) use ($teacherId) {
+                    $sub->select('course_id')
+                        ->from('teacher_courses')
+                        ->where('teacher_id', $teacherId);
+                });
+            });
+        }
+
+        return $query
+            ->name($filters['name'] ?? null)
+            ->email($filters['email'] ?? null)
+            ->registration($filters['registration'] ?? null)
+            ->status($filters['status'] ?? null)
+            ->orderBy('people.name', 'asc')
             ->paginate(10)
             ->withQueryString();
     }
 
     public function show(Student $student): Student
     {
+        $user = auth()->user();
+
         return $student->load([
             'person',
             'guardians',
             'currentContext',
             'deficiencies',
-            'peis',
+            'peis' => fn ($query) =>
+            $query->visibleToUser(auth()->user())
+                ->with(['semester'])
+                ->latest(),
             'studentCourses',
             'courses',
             'currentCourse',
@@ -44,6 +69,8 @@ class StudentService
                 $data['photo'] = $data['photo']->store('photos', 'public');
             }
 
+            $data['entry_date'] = now()->format('Y-m-d'); 
+
             // 2. Cria a Pessoa (incluindo o caminho da foto)
             $person = Person::create([
                 'name'       => $data['name'],
@@ -53,11 +80,11 @@ class StudentService
                 'email'      => $data['email'],
                 'phone'      => $data['phone'] ?? null,
                 'address'    => $data['address'] ?? null,
-                'photo'      => $data['photo'] ?? null, // <--- Faltava isso
+                'photo'      => $data['photo'] ?? null, 
             ]);
 
             // 3. Cria o Aluno vinculado à pessoa
-            return Student::create([
+            return $student = Student::create([
                 'person_id'    => $person->id,
                 'registration' => $data['registration'],
                 'entry_date'   => $data['entry_date'],
@@ -108,7 +135,6 @@ class StudentService
             // Atualiza o Aluno
             $student->update([
                 'registration' => $data['registration'],
-                'entry_date'   => $data['entry_date'],
                 'status'       => $data['status'] ?? $student->status,
             ]);
 

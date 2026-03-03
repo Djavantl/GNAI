@@ -56,6 +56,11 @@ class LoanRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
+            $loan = $this->route('loan');
+            if ($loan && $loan->status !== 'active') {
+                return;
+            }
+
             $student = $this->input('student_id');
             $professional = $this->input('professional_id');
 

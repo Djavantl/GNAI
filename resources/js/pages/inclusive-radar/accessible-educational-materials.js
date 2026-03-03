@@ -1,102 +1,23 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const typeSelect = document.getElementById('type_id');
-    const dynamicAttrContainer = document.getElementById('dynamic-attributes-container');
-    const dynamicAttrList = document.getElementById('dynamic-attributes');
-    const assetContainer = document.getElementById('asset_code_container');
-    const qtyContainer = document.getElementById('quantity_container');
-    const qtyInput = document.getElementById('quantity_input');
+function toggleAssetCodeField() {
+    const select = document.querySelector('[name="is_digital"]');
+    const isDigital = select.value == "1";
 
-    const currentValues = window.currentAttributeValues || {};
+    const assetCodeContainer = document.getElementById('asset_code_container');
+    const assetCodeInput = assetCodeContainer?.querySelector('input[name="asset_code"]');
 
-    function handleTypeChange() {
-        if (!typeSelect || typeSelect.selectedIndex === -1) return;
-
-        const selected = typeSelect.options[typeSelect.selectedIndex];
-        if (!selected) return;
-
-        const isDigital = selected.dataset.digital === '1';
-
-        if (assetContainer) assetContainer.style.display = isDigital ? 'none' : 'block';
-        if (qtyContainer) qtyContainer.style.display = isDigital ? 'none' : 'block';
-
-        if (qtyInput) {
-            if (isDigital) {
-                qtyInput.value = '';
-                qtyInput.required = false;
-            } else {
-                if (!qtyInput.value) qtyInput.value = 1;
-                qtyInput.required = true;
-            }
-        }
+    if (isDigital) {
+        // Esconde o campo e limpa o valor
+        if (assetCodeContainer) assetCodeContainer.style.display = 'none';
+        if (assetCodeInput) assetCodeInput.value = '';
+    } else {
+        // Mostra o campo
+        if (assetCodeContainer) assetCodeContainer.style.display = 'block';
     }
+}
 
-    function loadAttributes(typeId, isInitialLoad = false) {
-        if (!typeId) {
-            if (dynamicAttrContainer) dynamicAttrContainer.style.display = 'none';
-            return;
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    toggleAssetCodeField();
 
-        if (dynamicAttrList) {
-            dynamicAttrList.innerHTML = '<div class="col-12 text-muted fst-italic mb-3 px-3">Buscando especificações técnicas...</div>';
-        }
-
-        if (dynamicAttrContainer) dynamicAttrContainer.style.display = 'block';
-
-        fetch(`/inclusive-radar/admin/resource-types/${typeId}/attributes`)
-            .then(res => res.json())
-            .then(data => {
-                if (!dynamicAttrList) return;
-
-                dynamicAttrList.innerHTML = '';
-                if (data && data.length > 0) {
-                    data.forEach(attr => {
-                        const div = document.createElement('div');
-                        div.className = "col-md-6 mb-3 px-3";
-
-                        const savedValue = currentValues[attr.id] ?? '';
-
-                        if (attr.field_type === 'boolean') {
-                            div.innerHTML = `
-                                <div class="form-check mt-4">
-                                    <input class="form-check-input" type="checkbox"
-                                        name="attributes[${attr.id}]" value="1"
-                                        id="attr_${attr.id}" ${savedValue == '1' ? 'checked' : ''}>
-                                    <label class="form-check-label fw-bold text-purple-dark" for="attr_${attr.id}">
-                                        ${attr.label}
-                                    </label>
-                                </div>`;
-                        } else {
-                            div.innerHTML = `
-                                <label class="form-label fw-bold text-purple-dark">
-                                    ${attr.label} ${attr.is_required ? '*' : ''}
-                                </label>
-                                <input type="${(attr.field_type === 'integer' || attr.field_type === 'decimal') ? 'number' : 'text'}"
-                                       name="attributes[${attr.id}]"
-                                       value="${savedValue}"
-                                       ${attr.is_required ? 'required' : ''}
-                                       class="form-control custom-input">`;
-                        }
-                        dynamicAttrList.appendChild(div);
-                    });
-                } else {
-                    if (dynamicAttrContainer) dynamicAttrContainer.style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao carregar atributos:', error);
-                if (dynamicAttrContainer) dynamicAttrContainer.style.display = 'none';
-            });
-    }
-
-    if (typeSelect) {
-        typeSelect.addEventListener('change', (e) => {
-            handleTypeChange();
-            loadAttributes(e.target.value, false);
-        });
-
-        if (typeSelect.value) {
-            handleTypeChange();
-            loadAttributes(typeSelect.value, true);
-        }
-    }
+    const select = document.querySelector('[name="is_digital"]');
+    if (select) select.addEventListener('change', toggleAssetCodeField);
 });

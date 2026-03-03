@@ -1,4 +1,4 @@
-<section id="documents" class="mb-5 bg-soft-info rounded shadow-sm">
+<section id="documents" class="mb-5  rounded shadow-sm">
 
     <x-forms.section title="Documentos do Aluno" class="m-0" />
 
@@ -47,8 +47,9 @@
 
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">
-                            Nenhum documento registrado.
+                        <td colspan="5" class="text-center text-muted fw-bold py-5">
+                            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
+                            Nenhum documento encontrado.
                         </td>
                     </tr>
                 @endforelse

@@ -10,288 +10,289 @@ use App\Http\Requests\SpecializedEducationalSupport\ContentProgrammaticRequest;
 use App\Http\Requests\SpecializedEducationalSupport\MethodologyRequest;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Pei;
+use App\Models\SpecializedEducationalSupport\PeiDiscipline;
 use App\Models\SpecializedEducationalSupport\Course;
 use App\Models\SpecializedEducationalSupport\Semester;
 use App\Models\SpecializedEducationalSupport\Discipline;
-use App\Models\SpecializedEducationalSupport\SpecificObjective;
-use App\Models\SpecializedEducationalSupport\ContentProgrammatic;
-use App\Models\SpecializedEducationalSupport\Methodology;
+use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Services\SpecializedEducationalSupport\PeiService;
-use App\Enums\SpecializedEducationalSupport\ObjectiveStatus;
+use App\Services\SpecializedEducationalSupport\PeiDisciplineService;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Requests\SpecializedEducationalSupport\PeiDisciplineRequest;
+use Illuminate\Support\Facades\Auth;
 
 class PeiController extends Controller
 {
-    protected PeiService $service;
+    protected PeiService $peiService;
+    protected PeiDisciplineService $peiDisciplineService;
 
-    public function __construct(PeiService $service)
+    public function __construct(PeiService $service, PeiDisciplineService $disciplineService)
     {
         $this->service = $service;
+        $this->disciplineService = $disciplineService;
     }
 
-    public function all()
+    public function all(Request $request)
     {
-        $peis = Pei::with(['student.person', 'discipline', 'semester', 'course'])->get();
-        $semester = Semester::current();
-        
-        return view('pages.specialized-educational-support.peis.all', compact('peis', 'semester'));
+        $peis = $this->service->all($request->all());
+
+        $students = Student::with('person')
+            ->orderBy('id')
+            ->get();
+
+        $semesters = Semester::orderByDesc('year')
+            ->orderByDesc('term')
+            ->get(['id', 'label']);
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.peis.partials.table-all',
+                compact('peis')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.peis.all',
+            compact('peis', 'students', 'semesters')
+        );
     }
 
-    public function index(Student $student)
+    public function index(Student $student, Request $request)
     {
-        $peis = $this->service->index($student);
-        return view('pages.specialized-educational-support.peis.index', compact('student', 'peis'));
+        $peis = $this->service->index($student, $request->all());
+
+        $semesters = Semester::orderByDesc('year')
+            ->orderByDesc('term')
+            ->get(['id', 'label']);
+
+        $disciplines = Discipline::orderBy('name')
+            ->get(['id', 'name']);
+ 
+            
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.peis.partials.table',
+                compact('peis')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.peis.index',
+            compact('peis', 'student', 'semesters', 'disciplines')
+        );
     }
 
     public function show(Pei $pei)
     {
-        $pei = $this->service->show($pei);
-        $student = $pei->student;
-        $statuses = ObjectiveStatus::cases();
+        $pei->load([
+            'student.person',
+            'student.deficiencies',
+            'studentContext'
+        ]);
 
-        return view('pages.specialized-educational-support.peis.show', compact('pei', 'student', 'statuses'));
+        $student = $pei->student;
+        $studentContext = $pei->studentContext;
+
+        $peiDisciplines = $pei->peiDisciplines()
+            ->with(['discipline', 'teacher.person', 'creator'])
+            ->latest()
+            ->paginate(5);
+
+        return view('pages.specialized-educational-support.peis.show', compact(
+            'pei', 'student', 'studentContext', 'peiDisciplines'
+        ));
     }
 
     public function create(Student $student)
     {
-        $courses = Course::orderBy('name')->pluck('name', 'id');
-        $disciplines = Discipline::orderBy('name')->pluck('name', 'id');
-        $currentContext = $student->contexts()->where('is_current', true)->first();
-        $semester = Semester::current();
+        $studentCourse = $student->currentCourse()->first();
+        if (!$studentCourse) {
+            return redirect()->back()->with('error', 'Este aluno não possui matrícula vigente');
+        }
         
-        return view('pages.specialized-educational-support.peis.create', compact('student', 'currentContext', 'courses', 'disciplines', 'semester'));
+        $course = $studentCourse->course;
+
+        $currentContext = $student->contexts()->where('is_current', true)->first();
+        if (!$currentContext) {
+            return redirect()->back()->with('error', 'Este aluno não possui um contexto atual');
+        }
+
+        $semester = Semester::current();
+        if (!$semester) {
+            return redirect()->back()->with('error', 'O sistema não possui semestre atual configurado');
+        }
+
+        return view('pages.specialized-educational-support.peis.create', compact(
+            'student', 'studentCourse', 'course', 'currentContext', 'semester'
+        ));
     }
 
-    public function store(PeiRequest $request)
-    {
-        $pei = $this->service->create($request->validated());
+    public function store(Student $student)
+    {   
+        try {
+            $pei = $this->service->create($student);
+ 
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'PEI gerado com sucesso.');
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'PEI gerado com sucesso. Agora você pode adicionar os objetivos e metodologias.');
-    }
-
-    public function edit(Pei $pei)
-    {
-        $courses = Course::orderBy('name')->pluck('name', 'id');
-        $disciplines = Discipline::orderBy('name')->pluck('name', 'id');
-        $student = $pei->student;
-
-        return view('pages.specialized-educational-support.peis.edit', compact('pei', 'student', 'courses', 'disciplines'));
-    }
-
-    public function update(Pei $pei, PeiRequest $request)
-    {
-        $this->service->update($pei, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Dados básicos do PEI atualizados com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function destroy(Pei $pei)
     {
-        $student = $pei->student;
-        $this->service->delete($pei);
+        try {
+            $student = $pei->student;
+            $this->service->delete($pei);
 
-        return redirect()
-            ->route('specialized-educational-support.pei.index', $student)
-            ->with('success', 'PEI removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.index', $student)
+                ->with('success', 'PEI removido com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function finish(Pei $pei)
     {
-        $this->service->finish($pei);
+        try {
+            $this->service->finish($pei);
 
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'PEI finalizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'PEI finalizado com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage());
+        }
     }
 
-    // --- Métodos para Tabelas Auxiliares (Chamados via modal ou formulário na tela Show) ---
-
-    public function showObjective(SpecificObjective $specific_objective)
+    public function createVersion(Pei $pei)
     {
-        $pei = $specific_objective->pei;
-        $statuses = ObjectiveStatus::labels();
+        try {
+            $new = $this->service->createVersion($pei);
 
-        return view(
-            'pages.specialized-educational-support.peis.objectives.show', 
-            compact('specific_objective', 'pei', 'statuses')
-        );
-    }
-
-    public function createObjective(Pei $pei)
-    {
-        $student = $pei->student;
-        $statuses = ObjectiveStatus::labels();
-
-        return view(
-            'pages.specialized-educational-support.peis.objectives.create',
-            compact('pei', 'student', 'statuses')
-        );
-    }
-
-    public function storeObjective(Pei $pei, SpecificObjectiveRequest $request)
-    {
-        $this->service->addObjective($pei, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Objetivo específico adicionado com sucesso.');
-    } 
-
-    public function editObjective(SpecificObjective $specific_objective)
-    {
-        $statuses = ObjectiveStatus::labels();
-        $pei = $specific_objective->pei;
-
-        return view(
-            'pages.specialized-educational-support.peis.objectives.edit',
-            compact('specific_objective', 'statuses', 'pei')
-        );
-    }
-
-    public function updateObjective(SpecificObjective $specific_objective, SpecificObjectiveRequest $request)
-    {
-
-        $pei = $specific_objective->pei;
-        $this->service->updateObjective($specific_objective, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Dados do objetivo atualizados com sucesso.');
-    }
-
-    public function destroyObjective(SpecificObjective $specific_objective)
-    {
-        $this->service->deleteObjective($specific_objective);
-
-        return back()->with('success', 'Objetivo removido.');
-    }
-
-    // Tela para criar Conteúdo Programático
-
-    public function showContent(ContentProgrammatic $content_programmatic)
-    {
-        $pei = $content_programmatic->pei;
-
-        return view(
-            'pages.specialized-educational-support.peis.contents.show', 
-            compact('content_programmatic', 'pei')
-        );
-    }
-
-    public function editContent(ContentProgrammatic $content_programmatic)
-    {
-        $pei = $content_programmatic->pei;
-
-        return view(
-            'pages.specialized-educational-support.peis.contents.edit',
-            compact('content_programmatic', 'pei')
-        );
-    }
-
-    public function updateContent(ContentProgrammatic $content_programmatic, ContentProgrammaticRequest $request)
-    {
-        $pei = $content_programmatic->pei;
-        $this->service->updateContent($content_programmatic, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Conteúdo programático atualizado com sucesso.');
-    }
-
-    public function createContent(Pei $pei)
-    {
-        $student = $pei->student;
-
-        return view(
-            'pages.specialized-educational-support.peis.contents.create',
-            compact('pei', 'student')
-        );
-    }
-
-    public function storeContent(Pei $pei, ContentProgrammaticRequest $request)
-    {
-        $this->service->addContent($pei, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Conteúdo programático adicionado com sucesso.');
-    }
-
-    public function destroyContent(ContentProgrammatic $content_programmatic)
-    {
-        $this->service->deleteContent($content_programmatic);
-
-        return back()->with('success', 'Conteúdo removido.');
-    }
-
-    // Tela para criar Metodologia
-
-    public function showMethodology(Methodology $methodology)
-    {
-        $pei = $methodology->pei;
-
-        return view(
-            'pages.specialized-educational-support.peis.methodologies.show', 
-            compact('methodology', 'pei')
-        );
-    }
-
-    public function editMethodology(Methodology $methodology)
-    {
-        $pei = $methodology->pei;
-
-        return view(
-            'pages.specialized-educational-support.peis.methodologies.edit',
-            compact('methodology', 'pei')
-        );
-    }
-
-    public function updateMethodology(Methodology $methodology, MethodologyRequest $request)
-    {
-        $pei = $methodology->pei;
-        $this->service->updateMethodology($methodology, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Metodologia atualizada com sucesso.');
-    }
-    
-    public function createMethodology(Pei $pei)
-    {
-        $student = $pei->student;
-
-        return view(
-            'pages.specialized-educational-support.peis.methodologies.create',
-            compact('pei', 'student')
-        );
-    }
-
-    public function storeMethodology(Pei $pei, MethodologyRequest $request)
-    {
-        $this->service->addMethodology($pei, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
-            ->with('success', 'Metodologia adicionada com sucesso.');
-    }
-    public function destroyMethodology(Methodology $methodology)
-    {
-        $this->service->deleteMethodology($methodology);
-
-        return back()->with('success', 'Metodologia removida.');
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $new)
+                ->with('success', 'Nova versão criada com sucesso.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function generatePdf(Pei $pei)
     {
-        $pei->load(['student.person', 'studentContext', 'specificObjectives', 'contentProgrammatic', 'methodologies']);
-        
-        $pdf = Pdf::loadView('pages.specialized-educational-support.peis.pdf', compact('pei'))
-                ->setPaper('a4', 'portrait');
+        if (! $pei->is_finished) {
+            return redirect()
+                ->back()
+                ->with('error', 'Somente PEIs finalizados podem gerar PDF.');
+        }
+
+        $pei->load([
+            'student.person',
+            'studentContext',
+            'peiDisciplines.discipline',
+            'peiDisciplines.teacher.person'
+        ]);
+
+        $pdf = app('dompdf.wrapper')
+            ->loadView('pages.specialized-educational-support.peis.pdf', compact('pei'))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream("PEI_{$pei->student->person->name}_{$pei->discipline->name}.pdf");
+    }
+
+    public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)
+    {
+        $peiDiscipline->load(['teacher.person', 'discipline', 'creator']);
+        $student = $pei->student->load('person');
+
+        return view('pages.specialized-educational-support.peis.disciplines.show', compact('pei', 'peiDiscipline', 'student'));
+    }
+
+    /**
+     * Exibe formulário de criação de disciplina para o PEI
+     */
+    public function createDiscipline(Pei $pei)
+    {
+        if ($pei->is_finished) {
+            return redirect()->back()->with('error', 'Não é possível adicionar disciplinas a um PEI finalizado.');
+        }
+
+        $teachers = Teacher::all(); // Ou sua lógica de filtro de professores
+        $disciplines = Discipline::orderBy('name')->get();
+
+        return view('pages.specialized-educational-support.peis.disciplines.create', compact('pei', 'teachers', 'disciplines'));;
+    }
+
+    /**
+     * Salva a nova disciplina
+     */
+    public function storeDiscipline(PeiDisciplineRequest $request, Pei $pei)
+    {
+        try {
+            $this->disciplineService->store($pei, $request->validated());
+
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Adaptação de disciplina adicionada com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Exibe formulário de edição
+     */
+    public function editDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)
+    {
+        // O Laravel já garante que $peiDiscipline pertence a $pei por causa do scopeBindings nas rotas
+        if ($pei->is_finished) {
+            return redirect()->back()->with('error', 'Não é possível editar disciplinas de um PEI finalizado.');
+        }
+
+        $teachers = Teacher::all();
+        $disciplines = Discipline::orderBy('name')->get();
+
+        return view('pages.specialized-educational-support.peis.disciplines.edit', compact('pei', 'peiDiscipline', 'teachers', 'disciplines'));
+    }
+
+    /**
+     * Atualiza a disciplina
+     */
+    public function updateDiscipline(PeiDisciplineRequest $request, Pei $pei, PeiDiscipline $peiDiscipline)
+    {
+        try {
+            $this->disciplineService->update($peiDiscipline, $request->validated());
+
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Adaptação de disciplina atualizada com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove a disciplina
+     */
+    public function destroyDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)
+    {
+        try {
+            $this->disciplineService->delete($peiDiscipline);
+
+            return redirect()
+                ->route('specialized-educational-support.pei.show', $pei)
+                ->with('success', 'Adaptação removida com sucesso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

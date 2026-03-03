@@ -10,13 +10,14 @@
             {{-- TIPO --}}
             <x-table.td>{{ $loc->type ?? 'N/A' }}</x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 @php
                     $statusColor = $loc->is_active ? 'success' : 'secondary';
                     $statusLabel = $loc->is_active ? 'Ativo' : 'Inativo';
                 @endphp
-                <span class="text-{{ $statusColor }} fw-bold">
+
+                {{-- Status da localização seguindo o padrão Clean & Bold do sistema --}}
+                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>

@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-use App\Models\InclusiveRadar\ResourceType;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\SpecializedEducationalSupport\Person;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
@@ -13,8 +14,13 @@ use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Inspection;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\Paginator;
+use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
+use App\Models\SpecializedEducationalSupport\StudentDocument;
+use App\Models\SpecializedEducationalSupport\StudentCourse;
+use App\Models\SpecializedEducationalSupport\StudentContext;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,10 +33,17 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
         Relation::enforceMorphMap([
+            'student'            => Student::class,
+            'person'             => Person::class,
+            'student_deficiency' => StudentDeficiencies::class,
+            'student_document'   => StudentDocument::class,
+            'student_course'     => StudentCourse::class,
+            'student_context'    => StudentContext::class,
             'assistive_technology'            => AssistiveTechnology::class,
             'accessible_educational_material' => AccessibleEducationalMaterial::class,
             'barrier'                         => Barrier::class,
             'inspection'                      => Inspection::class,
+            'user' => User::class,
         ]);
 
         // --- SISTEMA DE PERMISSÕES ---
@@ -64,10 +77,6 @@ class AppServiceProvider extends ServiceProvider
         ], function ($view) {
             $view->with([
                 'deficiencies' => Deficiency::orderBy('name')->get(),
-                'resourceTypes' => ResourceType::active()
-                    ->forEducationalMaterial()
-                    ->orderBy('name')
-                    ->get(),
             ]);
         });
 
@@ -78,10 +87,6 @@ class AppServiceProvider extends ServiceProvider
         ], function ($view) {
             $view->with([
                 'deficiencies' => Deficiency::orderBy('name')->get(),
-                'resourceTypes' => ResourceType::active()
-                    ->forAssistiveTechnology()
-                    ->orderBy('name')
-                    ->get(),
             ]);
         });
     }

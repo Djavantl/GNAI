@@ -36,4 +36,27 @@ class Guardian extends Model
     {
         return $this->belongsTo(Person::class);
     }
+
+    // Scopes para Filtros
+    public function scopeName($query, ?string $name)
+    {
+        if (!$name) return $query;
+        return $query->whereHas('person', function($q) use ($name) {
+            $q->where('name', 'like', "{$name}%");
+        });
+    }
+
+    public function scopeEmail($query, ?string $email)
+    {
+        if (!$email) return $query;
+        return $query->whereHas('person', function($q) use ($email) {
+            $q->where('email', 'like', "%{$email}%");
+        });
+    }
+
+    public function scopeRelationship($query, ?string $relationship)
+    {
+        if (!$relationship) return $query;
+        return $query->where('relationship', 'like', "%{$relationship}%");
+    }
 }

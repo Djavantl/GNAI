@@ -33,7 +33,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome da Categoria *"
+                    label="Nome da Categoria"
                     required
                     :value="old('name')"
                     placeholder="Ex: Arquitetônica, Atitudinal, Comunicacional..."

@@ -6,13 +6,30 @@ use App\Models\SpecializedEducationalSupport\Pendency;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\Priority;
+use App\Notifications\NewPendencyNotification;
+use App\Notifications\PendencyCompletedNotification;
 
 class PendencyService
 {
+    public function index(array $filters = [])
+    {
+        return Pendency::query()
+            ->with(['assignedProfessional.person', 'creator'])
+
+            ->title($filters['title'] ?? null)
+            ->assignedTo($filters['assigned_to'] ?? null)
+            ->priority($filters['priority'] ?? null)
+            ->completed($filters['is_completed'] ?? null)
+
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+    }
+
     //criar
     public function create(array $data): Pendency
     {
-        return Pendency::create([
+        $pendency = Pendency::create([
             'created_by'   => Auth::id(),
             'assigned_to'  => $data['assigned_to'],
             'title'        => $data['title'],
@@ -21,6 +38,16 @@ class PendencyService
             'due_date'     => $data['due_date'] ?? null,
             'is_completed' => false,
         ]);
+
+        // ----- notificar o profissional/usuário associado -----
+        // assumindo que assignedProfessional->user existe
+        $assignedProfessional = $pendency->assignedProfessional;
+        if ($assignedProfessional && $assignedProfessional->user) {
+            $user = $assignedProfessional->user;
+            $user->notify(new NewPendencyNotification($pendency));
+        }
+
+        return $pendency;
     }
 
     //pegar todas
@@ -37,7 +64,7 @@ class PendencyService
         return Pendency::with(['creator', 'assignedProfessional'])
             ->findOrFail($id);
     }
-
+ 
     //pegar de um profissional
     public function getByProfessional(int $professionalId): Collection
     {
@@ -49,11 +76,21 @@ class PendencyService
     }
 
     //pegar as propias
-    public function getMyPendencies(): Collection
+    public function getMyPendencies(array $filters = [])
     {
         $professionalId = Auth::user()->professional->id;
 
-        return $this->getByProfessional($professionalId);
+        return Pendency::query()
+            ->with(['assignedProfessional.person', 'creator'])
+            ->where('assigned_to', $professionalId)
+
+            ->title($filters['title'] ?? null)
+            ->priority($filters['priority'] ?? null)
+            ->completed($filters['is_completed'] ?? null)
+
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
     }
 
     //pegar pendentes
@@ -93,6 +130,13 @@ class PendencyService
     public function markAsCompleted(Pendency $pendency): Pendency
     {
         $pendency->markAsCompleted();
+
+        // notificar quem criou
+        if ($pendency->creator) {
+            $pendency->creator->notify(
+                new PendencyCompletedNotification($pendency)
+            );
+        }
 
         return $pendency;
     }

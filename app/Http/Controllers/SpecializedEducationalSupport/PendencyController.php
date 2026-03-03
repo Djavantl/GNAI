@@ -8,6 +8,8 @@ use App\Models\SpecializedEducationalSupport\Professional;
 use App\Http\Requests\SpecializedEducationalSupport\PendencyRequest;
 use App\Services\SpecializedEducationalSupport\PendencyService;
 use App\Enums\Priority;
+use Illuminate\Http\Request;
+
 
 class PendencyController extends Controller
 {
@@ -18,13 +20,24 @@ class PendencyController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $pendencies = $this->service->getAll();
+        $pendencies = $this->service->index($request->all());
+
+        $professionals = Professional::with('person')
+            ->orderBy('id')
+            ->get();
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.pendencies.partials.table',
+                compact('pendencies')
+            )->render();
+        }
 
         return view(
             'pages.specialized-educational-support.pendencies.index',
-            compact('pendencies')
+            compact('pendencies', 'professionals')
         );
     }
 
@@ -95,9 +108,16 @@ class PendencyController extends Controller
             ->with('success', 'Pendência removida com sucesso.');
     }
 
-    public function myPendencies()
+    public function myPendencies(Request $request)
     {
-        $pendencies = $this->service->getMyPendencies();
+        $pendencies = $this->service->getMyPendencies($request->all());
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.pendencies.partials.table',
+                compact('pendencies')
+            )->render();
+        }
 
         return view(
             'pages.specialized-educational-support.pendencies.my',

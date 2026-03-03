@@ -18,6 +18,9 @@
                 Aluno: {{ $student->person->name }}
             </p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.student-deficiencies.index', $student) }}" variant="secondary">
+            <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -28,7 +31,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="deficiency_id"
-                    label="Deficiência *"
+                    label="Deficiência"
                     required
                     :options="$deficienciesList->pluck('name', 'id')"
                     :value="old('deficiency_id')"
@@ -39,6 +42,7 @@
                 <x-forms.select
                     name="severity"
                     label="Severidade"
+                    required
                     :options="[
                         'mild' => 'Leve',
                         'moderate' => 'Moderada',
@@ -48,16 +52,7 @@
                 />
             </div>
 
-            <div class="col-md-12 mt-2">
-                <x-forms.checkbox 
-                    name="uses_support_resources" 
-                    label="Utiliza recursos de apoio" 
-                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para esta deficiência"
-                    :checked="old('uses_support_resources')" 
-                />
-            </div>
-
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <x-forms.textarea 
                     name="notes" 
                     label="Observações" 
@@ -67,13 +62,22 @@
                 />
             </div>
 
+            <div class="col-md-6">
+                <x-forms.select
+                    name="uses_support_resources"
+                    label="Utiliza recursos de apoio"
+                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para esta deficiência"
+                    :options="[1 => 'Sim', 0 => 'Não']"
+                />
+            </div>
+
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.student-deficiencies.index', $student) }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-times" aria-hidden="true"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-link mr-2"></i> Vincular Deficiência
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save" aria-hidden="true"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

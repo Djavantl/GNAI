@@ -45,7 +45,7 @@
                 <x-forms.select
                     name="loanable_type"
                     id="loanable_type"
-                    label="Tipo de Recurso *"
+                    label="Tipo de Recurso"
                     required
                     aria-controls="loanable_id"
                     :options="[
@@ -61,7 +61,7 @@
                     <x-forms.select
                         name="loanable_id"
                         id="loanable_id"
-                        label="Item Específico *"
+                        label="Item Específico"
                         required
                         :options="['' => 'Selecione o tipo primeiro']"
                     />
@@ -108,7 +108,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="loan_date"
-                    label="Data de Saída *"
+                    label="Data de Saída"
                     type="datetime-local"
                     required
                     :value="old('loan_date', now()->format('Y-m-d\TH:i'))"
@@ -118,7 +118,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="due_date"
-                    label="Previsão de Devolução *"
+                    label="Previsão de Devolução"
                     type="date"
                     required
                     :value="old('due_date')"
@@ -154,8 +154,8 @@
     <script>
         window.loanData = {
             items: {
-                'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies ?? []),
-                'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials ?? [])
+                'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies),
+                'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials)
             },
             oldId: "{{ old('loanable_id') }}"
         };

@@ -10,13 +10,20 @@ class SemesterService
     /**
      * Listar todos os semestres
      */
-    public function index()
+    public function index(array $filters = [])
     {
-        return Semester::orderBy('year', 'desc')
-            ->orderBy('term', 'desc')
-            ->get();
-    }
+        return Semester::query()
+            ->year($filters['year'] ?? null)
+            ->term($filters['term'] ?? null)
+            ->label($filters['label'] ?? null)
+            ->current($filters['is_current'] ?? null)
 
+            ->orderByDesc('year')
+            ->orderByDesc('term')
+
+            ->paginate(10)
+            ->withQueryString();
+    }
     /**
      * Criar semestre
      */
@@ -24,11 +31,14 @@ class SemesterService
     {
         return DB::transaction(function () use ($data) {
 
+            $label = $data['year'] . "." . $data['term'];
             // Se criar já como atual, desativa os outros
             if (!empty($data['is_current']) && $data['is_current']) {
                 Semester::where('is_current', true)
                     ->update(['is_current' => false]);
             }
+
+            $data['label'] = $label;
 
             return Semester::create($data);
         });
@@ -46,6 +56,9 @@ class SemesterService
                     ->where('id', '!=', $semester->id)
                     ->update(['is_current' => false]);
             }
+
+            $label = $data['year'] . "." . $data['term'];
+            $data['label'] = $label;
 
             $semester->update($data);
 

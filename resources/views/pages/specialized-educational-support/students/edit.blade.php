@@ -10,11 +10,14 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
-            <h2 class="text-title">Editar Aluno</h2>
+            <h2 class="text-title">Editar {{$student->person->name}}</h2>
             <p class="text-muted">Atualize as informações cadastrais e acadêmicas do estudante.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.students.show', $student) }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -23,36 +26,29 @@
 
             <x-forms.section title="Dados Pessoais" />
 
-            <div class="col-md-12 mb-4">
-                <label class="form-label fw-bold d-block">Foto do Aluno</label>
-                <div class="photo-preview-container">
-                    <img src="{{ $student->person->photo_url }}" class="img-preview mb-2" id="preview">
-                </div>
-                <input type="file" name="photo" class="form-control" accept="image/*">
-                
-                @if($student->person->photo)
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="remove_photo" value="1" id="removePhoto">
-                        <label class="form-check-label text-danger" for="removePhoto">
-                            <i class="bi bi-trash"></i> Remover foto atual
-                        </label>
-                    </div>
-                @endif
-            </div>
+            <x-forms.photo-upload
+                name="photo"
+                label="Foto do Aluno"
+                :current="$student->person->photo_url"
+            />
+            
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome Completo *" 
+                    label="Nome Completo " 
                     required 
                     :value="old('name', $student->person->name)" 
                 />
             </div>
 
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="Documento *" 
+                    label="Documento " 
+                    class="cpf-mask"
+                    maxlength="14"  
+                    placeholder="000.000.000-00"
                     required 
                     :value="old('document', $student->person->document)" 
                 />
@@ -61,7 +57,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="birth_date" 
-                    label="Data de Nascimento *" 
+                    label="Data de Nascimento " 
                     type="date" 
                     required 
                     :value="old('birth_date', optional($student->person->birth_date)->format('Y-m-d'))" 
@@ -86,7 +82,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="email" 
-                    label="E-mail *" 
+                    label="E-mail " 
                     type="email" 
                     required 
                     :value="old('email', $student->person->email)" 
@@ -96,7 +92,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="phone" 
-                    label="Telefone" 
+                    label="Telefone"
+                    class="phone-mask" 
+                    maxlength="15" 
+                    placeholder="(00) 00000-0000" 
                     :value="old('phone', $student->person->phone)" 
                 />
             </div>
@@ -115,7 +114,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="registration" 
-                    label="Matrícula *" 
+                    label="Matrícula " 
                     required 
                     :value="old('registration', $student->registration)" 
                 />
@@ -124,7 +123,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="entry_date" 
-                    label="Data de Ingresso *" 
+                    label="Data de Ingresso " 
                     type="date" 
                     required 
                     :value="old('entry_date', $student->entry_date)" 
@@ -132,15 +131,18 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.students.index') }}" variant="secondary">
-                    Cancelar
+                <x-buttons.link-button href="{{ route('specialized-educational-support.students.show', $student) }}" variant="secondary">
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-sync mr-2"></i> Atualizar Cadastro
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>
     </div>
 @endsection
+@push('scripts')
+    @vite(['resources/js/components/photos.js'])
+@endpush

@@ -9,12 +9,15 @@
             'Cadastrar' => null
         ]" />
     </div>
-
+ 
     <div class="d-flex justify-content-between mb-3">
         <div>
             <h2 class="text-title">Novo Registro de Sessão</h2>
             <p class="text-muted">Sessão #{{ $session->id }} </p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.show', $session) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <x-forms.form-card action="{{ route('specialized-educational-support.session-records.store') }}" method="POST">
@@ -24,23 +27,54 @@
         <x-forms.section title="Informações Gerais da Execução" />
         
         <div class="col-md-6">
-            <x-forms.input name="duration" label="Duração *" placeholder="Ex: 50 minutos" required :value="old('duration')" />
+            <x-forms.input 
+                name="duration" 
+                label="Duração" 
+                placeholder="Ex: 50 minutos ou 01:00" 
+                required 
+                :value="old('duration')" 
+            />
         </div>
 
         <div class="col-md-12">
-            <x-forms.textarea name="activities_performed" label="Atividades Planejadas/Realizadas" rows="3" required :value="old('activities_performed')" />
+            <x-forms.textarea 
+                name="activities_performed" 
+                label="Atividades Planejadas/Realizadas" 
+                rows="3" 
+                placeholder="Descreva as atividades realizadas durante a sessão..." 
+                required 
+                :value="old('activities_performed')" 
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.textarea name="strategies_used" label="Estratégias Planejadas/Utilizadas" rows="2" :value="old('strategies_used')" />
+            <x-forms.textarea 
+                name="strategies_used" 
+                label="Estratégias Planejadas/Utilizadas" 
+                rows="2" 
+                placeholder="Métodos, abordagens pedagógicas ou intervenções utilizadas..." 
+                :value="old('strategies_used')" 
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.textarea name="resources_used" label="Recursos Planejadas/Utilizados" rows="2" :value="old('resources_used')" />
+            <x-forms.textarea 
+                name="resources_used" 
+                label="Recursos Planejadas/Utilizados" 
+                rows="2" 
+                placeholder="Materiais, tecnologias ou instrumentos utilizados..." 
+                :value="old('resources_used')" 
+            />
         </div>
 
         <div class="col-md-12">
-            <x-forms.textarea name="general_observations" label="Observações Gerais " rows="2" :value="old('general_observations')" />
+            <x-forms.textarea 
+                name="general_observations" 
+                label="Observações Gerais" 
+                rows="2" 
+                placeholder="Observações relevantes sobre a sessão..." 
+                :value="old('general_observations')" 
+            />
         </div>
 
         {{-- SEÇÃO 2: AVALIAÇÕES INDIVIDUAIS --}}
@@ -48,7 +82,6 @@
         
         <div class="col-12">
             <div class="row g-0 border rounded overflow-hidden">
-                {{-- Navegação Lateral dos Alunos --}}
                 <div class="col-md-3 bg-light border-end">
                     <div class="list-group list-group-flush" id="students-list" role="tablist">
                         @foreach($session->students as $index => $student)
@@ -64,7 +97,6 @@
                     </div>
                 </div>
 
-                {{-- Conteúdo das Avaliações --}}
                 <div class="col-md-9 p-4 bg-white">
                     <div class="tab-content">
                         @foreach($session->students as $index => $student)
@@ -83,38 +115,67 @@
                                         </div>
                                     </div>
 
-                                    {{-- Bloco de Ausência (Motivo) --}}
                                     <div class="col-md-12" id="absence_fields_{{ $index }}" style="display: none;">
-                                        <div class="mb-0">
-                                            <x-forms.textarea 
-                                                name="evaluations[{{ $index }}][absence_reason]" 
-                                                label="Motivo da Ausência *" 
-                                                rows="2" 
-                                                :value="old('evaluations.'.$index.'.absence_reason')"
-                                            />
-                                        </div>
+                                        <x-forms.textarea 
+                                            name="evaluations[{{ $index }}][absence_reason]" 
+                                            label="Motivo da Ausência" 
+                                            rows="2" 
+                                            placeholder="Informe o motivo da ausência do aluno..." 
+                                            :value="old('evaluations.'.$index.'.absence_reason')"
+                                        />
                                     </div>
 
-                                    {{-- Campos de Presença --}}
                                     <div class="col-md-12 evaluation-fields" id="eval_fields_{{ $index }}">
                                         <div class="row g-3">
                                             <div class="col-md-12">
-                                                <x-forms.textarea name="evaluations[{{ $index }}][student_participation]" required label="Participação" row="3" />
+                                                <x-forms.textarea 
+                                                    name="evaluations[{{ $index }}][student_participation]" 
+                                                    label="Participação" 
+                                                    rows="3" 
+                                                    placeholder="Descreva o nível de participação do aluno..." 
+                                                    required 
+                                                />
                                             </div>
                                             <div class="col-md-12">
-                                                <x-forms.textarea name="evaluations[{{ $index }}][adaptations_made]" label="Adaptações para este Aluno" rows="3" />
+                                                <x-forms.textarea 
+                                                    name="evaluations[{{ $index }}][adaptations_made]" 
+                                                    label="Adaptações para este Aluno" 
+                                                    rows="3" 
+                                                    placeholder="Adaptações realizadas durante a sessão..." 
+                                                />
                                             </div>
                                             <div class="col-md-12">
-                                                <x-forms.textarea name="evaluations[{{ $index }}][development_evaluation]" required label="Avaliação do Desenvolvimento" rows="3" />
+                                                <x-forms.textarea 
+                                                    name="evaluations[{{ $index }}][development_evaluation]" 
+                                                    label="Avaliação do Desenvolvimento" 
+                                                    rows="3" 
+                                                    placeholder="Avaliação do desempenho e evolução do aluno..." 
+                                                    required 
+                                                />
                                             </div>
                                             <div class="col-md-12">
-                                                <x-forms.textarea name="evaluations[{{ $index }}][progress_indicators]" label="Indicadores de Progresso" rows="3" />
+                                                <x-forms.textarea 
+                                                    name="evaluations[{{ $index }}][progress_indicators]" 
+                                                    label="Indicadores de Progresso" 
+                                                    rows="3" 
+                                                    placeholder="Evidências observáveis de progresso..." 
+                                                />
                                             </div>
                                             <div class="col-md-6">
-                                                <x-forms.textarea name="evaluations[{{ $index }}][recommendations]" label="Recomendações" rows="3" />
+                                                <x-forms.textarea 
+                                                    name="evaluations[{{ $index }}][recommendations]" 
+                                                    label="Recomendações" 
+                                                    rows="3" 
+                                                    placeholder="Sugestões para continuidade do trabalho..." 
+                                                />
                                             </div>
                                             <div class="col-md-6">
-                                                <x-forms.textarea name="evaluations[{{ $index }}][next_session_adjustments]" label="Ajustes para Próxima Sessão" rows="3" />
+                                                <x-forms.textarea 
+                                                    name="evaluations[{{ $index }}][next_session_adjustments]" 
+                                                    label="Ajustes para Próxima Sessão" 
+                                                    rows="3" 
+                                                    placeholder="O que ajustar ou manter para a próxima sessão..." 
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -128,10 +189,10 @@
 
         <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
             <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.show', $session) }}" variant="secondary">
-                Cancelar
+                <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>
-            <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                <i class="fas fa-save mr-2"></i> Salvar Registro
+            <x-buttons.submit-button type="submit" class="btn-action new submit">
+                <i class="fas fa-save"></i> Salvar
             </x-buttons.submit-button>
         </div>
     </x-forms.form-card>

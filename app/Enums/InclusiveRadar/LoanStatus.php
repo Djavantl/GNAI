@@ -28,4 +28,31 @@ enum LoanStatus: string
             self::DAMAGED  => 'danger',
         };
     }
+
+    public function isActive(): bool
+    {
+        return $this === self::ACTIVE;
+    }
+
+    public function isReturned(): bool
+    {
+        return in_array($this, [
+            self::RETURNED,
+            self::LATE,
+            self::DAMAGED,
+        ]);
+    }
+
+    public function requiresMaintenance(): bool
+    {
+        return $this === self::DAMAGED;
+    }
+
+    public static function openStatuses(): array
+    {
+        return [
+            self::ACTIVE->value,
+            self::LATE->value,
+        ];
+    }
 }

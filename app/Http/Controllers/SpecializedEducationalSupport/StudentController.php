@@ -22,9 +22,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $students = $this->service->index($request->all());
-        $semesters = Semester::orderByDesc('year')
-        ->orderByDesc('term')
-        ->get(['id', 'label']);
+        $semesters = $this->semesters();
 
         if ($request->ajax()) {
             return view(
@@ -57,10 +55,10 @@ class StudentController extends Controller
 
     public function store(StudentRequest $request)
     {
-        $this->service->create($request->validated());
+        $student = $this->service->create($request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.students.index')
+            ->route('specialized-educational-support.students.show', $student)
             ->with('success', 'Aluno cadastrado com sucesso.');
     }
 
@@ -72,10 +70,10 @@ class StudentController extends Controller
 
     public function update(StudentRequest $request, Student $student)
     {
-        $this->service->update($student, $request->validated());
+        $student = $this->service->update($student, $request->validated());
 
         return redirect()
-            ->route('specialized-educational-support.students.index')
+            ->route('specialized-educational-support.students.show', $student)
             ->with('success', 'Aluno atualizado com sucesso.');
     }
 

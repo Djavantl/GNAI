@@ -9,11 +9,17 @@ use Illuminate\Support\Facades\DB;
 
 class GuardianService
 {
-    public function listByStudent(int $studentId)
+    public function getByStudent(Student $student, array $filters = [])
     {
-        return Guardian::with('person')
-            ->where('student_id', $studentId)
-            ->get();
+        return Guardian::query()
+            ->with('person') // Eager loading essencial
+            ->where('student_id', $student->id)
+            ->name($filters['name'] ?? null)
+            ->email($filters['email'] ?? null)
+            ->relationship($filters['relationship'] ?? null)
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function show(Guardian $guardian){

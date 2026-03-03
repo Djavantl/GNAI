@@ -39,7 +39,7 @@
                         <div class="col-md-6">
                             <label for="institution_select"
                                    class="form-label fw-bold text-purple-dark italic">
-                                Campus / Unidade <span class="text-danger">*</span>
+                                Campus / Unidade <span class="text-danger"></span>
                             </label>
                             <select name="institution_id"
                                     id="institution_select"
@@ -175,7 +175,7 @@
 
                 {{-- Deficiências Relacionadas --}}
                 <div class="col-md-12 mb-4 px-4">
-                    <label class="form-label fw-bold text-purple-dark">Deficiências Relacionadas *</label>
+                    <label class="form-label fw-bold text-purple-dark">Deficiências Relacionadas</label>
                     <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light max-h-40 overflow-y-auto custom-scrollbar">
                         @foreach($deficiencies as $def)
                             <x-forms.checkbox
@@ -199,8 +199,15 @@
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <div class="mb-4">
-                        <div class="mb-3 px-4">
+                        <div class="mb-3 px-4 d-flex justify-content-between align-items-center">
                             <x-forms.checkbox name="no_location" id="no_location" label="Sem localização física" :checked="old('no_location')" />
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="btn-toggle-locations" checked style="cursor: pointer;">
+                                <label class="form-check-label small text-muted fw-bold" for="btn-toggle-locations" style="cursor: pointer;">
+                                    Exibir Locais (Cinza)
+                                </label>
+                            </div>
                         </div>
 
                         @php

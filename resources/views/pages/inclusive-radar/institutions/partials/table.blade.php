@@ -14,14 +14,14 @@
                 {{ $inst->city }} - {{ $inst->state }}
             </x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 @php
                     $statusColor = $inst->is_active ? 'success' : 'danger';
                     $statusLabel = $inst->is_active ? 'Ativo' : 'Inativo';
                 @endphp
 
-                <span class="text-{{ $statusColor }} fw-bold">
+                {{-- Status da instituição seguindo o padrão Clean & Bold do sistema --}}
+                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>

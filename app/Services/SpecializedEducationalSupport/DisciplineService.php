@@ -6,9 +6,14 @@ use App\Models\SpecializedEducationalSupport\Discipline;
 
 class DisciplineService
 {
-    public function index()
+    public function index(array $filters = [])
     {
-        return Discipline::orderBy('name', 'asc')->get();
+        return Discipline::query()
+            ->name($filters['name'] ?? null)
+            ->active($filters['is_active'] ?? null)
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function show(Discipline $discipline)

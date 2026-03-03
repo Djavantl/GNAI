@@ -3,6 +3,7 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\WaitlistStatus;
+use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Models\InclusiveRadar\Loan;
 use App\Models\InclusiveRadar\Waitlist;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,7 @@ class WaitlistService
 {
     /*
     |----------------------------------------------------------------------
-    | CRUD
+    | GESTÃO DE SOLICITAÇÕES (CRUD)
     |----------------------------------------------------------------------
     */
 
@@ -56,7 +57,7 @@ class WaitlistService
 
     /*
     |----------------------------------------------------------------------
-    | Business Actions
+    | FLUXO DE ATENDIMENTO
     |----------------------------------------------------------------------
     */
 
@@ -93,7 +94,6 @@ class WaitlistService
     public function fulfill(Waitlist $waitlist): Waitlist
     {
         $waitlist->update(['status' => WaitlistStatus::FULFILLED->value]);
-
         return $waitlist->fresh();
     }
 
@@ -111,9 +111,11 @@ class WaitlistService
 
     private function ensureNoStockAvailable($item): void
     {
-        if ($item->quantity_available > 0) {
+        $status = $item->status;
+
+        if (!$status->blocksLoan() && $item->quantity_available > 0) {
             throw ValidationException::withMessages([
-                'waitlistable_id' => 'Este recurso ainda possui unidades disponíveis.'
+                'waitlistable_id' => 'Este recurso ainda possui unidades disponíveis e pode ser emprestado, portanto não é possível criar uma fila de espera.'
             ]);
         }
     }
@@ -123,6 +125,7 @@ class WaitlistService
         $student = $data['student_id'] ?? null;
         $professional = $data['professional_id'] ?? null;
 
+        // Verifica se já existe na fila de espera
         $existsQuery = Waitlist::where('waitlistable_id', $item->id)
             ->where('waitlistable_type', $item->getMorphClass())
             ->whereIn('status', [
@@ -140,6 +143,7 @@ class WaitlistService
             ]);
         }
 
+        // Verifica se já possui empréstimo ativo
         $loanQuery = Loan::where('loanable_id', $item->id)
             ->where('loanable_type', $item->getMorphClass())
             ->whereNull('return_date');

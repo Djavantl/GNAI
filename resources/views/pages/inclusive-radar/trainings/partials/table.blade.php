@@ -6,7 +6,7 @@
 
             {{-- STATUS --}}
             <x-table.td>
-                <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold">
+                <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $training->is_active ? 'Ativo' : 'Inativo' }}
                 </span>
             </x-table.td>

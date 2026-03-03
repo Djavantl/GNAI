@@ -33,7 +33,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="name"
-                    label="Nome do Recurso *"
+                    label="Nome do Recurso"
                     required
                     :value="old('name', $accessibilityFeature->name)"
                 />

@@ -3,61 +3,75 @@
 @section('title', 'Gestão de Matrículas')
 
 @section('content')
-    <div class="d-flex justify-content-between mb-3">
-        <h2 class="text-title">Matrículas e Histórico Geral</h2>
-        <x-buttons.link-button :href="route('specialized-educational-support.student-courses.create')" variant="new">
-             Nova Matrícula
-        </x-buttons.link-button>
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Alunos' => route('specialized-educational-support.students.index'),
+            $student->person->name => route('specialized-educational-support.students.show', $student),
+            'Matrículas' => null
+        ]" />
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Matrículas — {{ $student->person->name }}"
+            subtitle="Gerencie as matrículas e o histórico acadêmico do aluno."
+        >
+            <div class="d-flex gap-2">
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.students.show', $student)"
+                    variant="secondary"
+                >
+                    <i class="fas fa-arrow-left"></i>Voltar
+                </x-buttons.link-button>
 
-    <x-table.table :headers="['Aluno', 'Curso / Série', 'Ano Letivo', 'Vigente', 'Status', 'Ações']">
-    @foreach($studentCourses as $enrollment)
-        <tr>
-            <x-table.td>{{ $enrollment->student->person->name }}</x-table.td>
-            <x-table.td>{{ $enrollment->course->name }}</x-table.td>
-            <x-table.td>{{ $enrollment->academic_year }}</x-table.td>
-            <x-table.td>
-                @if($enrollment->is_current)
-                    <span class="badge bg-success">SIM</span>
-                @else
-                    <span class="badge bg-light text-dark">NÃO</span>
-                @endif
-            </x-table.td>
-            <x-table.td>
-                @php
-                    $statusLabel = [
-                        'active' => 'Ativo',
-                        'completed' => 'Concluído',
-                        'dropped' => 'Evadido'
-                    ];
-                @endphp
-                <span class="fw-bold">{{ $statusLabel[$enrollment->status] ?? $enrollment->status }}</span>
-            </x-table.td>
+                <x-buttons.link-button 
+                    :href="route('specialized-educational-support.student-courses.create', $student)" 
+                    variant="new"
+                    title="Nova matrícula"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            </div>
+        </x-table.page-header>
 
-            <x-table.td>
-                <x-table.actions>
-                    <x-buttons.link-button :href="route('specialized-educational-support.student-courses.show', $enrollment)" variant="info">
-                        Ver
-                    </x-buttons.link-button>
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#student-courses-table"
+                :fields="[
+                    [
+                        'name' => 'course_id',
+                        'type' => 'select',
+                        'options' => ['' => 'Filtrar por Curso (Histórico)'] + $courses
+                    ],
+                    [
+                        'name' => 'academic_year',
+                        'placeholder' => 'Ano letivo'
+                    ],
+                    [
+                        'name' => 'is_current',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Status (Todos)',
+                            '1' => 'Curso Atual',
+                            '0' => 'Histórico Antigo',
+                        ]
+                    ],
+                ]"
+            />
+        </div>
 
-                    <x-buttons.link-button :href="route('specialized-educational-support.student-courses.edit', $enrollment)" variant="warning">
-                        Editar
-                    </x-buttons.link-button>
+        {{-- TABELA --}}
+        <div id="student-courses-table" class="p-3">
+            @include('pages.specialized-educational-support.student-courses.partials.table')
+        </div>
+    </div>
 
-                    <form action="{{ route('specialized-educational-support.student-courses.destroy', $enrollment) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir esta matrícula do histórico?')">
-                            Excluir
-                        </x-buttons.submit-button>
-                    </form>
-                </x-table.actions>
-            </x-table.td>
-        </tr>
-    @endforeach
-    </x-table.table>
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

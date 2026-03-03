@@ -5,6 +5,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Sessões' => route('specialized-educational-support.sessions.index'),
+            'Sessão #' . $session->id => route('specialized-educational-support.sessions.show', $session),
             'Editar' => null
         ]" />
     </div>
@@ -14,6 +15,9 @@
             <h2 class="text-title">Editar Sessão #{{ $session->id }}</h2>
             <p class="text-muted">Ajuste os dados de agendamento, local ou objetivo desta sessão.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.show', $session) }}" variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -54,10 +58,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="session_date" 
-                    label="Data da Sessão *" 
+                    label="Data da Sessão " 
                     type="date" 
                     required 
-                    :value="old('session_date', $session->session_date)" 
+                    :value="old('session_date', optional($session->session_date)->format('Y-m-d'))"
                 />
             </div>
 
@@ -66,16 +70,16 @@
                     <div class="col-6">
                         <x-forms.select 
                             name="start_time" 
-                            label="Início *" 
+                            label="Início " 
                             required 
                             :options="$startTimes" 
-                            :selected="old('start_time', $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '')" 
+                            :selected="old('start_time', $session->start_time ? \Carbon\Carbon::parse($session->start_time)->format('H:i') : '')"
                         />
                     </div>
                     <div class="col-6">
                         <x-forms.select 
                             name="end_time" 
-                            label="Fim *" 
+                            label="Fim " 
                             required
                             :options="$endTimes" 
                            :selected="old('end_time', $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '')" 
@@ -99,6 +103,7 @@
                     name="location" 
                     label="Local" 
                     :value="old('location', $session->location)" 
+                    required
                 />
             </div>
 
@@ -108,16 +113,17 @@
                     label="Objetivo da Sessão"
                     rows="3"
                     :value="old('session_objective', $session->session_objective)"
+                    required
                 />
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.index') }}" variant="secondary">
-                    Cancelar
+                <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.show', $session) }}" variant="secondary">
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action btn-warning px-5">
-                    <i class="fas fa-save mr-2"></i> Salvar Alterações
+                <x-buttons.submit-button type="submit" class="btn-action btn-warning">
+                    <i class="fas fa-save"></i> Salvar 
                 </x-buttons.submit-button>
             </div>
 

@@ -3,7 +3,7 @@
 namespace App\Services\SpecializedEducationalSupport;
 
 use App\Models\SpecializedEducationalSupport\StudentCourse;
-use App\Models\Student;
+use App\Models\SpecializedEducationalSupport\Student;
 use Illuminate\Support\Facades\DB;
 
 class StudentCourseService
@@ -11,33 +11,37 @@ class StudentCourseService
     /**
      * Lista o histórico de cursos de um aluno específico
      */
-    public function getHistoryByStudent(int $studentId)
+    public function getHistoryByStudent(int $studentId, array $filters = [])
     {
-        return StudentCourse::with('course')
+        return StudentCourse::query()
+            ->with('course')
             ->where('student_id', $studentId)
+            ->courseId($filters['course_id'] ?? null)
+            ->academicYear($filters['academic_year'] ?? null)
+            ->isCurrent($filters['is_current'] ?? null)
             ->orderBy('academic_year', 'desc')
-            ->get();
+            ->paginate(10) 
+            ->withQueryString();
     }
 
     /**
      * Matricula um aluno (e lida com o histórico/curso atual)
      */
-    public function enroll(array $data): StudentCourse
+    public function enroll(Student $student, array $data): StudentCourse
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($student, $data) {
             // Se for marcado como atual, desativamos o anterior
             if ($data['is_current'] ?? true) {
-                StudentCourse::where('student_id', $data['student_id'])
+                StudentCourse::where('student_id', $student->id)
                     ->where('is_current', true)
                     ->update(['is_current' => false]);
             }
 
             return StudentCourse::create([
-                'student_id'    => $data['student_id'],
+                'student_id'    => $student->id,
                 'course_id'     => $data['course_id'],
                 'academic_year' => $data['academic_year'],
-                'is_current'    => $data['is_current'] ?? true,
-                'status'        => $data['status'] ?? 'active',
+                'is_current'    => $data['is_current'] ?? false, 
             ]);
         });
     }
@@ -63,5 +67,5 @@ class StudentCourseService
     public function deleteEnrollment(StudentCourse $studentCourse): void
     {
         $studentCourse->delete();
-    }
+    } 
 }

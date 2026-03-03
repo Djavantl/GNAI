@@ -1,7 +1,8 @@
 @props([
     'variant' => 'primary',
     'size' => 'md',
-    'label' => null
+    'label' => null,
+    'disabled' => false,
 ])
 
 @php
@@ -13,8 +14,9 @@
     type="submit"
     {{ $attributes->merge([
         'class' => $classes,
-        'aria-label' => $label
+        'aria-label' => $label,
     ]) }}
+    @if($disabled) disabled @endif
 >
     {{ $slot }}
 </button>

@@ -3,10 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Backup\Backup;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\SpecializedEducationalSupport\Professional;
+use App\Models\SpecializedEducationalSupport\Teacher;
 
 class User extends Authenticatable
 {
@@ -23,6 +26,9 @@ class User extends Authenticatable
         'email',
         'password',
         'professional_id',
+        'teacher_id',  
+        'is_admin',     
+        'role',
     ];
 
     /**
@@ -42,29 +48,54 @@ class User extends Authenticatable
     // Atalho para pegar o nome da Person vinculada
     public function getNameAttribute()
     {
-        return $this->professional?->person?->name ?? $this->attributes['name'];
+        return $this->professional?->person?->name
+            ?? $this->teacher?->person?->name
+            ?? $this->attributes['name'];
     }
 
-    // Atalho para pegar a foto da Person vinculada
+    public function backups(): HasMany
+    {
+        return $this->hasMany(Backup::class);
+    }
+
     public function getPhotoUrlAttribute()
     {
-        return $this->professional?->person?->photo_url ?? asset('images/default-user.png');
+        $photoUrl = $this->professional?->person?->photo_url 
+                ?? $this->teacher?->person?->photo_url;
+
+        return $photoUrl ?? asset('images/default-user.jpg');
     }
 
     public function hasPermission(string $permissionSlug): bool
     {
-        // Se for admin total, libera tudo
+
         if ($this->is_admin) return true;
 
-        return $this->professional
+        $hasProfessionalPermission = $this->professional
             ?->position
             ?->permissions
             ->contains('slug', $permissionSlug) ?? false;
+
+        if ($hasProfessionalPermission) return true;
+
+        if ($this->teacher_id) {
+            return \DB::table('teacher_global_permissions')
+                ->join('permissions', 'permissions.id', '=', 'teacher_global_permissions.permission_id')
+                ->where('permissions.slug', $permissionSlug)
+                ->exists();
+        }
+
+        return false;
     }
 
     public function isAdmin(): bool
     {
         return $this->is_admin;
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
     }
 
     /**

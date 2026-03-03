@@ -13,6 +13,24 @@ use Illuminate\Validation\ValidationException;
 class SessionService
 {
     
+    public function index(array $filters = [])
+    {
+        return Session::query()
+            ->with([
+                'students.person',
+                'professional.person',
+                'sessionRecord'
+            ])
+
+            ->student($filters['student'] ?? null)
+            ->professional($filters['professional'] ?? null)
+            ->type($filters['type'] ?? null)
+            ->status($filters['status'] ?? null)
+            
+            ->orderByDesc('session_date')
+            ->paginate(10)
+            ->withQueryString();
+    }
 
     //email
 
@@ -129,7 +147,7 @@ class SessionService
                 'type'              => $data['type'],
                 'location'          => $data['location'] ?? null,
                 'session_objective' => $data['session_objective'],
-                'status'            => 'Agendado',
+                'status'            => 'Agendada',
             ]);
 
             $session->students()->sync($data['student_ids']);
@@ -143,7 +161,7 @@ class SessionService
     public function cancel(Session $session, string $reason): Session
     {
         $session->update([
-            'status' => 'cancelled', // Verifique se no seu banco é 'cancelled' ou 'Cancelado'
+            'status' => 'Cancelada', 
             'cancellation_reason' => $reason
         ]);
 

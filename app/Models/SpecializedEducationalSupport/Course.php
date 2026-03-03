@@ -23,4 +23,17 @@ class Course extends Model
     {
         return $this->belongsToMany(Discipline::class,'course_disciplines')->withTimestamps();
     }
+
+    // Scopes para Filtros Dinâmicos
+    public function scopeName($query, ?string $term)
+    {
+        if (!$term) return $query;
+        return $query->where('name', 'like', "%{$term}%");
+    }
+
+    public function scopeActive($query, $isActive)
+    {
+        if ($isActive === null || $isActive === '') return $query;
+        return $query->where('is_active', (bool) $isActive);
+    }
 }

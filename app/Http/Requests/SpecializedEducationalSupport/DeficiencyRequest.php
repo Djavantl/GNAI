@@ -43,10 +43,6 @@ class DeficiencyRequest extends FormRequest
                 'string',
             ],
 
-            'is_active' => [
-                'sometimes',
-                'boolean',
-            ],
         ];
     }
 

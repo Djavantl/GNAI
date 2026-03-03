@@ -10,94 +10,73 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
-            <h2 class="text-title">Semestres Letivos</h2>
-            <p class="text-muted">Configuração de períodos para organização dos atendimentos e relatórios.</p>
-        </div>
-        <x-buttons.link-button
-            :href="route('specialized-educational-support.semesters.create')"
-            variant="new"
+    {{-- CARD UNIFICADO --}}
+    <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
+        {{-- HEADER --}}
+        <x-table.page-header
+            title="Semestres Letivos"
+            subtitle="Configuração de períodos para organização dos atendimentos e relatórios."
         >
-            Novo Semestre
-        </x-buttons.link-button>
-    </div>
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.semesters.create')"
+                variant="new"
+                title="Novo semestre"
+            >
+                <i class="fas fa-plus"></i>
+            </x-buttons.link-button>
+        </x-table.page-header>
 
-    <x-table.table :headers="['Ano / Período', 'Rótulo Identificador', 'Status', 'Ações']">
-        @forelse($semesters as $semester)
-            <tr class="{{ $semester->is_current ? 'table-primary' : '' }}">
-                <x-table.td>
-                    <div class="fw-bold">{{ $semester->year }}</div>
-                    <small class="text-muted text-uppercase">{{ $semester->term }}º Período</small>
-                </x-table.td>
+        {{-- FILTROS --}}
+        <div class="px-3 pt-3">
+            <x-table.filters.form
+                data-dynamic-filter
+                data-target="#semesters-table"
+                :fields="[
+                    [
+                        'name' => 'year',
+                        'placeholder' => 'Ano...'
+                    ],
+                    [
+                        'name' => 'term',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Termo (Todos)',
+                            1 => '1º semestre',
+                            2 => '2º semestre'
+                        ]
+                    ],
+                    [
+                        'name' => 'label',
+                        'placeholder' => 'Label...'
+                    ],
+                    [
+                        'name' => 'is_current',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Status (Todos)',
+                            1 => 'Atual',
+                            0 => 'Não atual'
+                        ]
+                    ]
+                ]"
+            />
+        </div>
 
-                <x-table.td>
-                    <span class="text-uppercase fw-bold">{{ $semester->label }}</span>
-                </x-table.td>
+        {{-- TABELA --}}
+        <div id="semesters-table" class="p-3">
+            @include('pages.specialized-educational-support.semesters.partials.table')
+        </div>
 
-                <x-table.td >
-                    @if($semester->is_current)
-                        <span class="text-success">
-                            SEMESTRE ATUAL
-                        </span>
-                    @else
-                        <span class="text-muted">Histórico</span>
-                    @endif
-                </x-table.td>
-
-                <x-table.td>
-                    <x-table.actions>
-
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.semesters.show', $semester)"
-                            variant="info-outline"
-                        >
-                            ver
-                        </x-buttons.link-button>
-
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.semesters.edit', $semester)"
-                            variant="warning"
-                        >
-                            Editar
-                        </x-buttons.link-button>
-
-                        @if(!$semester->is_current)
-                            <form action="{{ route('specialized-educational-support.semesters.setCurrent', $semester) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('PATCH')
-                                <x-buttons.submit-button variant="success">
-                                    Definir Atual
-                                </x-buttons.submit-button>
-                            </form>
-                        @endif
-
-                        <form action="{{ route('specialized-educational-support.semesters.destroy', $semester) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Tem certeza que deseja excluir este semestre?')"
-                            >
-                                Excluir
-                            </x-buttons.submit-button>
-                        </form>
-                    </x-table.actions>
-                </x-table.td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="4" class="text-center text-muted py-5">
-                    Nenhum semestre cadastrado.
-                </td>
-            </tr>
-        @endforelse
-    </x-table.table>
-
-    <div class="mt-4">
-        <div class="alert alert-light border small text-muted">
-            <i class="fas fa-info-circle mr-1"></i>
-            O <strong>Semestre Atual</strong> determina qual período será selecionado por padrão em novos lançamentos e filtros de relatórios.
+        {{-- INFO --}}
+        <div class="px-3 pb-3">
+            <div class="alert alert-light border small text-muted mb-0">
+                <i class="fas fa-info-circle mr-1"></i>
+                O <strong>Semestre Atual</strong> determina qual período será selecionado por padrão em novos registros do sistema.
+            </div>
         </div>
     </div>
+
+    @push('scripts')
+        @vite('resources/js/components/dynamicFilters.js')
+    @endpush
 @endsection

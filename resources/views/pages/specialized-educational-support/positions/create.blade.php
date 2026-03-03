@@ -14,6 +14,9 @@
             <h2 class="text-title">Cadastrar Novo Cargo</h2>
             <p class="text-muted">Defina as atribuições e o status do cargo no sistema.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.positions.index') }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -24,20 +27,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome do Cargo *" 
+                    label="Nome do Cargo " 
                     required 
                     placeholder="Ex: Professor AEE, Psicólogo..."
                     :value="old('name')" 
-                />
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.select
-                    name="is_active"
-                    label="Status *"
-                    required
-                    :options="['1' => 'Ativo', '0' => 'Inativo']"
-                    :value="old('is_active', '1')"
                 />
             </div>
 
@@ -101,11 +94,11 @@
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.positions.index') }}" variant="secondary">
-                    Cancelar
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save mr-2"></i> Salvar Cargo
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 

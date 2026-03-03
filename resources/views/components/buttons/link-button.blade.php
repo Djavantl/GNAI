@@ -1,21 +1,28 @@
 @props([
-    'href',
+    'href' => null,
     'variant' => 'primary',
     'size' => 'md',
-    'label' => null
+    'label' => null,
+    'type' => 'button'
 ])
 
 @php
     $sizeClass = $size !== 'md' ? $size : '';
     $classes = "btn-action {$variant} {$sizeClass}";
+    $tag = $href ? 'a' : 'button';
 @endphp
 
-<a
+<{{ $tag }}
+    @if($href)
     href="{{ $href }}"
-    {{ $attributes->merge([
-        'class' => $classes,
-        'aria-label' => $label
-    ]) }}
+@else
+    type="{{ $type }}"
+@endif
+
+{{ $attributes->merge([
+    'class' => $classes,
+    'aria-label' => $label
+]) }}
 >
-    {{ $slot }}
-</a>
+{{ $slot }}
+</{{ $tag }}>

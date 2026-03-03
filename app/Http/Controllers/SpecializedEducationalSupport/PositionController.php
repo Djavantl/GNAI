@@ -7,6 +7,7 @@ use App\Models\Permission;
 use App\Http\Requests\SpecializedEducationalSupport\PositionRequest;
 use App\Models\SpecializedEducationalSupport\Position;
 use App\Services\SpecializedEducationalSupport\PositionService;
+use Illuminate\Http\Request;
 
 class PositionController extends Controller
 {
@@ -17,15 +18,26 @@ class PositionController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $position = $this->service->index();
+        $positions = $this->service->index($request->all());
 
-        return view('pages.specialized-educational-support.positions.index', compact('position'));
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.positions.partials.table',
+                compact('positions')
+            )->render();
+        }
+
+        return view(
+            'pages.specialized-educational-support.positions.index',
+            compact('positions')
+        );
     }
 
     public function show(Position $position)
-    {
+    {      
+        $position = $position->load('permissions');
         return view('pages.specialized-educational-support.positions.show', compact('position'));
     }
 

@@ -10,7 +10,8 @@ use App\Models\SpecializedEducationalSupport\Methodology;
 use Illuminate\Support\Facades\DB;
 use App\Services\SpecializedEducationalSupport\SemesterService;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; 
+use App\Models\User;
 
 class PeiService
 {
@@ -21,62 +22,136 @@ class PeiService
         $this->semesterService = $semesterService;
     }
 
-    /**
-     * Lista todos os PEIs de um estudante específico.
-     */
-    public function index(Student $student): Collection
+
+    public function all(array $filters = [])
     {
-        return Pei::where('student_id', $student->id)
-            ->with(['discipline', 'semester'])
-            ->get();
+        $user = auth()->user();
+
+        $query = Pei::query()
+            ->with([
+                'student.person',
+                'semester',
+            ]);
+
+        return $query
+            ->student($filters['student_id'] ?? null)
+            ->semester($filters['semester_id'] ?? null)
+            ->finished($filters['is_finished'] ?? null)
+            ->version($filters['version'] ?? null)
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
     }
 
     /**
-     * Mostra os detalhes de um PEI com todas as suas tabelas auxiliares.
+     * Lista todos os PEIs de um estudante específico.
      */
-    public function show(Pei $pei): Pei
+    public function index(Student $student, array $filters = [])
     {
-        return $pei->load([
-            'student', 
-            'studentContext', 
-            'specificObjectives', 
-            'contentProgrammatic', 
-            'methodologies'
-        ]);
+        return Pei::query()
+            ->where('student_id', $student->id)
+            ->visibleToUser(auth()->user())
+            ->with(['student.person', 'semester'])
+            ->semester($filters['semester_id'] ?? null)
+            ->finished($filters['is_finished'] ?? null)
+            ->version($filters['version'] ?? null)
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
     }
 
     /**
      * Cria a estrutura inicial do PEI vinculada ao contexto atual do aluno.
      */
-    public function create(array $data): Pei
+    public function create(Student $student): Pei
     {
-        return DB::transaction(function () use ($data) {
-            $semester = $this->semesterService->getCurrent();
+        return DB::transaction(function () use ($student) {
 
-            if (!$semester) {
-                throw new \Exception('Não há semestre atual definido para gerar o PEI.');
+            $exists = Pei::where('student_id', $student->id)->exists();
+
+            if ($exists) {
+                throw new \Exception('Este aluno já possui um Pei. Crie uma nova versão.');
             }
 
-            $professional = Auth::id();
+            $semesterId = $this->semesterService->getCurrent()?->id;
+            if (!$semesterId) {
+                throw new \Exception('O sistema não possui semestre atual cadastrado');
+            }
 
-            $data['professional_id'] = $professional;
-            $data['semester_id'] = $semester->id;
+            $studentCourse = $student->currentCourse()->first();
+            if (!$studentCourse) {
+                throw new \Exception('Este aluno não possui matrícula vigente');
+            }
+            $course = $studentCourse->course;
+
+            $currentContext = $student->contexts()->where('is_current', true)->first();
+             if (!$currentContext) {
+                throw new \Exception('Este aluno não possui um contexto atual');
+            }
+
+
+            $data['student_id'] = $student->id;
+            $data['creator_id'] = Auth::id();
+            $data['semester_id'] = $semesterId;
+            $data['course_id'] = $course->id;
+            $data['student_context_id'] = $currentContext->id;
             $data['is_finished'] = false;
+            $data['version'] = 1;
+            $data['is_current'] = true;
 
+        
             return Pei::create($data);
         });
     }
 
-    /**
-     * Atualiza os dados básicos do PEI.
-     */
-    public function update(Pei $pei, array $data): Pei
+    public function createVersion(Student $student): Pei
     {
-        DB::transaction(function () use ($pei, $data) {
-            $pei->update($data);
-        });
+        return DB::transaction(function () use ($student) {
+            $user = auth()->user();
 
-        return $pei;
+            $pei =  $this->getCurrent($student);
+
+            if (!$pei) {
+                throw new \DomainException('Aluno não possui PEI atual');
+            }
+
+            if (!$pei->is_finished) {
+                throw new \Exception('Só é possível criar nova versão a partir de um PEI atual finalizado.');
+            }
+
+            $semesterId = $this->semesterService->getCurrent()?->id;
+
+            if (!$semesterId) {
+                throw new \DomainException('O sistema não possui semestre atual cadastrado');
+            }
+
+            $student = $pei->student;
+            $studentContext = $student->currentContext()->first();
+
+            if (!$studentContext) {
+                throw new \Exception('Este aluno não possui um Contexto atual definido.');
+            }
+
+            $this->removeCurrent($pei);
+
+            $new = Pei::create([
+                'creator_id'         => $user->id,
+                'student_id'         => $pei->student_id,
+                'semester_id'        => $semesterId,
+                'course_id'          => $pei->course_id,
+                'student_context_id' => $studentContext->id,
+                'is_finished'        => false,
+                'version'            => ($pei->version ?? 1) + 1,
+                'is_current'         => true,
+            ]);
+
+            // Copiar pei_disciplines
+            foreach ($pei->peiDisciplines as $obj) {
+                $new->peiDisciplines()->create($obj->replicate()->toArray());
+            }
+
+            return $new;
+        });
     }
 
     /**
@@ -84,6 +159,10 @@ class PeiService
      */
     public function finish(Pei $pei): Pei
     {
+        if ($pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador do PEI pode finaliza-lo');
+        }
+
         DB::transaction(function () use ($pei) {
             $pei->update(['is_finished' => true]);
         });
@@ -96,95 +175,39 @@ class PeiService
      */
     public function delete(Pei $pei): void
     {
+        if ($pei->creator_id !== auth()->id()) {
+            throw new \Exception('Acesso negado: apenas o criador deste PEI pode excluí-lo.');
+        }
+
         DB::transaction(function () use ($pei) {
             $pei->delete();
         });
     }
 
-    // --- Métodos para Tabelas Auxiliares (Objetivos, Conteúdos e Metodologias) ---
-
-    /**
-     * Adiciona um objetivo específico ao PEI.
-     */
-    public function addObjective(Pei $pei, array $data): SpecificObjective
+    public function getCurrent(Student $student): ?Pei
     {
-        return DB::transaction(function () use ($pei, $data) {
-            return $pei->specificObjectives()->create($data);
-        });
+        return Pei::where('student_id', $student->id)
+            ->where('is_current', true)
+            ->first();
     }
 
-    public function updateObjective(SpecificObjective $objective, array $data): SpecificObjective
+    public function removeCurrent(Pei $pei)
     {
-        DB::transaction(function () use ($objective, $data) {
-            $objective->update($data);
-        });
-
-        return $objective;
+        $pei->update(['is_current' => false]); 
     }
 
-
-    public function deleteObjective(SpecificObjective $objective): void
+    public function cancelVersion(Pei $pei)
     {
-        $objective->delete();
-    }
+        if ($pei->is_current) {
 
-   /**
-     * Adiciona conteúdo programático adaptado.
-     */
-    public function addContent(Pei $pei, array $data): ContentProgrammatic
-    {
-        return DB::transaction(function () use ($pei, $data) {
-            return $pei->contentProgrammatic()->create($data);
-        });
-    }
+            $previous = Pei::where('student_id', $pei->student_id)
+            ->where('version', '<', $pei->version)
+            ->orderByDesc('version')
+            ->first();
 
-    /**
-     * Atualiza conteúdo programático adaptado.
-     */
-    public function updateContent(ContentProgrammatic $content, array $data): ContentProgrammatic
-    {
-        DB::transaction(function () use ($content, $data) {
-            $content->update($data);
-        });
-
-        return $content;
-    }
-
-    /**
-     * Remove conteúdo programático adaptado.
-     */
-    public function deleteContent(ContentProgrammatic $content): void
-    {
-        $content->delete();
-    }
-
-   /**
-     * Adiciona metodologia 
-     */
-    public function addMethodology(Pei $pei, array $data): Methodology
-    {
-        return DB::transaction(function () use ($pei, $data) {
-            return $pei->methodologies()->create($data);
-        });
-    }
-
-    /**
-     * Atualiza metodologia 
-     */
-    public function updateMethodology(Methodology $methodology, array $data): Methodology
-    {
-        DB::transaction(function () use ($methodology, $data) {
-            $methodology->update($data);
-        });
-
-        return $methodology;
-    }
-
-    /**
-     * Remove metodologia .
-     */
-    public function deleteMethodology(Methodology $methodology): void
-    {
-        $methodology->delete();
+            if ($previous) {
+                $previous->update(['is_current' => true]);
+            }
+        }
     }
 }

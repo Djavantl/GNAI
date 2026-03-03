@@ -10,11 +10,14 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Profissional</h2>
             <p class="text-muted">Atualize as informações do profissional e seu vínculo com a instituição.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.show', $professional) }}" variant="secondary">
+            <i class="fas fa-times"></i>Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -23,27 +26,16 @@
 
             <x-forms.section title="Dados da Pessoa" />
 
-            <div class="col-md-12 mb-4">
-                <label class="form-label fw-bold d-block">Foto do Profissional</label>
-                <div class="photo-preview-container">
-                    <img src="{{ $professional->person->photo_url }}" class="img-preview mb-2" id="preview">
-                </div>
-                <input type="file" name="photo" class="form-control" accept="image/*">
-                
-                @if($professional->person->photo)
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" name="remove_photo" value="1" id="removePhoto">
-                        <label class="form-check-label text-danger" for="removePhoto">
-                            <i class="bi bi-trash"></i> Remover foto atual
-                        </label>
-                    </div>
-                @endif
-            </div>
-
+            <x-forms.photo-upload
+                name="photo"
+                label="Foto do Profissional"
+                :current="$professional->person->photo_url"
+            />
+            
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome *" 
+                    label="Nome " 
                     required 
                     :value="old('name', $professional->person->name)" 
                 />
@@ -52,7 +44,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="Documento *" 
+                    label="Documento "
+                    class="cpf-mask"
+                    maxlength="14"  
+                    placeholder="000.000.000-00" 
                     required 
                     :value="old('document', $professional->person->document)" 
                 />
@@ -61,7 +56,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="birth_date" 
-                    label="Nascimento *" 
+                    label="Nascimento " 
                     type="date" 
                     required 
                     :value="old('birth_date', optional($professional->person->birth_date)->format('Y-m-d'))" 
@@ -80,13 +75,17 @@
                     ]"
                     :value="old('gender', $professional->person->gender)"
                     :selected="old('gender', $professional->person->gender)"
+                    required
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.input 
                     name="phone" 
-                    label="Telefone" 
+                    label="Telefone"
+                    class="phone-mask" 
+                    maxlength="15" 
+                    placeholder="(00) 00000-0000" 
                     :value="old('phone', $professional->person->phone)" 
                 />
             </div>
@@ -94,7 +93,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="email" 
-                    label="Email *" 
+                    label="Email " 
                     type="email" 
                     required 
                     :value="old('email', $professional->person->email)" 
@@ -114,7 +113,7 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="position_id"
-                    label="Cargo *"
+                    label="Cargo "
                     required
                     :options="$positions->pluck('name', 'id')"
                     :value="old('position_id', $professional->position_id)"
@@ -125,19 +124,9 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="registration" 
-                    label="Matrícula *" 
+                    label="Matrícula " 
                     required 
                     :value="old('registration', $professional->registration)" 
-                />
-            </div>
-
-            <div class="col-md-6">
-                <x-forms.input 
-                    name="entry_date" 
-                    label="Entrada *" 
-                    type="date" 
-                    required 
-                    :value="old('entry_date', $professional->entry_date)" 
                 />
             </div>
 
@@ -152,15 +141,18 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
-                <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.index') }}" variant="secondary">
-                    Cancelar
+                <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.show', $professional) }}" variant="secondary">
+                    <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                    <i class="fas fa-sync mr-2"></i> Atualizar Profissional
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-save"></i> Salvar
                 </x-buttons.submit-button>
             </div>
 
         </x-forms.form-card>
     </div>
 @endsection
+@push('scripts')
+    @vite(['resources/js/components/photos.js'])
+@endpush

@@ -51,7 +51,7 @@
                 <x-forms.select
                     name="waitlistable_type"
                     id="waitlistable_type"
-                    label="Tipo de Recurso *"
+                    label="Tipo de Recurso"
                     required
                     :options="[
                     'App\\Models\\InclusiveRadar\\AssistiveTechnology' => 'Tecnologia Assistiva',
@@ -65,7 +65,7 @@
                 <x-forms.select
                     name="waitlistable_id"
                     id="waitlistable_id"
-                    label="Item Específico *"
+                    label="Item Específico"
                     required
                     :options="['' => 'Selecione o tipo primeiro']"
                 />

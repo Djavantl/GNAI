@@ -16,11 +16,11 @@
 
         <div class="d-flex gap-2">
             <x-buttons.link-button :href="route('specialized-educational-support.pendencies.edit', $pendency)" variant="warning">
-                <i class="fas fa-edit me-1"></i> Editar
+                <i class="fas fa-edit "></i> Editar
             </x-buttons.link-button>
 
             <x-buttons.link-button :href="route('specialized-educational-support.pendencies.index')" variant="secondary">
-                Voltar para Lista
+                <i class="fas fa-arrow-left"></i>Voltar para Lista
             </x-buttons.link-button>
         </div>
     </div>
@@ -80,12 +80,12 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    @if(! $pendency->is_completed)
+                    @if(!$pendency->is_completed)
                         <form action="{{ route('specialized-educational-support.pendencies.complete', $pendency) }}" method="POST" onsubmit="return confirm('Marcar como concluída?')">
                             @csrf
                             @method('PUT')
                             <x-buttons.submit-button variant="success">
-                                <i class="fas fa-check me-1"></i> Marcar como Concluída
+                                <i class="fas fa-check "></i> Marcar como Concluída
                             </x-buttons.submit-button>
                         </form>
                     @endif
@@ -94,13 +94,9 @@
                         @csrf
                         @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt me-1"></i> Excluir
+                            <i class="fas fa-trash-alt "></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-
-                    <x-buttons.link-button :href="route('specialized-educational-support.pendencies.edit', $pendency)" variant="warning">
-                        <i class="fas fa-edit me-1"></i> Editar
-                    </x-buttons.link-button>
                 </div>
             </div>
 

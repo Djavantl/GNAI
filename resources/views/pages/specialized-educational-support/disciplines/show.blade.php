@@ -16,10 +16,10 @@
         </div>
         <div class="d-flex gap-2">
             <x-buttons.link-button :href="route('specialized-educational-support.disciplines.edit', $discipline)" variant="warning">
-                <i class="fas fa-edit"></i> Editar Disciplina
+                <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
             <x-buttons.link-button :href="route('specialized-educational-support.disciplines.index')" variant="secondary">
-                Voltar
+               <i class="fas fa-arrow-left"></i>  Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -41,15 +41,6 @@
             <x-show.info-item label="Descrição / Objetivos" column="col-md-12" isBox="true">
                 {{ $discipline->description ?? 'Nenhuma descrição informada.' }}
             </x-show.info-item>
-
-            <x-forms.section title="Vínculos" />
-
-            <div class="col-12 p-4">
-                <p class="text-muted mb-0">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Esta disciplina pode estar vinculada a múltiplos cursos e planos de AEE.
-                </p>
-            </div>
 
             {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">

@@ -1,0 +1,66 @@
+/* ===== CONTAINER ===== */
+.ctx-section {
+    padding: 0.5rem;
+    background-color: var(--bg-soft-info);
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    box-shadow: 6px 6px 10px rgba(0,0,0,0.14);
+}
+
+/* ===== HEADER ===== */
+.ctx-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.ctx-section-title h5 {
+    margin-left: 2rem;
+    color: var(--primary-color-dark);
+    font-weight: 600;
+}
+
+/* ===== TOGGLE BUTTON ===== */
+.ctx-toggle {
+    border: none;
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 6px 10px;
+    transition: background .15s ease;
+}
+
+.ctx-toggle:hover {
+    background: var(--primary-color);
+}
+
+/* ===== CHEVRON ===== */
+.ctx-chevron {
+    color: var(--primary-color);
+    transition: transform .18s ease;
+}
+
+/* muda a cor do ícone quando o botão estiver em hover */
+.ctx-toggle:hover .ctx-chevron {
+    color: var(--bg-soft-info);
+}
+
+
+.ctx-toggle[aria-expanded="true"] .ctx-chevron {
+    transform: rotate(180deg);
+}
+
+/* ===== BODY STATES ===== */
+.ctx-collapsed {
+    display: none;
+}
+
+.ctx-expanded {
+    display: block;
+    animation: ctxFadeIn .12s ease;
+}
+
+@keyframes ctxFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}

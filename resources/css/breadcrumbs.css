@@ -1,0 +1,17 @@
+/* breadcrumbs.css */
+
+.breadcrumb-custom {
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+  color: var(--breadcrumb-active);
+}

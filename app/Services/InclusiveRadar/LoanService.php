@@ -2,49 +2,71 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\WaitlistStatus;
-use App\Models\InclusiveRadar\{Loan, ResourceStatus, ResourceType, Waitlist};
+use App\Models\InclusiveRadar\Loan;
+use App\Models\InclusiveRadar\Waitlist;
 use App\Enums\InclusiveRadar\LoanStatus;
+use App\Enums\InclusiveRadar\ResourceStatus;
+use App\Enums\InclusiveRadar\WaitlistStatus;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
 
 class LoanService
 {
     /*
     |--------------------------------------------------------------------------
-    | CRUD
+    | REGISTRO DE NOVO EMPRÉSTIMO
     |--------------------------------------------------------------------------
     */
 
     public function store(array $data): Loan
     {
         return DB::transaction(function () use ($data) {
-            $item = $data['loanable_type']::lockForUpdate()->findOrFail($data['loanable_id']);
+
+            $item = $data['loanable_type']::lockForUpdate()
+                ->findOrFail($data['loanable_id']);
+
             $data['loanable_type'] = $item->getMorphClass();
+
             $this->validateNewLoan($item, $data);
+
             $this->handleStockDecrement($item);
 
-            $data['status'] = $data['status'] ?? LoanStatus::ACTIVE->value;
-            $data['user_id'] = $data['user_id'] ?? auth()->id();
+            $loan = Loan::create([
+                ...$data,
+                'status' => LoanStatus::ACTIVE,
+                'return_date' => null,
+                'user_id' => $data['user_id'] ?? auth()->id(),
+            ]);
 
-            $loan = Loan::create($data);
-
-            $this->fulfillWaitlistIfExists($item, $data['student_id'] ?? null, $data['professional_id'] ?? null);
+            $this->fulfillWaitlistIfExists(
+                $item,
+                $data['student_id'] ?? null,
+                $data['professional_id'] ?? null
+            );
 
             return $loan;
         });
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ATUALIZAÇÃO
+    |--------------------------------------------------------------------------
+    */
+
     public function update(Loan $loan, array $data): Loan
     {
         return DB::transaction(function () use ($loan, $data) {
-            $item = $loan->loanable()->lockForUpdate()->first();
 
-            $this->validateDueDateModification($loan, $data);
+            if ($loan->return_date !== null) {
+                $loan->update([
+                    'observation' => $data['observation'] ?? $loan->observation,
+                ]);
+                return $loan->fresh();
+            }
 
-            $this->processStatusTransition($loan, $item, $data);
+            unset($data['status'], $data['return_date']);
 
             $loan->update($data);
 
@@ -52,79 +74,146 @@ class LoanService
         });
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | EXCLUSÃO
+    |--------------------------------------------------------------------------
+    */
+
     public function delete(Loan $loan): void
     {
         DB::transaction(function () use ($loan) {
-            // Se deletar um empréstimo que ainda não foi devolvido, repõe o estoque
-            if (empty($loan->return_date)) {
-                $this->handleStockIncrement($loan->loanable, 'available');
+
+            if ($loan->return_date === null) {
+                $this->handleStockIncrement($loan->loanable, LoanStatus::RETURNED);
             }
+
             $loan->delete();
         });
     }
 
     /*
     |--------------------------------------------------------------------------
-    | LÓGICAS DE TRANSIÇÃO E ESTADO
+    | DEVOLUÇÃO
     |--------------------------------------------------------------------------
     */
 
-    private function validateDueDateModification(Loan $loan, array $data): void
+    public function markAsReturned(Loan $loan, array $data = []): Loan
     {
-        if (!isset($data['due_date'])) return;
+        return DB::transaction(function () use ($loan, $data) {
 
-        $wasReturned = !empty($loan->return_date);
-        $newDueDate = Carbon::parse($data['due_date'])->format('Y-m-d');
-        $oldDueDate = Carbon::parse($loan->due_date)->format('Y-m-d');
+            if ($loan->return_date !== null) {
+                throw ValidationException::withMessages([
+                    'loan' => 'Este empréstimo já foi finalizado.'
+                ]);
+            }
 
-        if ($wasReturned && $newDueDate !== $oldDueDate) {
+            $item = $loan->loanable()->lockForUpdate()->first();
+
+            $returnDate = now();
+            $isDamaged = !empty($data['is_damaged']);
+
+            $statusEnum = $isDamaged
+                ? LoanStatus::DAMAGED
+                : ($returnDate->greaterThan($loan->due_date)
+                    ? LoanStatus::LATE
+                    : LoanStatus::RETURNED);
+
+            $loan->update([
+                'return_date' => $returnDate,
+                'status' => $statusEnum,
+                'observation' => $data['observation'] ?? $loan->observation,
+            ]);
+
+            $this->handleStockIncrement($item, $statusEnum);
+
+            return $loan->fresh();
+        });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ESTOQUE OPERACIONAL
+    |--------------------------------------------------------------------------
+    */
+
+    private function handleStockDecrement($item): void
+    {
+        if ($item->is_digital) return;
+
+        if ($item->quantity_available <= 0) {
             throw ValidationException::withMessages([
-                'due_date' => 'Não é permitido alterar a previsão de entrega de um empréstimo que já foi finalizado/devolvido.'
+                'stock' => 'Não há unidades disponíveis em estoque.'
+            ]);
+        }
+
+        $item->decrement('quantity_available');
+
+        if ($item->quantity_available <= 0) {
+            $item->update([
+                'status' => ResourceStatus::IN_USE
             ]);
         }
     }
 
-    private function processStatusTransition(Loan $loan, $item, array &$data): void
+    private function handleStockIncrement($item, LoanStatus $status): void
     {
-        $wasReturned = !empty($loan->return_date);
-        $isSettingActive = ($data['status'] ?? null) === LoanStatus::ACTIVE->value;
+        if (!$item || $item->is_digital) return;
 
-        $isSettingReturned = in_array($data['status'] ?? '', [
-            LoanStatus::RETURNED->value,
-            LoanStatus::LATE->value,
-            LoanStatus::DAMAGED->value
+        $item->increment('quantity_available');
+
+        $newStatus = $status === LoanStatus::DAMAGED
+            ? ResourceStatus::DAMAGED
+            : ResourceStatus::AVAILABLE;
+
+        $item->update([
+            'status' => $newStatus
         ]);
+    }
 
-        // Caso 1: Reativando um empréstimo (De Devolvido para Ativo)
-        if ($wasReturned && $isSettingActive) {
-            $this->validateResourceAvailability($item);
-            $this->handleStockDecrement($item);
-            $data['return_date'] = null;
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | CONTROLE ESTRUTURAL DE ESTOQUE (TA SERVICE USA ISSO)
+    |--------------------------------------------------------------------------
+    */
 
-        // Caso 2: Finalizando um empréstimo (De Ativo para Devolvido)
-        if (!$wasReturned && $isSettingReturned) {
-            $this->validateReturnStatus($loan, $data);
-            $this->handleStockIncrement($item, $data['status']);
+    public function validateStockAvailability($item, int $quantity): void
+    {
+        if ($item->is_digital) return;
+
+        $activeLoans = $item->exists
+            ? $item->loans()
+                ->whereIn('status', LoanStatus::openStatuses())
+                ->count()
+            : 0;
+
+        if ($quantity < $activeLoans) {
+            throw ValidationException::withMessages([
+                'quantity' => "Impossível reduzir estoque: existem {$activeLoans} unidades emprestadas."
+            ]);
         }
     }
 
-    public function markAsReturned(Loan $loan, array $data = []): Loan
+    public function calculateStockForLoan($item, array $data): array
     {
-        $returnDate = now();
+        $isDigital = $data['is_digital'] ?? $item->is_digital ?? false;
 
-        $status = !empty($data['is_damaged'])
-            ? LoanStatus::DAMAGED->value
-            : ($returnDate->greaterThan($loan->due_date)
-                ? LoanStatus::LATE->value
-                : LoanStatus::RETURNED->value
-            );
+        if ($isDigital) {
+            $data['quantity_available'] = null;
+            return $data;
+        }
 
-        return $this->update($loan, [
-            'return_date' => $returnDate,
-            'status'      => $status,
-            'observation' => $data['observation'] ?? $loan->observation,
-        ]);
+        $total = (int) ($data['quantity'] ?? $item->quantity ?? 0);
+
+        $activeLoans = $item->exists
+            ? $item->loans()
+                ->whereIn('status', LoanStatus::openStatuses())
+                ->count()
+            : 0;
+
+        $data['quantity_available'] = $total - $activeLoans;
+
+        return $data;
     }
 
     /*
@@ -141,9 +230,17 @@ class LoanService
 
     private function validateResourceAvailability($item): void
     {
-        if ($item->resourceStatus?->blocks_loan) {
+        if ($item->is_digital) return;
+
+        if ($item->status->blocksLoan()) {
             throw ValidationException::withMessages([
-                'status' => "O recurso está com status '{$item->resourceStatus->name}', que bloqueia novos empréstimos."
+                'status' => "O recurso está com status '{$item->status->label()}', que bloqueia empréstimos."
+            ]);
+        }
+
+        if ($item->conservation_state?->blocksLoan()) {
+            throw ValidationException::withMessages([
+                'conservation_state' => "O estado '{$item->conservation_state->label()}' bloqueia empréstimos."
             ]);
         }
     }
@@ -153,115 +250,42 @@ class LoanService
         $exists = Loan::where('loanable_id', $data['loanable_id'])
             ->where('loanable_type', $data['loanable_type'])
             ->whereNull('return_date')
-            ->where(fn($q) => !empty($data['student_id'])
-                ? $q->where('student_id', $data['student_id'])
-                : $q->where('professional_id', $data['professional_id'])
-            )
+            ->where(function ($q) use ($data) {
+                if (!empty($data['student_id'])) {
+                    $q->where('student_id', $data['student_id']);
+                } else {
+                    $q->where('professional_id', $data['professional_id']);
+                }
+            })
             ->exists();
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'loanable_id' => 'Este beneficiário ainda possui uma pendência ativa deste recurso.'
+                'loanable_id' => 'Este beneficiário já possui um empréstimo ativo deste recurso.'
             ]);
-        }
-    }
-
-    private function validateReturnStatus(Loan $loan, array $data): void
-    {
-        if (empty($data['return_date'])) {
-            throw ValidationException::withMessages([
-                'return_date' => 'Você deve informar a data real de devolução.'
-            ]);
-        }
-
-        $returnDate = Carbon::parse($data['return_date']);
-        $dueDate = Carbon::parse($loan->due_date);
-
-        if ($data['status'] === LoanStatus::RETURNED->value && $returnDate->greaterThan($dueDate)) {
-            throw ValidationException::withMessages(['status' => 'Data superior ao prazo. Use "Devolvido com atraso".']);
-        }
-
-        if ($data['status'] === LoanStatus::LATE->value && $returnDate->lessThanOrEqualTo($dueDate)) {
-            throw ValidationException::withMessages(['status' => 'Data dentro do prazo. Use "Devolvido no prazo".']);
         }
     }
 
     /*
     |--------------------------------------------------------------------------
-    | GESTÃO DE ESTOQUE
+    | RELATÓRIOS
     |--------------------------------------------------------------------------
     */
 
-    private function handleStockDecrement($item): void
-    {
-        if (isset($item->type) && !$item->type->is_digital) {
-            if ($item->quantity_available <= 0) {
-                throw new \Exception('Não há unidades disponíveis em estoque.');
-            }
-
-            $item->decrement('quantity_available');
-
-            if ($item->quantity_available <= 0) {
-                $status = ResourceStatus::where('code', 'in_use')->first();
-                if ($status) $item->update(['status_id' => $status->id]);
-            }
-        }
-    }
-
-    private function handleStockIncrement($item, string $status): void
-    {
-        if ($item && isset($item->type) && !$item->type->is_digital) {
-            $item->increment('quantity_available');
-
-            $code = ($status === LoanStatus::DAMAGED->value) ? 'damaged' : 'available';
-            $statusModel = ResourceStatus::where('code', $code)->first();
-
-            if ($statusModel) {
-                $item->update(['status_id' => $statusModel->id]);
-            }
-        }
-    }
-
-    public function calculateStockForLoan($item, array $data): array
-    {
-        $type = ResourceType::find($data['type_id'] ?? $item->type_id);
-
-        if ($type?->is_digital) {
-            $data['quantity_available'] = null;
-            return $data;
-        }
-
-        $total = (int) ($data['quantity'] ?? $item->quantity ?? 0);
-        $activeLoans = $item->exists ? $item->loans()->whereNull('return_date')->count() : 0;
-        $data['quantity_available'] = $total - $activeLoans;
-
-        return $data;
-    }
-
-    public function validateStockAvailability($item, int $quantity): void
-    {
-        if (!isset($item->type) || $item->type->is_digital) return;
-
-        $activeLoans = $item->exists
-            ? $item->loans()->whereIn('status', [LoanStatus::ACTIVE->value, LoanStatus::LATE->value])->count()
-            : 0;
-
-        if ($quantity < $activeLoans) {
-            throw ValidationException::withMessages([
-                'quantity' => "Mínimo permitido: {$activeLoans} (recursos atualmente em uso)."
-            ]);
-        }
-    }
-
     public function getOverdueLoans(): Collection
     {
-        return Loan::overdue()->with(['student.person', 'loanable'])->get();
+        return Loan::where('status', LoanStatus::ACTIVE)
+            ->where('due_date', '<', now())
+            ->with(['student.person', 'loanable'])
+            ->get();
     }
 
-    /**
-     * Verifica se o beneficiário (aluno ou profissional) possui fila de espera
-     * para o recurso que está sendo emprestado e marca como atendida (fulfilled).
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | FILA DE ESPERA
+    |--------------------------------------------------------------------------
+    */
+
     private function fulfillWaitlistIfExists($item, ?int $studentId, ?int $professionalId): void
     {
         $query = Waitlist::where('waitlistable_id', $item->id)
@@ -277,7 +301,9 @@ class LoanService
         $waitlist = $query->first();
 
         if ($waitlist) {
-            $waitlist->update(['status' => WaitlistStatus::FULFILLED->value]);
+            $waitlist->update([
+                'status' => WaitlistStatus::FULFILLED->value
+            ]);
         }
     }
 }

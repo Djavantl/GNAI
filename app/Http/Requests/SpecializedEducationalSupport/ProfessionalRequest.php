@@ -4,6 +4,7 @@ namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Rules\Cpf;
 
 class ProfessionalRequest extends FormRequest
 {
@@ -30,7 +31,7 @@ class ProfessionalRequest extends FormRequest
             'document' => [
                 'required',
                 'string',
-                'max:20',
+                new Cpf, // Adiciona a validação real
                 Rule::unique('people', 'document')->ignore($personId),
             ],
 
@@ -68,16 +69,6 @@ class ProfessionalRequest extends FormRequest
                 'max:50',
                 Rule::unique('professionals', 'registration')
                     ->ignore($professional?->id),
-            ],
-
-            'entry_date' => [
-                'required',
-                'date',
-            ],
-
-            'status' => [
-                'required',
-                'in:active,inactive',
             ],
 
             // Cargo

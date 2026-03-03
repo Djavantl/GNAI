@@ -9,13 +9,13 @@
                 {{ $category->barriers_count ?? $category->barriers->count() }}
             </x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 @php
                     $statusColor = $category->is_active ? 'success' : 'secondary';
                     $statusLabel = $category->is_active ? 'Ativo' : 'Inativo';
                 @endphp
-                <span class="text-{{ $statusColor }} fw-bold">
+
+                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>

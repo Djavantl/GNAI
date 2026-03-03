@@ -9,9 +9,9 @@ use App\Models\SpecializedEducationalSupport\Professional;
 
 class PendencySeeder extends Seeder
 {
-
     public function run(): void
     {
+        // Pegamos todos os usuários (quem cria) e todos os profissionais (quem recebe)
         $users = User::where('role', 'professional')->get();
         $professionals = Professional::all();
 
@@ -19,44 +19,42 @@ class PendencySeeder extends Seeder
             return;
         }
 
-        Pendency::create([
-            'created_by'   => $users[0]->id,
-            'assigned_to'  => $professionals[1]->id,
-            'title'        => 'Atualizar relatório de aluno do AEE',
-            'description'  => 'Revisar e atualizar o relatório de progresso do AEE para os alunos atribuídos.',
-            'priority'     => 'urgent',
-            'due_date'     => now()->addDays(3),
-            'is_completed' => false,
-        ]);
+        $titles = [
+            'Revisar PEI semestral',
+            'Atualizar anamnese de aluno novo',
+            'Lançar frequência da semana',
+            'Preparar material adaptado para aula',
+            'Reunião de feedback com responsáveis',
+            'Relatório de evolução trimestral',
+            'Solicitar renovação de laudo médico',
+            'Organizar oficina de tecnologia assistiva',
+            'Ajustar cronograma de atendimentos',
+            'Digitalizar documentos de matrícula'
+        ];
 
-        Pendency::create([
-            'created_by'   => $users[1]->id,
-            'assigned_to'  => $professionals[0]->id,
-            'title'        => 'Preparar reunião pedagógica',
-            'description'  => 'Organizar materiais e pauta para a próxima reunião pedagógica.',
-            'priority'     => 'high',
-            'due_date'     => now()->addDays(7),
-            'is_completed' => false,
-        ]);
+        $priorities = ['urgent', 'high', 'medium', 'low'];
 
-        Pendency::create([
-            'created_by'   => $users[2]->id,
-            'assigned_to'  => $professionals[2]->id,
-            'title'        => 'Atualizar registros de frequência dos alunos',
-            'description'  => 'Garantir que todos os dados de frequência estejam registrados corretamente no sistema.',
-            'priority'     => 'medium',
-            'due_date'     => now()->addDays(10),
-            'is_completed' => true,
-        ]);
+        foreach ($professionals as $index => $professional) {
+            
+            // Definimos quem será o criador (usamos o índice para variar os usuários criadores)
+            $creator = $users[$index % $users->count()];
 
-        Pendency::create([
-            'created_by'   => $users[0]->id,
-            'assigned_to'  => $professionals[0]->id,
-            'title'        => 'Revisar planos de ensino individualizados',
-            'description'  => 'Verificar e atualizar os planos de ensino individualizados de acordo com as novas avaliações.',
-            'priority'     => 'low',
-            'due_date'     => now()->addDays(15),
-            'is_completed' => false,
-        ]);
+            for ($i = 1; $i <= 5; $i++) {
+                
+                $titleIndex = array_rand($titles);
+                
+                Pendency::create([
+                    'created_by'   => $creator->id,
+                    'assigned_to'  => $professional->id,
+                    'title'        => $titles[$titleIndex] . " (#$i)",
+                    'description'  => "Tarefa detalhada referente a " . strtolower($titles[$titleIndex]) . " para o fluxo de trabalho do NAPNE.",
+                    'priority'     => $priorities[array_rand($priorities)],
+                    'due_date'     => now()->addDays(rand(1, 30)),
+                    'is_completed' => (rand(1, 10) > 8), // 20% de chance de já estar concluída
+                    'created_at'   => now()->subDays(rand(1, 5)),
+                    'updated_at'   => now(),
+                ]);
+            }
+        }
     }
 }

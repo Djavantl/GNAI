@@ -8,9 +8,18 @@ use Illuminate\Support\Facades\DB;
 
 class PositionService
 {
-    public function index()
+    public function index(array $filters = [])
     {
-        return Position::orderBy('name')->get();
+        return Position::query()
+            ->name($filters['name'] ?? null)
+            ->description($filters['description'] ?? null)
+            ->active($filters['is_active'] ?? null)
+
+            ->withCount('professionals')
+            ->orderBy('name')
+
+            ->paginate(10)
+            ->withQueryString();
     }
 
     public function store(array $data): Position

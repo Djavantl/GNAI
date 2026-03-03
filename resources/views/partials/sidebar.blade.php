@@ -1,8 +1,14 @@
 <aside class="sidebar">
+    <div class="sidebar-header">
+        <img src="{{ asset('images/logo2.png') }}" class="sidebar-logo" alt="Logo">
+        <span class="sidebar-title">NAI</span>
+    </div>
+
     <ul class="sidebar-menu">
+
         <li>
             <a href="{{ route('dashboard') }}"
-               class="{{ request()->routeIs('auth.dashboard') ? 'active' : '' }}">
+               class="{{ request()->is('auth/dashboard') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-speedometer2"></i></span>
                 <span class="text">Dashboard</span>
             </a>
@@ -19,12 +25,28 @@
         @can('report.reports.index')
         <li>
             <a href="{{ route('report.reports.index') }}"
-               class="{{ request()->is('relatorios*') ? 'active' : '' }}">
+               class="{{ request()->routeIs('report.reports*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-bar-chart"></i></span>
                 <span class="text">Relatórios</span>
             </a>
         </li>
         @endcan
+
+        <li>
+            <a href="{{ route('notifications.index') }}"
+                class="{{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fa fa-regular fa-bell"></i></span>
+                <span class="text">Notificações</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('backup.backups.index') }}"
+                class="{{ request()->routeIs('backup.backups.*') ? 'active' : '' }}">
+                <span class="icon"><i class="fas fa-cloud-download"></i></span>
+                <span class="text">Backups</span>
+            </a>
+        </li>
 
         @auth
             @if(auth()->user()->is_admin)
@@ -75,38 +97,6 @@
                 {{-- ===== RADAR INCLUSIVO – ADMIN ===== --}}
 
                 <li>
-                    <a href="{{ route('inclusive-radar.resource-types.index') }}"
-                       class="{{ request()->routeIs('resource-types.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-diagram-3"></i></span>
-                        <span class="text">Tipos de Recursos</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('inclusive-radar.type-attributes.index') }}"
-                       class="{{ request()->routeIs('type-attributes.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-input-cursor-text"></i></span>
-                        <span class="text">Atributos</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('inclusive-radar.type-attribute-assignments.index') }}"
-                       class="{{ request()->routeIs('type-attribute-assignments.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-link-45deg"></i></span>
-                        <span class="text">Vincular Atributos</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('inclusive-radar.barrier-categories.index') }}"
-                       class="{{ request()->routeIs('barrier-categories.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-grid"></i></span>
-                        <span class="text">Categorias de Barreiras</span>
-                    </a>
-                </li>
-
-                <li>
                     <a href="{{ route('inclusive-radar.accessibility-features.index') }}"
                        class="{{ request()->routeIs('accessibility-features.*') ? 'active' : '' }}">
                         <span class="icon"><i class="bi bi-universal-access"></i></span>
@@ -115,10 +105,10 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('inclusive-radar.resource-statuses.index') }}"
-                       class="{{ request()->routeIs('resource-statuses.*') ? 'active' : '' }}">
-                        <span class="icon"><i class="bi bi-toggle-on"></i></span>
-                        <span class="text">Status de Recursos</span>
+                    <a href="{{ route('inclusive-radar.barrier-categories.index') }}"
+                       class="{{ request()->routeIs('barrier-categories.*') ? 'active' : '' }}">
+                        <span class="icon"><i class="bi bi-grid"></i></span>
+                        <span class="text">Categorias de Barreiras</span>
                     </a>
                 </li>
 
@@ -143,7 +133,7 @@
 
         <li class="menu-divider">Atendimento AEE</li>
 
-        @can('student.index')
+        @can('student.view')
         <li class="nav-item">
             <a href="{{ route('specialized-educational-support.students.index') }}"
                 class="{{ request()->routeIs([
@@ -158,8 +148,7 @@
         </li>
         @endcan
 
-
-        @can('professional.index')
+        @can('professional.view')
         <li>
             <a href="{{ route('specialized-educational-support.professionals.index') }}"
             class="{{ request()->routeIs('specialized-educational-support.professionals.*') ? 'active' : '' }}">
@@ -169,19 +158,27 @@
         </li>
         @endcan
 
+        @can('teacher.view')
+        <li>
+            <a href="{{ route('specialized-educational-support.teachers.index') }}"
+            class="{{ request()->routeIs('specialized-educational-support.teachers.*') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-mortarboard"></i></span>
+                <span class="text">Professores</span>
+            </a>
+        </li>
+        @endcan
 
-
+        @can('pei.view')
         <li>
             <a href="{{ route('specialized-educational-support.pei.all') }}"
-            class="{{ request()->is('peis*') ? 'active' : '' }}">
+            class="{{ request()->routeIs('specialized-educational-support.pei.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-file-text"></i></span>
                 <span class="text">PEIs</span>
             </a>
         </li>
+        @endcan
 
-
-
-        @can('session.index')
+        @can('session.view')
         <li>
             <a href="{{ route('specialized-educational-support.sessions.index') }}"
             class="{{ request()->routeIs('specialized-educational-support.sessions.*') ? 'active' : '' }}">
@@ -191,28 +188,15 @@
         </li>
         @endcan
 
-
-        @can('session-record.index')
-        <li>
-            <a href="{{ route('specialized-educational-support.session-records.index') }}"
-            class="{{ request()->routeIs('specialized-educational-support.session-records.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-journal-text"></i></span>
-                <span class="text">Registros de Sessões</span>
-            </a>
-        </li>
-        @endcan
-
-
-        @can('pendency.index')
+        @can('pendency.view')
         <li>
             <a href="{{ route('specialized-educational-support.pendencies.index') }}"
-            class="{{ request()->is('pendencias*') ? 'active' : '' }}">
+            class="{{ request()->routeis('specialized-educational-support.pendencies.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-exclamation-triangle"></i></span>
                 <span class="text">Pendências</span>
             </a>
         </li>
         @endcan
-
 
         <li class="menu-divider">Radar Inclusivo</li>
 
@@ -226,22 +210,22 @@
         </li>
         @endcan
 
+        @can('material.index')
+            <li>
+                <a href="{{ route('inclusive-radar.accessible-educational-materials.index') }}"
+                   class="{{ request()->routeIs('inclusive-radar.accessible-educational-materials.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="bi bi-book"></i></span>
+                    <span class="text">Materiais Pedagógicos</span>
+                </a>
+            </li>
+        @endcan
+
         @can('barriers.index')
         <li>
             <a href="{{ route('inclusive-radar.barriers.index') }}"
                class="{{ request()->routeIs('inclusive-radar.barriers.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-slash-circle"></i></span>
                 <span class="text">Barreiras</span>
-            </a>
-        </li>
-        @endcan
-
-        @can('material.index')
-        <li>
-            <a href="{{ route('inclusive-radar.accessible-educational-materials.index') }}"
-               class="{{ request()->routeIs('inclusive-radar.accessible-educational-materials.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-book"></i></span>
-                <span class="text">Materiais Pedagógicos</span>
             </a>
         </li>
         @endcan

@@ -1,0 +1,193 @@
+/* sidebar.css — todas as regras da sidebar, scrollbars e colapsado
+   (consolida as duas versões que você mandou) */
+
+/* Sidebar fixa */
+.sidebar {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  width: var(--sidebar-current-width);
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s;
+  overflow-y: auto; /* Permite scroll na sidebar */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Customizar scrollbar da sidebar */
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: var(--sidebar-hover); }
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+/* Header da Sidebar */
+.sidebar-header {
+  height: var(--navbar-height); /* mesma altura da navbar */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 1rem;
+  background-color: var(--sidebar-bg);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.sidebar-title {
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+/* Menu da Sidebar */
+.sidebar-menu { list-style: none; padding: 0; margin: 0; }
+.sidebar-menu li { position: relative; }
+
+.sidebar-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.sidebar-menu a.active {
+  background-color: var(--primary-color);
+  margin-left: 1rem;
+  border-radius: 20px 0 0 20px;
+  border-left: none;
+  font-weight: 600;
+  display: flex;
+  width: calc(100% - 1rem);
+}
+
+.sidebar-menu a:not(.active):hover {
+  color: white;
+  background-color: var(--sidebar-hover);
+  margin-left: 1rem;
+  border-radius: 20px 0 0 20px;
+}
+
+.sidebar-menu .icon {
+  width: 20px;
+  margin-right: 10px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.sidebar-menu .text {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-menu .badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Separadores do Menu */
+.menu-divider {
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Rodapé da Sidebar */
+.sidebar-footer {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--sidebar-bg);
+  padding: 1rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Usado quando o body tem essa classe (JS atual) */
+body.sidebar-collapsed .sidebar:not(.hover-open) .text,
+body.sidebar-collapsed .sidebar:not(.hover-open) .menu-divider,
+body.sidebar-collapsed .sidebar:not(.hover-open) .sidebar-title {
+  display: none;
+}
+
+body.sidebar-collapsed .sidebar:not(.hover-open) .sidebar-header {
+  justify-content: center;
+}
+
+body.sidebar-collapsed .sidebar:not(.hover-open) .sidebar-menu a {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+body.sidebar-collapsed .sidebar:not(.hover-open) .icon {
+  margin-right: 0;
+}
+
+/* Bloquear clique durante animação (usado pelo JS) */
+.sidebar.animating { pointer-events: none; }
+
+/* ===== Versão .collapsed (você mandou esse bloco separado: mantive ambos,
+   para não quebrar implementações que usem .sidebar.collapsed diretamente) ===== */
+
+/* regra explícita da outra versão */
+.sidebar.collapsed {
+  width: 70px;
+}
+
+/* esconde textos e divisores */
+.sidebar.collapsed .text,
+.sidebar.collapsed .menu-divider,
+.sidebar.collapsed .sidebar-title {
+  display: none;
+}
+
+/* centraliza ícones */
+.sidebar.collapsed .sidebar-menu a {
+  justify-content: center;
+  padding: 0.75rem 0;
+  margin-left: 0;
+  border-radius: 0;
+}
+
+/* remove espaçamento do ícone */
+.sidebar.collapsed .sidebar-menu .icon {
+  margin-right: 0;
+  font-size: 1.2rem;
+}
+
+/* centraliza logo */
+.sidebar.collapsed .sidebar-header { justify-content: center; }
+
+/* conteúdo acompanha a largura (se alguém usar o seletor adjacente) */
+.sidebar.collapsed + .main-content { margin-left: 70px; }
+.sidebar.collapsed ~ .navbar-custom { left: 70px; }
+
+/* Hover temporário (se a sidebar ganhar hover-open) */
+.sidebar.hover-open { /* classe que seu JS adiciona temporariamente */
+  transform: translateX(0);
+}

@@ -19,6 +19,9 @@
             <h2 class="text-title">Editar PEI: {{ $student->person->name }}</h2>
             <p class="text-muted">Atualize as informações básicas e o vínculo docente do plano.</p>
         </div>
+        <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei->id) }}" variant="secondary">
+            <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+        </x-buttons.link-button>
     </div>
 
     <div class="mt-3">
@@ -29,35 +32,34 @@
 
             <x-forms.section title="Vínculo Acadêmico" />
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="course_id"
-                    label="Curso *"
-                    required
-                    :options="$courses ?? []" 
-                    :value="old('course_id', $pei->course_id)"
-                    :selected="old('course_id', $pei->course_id)"
-                />
-            </div>
+            <x-show.info-item 
+                label="Curso Vinculado"
+                column="col-md-6"
+                isBox="true"
+            >
+                <strong>{{ $course->name }}</strong>
+            </x-show.info-item>
 
-            <div class="col-md-6">
+            <input type="hidden" name="course_id" value="{{ $course->id }}">
+
+           <div class="col-md-6">
                 <x-forms.select
                     name="discipline_id"
-                    label="Componente Curricular (Disciplina) *"
+                    label="Componente Curricular (Disciplina) "
                     required
-                    :options="$disciplines ?? []"
-                    :value="old('discipline_id', $pei->discipline_id)"
+                    :options="$disciplines"
                     :selected="old('discipline_id', $pei->discipline_id)"
+                    aria-label="Selecionar disciplina do curso {{ $course->name }}"
                 />
             </div>
 
             <div class="col-md-6 mt-3">
                 <x-forms.input
                     name="teacher_name"
-                    label="Nome do Docente Responsável *"
-                    placeholder="Digite o nome do professor"
+                    label="Nome do Docente Responsável "
                     required
                     :value="old('teacher_name', $pei->teacher_name)"
+                    aria-label="Nome do professor responsável pelo PEI"
                 />
             </div>
 
@@ -81,41 +83,18 @@
                 </div>
             </div>
 
-            <x-forms.section title="Status do Plano" />
+            <div class="col-12 d-flex justify-content-end border-t pt-4 px-4 pb-4 mt-4">
 
-            <div class="col-md-6">
-                <x-forms.checkbox 
-                    name="is_finished" 
-                    label="Finalizar Plano (Impede novas edições de objetivos/metodologias)" 
-                    :checked="old('is_finished', $pei->is_finished)" 
-                />
-            </div>
+                <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei->id) }}" variant="secondary">
+                   <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+                </x-buttons.link-button>
 
-            <div class="col-12 d-flex justify-content-between border-t pt-4 px-4 pb-4 mt-4">
-                <div>
-                    <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei->id) }}" variant="secondary">
-                        Voltar para Detalhes
-                    </x-buttons.link-button>
-                </div>
+                <x-buttons.submit-button type="submit" class="btn-action new submit ms-3">
+                    <i class="fas fa-save" aria-hidden="true"></i> Salvar
+                </x-buttons.submit-button>
 
-                <div class="d-flex gap-3">
-                    <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
-                        Atualizar PEI
-                    </x-buttons.submit-button>
-                </div>
             </div>
 
         </x-forms.form-card>
-
-        {{-- Formulário de exclusão separado seguindo o seu modelo --}}
-        <div class="mt-3 px-4 pb-4">
-            <form action="{{ route('specialized-educational-support.pei.destroy', $pei->id) }}" method="POST" onsubmit="return confirm('ATENÇÃO: Isso excluirá o PEI e TODAS as metas/metodologias vinculadas. Deseja continuar?')">
-                @csrf
-                @method('DELETE')
-                <x-buttons.submit-button type="submit" variant="danger">
-                    Excluir PEI
-                </x-buttons.submit-button>
-            </form>
-        </div>
     </div>
 @endsection
