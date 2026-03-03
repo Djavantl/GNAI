@@ -218,7 +218,7 @@
                     :href="route('inclusive-radar.accessible-educational-materials.index')"
                     variant="secondary"
                 >
-                    Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button>

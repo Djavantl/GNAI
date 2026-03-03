@@ -157,8 +157,12 @@
 
             {{-- Ações com espaçamento consistente com TA --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4">
-                <x-buttons.link-button href="{{ route('inclusive-radar.trainings.index') }}" variant="secondary" label="Voltar para a listagem">
-                    <i class="fas fa-arrow-left me-1" aria-hidden="true"></i> Voltar
+                <x-buttons.link-button
+                    href="{{ route('inclusive-radar.trainings.index') }}"
+                    variant="secondary"
+                    label="Cancelar cadastro e voltar para a lista de treinamentos"
+                >
+                    <i class="fas fa-times" aria-hidden="true"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit" aria-label="Salvar novo treinamento">

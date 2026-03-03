@@ -193,7 +193,7 @@
                     :href="route('inclusive-radar.assistive-technologies.index')"
                     variant="secondary"
                 >
-                    Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit">
