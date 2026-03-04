@@ -37,10 +37,6 @@ class Loan extends Model
         'status'      => LoanStatus::class,
     ];
 
-    // ------------------------------------------------------
-    // RELATIONSHIPS
-    // ------------------------------------------------------
-
     public function loanable(): MorphTo
     {
         return $this->morphTo()->withTrashed();
@@ -61,10 +57,6 @@ class Loan extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // ------------------------------------------------------
-    // QUERY SCOPES
-    // ------------------------------------------------------
-
     public function scopeByStatus($query, ?LoanStatus $status)
     {
         if (!is_null($status)) {
@@ -73,9 +65,6 @@ class Loan extends Model
         return $query;
     }
 
-    /**
-     * Filtra pelo nome do estudante
-     */
     public function scopeStudent($query, ?string $name)
     {
         if (!$name) return $query;
@@ -85,9 +74,6 @@ class Loan extends Model
         });
     }
 
-    /**
-     * Filtra pelo nome do profissional
-     */
     public function scopeProfessional($query, ?string $name)
     {
         if (!$name) return $query;

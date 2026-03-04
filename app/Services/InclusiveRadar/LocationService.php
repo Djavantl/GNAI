@@ -19,18 +19,26 @@ class LocationService
     public function update(Location $location, array $data): Location
     {
         return DB::transaction(function () use ($location, $data) {
+
+            $wasActive = $location->is_active;
+            $willDeactivate = $wasActive && isset($data['is_active']) && !$data['is_active'];
+
+            if ($willDeactivate) {
+                /* Bloqueamos a desativação do local para evitar que barreiras fiquem
+                   "escondidas" em locais inativos no radar antes de serem resolvidas. */
+                $hasUnresolvedBarriers = $location
+                    ->barriers()
+                    ->whereNull('resolved_at')
+                    ->exists();
+
+                if ($hasUnresolvedBarriers) {
+                    throw ValidationException::withMessages([
+                        'is_active' => 'Existem barreiras não resolvidas vinculadas a este local. Resolva-as antes de desativá-lo.'
+                    ]);
+                }
+            }
+
             $location->update($data);
-
-            return $location;
-        });
-    }
-
-    public function toggleActive(Location $location): Location
-    {
-        return DB::transaction(function () use ($location) {
-            $location->update([
-                'is_active' => ! $location->is_active
-            ]);
 
             return $location;
         });
@@ -40,6 +48,8 @@ class LocationService
     {
         DB::transaction(function () use ($location) {
 
+            /* Diferente da atualização, a exclusão física exige que o local esteja
+               completamente livre de pendências para manter a integridade do mapa histórico. */
             $hasActiveBarriers = $location
                 ->barriers()
                 ->whereNull('resolved_at')
@@ -52,5 +62,4 @@ class LocationService
             $location->delete();
         });
     }
-
 }

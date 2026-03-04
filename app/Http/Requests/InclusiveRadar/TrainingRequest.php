@@ -25,6 +25,8 @@ class TrainingRequest extends FormRequest
             'trainable_type' => [
                 'required',
                 'string',
+                /* Restringimos o treinamento apenas a Tecnologias Assistivas (TA) e Materiais
+                   Pedagógicos Acessíveis (MPA), conforme o escopo pedagógico do Inclusive Radar. */
                 Rule::in([
                     'assistive_technology',
                     'accessible_educational_material'

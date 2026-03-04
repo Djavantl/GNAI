@@ -32,13 +32,17 @@ class BarrierRequest extends FormRequest
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'location_specific_details' => 'nullable|string|max:255',
-            'not_applicable' => 'sometimes|boolean',
-            'is_anonymous' => 'sometimes|boolean',
-            'is_active' => 'sometimes|boolean',
+
+            'is_anonymous' => 'boolean',
+            'not_applicable' => 'boolean',
+
             'affected_student_id' => 'nullable|exists:students,id',
             'affected_professional_id' => 'nullable|exists:professionals,id',
+
+            // Regras básicas para os campos de texto
             'affected_person_name' => 'nullable|string|max:255',
             'affected_person_role' => 'nullable|string|max:255',
+
             'identified_at' => 'required|date',
             'deficiencies' => 'required|array|min:1',
             'deficiencies.*' => 'exists:deficiencies,id',
@@ -60,6 +64,38 @@ class BarrierRequest extends FormRequest
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $isAnonymous = $this->is_anonymous === true;
+            $isNotApplicable = $this->not_applicable === true;
+            $hasStudent = filled($this->affected_student_id);
+            $hasProfessional = filled($this->affected_professional_id);
+            $hasPersonName = filled($this->affected_person_name);
+            $hasPersonRole = filled($this->affected_person_role);
+
+            // 1. Prioridade Total: Se for Anônimo, ignora as outras exigências.
+            if ($isAnonymous) {
+                return;
+            }
+
+            // 2. Se for Relato Geral (not_applicable), OBRIGA nome e cargo textuais.
+            if ($isNotApplicable) {
+                if (!$hasPersonName || !$hasPersonRole) {
+                    $validator->errors()->add('affected_person_name', 'Para relatos gerais, informe o nome e o cargo da pessoa impactada.');
+                }
+                return;
+            }
+
+            // 3. Se não é Anônimo nem Geral, OBRIGA um Estudante OU Profissional (ou ambos).
+            if (!$hasStudent && !$hasProfessional) {
+                $msg = 'É necessário informar o estudante ou profissional impactado, ou selecionar uma opção de relato (Anônimo/Geral).';
+                $validator->errors()->add('affected_student_id', $msg);
+                $validator->errors()->add('affected_professional_id', $msg);
+            }
+        });
     }
 
     protected function prepareForValidation(): void

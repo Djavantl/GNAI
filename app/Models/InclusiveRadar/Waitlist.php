@@ -31,10 +31,6 @@ class Waitlist extends Model
         'updated_at'   => 'datetime',
     ];
 
-    // ------------------------------------------------------
-    // RELATIONSHIPS
-    // ------------------------------------------------------
-
     public function waitlistable(): MorphTo
     {
         return $this->morphTo();
@@ -55,13 +51,6 @@ class Waitlist extends Model
         return $this->belongsTo(User::class);
     }
 
-    // ------------------------------------------------------
-    // SCOPES DE FILTRO
-    // ------------------------------------------------------
-
-    /**
-     * Filtra pelo nome do estudante
-     */
     public function scopeStudent($query, $name = null)
     {
         if (!$name) return $query;
@@ -71,9 +60,6 @@ class Waitlist extends Model
         });
     }
 
-    /**
-     * Filtra pelo nome do profissional
-     */
     public function scopeProfessional($query, $name = null)
     {
         if (!$name) return $query;

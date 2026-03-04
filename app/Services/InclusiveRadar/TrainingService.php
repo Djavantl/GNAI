@@ -9,12 +9,6 @@ use Illuminate\Validation\ValidationException;
 
 class TrainingService
 {
-    /*
-    |--------------------------------------------------------------------------
-    | CRUD
-    |--------------------------------------------------------------------------
-    */
-
     public function store(array $data): Training
     {
         return DB::transaction(
@@ -29,28 +23,15 @@ class TrainingService
         );
     }
 
-    public function toggleActive(Training $training): Training
-    {
-        $training->update([
-            'is_active' => !$training->is_active
-        ]);
-
-        return $training;
-    }
-
     public function delete(Training $training): void
     {
         DB::transaction(function () use ($training) {
+            /* Garantimos que a remoção do registro limpe também o armazenamento físico
+               para evitar o acúmulo de arquivos sem referência no servidor. */
             $this->deleteFiles($training);
             $training->delete();
         });
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PERSIST (Fluxo Principal)
-    |--------------------------------------------------------------------------
-    */
 
     protected function persist(Training $training, array $data): Training
     {
@@ -65,15 +46,11 @@ class TrainingService
         return $this->loadFreshRelations($training);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Etapas do Persist
-    |--------------------------------------------------------------------------
-    */
-
     private function sanitizeUrls(array $data): array
     {
         if (isset($data['url']) && is_array($data['url'])) {
+            /* Removemos entradas vazias ou nulas para manter a limpeza dos metadados
+               e evitar erros de renderização em links na interface. */
             $data['url'] = array_values(
                 array_filter(
                     $data['url'],
@@ -97,7 +74,8 @@ class TrainingService
         }
 
         foreach ($data['files'] as $uploadedFile) {
-
+            /* Estruturamos os uploads em pastas por ID do treinamento para facilitar
+               a manutenção e exclusão em lote dos arquivos vinculados. */
             $path = $uploadedFile->store("trainings/{$training->id}", 'public');
 
             $training->files()->create([
@@ -118,6 +96,8 @@ class TrainingService
             $file->delete();
         }
 
+        /* Além de deletar os arquivos individualmente, removemos o diretório raiz
+           do treinamento para manter o sistema de arquivos organizado. */
         $directory = "trainings/{$training->id}";
         if (Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->deleteDirectory($directory);
@@ -131,12 +111,6 @@ class TrainingService
             'files'
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Regras de Negócio
-    |--------------------------------------------------------------------------
-    */
 
     private function validateTrainableIntegrity(Training $training, array $data): void
     {
@@ -153,6 +127,8 @@ class TrainingService
             ]);
         }
 
+        /* Bloqueamos a troca de vínculo (trainable) após a criação para preservar
+           a rastreabilidade pedagógica do material vinculado ao recurso original. */
         if (
             $training->trainable_type !== $newType ||
             (int)$training->trainable_id !== $newId

@@ -136,19 +136,6 @@ class LocationController extends Controller
             ->with('success', 'Localização atualizada com sucesso!');
     }
 
-    public function toggleActive(Location $location): RedirectResponse
-    {
-        $location = $this->service->toggleActive($location);
-
-        $message = $location->is_active
-            ? 'Localização ativada com sucesso!'
-            : 'Localização desativada com sucesso!';
-
-        return redirect()
-            ->route('inclusive-radar.locations.index')
-            ->with('success', $message);
-    }
-
     public function destroy(Location $location): RedirectResponse
     {
         $this->service->delete($location);

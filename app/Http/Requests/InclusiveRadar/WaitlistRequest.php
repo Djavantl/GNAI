@@ -16,57 +16,38 @@ class WaitlistRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [];
-
         if ($this->isMethod('POST')) {
-            $rules = [
-                'waitlistable_id' => ['required','integer'],
+            return [
+                'waitlistable_id' => ['required', 'integer'],
+
+                /* A lista de espera é restrita a tecnologias e materiais, garantindo que
+                   apenas recursos físicos/digitais do acervo entrem no fluxo de reserva. */
                 'waitlistable_type' => [
-                    'required','string',
+                    'required', 'string',
                     Rule::in([AssistiveTechnology::class, AccessibleEducationalMaterial::class]),
                 ],
                 'student_id' => 'nullable|exists:students,id',
                 'professional_id' => 'nullable|exists:professionals,id',
                 'user_id' => 'required|exists:users,id',
-                'observation' => ['nullable','string'],
+                'observation' => ['nullable', 'string'],
             ];
         }
 
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = [
-                'status' => [
-                    'nullable',
-                    Rule::in(['waiting','notified','fulfilled','cancelled']),
-                ],
-                'observation' => ['nullable','string'],
-            ];
-        }
-
-        return $rules;
+        return [
+            'status' => [
+                'nullable',
+                Rule::in(['waiting', 'notified', 'fulfilled', 'cancelled']),
+            ],
+            'observation' => ['nullable', 'string'],
+        ];
     }
 
     protected function prepareForValidation(): void
     {
+        /* Automatizamos o registro do usuário responsável pela inserção na fila
+           para fins de auditoria, caso não venha explicitamente no request. */
         if (!$this->has('user_id') && auth()->check()) {
             $this->merge(['user_id' => auth()->id()]);
-        }
-    }
-
-    public function withValidator($validator)
-    {
-        if ($this->isMethod('POST')) {
-            $validator->after(function ($validator) {
-                $student = $this->input('student_id');
-                $professional = $this->input('professional_id');
-
-                if (empty($student) && empty($professional)) {
-                    $validator->errors()->add('student_id', 'É necessário informar um aluno ou um profissional.');
-                }
-
-                if (!empty($student) && !empty($professional)) {
-                    $validator->errors()->add('student_id', 'Não é permitido informar aluno e profissional ao mesmo tempo.');
-                }
-            });
         }
     }
 

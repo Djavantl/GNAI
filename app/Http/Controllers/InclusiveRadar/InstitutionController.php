@@ -116,19 +116,6 @@ class InstitutionController extends Controller
             ->with('success', 'Instituição atualizada com sucesso!');
     }
 
-    public function toggleActive(Institution $institution): RedirectResponse
-    {
-        $institution = $this->service->toggleActive($institution);
-
-        $message = $institution->is_active
-            ? 'Instituição ativada com sucesso!'
-            : 'Instituição desativada com sucesso!';
-
-        return redirect()
-            ->route('inclusive-radar.institutions.index')
-            ->with('success', $message);
-    }
-
     public function destroy(Institution $institution): RedirectResponse
     {
         $this->service->delete($institution);

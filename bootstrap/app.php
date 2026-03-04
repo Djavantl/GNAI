@@ -6,6 +6,7 @@ use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -69,6 +70,23 @@ return Application::configure(basePath: dirname(__DIR__))
             return back()->withErrors([
                 'status_id' => $e->getMessage()
             ]);
+        });
+
+        $exceptions->render(function (
+            DomainException|InvalidArgumentException $e,
+            Request $request
+        ) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage()
+                ], 422);
+            }
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'business_rule' => $e->getMessage()
+                ]);
         });
 
     })->create();

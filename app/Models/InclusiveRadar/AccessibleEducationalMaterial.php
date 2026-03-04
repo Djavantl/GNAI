@@ -19,12 +19,6 @@ class AccessibleEducationalMaterial extends Model
 
     protected $table = 'accessible_educational_materials';
 
-    /*
-    |--------------------------------------------------------------------------
-    | FILLABLE
-    |--------------------------------------------------------------------------
-    */
-
     protected $fillable = [
         'name',
         'is_digital',
@@ -38,12 +32,6 @@ class AccessibleEducationalMaterial extends Model
         'is_active',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | CASTS
-    |--------------------------------------------------------------------------
-    */
-
     protected $casts = [
         'is_active' => 'boolean',
         'is_digital' => 'boolean',
@@ -51,12 +39,6 @@ class AccessibleEducationalMaterial extends Model
         'conservation_state' => ConservationState::class,
         'status' => ResourceStatus::class,
     ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | RELACIONAMENTOS
-    |--------------------------------------------------------------------------
-    */
 
     public function deficiencies(): BelongsToMany
     {
@@ -105,12 +87,6 @@ class AccessibleEducationalMaterial extends Model
         return $this->morphMany(AuditLog::class, 'auditable');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SCOPES
-    |--------------------------------------------------------------------------
-    */
-
     public function scopeFilterName($query, ?string $name)
     {
         if ($name) {
@@ -148,12 +124,6 @@ class AccessibleEducationalMaterial extends Model
 
         return $query;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | AUDITORIA
-    |--------------------------------------------------------------------------
-    */
 
     public static function getAuditLabels(): array
     {

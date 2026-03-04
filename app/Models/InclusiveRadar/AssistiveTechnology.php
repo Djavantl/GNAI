@@ -41,12 +41,6 @@ class AssistiveTechnology extends Model
         'status' => ResourceStatus::class,
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELACIONAMENTOS
-    |--------------------------------------------------------------------------
-    */
-
     public function deficiencies(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -84,12 +78,6 @@ class AssistiveTechnology extends Model
         return $this->morphMany(AuditLog::class, 'auditable');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SCOPES
-    |--------------------------------------------------------------------------
-    */
-
     public function scopeFilterName(Builder $query, ?string $name): Builder
     {
         return $name
@@ -122,12 +110,6 @@ class AssistiveTechnology extends Model
         }
         return $query;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | AUDITORIA
-    |--------------------------------------------------------------------------
-    */
 
     public static function getAuditLabels(): array
     {

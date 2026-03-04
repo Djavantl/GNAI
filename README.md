@@ -1,59 +1,83 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+# 🎓 GNAI - Gestor do Núcleo de Acessibilidade e Inclusão
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+O **GNAI** é uma plataforma integrada de gestão voltada para a promoção da acessibilidade e suporte à inclusão em ambientes educacionais. O sistema foi desenvolvido como **Trabalho de Conclusão de Curso (TCC)** para o curso de **Análise e Desenvolvimento de Sistemas (ADS)**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Embora o desenvolvimento das funcionalidades tenha sido realizado de forma **individual**, os módulos compartilham o mesmo repositório estratégico para viabilizar e facilitar a integração futura entre as duas frentes de trabalho.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🏛️ Contextualização do Projeto
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+O sistema nasce da necessidade de centralizar processos que hoje são muitas vezes dispersos ou manuais nas instituições de ensino. Ele é dividido em dois grandes pilares complementares:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🎯 Atendimento Educacional Especializado (AEE)
 
-## Laravel Sponsors
+*Responsável: Djavan Teixeira Lopes* - Focado na jornada pedagógica do estudante com deficiência, gerenciando planos de atendimento, avaliações de desenvolvimento e o acompanhamento direto entre o professor e o aluno.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 📡 Radar Inclusivo
 
-### Premium Partners
+*Responsável: Marley Teixeira Meira* - Focado na infraestrutura e logística de acessibilidade. Gerencia desde a identificação de barreiras físicas e atitudinais na instituição até o controle de estoque, empréstimos e manutenção de tecnologias assistivas e materiais pedagógicos adaptados.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🛠️ Por que um repositório único?
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+A decisão de utilizar um repositório compartilhado visa:
 
-## Code of Conduct
+1. **Consistência de Dados:** Garantir que o estudante cadastrado no módulo AEE seja o mesmo beneficiário de um empréstimo no Radar Inclusivo.
+2. **Padronização Tecnológica:** Ambos os módulos utilizam a mesma stack (Laravel 12 + Docker), garantindo uma manutenção simplificada.
+3. **Interoperabilidade:** Facilita a criação de relatórios gerenciais que cruzem dados de desempenho escolar com a disponibilidade de recursos de acessibilidade.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+### 🛠️ Stack Tecnológica & Infraestrutura
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Componente | Tecnologia | Papel no Projeto |
+| --- | --- | --- |
+| **Linguagem** | `PHP 8.4` | Backend robusto com tipagem forte. |
+| **Framework** | `Laravel 12` | Estrutura de ponta para aplicações web. |
+| **Frontend** | `Node 20 / Vite` | Compilação ultra-rápida de assets. |
+| **Banco de Dados** | `MySQL 8.0` | Armazenamento relacional seguro. |
+| **Container** | `Docker / Compose` | Padronização de ambiente (Dev/Prod). |
+| **Servidor Web** | `Nginx Alpine` | Proxy reverso leve e performático. |
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Documentação de Requisitos: AEE & Radar Inclusivo
+
+## 1. Módulo: Atendimento Educacional Especializado (AEE)
+
+**Responsável:** [Djavan Teixeira Lopes]
+
+| Tipo | Descrição do Requisito |
+| --- | --- |
+| **RF** | *Aguardando definições de requisitos do responsável pelo módulo.* |
+| **RNF** | *Aguardando definições de requisitos do responsável pelo módulo.* |
+
+---
+
+## 2. Módulo: Radar Inclusivo
+
+**Responsável:** [Marley Teixeira Meira]
+
+---
+
+## 📚 Documentação
+
+| Contexto                                                                                       | O que é / Para que serve                                                                                                                                                  |
+|------------------------------------------------------------------------------------------------| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Recursos de Acessibilidade](Docs/inclusive-radar/accessibility-features.md)                   | São ferramentas ou adaptações que ajudam a tornar materiais e ambientes mais acessíveis para pessoas com deficiência, como leitores de tela, legendas ou recursos táteis. |
+| [Materiais e Tecnologias Assistivas](Docs/inclusive-radar/accessible-educational-materials.md) | São os materiais físicos ou digitais disponibilizados para apoiar o aprendizado, como livros adaptados, softwares acessíveis ou equipamentos específicos.                 |
+| [Empréstimos](Docs/inclusive-radar/loans.md)                                                   | Área responsável por controlar quando um material ou equipamento é emprestado para um aluno ou profissional, registrando datas e devoluções.                              |
+| [Treinamentos](Docs/inclusive-radar/trainings.md)                                              | Espaço onde são registrados conteúdos e orientações para ensinar como utilizar corretamente um material ou tecnologia assistiva.                                          |
+| [Lista de Espera](Docs/inclusive-radar/waitlists.md)                                           | Funciona como uma fila organizada para quando um material está indisponível. A pessoa entra na fila e é avisada quando o item estiver disponível.                         |
+| [Inspeções](Docs/inclusive-radar/inspections.md)                                               | Registro das verificações feitas nos materiais e equipamentos para garantir que estejam em bom estado de uso.                                                             |
+| [Barreiras](Docs/inclusive-radar/barriers.md)                                                  | Registro de dificuldades ou obstáculos encontrados dentro da instituição que podem prejudicar a acessibilidade, como falta de rampas ou sinalização adequada.             |
+| [Instituições e Locais](Docs/inclusive-radar/locations.md)                                     | Informações sobre a instituição e seus diferentes espaços físicos, permitindo identificar onde estão os materiais ou onde existe alguma barreira.                         |
+| [Geocodificação](Docs/inclusive-radar/openstreetmap.md)                                        | Sistema que transforma um endereço em localização no mapa, ajudando a identificar coordenadas geográficas automaticamente.                                                |
+| [Requisitos Não Funcionais Gerais](Docs/inclusive-radar/general.md)                            | Conjunto de regras que garantem segurança, organização, controle e bom funcionamento do sistema como um todo.                                                             |
+
+---

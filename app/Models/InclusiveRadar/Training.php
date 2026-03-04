@@ -28,21 +28,15 @@ class Training extends Model
         'url' => 'array',
     ];
 
-    // Relacionamentos
-
-    // Relação polimórfica: Retorna a instância de AssistiveTechnology ou AccessibleEducationalMaterial
     public function trainable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    // Arquivos do treinamento (PDF, DOC, etc.)
     public function files(): HasMany
     {
         return $this->hasMany(TrainingFile::class, 'training_id');
     }
-
-    // Scopes
 
     public function scopeSearchTitle(Builder $query, ?string $title): Builder
     {

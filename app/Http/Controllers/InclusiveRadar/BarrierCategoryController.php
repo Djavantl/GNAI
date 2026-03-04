@@ -74,19 +74,6 @@ class BarrierCategoryController extends Controller
             ->with('success', 'Categoria atualizada com sucesso!');
     }
 
-    public function toggleActive(BarrierCategory $barrierCategory): RedirectResponse
-    {
-        $barrierCategory = $this->service->toggleActive($barrierCategory);
-
-        $message = $barrierCategory->is_active
-            ? 'Categoria ativada com sucesso!'
-            : 'Categoria desativada com sucesso!';
-
-        return redirect()
-            ->route('inclusive-radar.barrier-categories.index')
-            ->with('success', $message);
-    }
-
     public function destroy(BarrierCategory $barrierCategory): RedirectResponse
     {
         $this->service->delete($barrierCategory);
