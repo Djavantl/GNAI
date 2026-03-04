@@ -8,10 +8,9 @@ use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Support\Facades\DB;
+use DomainException;
+use InvalidArgumentException;
 
-/**
- * Service responsável pela gestão de materiais educacionais acessíveis.
- */
 class AccessibleEducationalMaterialService
 {
     public function __construct(
@@ -19,9 +18,6 @@ class AccessibleEducationalMaterialService
         protected LoanService $loanService,
     ) {}
 
-    /**
-     * Cria um novo material educacional.
-     */
     public function store(array $data): AccessibleEducationalMaterial
     {
         return DB::transaction(
@@ -29,9 +25,6 @@ class AccessibleEducationalMaterialService
         );
     }
 
-    /**
-     * Atualiza um material educacional existente.
-     */
     public function update(AccessibleEducationalMaterial $material, array $data): AccessibleEducationalMaterial
     {
         return DB::transaction(
@@ -39,27 +32,11 @@ class AccessibleEducationalMaterialService
         );
     }
 
-    /**
-     * Alterna o status de ativação do material.
-     */
-    public function toggleActive(AccessibleEducationalMaterial $material): AccessibleEducationalMaterial
-    {
-        return DB::transaction(function () use ($material) {
-            $material->update([
-                'is_active' => !$material->is_active
-            ]);
-            return $material;
-        });
-    }
-
-    /**
-     * Remove o material se não houver empréstimos ativos.
-     * * @throws CannotDeleteWithActiveLoansException
-     */
     public function delete(AccessibleEducationalMaterial $material): void
     {
         DB::transaction(function () use ($material) {
-            // Materiais com empréstimos em aberto (sem data de retorno) não podem ser excluídos
+            /* Impedimos a remoção para evitar a perda do histórico de movimentação
+               de itens que ainda estão sob posse de terceiros. */
             if ($material->loans()->whereNull('return_date')->exists()) {
                 throw new CannotDeleteWithActiveLoansException();
             }
@@ -67,36 +44,65 @@ class AccessibleEducationalMaterialService
         });
     }
 
-    /**
-     * Orquestra o fluxo de persistência e sincronização de dados.
-     */
     protected function persist(AccessibleEducationalMaterial $material, array $data): AccessibleEducationalMaterial
     {
-        // Precisamos do estado anterior para comparar e gerar logs de auditoria precisos
+        $this->validateBusinessRules($material, $data);
+
         [$oldDef, $oldFeatures, $oldTrainings] = $this->captureOriginalState($material);
 
-        // Verifica se a quantidade solicitada é compatível com o estoque atual
         $data = $this->processStock($material, $data);
 
-        // Garante que o status do recurso não mude enquanto houverem itens emprestados
         $this->validateStatusChangeWithActiveLoans($material, $data);
 
         $this->saveModel($material, $data);
 
         $this->syncRelations($material, $data);
 
-        // Dispara logs apenas para campos que sofreram alteração real
         $this->logRelationChanges($material, $data, $oldDef, $oldFeatures, $oldTrainings);
 
-        // Toda alteração ou criação gera uma nova vistoria técnica automaticamente
         $this->runInspection($material, $data);
 
         return $this->loadFreshRelations($material);
     }
 
-    /**
-     * Captura o estado das relações antes da alteração para fins de auditoria.
-     */
+    private function validateBusinessRules(AccessibleEducationalMaterial $material, array $data): void
+    {
+        $isDigital = $data['is_digital'] ?? $material->is_digital ?? false;
+        $isLoanable = $data['is_loanable'] ?? $material->is_loanable ?? false;
+
+        $quantity = isset($data['quantity'])
+            ? (int) $data['quantity']
+            : $material->quantity;
+
+        $available = isset($data['quantity_available'])
+            ? (int) $data['quantity_available']
+            : $material->quantity_available;
+
+        if (isset($data['deficiencies']) && empty($data['deficiencies'])) {
+            throw new InvalidArgumentException(
+                "Selecione pelo menos um público-alvo."
+            );
+        }
+
+        if (!$isDigital && $quantity <= 0) {
+            throw new DomainException(
+                "Para materiais físicos, a quantidade deve ser no mínimo 1."
+            );
+        }
+
+        if ($isLoanable && $quantity <= 0) {
+            throw new DomainException(
+                "Materiais marcados como emprestáveis devem ter quantidade maior que zero."
+            );
+        }
+
+        if ($available > $quantity) {
+            throw new DomainException(
+                "A quantidade disponível ({$available}) não pode ser maior que a quantidade total ({$quantity})."
+            );
+        }
+    }
+
     private function captureOriginalState(AccessibleEducationalMaterial $material): array
     {
         $oldDeficiencies = $material->exists
@@ -114,23 +120,17 @@ class AccessibleEducationalMaterialService
         return [$oldDeficiencies, $oldFeatures, $oldTrainings];
     }
 
-    /**
-     * Valida disponibilidade e processa os dados de estoque.
-     */
     private function processStock(AccessibleEducationalMaterial $material, array $data): array
     {
         if (isset($data['quantity'])) {
             $this->loanService->validateStockAvailability($material, (int) $data['quantity']);
         }
+
         return $this->loanService->calculateStockForLoan($material, $data);
     }
 
-    /**
-     * Salva os dados básicos no banco de dados.
-     */
     private function saveModel(AccessibleEducationalMaterial $material, array $data): void
     {
-        // Novos materiais entram como 'Disponível' por padrão caso nenhum status seja enviado
         if (!$material->exists && empty($data['status'])) {
             $data['status'] = ResourceStatus::AVAILABLE->value;
         }
@@ -138,9 +138,6 @@ class AccessibleEducationalMaterialService
         $material->fill($data)->save();
     }
 
-    /**
-     * Sincroniza deficiências, recursos e treinamentos vinculados.
-     */
     protected function syncRelations(AccessibleEducationalMaterial $material, array $data): void
     {
         if (isset($data['deficiencies'])) {
@@ -151,8 +148,9 @@ class AccessibleEducationalMaterialService
             $material->accessibilityFeatures()->sync($data['accessibility_features']);
         }
 
-        if (!empty($data['trainings'])) {
-            // Recriamos os treinamentos para garantir a integridade dos anexos enviados
+        if ($material->exists && isset($data['trainings'])) {
+            /* Deletamos e recriamos treinamentos para evitar lógica complexa de comparação
+               de arquivos e metadados em atualizações parciais. */
             $material->trainings()->delete();
 
             foreach ($data['trainings'] as $training) {
@@ -166,6 +164,7 @@ class AccessibleEducationalMaterialService
                 if (!empty($training['files'])) {
                     foreach ($training['files'] as $file) {
                         $path = $file->store('trainings', 'public');
+
                         $t->files()->create([
                             'path'          => $path,
                             'original_name' => $file->getClientOriginalName(),
@@ -178,44 +177,31 @@ class AccessibleEducationalMaterialService
         }
     }
 
-    /**
-     * Impede a alteração de status caso existam empréstimos pendentes.
-     * * @throws CannotChangeStatusWithActiveLoansException
-     */
     private function validateStatusChangeWithActiveLoans(AccessibleEducationalMaterial $material, array $data): void
     {
         if (!$material->exists || !isset($data['status'])) return;
 
         $hasActiveLoans = $material->loans()->whereNull('return_date')->exists();
 
-        // Se houver empréstimo ativo, o status (Ex: Disponível para Manutenção) não pode ser trocado
+        /* Mudanças de status (ex: Inativo ou Manutenção) são bloqueadas se houver
+           empréstimos ativos para não gerar inconsistência no fluxo de devolução. */
         if ($hasActiveLoans && $material->status->value != $data['status']) {
             throw new CannotChangeStatusWithActiveLoansException();
         }
     }
 
-    /**
-     * Dispara a criação de vistoria técnica.
-     */
     private function runInspection(AccessibleEducationalMaterial $material, array $data): void
     {
         $this->inspectionService->createInspectionForModel($material, $data);
     }
 
-    /**
-     * Recarrega as relações atualizadas do modelo para retorno da API.
-     */
     private function loadFreshRelations(AccessibleEducationalMaterial $material): AccessibleEducationalMaterial
     {
         return $material->fresh(['deficiencies', 'accessibilityFeatures', 'trainings.files']);
     }
 
-    /**
-     * Avalia e registra mudanças nas relações para auditoria.
-     */
     private function logRelationChanges(AccessibleEducationalMaterial $material, array $data, array $oldDef, array $oldFeatures, array $oldTrainings): void
     {
-        // Ignoramos auditoria em registros recém-criados para evitar duplicidade com o log de criação
         if ($material->wasRecentlyCreated) return;
 
         if (isset($data['deficiencies'])) {
@@ -228,32 +214,32 @@ class AccessibleEducationalMaterialService
 
         if (isset($data['trainings'])) {
             $newTrain = $material->trainings()->pluck('id')->toArray();
-            sort($oldTrainings); sort($newTrain);
 
-            // Compara arrays de IDs para detectar mudanças na lista de treinamentos
+            /* Ordenamos para garantir que a comparação de arrays identifique apenas mudanças
+               de valores reais, ignorando se a ordem dos IDs veio diferente da requisição. */
+            sort($oldTrainings);
+            sort($newTrain);
+
             if ($oldTrainings !== $newTrain) {
                 $this->logRelationChange($material, 'trainings', $oldTrainings, $newTrain);
             }
         }
     }
 
-    /**
-     * Compara arrays e registra log se houver diferença.
-     */
     protected function auditIfChanged($model, string $field, array $old, ?array $new): void
     {
         if ($new === null) return;
+
         $new = array_map('intval', $new);
-        sort($old); sort($new);
+
+        sort($old);
+        sort($new);
 
         if ($old !== $new) {
             $this->logRelationChange($model, $field, $old, $new);
         }
     }
 
-    /**
-     * Salva o registro de auditoria no banco de dados.
-     */
     protected function logRelationChange($model, string $field, array $old, array $new): void
     {
         AuditLog::create([

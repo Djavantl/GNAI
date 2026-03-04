@@ -13,18 +13,6 @@ use Illuminate\Support\Facades\Storage;
 
 class InspectionService
 {
-    /*
-    |--------------------------------------------------------------------------
-    | FLUXO DE CRIAÇÃO E PERSISTÊNCIA
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * REGISTRO BASE DE VISTORIA (INSPECTION)
-     * * IMPORTÂNCIA: Centraliza a criação física do registro de inspeção no banco.
-     * * FLUXO: Grava os dados da vistoria e gerencia o upload e vinculação de
-     * evidências fotográficas no storage público.
-     */
     public function createForModel(Model $model, array $data): Inspection
     {
         return DB::transaction(function () use ($model, $data) {
@@ -39,7 +27,8 @@ class InspectionService
 
             if (!empty($data['images'])) {
                 foreach ($data['images'] as $image) {
-
+                    /* Armazenamos fotos em subpastas por ID da vistoria para facilitar
+                       a limpeza em massa do diretório durante uma eventual exclusão. */
                     $path = $image->store("inspections/{$inspection->id}", 'public');
 
                     $inspection->images()->create([
@@ -55,26 +44,14 @@ class InspectionService
         });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | LÓGICA DE NEGÓCIO E AUTOMATIZAÇÃO
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * ORQUESTRADOR DINÂMICO DE VISTORIAS
-     * * Utilizado por: TA, MPA e MaintenanceService.
-     * * IMPORTÂNCIA: Decide se uma vistoria deve ser gerada automaticamente.
-     * * REGRA: Se o estado de conservação mudou, se há fotos ou descrição nova,
-     * ele gera o registro (Inicial, Periódico ou de Manutenção). Caso contrário,
-     * ignora a criação para evitar duplicidade de dados irrelevantes.
-     */
     public function createInspectionForModel(Model $model, array $data): ?Inspection
     {
         $isUpdate = $model->wasRecentlyCreated === false;
         $description = $data['description'] ?? $data['inspection_description'] ?? null;
         $type = $data['type'] ?? $data['inspection_type'] ?? null;
 
+        /* Evitamos a criação de vistorias "vazias" (sem alteração de estado, fotos ou notas)
+           para manter o histórico de auditoria relevante e economizar espaço em banco. */
         if ($isUpdate
             && !$model->wasChanged('conservation_state')
             && empty($description)
@@ -95,31 +72,20 @@ class InspectionService
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | MANUTENÇÃO DE DADOS
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * EXCLUSÃO DE VISTORIA
-     * * IMPORTÂNCIA: Garante a limpeza completa dos dados.
-     * * LÓGICA: Antes de apagar o registro no banco, remove fisicamente todos
-     * os arquivos de imagem associados do disco para evitar acúmulo de arquivos órfãos.
-     */
     public function delete(Inspection $inspection): void
     {
         DB::transaction(function () use ($inspection) {
             $images = $inspection->images;
 
             if ($images->isNotEmpty()) {
-
                 $paths = $images->pluck('path')->toArray();
 
                 Storage::disk('public')->delete($paths);
 
                 $directory = "inspections/{$inspection->id}";
 
+                /* Além de apagar os arquivos, removemos o diretório específico para evitar
+                   que o storage fique poluído com pastas vazias ao longo do tempo. */
                 if (Storage::disk('public')->exists($directory)) {
                     Storage::disk('public')->deleteDirectory($directory);
                 }

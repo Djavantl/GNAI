@@ -21,12 +21,6 @@ class AssistiveTechnologyController extends Controller
         protected AssistiveTechnologyService $service
     ) {}
 
-    /*
-    |--------------------------------------------------------------------------
-    | LISTAGEM
-    |--------------------------------------------------------------------------
-    */
-
     public function index(Request $request): View
     {
         $name = trim($request->name ?? '');
@@ -64,24 +58,12 @@ class AssistiveTechnologyController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CRIAÇÃO
-    |--------------------------------------------------------------------------
-    */
-
     public function create(): View
     {
         return view('pages.inclusive-radar.assistive-technologies.create', [
             'statuses' => ResourceStatus::cases(),
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | STORE
-    |--------------------------------------------------------------------------
-    */
 
     public function store(AssistiveTechnologyRequest $request): RedirectResponse
     {
@@ -91,12 +73,6 @@ class AssistiveTechnologyController extends Controller
             ->route('inclusive-radar.assistive-technologies.index')
             ->with('success', 'Tecnologia assistiva criada com sucesso!');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | SHOW
-    |--------------------------------------------------------------------------
-    */
 
     public function show(AssistiveTechnology $assistiveTechnology): View
     {
@@ -112,12 +88,6 @@ class AssistiveTechnologyController extends Controller
             compact('assistiveTechnology')
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | EDIT
-    |--------------------------------------------------------------------------
-    */
 
     public function edit(AssistiveTechnology $assistiveTechnology): View
     {
@@ -136,12 +106,6 @@ class AssistiveTechnologyController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE
-    |--------------------------------------------------------------------------
-    */
-
     public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
         $this->service->update($assistiveTechnology, $request->validated());
@@ -151,25 +115,6 @@ class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | TOGGLE ACTIVE
-    |--------------------------------------------------------------------------
-    */
-
-    public function toggleActive(AssistiveTechnology $assistiveTechnology): RedirectResponse
-    {
-        $this->service->toggleActive($assistiveTechnology);
-
-        return back()->with('success', 'Status atualizado com sucesso!');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | DELETE
-    |--------------------------------------------------------------------------
-    */
-
     public function destroy(AssistiveTechnology $assistiveTechnology): RedirectResponse
     {
         $this->service->delete($assistiveTechnology);
@@ -178,12 +123,6 @@ class AssistiveTechnologyController extends Controller
             ->route('inclusive-radar.assistive-technologies.index')
             ->with('success', 'Tecnologia removida com sucesso!');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PDF
-    |--------------------------------------------------------------------------
-    */
 
     public function generatePdf(AssistiveTechnology $assistiveTechnology)
     {
@@ -203,12 +142,6 @@ class AssistiveTechnologyController extends Controller
         return $pdf->stream("TA_{$assistiveTechnology->name}.pdf");
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | EXCEL
-    |--------------------------------------------------------------------------
-    */
-
     public function exportExcel(AssistiveTechnology $assistiveTechnology)
     {
         return Excel::download(
@@ -220,12 +153,6 @@ class AssistiveTechnologyController extends Controller
             'TA_'.$assistiveTechnology->name.'.xlsx'
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | INSPEÇÃO
-    |--------------------------------------------------------------------------
-    */
 
     public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection)
     {

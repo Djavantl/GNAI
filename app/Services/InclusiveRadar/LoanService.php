@@ -13,16 +13,12 @@ use Illuminate\Validation\ValidationException;
 
 class LoanService
 {
-    /*
-    |--------------------------------------------------------------------------
-    | REGISTRO DE NOVO EMPRÉSTIMO
-    |--------------------------------------------------------------------------
-    */
 
     public function store(array $data): Loan
     {
         return DB::transaction(function () use ($data) {
-
+            /* Usamos lockForUpdate para evitar condições de corrida (race conditions)
+               onde dois empréstimos simultâneos poderiam ignorar o limite de estoque. */
             $item = $data['loanable_type']::lockForUpdate()
                 ->findOrFail($data['loanable_id']);
 
@@ -49,41 +45,29 @@ class LoanService
         });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ATUALIZAÇÃO
-    |--------------------------------------------------------------------------
-    */
-
     public function update(Loan $loan, array $data): Loan
     {
         return DB::transaction(function () use ($loan, $data) {
 
-            if ($loan->return_date !== null) {
+            /* Garantimos a imutabilidade do histórico do empréstimo permitindo
+               apenas a edição de campos que não afetam a auditoria do item. */
+            $safeData = array_intersect_key($data, array_flip(['observation']));
+
+            if (array_key_exists('observation', $safeData)) {
                 $loan->update([
-                    'observation' => $data['observation'] ?? $loan->observation,
+                    'observation' => $safeData['observation']
                 ]);
-                return $loan->fresh();
             }
-
-            unset($data['status'], $data['return_date']);
-
-            $loan->update($data);
 
             return $loan->fresh();
         });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | EXCLUSÃO
-    |--------------------------------------------------------------------------
-    */
-
     public function delete(Loan $loan): void
     {
         DB::transaction(function () use ($loan) {
-
+            /* Se um empréstimo ativo for deletado (ex: erro operacional), o estoque
+               deve ser restaurado imediatamente para refletir a disponibilidade real. */
             if ($loan->return_date === null) {
                 $this->handleStockIncrement($loan->loanable, LoanStatus::RETURNED);
             }
@@ -91,12 +75,6 @@ class LoanService
             $loan->delete();
         });
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | DEVOLUÇÃO
-    |--------------------------------------------------------------------------
-    */
 
     public function markAsReturned(Loan $loan, array $data = []): Loan
     {
@@ -131,12 +109,6 @@ class LoanService
         });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ESTOQUE OPERACIONAL
-    |--------------------------------------------------------------------------
-    */
-
     private function handleStockDecrement($item): void
     {
         if ($item->is_digital) return;
@@ -162,6 +134,8 @@ class LoanService
 
         $item->increment('quantity_available');
 
+        /* Itens devolvidos com dano recebem status específico para impedir novos
+           empréstimos automáticos até que passem por manutenção/inspeção. */
         $newStatus = $status === LoanStatus::DAMAGED
             ? ResourceStatus::DAMAGED
             : ResourceStatus::AVAILABLE;
@@ -170,12 +144,6 @@ class LoanService
             'status' => $newStatus
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | CONTROLE ESTRUTURAL DE ESTOQUE (TA SERVICE USA ISSO)
-    |--------------------------------------------------------------------------
-    */
 
     public function validateStockAvailability($item, int $quantity): void
     {
@@ -187,6 +155,8 @@ class LoanService
                 ->count()
             : 0;
 
+        /* Impede que a edição de um material reduza a quantidade total abaixo
+           do número de itens que estão fisicamente na rua com alunos/profissionais. */
         if ($quantity < $activeLoans) {
             throw ValidationException::withMessages([
                 'quantity' => "Impossível reduzir estoque: existem {$activeLoans} unidades emprestadas."
@@ -216,14 +186,9 @@ class LoanService
         return $data;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VALIDAÇÕES
-    |--------------------------------------------------------------------------
-    */
-
     private function validateNewLoan($item, array $data): void
     {
+        $this->validateBeneficiary($data);
         $this->checkActiveLoanPendency($data);
         $this->validateResourceAvailability($item);
     }
@@ -259,6 +224,8 @@ class LoanService
             })
             ->exists();
 
+        /* Regra de negócio: Um mesmo beneficiário não pode ter duas unidades do
+           mesmo recurso simultaneamente para garantir a rotatividade do acervo. */
         if ($exists) {
             throw ValidationException::withMessages([
                 'loanable_id' => 'Este beneficiário já possui um empréstimo ativo deste recurso.'
@@ -266,11 +233,27 @@ class LoanService
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATÓRIOS
-    |--------------------------------------------------------------------------
-    */
+    private function validateBeneficiary(array $data, ?Loan $loan = null): void
+    {
+        if ($loan && $loan->status !== LoanStatus::ACTIVE) {
+            return;
+        }
+
+        $student = $data['student_id'] ?? null;
+        $professional = $data['professional_id'] ?? null;
+
+        if (empty($student) && empty($professional)) {
+            throw ValidationException::withMessages([
+                'student_id' => 'É necessário informar um aluno ou um profissional.'
+            ]);
+        }
+
+        if (!empty($student) && !empty($professional)) {
+            throw ValidationException::withMessages([
+                'student_id' => 'Não é permitido informar aluno e profissional ao mesmo tempo.'
+            ]);
+        }
+    }
 
     public function getOverdueLoans(): Collection
     {
@@ -279,12 +262,6 @@ class LoanService
             ->with(['student.person', 'loanable'])
             ->get();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | FILA DE ESPERA
-    |--------------------------------------------------------------------------
-    */
 
     private function fulfillWaitlistIfExists($item, ?int $studentId, ?int $professionalId): void
     {
@@ -300,6 +277,8 @@ class LoanService
 
         $waitlist = $query->first();
 
+        /* Ao efetivar o empréstimo, damos baixa automática na intenção de reserva
+           do usuário para manter a fila de espera atualizada. */
         if ($waitlist) {
             $waitlist->update([
                 'status' => WaitlistStatus::FULFILLED->value

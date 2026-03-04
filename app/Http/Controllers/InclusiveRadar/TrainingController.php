@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Exports\InclusiveRadar\Items\TrainingExport;
 use App\Http\Controllers\Concerns\ResolvesBackRoute;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\TrainingRequest;
@@ -44,8 +45,6 @@ class TrainingController extends Controller
 
         return view('pages.inclusive-radar.trainings.index', compact('trainings'));
     }
-
-    // No TrainingController.php
 
     public function create(Request $request): View
     {
@@ -125,13 +124,6 @@ class TrainingController extends Controller
             ->with('success', 'Treinamento atualizado com sucesso!');
     }
 
-    public function toggleActive(Training $training): RedirectResponse
-    {
-        $this->service->toggleActive($training);
-
-        return redirect()->back()->with('success', 'Status atualizado com sucesso!');
-    }
-
     public function destroy(Training $training): RedirectResponse
     {
         try {
@@ -189,7 +181,7 @@ class TrainingController extends Controller
     public function exportExcel(Training $training)
     {
         return Excel::download(
-            new \App\Exports\InclusiveRadar\Items\TrainingExport(collect([$training]), "Treinamento: {$training->title}"),
+            new TrainingExport(collect([$training]), "Treinamento: {$training->title}"),
             "Treinamento_{$training->title}_" . now()->format('d_m_Y') . ".xlsx"
         );
     }

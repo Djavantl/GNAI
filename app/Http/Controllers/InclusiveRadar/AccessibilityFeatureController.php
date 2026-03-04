@@ -75,15 +75,6 @@ class AccessibilityFeatureController extends Controller
             ->with('success', 'Recurso de acessibilidade atualizado com sucesso!');
     }
 
-    public function toggleActive(AccessibilityFeature $accessibilityFeature): RedirectResponse
-    {
-        $feature = $this->service->toggleActive($accessibilityFeature);
-        $message = $feature->is_active ? 'Recurso de acessibilidade ativado com sucesso!' : 'Recurso de acessibilidade desativado com sucesso!';
-
-        return redirect()->route('inclusive-radar.accessibility-features.index')
-            ->with('success', $message);
-    }
-
     public function destroy(AccessibilityFeature $accessibilityFeature): RedirectResponse
     {
         $this->service->delete($accessibilityFeature);

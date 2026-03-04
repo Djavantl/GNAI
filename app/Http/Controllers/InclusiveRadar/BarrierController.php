@@ -137,13 +137,6 @@ class BarrierController extends Controller
             ->with('success', 'Barreira atualizada com sucesso!');
     }
 
-    public function toggleActive(Barrier $barrier): RedirectResponse
-    {
-        $this->service->toggleActive($barrier);
-
-        return redirect()->back()->with('success', 'Status da barreira atualizado!');
-    }
-
     public function destroy(Barrier $barrier): RedirectResponse
     {
         $this->service->delete($barrier);

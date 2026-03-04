@@ -34,8 +34,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('barrier-categories.edit');
     Route::put('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'update'])
         ->name('barrier-categories.update');
-    Route::patch('/barrier-categories/{barrierCategory}/toggle', [BarrierCategoryController::class, 'toggleActive'])
-        ->name('barrier-categories.toggle');
     Route::delete('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'destroy'])
         ->name('barrier-categories.destroy');
 
@@ -52,8 +50,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('institutions.edit');
     Route::put('/institutions/{institution}', [InstitutionController::class, 'update'])
         ->name('institutions.update');
-    Route::patch('/institutions/{institution}/toggle', [InstitutionController::class, 'toggleActive'])
-        ->name('institutions.toggle');
     Route::delete('/institutions/{institution}', [InstitutionController::class, 'destroy'])
         ->name('institutions.destroy');
 
@@ -69,8 +65,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('locations.edit');
     Route::put('/locations/{location}', [LocationController::class, 'update'])
         ->name('locations.update');
-    Route::patch('/locations/{location}/toggle', [LocationController::class, 'toggleActive'])
-        ->name('locations.toggle');
     Route::delete('/locations/{location}', [LocationController::class, 'destroy'])
         ->name('locations.destroy');
 
@@ -87,8 +81,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('accessibility-features.edit');
     Route::put('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'update'])
         ->name('accessibility-features.update');
-    Route::patch('/accessibility-features/{accessibilityFeature}/toggle', [AccessibilityFeatureController::class, 'toggleActive'])
-        ->name('accessibility-features.toggle');
     Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])
         ->name('accessibility-features.destroy');
 });
@@ -121,9 +113,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::put('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'update'])
         ->name('assistive-technologies.update')->middleware('can:assistive-technology.update');
-
-    Route::patch('/assistive-technologies/{assistiveTechnology}/toggle', [AssistiveTechnologyController::class, 'toggleActive'])
-        ->name('assistive-technologies.toggle')->middleware('can:assistive-technology.toggle');
 
     Route::delete('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'destroy'])
         ->name('assistive-technologies.destroy')->middleware('can:assistive-technology.destroy');
@@ -166,9 +155,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/barriers/{barrier}', [BarrierController::class, 'update'])
         ->name('barriers.update')->middleware('can:barrier.update');
 
-    Route::patch('/barriers/{barrier}/toggle', [BarrierController::class, 'toggleActive'])
-        ->name('barriers.toggle')->middleware('can:barrier.toggle');
-
     Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])
         ->name('barriers.destroy')->middleware('can:barrier.destroy');
 
@@ -196,9 +182,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::put('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'update'])
         ->name('accessible-educational-materials.update')->middleware('can:material.update');
-
-    Route::patch('/accessible-educational-materials/{material}/toggle', [AccessibleEducationalMaterialController::class, 'toggleActive'])
-        ->name('accessible-educational-materials.toggle')->middleware('can:material.toggle');
 
     Route::delete('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'destroy'])
         ->name('accessible-educational-materials.destroy')->middleware('can:material.destroy');
@@ -236,9 +219,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::put('/trainings/{training}', [TrainingController::class, 'update'])
         ->name('trainings.update')->middleware('can:training.update');
-
-    Route::patch('/trainings/{training}/toggle', [TrainingController::class, 'toggleActive'])
-        ->name('trainings.toggle')->middleware('can:training.toggle');
 
     Route::delete('/trainings/{training}', [TrainingController::class, 'destroy'])
         ->name('trainings.destroy')->middleware('can:training.destroy');

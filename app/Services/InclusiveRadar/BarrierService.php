@@ -12,8 +12,6 @@ class BarrierService
         protected InspectionService $inspectionService
     ) {}
 
-    // Ações principais (públicas)
-
     public function store(array $data): Barrier
     {
         return DB::transaction(
@@ -28,19 +26,10 @@ class BarrierService
         );
     }
 
-    public function toggleActive(Barrier $barrier): Barrier
-    {
-        $barrier->update(['is_active' => !$barrier->is_active]);
-
-        return $barrier->fresh();
-    }
-
     public function delete(Barrier $barrier): void
     {
         DB::transaction(fn() => $barrier->delete());
     }
-
-    // Regras internas (protegidas)
 
     protected function persist(Barrier $barrier, array $data): Barrier
     {
@@ -74,7 +63,8 @@ class BarrierService
 
     protected function sanitizeReporterData(array $data): array
     {
-        $allReporterFields = [
+        // Estado padrão (limpo)
+        $cleanFields = [
             'affected_student_id'      => null,
             'affected_professional_id' => null,
             'affected_person_name'     => null,
@@ -83,23 +73,28 @@ class BarrierService
             'not_applicable'           => false,
         ];
 
+        // REGRA 1: Prioridade Anônima (Limpa absolutamente tudo)
         if (!empty($data['is_anonymous'])) {
-            return array_merge($data, $allReporterFields, ['is_anonymous' => true]);
+            return array_merge($data, $cleanFields, ['is_anonymous' => true]);
         }
 
+        // REGRA 2: Relato Geral (Limpa os IDs do sistema, mantém o texto livre)
         if (!empty($data['not_applicable'])) {
-            return array_merge($data, $allReporterFields, [
+            return array_merge($data, $cleanFields, [
                 'not_applicable'       => true,
                 'affected_person_name' => $data['affected_person_name'] ?? null,
                 'affected_person_role' => $data['affected_person_role'] ?? null,
             ]);
         }
 
+        // REGRA 3: Identificado (Limpa os textos livres, mantém os IDs)
         return array_merge($data, [
             'is_anonymous'         => false,
             'not_applicable'       => false,
-            'affected_person_name' => $data['affected_person_name'] ?? null,
-            'affected_person_role' => $data['affected_person_role'] ?? null,
+            'affected_person_name' => null,
+            'affected_person_role' => null,
+            'affected_student_id'  => $data['affected_student_id'] ?? null,
+            'affected_professional_id' => $data['affected_professional_id'] ?? null,
         ]);
     }
 
@@ -119,12 +114,16 @@ class BarrierService
         $statusChanged = $isUpdate && $newStatus !== $oldStatus;
         $hasInteraction = filled($data['inspection_description'] ?? null) || !empty($data['images']);
 
+        /* Gerenciamos o timestamp de resolução para facilitar relatórios de
+           tempo médio de resposta (SLA) sem depender de logs de auditoria. */
         if (in_array($newStatus, [BarrierStatus::RESOLVED->value, BarrierStatus::NOT_APPLICABLE->value])) {
             $barrier->update(['resolved_at' => $barrier->resolved_at ?? now()]);
         } else {
             $barrier->update(['resolved_at' => null]);
         }
 
+        /* Evitamos a criação de logs de inspeção vazios durante updates
+           que alteram apenas dados cadastrais da barreira. */
         if ($isUpdate && !$statusChanged && !$hasInteraction) {
             return;
         }

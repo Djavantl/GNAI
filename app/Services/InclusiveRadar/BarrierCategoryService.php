@@ -2,7 +2,6 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
 use App\Models\InclusiveRadar\BarrierCategory;
 use Illuminate\Support\Facades\DB;
@@ -24,18 +23,6 @@ class BarrierCategoryService
         });
     }
 
-    public function toggleActive(BarrierCategory $category): BarrierCategory
-    {
-        return DB::transaction(function () use ($category) {
-
-            $category->update([
-                'is_active' => !$category->is_active
-            ]);
-
-            return $category;
-        });
-    }
-
     public function delete(BarrierCategory $category): void
     {
         DB::transaction(function () use ($category) {
@@ -44,10 +31,11 @@ class BarrierCategoryService
                 ->barriers()
                 ->get()
                 ->contains(function ($barrier) {
-
                     $status = $barrier->latestStatus();
 
-                    // Sem status → considera ativa
+                    /* Assumimos que a ausência de status ou um status impeditivo impossibilita
+                       a exclusão da categoria, evitando que dados históricos fiquem sem
+                       classificação e dificultem auditorias futuras. */
                     if (!$status) {
                         return true;
                     }

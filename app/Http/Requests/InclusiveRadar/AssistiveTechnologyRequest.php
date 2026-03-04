@@ -21,16 +21,11 @@ class AssistiveTechnologyRequest extends FormRequest
         $tech = $this->route('assistiveTechnology');
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
         $isDigital = $this->boolean('is_digital');
-        $isLoanable = $this->boolean('is_loanable');
 
         return [
-
             'name' => 'required|string|max:255',
-
             'is_digital' => 'required|boolean',
-
             'is_loanable' => 'sometimes|boolean',
-
             'notes' => 'nullable|string',
 
             'asset_code' => [
@@ -41,16 +36,15 @@ class AssistiveTechnologyRequest extends FormRequest
                     ->ignore($tech?->id),
             ],
 
-            'quantity' => $isDigital
-                ? 'nullable|integer|min:0'
-                : 'required|integer|min:1',
+            /* Tecnologias puramente digitais (softwares) não possuem controle de
+               estoque físico, tornando a quantidade um campo opcional. */
+            'quantity' => $isDigital ? 'nullable|integer' : 'required|integer',
 
-            'quantity_available' => $isLoanable
-                ? 'nullable|integer|min:0'
-                : 'nullable',
-
+            'quantity_available' => 'nullable|integer',
             'is_active' => 'sometimes|boolean',
 
+            /* No cadastro inicial, é obrigatório definir o estado operacional e
+               de conservação para garantir o rastreio desde a entrada no acervo. */
             'status' => [
                 $isUpdate ? 'nullable' : 'required',
                 new Enum(ResourceStatus::class),
@@ -76,7 +70,6 @@ class AssistiveTechnologyRequest extends FormRequest
             ],
 
             'inspection_description' => 'nullable|string|max:1000',
-
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ];
@@ -86,6 +79,8 @@ class AssistiveTechnologyRequest extends FormRequest
     {
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
+        /* Garantimos a integridade dos tipos booleanos e definimos a data atual
+           como padrão de inspeção caso nenhuma seja fornecida pelo usuário. */
         $this->merge([
             'is_active' => $this->boolean('is_active'),
             'is_digital' => $this->boolean('is_digital'),
@@ -93,52 +88,23 @@ class AssistiveTechnologyRequest extends FormRequest
             'inspection_date' => $this->inspection_date ?? now()->format('Y-m-d'),
         ]);
 
-        if (!$this->boolean('is_loanable')) {
-            $this->merge([
-                'quantity_available' => 0,
-            ]);
-        }
-
         if (!$isUpdate) {
+            /* Definimos que toda tecnologia assistiva recém-cadastrada inicia
+               obrigatoriamente com o registro de uma Inspeção Inicial. */
             $this->merge([
                 'inspection_type' => $this->inspection_type ?? InspectionType::INITIAL->value,
             ]);
         }
     }
 
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-
-            if ($this->boolean('is_loanable') && (int)$this->quantity <= 0) {
-                $validator->errors()->add(
-                    'quantity',
-                    'Recursos emprestáveis devem ter quantidade maior que zero.'
-                );
-            }
-
-            if (
-                $this->boolean('is_loanable') &&
-                $this->quantity !== null &&
-                $this->quantity_available !== null &&
-                $this->quantity_available > $this->quantity
-            ) {
-                $validator->errors()->add(
-                    'quantity_available',
-                    'A quantidade disponível não pode ser maior que a quantidade total.'
-                );
-            }
-        });
-    }
-
     public function messages(): array
     {
         return [
             'name.required' => 'Informe o tipo da tecnologia assistiva.',
-            'quantity.required' => 'Para recursos físicos, a quantidade é obrigatória.',
+            'quantity.required' => 'A quantidade é obrigatória para este recurso.',
             'asset_code.unique' => 'O código patrimonial já está em uso.',
             'deficiencies.required' => 'Selecione pelo menos um público-alvo.',
-            'conservation_state.required' => 'O estado de conservação atual é obrigatório no cadastro.',
+            'conservation_state.required' => 'O estado de conservação atual é obrigatório.',
             'inspection_date.before_or_equal' => 'A data da inspeção não pode ser no futuro.',
             'images.*.image' => 'O arquivo deve ser uma imagem.',
             'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',

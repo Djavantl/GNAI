@@ -22,16 +22,6 @@ class AccessibilityFeatureService
         });
     }
 
-    public function toggleActive(AccessibilityFeature $feature): AccessibilityFeature
-    {
-        return DB::transaction(function () use ($feature) {
-            $feature->update([
-                'is_active' => !$feature->is_active,
-            ]);
-            return $feature->fresh();
-        });
-    }
-
     public function delete(AccessibilityFeature $feature): void
     {
         DB::transaction(function () use ($feature) {

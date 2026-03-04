@@ -131,12 +131,6 @@ class Barrier extends Model
         )->where('inspectable_type', static::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes para Filtros
-    |--------------------------------------------------------------------------
-    */
-
     public function scopeName(Builder $query, ?string $value): Builder
     {
         return $query->when($value, function (Builder $q) use ($value) {

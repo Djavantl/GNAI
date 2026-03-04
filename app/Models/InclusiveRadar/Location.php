@@ -42,17 +42,11 @@ class Location extends Model
         return $this->hasMany(Barrier::class);
     }
 
-    /**
-     * Filtra pelo nome do ponto de referência
-     */
     public function scopeFilterName(Builder $query, ?string $name): Builder
     {
         return $name ? $query->where('name', 'like', "%{$name}%") : $query;
     }
 
-    /**
-     * Filtra pelo nome da instituição através do relacionamento
-     */
     public function scopeFilterInstitution(Builder $query, ?string $institutionName): Builder
     {
         if ($institutionName) {
@@ -63,9 +57,6 @@ class Location extends Model
         return $query;
     }
 
-    /**
-     * Filtra pelo status ativo/inativo
-     */
     public function scopeFilterActive(Builder $query, $isActive): Builder
     {
         if (!is_null($isActive) && $isActive !== '') {

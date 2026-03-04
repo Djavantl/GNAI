@@ -21,12 +21,6 @@ class LoanController extends Controller
         protected LoanService $service
     ) {}
 
-    /*
-    |--------------------------------------------------------------------------
-    | LISTAGEM
-    |--------------------------------------------------------------------------
-    */
-
     public function index(Request $request): View
     {
         $studentName      = $request->student ?? null;
@@ -62,12 +56,6 @@ class LoanController extends Controller
             compact('loans')
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | CRIAÇÃO
-    |--------------------------------------------------------------------------
-    */
 
     public function create(): View
     {
@@ -128,12 +116,6 @@ class LoanController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VISUALIZAÇÃO
-    |--------------------------------------------------------------------------
-    */
-
     public function show(Loan $loan): View
     {
         $loan->load([
@@ -149,12 +131,6 @@ class LoanController extends Controller
             compact('loan', 'authUser')
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | EDIÇÃO
-    |--------------------------------------------------------------------------
-    */
 
     public function edit(Loan $loan): View
     {
@@ -206,12 +182,6 @@ class LoanController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DEVOLUÇÃO
-    |--------------------------------------------------------------------------
-    */
-
     public function returnItem(Request $request, Loan $loan): RedirectResponse
     {
         try {
@@ -232,12 +202,6 @@ class LoanController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | EXCLUSÃO
-    |--------------------------------------------------------------------------
-    */
-
     public function destroy(Loan $loan): RedirectResponse
     {
         try {
@@ -252,12 +216,6 @@ class LoanController extends Controller
             ]);
         }
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PDF
-    |--------------------------------------------------------------------------
-    */
 
     public function generatePdf(Loan $loan)
     {

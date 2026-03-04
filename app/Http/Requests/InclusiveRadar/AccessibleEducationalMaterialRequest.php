@@ -21,7 +21,6 @@ class AccessibleEducationalMaterialRequest extends FormRequest
         $material = $this->route('material');
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
         $isDigital = $this->boolean('is_digital');
-        $isLoanable = $this->boolean('is_loanable');
 
         return [
 
@@ -39,13 +38,13 @@ class AccessibleEducationalMaterialRequest extends FormRequest
                     ->ignore($material?->id),
             ],
 
+            /* Materiais digitais não possuem estoque físico limitado, por isso a
+               quantidade torna-se opcional, diferentemente de itens físicos. */
             'quantity' => $isDigital
                 ? 'nullable|integer|min:0'
-                : 'required|integer|min:1',
+                : 'required|integer|min:0',
 
-            'quantity_available' => $isLoanable
-                ? 'nullable|integer|min:0'
-                : 'nullable',
+            'quantity_available' => 'nullable|integer|min:0',
 
             'is_active' => 'sometimes|boolean',
 
@@ -62,6 +61,8 @@ class AccessibleEducationalMaterialRequest extends FormRequest
             'accessibility_features' => 'nullable|array',
             'accessibility_features.*' => 'exists:accessibility_features,id',
 
+            /* Na criação, o status e estado de conservação são obrigatórios para
+               definir o ponto de partida do material no acervo. */
             'conservation_state' => [
                 $isUpdate ? 'nullable' : 'required',
                 new Enum(ConservationState::class),
@@ -89,6 +90,8 @@ class AccessibleEducationalMaterialRequest extends FormRequest
     {
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
+        /* Normalizamos os campos booleanos e garantimos que a data de inspeção
+           seja preenchida com o dia atual caso o usuário omita o campo. */
         $this->merge([
             'is_active' => $this->boolean('is_active'),
             'is_digital' => $this->boolean('is_digital'),
@@ -96,53 +99,22 @@ class AccessibleEducationalMaterialRequest extends FormRequest
             'inspection_date' => $this->inspection_date ?? now()->format('Y-m-d'),
         ]);
 
-        if (!$this->boolean('is_loanable')) {
-            $this->merge([
-                'quantity_available' => 0,
-            ]);
-        }
-
         if (!$isUpdate) {
+            /* Todo material novo entra no sistema através de uma inspeção do tipo inicial. */
             $this->merge([
                 'inspection_type' => $this->inspection_type ?? InspectionType::INITIAL->value,
             ]);
         }
     }
 
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-
-            if ($this->boolean('is_loanable') && (int)$this->quantity <= 0) {
-                $validator->errors()->add(
-                    'quantity',
-                    'Materiais emprestáveis devem ter quantidade maior que zero.'
-                );
-            }
-
-            if (
-                $this->boolean('is_loanable') &&
-                $this->quantity !== null &&
-                $this->quantity_available !== null &&
-                $this->quantity_available > $this->quantity
-            ) {
-                $validator->errors()->add(
-                    'quantity_available',
-                    'A quantidade disponível não pode ser maior que a quantidade total.'
-                );
-            }
-        });
-    }
-
     public function messages(): array
     {
         return [
             'name.required' => 'O nome do material pedagógico é obrigatório.',
-            'is_digital.required' => 'Informe se o material é digital ou físico.',
             'quantity.required' => 'Para materiais físicos, a quantidade é obrigatória.',
             'asset_code.unique' => 'O código patrimonial já está em uso.',
             'deficiencies.required' => 'Selecione pelo menos um público-alvo.',
-            'conservation_state.required' => 'O estado de conservação atual é obrigatório no cadastro.',
+            'conservation_state.required' => 'O estado de conservação atual é obrigatório.',
             'inspection_date.before_or_equal' => 'A data da inspeção não pode ser no futuro.',
             'images.*.image' => 'O arquivo deve ser uma imagem.',
             'images.*.max' => 'Cada imagem não pode ser maior que 2MB.',

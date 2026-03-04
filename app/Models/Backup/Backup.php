@@ -11,9 +11,6 @@ class Backup extends Model {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Escopo para filtrar por nome de exibição
-     */
     public function scopeFilterName($query, $name)
     {
         if ($name) {
@@ -21,9 +18,6 @@ class Backup extends Model {
         }
     }
 
-    /**
-     * Escopo para filtrar por status
-     */
     public function scopeByType($query, $status)
     {
         if ($status) {
@@ -31,9 +25,6 @@ class Backup extends Model {
         }
     }
 
-    /**
-     * Escopo para filtrar por usuário (Responsável)
-     */
     public function scopeByUser($query, $userId)
     {
         if ($userId) {

@@ -19,12 +19,6 @@ class AccessibleEducationalMaterialController extends Controller
         protected AccessibleEducationalMaterialService $service
     ) {}
 
-    /*
-    |--------------------------------------------------------------------------
-    | LISTAGEM
-    |--------------------------------------------------------------------------
-    */
-
     public function index(Request $request): View
     {
         $name = trim($request->name ?? '');
@@ -67,12 +61,6 @@ class AccessibleEducationalMaterialController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE
-    |--------------------------------------------------------------------------
-    */
-
     public function create(): View
     {
         return view(
@@ -92,12 +80,6 @@ class AccessibleEducationalMaterialController extends Controller
             ->with('success', 'Material criado com sucesso!');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SHOW
-    |--------------------------------------------------------------------------
-    */
-
     public function show(AccessibleEducationalMaterial $material): View
     {
         $material->load([
@@ -113,12 +95,6 @@ class AccessibleEducationalMaterialController extends Controller
             compact('material')
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | EDIT
-    |--------------------------------------------------------------------------
-    */
 
     public function edit(AccessibleEducationalMaterial $material): View
     {
@@ -138,12 +114,6 @@ class AccessibleEducationalMaterialController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE
-    |--------------------------------------------------------------------------
-    */
-
     public function update(AccessibleEducationalMaterialRequest $request, AccessibleEducationalMaterial $material): RedirectResponse
     {
         $this->service->update($material, $request->validated());
@@ -153,25 +123,6 @@ class AccessibleEducationalMaterialController extends Controller
             ->with('success', 'Material atualizado com sucesso!');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | TOGGLE ACTIVE
-    |--------------------------------------------------------------------------
-    */
-
-    public function toggleActive(AccessibleEducationalMaterial $material): RedirectResponse
-    {
-        $this->service->toggleActive($material);
-
-        return back()->with('success', 'Status atualizado com sucesso!');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | DELETE
-    |--------------------------------------------------------------------------
-    */
-
     public function destroy(AccessibleEducationalMaterial $material): RedirectResponse
     {
         $this->service->delete($material);
@@ -180,12 +131,6 @@ class AccessibleEducationalMaterialController extends Controller
             ->route('inclusive-radar.accessible-educational-materials.index')
             ->with('success', 'Material removido!');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PDF
-    |--------------------------------------------------------------------------
-    */
 
     public function generatePdf(AccessibleEducationalMaterial $material)
     {
@@ -205,12 +150,6 @@ class AccessibleEducationalMaterialController extends Controller
 
         return $pdf->stream("MPA_{$material->name}.pdf");
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | INSPEÇÃO
-    |--------------------------------------------------------------------------
-    */
 
     public function showInspection(AccessibleEducationalMaterial $material, Inspection $inspection)
     {
