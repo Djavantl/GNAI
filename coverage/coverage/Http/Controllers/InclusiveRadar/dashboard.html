@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/app/Http/Controllers/InclusiveRadar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../../index.html">/var/www/app</a></li>
+         <li class="breadcrumb-item"><a href="../../index.html">Http</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Controllers</a></li>
+         <li class="breadcrumb-item"><a href="index.html">InclusiveRadar</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccessibilityFeatureController.php.html#13">App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#16">App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#18">App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#13">App\Http\Controllers\InclusiveRadar\BarrierCategoryController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#15">App\Http\Controllers\InclusiveRadar\BarrierController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#18">App\Http\Controllers\InclusiveRadar\LoanController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Logs/AccessibleEducationalMaterialLogController.php.html#10">App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Logs/AssistiveTechnologyLogController.php.html#9">App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#20">App\Http\Controllers\InclusiveRadar\TrainingController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#18">App\Http\Controllers\InclusiveRadar\WaitlistController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LocationController.php.html#14">App\Http\Controllers\InclusiveRadar\LocationController</a></td><td class="text-right">49%</td></tr>
+       <tr><td><a href="InstitutionController.php.html#13">App\Http\Controllers\InclusiveRadar\InstitutionController</a></td><td class="text-right">67%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="LoanController.php.html#18">App\Http\Controllers\InclusiveRadar\LoanController</a></td><td class="text-right">0.0%</td><td class="text-right">20</td><td class="text-right">420</td></tr>
+       <tr><td><a href="TrainingController.php.html#20">App\Http\Controllers\InclusiveRadar\TrainingController</a></td><td class="text-right">0.0%</td><td class="text-right">18</td><td class="text-right">342</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#16">App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController</a></td><td class="text-right">0.0%</td><td class="text-right">16</td><td class="text-right">272</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#18">App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController</a></td><td class="text-right">0.0%</td><td class="text-right">16</td><td class="text-right">272</td></tr>
+       <tr><td><a href="BarrierController.php.html#15">App\Http\Controllers\InclusiveRadar\BarrierController</a></td><td class="text-right">0.0%</td><td class="text-right">16</td><td class="text-right">272</td></tr>
+       <tr><td><a href="WaitlistController.php.html#18">App\Http\Controllers\InclusiveRadar\WaitlistController</a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#13">App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#13">App\Http\Controllers\InclusiveRadar\BarrierCategoryController</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="LocationController.php.html#14">App\Http\Controllers\InclusiveRadar\LocationController</a></td><td class="text-right">49.1%</td><td class="text-right">9</td><td class="text-right">19</td></tr>
+       <tr><td><a href="InstitutionController.php.html#13">App\Http\Controllers\InclusiveRadar\InstitutionController</a></td><td class="text-right">67.4%</td><td class="text-right">10</td><td class="text-right">13</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccessibilityFeatureController.php.html#15"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#19"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#41"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#49"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#54"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#62"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#70"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#78"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#18"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#22"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#64"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#74"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#83"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#99"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#117"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#126"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#135"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#154"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::showInspection">showInspection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#20"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#61"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#68"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#77"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#92"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#109"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#118"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#127"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#145"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::exportExcel">exportExcel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#157"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::showInspection">showInspection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#15"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#19"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#38"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#43"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#52"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#60"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#68"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#77"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#17"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#21"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#53"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#74"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#83"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#99"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#131"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#140"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#149"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::showInspection">showInspection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierController.php.html#165"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InstitutionController.php.html#43"><abbr title="App\Http\Controllers\InclusiveRadar\InstitutionController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InstitutionController.php.html#64"><abbr title="App\Http\Controllers\InclusiveRadar\InstitutionController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InstitutionController.php.html#74"><abbr title="App\Http\Controllers\InclusiveRadar\InstitutionController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#20"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#60"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#102"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#119"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#135"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#161"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#185"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::returnItem">returnItem</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#205"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LoanController.php.html#220"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LocationController.php.html#40"><abbr title="App\Http\Controllers\InclusiveRadar\LocationController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LocationController.php.html#65"><abbr title="App\Http\Controllers\InclusiveRadar\LocationController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LocationController.php.html#73"><abbr title="App\Http\Controllers\InclusiveRadar\LocationController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Logs/AccessibleEducationalMaterialLogController.php.html#15"><abbr title="App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Logs/AccessibleEducationalMaterialLogController.php.html#31"><abbr title="App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Logs/AssistiveTechnologyLogController.php.html#11"><abbr title="App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Logs/AssistiveTechnologyLogController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#28"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#49"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#75"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#84"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#102"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#118"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#127"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#142"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::destroyFile">destroyFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#164"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingController.php.html#181"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::exportExcel">exportExcel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#20"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#59"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#80"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#95"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#103"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::edit">edit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#124"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#133"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#142"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WaitlistController.php.html#151"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InstitutionController.php.html#19"><abbr title="App\Http\Controllers\InclusiveRadar\InstitutionController::index">index</abbr></a></td><td class="text-right">76%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#22"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="BarrierController.php.html#165"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::generatePdf">generatePdf</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="TrainingController.php.html#142"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::destroyFile">destroyFile</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="LoanController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="LoanController.php.html#60"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::create">create</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="LoanController.php.html#161"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::update">update</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="LoanController.php.html#185"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::returnItem">returnItem</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TrainingController.php.html#28"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="WaitlistController.php.html#24"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="WaitlistController.php.html#59"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::create">create</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AccessibilityFeatureController.php.html#19"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterialController.php.html#154"><abbr title="App\Http\Controllers\InclusiveRadar\AccessibleEducationalMaterialController::showInspection">showInspection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="AssistiveTechnologyController.php.html#157"><abbr title="App\Http\Controllers\InclusiveRadar\AssistiveTechnologyController::showInspection">showInspection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="BarrierCategoryController.php.html#19"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierCategoryController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="BarrierController.php.html#21"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::index">index</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="BarrierController.php.html#149"><abbr title="App\Http\Controllers\InclusiveRadar\BarrierController::showInspection">showInspection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="LoanController.php.html#102"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::store">store</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="LoanController.php.html#205"><abbr title="App\Http\Controllers\InclusiveRadar\LoanController::destroy">destroy</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="TrainingController.php.html#127"><abbr title="App\Http\Controllers\InclusiveRadar\TrainingController::destroy">destroy</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="WaitlistController.php.html#80"><abbr title="App\Http\Controllers\InclusiveRadar\WaitlistController::store">store</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="InstitutionController.php.html#19"><abbr title="App\Http\Controllers\InclusiveRadar\InstitutionController::index">index</abbr></a></td><td class="text-right">76.5%</td><td class="text-right">2</td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.18</a> and <a href="https://phpunit.de/">PHPUnit 12.5.14</a> at Wed Mar 4 2:11:52 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,9,"AccessibilityFeatureController.php.html#13","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController","90"],[0,16,"AccessibleEducationalMaterialController.php.html#16","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController","272"],[0,16,"AssistiveTechnologyController.php.html#18","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController","272"],[0,9,"BarrierCategoryController.php.html#13","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController","90"],[0,16,"BarrierController.php.html#15","App\\Http\\Controllers\\InclusiveRadar\\BarrierController","272"],[0,20,"LoanController.php.html#18","App\\Http\\Controllers\\InclusiveRadar\\LoanController","420"],[0,2,"Logs\/AccessibleEducationalMaterialLogController.php.html#10","App\\Http\\Controllers\\InclusiveRadar\\Logs\\AccessibleEducationalMaterialLogController","6"],[0,2,"Logs\/AssistiveTechnologyLogController.php.html#9","App\\Http\\Controllers\\InclusiveRadar\\Logs\\AssistiveTechnologyLogController","6"],[0,18,"TrainingController.php.html#20","App\\Http\\Controllers\\InclusiveRadar\\TrainingController","342"],[0,15,"WaitlistController.php.html#18","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController","240"],[49.056603773584904,9,"LocationController.php.html#14","App\\Http\\Controllers\\InclusiveRadar\\LocationController","19.71"],[67.3913043478261,10,"InstitutionController.php.html#13","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController","13.47"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"AccessibilityFeatureController.php.html#15","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::__construct","2"],[0,2,"AccessibilityFeatureController.php.html#19","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::index","6"],[0,1,"AccessibilityFeatureController.php.html#41","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::show","2"],[0,1,"AccessibilityFeatureController.php.html#49","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::create","2"],[0,1,"AccessibilityFeatureController.php.html#54","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::store","2"],[0,1,"AccessibilityFeatureController.php.html#62","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::edit","2"],[0,1,"AccessibilityFeatureController.php.html#70","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::update","2"],[0,1,"AccessibilityFeatureController.php.html#78","App\\Http\\Controllers\\InclusiveRadar\\AccessibilityFeatureController::destroy","2"],[0,1,"AccessibleEducationalMaterialController.php.html#18","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::__construct","2"],[0,6,"AccessibleEducationalMaterialController.php.html#22","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::index","42"],[0,1,"AccessibleEducationalMaterialController.php.html#64","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::create","2"],[0,1,"AccessibleEducationalMaterialController.php.html#74","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::store","2"],[0,1,"AccessibleEducationalMaterialController.php.html#83","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::show","2"],[0,1,"AccessibleEducationalMaterialController.php.html#99","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::edit","2"],[0,1,"AccessibleEducationalMaterialController.php.html#117","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::update","2"],[0,1,"AccessibleEducationalMaterialController.php.html#126","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::destroy","2"],[0,1,"AccessibleEducationalMaterialController.php.html#135","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::generatePdf","2"],[0,2,"AccessibleEducationalMaterialController.php.html#154","App\\Http\\Controllers\\InclusiveRadar\\AccessibleEducationalMaterialController::showInspection","6"],[0,1,"AssistiveTechnologyController.php.html#20","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::__construct","2"],[0,5,"AssistiveTechnologyController.php.html#24","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::index","30"],[0,1,"AssistiveTechnologyController.php.html#61","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::create","2"],[0,1,"AssistiveTechnologyController.php.html#68","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::store","2"],[0,1,"AssistiveTechnologyController.php.html#77","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::show","2"],[0,1,"AssistiveTechnologyController.php.html#92","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::edit","2"],[0,1,"AssistiveTechnologyController.php.html#109","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::update","2"],[0,1,"AssistiveTechnologyController.php.html#118","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::destroy","2"],[0,1,"AssistiveTechnologyController.php.html#127","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::generatePdf","2"],[0,1,"AssistiveTechnologyController.php.html#145","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::exportExcel","2"],[0,2,"AssistiveTechnologyController.php.html#157","App\\Http\\Controllers\\InclusiveRadar\\AssistiveTechnologyController::showInspection","6"],[0,1,"BarrierCategoryController.php.html#15","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::__construct","2"],[0,2,"BarrierCategoryController.php.html#19","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::index","6"],[0,1,"BarrierCategoryController.php.html#38","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::create","2"],[0,1,"BarrierCategoryController.php.html#43","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::store","2"],[0,1,"BarrierCategoryController.php.html#52","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::show","2"],[0,1,"BarrierCategoryController.php.html#60","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::edit","2"],[0,1,"BarrierCategoryController.php.html#68","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::update","2"],[0,1,"BarrierCategoryController.php.html#77","App\\Http\\Controllers\\InclusiveRadar\\BarrierCategoryController::destroy","2"],[0,1,"BarrierController.php.html#17","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::__construct","2"],[0,2,"BarrierController.php.html#21","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::index","6"],[0,1,"BarrierController.php.html#53","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::create","2"],[0,1,"BarrierController.php.html#74","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::store","2"],[0,1,"BarrierController.php.html#83","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::show","2"],[0,1,"BarrierController.php.html#99","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::edit","2"],[0,1,"BarrierController.php.html#131","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::update","2"],[0,1,"BarrierController.php.html#140","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::destroy","2"],[0,2,"BarrierController.php.html#149","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::showInspection","6"],[0,5,"BarrierController.php.html#165","App\\Http\\Controllers\\InclusiveRadar\\BarrierController::generatePdf","30"],[0,1,"InstitutionController.php.html#43","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::create","2"],[0,1,"InstitutionController.php.html#64","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::show","2"],[0,1,"InstitutionController.php.html#74","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::edit","2"],[0,1,"LoanController.php.html#20","App\\Http\\Controllers\\InclusiveRadar\\LoanController::__construct","2"],[0,3,"LoanController.php.html#24","App\\Http\\Controllers\\InclusiveRadar\\LoanController::index","12"],[0,3,"LoanController.php.html#60","App\\Http\\Controllers\\InclusiveRadar\\LoanController::create","12"],[0,2,"LoanController.php.html#102","App\\Http\\Controllers\\InclusiveRadar\\LoanController::store","6"],[0,1,"LoanController.php.html#119","App\\Http\\Controllers\\InclusiveRadar\\LoanController::show","2"],[0,1,"LoanController.php.html#135","App\\Http\\Controllers\\InclusiveRadar\\LoanController::edit","2"],[0,3,"LoanController.php.html#161","App\\Http\\Controllers\\InclusiveRadar\\LoanController::update","12"],[0,3,"LoanController.php.html#185","App\\Http\\Controllers\\InclusiveRadar\\LoanController::returnItem","12"],[0,2,"LoanController.php.html#205","App\\Http\\Controllers\\InclusiveRadar\\LoanController::destroy","6"],[0,1,"LoanController.php.html#220","App\\Http\\Controllers\\InclusiveRadar\\LoanController::generatePdf","2"],[0,1,"LocationController.php.html#40","App\\Http\\Controllers\\InclusiveRadar\\LocationController::create","2"],[0,1,"LocationController.php.html#65","App\\Http\\Controllers\\InclusiveRadar\\LocationController::show","2"],[0,1,"LocationController.php.html#73","App\\Http\\Controllers\\InclusiveRadar\\LocationController::edit","2"],[0,1,"Logs\/AccessibleEducationalMaterialLogController.php.html#15","App\\Http\\Controllers\\InclusiveRadar\\Logs\\AccessibleEducationalMaterialLogController::index","2"],[0,1,"Logs\/AccessibleEducationalMaterialLogController.php.html#31","App\\Http\\Controllers\\InclusiveRadar\\Logs\\AccessibleEducationalMaterialLogController::generatePdf","2"],[0,1,"Logs\/AssistiveTechnologyLogController.php.html#11","App\\Http\\Controllers\\InclusiveRadar\\Logs\\AssistiveTechnologyLogController::index","2"],[0,1,"Logs\/AssistiveTechnologyLogController.php.html#24","App\\Http\\Controllers\\InclusiveRadar\\Logs\\AssistiveTechnologyLogController::generatePdf","2"],[0,1,"TrainingController.php.html#24","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::__construct","2"],[0,3,"TrainingController.php.html#28","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::index","12"],[0,1,"TrainingController.php.html#49","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::create","2"],[0,1,"TrainingController.php.html#75","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::store","2"],[0,1,"TrainingController.php.html#84","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::show","2"],[0,1,"TrainingController.php.html#102","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::edit","2"],[0,1,"TrainingController.php.html#118","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::update","2"],[0,2,"TrainingController.php.html#127","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::destroy","6"],[0,5,"TrainingController.php.html#142","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::destroyFile","30"],[0,1,"TrainingController.php.html#164","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::generatePdf","2"],[0,1,"TrainingController.php.html#181","App\\Http\\Controllers\\InclusiveRadar\\TrainingController::exportExcel","2"],[0,1,"WaitlistController.php.html#20","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::__construct","2"],[0,3,"WaitlistController.php.html#24","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::index","12"],[0,3,"WaitlistController.php.html#59","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::create","12"],[0,2,"WaitlistController.php.html#80","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::store","6"],[0,1,"WaitlistController.php.html#95","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::show","2"],[0,1,"WaitlistController.php.html#103","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::edit","2"],[0,1,"WaitlistController.php.html#124","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::update","2"],[0,1,"WaitlistController.php.html#133","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::destroy","2"],[0,1,"WaitlistController.php.html#142","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::cancel","2"],[0,1,"WaitlistController.php.html#151","App\\Http\\Controllers\\InclusiveRadar\\WaitlistController::generatePdf","2"],[76.47058823529412,2,"InstitutionController.php.html#19","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::index","2.05"],[100,1,"InstitutionController.php.html#15","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::__construct","1"],[100,2,"InstitutionController.php.html#48","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::store","2"],[100,1,"InstitutionController.php.html#84","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::update","1"],[100,1,"InstitutionController.php.html#93","App\\Http\\Controllers\\InclusiveRadar\\InstitutionController::destroy","1"],[100,1,"LocationController.php.html#16","App\\Http\\Controllers\\InclusiveRadar\\LocationController::__construct","1"],[100,2,"LocationController.php.html#20","App\\Http\\Controllers\\InclusiveRadar\\LocationController::index","2"],[100,1,"LocationController.php.html#56","App\\Http\\Controllers\\InclusiveRadar\\LocationController::store","1"],[100,1,"LocationController.php.html#90","App\\Http\\Controllers\\InclusiveRadar\\LocationController::update","1"],[100,1,"LocationController.php.html#99","App\\Http\\Controllers\\InclusiveRadar\\LocationController::destroy","1"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [10,0,0,0,0,1,0,1,0,0,0,0])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [88,0,0,0,0,0,0,0,1,0,0,9])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

@@ -1,6 +1,12 @@
 # Makefile para o projeto GNAI
 
 # -----------------------------
+# Declarando regras “PHONY” para sempre executar
+# -----------------------------
+.PHONY: up down art migrate seed perm make tinker scheduler coverage \
+        db backup-db restore-db backup-full restore-full
+
+# -----------------------------
 # Contêineres principais
 # -----------------------------
 up:
@@ -34,6 +40,12 @@ scheduler:
 	docker compose exec app php artisan schedule:work
 
 # -----------------------------
+# PHPUnit / Testes
+# -----------------------------
+coverage:
+	docker exec -it gnai_app ./vendor/bin/phpunit --coverage-html /var/www/coverage
+
+# -----------------------------
 # Banco de dados MySQL
 # -----------------------------
 db:
@@ -60,13 +72,9 @@ restore-db:
 backup-full:
 	@echo "Criando backup completo..."
 	@mkdir -p storage/app/private/GNAIbackups
-	@# Dump do banco de dados
 	@docker compose exec db sh -c 'exec mysqldump -uroot -p$$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE' > storage/app/private/GNAIbackups/database.sql
-	@# Compacta o storage (só o que interessa)
 	@tar -czf storage/app/private/GNAIbackups/storage.tar.gz -C storage/app private
-	@# Cria o arquivo ZIP final com data/hora
 	@zip -r storage/app/private/GNAIbackups/backup-$(shell date +%Y-%m-%d_%H-%M-%S).zip storage/app/private/GNAIbackups/database.sql storage/app/private/GNAIbackups/storage.tar.gz
-	@# Remove arquivos temporários
 	@rm storage/app/private/GNAIbackups/database.sql storage/app/private/GNAIbackups/storage.tar.gz
 	@echo "Backup completo gerado em storage/app/private/GNAIbackups"
 
@@ -85,6 +93,7 @@ restore-full:
 	@tar -xzf restore-temp/storage.tar.gz -C storage/app
 	@rm -rf restore-temp
 	@echo "Restore completo!"
+
 # -----------------------------
 # Evita conflito com arquivos
 # -----------------------------

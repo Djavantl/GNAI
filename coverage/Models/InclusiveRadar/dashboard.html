@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/app/Models/InclusiveRadar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../index.html">/var/www/app</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Models</a></li>
+         <li class="breadcrumb-item"><a href="index.html">InclusiveRadar</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccessibilityFeature.php.html#9">App\Models\InclusiveRadar\AccessibilityFeature</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#16">App\Models\InclusiveRadar\AccessibleEducationalMaterial</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#17">App\Models\InclusiveRadar\AssistiveTechnology</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#19">App\Models\InclusiveRadar\Barrier</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategory.php.html#10">App\Models\InclusiveRadar\BarrierCategory</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Inspection.php.html#13">App\Models\InclusiveRadar\Inspection</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InspectionImage.php.html#10">App\Models\InclusiveRadar\InspectionImage</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#14">App\Models\InclusiveRadar\Loan</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Training.php.html#11">App\Models\InclusiveRadar\Training</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingFile.php.html#10">App\Models\InclusiveRadar\TrainingFile</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Waitlist.php.html#13">App\Models\InclusiveRadar\Waitlist</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#16">App\Models\InclusiveRadar\AccessibleEducationalMaterial</a></td><td class="text-right">0.0%</td><td class="text-right">36</td><td class="text-right">1332</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#17">App\Models\InclusiveRadar\AssistiveTechnology</a></td><td class="text-right">0.0%</td><td class="text-right">32</td><td class="text-right">1056</td></tr>
+       <tr><td><a href="Loan.php.html#14">App\Models\InclusiveRadar\Loan</a></td><td class="text-right">0.0%</td><td class="text-right">20</td><td class="text-right">420</td></tr>
+       <tr><td><a href="Barrier.php.html#19">App\Models\InclusiveRadar\Barrier</a></td><td class="text-right">0.0%</td><td class="text-right">16</td><td class="text-right">272</td></tr>
+       <tr><td><a href="Waitlist.php.html#13">App\Models\InclusiveRadar\Waitlist</a></td><td class="text-right">0.0%</td><td class="text-right">8</td><td class="text-right">72</td></tr>
+       <tr><td><a href="AccessibilityFeature.php.html#9">App\Models\InclusiveRadar\AccessibilityFeature</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="BarrierCategory.php.html#10">App\Models\InclusiveRadar\BarrierCategory</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="Training.php.html#11">App\Models\InclusiveRadar\Training</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="InspectionImage.php.html#10">App\Models\InclusiveRadar\InspectionImage</a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="TrainingFile.php.html#10">App\Models\InclusiveRadar\TrainingFile</a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccessibilityFeature.php.html#25"><abbr title="App\Models\InclusiveRadar\AccessibilityFeature::materials">materials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeature.php.html#33"><abbr title="App\Models\InclusiveRadar\AccessibilityFeature::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibilityFeature.php.html#40"><abbr title="App\Models\InclusiveRadar\AccessibilityFeature::scopeFilterStatus">scopeFilterStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#43"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::deficiencies">deficiencies</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#53"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::accessibilityFeatures">accessibilityFeatures</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#63"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::trainings">trainings</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#67"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::inspections">inspections</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#75"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::loans">loans</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#80"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::waitlists">waitlists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#85"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::logs">logs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#90"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#99"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeActive">scopeActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#108"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeAvailable">scopeAvailable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#119"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeDigital">scopeDigital</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#128"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::getAuditLabels">getAuditLabels</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#145"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::formatAuditValue">formatAuditValue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#44"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::deficiencies">deficiencies</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#54"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::trainings">trainings</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#58"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::inspections">inspections</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#66"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::loans">loans</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#71"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::waitlists">waitlists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#76"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::logs">logs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#81"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#88"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeActive">scopeActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#96"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeAvailable">scopeAvailable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#106"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeDigital">scopeDigital</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#114"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::getAuditLabels">getAuditLabels</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#130"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::formatAuditValue">formatAuditValue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#56"><abbr title="App\Models\InclusiveRadar\Barrier::getReporterDisplayNameAttribute">getReporterDisplayNameAttribute</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#65"><abbr title="App\Models\InclusiveRadar\Barrier::registeredBy">registeredBy</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#70"><abbr title="App\Models\InclusiveRadar\Barrier::institution">institution</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#75"><abbr title="App\Models\InclusiveRadar\Barrier::category">category</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#80"><abbr title="App\Models\InclusiveRadar\Barrier::location">location</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#84"><abbr title="App\Models\InclusiveRadar\Barrier::affectedStudent">affectedStudent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#89"><abbr title="App\Models\InclusiveRadar\Barrier::affectedProfessional">affectedProfessional</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#94"><abbr title="App\Models\InclusiveRadar\Barrier::deficiencies">deficiencies</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#104"><abbr title="App\Models\InclusiveRadar\Barrier::latestStatus">latestStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#114"><abbr title="App\Models\InclusiveRadar\Barrier::inspections">inspections</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#122"><abbr title="App\Models\InclusiveRadar\Barrier::allImages">allImages</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#134"><abbr title="App\Models\InclusiveRadar\Barrier::scopeName">scopeName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#141"><abbr title="App\Models\InclusiveRadar\Barrier::scopeCategory">scopeCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#150"><abbr title="App\Models\InclusiveRadar\Barrier::scopePriority">scopePriority</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Barrier.php.html#157"><abbr title="App\Models\InclusiveRadar\Barrier::scopeStatus">scopeStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategory.php.html#26"><abbr title="App\Models\InclusiveRadar\BarrierCategory::barriers">barriers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategory.php.html#31"><abbr title="App\Models\InclusiveRadar\BarrierCategory::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BarrierCategory.php.html#36"><abbr title="App\Models\InclusiveRadar\BarrierCategory::scopeFilterActive">scopeFilterActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Inspection.php.html#35"><abbr title="App\Models\InclusiveRadar\Inspection::inspectable">inspectable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Inspection.php.html#40"><abbr title="App\Models\InclusiveRadar\Inspection::images">images</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InspectionImage.php.html#22"><abbr title="App\Models\InclusiveRadar\InspectionImage::booted">booted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InspectionImage.php.html#31"><abbr title="App\Models\InclusiveRadar\InspectionImage::inspection">inspection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#40"><abbr title="App\Models\InclusiveRadar\Loan::loanable">loanable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#45"><abbr title="App\Models\InclusiveRadar\Loan::student">student</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#50"><abbr title="App\Models\InclusiveRadar\Loan::professional">professional</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#55"><abbr title="App\Models\InclusiveRadar\Loan::user">user</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#60"><abbr title="App\Models\InclusiveRadar\Loan::scopeByStatus">scopeByStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#68"><abbr title="App\Models\InclusiveRadar\Loan::scopeStudent">scopeStudent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#77"><abbr title="App\Models\InclusiveRadar\Loan::scopeProfessional">scopeProfessional</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#86"><abbr title="App\Models\InclusiveRadar\Loan::scopeItem">scopeItem</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#112"><abbr title="App\Models\InclusiveRadar\Loan::scopeByUser">scopeByUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#120"><abbr title="App\Models\InclusiveRadar\Loan::scopeLoanedBetween">scopeLoanedBetween</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#127"><abbr title="App\Models\InclusiveRadar\Loan::scopeActive">scopeActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#132"><abbr title="App\Models\InclusiveRadar\Loan::scopeOverdue">scopeOverdue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Loan.php.html#138"><abbr title="App\Models\InclusiveRadar\Loan::scopeReturned">scopeReturned</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Training.php.html#31"><abbr title="App\Models\InclusiveRadar\Training::trainable">trainable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Training.php.html#36"><abbr title="App\Models\InclusiveRadar\Training::files">files</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Training.php.html#41"><abbr title="App\Models\InclusiveRadar\Training::scopeSearchTitle">scopeSearchTitle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Training.php.html#49"><abbr title="App\Models\InclusiveRadar\Training::scopeActive">scopeActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Training.php.html#54"><abbr title="App\Models\InclusiveRadar\Training::assistiveTechnologies">assistiveTechnologies</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingFile.php.html#22"><abbr title="App\Models\InclusiveRadar\TrainingFile::booted">booted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TrainingFile.php.html#31"><abbr title="App\Models\InclusiveRadar\TrainingFile::training">training</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Waitlist.php.html#34"><abbr title="App\Models\InclusiveRadar\Waitlist::waitlistable">waitlistable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Waitlist.php.html#39"><abbr title="App\Models\InclusiveRadar\Waitlist::student">student</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Waitlist.php.html#44"><abbr title="App\Models\InclusiveRadar\Waitlist::professional">professional</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Waitlist.php.html#49"><abbr title="App\Models\InclusiveRadar\Waitlist::user">user</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Waitlist.php.html#54"><abbr title="App\Models\InclusiveRadar\Waitlist::scopeStudent">scopeStudent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Waitlist.php.html#63"><abbr title="App\Models\InclusiveRadar\Waitlist::scopeProfessional">scopeProfessional</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#145"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::formatAuditValue">formatAuditValue</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">16</td><td class="text-right">272</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#130"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::formatAuditValue">formatAuditValue</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">13</td><td class="text-right">182</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#108"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeAvailable">scopeAvailable</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#96"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeAvailable">scopeAvailable</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="AccessibilityFeature.php.html#40"><abbr title="App\Models\InclusiveRadar\AccessibilityFeature::scopeFilterStatus">scopeFilterStatus</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#99"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeActive">scopeActive</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#119"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeDigital">scopeDigital</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#88"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeActive">scopeActive</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#106"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeDigital">scopeDigital</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="BarrierCategory.php.html#36"><abbr title="App\Models\InclusiveRadar\BarrierCategory::scopeFilterActive">scopeFilterActive</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="InspectionImage.php.html#22"><abbr title="App\Models\InclusiveRadar\InspectionImage::booted">booted</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Loan.php.html#120"><abbr title="App\Models\InclusiveRadar\Loan::scopeLoanedBetween">scopeLoanedBetween</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TrainingFile.php.html#22"><abbr title="App\Models\InclusiveRadar\TrainingFile::booted">booted</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AccessibilityFeature.php.html#33"><abbr title="App\Models\InclusiveRadar\AccessibilityFeature::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="AccessibleEducationalMaterial.php.html#90"><abbr title="App\Models\InclusiveRadar\AccessibleEducationalMaterial::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="AssistiveTechnology.php.html#81"><abbr title="App\Models\InclusiveRadar\AssistiveTechnology::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Barrier.php.html#56"><abbr title="App\Models\InclusiveRadar\Barrier::getReporterDisplayNameAttribute">getReporterDisplayNameAttribute</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="BarrierCategory.php.html#31"><abbr title="App\Models\InclusiveRadar\BarrierCategory::scopeFilterName">scopeFilterName</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Loan.php.html#60"><abbr title="App\Models\InclusiveRadar\Loan::scopeByStatus">scopeByStatus</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Loan.php.html#68"><abbr title="App\Models\InclusiveRadar\Loan::scopeStudent">scopeStudent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Loan.php.html#77"><abbr title="App\Models\InclusiveRadar\Loan::scopeProfessional">scopeProfessional</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Loan.php.html#86"><abbr title="App\Models\InclusiveRadar\Loan::scopeItem">scopeItem</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Loan.php.html#112"><abbr title="App\Models\InclusiveRadar\Loan::scopeByUser">scopeByUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Training.php.html#41"><abbr title="App\Models\InclusiveRadar\Training::scopeSearchTitle">scopeSearchTitle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Waitlist.php.html#54"><abbr title="App\Models\InclusiveRadar\Waitlist::scopeStudent">scopeStudent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Waitlist.php.html#63"><abbr title="App\Models\InclusiveRadar\Waitlist::scopeProfessional">scopeProfessional</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.18</a> and <a href="https://phpunit.de/">PHPUnit 12.5.14</a> at Wed Mar 4 2:39:14 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,6,"AccessibilityFeature.php.html#9","App\\Models\\InclusiveRadar\\AccessibilityFeature","42"],[0,36,"AccessibleEducationalMaterial.php.html#16","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial","1332"],[0,32,"AssistiveTechnology.php.html#17","App\\Models\\InclusiveRadar\\AssistiveTechnology","1056"],[0,16,"Barrier.php.html#19","App\\Models\\InclusiveRadar\\Barrier","272"],[0,6,"BarrierCategory.php.html#10","App\\Models\\InclusiveRadar\\BarrierCategory","42"],[0,2,"Inspection.php.html#13","App\\Models\\InclusiveRadar\\Inspection","6"],[0,4,"InspectionImage.php.html#10","App\\Models\\InclusiveRadar\\InspectionImage","20"],[0,20,"Loan.php.html#14","App\\Models\\InclusiveRadar\\Loan","420"],[0,6,"Training.php.html#11","App\\Models\\InclusiveRadar\\Training","42"],[0,4,"TrainingFile.php.html#10","App\\Models\\InclusiveRadar\\TrainingFile","20"],[0,8,"Waitlist.php.html#13","App\\Models\\InclusiveRadar\\Waitlist","72"],[100,9,"Institution.php.html#10","App\\Models\\InclusiveRadar\\Institution","9"],[100,9,"Location.php.html#12","App\\Models\\InclusiveRadar\\Location","9"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"AccessibilityFeature.php.html#25","App\\Models\\InclusiveRadar\\AccessibilityFeature::materials","2"],[0,2,"AccessibilityFeature.php.html#33","App\\Models\\InclusiveRadar\\AccessibilityFeature::scopeFilterName","6"],[0,3,"AccessibilityFeature.php.html#40","App\\Models\\InclusiveRadar\\AccessibilityFeature::scopeFilterStatus","12"],[0,1,"AccessibleEducationalMaterial.php.html#43","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::deficiencies","2"],[0,1,"AccessibleEducationalMaterial.php.html#53","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::accessibilityFeatures","2"],[0,1,"AccessibleEducationalMaterial.php.html#63","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::trainings","2"],[0,1,"AccessibleEducationalMaterial.php.html#67","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::inspections","2"],[0,1,"AccessibleEducationalMaterial.php.html#75","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::loans","2"],[0,1,"AccessibleEducationalMaterial.php.html#80","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::waitlists","2"],[0,1,"AccessibleEducationalMaterial.php.html#85","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::logs","2"],[0,2,"AccessibleEducationalMaterial.php.html#90","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::scopeFilterName","6"],[0,3,"AccessibleEducationalMaterial.php.html#99","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::scopeActive","12"],[0,4,"AccessibleEducationalMaterial.php.html#108","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::scopeAvailable","20"],[0,3,"AccessibleEducationalMaterial.php.html#119","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::scopeDigital","12"],[0,1,"AccessibleEducationalMaterial.php.html#128","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::getAuditLabels","2"],[0,16,"AccessibleEducationalMaterial.php.html#145","App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial::formatAuditValue","272"],[0,1,"AssistiveTechnology.php.html#44","App\\Models\\InclusiveRadar\\AssistiveTechnology::deficiencies","2"],[0,1,"AssistiveTechnology.php.html#54","App\\Models\\InclusiveRadar\\AssistiveTechnology::trainings","2"],[0,1,"AssistiveTechnology.php.html#58","App\\Models\\InclusiveRadar\\AssistiveTechnology::inspections","2"],[0,1,"AssistiveTechnology.php.html#66","App\\Models\\InclusiveRadar\\AssistiveTechnology::loans","2"],[0,1,"AssistiveTechnology.php.html#71","App\\Models\\InclusiveRadar\\AssistiveTechnology::waitlists","2"],[0,1,"AssistiveTechnology.php.html#76","App\\Models\\InclusiveRadar\\AssistiveTechnology::logs","2"],[0,2,"AssistiveTechnology.php.html#81","App\\Models\\InclusiveRadar\\AssistiveTechnology::scopeFilterName","6"],[0,3,"AssistiveTechnology.php.html#88","App\\Models\\InclusiveRadar\\AssistiveTechnology::scopeActive","12"],[0,4,"AssistiveTechnology.php.html#96","App\\Models\\InclusiveRadar\\AssistiveTechnology::scopeAvailable","20"],[0,3,"AssistiveTechnology.php.html#106","App\\Models\\InclusiveRadar\\AssistiveTechnology::scopeDigital","12"],[0,1,"AssistiveTechnology.php.html#114","App\\Models\\InclusiveRadar\\AssistiveTechnology::getAuditLabels","2"],[0,13,"AssistiveTechnology.php.html#130","App\\Models\\InclusiveRadar\\AssistiveTechnology::formatAuditValue","182"],[0,2,"Barrier.php.html#56","App\\Models\\InclusiveRadar\\Barrier::getReporterDisplayNameAttribute","6"],[0,1,"Barrier.php.html#65","App\\Models\\InclusiveRadar\\Barrier::registeredBy","2"],[0,1,"Barrier.php.html#70","App\\Models\\InclusiveRadar\\Barrier::institution","2"],[0,1,"Barrier.php.html#75","App\\Models\\InclusiveRadar\\Barrier::category","2"],[0,1,"Barrier.php.html#80","App\\Models\\InclusiveRadar\\Barrier::location","2"],[0,1,"Barrier.php.html#84","App\\Models\\InclusiveRadar\\Barrier::affectedStudent","2"],[0,1,"Barrier.php.html#89","App\\Models\\InclusiveRadar\\Barrier::affectedProfessional","2"],[0,1,"Barrier.php.html#94","App\\Models\\InclusiveRadar\\Barrier::deficiencies","2"],[0,1,"Barrier.php.html#104","App\\Models\\InclusiveRadar\\Barrier::latestStatus","2"],[0,1,"Barrier.php.html#114","App\\Models\\InclusiveRadar\\Barrier::inspections","2"],[0,1,"Barrier.php.html#122","App\\Models\\InclusiveRadar\\Barrier::allImages","2"],[0,1,"Barrier.php.html#134","App\\Models\\InclusiveRadar\\Barrier::scopeName","2"],[0,1,"Barrier.php.html#141","App\\Models\\InclusiveRadar\\Barrier::scopeCategory","2"],[0,1,"Barrier.php.html#150","App\\Models\\InclusiveRadar\\Barrier::scopePriority","2"],[0,1,"Barrier.php.html#157","App\\Models\\InclusiveRadar\\Barrier::scopeStatus","2"],[0,1,"BarrierCategory.php.html#26","App\\Models\\InclusiveRadar\\BarrierCategory::barriers","2"],[0,2,"BarrierCategory.php.html#31","App\\Models\\InclusiveRadar\\BarrierCategory::scopeFilterName","6"],[0,3,"BarrierCategory.php.html#36","App\\Models\\InclusiveRadar\\BarrierCategory::scopeFilterActive","12"],[0,1,"Inspection.php.html#35","App\\Models\\InclusiveRadar\\Inspection::inspectable","2"],[0,1,"Inspection.php.html#40","App\\Models\\InclusiveRadar\\Inspection::images","2"],[0,3,"InspectionImage.php.html#22","App\\Models\\InclusiveRadar\\InspectionImage::booted","12"],[0,1,"InspectionImage.php.html#31","App\\Models\\InclusiveRadar\\InspectionImage::inspection","2"],[0,1,"Loan.php.html#40","App\\Models\\InclusiveRadar\\Loan::loanable","2"],[0,1,"Loan.php.html#45","App\\Models\\InclusiveRadar\\Loan::student","2"],[0,1,"Loan.php.html#50","App\\Models\\InclusiveRadar\\Loan::professional","2"],[0,1,"Loan.php.html#55","App\\Models\\InclusiveRadar\\Loan::user","2"],[0,2,"Loan.php.html#60","App\\Models\\InclusiveRadar\\Loan::scopeByStatus","6"],[0,2,"Loan.php.html#68","App\\Models\\InclusiveRadar\\Loan::scopeStudent","6"],[0,2,"Loan.php.html#77","App\\Models\\InclusiveRadar\\Loan::scopeProfessional","6"],[0,2,"Loan.php.html#86","App\\Models\\InclusiveRadar\\Loan::scopeItem","6"],[0,2,"Loan.php.html#112","App\\Models\\InclusiveRadar\\Loan::scopeByUser","6"],[0,3,"Loan.php.html#120","App\\Models\\InclusiveRadar\\Loan::scopeLoanedBetween","12"],[0,1,"Loan.php.html#127","App\\Models\\InclusiveRadar\\Loan::scopeActive","2"],[0,1,"Loan.php.html#132","App\\Models\\InclusiveRadar\\Loan::scopeOverdue","2"],[0,1,"Loan.php.html#138","App\\Models\\InclusiveRadar\\Loan::scopeReturned","2"],[0,1,"Training.php.html#31","App\\Models\\InclusiveRadar\\Training::trainable","2"],[0,1,"Training.php.html#36","App\\Models\\InclusiveRadar\\Training::files","2"],[0,2,"Training.php.html#41","App\\Models\\InclusiveRadar\\Training::scopeSearchTitle","6"],[0,1,"Training.php.html#49","App\\Models\\InclusiveRadar\\Training::scopeActive","2"],[0,1,"Training.php.html#54","App\\Models\\InclusiveRadar\\Training::assistiveTechnologies","2"],[0,3,"TrainingFile.php.html#22","App\\Models\\InclusiveRadar\\TrainingFile::booted","12"],[0,1,"TrainingFile.php.html#31","App\\Models\\InclusiveRadar\\TrainingFile::training","2"],[0,1,"Waitlist.php.html#34","App\\Models\\InclusiveRadar\\Waitlist::waitlistable","2"],[0,1,"Waitlist.php.html#39","App\\Models\\InclusiveRadar\\Waitlist::student","2"],[0,1,"Waitlist.php.html#44","App\\Models\\InclusiveRadar\\Waitlist::professional","2"],[0,1,"Waitlist.php.html#49","App\\Models\\InclusiveRadar\\Waitlist::user","2"],[0,2,"Waitlist.php.html#54","App\\Models\\InclusiveRadar\\Waitlist::scopeStudent","6"],[0,2,"Waitlist.php.html#63","App\\Models\\InclusiveRadar\\Waitlist::scopeProfessional","6"],[100,1,"Institution.php.html#36","App\\Models\\InclusiveRadar\\Institution::locations","1"],[100,1,"Institution.php.html#41","App\\Models\\InclusiveRadar\\Institution::barriers","1"],[100,2,"Institution.php.html#46","App\\Models\\InclusiveRadar\\Institution::scopeFilterName","2"],[100,3,"Institution.php.html#53","App\\Models\\InclusiveRadar\\Institution::scopeFilterStatus","3"],[100,2,"Institution.php.html#60","App\\Models\\InclusiveRadar\\Institution::scopeFilterLocation","2"],[100,1,"Location.php.html#35","App\\Models\\InclusiveRadar\\Location::institution","1"],[100,1,"Location.php.html#40","App\\Models\\InclusiveRadar\\Location::barriers","1"],[100,2,"Location.php.html#45","App\\Models\\InclusiveRadar\\Location::scopeFilterName","2"],[100,2,"Location.php.html#50","App\\Models\\InclusiveRadar\\Location::scopeFilterInstitution","2"],[100,3,"Location.php.html#60","App\\Models\\InclusiveRadar\\Location::scopeFilterActive","3"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [11,0,0,0,0,0,0,0,0,0,0,2])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [76,0,0,0,0,0,0,0,0,0,0,10])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

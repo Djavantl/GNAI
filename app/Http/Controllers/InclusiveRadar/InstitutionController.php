@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\InstitutionRequest;
 use App\Models\InclusiveRadar\Institution;
 use App\Services\InclusiveRadar\InstitutionService;
-use App\Services\InclusiveRadar\OpenStreetMapService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,7 +14,6 @@ class InstitutionController extends Controller
 {
     public function __construct(
         protected InstitutionService $service,
-        protected OpenStreetMapService $osmService
     ) {}
 
     public function index(Request $request): View
@@ -49,25 +47,13 @@ class InstitutionController extends Controller
 
     public function store(InstitutionRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
-        if (empty($data['latitude']) || empty($data['longitude'])) {
-            $address = "{$data['name']}, {$data['city']}, {$data['state']}";
-            $coords = $this->osmService->geocode($address);
-
-            if ($coords) {
-                $data['latitude'] = $coords['latitude'];
-                $data['longitude'] = $coords['longitude'];
-            }
-        }
-
-        $institution = $this->service->store($data);
+        $institution = $this->service->store($request->validated());
 
         if (!$institution) {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', 'Já existe uma instituição cadastrada.');
+                ->with('error', 'Já existe uma instituição cadastrada com esses dados.');
         }
 
         return redirect()
@@ -97,19 +83,7 @@ class InstitutionController extends Controller
 
     public function update(InstitutionRequest $request, Institution $institution): RedirectResponse
     {
-        $data = $request->validated();
-
-        if (empty($data['latitude']) || empty($data['longitude'])) {
-            $address = "{$data['name']}, {$data['city']}, {$data['state']}";
-            $coords = $this->osmService->geocode($address);
-
-            if ($coords) {
-                $data['latitude'] = $coords['latitude'];
-                $data['longitude'] = $coords['longitude'];
-            }
-        }
-
-        $this->service->update($institution, $data);
+        $this->service->update($institution, $request->validated());
 
         return redirect()
             ->route('inclusive-radar.institutions.index')
