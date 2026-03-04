@@ -19,50 +19,72 @@ class LocationTest extends TestCase
     {
         parent::setUp();
 
-        // Arrange: Preparamos o admin e uma instituição ativa para os vínculos
+        // Arrange
         $this->adminUser = User::factory()->create(['is_admin' => true]);
         $this->institution = Institution::factory()->create(['is_active' => true]);
     }
 
-    /** * Objetivo: Impedir acesso de visitantes à gestão de locais.
-     * Cenário: Triste (Sem Autenticação).
+    /**
+     * Objetivo: Redirecionar visitantes (não logados) para a tela de login ao tentar acessar a listagem.
+     * Cenário: Triste (Acesso sem autenticação).
      */
     public function test_guest_cannot_access_locations_index()
     {
-        $this->get(route('inclusive-radar.locations.index'))
-            ->assertRedirect('auth/login');
+        // Act
+        $response = $this->get(route('inclusive-radar.locations.index'));
+
+        // Assert
+        $response->assertRedirect(route('login'));
     }
 
-    /** * Objetivo: Impedir que usuários comuns acessem rotas administrativas.
-     * Cenário: Triste (Sem Autorização).
+    /**
+     * Objetivo: Impedir que usuários sem privilégios de administrador acessem a listagem de localizações.
+     * Cenário: Triste (Permissão insuficiente / Autorização).
      */
     public function test_non_admin_cannot_access_locations_index()
     {
+        // Arrange
         $user = User::factory()->create(['is_admin' => false]);
 
-        $this->actingAs($user)
-            ->get(route('inclusive-radar.locations.index'))
-            ->assertStatus(403);
+        // Act
+        $response = $this->actingAs($user)
+            ->get(route('inclusive-radar.locations.index'));
+
+        // Assert
+        $response->assertStatus(403);
     }
 
-    /** * Objetivo: Validar se a listagem exibe os locais cadastrados.
-     * Cenário: Feliz.
+    /**
+     * Objetivo: Validar se o administrador consegue visualizar a listagem de localizações.
+     * Cenário: Feliz (Visualização de dados).
      */
     public function test_it_can_list_locations()
     {
-        Location::factory()->count(3)->create(['institution_id' => $this->institution->id]);
+        // Arrange
+        Location::factory()->count(3)->create([
+            'institution_id' => $this->institution->id
+        ]);
 
-        $this->actingAs($this->adminUser)
-            ->get(route('inclusive-radar.locations.index'))
-            ->assertStatus(200)
-            ->assertViewHas('locations');
+        // Act
+        $response = $this->actingAs($this->adminUser)
+            ->get(route('inclusive-radar.locations.index'));
+
+        // Assert
+        $response->assertStatus(200);
+        $response->assertViewHas('locations');
+
+        // Opcional
+        $locations = $response->viewData('locations');
+        $this->assertCount(3, $locations);
     }
 
-    /** * Objetivo: Criar um local com sucesso enviando todos os dados obrigatórios.
-     * Cenário: Feliz.
+    /**
+     * Objetivo: Validar a criação e persistência de uma nova localização com dados válidos.
+     * Cenário: Feliz (Fluxo principal de armazenamento).
      */
     public function test_it_creates_a_new_location_with_valid_data()
     {
+        // Arrange
         $data = [
             'institution_id' => $this->institution->id,
             'name'           => 'Rampa de Acesso Bloco A',
@@ -72,56 +94,76 @@ class LocationTest extends TestCase
             'is_active'      => true,
         ];
 
-        $this->actingAs($this->adminUser)
-            ->post(route('inclusive-radar.locations.store'), $data)
-            ->assertRedirect(route('inclusive-radar.locations.index'));
+        // Act
+        $response = $this->actingAs($this->adminUser)
+            ->post(route('inclusive-radar.locations.store'), $data);
+
+        // Assert
+        $response->assertRedirect(route('inclusive-radar.locations.index'));
 
         $this->assertDatabaseHas('locations', [
-            'name' => 'Rampa de Acesso Bloco A',
-            'latitude' => -14.2312
+            'name'           => 'Rampa de Acesso Bloco A',
+            'institution_id' => $this->institution->id,
+            'latitude'       => -14.2312,
+            'is_active'      => true
         ]);
     }
 
-    /** * Objetivo: Garantir que o sistema REJEITE a criação sem as coordenadas (Obrigatórias).
-     * Cenário: Triste (Erro de Validação).
+    /**
+     * Objetivo: Garantir que latitude e longitude sejam campos obrigatórios.
+     * Cenário: Triste (Falha de validação de campos nulos).
      */
     public function test_it_fails_if_coordinates_are_missing()
     {
+        // Arrange
         $data = [
             'institution_id' => $this->institution->id,
             'name'           => 'Local Sem GPS',
-            'latitude'       => null, // Deixando nulo propositalmente
+            'latitude'       => null,
             'longitude'      => null,
         ];
 
-        $this->actingAs($this->adminUser)
+        // Act
+        $response = $this->actingAs($this->adminUser)
             ->from(route('inclusive-radar.locations.create'))
-            ->post(route('inclusive-radar.locations.store'), $data)
-            ->assertSessionHasErrors(['latitude', 'longitude']);
+            ->post(route('inclusive-radar.locations.store'), $data);
+
+        // Assert
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors(['latitude', 'longitude']);
+        $this->assertDatabaseMissing('locations', ['name' => 'Local Sem GPS']);
     }
 
-    /** * Objetivo: Validar que coordenadas fora do padrão geográfico são rejeitadas.
-     * Cenário: Triste (Validação de Limite).
+    /**
+     * Objetivo: Validar que o sistema rejeite latitudes (>90 ou <-90) e longitudes (>180 ou <-180) inválidas.
+     * Cenário: Triste (Validação de limites geográficos).
      */
     public function test_it_fails_if_coordinates_are_out_of_range()
     {
+        // Arrange
         $data = [
             'institution_id' => $this->institution->id,
             'name'           => 'Local no Espaço',
-            'latitude'       => 95.0,  // Max 90
-            'longitude'      => 185.0, // Max 180
+            'latitude'       => 95.0,
+            'longitude'      => 185.0,
         ];
 
-        $this->actingAs($this->adminUser)
-            ->post(route('inclusive-radar.locations.store'), $data)
-            ->assertSessionHasErrors(['latitude', 'longitude']);
+        // Act
+        $response = $this->actingAs($this->adminUser)
+            ->post(route('inclusive-radar.locations.store'), $data);
+
+        // Assert
+        $response->assertSessionHasErrors(['latitude', 'longitude']);
+        $this->assertDatabaseMissing('locations', ['name' => 'Local no Espaço']);
     }
 
-    /** * Objetivo: Verificar a atualização de um local existente.
-     * Cenário: Feliz.
+    /**
+     * Objetivo: Validar se o administrador consegue atualizar os dados de uma localização existente.
+     * Cenário: Feliz (Persistência de dados).
      */
     public function test_it_can_update_a_location()
     {
+        // Arrange
         $location = Location::factory()->create(['name' => 'Nome Original']);
 
         $newData = [
@@ -131,24 +173,40 @@ class LocationTest extends TestCase
             'longitude'      => -42.0000,
         ];
 
-        $this->actingAs($this->adminUser)
-            ->put(route('inclusive-radar.locations.update', $location), $newData)
-            ->assertRedirect(route('inclusive-radar.locations.index'));
+        // Act
+        $response = $this->actingAs($this->adminUser)
+            ->put(route('inclusive-radar.locations.update', $location), $newData);
 
-        $this->assertDatabaseHas('locations', ['name' => 'Nome Alterado']);
+        // Assert
+        $response->assertRedirect(route('inclusive-radar.locations.index'));
+
+        $this->assertDatabaseHas('locations', [
+            'id'   => $location->id,
+            'name' => 'Nome Alterado'
+        ]);
+
+        // Opcional
+        $this->assertDatabaseMissing('locations', ['name' => 'Nome Original']);
     }
 
-    /** * Objetivo: Testar a exclusão lógica (Soft Delete).
-     * Cenário: Feliz.
+    /**
+     * Objetivo: Garantir que o administrador consiga realizar a exclusão lógica (Soft Delete).
+     * Cenário: Feliz (Integridade de dados).
      */
     public function test_it_can_soft_delete_a_location()
     {
+        // Arrange
         $location = Location::factory()->create();
 
-        $this->actingAs($this->adminUser)
+        // Act
+        $response = $this->actingAs($this->adminUser)
             ->delete(route('inclusive-radar.locations.destroy', $location));
 
-        $this->assertSoftDeleted('locations', ['id' => $location->id]);
+        // Assert
+        $response->assertRedirect();
+        $this->assertSoftDeleted('locations', [
+            'id' => $location->id
+        ]);
     }
 
     /** * Objetivo: Testar o filtro de busca por nome da instituição vinculada.
@@ -176,23 +234,31 @@ class LocationTest extends TestCase
         $this->assertFalse($locations->contains('name', 'Laboratório'), 'O Laboratório não deveria estar nos resultados filtrados.');
     }
 
-    /** * Objetivo: Validar se a resposta via AJAX retorna apenas o conteúdo da tabela.
-     * Cenário: Feliz (Técnico).
+    /**
+     * Objetivo: Validar se a requisição AJAX retorna apenas o conteúdo parcial (sem o layout completo).
+     * Cenário: Feliz (Integração Frontend/Datatables).
      */
     public function test_it_returns_ajax_partial_successfully()
     {
+        // Act
         $response = $this->actingAs($this->adminUser)
             ->get(route('inclusive-radar.locations.index'), [
                 'HTTP_X-Requested-With' => 'XMLHttpRequest'
             ]);
 
+        // Assert
         $response->assertStatus(200);
-        // Garante que não carregou a estrutura completa do HTML (header, body, etc)
         $this->assertStringNotContainsString('<html', $response->getContent());
+        $this->assertStringNotContainsString('<body', $response->getContent());
     }
 
+    /**
+     * Objetivo: Validar que o campo 'type' não aceite strings maiores que o limite permitido.
+     * Cenário: Triste (Falha de validação).
+     */
     public function test_it_fails_if_type_exceeds_max_length()
     {
+        // Arrange
         $data = [
             'institution_id' => $this->institution->id,
             'name'           => 'Local Grande',
@@ -201,13 +267,22 @@ class LocationTest extends TestCase
             'longitude'      => -42.0000,
         ];
 
-        $this->actingAs($this->adminUser)
-            ->post(route('inclusive-radar.locations.store'), $data)
-            ->assertSessionHasErrors(['type']);
+        // Act
+        $response = $this->actingAs($this->adminUser)
+            ->post(route('inclusive-radar.locations.store'), $data);
+
+        // Assert
+        $response->assertSessionHasErrors(['type']);
+        $this->assertDatabaseMissing('locations', ['name' => 'Local Grande']);
     }
 
+    /**
+     * Objetivo: Garantir que o campo is_active seja falso por padrão se omitido no request.
+     * Cenário: Feliz (Valor default/Tratamento de input).
+     */
     public function test_it_sets_is_active_to_false_when_missing()
     {
+        // Arrange
         $data = [
             'institution_id' => $this->institution->id,
             'name'           => 'Local Inativo',
@@ -215,11 +290,14 @@ class LocationTest extends TestCase
             'longitude'      => -42.0,
         ];
 
-        $this->actingAs($this->adminUser)
+        // Act
+        $response = $this->actingAs($this->adminUser)
             ->post(route('inclusive-radar.locations.store'), $data);
 
+        // Assert
+        $response->assertRedirect();
         $this->assertDatabaseHas('locations', [
-            'name' => 'Local Inativo',
+            'name'      => 'Local Inativo',
             'is_active' => false
         ]);
     }
@@ -233,7 +311,7 @@ class LocationTest extends TestCase
         $ativo = Location::factory()->create(['name' => 'Local Ativo', 'is_active' => true]);
         $inativo = Location::factory()->create(['name' => 'Local Inativo', 'is_active' => false]);
 
-        // Act: Filtrando por ATIVOS (is_active=1)
+        // Act
         $response = $this->actingAs($this->adminUser)
             ->get(route('inclusive-radar.locations.index', ['is_active' => '1']));
 
@@ -242,7 +320,7 @@ class LocationTest extends TestCase
         $response->assertSee($ativo->name);
         $response->assertDontSee($inativo->name);
 
-        // Act: Filtrando por INATIVOS (is_active=0)
+        // Act
         $response = $this->actingAs($this->adminUser)
             ->get(route('inclusive-radar.locations.index', ['is_active' => '0']));
 

@@ -17,7 +17,7 @@ class InstitutionTest extends TestCase
     {
         parent::setUp();
 
-        // Arrange: Criamos um administrador para os cenários felizes
+        // Arrange
         $this->adminUser = User::factory()->create([
             'is_admin' => true,
         ]);
@@ -28,10 +28,10 @@ class InstitutionTest extends TestCase
      */
     public function test_guest_cannot_access_institution_index()
     {
-        // Act: Tentativa de acesso sem actingAs
+        // Act
         $response = $this->get(route('inclusive-radar.institutions.index'));
 
-        // Assert: Redireciona para o login
+        // Assert
         $response->assertRedirect('auth/login');
     }
 
@@ -40,14 +40,14 @@ class InstitutionTest extends TestCase
      */
     public function test_non_admin_user_cannot_access_institution_index()
     {
-        // Arrange: Usuário comum (is_admin = false)
+        // Arrange
         $user = User::factory()->create(['is_admin' => false]);
 
         // Act
         $response = $this->actingAs($user)
             ->get(route('inclusive-radar.institutions.index'));
 
-        // Assert: Retorna proibido (403) ou redireciona conforme teu middleware
+        // Assert
         $response->assertStatus(403);
     }
 
@@ -207,7 +207,7 @@ class InstitutionTest extends TestCase
         Institution::factory()->create(['name' => 'Ativa', 'is_active' => true]);
         Institution::factory()->create(['name' => 'Inativa', 'is_active' => false]);
 
-        // Act: Filtrando apenas as ativas (status = 1)
+        // Act
         $response = $this->actingAs($this->adminUser)
             ->get(route('inclusive-radar.institutions.index', ['is_active' => '1']));
 
