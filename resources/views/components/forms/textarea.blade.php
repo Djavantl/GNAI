@@ -4,7 +4,8 @@
     'value' => '',
     'placeholder' => '',
     'rows' => 3,
-    'required' => false
+    'required' => false,
+    'rich' => true 
 ])
 
 <div {{ $attributes->merge(['class' => 'mb-3']) }}>
@@ -22,9 +23,10 @@
         id="{{ $name }}"
         rows="{{ $rows }}"
         placeholder="{{ $placeholder }}"
-        {{ $required ? 'required' : '' }}
+        {{-- Só aplica required no HTML se NÃO for rich editor --}}
+        {{ ($required && !$rich) ? 'required' : '' }}
         aria-label="{{ $label }}"
-        {{ $attributes->merge(['class' => 'form-control custom-input' . ($errors->has($name) ? ' is-invalid' : '')]) }}
+        class="form-control custom-input {{ $errors->has($name) ? 'is-invalid' : '' }} {{ $rich ? 'rich-editor' : '' }}"
     >{{ old($name, $value) }}</textarea>
 
     @error($name)

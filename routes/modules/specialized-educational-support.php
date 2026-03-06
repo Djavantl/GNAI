@@ -202,6 +202,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/peis/{pei}/disciplines/{peiDiscipline}/edit', [PeiController::class, 'editDiscipline'])->name('pei-discipline.edit')->middleware('can:pei.update')->scopeBindings();
     Route::put('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'updateDiscipline'])->name('pei-discipline.update')->middleware('can:pei.update')->scopeBindings();
     Route::delete('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'destroyDiscipline'])->name('pei-discipline.destroy')->middleware('can:pei.delete')->scopeBindings();
+    Route::get('specialized-educational-support/pei/{pei}/teacher-disciplines', [PeiController::class, 'teacherDisciplines'])
+    ->name('teacher-disciplines');
 
     /* 13. STUDENT DOCUMENTS */
     Route::get('/students/{student}/documents', [StudentDocumentController::class, 'index'])->name('student-documents.index')->middleware('can:student-document.view');

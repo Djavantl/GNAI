@@ -16,14 +16,16 @@
 }
 
 .ctx-section-title h5 {
-    margin-left: 2rem;
+    margin-left: 1rem;
     color: var(--primary-color-dark);
     font-weight: 600;
 }
 
 /* ===== TOGGLE BUTTON ===== */
 .ctx-toggle {
-    border: none;
+    margin-left: 1rem;
+    border: 1px solid;
+    border-color: var(--primary-color);
     background: #f8f9fa;
     border-radius: 6px;
     padding: 6px 10px;

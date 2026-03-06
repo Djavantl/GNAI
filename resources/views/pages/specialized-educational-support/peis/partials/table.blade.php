@@ -1,10 +1,14 @@
-<x-table.table :headers="['Semestre', 'Status', 'Ações']"
+<x-table.table :headers="['Semestre','Curso', 'Status', 'Ações']"
 :records="$peis">
         @forelse($peis as $pei)
             <tr>
                 <x-table.td>
                     <strong>{{ $pei->semester->label ?? 'N/A' }}</strong><br>
                     <small class="text-muted">Criado em: {{ $pei->created_at->format('d/m/Y') }}</small>
+                </x-table.td>
+
+                <x-table.td>
+                    <strong>{{ $pei->course->name ?? 'N/A' }}</strong><br>
                 </x-table.td>
 
                 <x-table.td>
