@@ -56,9 +56,11 @@
                 @endif
             </x-show.info-item>
 
-            <x-show.info-item label="Descrição" column="col-md-12" isBox="true">
-                {!! nl2br(e($pendency->description ?? '—')) !!}
-            </x-show.info-item>
+            <x-show.info-textarea 
+                label="Descrição" 
+                column="col-md-12" 
+                :value="$pendency->description" 
+            />
 
             <x-forms.section title="Informações do Sistema" />
 

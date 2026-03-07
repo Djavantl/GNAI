@@ -23,25 +23,40 @@
 
     <div class="mt-3">
         <x-forms.form-card action="{{ route('specialized-educational-support.pei-discipline.store', $pei) }}" method="POST">
-            
+            @csrf
             <x-forms.section title="Identificação da Disciplina" />
 
             <div class="col-md-6">
-                <x-forms.select
-                    name="discipline_id"
-                    label="Disciplina"
-                    :options="$disciplines->pluck('name', 'id')->toArray()"
-                    :value="old('discipline_id')"
-                    required
-                />
-            </div>
+                @if(auth()->user()->teacher_id)
 
-            <div class="col-md-6">
+                <input type="hidden" name="teacher_id" value="{{ auth()->user()->teacher_id }}">
+
+                <x-forms.input
+                    name="teacher_name"
+                    label="Professor Responsável"
+                    value="{{ auth()->user()->teacher->person->name }}"
+                    disabled
+                />
+
+                @else
                 <x-forms.select
+                    id="teacher-select"
                     name="teacher_id"
                     label="Professor Responsável"
                     :options="$teachers->pluck('person.name', 'id')->toArray()"
                     :value="old('teacher_id')"
+                    required
+                />
+                @endif
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    id="discipline-select"
+                    name="discipline_id"
+                    label="Disciplina"
+                    :options="[]"
+                    :value="old('discipline_id')"
                     required
                 />
             </div>
@@ -52,8 +67,8 @@
                 <x-forms.textarea
                     name="specific_objectives"
                     label="Objetivos Específicos"
+                    :required="true"
                     rows="4"
-                    required
                     :value="old('specific_objectives')"
                     placeholder="Descreva os objetivos de aprendizagem adaptados para o aluno..."
                 />
@@ -64,7 +79,7 @@
                     name="content_programmatic"
                     label="Conteúdo Programático"
                     rows="4"
-                    required
+                    :required="true"
                     :value="old('content_programmatic')"
                     placeholder="Liste os conteúdos que serão abordados nesta disciplina..."
                 />
@@ -75,7 +90,7 @@
                     name="methodologies"
                     label="Metodologias e Estratégias"
                     rows="4"
-                    required
+                    :required="true"
                     :value="old('methodologies')"
                     placeholder="Descreva como o conteúdo será ensinado (recursos, materiais, apoios)..."
                 />
@@ -86,7 +101,7 @@
                     name="evaluations"
                     label="Processo de Avaliação"
                     rows="4"
-                    required
+                    :required="true"
                     :value="old('evaluations')"
                     placeholder="Como a aprendizagem será avaliada nesta disciplina?"
                 />
@@ -104,4 +119,102 @@
 
         </x-forms.form-card>
     </div>
+    @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const teacherSelect = document.getElementById('teacher-select');
+    const disciplineSelect = document.getElementById('discipline-select');
+    const form = document.querySelector('form');
+
+    const urlBase = "{{ route('specialized-educational-support.teacher-disciplines', $pei) }}";
+    const loggedTeacherId = {{ auth()->user()->teacher_id ?? 'null' }};
+
+    function resetDisciplines() {
+        disciplineSelect.innerHTML = '<option value="">Selecione uma disciplina</option>';
+        disciplineSelect.disabled = true;
+    }
+
+    function populateDisciplines(items, selectedId = null) {
+
+        disciplineSelect.innerHTML = '';
+
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.text = 'Selecione uma disciplina';
+        disciplineSelect.appendChild(emptyOpt);
+
+        items.forEach(function (d) {
+
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.text = d.name;
+
+            if (selectedId && String(d.id) === String(selectedId)) {
+                opt.selected = true;
+            }
+
+            disciplineSelect.appendChild(opt);
+        });
+
+        disciplineSelect.disabled = false;
+    }
+
+    function loadDisciplines(teacherId) {
+
+        if (!teacherId) {
+            resetDisciplines();
+            return;
+        }
+
+        const url = new URL(urlBase, window.location.origin);
+        url.searchParams.set('teacher_id', teacherId);
+
+        fetch(url.toString(), {
+            headers: {
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(res => res.json())
+        .then(data => {
+            populateDisciplines(data, "{{ old('discipline_id') }}");
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro ao buscar disciplinas do professor.');
+            resetDisciplines();
+        });
+    }
+
+    // estado inicial
+    resetDisciplines();
+
+    // gestor/admin
+    if (teacherSelect) {
+
+        teacherSelect.addEventListener('change', function () {
+            loadDisciplines(this.value);
+        });
+
+        if (teacherSelect.value) {
+            loadDisciplines(teacherSelect.value);
+        }
+    }
+
+    // professor logado
+    if (!teacherSelect && loggedTeacherId) {
+        loadDisciplines(loggedTeacherId);
+    }
+
+    // garantir que disabled não impeça o submit
+    if (form) {
+        form.addEventListener('submit', function () {
+            disciplineSelect.disabled = false;
+        });
+    }
+
+});
+</script>
+@endpush
 @endsection

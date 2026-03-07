@@ -2,10 +2,13 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Deficiency extends Model
 {
+    use hasFactory;
+
     protected $fillable = [
         'name',
         'cid_code',

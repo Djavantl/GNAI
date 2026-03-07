@@ -7,7 +7,6 @@ use App\Http\Requests\InclusiveRadar\LocationRequest;
 use App\Models\InclusiveRadar\Location;
 use App\Models\InclusiveRadar\Institution;
 use App\Services\InclusiveRadar\LocationService;
-use App\Services\InclusiveRadar\OpenStreetMapService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,7 +15,6 @@ class LocationController extends Controller
 {
     public function __construct(
         protected LocationService $service,
-        protected OpenStreetMapService $osmService
     ) {}
 
     public function index(Request $request)
@@ -55,32 +53,9 @@ class LocationController extends Controller
         );
     }
 
-
     public function store(LocationRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
-        if (empty($data['latitude']) || empty($data['longitude'])) {
-
-            $institution = Institution::find($data['institution_id']);
-
-            $address = "{$data['name']}, {$institution->city}, {$institution->state}";
-            $coords = $this->osmService->geocode($address);
-
-            if ($coords) {
-                $data['latitude'] = $coords['latitude'];
-                $data['longitude'] = $coords['longitude'];
-            } else {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->withErrors([
-                        'latitude' => 'Não foi possível determinar a localização. Clique no mapa.'
-                    ]);
-            }
-        }
-
-        $this->service->store($data);
+        $this->service->store($request->validated());
 
         return redirect()
             ->route('inclusive-radar.locations.index')
@@ -114,22 +89,7 @@ class LocationController extends Controller
 
     public function update(LocationRequest $request, Location $location): RedirectResponse
     {
-        $data = $request->validated();
-
-        if (empty($data['latitude']) || empty($data['longitude'])) {
-
-            $institution = Institution::find($data['institution_id']);
-
-            $address = "{$data['name']}, {$institution->city}, {$institution->state}";
-            $coords = $this->osmService->geocode($address);
-
-            if ($coords) {
-                $data['latitude'] = $coords['latitude'];
-                $data['longitude'] = $coords['longitude'];
-            }
-        }
-
-        $this->service->update($location, $data);
+        $this->service->update($location, $request->validated());
 
         return redirect()
             ->route('inclusive-radar.locations.index')

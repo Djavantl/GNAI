@@ -27,7 +27,15 @@
                             target="pd-{{ $item->id }}"
                             title="Mostrar adaptações"
                             description=""
-                        />
+                        >
+                            <x-slot:actions>
+                                <x-buttons.link-button 
+                                    href="{{ route('specialized-educational-support.pei-discipline.show', [$pei, $item]) }}"
+                                    variant="info">
+                                    <i class="fas fa-eye"></i> Ver
+                                </x-buttons.link-button>
+                            </x-slot:actions>
+                        </x-ui.section-header>
 
                         {{-- conteúdo colapsável --}}
                         <div id="pd-{{ $item->id }}" class="ctx-collapsed">
@@ -66,12 +74,8 @@
 
                                 {{-- ações --}}
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                                    <x-buttons.link-button 
-                                        href="{{ route('specialized-educational-support.pei-discipline.show', [$pei, $item]) }}"
-                                        variant="info">
-                                        <i class="fas fa-eye"></i> Ver
-                                    </x-buttons.link-button>
-                                    @if(!$pei->is_finished)
+                                   
+                                    @if(!$pei->is_finished && auth()->user()->teacher?->id == $item->teacher_id)
                                         <x-buttons.link-button Dados do PEI
                                            href="{{ route('specialized-educational-support.pei-discipline.edit', [$pei, $item]) }}"
                                             variant="warning">

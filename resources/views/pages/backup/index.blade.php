@@ -18,13 +18,36 @@
             title="Gerenciamento de Backups"
             subtitle="Visualize e administre as cópias de segurança do sistema."
         >
-            {{-- Botão de ação --}}
-            <form action="{{ route('backup.backups.store') }}" method="POST" class="d-inline">
-                @csrf
-                <x-buttons.submit-button variant="new">
-                    <i class="fas fa-plus-circle"></i> Gerar Novo Backup
-                </x-buttons.submit-button>
-            </form>
+            <div class="d-flex gap-2">
+                {{-- FORM DE UPLOAD --}}
+                <form action="{{ route('backup.backups.upload') }}" method="POST" enctype="multipart/form-data" id="form-upload-backup">
+                    @csrf
+                    {{-- O segredo está no onchange="this.form.submit()" --}}
+                    <input type="file"
+                           name="backup_file"
+                           id="input-backup-file"
+                           class="d-none"
+                           accept=".zip"
+                           onchange="if(this.value) { this.form.submit(); }">
+
+                    {{-- Use o x-buttons.link-button aqui --}}
+                    <x-buttons.link-button
+                        type="button"
+                        variant="outline-primary"
+                        onclick="document.getElementById('input-backup-file').click()"
+                    >
+                        <i class="fas fa-upload"></i> Importar Backup
+                    </x-buttons.link-button>
+                </form>
+
+                {{-- BOTÃO GERAR NOVO --}}
+                <form action="{{ route('backup.backups.store') }}" method="POST">
+                    @csrf
+                    <x-buttons.submit-button type="submit" variant="new">
+                        <i class="fas fa-plus-circle"></i> Gerar Novo
+                    </x-buttons.submit-button>
+                </form>
+            </div>
         </x-table.page-header>
 
         {{-- FILTROS --}}
@@ -62,6 +85,28 @@
             </small>
         </div>
     </div>
+
+    <script>
+        document.querySelectorAll('.form-restore').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const fileName = this.querySelector('.btn-restore').dataset.filename;
+                const confirmacao = confirm(
+                    `⚠️ ATENÇÃO: Você está prestes a restaurar o backup: ${fileName}\n\n` +
+                    `Isso substituirá TODOS os dados atuais do banco de dados e arquivos de mídia pelas informações desta data.\n\n` +
+                    `Deseja continuar?`
+                );
+
+                if (confirmacao) {
+                    const btn = this.querySelector('.btn-restore');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Restaurando...';
+                    this.submit();
+                }
+            });
+        });
+    </script>
 
     @push('scripts')
         @vite('resources/js/components/dynamicFilters.js')

@@ -3,7 +3,6 @@
 namespace App\Http\Requests\InclusiveRadar;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class LocationRequest extends FormRequest
 {

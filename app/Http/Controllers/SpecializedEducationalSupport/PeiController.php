@@ -226,10 +226,23 @@ class PeiController extends Controller
             return redirect()->back()->with('error', 'Não é possível adicionar disciplinas a um PEI finalizado.');
         }
 
-        $teachers = Teacher::all(); // Ou sua lógica de filtro de professores
-        $disciplines = Discipline::orderBy('name')->get();
+        // pega o curso atual do aluno ( StudentCourse )
+        $studentCourse = $pei->student->currentCourse()->first();
+        if (!$studentCourse) {
+            return redirect()->back()->with('error', 'Este aluno não possui matrícula vigente.');
+        }
 
-        return view('pages.specialized-educational-support.peis.disciplines.create', compact('pei', 'teachers', 'disciplines'));;
+        $course = $studentCourse->course;
+
+        // professores vinculados ao curso (com pessoa carregada)
+        $teachers = Teacher::whereHas('courses', function ($q) use ($course) {
+            $q->where('course_id', $course->id);
+        })->with('person')->get();
+
+        // disciplinas do curso
+        $disciplines = $course->disciplines()->orderBy('name')->get();
+
+        return view('pages.specialized-educational-support.peis.disciplines.create', compact('pei', 'teachers', 'disciplines'));
     }
 
     /**
@@ -247,6 +260,7 @@ class PeiController extends Controller
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
+    
 
     /**
      * Exibe formulário de edição
@@ -294,5 +308,43 @@ class PeiController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+     /**
+     * Retorna via JSON as disciplinas que o professor leciona dentro do curso do PEI.
+     * Usa query param teacher_id (GET).
+     */
+    public function teacherDisciplines(Pei $pei, Request $request)
+    {
+        $teacherId = $request->query('teacher_id');
+        $studentCourse = $pei->student->currentCourse()->first();
+
+        if (!$studentCourse) {
+            return response()->json(['error' => 'Aluno sem matrícula vigente'], 422);
+        }
+
+        $course = $studentCourse->course;
+
+        // disciplinas base do curso
+        $courseDisciplineIds = $course->disciplines()->pluck('disciplines.id')->toArray();
+
+        if (!$teacherId) {
+            // sem professor, retorna todas as disciplinas do curso
+            $disciplines = $course->disciplines()->orderBy('name')->get(['id', 'name']);
+            return response()->json($disciplines);
+        }
+
+        $teacher = Teacher::with('disciplines')->find($teacherId);
+        if (!$teacher) {
+            return response()->json(['error' => 'Professor não encontrado.'], 404);
+        }
+
+        // pega interseção entre as disciplinas que o prof leciona e as do curso
+        $teacherDisciplineIds = $teacher->disciplines->pluck('id')->toArray();
+        $intersection = array_values(array_intersect($courseDisciplineIds, $teacherDisciplineIds));
+
+        $disciplines = Discipline::whereIn('id', $intersection)->orderBy('name')->get(['id', 'name']);
+
+        return response()->json($disciplines);
     }
 }

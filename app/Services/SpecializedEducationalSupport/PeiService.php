@@ -50,7 +50,6 @@ class PeiService
     {
         return Pei::query()
             ->where('student_id', $student->id)
-            ->visibleToUser(auth()->user())
             ->with(['student.person', 'semester'])
             ->semester($filters['semester_id'] ?? null)
             ->finished($filters['is_finished'] ?? null)
@@ -67,7 +66,13 @@ class PeiService
     {
         return DB::transaction(function () use ($student) {
 
-            $exists = Pei::where('student_id', $student->id)->exists();
+            $studentCourse = $student->currentCourse()->first();
+            if (!$studentCourse) {
+                throw new \Exception('Este aluno não possui matrícula vigente');
+            }
+            $course = $studentCourse->course;
+
+            $exists = Pei::where('student_id', $student->id)->where('course_id', $course->id)->exists();
 
             if ($exists) {
                 throw new \Exception('Este aluno já possui um Pei. Crie uma nova versão.');
@@ -78,11 +83,6 @@ class PeiService
                 throw new \Exception('O sistema não possui semestre atual cadastrado');
             }
 
-            $studentCourse = $student->currentCourse()->first();
-            if (!$studentCourse) {
-                throw new \Exception('Este aluno não possui matrícula vigente');
-            }
-            $course = $studentCourse->course;
 
             $currentContext = $student->contexts()->where('is_current', true)->first();
              if (!$currentContext) {

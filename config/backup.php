@@ -4,7 +4,7 @@ return [
 
     'backup' => [
 
-        'name' => 'GNAI',
+        'name' => env('BACKUP_DISK_NAME', 'GNAIbackups'),
 
         'source' => [
 
@@ -16,10 +16,7 @@ return [
 
                 'exclude' => [
                     storage_path('app/backup-temp'),
-                    storage_path('app/backups'), // Evita backup do backup se o disco for local
-                    base_path('vendor'),
-                    base_path('node_modules'),
-                    base_path('.git'),
+                    storage_path('app/private/' . env('BACKUP_DISK_NAME', 'GNAIbackups')),
                 ],
 
                 'follow_links' => false,
@@ -78,7 +75,7 @@ return [
 
     'monitor_backups' => [
         [
-            'name' => 'GNAI',
+            'name' => env('BACKUP_DISK_NAME', 'GNAIbackups'),
             'disks' => ['local'],
             'health_checks' => [
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,

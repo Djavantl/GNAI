@@ -86,5 +86,37 @@
     <script>
         new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // 1. Criamos um objeto para guardar todas as instâncias dos editores
+    const allEditors = {};
+
+    document.querySelectorAll('.rich-editor').forEach(element => {
+        ClassicEditor.create(element, {
+            toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', '|', 'bulletedList', 'numberedList', '|', 'undo', 'redo']
+        })
+        .then(editor => {
+            // Guardamos a instância usando o nome do campo como chave (ex: specific_objectives)
+            allEditors[element.name] = editor;
+        })
+        .catch(error => console.error(error));
+    });
+
+    // 2. O SEGREDO: Sincronizar antes de enviar
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            // Para cada editor aberto na página, forçamos a atualização do textarea original
+            Object.keys(allEditors).forEach(name => {
+                allEditors[name].updateSourceElement();
+            });
+            
+            // Log de depuração (pode remover depois de testar)
+            console.log('Dados sincronizados com sucesso!');
+        });
+    }
+});
+    </script>
 </body>
 </html>

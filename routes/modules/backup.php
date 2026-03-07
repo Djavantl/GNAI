@@ -12,3 +12,5 @@ Route::get('/backups/{id}/edit', [BackupController::class, 'edit'])->name('backu
 Route::put('/backups/{id}', [BackupController::class, 'update'])->name('backups.update');
 Route::get('/backups/{id}/download', [BackupController::class, 'download'])->name('backups.download');
 Route::delete('/backups/{id}', [BackupController::class, 'destroy'])->name('backups.destroy');
+Route::post('backups/{id}/restore', [BackupController::class, 'restore'])->name('backups.restore');
+Route::post('/backups/upload', [BackupController::class, 'upload'])->name('backups.upload');

@@ -1,7 +1,7 @@
 @props([
     'label' => null,
     'value' => null,
-    'rows' => 6,        
+    'rows' => 20,        
     'column' => 'col-md-12',
     'scroll' => true,
     'empty' => '—'
@@ -19,24 +19,18 @@
         @endif
 
         @php
-            // calcula altura baseada em rows
-            $lineHeight = 1.5; // em rem
+            $lineHeight = 1.5;
             $height = $rows * $lineHeight;
         @endphp
 
         <div
-            style="
-                min-height: {{ $height }}rem;
-                max-height: {{ $height }}rem;
-                overflow-y: {{ $scroll ? 'auto' : 'visible' }};
-                white-space: pre-line;
-            "
-            class="small"
+            class="small custom-display-box-textarea"
+            style="overflow-y: {{ $scroll ? 'auto' : 'visible' }};"
         >
             @if(trim($slot) !== '')
-                {{ $slot }}
+                {!! $slot !!}
             @else
-                {{ $value ?? $empty }}
+                {!! $value ?? $empty !!}
             @endif
         </div>
 
