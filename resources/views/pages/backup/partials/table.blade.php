@@ -60,6 +60,22 @@
                         <i class="fas fa-download"></i> Baixar
                     </x-buttons.link-button>
 
+                    {{-- Restaurar --}}
+                    @if($backup->status === 'success')
+                        <form action="{{ route('backup.backups.restore', $backup->id) }}"
+                              method="POST"
+                              class="d-inline form-restore">
+                            @csrf
+                            <x-buttons.submit-button
+                                variant="warning"
+                                class="btn-restore"
+                                data-filename="{{ $backup->file_name }}"
+                            >
+                                <i class="fas fa-history"></i> Restaurar
+                            </x-buttons.submit-button>
+                        </form>
+                    @endif
+
                     {{-- Ver --}}
                     <x-buttons.link-button
                         :href="route('backup.backups.show', $backup->id)"

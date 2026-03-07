@@ -1,13 +1,17 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Console\Scheduling\Schedule;
+use App\Services\Backup\BackupService;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
-
-app(Schedule::class)->command('backup:automatic')
+// Roda a limpeza às 12:00 (antes do backup novo)
+Schedule::command('backup:clean')
     ->dailyAt('12:00')
-    ->withoutOverlapping();
+    ->timezone('America/Bahia');
+
+// Roda o backup às 12:05
+Schedule::command('backup:run')
+    ->dailyAt('12:05')
+    ->timezone('America/Bahia')
+    ->onSuccess(function () {
+        app(BackupService::class)->sync();
+    });

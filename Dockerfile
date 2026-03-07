@@ -19,15 +19,19 @@ ARG GROUP_ID=1000
 
 WORKDIR /var/www
 
+# Adicionando dependências de runtime e o mysql-client para o restore
 RUN apk add --no-cache \
     curl git unzip shadow \
     libxml2 libpng libjpeg-turbo freetype libwebp libzip icu-libs zlib \
-    mysql-client
+    mysql-client \
+    tzdata
 
+# Copia extensões do estágio anterior
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Ajuste de permissões e fuso horário
 RUN usermod -u ${USER_ID} www-data && groupmod -g ${GROUP_ID} www-data \
     && git config --global --add safe.directory /var/www
 
@@ -37,6 +41,7 @@ RUN composer install --no-scripts --no-autoloader --prefer-dist
 
 COPY . .
 
+# Garante que o usuário www-data tenha poder sobre a storage e logs
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
     && composer dump-autoload --optimize --no-scripts
@@ -45,4 +50,5 @@ USER www-data
 
 EXPOSE 9000
 
+# Link da storage e limpeza de cache ao subir
 CMD ["sh", "-c", "php artisan storage:link --force && php artisan config:clear && php-fpm"]
