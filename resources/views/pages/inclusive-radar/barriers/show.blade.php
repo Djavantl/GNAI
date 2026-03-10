@@ -176,23 +176,38 @@
                 {{-- ========== COLUNA DIREITA ========== --}}
                 <div class="col-lg-7 bg-light">
                     {{-- MAPA --}}
-                    <x-forms.section title="3. Localização no Mapa" id="map-section-title" />
-                    <div class="mb-3 px-4" style="top:20px; z-index:1;">
-                        <section aria-labelledby="map-section-title">
-                            @if($barrier->no_location || (!$barrier->latitude && !$barrier->longitude))
-                                <div class="text-center py-5 text-muted bg-white rounded border m-3">
-                                    <i class="fas fa-map-marked-alt fa-3x mb-3 opacity-20"></i>
-                                    <p class="fw-bold">Localização não informada</p>
-                                </div>
-                            @else
-                                <x-show.maps.barrier
-                                    :barrier="$barrier"
-                                    :institution="$barrier->institution"
-                                    height="450px"
-                                    label="Localização da Barreira"
-                                />
-                            @endif
-                        </section>
+                    <div style="position: relative;">
+                        <x-show.maps.barrier
+                            :barrier="$barrier"
+                            :institution="$barrier->institution"
+                            height="450px"
+                            label="Localização da Barreira"
+                        />
+
+                        @if($barrier->category?->blocks_map)
+                            <div id="map-blocked-overlay"
+                                 style="
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    background: rgba(255,255,255,0.8);
+                                    z-index: 1000;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-weight: bold;
+                                    color: #333;
+                                    border-radius: 0.375rem;
+                                    cursor: not-allowed;
+                                 ">
+                                <span class="bg-white p-3 rounded shadow-sm border text-center">
+                                    <i class="fas fa-lock text-danger mb-2 d-block"></i>
+                                    Mapa não se aplica a categoria <br>{{ $barrier->category?->name }}.
+                                </span>
+                            </div>
+                        @endif
                     </div>
 
                     <x-forms.section title="4. Histórico de Vistorias" />

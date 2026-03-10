@@ -4,7 +4,7 @@
     'options' => [],
     'selected' => null,
     'resourceObjects' => null,
-    'search' => false {{-- Nova Prop --}},
+    'search' => false,
     'required' => false
 ])
 
@@ -21,13 +21,13 @@
         name="{{ $name }}"
         id="{{ $attributes->get('id') ?? $name }}"
         {{ $attributes->merge([
-            'class' => 'form-select custom-input ' . 
-                       ($search ? 'select-search ' : '') . {{-- Classe condicional --}}
+            'class' => 'form-select custom-input ' .
+                       ($search ? 'select-search ' : '') .
                        ($errors->has($name) ? ' is-invalid' : '')
         ]) }}
     >
         <option value="" disabled {{ empty(old($name, $selected)) ? 'selected' : '' }}>Selecione uma opção...</option>
-        
+
         @foreach($options as $value => $labelOption)
             @php
                 $isDigital = false;

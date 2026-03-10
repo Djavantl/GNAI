@@ -66,6 +66,16 @@
                 />
             </div>
 
+            <div class="col-md-12">
+                <x-forms.checkbox
+                    name="blocks_map"
+                    id="blocks_map"
+                    label="Bloquear Mapa"
+                    description="Caso ativo ocultará o mapa no cadastro de novas barreiras quando esta categoria for selecionada"
+                    :checked="old('blocks_map', $barrierCategory->blocks_map)"
+                />
+            </div>
+
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.barrier-categories.show', $barrierCategory) }}" variant="secondary">
                     <i class="fas fa-times"></i> Cancelar

@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 150)->unique();
             $table->text('description')->nullable();
+            $table->boolean('blocks_map')->default(true);
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();

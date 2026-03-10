@@ -111,6 +111,7 @@
                                 required
                                 :options="$categories->pluck('name', 'id')"
                                 :selected="old('barrier_category_id')"
+                                extraAttributes="data-blocks-map-options"
                             />
                         </div>
                     </div>
@@ -199,9 +200,8 @@
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <div class="mb-4">
+                        {{-- Checkbox "Exibir Locais" permanece --}}
                         <div class="mb-3 px-4 d-flex justify-content-between align-items-center">
-                            <x-forms.checkbox name="no_location" id="no_location" label="Sem localização física" :checked="old('no_location')" />
-
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="btn-toggle-locations" checked style="cursor: pointer;">
                                 <label class="form-check-label small text-muted fw-bold" for="btn-toggle-locations" style="cursor: pointer;">
@@ -218,11 +218,21 @@
                             }
                         @endphp
 
-                        <x-forms.maps.barrier
-                            :institution="$selectedInstitution"
-                            height="450px"
-                            label="Localização da Barreira"
-                        />
+                        {{-- Container relativo para posicionar o overlay --}}
+                        <div style="position: relative;">
+                            <x-forms.maps.barrier
+                                :institution="$selectedInstitution"
+                                height="450px"
+                                label="Localização da Barreira"
+                            />
+
+                            {{-- Overlay de bloqueio (inicialmente oculto) --}}
+                            <div id="map-blocked-overlay"
+                                 class="d-none"
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #333; pointer-events: none; border-radius: 0.375rem;">
+                                <span id="map-blocked-text" class="bg-white p-3 rounded shadow-sm"></span>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- ===== Vistoria Inicial (Padrão TA) ===== --}}
@@ -286,10 +296,11 @@
 
     @push('scripts')
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            window.categoriesData = @json($categories->mapWithKeys(fn($cat) => [$cat->id => $cat->blocks_map]));
+            window.institutionsData = @json($institutions);
+            window.oldLocationId = "{{ old('location_id') }}";
+        </script>
     @endpush
-
-    <script>
-        window.institutionsData = @json($institutions);
-        window.oldLocationId = "{{ old('location_id') }}";
-    </script>
+    @vite('resources/js/pages/inclusive-radar/barriers.js')
 @endsection

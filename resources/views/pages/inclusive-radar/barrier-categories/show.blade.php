@@ -58,8 +58,12 @@
 
             <div class="row g-3 mb-4">
 
-                <x-show.info-item label="Ativo no Sistema" column="col-12" isBox="true">
+                <x-show.info-item label="Ativo no Sistema" column="col-6" isBox="true">
                     {{ $barrierCategory->is_active ? 'Sim' : 'Não' }}
+                </x-show.info-item>
+
+                <x-show.info-item label="Mapa se Aplica" column="col-6" isBox="true">
+                    {{ !$barrierCategory->blocks_map ? 'Sim' : 'Não' }}
                 </x-show.info-item>
 
             </div>
