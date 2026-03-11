@@ -158,18 +158,23 @@ document.addEventListener('DOMContentLoaded', function () {
             visibleBarriers.forEach(barrier => {
                 const isBlocked = (barrier.blocks_map === true || barrier.blocks_map === 1);
 
+                // Debug
+                console.log(barrier.name, barrier.color, isBlocked, barrier.lat, barrier.lng);
+
+                // Exibe todas com lat/lng, exceto as realmente bloqueadas
                 if (!isBlocked && barrier.lat && barrier.lng) {
                     const marker = L.marker([barrier.lat, barrier.lng], {
-                        icon: getMarkerIcon(barrier.color)
+                        icon: getMarkerIcon((barrier.color || '').toLowerCase())
                     })
                         .bindPopup(`
-                        <div class="text-center">
-                            <h6 class="mb-1 fw-bold">${barrier.name}</h6>
-                            <small class="text-muted d-block mb-2">${barrier.category_name}</small>
-                            <span class="badge bg-${barrier.color} mb-2">${barrier.status_label}</span><br>
-                            <a href="${barrier.url}" class="btn btn-sm btn-primary text-white py-1 px-2" style="font-size: 11px">Ver Detalhes</a>
-                        </div>
-                    `);
+                            <div class="text-center">
+                                <h6 class="mb-1 fw-bold">${barrier.name}</h6>
+                                <small class="text-muted d-block mb-2">${barrier.category_name}</small>
+                                <span class="badge bg-${barrier.color} mb-2">${barrier.status_label}</span><br>
+                                <a href="${barrier.url}" class="btn btn-sm btn-primary text-white py-1 px-2" style="font-size: 11px">Ver Detalhes</a>
+                            </div>
+                        `);
+
                     markersGroup.addLayer(marker);
                     bounds.push([barrier.lat, barrier.lng]);
                 }

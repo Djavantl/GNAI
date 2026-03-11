@@ -16,22 +16,27 @@ class BarrierCategorySeeder extends Seeder
             [
                 'name' => 'Arquitetônica',
                 'description' => 'Barreiras físicas ou estruturais que dificultam o acesso.',
+                'blocks_map' => false,
             ],
             [
                 'name' => 'Comunicacional',
                 'description' => 'Barreiras relacionadas à comunicação e à informação.',
+                'blocks_map' => true,
             ],
             [
                 'name' => 'Atitudinal',
                 'description' => 'Barreiras decorrentes de preconceitos ou atitudes excludentes.',
+                'blocks_map' => true,
             ],
             [
                 'name' => 'Pedagógica',
                 'description' => 'Barreiras no processo de ensino e aprendizagem.',
+                'blocks_map' => true,
             ],
             [
                 'name' => 'Tecnológica',
                 'description' => 'Barreiras relacionadas ao uso ou acesso à tecnologia.',
+                'blocks_map' => true,
             ],
         ];
 
