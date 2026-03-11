@@ -4,40 +4,38 @@ namespace App\Models\InclusiveRadar;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
 
-class Training extends Model
+class InstitutionalEvent extends Model
 {
     use HasFactory;
 
-    protected $table = 'trainings';
+    protected $table = 'institutional_events';
 
     protected $fillable = [
         'title',
         'description',
-        'url',
+        'start_date',
+        'end_date',
+        'start_time',
+        'end_time',
+        'location',
+        'organizer',
+        'audience',
         'is_active',
-        'trainable_id',
-        'trainable_type',
     ];
 
     protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
         'is_active' => 'boolean',
-        'url' => 'array',
     ];
 
-    public function trainable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    public function files(): HasMany
-    {
-        return $this->hasMany(TrainingFile::class, 'training_id');
-    }
-
+    /**
+     * Scope para buscar por título
+     */
     public function scopeSearchTitle(Builder $query, ?string $title): Builder
     {
         if ($title) {
@@ -46,18 +44,11 @@ class Training extends Model
         return $query;
     }
 
+    /**
+     * Scope para eventos ativos
+     */
     public function scopeActive(Builder $query, bool $active = true): Builder
     {
         return $query->where('is_active', $active);
-    }
-
-    public function assistiveTechnologies()
-    {
-        return $this->belongsToMany(
-            AssistiveTechnology::class,
-            'assistive_technology_training',
-            'training_id',
-            'assistive_technology_id'
-        );
     }
 }

@@ -16,7 +16,9 @@ class InstitutionalEventController extends Controller
 {
     use ResolvesBackRoute;
 
-    public function __construct(protected InstitutionalEventService $service) {}
+    public function __construct(
+        protected InstitutionalEventService $service
+    ) {}
 
     public function index(Request $request): View
     {

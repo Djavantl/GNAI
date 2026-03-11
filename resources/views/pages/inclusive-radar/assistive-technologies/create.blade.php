@@ -59,7 +59,7 @@
                 />
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6" id="asset_code_container">
                 <x-forms.input
                     name="asset_code"
                     label="Patrimônio / Tombamento"

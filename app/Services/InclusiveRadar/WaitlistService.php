@@ -5,6 +5,7 @@ namespace App\Services\InclusiveRadar;
 use App\Enums\InclusiveRadar\WaitlistStatus;
 use App\Models\InclusiveRadar\Loan;
 use App\Models\InclusiveRadar\Waitlist;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -13,11 +14,18 @@ class WaitlistService
     public function store(array $data): Waitlist
     {
         return DB::transaction(function () use ($data) {
-            /* Utilizamos lockForUpdate para evitar condições de corrida (race conditions)
-               onde dois usuários tentam entrar na fila simultaneamente para o mesmo item. */
-            $item = $data['waitlistable_type']::lockForUpdate()
-                ->findOrFail($data['waitlistable_id']);
+            /* Resolvemos o nome vindo do request (alias) para a classe real da Model.
+               Se o MorphMap tiver 'assistive_technology', ele retornará o namespace completo.
+            */
+            $modelClass = Relation::getMorphedModel($data['waitlistable_type'])
+                ?? $data['waitlistable_type'];
 
+            /* Utilizamos o $modelClass resolvido para o lockForUpdate */
+            $item = $modelClass::lockForUpdate()->findOrFail($data['waitlistable_id']);
+
+            /* Garantimos que o waitlistable_type seja o alias (ex: 'assistive_technology')
+               para salvar corretamente no banco de acordo com o Morph Map.
+            */
             $data['waitlistable_type'] = $item->getMorphClass();
 
             $this->validateNewWaitlist($item, $data);
@@ -67,8 +75,9 @@ class WaitlistService
 
     public function notifyNext($item): ?Waitlist
     {
-        /* Selecionamos o próximo da fila seguindo o critério FIFO (First In, First Out),
-           garantindo a justiça no atendimento por ordem de solicitação. */
+        /* Aqui o $item->getMorphClass() já retornará o alias correto
+           porque o objeto $item já é uma instância da Model.
+        */
         $next = Waitlist::where('waitlistable_id', $item->id)
             ->where('waitlistable_type', $item->getMorphClass())
             ->where('status', WaitlistStatus::WAITING->value)

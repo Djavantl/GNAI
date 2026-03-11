@@ -1,12 +1,12 @@
 @extends('layouts.master')
 
-@section('title', 'Treinamentos')
+@section('title', 'Agenda Institucional')
 
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Treinamentos' => route('inclusive-radar.trainings.index'),
+            'Agenda Institucional' => route('inclusive-radar.institutional-events.index'),
         ]"/>
     </div>
 
@@ -15,14 +15,14 @@
 
         {{-- HEADER --}}
         <x-table.page-header
-            title="Treinamentos"
-            subtitle="Gerenciamento de treinamentos vinculados aos recursos."
+            title="Agenda Institucional"
+            subtitle="Gerenciamento de eventos institucionais."
         >
             {{-- Botão de ação --}}
             <x-buttons.link-button
-                :href="route('inclusive-radar.trainings.create')"
+                :href="route('inclusive-radar.institutional-events.create')"
                 variant="new"
-                title="Adicionar Treinamento"
+                title="Adicionar Evento"
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
@@ -32,9 +32,9 @@
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
-                data-target="#trainings-table"
+                data-target="#events-table"
                 :fields="[
-                    ['name' => 'title', 'placeholder' => 'Filtrar por nome do treinamento...'],
+                    ['name' => 'title', 'placeholder' => 'Filtrar por nome do evento...'],
                     ['name' => 'is_active', 'type' => 'select', 'options' => [
                         '' => 'Status (Todos)',
                         '1' => 'Ativo',
@@ -45,8 +45,8 @@
         </div>
 
         {{-- TABELA --}}
-        <div id="trainings-table" class="p-3">
-            @include('pages.inclusive-radar.trainings.partials.table', ['trainings' => $trainings])
+        <div id="events-table" class="p-3">
+            @include('pages.inclusive-radar.institutional-events.partials.table', ['events' => $events])
         </div>
 
     </div>

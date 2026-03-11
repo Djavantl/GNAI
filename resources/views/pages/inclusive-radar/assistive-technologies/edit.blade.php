@@ -79,43 +79,6 @@
                 />
             </div>
 
-            {{-- TREINAMENTOS --}}
-            <x-forms.section title="Treinamentos e Capacitações" />
-
-            <div class="col-12 mt-4 px-4 mb-4">
-                @if($assistiveTechnology->trainings->count() > 0)
-                    <div class="border rounded bg-white shadow-sm overflow-hidden">
-                        <x-table.table :headers="['Título', 'Status', 'Ações']">
-                            @foreach($assistiveTechnology->trainings as $training)
-                                <tr>
-                                    <x-table.td>
-                                        <strong>{{ $training->title }}</strong>
-                                    </x-table.td>
-
-                                    <x-table.td>
-                                        <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
-                                            {{ $training->is_active ? 'Ativo' : 'Inativo' }}
-                                        </span>
-                                    </x-table.td>
-
-                                    <x-table.td>
-                                        <x-buttons.link-button
-                                            :href="route('inclusive-radar.trainings.show', $training)"
-                                            variant="info">
-                                            <i class="fas fa-eye"></i> Ver
-                                        </x-buttons.link-button>
-                                    </x-table.td>
-                                </tr>
-                            @endforeach
-                        </x-table.table>
-                    </div>
-                @else
-                    <div class="text-center py-5 border rounded bg-light border-dashed">
-                        <p class="text-muted">Nenhum treinamento vinculado.</p>
-                    </div>
-                @endif
-            </div>
-
             {{-- NOVA VISTORIA --}}
             <x-forms.section title="Nova Atualização de Estado / Vistoria" />
 

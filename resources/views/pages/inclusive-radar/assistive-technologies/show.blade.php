@@ -60,52 +60,6 @@
                 </x-show.info-item>
             </div>
 
-
-            {{-- SEÇÃO 2: TREINAMENTOS --}}
-            <x-forms.section title="Treinamentos e Capacitações" />
-            <div class="col-12 mt-4">
-                <div class="px-4 mb-4">
-                    @if($assistiveTechnology->trainings->count() > 0)
-                        <div class="p-0 border rounded bg-white shadow-sm overflow-hidden">
-                            <x-table.table :headers="['Título', 'Status', 'Ações']" caption="Treinamentos vinculados">
-                                @foreach($assistiveTechnology->trainings as $training)
-                                    <tr>
-                                        <x-table.td>
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-chalkboard-teacher text-purple me-2" aria-hidden="true"></i>
-                                                <span class="fw-bold text-dark">{{ $training->title }}</span>
-                                            </div>
-                                        </x-table.td>
-                                        <x-table.td>
-                                            <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
-                                                {{ $training->is_active ? 'Ativo' : 'Inativo' }}
-                                            </span>
-                                        </x-table.td>
-                                        <x-table.td>
-                                            <x-table.actions>
-                                                <x-buttons.link-button :href="route('inclusive-radar.trainings.show', $training)" variant="info">
-                                                    <i class="fas fa-eye"></i> Ver
-                                                </x-buttons.link-button>
-                                            </x-table.actions>
-                                        </x-table.td>
-                                    </tr>
-                                @endforeach
-                            </x-table.table>
-                        </div>
-                    @else
-                        <div class="text-center py-5 border rounded bg-light border-dashed" role="status">
-                            <p class="text-muted italic mb-0">Nenhum treinamento cadastrado para este recurso.</p>
-                        </div>
-                    @endif
-                    <div class="text-end mt-3">
-                        <x-buttons.link-button :href="route('inclusive-radar.trainings.create', ['type' => 'assistive_technology', 'id' => $assistiveTechnology->id])" variant="primary" class="btn-sm">
-                            <i class="fas fa-plus me-1"></i> Adicionar Treinamento
-                        </x-buttons.link-button>
-                    </div>
-                </div>
-            </div>
-
-
             {{-- SEÇÃO 3: Histórico de Vistorias --}}
             <x-forms.section title="Histórico de Vistorias" />
 
@@ -124,7 +78,6 @@
                             <p class="fw-bold">Nenhuma vistoria registrada.</p>
                         </div>
                     @endforelse
-
                 </div>
             </div>
 

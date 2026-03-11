@@ -27,7 +27,6 @@ class AccessibleEducationalMaterialController extends Controller
             'deficiencies',
             'accessibilityFeatures',
         ])
-            ->withCount('trainings')
             ->filterName($name ?: null)
             ->active($request->is_active)
             ->digital($request->is_digital);
@@ -87,7 +86,6 @@ class AccessibleEducationalMaterialController extends Controller
             'accessibilityFeatures',
             'inspections.images',
             'loans',
-            'trainings',
         ]);
 
         return view(
@@ -102,7 +100,6 @@ class AccessibleEducationalMaterialController extends Controller
             'deficiencies',
             'accessibilityFeatures',
             'inspections.images',
-            'trainings',
         ]);
 
         return view(
@@ -138,7 +135,6 @@ class AccessibleEducationalMaterialController extends Controller
             'deficiencies',
             'accessibilityFeatures',
             'inspections.images',
-            'trainings',
         ]);
 
         $pdf = Pdf::loadView(

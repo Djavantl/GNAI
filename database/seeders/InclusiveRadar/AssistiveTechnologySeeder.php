@@ -2,6 +2,9 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
+use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use Database\Seeders\AdminSeeder;
+use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -71,52 +74,32 @@ class AssistiveTechnologySeeder extends Seeder
         $this->command->info("15 notebooks criados com sucesso, cada um com inspeções e deficiências associadas.");
     }
 
-    // Os demais métodos permanecem inalterados
     private function ensureDeficienciesExist(): void
     {
-        if (DB::table('deficiencies')->count() > 0) {
-            return;
+        if (DB::table('deficiencies')->count() === 0) {
+            $this->call(DeficiencySeeder::class);
         }
-
-        DB::table('deficiencies')->insert([
-            ['name' => 'Visual', 'cid_code' => 'H54', 'description' => 'Deficiência visual, incluindo baixa visão e cegueira parcial ou total.'],
-            ['name' => 'Auditiva', 'cid_code' => 'H90', 'description' => 'Perda auditiva parcial ou total, podendo ser unilateral ou bilateral.'],
-            ['name' => 'Física', 'cid_code' => 'G80', 'description' => 'Comprometimentos motores que afetam mobilidade, coordenação ou força física.'],
-            ['name' => 'Intelectual', 'cid_code' => 'F70', 'description' => 'Limitações significativas no funcionamento intelectual e no comportamento adaptativo.'],
-            ['name' => 'Psicossocial', 'cid_code' => 'F32', 'description' => 'Condições que afetam o comportamento, emoção e interação social do indivíduo.'],
-        ]);
     }
 
     private function ensureUserExists(): int
     {
-        $user = DB::table('users')->first();
-        if ($user) {
-            return $user->id;
+        if (DB::table('users')->count() === 0) {
+            $this->call(AdminSeeder::class);
         }
 
-        return DB::table('users')->insertGetId([
-            'name' => 'Admin Seeder',
-            'email' => 'admin@seeder.com',
-            'password' => bcrypt('password'),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        return DB::table('users')->first()->id;
     }
 
-    private function attachDeficiencies(AssistiveTechnology $technology, array $deficiencyIds): void
+    private function attachDeficiencies(AssistiveTechnology $assistiveTechnology, array $deficiencyIds): void
     {
         if (empty($deficiencyIds)) {
             return;
         }
 
-        $numberOfDeficiencies = rand(1, min(3, count($deficiencyIds)));
-        $selectedDeficiencies = array_rand(array_flip($deficiencyIds), $numberOfDeficiencies);
+        $number = rand(1, min(3, count($deficiencyIds)));
+        $selected = collect($deficiencyIds)->random($number)->toArray();
 
-        if (!is_array($selectedDeficiencies)) {
-            $selectedDeficiencies = [$selectedDeficiencies];
-        }
-
-        $technology->deficiencies()->sync($selectedDeficiencies);
+        $assistiveTechnology->deficiencies()->sync($selected);
     }
 
     private function generateNotes(string $name, string $state, bool $isDigital): string

@@ -54,9 +54,9 @@
                     label="Tipo de Recurso"
                     required
                     :options="[
-                    'App\\Models\\InclusiveRadar\\AssistiveTechnology' => 'Tecnologia Assistiva',
-                    'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial' => 'Material Pedagógico'
-                ]"
+                        'assistive_technology' => 'Tecnologia Assistiva',
+                        'accessible_educational_material' => 'Material Pedagógico'
+                    ]"
                     :selected="old('waitlistable_type')"
                 />
             </div>
@@ -135,8 +135,8 @@
     <script>
         window.waitlistData = {
             items: {
-                'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies ?? []),
-                'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials ?? [])
+                'assistive_technology': @json($assistive_technologies ?? []),
+                'accessible_educational_material': @json($educational_materials ?? [])
             },
             oldId: "{{ old('waitlistable_id') }}"
         };

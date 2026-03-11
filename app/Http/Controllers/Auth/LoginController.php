@@ -2,7 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Enums\InclusiveRadar\LoanStatus;
+use App\Enums\InclusiveRadar\WaitlistStatus;
 use App\Http\Controllers\Controller;
+use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Models\InclusiveRadar\AssistiveTechnology;
+use App\Models\InclusiveRadar\Barrier;
+use App\Models\InclusiveRadar\Loan;
+use App\Models\InclusiveRadar\Waitlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SpecializedEducationalSupport\Student;
@@ -45,23 +53,76 @@ class LoginController extends Controller
 
     public function index()
     {
-        // Buscamos os totais para exibir nos cards do GNAI
+        // --- AEE ---
         $totalStudents = Student::count();
         $totalSessions = Session::count();
         $totalPeis = Pei::count();
         $totalProfessionals = Professional::count();
         $totalCourses = Course::count();
-        $totalPeisFinalized = Pei::where('is_finished', (bool) true)->count();
-        $totalPeisNotFinalized = Pei::where('is_finished', (bool) false)->count();
+        $totalPeisFinished = Pei::where('is_finished', true)->count();
+        $totalPeisNotFinished = Pei::where('is_finished', false)->count();
+
+        // --- Radar Inclusivo ---
+        $totalAt = AssistiveTechnology::active('1')->count();
+        $totalAem = AccessibleEducationalMaterial::active('1')->count();
+        $totalLoans = Loan::count();
+
+        $totalWaitingAndNotified = Waitlist::whereIn('status', [
+            WaitlistStatus::WAITING->value,
+            WaitlistStatus::NOTIFIED->value
+        ])->count();
+
+        $totalBarriers = Barrier::count();
+
+        $barrierStatusCounts = collect(BarrierStatus::cases())->map(function ($status) {
+            return [
+                'label' => $status->label(),
+                'color' => $status->color(),
+                'count' => Barrier::status($status->value)->count(),
+            ];
+        })->filter(fn($item) => $item['count'] > 0)->values();
+
+        $mapBarriers = Barrier::with(['category', 'location', 'institution', 'inspections'])
+            ->get()
+            ->map(function ($barrier) {
+                $currentStatus = $barrier->latestStatus();
+
+                if (!$currentStatus) return null;
+
+                return [
+                    'id' => $barrier->id,
+                    'name' => $barrier->name,
+                    'lat' => (float) $barrier->latitude,
+                    'lng' => (float) $barrier->longitude,
+                    'status' => $currentStatus->value,
+                    'status_label' => $currentStatus->label(),
+                    'blocks_map' => (bool) ($barrier->category?->blocks_map ?? false),
+                    'category_name' => $barrier->category?->name ?? 'Sem Categoria',
+                    'color' => $currentStatus->color(),
+                    'url' => route('inclusive-radar.barriers.show', $barrier)
+                ];
+            })
+            ->filter()
+            ->values();
 
         return view('pages.dashboard', [
+            // AEE
             'totalStudents' => $totalStudents,
             'totalSessions' => $totalSessions,
             'totalPeis' => $totalPeis,
             'totalProfessionals' => $totalProfessionals,
-            'totalPeisFinished' => $totalPeisFinalized,
-            'totalPeisNotFinished' => $totalPeisNotFinalized,
-            'totalCourses' => $totalCourses
+            'totalPeisFinished' => $totalPeisFinished,
+            'totalPeisNotFinished' => $totalPeisNotFinished,
+            'totalCourses' => $totalCourses,
+
+            // Radar Inclusivo
+            'totalAt' => $totalAt,
+            'totalAem' => $totalAem,
+            'totalLoans' => $totalLoans,
+            'totalBarriers' => $totalBarriers,
+            'barrierStatusCounts' => $barrierStatusCounts,
+            'mapBarriers' => $mapBarriers,
+            'totalWaiting' => $totalWaitingAndNotified,
         ]);
     }
 

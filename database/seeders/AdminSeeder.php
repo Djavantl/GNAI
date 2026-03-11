@@ -10,19 +10,22 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        // Primeiro Admin
-        User::create([
-            'name' => 'Admin GNAI',
-            'email' => 'admin@gnai.com',
-            'password' => Hash::make('admin'),
-            'is_admin' => true,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@gnai.com'],
+            [
+                'name' => 'Admin GNAI',
+                'password' => Hash::make('admin'),
+                'is_admin' => true,
+            ]
+        );
 
-        User::create([
-            'name' => 'Segundo Admin',
-            'email' => 'admin2@gnai.com',
-            'password' => Hash::make('admin123'),
-            'is_admin' => true,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin2@gnai.com'],
+            [
+                'name' => 'Segundo Admin',
+                'password' => Hash::make('admin123'),
+                'is_admin' => true,
+            ]
+        );
     }
 }

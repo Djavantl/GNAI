@@ -79,6 +79,9 @@ class InstitutionService
                 throw new CannotDeleteLinkedBarrierException();
             }
 
+            // Remove todos os pontos de referencias desta instituicao
+            $institution->locations()->delete();
+
             $institution->delete();
         });
     }

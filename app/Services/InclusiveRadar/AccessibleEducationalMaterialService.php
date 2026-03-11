@@ -48,7 +48,7 @@ class AccessibleEducationalMaterialService
     {
         $this->validateBusinessRules($material, $data);
 
-        [$oldDef, $oldFeatures, $oldTrainings] = $this->captureOriginalState($material);
+        [$oldDef, $oldFeatures] = $this->captureOriginalState($material);
 
         $data = $this->processStock($material, $data);
 
@@ -58,7 +58,7 @@ class AccessibleEducationalMaterialService
 
         $this->syncRelations($material, $data);
 
-        $this->logRelationChanges($material, $data, $oldDef, $oldFeatures, $oldTrainings);
+        $this->logRelationChanges($material, $data, $oldDef, $oldFeatures);
 
         $this->runInspection($material, $data);
 
@@ -113,11 +113,7 @@ class AccessibleEducationalMaterialService
             ? $material->accessibilityFeatures()->pluck('accessibility_features.id')->toArray()
             : [];
 
-        $oldTrainings = $material->exists
-            ? $material->trainings()->pluck('id')->toArray()
-            : [];
-
-        return [$oldDeficiencies, $oldFeatures, $oldTrainings];
+        return [$oldDeficiencies, $oldFeatures];
     }
 
     private function processStock(AccessibleEducationalMaterial $material, array $data): array
@@ -147,34 +143,6 @@ class AccessibleEducationalMaterialService
         if (isset($data['accessibility_features'])) {
             $material->accessibilityFeatures()->sync($data['accessibility_features']);
         }
-
-        if ($material->exists && isset($data['trainings'])) {
-            /* Deletamos e recriamos treinamentos para evitar lógica complexa de comparação
-               de arquivos e metadados em atualizações parciais. */
-            $material->trainings()->delete();
-
-            foreach ($data['trainings'] as $training) {
-                $t = $material->trainings()->create([
-                    'title'       => $training['title'],
-                    'description' => $training['description'] ?? null,
-                    'url'         => $training['url'] ?? null,
-                    'is_active'   => true
-                ]);
-
-                if (!empty($training['files'])) {
-                    foreach ($training['files'] as $file) {
-                        $path = $file->store('trainings', 'public');
-
-                        $t->files()->create([
-                            'path'          => $path,
-                            'original_name' => $file->getClientOriginalName(),
-                            'mime_type'     => $file->getMimeType(),
-                            'size'          => $file->getSize(),
-                        ]);
-                    }
-                }
-            }
-        }
     }
 
     private function validateStatusChangeWithActiveLoans(AccessibleEducationalMaterial $material, array $data): void
@@ -197,10 +165,10 @@ class AccessibleEducationalMaterialService
 
     private function loadFreshRelations(AccessibleEducationalMaterial $material): AccessibleEducationalMaterial
     {
-        return $material->fresh(['deficiencies', 'accessibilityFeatures', 'trainings.files']);
+        return $material->fresh(['deficiencies', 'accessibilityFeatures']);
     }
 
-    private function logRelationChanges(AccessibleEducationalMaterial $material, array $data, array $oldDef, array $oldFeatures, array $oldTrainings): void
+    private function logRelationChanges(AccessibleEducationalMaterial $material, array $data, array $oldDef, array $oldFeatures): void
     {
         if ($material->wasRecentlyCreated) return;
 
@@ -210,19 +178,6 @@ class AccessibleEducationalMaterialService
 
         if (isset($data['accessibility_features'])) {
             $this->auditIfChanged($material, 'accessibility_features', $oldFeatures, $data['accessibility_features']);
-        }
-
-        if (isset($data['trainings'])) {
-            $newTrain = $material->trainings()->pluck('id')->toArray();
-
-            /* Ordenamos para garantir que a comparação de arrays identifique apenas mudanças
-               de valores reais, ignorando se a ordem dos IDs veio diferente da requisição. */
-            sort($oldTrainings);
-            sort($newTrain);
-
-            if ($oldTrainings !== $newTrain) {
-                $this->logRelationChange($material, 'trainings', $oldTrainings, $newTrain);
-            }
         }
     }
 

@@ -51,10 +51,6 @@ class AssistiveTechnology extends Model
         );
     }
 
-    public function trainings(): MorphMany {
-        return $this->morphMany(Training::class, 'trainable');
-    }
-
     public function inspections(): MorphMany
     {
         return $this->morphMany(Inspection::class, 'inspectable')
@@ -123,7 +119,6 @@ class AssistiveTechnology extends Model
             'status' => 'Status do Recurso',
             'is_active' => 'Cadastro Ativo',
             'deficiencies' => 'Público-Alvo (Deficiências)',
-            'trainings' => 'Treinamentos',
         ];
     }
 
@@ -133,12 +128,6 @@ class AssistiveTechnology extends Model
             return Deficiency::whereIn('id', $value)
                 ->pluck('name')
                 ->join(', ') ?: 'Nenhuma';
-        }
-
-        if ($field === 'trainings' && is_array($value)) {
-            return Training::whereIn('id', $value)
-                ->pluck('title')
-                ->join(', ') ?: 'Nenhum';
         }
 
         if ($field === 'is_digital') {

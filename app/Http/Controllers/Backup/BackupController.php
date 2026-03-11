@@ -62,26 +62,6 @@ class BackupController extends Controller {
         return view('pages.backup.show', compact('backup'));
     }
 
-    public function edit($id) {
-        $backup = Backup::findOrFail($id);
-        return view('pages.backup.edit', compact('backup'));
-    }
-
-    public function update(Request $request, $id) {
-        $request->validate([
-            'file_name' => 'required|string|max:255',
-            'status'    => 'required|string'
-        ]);
-
-        $backup = Backup::findOrFail($id);
-        $backup->update([
-            'file_name' => $request->file_name,
-            'status'    => $request->status,
-        ]);
-
-        return redirect()->route('backup.backups.index')->with('success', 'Informações do backups atualizadas!');
-    }
-
     public function download($id) {
         $backup = Backup::findOrFail($id);
 

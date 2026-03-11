@@ -30,61 +30,8 @@
             {{-- LADO ESQUERDO: Formulário --}}
             <div class="col-lg-5 border-end">
 
-                {{-- 1. Localização e Contexto --}}
-                <x-forms.section title="1. Localização e Contexto" />
-
-                <div class="col-md-12 mb-3 px-4">
-                    <div class="row">
-                        {{-- Campus --}}
-                        <div class="col-md-6">
-                            <label for="institution_select"
-                                   class="form-label fw-bold text-purple-dark italic">
-                                Campus / Unidade <span class="text-danger"></span>
-                            </label>
-                            <select name="institution_id"
-                                    id="institution_select"
-                                    required
-                                    class="form-select custom-input shadow-sm">
-                                <option value="">-- Selecione --</option>
-                                @foreach($institutions as $inst)
-                                    <option value="{{ $inst->id }}"
-                                            data-lat="{{ $inst->latitude }}"
-                                            data-lng="{{ $inst->longitude }}"
-                                        {{ old('institution_id') == $inst->id ? 'selected' : '' }}>
-                                        {{ $inst->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Local --}}
-                        <div class="col-md-6">
-                            <label for="location_select"
-                                   class="form-label fw-bold text-purple-dark italic">
-                                Local/Ponto de Referência
-                            </label>
-                            <select name="location_id"
-                                    id="location_select"
-                                    class="form-select custom-input shadow-sm">
-                                <option value="">Selecione...</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Complemento --}}
-                <div id="location_wrapper"
-                     class="{{ old('institution_id') ? '' : 'd-none' }} col-md-12 mb-3 px-4 mt-3">
-                    <x-forms.textarea
-                        name="location_specific_details"
-                        label="Complemento"
-                        rows="3"
-                        :value="old('location_specific_details')"
-                    />
-                </div>
-
-                {{-- 2. Detalhes da Ocorrência --}}
-                <x-forms.section title="2. Detalhes da Ocorrência" />
+                {{-- 1. Detalhes da Ocorrência --}}
+                <x-forms.section title="1. Detalhes da Ocorrência" />
 
                 <div class="px-4">
                     <div class="row g-3">
@@ -112,6 +59,39 @@
                                 :options="$categories->pluck('name', 'id')"
                                 :selected="old('barrier_category_id')"
                                 extraAttributes="data-blocks-map-options"
+                            />
+                        </div>
+
+                        <div class="col-md-6">
+                            <x-forms.select
+                                name="institution_id"
+                                id="institution_select"
+                                label="Campus / Unidade"
+                                required
+                                :options="$institutions->pluck('name','id')"
+                                :selected="old('institution_id')"
+                                :resourceObjects="$institutions"
+                            />
+                        </div>
+
+                        <div class="col-md-6">
+                            <x-forms.select
+                                name="location_id"
+                                id="location_select"
+                                label="Local / Ponto de Referência"
+                                :options="[]"
+                                :selected="old('location_id')"
+                            />
+                        </div>
+                        {{-- Complemento --}}
+                        <div id="location_wrapper"
+                             class="{{ old('institution_id') ? '' : 'd-none' }} col-md-12 mb-3 mt-3">
+                            <x-forms.textarea
+                                name="location_specific_details"
+                                label="Complemento"
+                                rows="3"
+                                placeholder="Descreva melhor onde a barreira está localizada, caso o ponto de referência não seja suficiente"
+                                :value="old('location_specific_details')"
                             />
                         </div>
                     </div>
@@ -235,7 +215,6 @@
                         </div>
                     </div>
 
-                    {{-- ===== Vistoria Inicial (Padrão TA) ===== --}}
                     <div class="mt-3">
                         <x-forms.section title="4. Vistoria Inicial" />
 
@@ -252,7 +231,6 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    {{-- !! COMPONENTE DE UPLOAD IGUAL AO TA !! --}}
                                     <x-forms.image-uploader
                                         name="images[]"
                                         label="Fotos da Barreira"

@@ -60,10 +60,6 @@ class AccessibleEducationalMaterial extends Model
         );
     }
 
-    public function trainings(): MorphMany {
-        return $this->morphMany(Training::class, 'trainable');
-    }
-
     public function inspections(): MorphMany
     {
         return $this->morphMany(Inspection::class, 'inspectable')
@@ -137,7 +133,6 @@ class AccessibleEducationalMaterial extends Model
             'status' => 'Status do Recurso',
             'is_active' => 'Cadastro Ativo',
             'deficiencies' => 'Público-Alvo',
-            'trainings' => 'Treinamentos',
             'accessibility_features' => 'Recursos de Acessibilidade',
         ];
     }
@@ -148,12 +143,6 @@ class AccessibleEducationalMaterial extends Model
             return Deficiency::whereIn('id', $value)
                 ->pluck('name')
                 ->join(', ') ?: 'Nenhuma';
-        }
-
-        if ($field === 'trainings' && is_array($value)) {
-            return Training::whereIn('id', $value)
-                ->pluck('title')
-                ->join(', ') ?: 'Nenhum';
         }
 
         if ($field === 'accessibility_features' && is_array($value)) {

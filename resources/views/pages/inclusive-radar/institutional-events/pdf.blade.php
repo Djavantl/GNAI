@@ -2,86 +2,54 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
-    <title>Relatório - {{ $training->title }}</title>
+    <title>Relatório - {{ $event->title }}</title>
     <style>
         {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-        a { color: #4B0082; text-decoration: underline; }
     </style>
 </head>
 <body>
-<div class="header">
-    <h2>Ficha de Treinamento</h2>
-    <p><strong>Título:</strong> {{ $training->title }}</p>
-    <p><strong>Gerado em:</strong> {{ now()->format('d/m/Y H:i') }}</p>
-    <p><strong>Status:</strong> {{ $training->is_active ? 'Ativo' : 'Inativo' }}</p>
-</div>
+    <div class="header">
+        <h2>Ficha de Agenda Institucional</h2>
+        <p><strong>Título:</strong> {{ $event->title }}</p>
+        <p><strong>Gerado em:</strong> {{ now()->format('d/m/Y H:i') }}</p>
+        <p><strong>Status:</strong> {{ $event->is_active ? 'Ativo' : 'Inativo' }}</p>
+    </div>
 
-{{-- Seção 1: Informações Gerais --}}
-<x-pdf.section-title title="1. Informações Gerais" />
-<x-pdf.table>
-    <x-pdf.row>
-        <x-pdf.info-item label="Título do Treinamento" :value="$training->title" colspan="2" />
-        <x-pdf.info-item label="Descrição" :value="$training->description ?: '---'" colspan="2" />
-    </x-pdf.row>
-    <x-pdf.row>
-        <x-pdf.info-item label="Vinculado a" :value="$training->trainable->name ?? '---'" colspan="2" />
-        @php
-            $trainableTypeLabel = match($training->trainable_type) {
-                'assistive_technology' => 'Tecnologia Assistiva',
-                'accessible_educational_material' => 'Material Pedagógico Acessível',
-                default => '---',
-            };
-        @endphp
-
-        <x-pdf.info-item label="Tipo" :value="$trainableTypeLabel" colspan="2" />
-    </x-pdf.row>
-</x-pdf.table>
-
-{{-- Seção 2: Links de Tutoriais --}}
-@if(!empty($training->url))
-    <x-pdf.section-title title="2. Links de Tutoriais" />
+    {{-- Seção 1: Informações Gerais --}}
+    <x-pdf.section-title title="1. Informações Gerais" />
     <x-pdf.table>
-        @foreach($training->url as $key => $link)
-            <x-pdf.row>
-                <x-pdf.info-item
-                    label="Tutorial {{ $key + 1 }}"
-                    :value="'<a href='.$link.' target=_blank>'.$link.'</a>'"
-                    colspan="4"
-                    :isHtml="true"
-                />
-            </x-pdf.row>
-        @endforeach
+        <x-pdf.row>
+            <x-pdf.info-item label="Título" :value="$event->title" colspan="2" />
+            <x-pdf.info-item label="Descrição" :value="$event->description ?: '---'" colspan="2" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Local" :value="$event->location ?: '---'" colspan="2" />
+            <x-pdf.info-item label="Organizador" :value="$event->organizer ?: '---'" colspan="2" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Público Alvo" :value="$event->audience ?: '---'" colspan="4" />
+        </x-pdf.row>
     </x-pdf.table>
-@endif
 
-<x-pdf.section-title title="3. Arquivos Registrados" />
-
-@php
-    $fileCount = $training->files->count();
-@endphp
-
-@if($fileCount > 0)
-    <x-pdf.text-area
-        label="Arquivos"
-        :value="'Existem ' . $fileCount . ' documentos registrados no sistema. Para acessá-los, entre no sistema.'"
-    />
+    {{-- Seção 2: Datas e Horários --}}
+    <x-pdf.section-title title="2. Datas e Horários" />
     <x-pdf.table>
-        @foreach($training->files as $index => $file)
-            <x-pdf.row>
-                <x-pdf.info-item
-                    label="Arquivo {{ $index + 1 }}"
-                    :value="$file->original_name ?? 'Sem nome'"
-                />
-            </x-pdf.row>
-        @endforeach
+        <x-pdf.row>
+            <x-pdf.info-item label="Data de Início" :value="$event->start_date?->format('d/m/Y')" />
+            <x-pdf.info-item label="Horário de Início" :value="$event->start_time?->format('H:i')" />
+            <x-pdf.info-item label="Data de Término" :value="$event->end_date?->format('d/m/Y')" />
+            <x-pdf.info-item label="Horário de Término" :value="$event->end_time?->format('H:i')" />
+        </x-pdf.row>
     </x-pdf.table>
-@else
-    <x-pdf.text-area
-        label="Arquivos"
-        :value="'Nenhum arquivo registrado para este treinamento.'"
-    />
-@endif
 
-<x-pdf.pages />
+    {{-- Seção 3: Status --}}
+    <x-pdf.section-title title="3. Configurações de Visibilidade" />
+    <x-pdf.table>
+        <x-pdf.row>
+            <x-pdf.info-item label="Status no Sistema" :value="$event->is_active ? 'Ativo' : 'Inativo'" colspan="4" />
+        </x-pdf.row>
+    </x-pdf.table>
+
+    <x-pdf.pages />
 </body>
 </html>

@@ -18,7 +18,7 @@
         <div class="login-brand-side">
             <div class="brand-content">
                 <div class="brand-icon mb-4">
-                    <i class="fas fa-layer-group"></i>
+                    <img src="{{ asset('./images/logo.png') }}" style="max-width: 60px;">
                 </div>
                 <h1 class="welcome-title">Bem-vindo(a) ao GNAI</h1>
                 <p class="brand-tagline">

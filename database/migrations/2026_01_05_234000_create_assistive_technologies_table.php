@@ -24,24 +24,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('assistive_technology_training', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('assistive_technology_id')
-                ->constrained('assistive_technologies')
-                ->cascadeOnDelete();
-
-            $table->foreignId('training_id')
-                ->constrained('trainings')
-                ->cascadeOnDelete();
-
-            $table->unique(
-                ['assistive_technology_id', 'training_id'],
-                'tech_training_unique'
-            );
-
-            $table->timestamps();
-        });
-
         Schema::create('assistive_technology_deficiency', function (Blueprint $table) {
             $table->id();
 
@@ -65,7 +47,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('assistive_technology_deficiency');
-        Schema::dropIfExists('assistive_technology_training');
         Schema::dropIfExists('assistive_technologies');
     }
 };

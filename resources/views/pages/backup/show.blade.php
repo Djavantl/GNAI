@@ -19,10 +19,6 @@
         </div>
 
         <div class="d-flex gap-2">
-            <x-buttons.link-button :href="route('backup.backups.edit', $backup->id)" variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
-
             <x-buttons.link-button :href="route('backup.backups.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
             </x-buttons.link-button>
@@ -142,7 +138,6 @@
                     </x-buttons.link-button>
                 </div>
             </div>
-
         </div>
     </div>
 @endsection

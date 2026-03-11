@@ -48,7 +48,7 @@ class AssistiveTechnologyService
     {
         $this->validateBusinessRules($at, $data);
 
-        [$oldDef, $oldTrainings] = $this->captureOriginalState($at);
+        [$oldDef] = $this->captureOriginalState($at);
 
         $data = $this->processStock($at, $data);
 
@@ -58,7 +58,7 @@ class AssistiveTechnologyService
 
         $this->syncRelations($at, $data);
 
-        $this->logRelationChanges($at, $data, $oldDef, $oldTrainings);
+        $this->logRelationChanges($at, $data, $oldDef);
 
         $this->runInspection($at, $data);
 
@@ -95,11 +95,8 @@ class AssistiveTechnologyService
             ? $at->deficiencies()->pluck('deficiencies.id')->toArray()
             : [];
 
-        $oldTrainings = $at->exists
-            ? $at->trainings()->pluck('id')->toArray()
-            : [];
 
-        return [$oldDeficiencies, $oldTrainings];
+        return [$oldDeficiencies];
     }
 
     private function processStock(AssistiveTechnology $at, array $data): array
@@ -125,33 +122,6 @@ class AssistiveTechnologyService
         if (isset($data['deficiencies'])) {
             $at->deficiencies()->sync($data['deficiencies']);
         }
-
-        if ($at->exists && isset($data['trainings'])) {
-            /* Treinamentos são recriados integralmente para simplificar o
-               gerenciamento de versões e arquivos vinculados em lote. */
-            $at->trainings()->delete();
-
-            foreach ($data['trainings'] as $training) {
-                $t = $at->trainings()->create([
-                    'title'       => $training['title'],
-                    'description' => $training['description'] ?? null,
-                    'url'         => $training['url'] ?? null,
-                    'is_active'   => true
-                ]);
-
-                if (!empty($training['files'])) {
-                    foreach ($training['files'] as $file) {
-                        $path = $file->store('trainings', 'public');
-                        $t->files()->create([
-                            'path'          => $path,
-                            'original_name' => $file->getClientOriginalName(),
-                            'mime_type'     => $file->getMimeType(),
-                            'size'          => $file->getSize(),
-                        ]);
-                    }
-                }
-            }
-        }
     }
 
     private function validateStatusChangeWithActiveLoans(AssistiveTechnology $at, array $data): void
@@ -174,10 +144,10 @@ class AssistiveTechnologyService
 
     private function loadFreshRelations(AssistiveTechnology $at): AssistiveTechnology
     {
-        return $at->fresh(['deficiencies', 'trainings']);
+        return $at->fresh(['deficiencies']);
     }
 
-    private function logRelationChanges(AssistiveTechnology $at, array $data, array $oldDef, array $oldTrainings): void
+    private function logRelationChanges(AssistiveTechnology $at, array $data, array $oldDef): void
     {
         if ($at->wasRecentlyCreated) return;
 
@@ -189,15 +159,6 @@ class AssistiveTechnologyService
             sort($newDef);
             if ($oldDef !== $newDef) {
                 $this->logRelationChange($at, 'deficiencies', $oldDef, $newDef);
-            }
-        }
-
-        if (isset($data['trainings'])) {
-            $newTrain = $at->trainings()->pluck('id')->toArray();
-            sort($oldTrainings);
-            sort($newTrain);
-            if ($oldTrainings !== $newTrain) {
-                $this->logRelationChange($at, 'trainings', $oldTrainings, $newTrain);
             }
         }
     }

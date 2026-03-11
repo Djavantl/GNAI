@@ -61,15 +61,6 @@
                 />
             </div>
 
-            {{-- Patrimônio / Tombamento --}}
-            <div class="col-md-6" id="asset_code_container">
-                <x-forms.input
-                    name="asset_code"
-                    label="Patrimônio / Tombamento"
-                    :value="old('asset_code', $material->asset_code)"
-                />
-            </div>
-
             {{-- Natureza do Recurso --}}
             <div class="col-md-6" id="is_digital_container">
                 <x-forms.select
@@ -78,6 +69,15 @@
                     required
                     :options="[0 => 'Recurso Físico', 1 => 'Recurso Digital']"
                     :selected="old('is_digital', $material->is_digital ? 1 : 0)"
+                />
+            </div>
+
+            {{-- Patrimônio / Tombamento --}}
+            <div class="col-md-6" id="asset_code_container">
+                <x-forms.input
+                    name="asset_code"
+                    label="Patrimônio / Tombamento"
+                    :value="old('asset_code', $material->asset_code)"
                 />
             </div>
 
@@ -103,56 +103,6 @@
                 @error('accessibility_features')
                 <small class="text-danger d-block mt-1">{{ $message }}</small>
                 @enderror
-            </div>
-
-            {{-- TREINAMENTOS --}}
-            <x-forms.section title="Treinamentos e Capacitações" />
-
-            <div class="col-12 mb-4 px-4">
-                @if($material->trainings->count())
-                    <div class="border rounded bg-white shadow-sm overflow-hidden">
-                        <x-table.table :headers="['Título','Status','Ações']">
-                            @foreach($material->trainings as $training)
-                                <tr>
-                                    <x-table.td>
-                                        <strong>{{ $training->title }}</strong>
-                                    </x-table.td>
-                                    <x-table.td>
-                                        <span class="text-{{ $training->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase">
-                                            {{ $training->is_active ? 'Ativo' : 'Inativo' }}
-                                        </span>
-                                    </x-table.td>
-                                    <x-table.td>
-                                        <x-buttons.link-button
-                                            :href="route('inclusive-radar.trainings.show', $training)"
-                                            variant="info">
-                                            <i class="fas fa-eye"></i> Ver
-                                        </x-buttons.link-button>
-                                    </x-table.td>
-                                </tr>
-                            @endforeach
-                        </x-table.table>
-                    </div>
-                @else
-                    <div class="text-center py-5 border rounded bg-light border-dashed">
-                        <p class="text-muted">Nenhum treinamento vinculado.</p>
-                    </div>
-                @endif
-            </div>
-
-            {{-- HISTÓRICO DE VISTORIAS --}}
-            <x-forms.section title="Histórico de Vistorias" />
-
-            <div class="col-12 mb-4 px-4">
-                <div class="p-4 border rounded bg-light" style="max-height:400px; overflow-y:auto;">
-                    @forelse($material->inspections()->latest('inspection_date')->get() as $inspection)
-                        <x-forms.inspection-history-card :inspection="$inspection"/>
-                    @empty
-                        <div class="text-center py-5 text-muted">
-                            Nenhum histórico encontrado.
-                        </div>
-                    @endforelse
-                </div>
             </div>
 
             {{-- NOVA VISTORIA --}}

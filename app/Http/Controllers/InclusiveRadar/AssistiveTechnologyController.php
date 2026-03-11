@@ -28,7 +28,6 @@ class AssistiveTechnologyController extends Controller
         $query = AssistiveTechnology::with([
             'deficiencies'
         ])
-            ->withCount('trainings')
             ->filterName($name ?: null)
             ->active($request->is_active)
             ->digital($request->is_digital);
@@ -80,7 +79,6 @@ class AssistiveTechnologyController extends Controller
             'deficiencies',
             'inspections.images',
             'loans',
-            'trainings',
         ]);
 
         return view(
@@ -94,7 +92,6 @@ class AssistiveTechnologyController extends Controller
         $assistiveTechnology->load([
             'deficiencies',
             'inspections.images',
-            'trainings',
         ]);
 
         return view(
@@ -129,7 +126,6 @@ class AssistiveTechnologyController extends Controller
         $assistiveTechnology->load([
             'deficiencies',
             'inspections.images',
-            'trainings',
         ]);
 
         $pdf = Pdf::loadView(

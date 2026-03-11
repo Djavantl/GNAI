@@ -6,6 +6,7 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     AccessibilityFeatureController,
     BarrierCategoryController,
     BarrierController,
+    InstitutionalEventController,
     InstitutionController,
     LoanController,
     LocationController,
@@ -197,37 +198,26 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    // ------------------- TREINAMENTOS -------------------
+    Route::get('/institutional-events', [InstitutionalEventController::class, 'index'])
+        ->name('institutional-events.index')->middleware('can:institutional-event.index');
 
-    Route::get('/trainings', [TrainingController::class, 'index'])
-        ->name('trainings.index')->middleware('can:training.index');
+    Route::get('/institutional-events/create', [InstitutionalEventController::class, 'create'])
+        ->name('institutional-events.create')->middleware('can:institutional-event.create');
 
-    Route::get('/trainings/create', [TrainingController::class, 'create'])
-        ->name('trainings.create')->middleware('can:training.create');
+    Route::post('/institutional-events/store', [InstitutionalEventController::class, 'store'])
+        ->name('institutional-events.store')->middleware('can:institutional-event.store');
 
-    Route::post('/trainings/store', [TrainingController::class, 'store'])
-        ->name('trainings.store')->middleware('can:training.store');
+    Route::get('/institutional-events/{event}', [InstitutionalEventController::class, 'show'])
+        ->name('institutional-events.show')->middleware('can:institutional-event.show');
 
-    Route::delete('trainings/{training}/files/{file}', [TrainingController::class, 'destroyFile'])
-        ->name('trainings.files.destroy');
+    Route::get('/institutional-events/{event}/edit', [InstitutionalEventController::class, 'edit'])
+        ->name('institutional-events.edit')->middleware('can:institutional-event.edit');
 
-    Route::get('/trainings/{training}', [TrainingController::class, 'show'])
-        ->name('trainings.show')->middleware('can:training.show');
+    Route::put('/institutional-events/{event}', [InstitutionalEventController::class, 'update'])
+        ->name('institutional-events.update')->middleware('can:institutional-event.update');
 
-    Route::get('/trainings/{training}/edit', [TrainingController::class, 'edit'])
-        ->name('trainings.edit')->middleware('can:training.edit');
-
-    Route::put('/trainings/{training}', [TrainingController::class, 'update'])
-        ->name('trainings.update')->middleware('can:training.update');
-
-    Route::delete('/trainings/{training}', [TrainingController::class, 'destroy'])
-        ->name('trainings.destroy')->middleware('can:training.destroy');
-
-    Route::get('/trainings/{training}/pdf', [TrainingController::class, 'generatePdf'])
-        ->name('trainings.pdf')->middleware('can:training.pdf');
-
-    Route::get('/trainings/{training}/excel', [TrainingController::class, 'exportExcel'])
-        ->name('trainings.excel')->middleware('can:training.export');
+    Route::delete('/institutional-events/{event}', [InstitutionalEventController::class, 'destroy'])
+        ->name('institutional-events.destroy')->middleware('can:institutional-event.destroy');
 
 
     // ------------------- EMPRÉSTIMOS -------------------

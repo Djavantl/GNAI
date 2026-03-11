@@ -32,26 +32,6 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        Schema::create('accessible_educational_material_training', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('accessible_educational_material_id')
-                ->constrained('accessible_educational_materials')
-                ->cascadeOnDelete()
-                ->name('aem_training_material_fk');
-
-            $table->foreignId('training_id')
-                ->constrained('trainings')
-                ->cascadeOnDelete()
-                ->name('aem_training_training_fk');
-
-            $table->unique(
-                ['accessible_educational_material_id', 'training_id'],
-                'aem_training_unique'
-            );
-
-            $table->timestamps();
-        });
-
         Schema::create('accessible_educational_material_accessibility', function (Blueprint $table) {
             $table->id();
             $table->foreignId('accessible_educational_material_id')
@@ -95,7 +75,6 @@ return new class extends Migration {
     {
         Schema::dropIfExists('accessible_educational_material_deficiency');
         Schema::dropIfExists('accessible_educational_material_accessibility');
-        Schema::dropIfExists('accessible_educational_material_training');
         Schema::dropIfExists('accessible_educational_materials');
         Schema::dropIfExists('accessibility_features');
     }

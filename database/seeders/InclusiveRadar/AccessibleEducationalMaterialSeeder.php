@@ -2,6 +2,8 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
+use Database\Seeders\AdminSeeder;
+use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -92,53 +94,25 @@ class AccessibleEducationalMaterialSeeder extends Seeder
 
     private function ensureDeficienciesExist(): void
     {
-        if (DB::table('deficiencies')->count() > 0) {
-            return;
+        if (DB::table('deficiencies')->count() === 0) {
+            $this->call(DeficiencySeeder::class);
         }
-
-        DB::table('deficiencies')->insert([
-            ['name' => 'Visual', 'cid_code' => 'H54', 'description' => 'Deficiência visual, incluindo baixa visão e cegueira parcial ou total.'],
-            ['name' => 'Auditiva', 'cid_code' => 'H90', 'description' => 'Perda auditiva parcial ou total, podendo ser unilateral ou bilateral.'],
-            ['name' => 'Física', 'cid_code' => 'G80', 'description' => 'Comprometimentos motores que afetam mobilidade, coordenação ou força física.'],
-            ['name' => 'Intelectual', 'cid_code' => 'F70', 'description' => 'Limitações significativas no funcionamento intelectual e no comportamento adaptativo.'],
-            ['name' => 'Psicossocial', 'cid_code' => 'F32', 'description' => 'Condições que afetam o comportamento, emoção e interação social do indivíduo.'],
-        ]);
     }
 
     private function ensureAccessibilityFeaturesExist(): void
     {
-        if (DB::table('accessibility_features')->count() > 0) {
-            return;
+        if (DB::table('accessibility_features')->count() === 0) {
+            $this->call(AccessibilityFeatureSeeder::class);
         }
-
-        DB::table('accessibility_features')->insert([
-            ['name' => 'Braille', 'description' => 'Texto em braille.'],
-            ['name' => 'Áudio-descrição', 'description' => 'Narração descritiva de imagens e cenas.'],
-            ['name' => 'Libras', 'description' => 'Língua Brasileira de Sinais em vídeo.'],
-            ['name' => 'Letra Ampliada', 'description' => 'Fonte ampliada para baixa visão.'],
-            ['name' => 'Contraste', 'description' => 'Alto contraste para melhor visualização.'],
-            ['name' => 'Áudio (MP3)', 'description' => 'Versão em áudio do conteúdo.'],
-            ['name' => 'Legenda', 'description' => 'Legendas em vídeos.'],
-            ['name' => 'Comunicação Alternativa', 'description' => 'Símbolos e imagens para comunicação.'],
-            ['name' => 'Relevo', 'description' => 'Elementos táteis em relevo.'],
-            ['name' => 'Text-to-Speech', 'description' => 'Leitura por sintetizador de voz.'],
-        ]);
     }
 
     private function ensureUserExists(): int
     {
-        $user = DB::table('users')->first();
-        if ($user) {
-            return $user->id;
+        if (DB::table('users')->count() === 0) {
+            $this->call(AdminSeeder::class);
         }
 
-        return DB::table('users')->insertGetId([
-            'name' => 'Admin Seeder',
-            'email' => 'admin@seeder.com',
-            'password' => bcrypt('password'),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        return DB::table('users')->first()->id;
     }
 
     private function attachDeficiencies(AccessibleEducationalMaterial $mpa, array $deficiencyIds): void
@@ -148,10 +122,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         }
 
         $number = rand(1, min(3, count($deficiencyIds)));
-        $selected = array_rand(array_flip($deficiencyIds), $number);
-        if (!is_array($selected)) {
-            $selected = [$selected];
-        }
+        $selected = collect($deficiencyIds)->random($number)->toArray();
 
         $mpa->deficiencies()->sync($selected);
     }
@@ -163,10 +134,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         }
 
         $number = rand(1, min(4, count($featureIds)));
-        $selected = array_rand(array_flip($featureIds), $number);
-        if (!is_array($selected)) {
-            $selected = [$selected];
-        }
+        $selected = collect($featureIds)->random($number)->toArray();
 
         $mpa->accessibilityFeatures()->sync($selected);
     }

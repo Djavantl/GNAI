@@ -2,139 +2,69 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Models\InclusiveRadar\Training;
+use App\Models\InclusiveRadar\InstitutionalEvent;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
-class TrainingService
+class InstitutionalEventService
 {
-    public function store(array $data): Training
+    public function store(array $data): InstitutionalEvent
     {
         return DB::transaction(
-            fn() => $this->persist(new Training(), $data)
+            fn() => $this->persist(new InstitutionalEvent(), $data)
         );
     }
 
-    public function update(Training $training, array $data): Training
+    public function update(InstitutionalEvent $event, array $data): InstitutionalEvent
     {
         return DB::transaction(
-            fn() => $this->persist($training, $data)
+            fn() => $this->persist($event, $data)
         );
     }
 
-    public function delete(Training $training): void
+    public function delete(InstitutionalEvent $event): void
     {
-        DB::transaction(function () use ($training) {
-            /* Garantimos que a remoção do registro limpe também o armazenamento físico
-               para evitar o acúmulo de arquivos sem referência no servidor. */
-            $this->deleteFiles($training);
-            $training->delete();
+        DB::transaction(function () use ($event) {
+            $event->delete();
         });
     }
 
-    protected function persist(Training $training, array $data): Training
+    protected function persist(InstitutionalEvent $event, array $data): InstitutionalEvent
     {
-        $this->validateTrainableIntegrity($training, $data);
+        $this->validateEventDates($data);
 
-        $data = $this->sanitizeUrls($data);
+        $this->saveModel($event, $data);
 
-        $this->saveModel($training, $data);
-
-        $this->handleUploads($training, $data);
-
-        return $this->loadFreshRelations($training);
+        return $event->fresh();
     }
 
-    private function sanitizeUrls(array $data): array
+    private function saveModel(InstitutionalEvent $event, array $data): void
     {
-        if (isset($data['url']) && is_array($data['url'])) {
-            /* Removemos entradas vazias ou nulas para manter a limpeza dos metadados
-               e evitar erros de renderização em links na interface. */
-            $data['url'] = array_values(
-                array_filter(
-                    $data['url'],
-                    fn($value) => !is_null($value) && trim($value) !== ''
-                )
-            );
-        }
-
-        return $data;
+        $event->fill($data)->save();
     }
 
-    private function saveModel(Training $training, array $data): void
+    /**
+     * Valida regras de negócio relacionadas a datas e horários
+     */
+    private function validateEventDates(array $data): void
     {
-        $training->fill($data)->save();
-    }
+        $startDate = Carbon::parse($data['start_date']);
+        $endDate = Carbon::parse($data['end_date']);
+        $startTime = Carbon::createFromFormat('H:i', $data['start_time']);
+        $endTime = Carbon::createFromFormat('H:i', $data['end_time']);
 
-    private function handleUploads(Training $training, array $data): void
-    {
-        if (!isset($data['files']) || !is_array($data['files'])) {
-            return;
-        }
-
-        foreach ($data['files'] as $uploadedFile) {
-            /* Estruturamos os uploads em pastas por ID do treinamento para facilitar
-               a manutenção e exclusão em lote dos arquivos vinculados. */
-            $path = $uploadedFile->store("trainings/{$training->id}", 'public');
-
-            $training->files()->create([
-                'path' => $path,
-                'original_name' => $uploadedFile->getClientOriginalName(),
-                'mime_type' => $uploadedFile->getClientMimeType(),
-                'size' => $uploadedFile->getSize(),
-            ]);
-        }
-    }
-
-    private function deleteFiles(Training $training): void
-    {
-        foreach ($training->files as $file) {
-            if (Storage::disk('public')->exists($file->path)) {
-                Storage::disk('public')->delete($file->path);
-            }
-            $file->delete();
-        }
-
-        /* Além de deletar os arquivos individualmente, removemos o diretório raiz
-           do treinamento para manter o sistema de arquivos organizado. */
-        $directory = "trainings/{$training->id}";
-        if (Storage::disk('public')->exists($directory)) {
-            Storage::disk('public')->deleteDirectory($directory);
-        }
-    }
-
-    private function loadFreshRelations(Training $training): Training
-    {
-        return $training->fresh([
-            'trainable',
-            'files'
-        ]);
-    }
-
-    private function validateTrainableIntegrity(Training $training, array $data): void
-    {
-        if (!$training->exists) {
-            return;
-        }
-
-        $newType = $data['trainable_type'] ?? null;
-        $newId = isset($data['trainable_id']) ? (int) $data['trainable_id'] : null;
-
-        if (!$newType || !$newId) {
+        // Data final não pode ser antes da inicial
+        if ($endDate->lt($startDate)) {
             throw ValidationException::withMessages([
-                'trainable_id' => 'O treinamento deve permanecer vinculado a uma entidade.'
+                'end_date' => 'A data de término não pode ser anterior à data de início.',
             ]);
         }
 
-        /* Bloqueamos a troca de vínculo (trainable) após a criação para preservar
-           a rastreabilidade pedagógica do material vinculado ao recurso original. */
-        if (
-            $training->trainable_type !== $newType ||
-            (int)$training->trainable_id !== $newId
-        ) {
+        // Se a data final for o mesmo dia da inicial, hora final deve ser maior que a inicial
+        if ($startDate->eq($endDate) && $endTime->lte($startTime)) {
             throw ValidationException::withMessages([
-                'trainable_id' => 'Não é permitido alterar o vínculo deste treinamento.'
+                'end_time' => 'O horário de término deve ser maior que o horário de início para o mesmo dia.',
             ]);
         }
     }

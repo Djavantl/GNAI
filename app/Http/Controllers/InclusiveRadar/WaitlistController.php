@@ -63,11 +63,13 @@ class WaitlistController extends Controller
 
         $assistive_technologies = AssistiveTechnology::get()
             ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
-            ->sortBy('name');
+            ->sortBy('name')
+            ->values();
 
         $educational_materials = AccessibleEducationalMaterial::get()
             ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
-            ->sortBy('name');
+            ->sortBy('name')
+            ->values();
 
         $authUser = auth()->user();
 

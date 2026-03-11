@@ -4,6 +4,7 @@ namespace App\Http\Requests\InclusiveRadar;
 
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\AssistiveTechnology;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,8 +24,9 @@ class WaitlistRequest extends FormRequest
                 /* A lista de espera é restrita a tecnologias e materiais, garantindo que
                    apenas recursos físicos/digitais do acervo entrem no fluxo de reserva. */
                 'waitlistable_type' => [
-                    'required', 'string',
-                    Rule::in([AssistiveTechnology::class, AccessibleEducationalMaterial::class]),
+                    'required',
+                    'string',
+                    Rule::in(array_keys(Relation::morphMap())),
                 ],
                 'student_id' => 'nullable|exists:students,id',
                 'professional_id' => 'nullable|exists:professionals,id',

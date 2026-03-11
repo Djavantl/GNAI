@@ -250,12 +250,12 @@
             </li>
         @endcan
 
-        @can('training.index')
+        @can('institutional-event.index')
             <li>
-                <a href="{{ route('inclusive-radar.trainings.index') }}"
+                <a href="{{ route('inclusive-radar.institutional-events.index') }}"
                    class="{{ request()->routeIs('trainings.*') ? 'active' : '' }}">
-                    <span class="icon"><i class="bi bi-mortarboard-fill"></i></span>
-                    <span class="text">Treinamentos</span>
+                    <span class="icon"><i class="fa-solid fa-calendar-day"></i></span>
+                    <span class="text">Agenda Institucional</span>
                 </a>
             </li>
         @endcan
