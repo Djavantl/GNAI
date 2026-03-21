@@ -53,7 +53,6 @@
         <div id="materials-table" class="p-3">
             @include('pages.inclusive-radar.accessible-educational-materials.partials.table')
         </div>
-
     </div>
 
     @push('scripts')

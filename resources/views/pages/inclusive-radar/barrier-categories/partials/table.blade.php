@@ -1,13 +1,9 @@
 <x-table.table :headers="['Nome', 'Vínculos', 'Status', 'Ações']" :records="$categories">
     @forelse($categories as $category)
         <tr>
-            {{-- NOME --}}
             <x-table.td>{{ $category->name }}</x-table.td>
 
-            {{-- VÍNCULOS --}}
-            <x-table.td>
-                {{ $category->barriers_count ?? $category->barriers->count() }}
-            </x-table.td>
+            <x-table.td>{{ $category->barriers_count ?? $category->barriers->count() }}</x-table.td>
 
             <x-table.td>
                 @php
@@ -20,7 +16,6 @@
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button

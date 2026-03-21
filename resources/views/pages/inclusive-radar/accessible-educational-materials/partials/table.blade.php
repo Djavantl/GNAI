@@ -6,10 +6,7 @@
         <tr>
             <x-table.td>{{ $material->name }}</x-table.td>
 
-            {{-- NATUREZA --}}
-            <x-table.td>
-                {{ $material->is_digital ? 'Digital' : 'Físico' }}
-            </x-table.td>
+            <x-table.td>{{ $material->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
 
             <x-table.td>
                 @if($material->is_digital)
@@ -29,7 +26,6 @@
                     $stLabel = $isUnavailable ? 'Esgotado' : ($material->is_active ? 'Ativo' : 'Inativo');
                 @endphp
 
-                {{-- Padronização TA: Texto colorido, negrito e em caixa alta --}}
                 <span class="text-{{ $stColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $stLabel }}
                 </span>

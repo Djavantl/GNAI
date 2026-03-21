@@ -10,15 +10,11 @@
         ]" />
     </div>
 
-    {{-- CARD UNIFICADO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
-
-        {{-- HEADER --}}
         <x-table.page-header
             title="Tecnologias Assistivas"
             subtitle="Gerenciamento de periféricos, softwares e equipamentos de acessibilidade."
         >
-            {{-- Botão de ação --}}
             <x-buttons.link-button
                 :href="route('inclusive-radar.assistive-technologies.create')"
                 variant="new"
@@ -28,7 +24,6 @@
             </x-buttons.link-button>
         </x-table.page-header>
 
-        {{-- FILTROS --}}
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
@@ -55,11 +50,9 @@
             />
         </div>
 
-        {{-- TABELA --}}
         <div id="assistive-technologies-table" class="p-3">
             @include('pages.inclusive-radar.assistive-technologies.partials.table')
         </div>
-
     </div>
 
     @push('scripts')

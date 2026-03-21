@@ -406,13 +406,21 @@ class BarrierMap {
 
     getBarrierStatus(barrier) {
         if (!barrier) return 'Sem status';
+
         if (Array.isArray(barrier.inspections) && barrier.inspections.length > 0) {
-            const inspections = [...barrier.inspections].sort((a, b) => new Date(b.inspection_date ?? b.created_at) - new Date(a.inspection_date ?? a.created_at));
-            const latest = inspections[0];
-            if (latest?.status) return barrierStatusLabels[latest.status] ?? 'Sem status';
+            const latestInspection = [...barrier.inspections].sort((a, b) => {
+                const dateA = new Date(a.inspection_date || a.created_at).getTime();
+                const dateB = new Date(b.inspection_date || b.created_at).getTime();
+                return dateB - dateA;
+            })[0];
+
+            if (latestInspection?.status) {
+                return barrierStatusLabels[latestInspection.status] ?? 'Sem status';
+            }
         }
-        if (barrier.status) return barrierStatusLabels[barrier.status] ?? 'Sem status';
-        return 'Sem status';
+
+        const statusKey = barrier.status?.value ?? barrier.status;
+        return barrierStatusLabels[statusKey] ?? 'Identificada';
     }
 
     plotInstitutionAndData(institution = {}) {
@@ -527,11 +535,36 @@ class BarrierMap {
     }
 }
 
+function initInspectionRedirects() {
+    const timeline = document.querySelector('.history-timeline');
+    if (!timeline) return;
+
+    timeline.addEventListener('click', (e) => {
+        const card = e.target.closest('.cursor-pointer');
+        const url = card?.getAttribute('data-url');
+        if (url) {
+            window.location.href = url;
+        }
+    });
+
+    timeline.addEventListener('keydown', (e) => {
+        const card = e.target.closest('.cursor-pointer');
+        const url = card?.getAttribute('data-url');
+
+        if (card && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            if (url) window.location.href = url;
+        }
+    });
+}
+
 /* ============================
    Inicialização
    ============================ */
 document.addEventListener('DOMContentLoaded', () => {
     log('DOM loaded, inicializando módulos');
+
+    initInspectionRedirects();
 
     const mapEl = $('map-barrier');
     if (!mapEl) { console.error('Elemento do mapa (map-barrier) não encontrado'); return; }

@@ -41,7 +41,7 @@
 
             <div class="row g-3 px-4 pb-4">
                 <x-show.info-item label="Título do Material" column="col-md-12" isBox="true">
-                    <strong>{{ $material->name }}</strong>
+                    {{ $material->name }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Descrição Detalhada" column="col-md-12" isBox="true">
@@ -49,11 +49,11 @@
                 </x-show.info-item>
 
                 <x-show.info-item label="Natureza do Recurso" column="col-md-6" isBox="true">
-                    {{ $material->nature_label }}
+                    {{ $material->is_digital ? 'Recurso Digital' : 'Recurso Físico' }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Patrimônio / Tombamento" column="col-md-6" isBox="true">
-                    <strong>{{ $material->asset_code ?? 'SEM CÓDIGO' }}</strong>
+                    {{ $material->asset_code ?? 'SEM CÓDIGO' }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Recursos de Acessibilidade" column="col-md-12" isBox="true">
@@ -134,7 +134,7 @@
                     <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
                         @csrf @method('DELETE')
                         <x-buttons.submit-button variant="danger">
-                            Excluir
+                            <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
 

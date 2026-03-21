@@ -30,10 +30,8 @@
             @csrf
             @method('PUT')
 
-            {{-- LADO ESQUERDO: Formulário --}}
             <div class="col-lg-5 border-end">
 
-                {{-- 1. Detalhes da Ocorrência (Incluindo Localização conforme seu Create) --}}
                 <x-forms.section title="1. Detalhes da Ocorrência" />
 
                 <div class="px-4">
@@ -50,7 +48,7 @@
                             <x-forms.select
                                 name="priority"
                                 label="Prioridade"
-                                :options="collect(App\Enums\Priority::cases())->mapWithKeys(fn($case) => [$case->value => $case->label()])->toArray()"
+                                :options="$priorities"
                                 :selected="old('priority', $barrier->priority?->value)"
                             />
                         </div>
@@ -87,13 +85,11 @@
                             />
                         </div>
 
-                        {{-- Complemento --}}
                         <div id="location_wrapper" class="col-md-12 mb-3 mt-3">
                             <x-forms.textarea
                                 name="location_specific_details"
                                 label="Complemento"
                                 rows="3"
-                                placeholder="Descreva melhor onde a barreira está localizada..."
                                 :value="old('location_specific_details', $barrier->location_specific_details)"
                             />
                         </div>
@@ -110,7 +106,6 @@
                     />
                 </div>
 
-                {{-- Pessoa Impactada --}}
                 <div class="px-4">
                     <div class="bg-light p-3 rounded mb-4 border shadow-sm">
                         <label class="fw-bold text-purple-dark small uppercase mb-3 d-block">Pessoa Impactada</label>
@@ -128,7 +123,7 @@
                                         <x-forms.select
                                             name="affected_student_id"
                                             label="Estudante"
-                                            :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person?->name])"
+                                            :options="$students"
                                             :selected="old('affected_student_id', $barrier->affected_student_id)"
                                         />
                                     </div>
@@ -136,7 +131,7 @@
                                         <x-forms.select
                                             name="affected_professional_id"
                                             label="Profissional"
-                                            :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person?->name])"
+                                            :options="$professionals"
                                             :selected="old('affected_professional_id', $barrier->affected_professional_id)"
                                         />
                                     </div>
@@ -156,7 +151,6 @@
                     </div>
                 </div>
 
-                {{-- Deficiências Relacionadas --}}
                 <div class="col-md-12 mb-4 px-4">
                     <label class="form-label fw-bold text-purple-dark">Deficiências Relacionadas</label>
                     <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light max-h-40 overflow-y-auto custom-scrollbar">
@@ -174,9 +168,9 @@
                 </div>
             </div>
 
-            {{-- LADO DIREITO: Mapa e Histórico --}}
             <div class="col-lg-7 bg-light px-0">
-                <x-forms.section title="3. Localização no Mapa" id="map-section-title" />
+
+                <x-forms.section title="2. Localização no Mapa" id="map-section-title" />
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <div class="mb-4">
@@ -192,7 +186,7 @@
                         <div style="position: relative;">
                             <x-forms.maps.barrier
                                 :barrier="$barrier"
-                                :institution="$barrier->institution"
+                                :institution="$selectedInstitution"
                                 height="450px"
                                 label="Localização da Barreira"
                             />
@@ -204,26 +198,9 @@
                         </div>
                     </div>
 
-                    {{-- Histórico de Vistorias --}}
-                    <x-forms.section title="4. Histórico de Vistorias" />
-                    <div class="px-4 mt-4">
-                        <div class="custom-scrollbar" style="max-height:400px;overflow-y:auto">
-                            @forelse($barrier->inspections()->with('images')->latest('inspection_date')->get() as $inspection)
-                                <div class="inspection-link d-block mb-3"
-                                     onclick="window.location='{{ route('inclusive-radar.barriers.inspection.show', [$barrier, $inspection]) }}'"
-                                     style="cursor:pointer">
-                                    <x-forms.inspection-history-card :inspection="$inspection" />
-                                </div>
-                            @empty
-                                <div class="text-center py-4 text-muted bg-white rounded border border-dashed">
-                                    <i class="fas fa-history fa-2x mb-2 opacity-20"></i>
-                                    <p class="small fw-bold mb-0">Nenhuma vistoria registrada.</p>
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
                     <div class="mt-3">
-                        <x-forms.section title="4. Vistoria Periódica" />
+
+                        <x-forms.section title="3. Vistoria Periódica" />
 
                         <div class="px-4">
                             <div class="row g-3">
@@ -232,15 +209,25 @@
                                         name="status"
                                         id="status_select"
                                         label="Status Atual"
-                                        :options="collect(\App\Enums\InclusiveRadar\BarrierStatus::cases())->mapWithKeys(fn($s) => [$s->value => $s->label()])"
-                                        :selected="old('status', 'identified')"
+                                        :options="$barrierStatuses"
+                                        :selected="old('status', $barrier->status?->value ?? 'identified')"
+                                    />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <x-forms.input
+                                        name="inspection_date"
+                                        label="Data da Vistoria"
+                                        type="date"
+                                        required
+                                        :value="old('inspection_date', date('Y-m-d'))"
                                     />
                                 </div>
 
                                 <div class="col-md-6">
                                     <x-forms.image-uploader
                                         name="images[]"
-                                        label="Fotos da Barreira"
+                                        label="Fotos de Evidência"
                                         :existingImages="old('images', [])"
                                     />
                                 </div>
@@ -249,7 +236,7 @@
                                     <x-forms.textarea
                                         name="inspection_description"
                                         id="inspection_description"
-                                        label="Notas da Vistoria"
+                                        label="Parecer Técnico / Notas"
                                         rows="3"
                                         placeholder="Descreva o estado atual do local..."
                                         :value="old('inspection_description')"
@@ -261,7 +248,6 @@
                 </div>
             </div>
 
-            {{-- FOOTER / BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4 bg-white">
                 <x-buttons.link-button :href="route('inclusive-radar.barriers.show', $barrier)" variant="secondary">
                     <i class="fas fa-times"></i> Cancelar
@@ -271,7 +257,6 @@
                     <i class="fas fa-save mr-2"></i> Salvar Alterações
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 
@@ -286,7 +271,6 @@
             window.institutionsData = @json($institutions);
             window.oldLocationId = "{{ old('location_id', $barrier->location_id) }}";
             window.barrierData = @json($barrier);
-            window.initialInstitutionId = "{{ $barrier->institution_id }}";
         </script>
     @endpush
     @vite('resources/js/pages/inclusive-radar/barriers.js')

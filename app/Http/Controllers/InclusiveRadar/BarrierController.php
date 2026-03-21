@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Enums\Priority;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\BarrierRequest;
 use App\Models\InclusiveRadar\{Barrier, BarrierCategory, Inspection, Institution};
@@ -57,18 +59,33 @@ class BarrierController extends Controller
             ->orderBy('name')
             ->get();
 
-        $categories = BarrierCategory::where('is_active', true)->get();
-        $deficiencies = Deficiency::where('is_active', true)->orderBy('name')->get();
-        $students = Student::has('person')->with('person')->get()->sortBy('person.name');
-        $professionals = Professional::has('person')->with('person')->get()->sortBy('person.name');
+        return view('pages.inclusive-radar.barriers.create', [
+            'selectedInstitution' => old('institution_id')
+                ? $institutions->firstWhere('id', old('institution_id'))
+                : null,
 
-        return view('pages.inclusive-radar.barriers.create', compact(
-            'institutions',
-            'categories',
-            'deficiencies',
-            'students',
-            'professionals'
-        ));
+            'institutions' => $institutions,
+
+            'categories' => BarrierCategory::where('is_active', true)->get(),
+
+            'deficiencies' => Deficiency::where('is_active', true)->orderBy('name')->get(),
+
+            'students' => Student::has('person')->with('person')->get()
+                ->mapWithKeys(fn($s) => [$s->id => $s->person?->name])
+                ->sortBy(fn($name) => $name),
+
+            'professionals' => Professional::has('person')->with('person')->get()
+                ->mapWithKeys(fn($p) => [$p->id => $p->person?->name])
+                ->sortBy(fn($name) => $name),
+
+            'priorities' => collect(Priority::cases())
+                ->mapWithKeys(fn($case) => [$case->value => $case->label()]),
+
+            'barrierStatuses' => collect(BarrierStatus::cases())
+                ->mapWithKeys(fn($s) => [$s->value => $s->label()]),
+
+            'defaultStatus' => BarrierStatus::IDENTIFIED->value,
+        ]);
     }
 
     public function store(BarrierRequest $request): RedirectResponse
@@ -98,34 +115,38 @@ class BarrierController extends Controller
 
     public function edit(Barrier $barrier): View
     {
-
-        $barrier->load([
-            'deficiencies',
-            'inspections.images',
-            'location',
-            'institution',
-            'category',
-            'registeredBy'
-        ]);
+        $barrier->load(['deficiencies', 'inspections.images', 'location', 'institution', 'category', 'registeredBy']);
 
         $institutions = Institution::with(['locations' => fn($q) => $q->where('is_active', true)])
             ->where('is_active', true)
             ->orderBy('name')
             ->get();
 
-        $categories = BarrierCategory::where('is_active', true)->get();
-        $deficiencies = Deficiency::where('is_active', true)->orderBy('name')->get();
-        $students = Student::has('person')->with('person')->get()->sortBy('person.name');
-        $professionals = Professional::has('person')->with('person')->get()->sortBy('person.name');
+        return view('pages.inclusive-radar.barriers.edit', [
+            'barrier'             => $barrier,
+            'institutions'        => $institutions,
 
-        return view('pages.inclusive-radar.barriers.edit', compact(
-            'barrier',
-            'institutions',
-            'categories',
-            'deficiencies',
-            'students',
-            'professionals'
-        ));
+            'selectedInstitution' => old('institution_id')
+                ? $institutions->firstWhere('id', old('institution_id'))
+                : ($barrier->institution ?? null),
+
+            'categories'          => BarrierCategory::where('is_active', true)->get(),
+            'deficiencies'        => Deficiency::where('is_active', true)->orderBy('name')->get(),
+
+            'students' => Student::has('person')->with('person')->get()
+                ->mapWithKeys(fn($s) => [$s->id => $s->person?->name])
+                ->sortBy(fn($name) => $name),
+
+            'professionals' => Professional::has('person')->with('person')->get()
+                ->mapWithKeys(fn($p) => [$p->id => $p->person?->name])
+                ->sortBy(fn($name) => $name),
+
+            'priorities' => collect(Priority::cases())
+                ->mapWithKeys(fn($case) => [$case->value => $case->label()]),
+
+            'barrierStatuses' => collect(BarrierStatus::cases())
+                ->mapWithKeys(fn($s) => [$s->value => $s->label()]),
+        ]);
     }
 
     public function update(BarrierRequest $request, Barrier $barrier): RedirectResponse
@@ -146,20 +167,20 @@ class BarrierController extends Controller
             ->with('success', 'Barreira removida com sucesso!');
     }
 
-    public function showInspection(Barrier $barrier, Inspection $inspection)
+    public function showInspection(Barrier $barrier, Inspection $inspection): View
     {
         abort_if(
             $inspection->inspectable_id !== $barrier->id ||
-            $inspection->inspectable_type !== 'barrier',
+            $inspection->inspectable_type !== $barrier->getMorphClass(),
             403
         );
 
-        $inspection->load('images', 'inspectable');
+        $inspection->load(['images', 'inspectable']);
 
-        return view(
-            'pages.inclusive-radar.barriers.inspections.show',
-            compact('barrier', 'inspection')
-        );
+        return view('pages.inclusive-radar.barriers.inspections.show', [
+            'barrier'    => $barrier,
+            'inspection' => $inspection,
+        ]);
     }
 
     public function generatePdf(Barrier $barrier)

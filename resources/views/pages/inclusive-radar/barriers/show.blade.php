@@ -33,17 +33,14 @@
     <div class="mt-3">
         <x-show.display-card>
             <div class="row g-0">
-
-                {{-- ========== COLUNA ESQUERDA: FORMULÁRIO PADRONIZADO ========== --}}
                 <div class="col-lg-5 border-end">
 
-                    {{-- 1. Detalhes da Ocorrência (Igual ao Create/Edit) --}}
                     <x-forms.section title="1. Detalhes da Ocorrência" class="mx-n4" />
 
                     <div class="px-4">
                         <div class="row g-3">
                             <x-show.info-item label="Título do Relato" column="col-md-8" isBox="true">
-                                <strong>{{ $barrier->name }}</strong>
+                                {{ $barrier->name }}
                             </x-show.info-item>
 
                             <x-show.info-item label="Data" column="col-md-4" isBox="true">
@@ -61,7 +58,6 @@
                                 {{ $barrier->category?->name ?? 'Não categorizada' }}
                             </x-show.info-item>
 
-                            {{-- Localização integrada na Seção 1 conforme seu formulário --}}
                             <x-show.info-item label="Campus / Unidade" column="col-6" isBox="true">
                                 {{ $barrier->institution?->name ?? 'Não informado' }}
                             </x-show.info-item>
@@ -82,12 +78,9 @@
                         </div>
                     </div>
 
-                    {{-- 2. Pessoa Impactada & Deficiências --}}
-                    <x-forms.section title="2. Público e Impacto" class="mx-n4" />
-
                     <div class="px-4">
                         <div class="row g-3 mb-4">
-                            <x-show.info-item label="Pessoa Impactada" column="col-12" isBox="true">
+                            <x-show.info-item label="Pessoa(s) Impactada(s)" column="col-12" isBox="true">
                                 @if($barrier->is_anonymous)
                                     <div class="d-flex align-items-center gap-2">
                                         <i class="fas fa-user-secret text-muted"></i>
@@ -106,14 +99,30 @@
                                         @endif
                                     </div>
                                 @else
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-user-check text-primary"></i>
-                                        <div>
-                                            <div class="fw-bold text-purple-dark">
-                                                {{ $barrier->affectedStudent->person->name ?? $barrier->affectedProfessional->person->name ?? 'Não informado' }}
+                                    <div class="d-flex flex-column gap-3">
+                                        @if($barrier->affectedStudent)
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="fas fa-user-graduate text-primary"></i>
+                                                <div>
+                                                    <div class="fw-bold text-purple-dark">{{ $barrier->affectedStudent->person->name }}</div>
+                                                    <small class="text-muted">Estudante</small>
+                                                </div>
                                             </div>
-                                            <small class="text-muted">{{ $barrier->affectedStudent ? 'Estudante' : 'Profissional' }}</small>
-                                        </div>
+                                        @endif
+
+                                        @if($barrier->affectedProfessional)
+                                            <div class="d-flex align-items-center gap-2 {{ $barrier->affectedStudent ? 'pt-2 border-top' : '' }}">
+                                                <i class="fas fa-user-tie text-success"></i>
+                                                <div>
+                                                    <div class="fw-bold text-purple-dark">{{ $barrier->affectedProfessional->person->name }}</div>
+                                                    <small class="text-muted">Profissional</small>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if(!$barrier->affectedStudent && !$barrier->affectedProfessional)
+                                            <span class="text-muted">Não informado</span>
+                                        @endif
                                     </div>
                                 @endif
                             </x-show.info-item>
@@ -124,8 +133,6 @@
                         </div>
                     </div>
 
-                    {{-- Infos Adicionais --}}
-                    <x-forms.section title="Informações Adicionais" class="mx-n4" />
                     <div class="px-4 pb-4">
                         <div class="row g-3">
                             <x-show.info-item label="Relator" column="col-6" isBox="true">
@@ -149,10 +156,9 @@
                     </div>
                 </div>
 
-                {{-- ========== COLUNA DIREITA: MAPA E HISTÓRICO ========== --}}
                 <div class="col-lg-7 bg-light">
-                    {{-- 3. Localização no Mapa --}}
-                    <x-forms.section title="3. Localização no Mapa" class="mx-n4 mt-0" />
+
+                    <x-forms.section title="2. Localização no Mapa"/>
 
                     <div style="position: relative;">
                         <x-show.maps.barrier
@@ -172,20 +178,25 @@
                         @endif
                     </div>
 
-                    {{-- 4. Histórico de Vistorias --}}
-                    <x-forms.section title="4. Histórico de Vistorias" class="mx-n4" />
-                    <div class="mt-4 px-4 pb-4">
-                        <div class="custom-scrollbar" style="max-height: 400px; overflow-y: auto;">
+                    <x-forms.section title="3. Histórico de Vistorias"/>
+
+                    <div class="px-4 pb-4 mt-3">
+                        <div class="history-timeline custom-scrollbar p-3 border border-secondary-subtle rounded bg-white"
+                             style="max-height: 450px; overflow-y:auto;">
+
                             @forelse($barrier->inspections as $inspection)
-                                <div class="inspection-link d-block mb-3"
-                                     style="cursor:pointer;"
-                                     onclick="window.location='{{ route('inclusive-radar.barriers.inspection.show', [$barrier, $inspection]) }}'">
+                                <div class="mb-3 cursor-pointer p-2 rounded border shadow-sm transition-hover"
+                                     role="button"
+                                     tabindex="0"
+                                     data-url="{{ route('inclusive-radar.barriers.inspection.show', [$barrier, $inspection]) }}"
+                                     aria-label="Ver detalhes da vistoria de {{ $inspection->inspection_date?->format('d/m/Y') ?? $inspection->created_at->format('d/m/Y') }}">
                                     <x-forms.inspection-history-card :inspection="$inspection" />
                                 </div>
                             @empty
-                                <div class="text-center py-4 bg-white rounded border border-dashed">
-                                    <i class="fas fa-history text-muted mb-2 opacity-50"></i>
-                                    <p class="text-muted small mb-0">Nenhuma vistoria registrada para esta barreira.</p>
+                                <div class="text-center py-5 bg-light rounded border border-dashed">
+                                    <i class="fas fa-history fa-2x text-secondary mb-2 opacity-50"></i>
+                                    <p class="fw-bold text-dark mb-0">Nenhuma vistoria registrada para esta barreira.</p>
+                                    <small class="text-muted">As vistorias ajudam a monitorar o status da resolução.</small>
                                 </div>
                             @endforelse
                         </div>
@@ -193,7 +204,6 @@
                 </div>
             </div>
 
-            {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-white no-print">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1"></i> ID: #{{ $barrier->id }}
@@ -210,7 +220,7 @@
                     </form>
 
                     <x-buttons.link-button :href="route('inclusive-radar.barriers.index')" variant="secondary">
-                        Voltar
+                        <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
                 </div>
             </div>
@@ -229,4 +239,5 @@
     @push('scripts')
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     @endpush
+    @vite('resources/js/pages/inclusive-radar/barriers.js')
 @endsection

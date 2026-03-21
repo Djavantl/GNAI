@@ -1,15 +1,10 @@
 <x-table.table :headers="['Nome', 'Natureza', 'Estoque', 'Status', 'Ações']" :records="$assistiveTechnologies">
     @forelse($assistiveTechnologies as $tech)
         <tr>
-            {{-- NOME --}}
             <x-table.td>{{ $tech->name }}</x-table.td>
 
-            {{-- NATUREZA --}}
-            <x-table.td>
-                {{ $tech->is_digital ? 'Digital' : 'Físico' }}
-            </x-table.td>
+            <x-table.td>{{ $tech->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
 
-            {{-- ESTOQUE --}}
             <x-table.td>
                 @if($tech->is_digital)
                     <span class="text-info fw-bold text-uppercase" style="font-size: 0.85rem;">Ilimitado</span>
@@ -21,7 +16,6 @@
                 @endif
             </x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 @php
                     $isUnavailable = !$tech->is_digital && ($tech->quantity_available <= 0);
@@ -34,7 +28,6 @@
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button

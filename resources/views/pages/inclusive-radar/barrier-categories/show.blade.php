@@ -11,7 +11,6 @@
         ]" />
     </div>
 
-    {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes da Categoria de Barreira</h2>
@@ -38,13 +37,12 @@
     <div class="mt-3">
         <div class="custom-table-card bg-white shadow-sm">
 
-            {{-- SEÇÃO 1: Informações da Categoria --}}
             <x-forms.section title="Informações da Categoria" />
 
             <div class="row g-3 mb-4">
 
                 <x-show.info-item label="Nome da Categoria" column="col-md-12" isBox="true">
-                    <strong>{{ $barrierCategory->name }}</strong>
+                    {{ $barrierCategory->name }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Descrição Detalhada" column="col-md-12" isBox="true">
@@ -53,7 +51,6 @@
 
             </div>
 
-            {{-- SEÇÃO 2: Status e Visibilidade --}}
             <x-forms.section title="Status e Visibilidade" />
 
             <div class="row g-3 mb-4">
@@ -68,7 +65,6 @@
 
             </div>
 
-            {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $barrierCategory->id }}

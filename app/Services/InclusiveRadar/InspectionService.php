@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class InspectionService
 {
@@ -26,16 +28,25 @@ class InspectionService
             ]);
 
             if (!empty($data['images'])) {
+                $manager = new ImageManager(new Driver());
+
                 foreach ($data['images'] as $image) {
-                    /* Armazenamos fotos em subpastas por ID da vistoria para facilitar
-                       a limpeza em massa do diretório durante uma eventual exclusão. */
-                    $path = $image->store("inspections/{$inspection->id}", 'public');
+                    $name = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                    $fileName = $name . '_' . uniqid() . '.webp';
+                    $directory = "inspections/{$inspection->id}";
+                    $path = "{$directory}/{$fileName}";
+
+                    $optimizedImage = $manager->read($image)
+                        ->scale(width: 600)
+                        ->toWebp(60);
+
+                    Storage::disk('public')->put($path, (string) $optimizedImage);
 
                     $inspection->images()->create([
                         'path'          => $path,
                         'original_name' => $image->getClientOriginalName(),
-                        'mime_type'     => $image->getMimeType(),
-                        'size'          => $image->getSize(),
+                        'mime_type'     => 'image/webp',
+                        'size'          => strlen((string) $optimizedImage),
                     ]);
                 }
             }

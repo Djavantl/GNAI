@@ -5,7 +5,7 @@
         display: flex;
         align-items: center;
         background: transparent;
-        border: 2px solid transparent; 
+        border: 2px solid transparent;
         padding: 5px 12px;
         transition: all 0.2s ease-in-out;
         color: white !important; /* Força o texto branco sempre */
@@ -13,9 +13,9 @@
     }
 
     /* Hover e estado quando o dropdown está aberto (.show) */
-    .btn-user-profile:hover, 
+    .btn-user-profile:hover,
     .btn-user-profile:focus,
-    .btn-user-profile.show, 
+    .btn-user-profile.show,
     .btn-user-profile:active {
         border-color: rgba(255, 255, 255, 0.8) !important;
         background: rgba(255, 255, 255, 0.1) !important;
@@ -49,16 +49,20 @@
         border-radius: 50% !important;
         border: 2px solid rgba(255, 255, 255, 0.3);
     }
-    
+
     .dropdown-toggle::after {
         display: none;
     }
 </style>
 
 <div class="dropdown">
-    <button class="btn btn-user-profile dropdown-toggle shadow-none" type="button"
-            data-bs-toggle="dropdown" aria-expanded="false">
-        
+    <button class="btn btn-user-profile dropdown-toggle shadow-none"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            id="userMenuButton"
+            aria-label="Menu do usuário: {{ Auth::user()->name }}">
+
         <div class="user-info-text me-2 d-none d-sm-block">
             <span class="user-name">
                 {{ Str::words(Auth::user()?->name ?? 'Convidado', 1, '') }}
@@ -71,16 +75,20 @@
                 @else
                     Admin
                 @endif
-                
+
             </span>
         </div>
 
-        <img src="{{ Auth::user()->photo_url }}" 
-             alt="Foto de {{ Auth::user()->name }}" 
-             class="user-avatar-img">
+        <img src="{{ Auth::user()->photo_url }}"
+             alt="Foto de {{ Auth::user()->name }}"
+             class="user-avatar-img"
+             width="35"
+             height="35"
+             loading="lazy"
+        >
     </button>
 
-    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="border-radius: 4px; min-width: 200px;">
+    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userMenuButton" style="border-radius: 4px; min-width: 200px;">
         <li>
             <a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
                 <i class="bi bi-person me-2 text-muted"></i> Perfil

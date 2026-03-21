@@ -5,91 +5,91 @@
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
-        'Home' => route('dashboard'),
-        'Tecnologias Assistivas' => route('inclusive-radar.assistive-technologies.index'),
-        $assistiveTechnology->name => route('inclusive-radar.assistive-technologies.show', $assistiveTechnology),
-        'Inspeção' => null
-    ]" />
+            'Home' => route('dashboard'),
+            'Tecnologias Assistivas' => route('inclusive-radar.assistive-technologies.index'),
+            $assistiveTechnology->name => route('inclusive-radar.assistive-technologies.show', $assistiveTechnology),
+            'Detalhes da Inspeção' => null
+        ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+        <header>
             <h2 class="text-title">Detalhes da Inspeção</h2>
-            <p class="text-muted">
+            <p class="text-muted mb-0">
                 Visualize o estado de conservação, tipo de inspeção, parecer técnico e evidências visuais.
             </p>
-        </div>
+        </header>
+
         <div class="text-end">
-            <span class="d-block text-muted small uppercase fw-bold">Data da Inspeção</span>
-            <span class="badge bg-purple fs-6">{{ $inspection->inspection_date->format('d/m/Y') }}</span>
+            <span class="d-block text-muted small text-uppercase fw-bold mb-1">Data da Inspeção</span>
+            <span class="badge bg-purple fs-6 px-3">{{ $inspection->inspection_date->format('d/m/Y') }}</span>
         </div>
     </div>
 
     <div class="mt-3">
-        <div class="custom-table-card bg-white shadow-sm">
+        <main class="custom-table-card bg-white shadow-sm">
 
-            {{-- SEÇÃO 1: Estado de Conservação / Status / Tipo de Inspeção --}}
-            <x-forms.section title="Detalhes da Inspeção" />
+            <x-forms.section title="Informações Gerais" />
+
             <div class="row g-3 px-4 pb-4">
-                @php $isBarrier = str_contains($inspection->inspectable_type, 'barrier'); @endphp
-
-                {{-- Estado de Conservação / Status da Barreira --}}
                 <x-show.info-item
-                    :label="$isBarrier ? 'Status da Barreira' : 'Estado de Conservação'"
+                    label="Estado de Conservação"
                     column="col-md-6"
                     isBox="true"
                 >
-                <span class="fw-bold {{ $isBarrier ? $inspection->status?->color() : '' }}">
-                    {{ $isBarrier ? $inspection->status?->label() ?? 'Identificada' : $inspection->state?->label() ?? '---' }}
-                </span>
+                    {{ $inspection->conservation_state?->label() ?? $inspection->state?->label() ?? '---' }}
                 </x-show.info-item>
 
-                {{-- Tipo de Inspeção --}}
                 <x-show.info-item label="Tipo de Inspeção" column="col-md-6" isBox="true">
-                    {{ $inspection->type?->label() ?? '---' }}
+                    {{ $inspection->inspection_type?->label() ?? $inspection->type?->label() ?? '---' }}
                 </x-show.info-item>
 
-                {{-- Parecer Técnico --}}
-                @if($inspection->description)
-                    <x-show.info-item label="Parecer Técnico" column="col-12" isBox="true">
-                        {{ $inspection->description }}
-                    </x-show.info-item>
-                @endif
+                <x-show.info-item label="Parecer Técnico / Descrição" column="col-12" isBox="true">
+                    {!! nl2br(e($inspection->inspection_description ?? $inspection->description)) ?: '<span class="text-muted small">Nenhum parecer técnico registrado.</span>' !!}
+                </x-show.info-item>
             </div>
 
-            {{-- SEÇÃO 2: Evidências Visuais --}}
             <x-forms.section title="Evidências Visuais" />
+
             <div class="row g-3 px-4 pb-4">
-                @if($inspection->images && $inspection->images->count() > 0)
-                    @foreach($inspection->images as $img)
-                        <div class="col-12 col-md-6">
-                            <a href="{{ asset('storage/' . $img->path) }}" target="_blank">
-                                <img src="{{ asset('storage/' . $img->path) }}"
-                                     class="rounded shadow-sm w-100"
-                                     style="height: 250px; object-fit: cover; cursor:pointer;">
-                            </a>
-                        </div>
-                    @endforeach
-                @else
-                    <div class="text-center py-5 bg-light rounded border border-dashed w-100">
-                        <span class="text-muted small">Nenhuma evidência visual registrada</span>
+                @forelse($inspection->images as $index => $img)
+                    <div class="col-12 col-md-4">
+                        <a href="{{ asset('storage/' . $img->path) }}"
+                           target="_blank"
+                           class="d-block border rounded overflow-hidden shadow-sm"
+                           aria-label="Ver evidência visual {{ $index + 1 }} em tamanho real"
+                        >
+                            <img src="{{ asset('storage/' . $img->path) }}"
+                                 class="w-100"
+                                 alt="Foto de evidência {{ $index + 1 }}"
+                                 width="444"
+                                 height="250"
+                                 @if($loop->first) fetchpriority="high" loading="eager" @else loading="lazy" @endif
+                                 style="height: 250px; object-fit: cover; transition: transform 0.3s;"
+                            >
+                        </a>
                     </div>
-                @endif
+                @empty
+                    <div class="col-12">
+                        <div class="text-center py-5 bg-light rounded border border-dashed">
+                            <i class="fas fa-camera fa-2x text-secondary mb-2" aria-hidden="true"></i>
+                            <p class="text-muted mb-0 small">Nenhuma evidência visual registrada para esta inspeção.</p>
+                        </div>
+                    </div>
+                @endforelse
             </div>
 
-            {{-- RODAPÉ DE AÇÕES --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
+            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
                 <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i> ID da Inspeção: #{{ $inspection->id }}
+                    <i class="fas fa-fingerprint me-1" aria-hidden="true"></i> ID da Inspeção: #{{ $inspection->id }}
                 </div>
 
                 <div class="d-flex gap-2">
                     <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)" variant="secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Voltar ao Histórico
+                        <i class="fas fa-arrow-left me-1"></i> Voltar
                     </x-buttons.link-button>
                 </div>
-            </div>
-
-        </div> {{-- FIM DO CUSTOM TABLE CARD --}}
+            </footer>
+        </main>
     </div>
 @endsection

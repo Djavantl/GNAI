@@ -17,6 +17,7 @@
             <h2 class="text-title">Editar Categoria de Barreira</h2>
             <p class="text-muted">Atualizando as definições da categoria: <strong>{{ $barrierCategory->name }}</strong></p>
         </div>
+
         <div>
             <x-buttons.link-button href="{{ route('inclusive-radar.barrier-categories.show', $barrierCategory) }}" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
@@ -29,7 +30,6 @@
             @csrf
             @method('PUT')
 
-            {{-- SEÇÃO 1: Identificação --}}
             <x-forms.section title="Informações da Categoria" />
 
             <div class="col-md-12">
@@ -52,10 +52,8 @@
                 />
             </div>
 
-            {{-- SEÇÃO 2: Configurações --}}
             <x-forms.section title="Status e Visibilidade" />
 
-            {{-- Status Ativo: Estilo Limpo TA (Sem divs extras) --}}
             <div class="col-md-12">
                 <x-forms.checkbox
                     name="is_active"

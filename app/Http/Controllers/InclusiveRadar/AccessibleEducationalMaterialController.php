@@ -67,7 +67,6 @@ class AccessibleEducationalMaterialController extends Controller
     public function create(): View
     {
         return view('pages.inclusive-radar.accessible-educational-materials.create', [
-            'statuses' => ResourceStatus::cases(),
 
             'accessibilityFeatures' => AccessibilityFeature::where('is_active', true)->orderBy('name')->get(),
 
@@ -173,7 +172,7 @@ class AccessibleEducationalMaterialController extends Controller
         return $pdf->stream("MPA_{$material->name}.pdf");
     }
 
-    public function showInspection(AccessibleEducationalMaterial $material, Inspection $inspection)
+    public function showInspection(AccessibleEducationalMaterial $material, Inspection $inspection): View
     {
         abort_if(
             $inspection->inspectable_id !== $material->id ||
@@ -181,11 +180,11 @@ class AccessibleEducationalMaterialController extends Controller
             403
         );
 
-        $inspection->load('images', 'inspectable');
+        $inspection->load(['images', 'inspectable']);
 
-        return view(
-            'pages.inclusive-radar.accessible-educational-materials.inspections.show',
-            compact('material', 'inspection')
-        );
+        return view('pages.inclusive-radar.accessible-educational-materials.inspections.show', [
+            'material'   => $material,
+            'inspection' => $inspection,
+        ]);
     }
 }
