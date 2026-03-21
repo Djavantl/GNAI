@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'GNAI - Sistema Escolar')</title>
+    <title>@yield('title', 'GNAI - Sistema de Gestão de Acessibilidade')</title>
+    <meta name="description" content="GNAI - Plataforma para o Atendimento Educacional Especializado (AEE). Gestão e inventário de recursos, mapeamento de barreiras e sessões de atendimento.">
+    <meta name="author" content="Equipe ADS-2026: Djavan Teixeira Lopes e Marley Teixeira Meira">
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     <!-- fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,8 +66,8 @@
             $('.select-search').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
-                placeholder: 'Selecione uma opção...', 
-                allowClear: true, 
+                placeholder: 'Selecione uma opção...',
+                allowClear: true,
                 language: {
                     noResults: function() {
                         return "Nenhum resultado encontrado";
@@ -111,7 +113,7 @@
             Object.keys(allEditors).forEach(name => {
                 allEditors[name].updateSourceElement();
             });
-            
+
             // Log de depuração (pode remover depois de testar)
             console.log('Dados sincronizados com sucesso!');
         });

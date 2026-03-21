@@ -6,8 +6,8 @@
 ])
 
 @php
-    $sizeClass = $size !== 'md' ? $size : '';
-    $classes = "btn-action {$variant} {$sizeClass} align-items-center";
+    $sizeClass = $size !== 'md' ? "btn-{$size}" : '';
+    $classes = "btn-action {$variant} {$sizeClass} d-inline-flex align-items-center justify-content-center";
 @endphp
 
 <button
@@ -15,8 +15,8 @@
     {{ $attributes->merge([
         'class' => $classes,
         'aria-label' => $label,
+        'disabled' => $disabled,
     ]) }}
-    @if($disabled) disabled @endif
 >
     {{ $slot }}
 </button>

@@ -49,10 +49,10 @@
                     required
                     aria-controls="loanable_id"
                     :options="[
-                        'App\\Models\\InclusiveRadar\\AssistiveTechnology' => 'Tecnologia Assistiva',
-                        'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial' => 'Material Pedagógico'
+                        'assistive_technology' => 'Tecnologia Assistiva',
+                        'accessible_educational_material' => 'Material Pedagógico'
                     ]"
-                    :selected="old('loanable_type')"
+                    :selected="old('loanable_type') ?? $selectedItemType"
                 />
             </div>
 
@@ -74,20 +74,22 @@
             <div class="col-md-6">
                 <x-forms.select
                     name="student_id"
+                    id="student_id"
                     label="Estudante (Beneficiário)"
                     required
                     :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person->name . ' (' . $s->registration . ')'])"
-                    :selected="old('student_id')"
+                    :selected="old('student_id') ?? $selectedStudentId"
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.select
                     name="professional_id"
+                    id="professional_id"
                     label="Profissional (Beneficiário)"
                     required
                     :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name . ' - ' . $p->registration])"
-                    :selected="old('professional_id')"
+                    :selected="old('professional_id') ?? $selectedProfessionalId"
                 />
             </div>
 
@@ -150,14 +152,13 @@
         </x-forms.form-card>
     </div>
 
-    {{-- Script para popular itens dinamicamente --}}
     <script>
         window.loanData = {
             items: {
-                'App\\Models\\InclusiveRadar\\AssistiveTechnology': @json($assistive_technologies),
-                'App\\Models\\InclusiveRadar\\AccessibleEducationalMaterial': @json($educational_materials)
+                'assistive_technology': @json($assistive_technologies),
+                'accessible_educational_material': @json($educational_materials)
             },
-            oldId: "{{ old('loanable_id') }}"
+            targetId: "{{ old('loanable_id') ?? $selectedItemId }}"
         };
     </script>
 

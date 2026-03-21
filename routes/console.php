@@ -15,3 +15,11 @@ Schedule::command('backup:run')
     ->onSuccess(function () {
         app(BackupService::class)->sync();
     });
+
+// Roda verificacao de emprestimos em atraso
+Schedule::command('loans:check-overdue')
+    ->dailyAt('12:05')
+    ->timezone('America/Bahia')
+    ->onFailure(function () {
+        Log::error('Falha ao processar verificação de empréstimos em atraso.');
+    });

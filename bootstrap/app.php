@@ -41,35 +41,18 @@ return Application::configure(basePath: dirname(__DIR__))
             ]);
         });
 
-        // Recursos vinculados
-        $exceptions->render(function (
-            CannotDeleteLinkedBarrierException $e,
-                                                $request
-        ) {
+        $exceptions->render(function (CannotDeleteWithActiveLoansException $e, Request $request) {
             if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => $e->getMessage()
-                ], 422);
+                return response()->json(['message' => $e->getMessage()], 422);
             }
-
-            return back()->withErrors([
-                'delete' => $e->getMessage()
-            ]);
+            return back()->withErrors(['delete' => $e->getMessage()]);
         });
 
-        $exceptions->render(function (
-            CannotChangeStatusWithActiveLoansException $e,
-                                                       $request
-        ) {
+        $exceptions->render(function (CannotDeleteLinkedBarrierException $e, Request $request) {
             if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => $e->getMessage()
-                ], 422);
+                return response()->json(['message' => $e->getMessage()], 422);
             }
-
-            return back()->withErrors([
-                'status_id' => $e->getMessage()
-            ]);
+            return back()->withErrors(['delete' => $e->getMessage()]);
         });
 
         $exceptions->render(function (

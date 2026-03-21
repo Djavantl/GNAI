@@ -48,8 +48,8 @@
     <p><strong>Status no Sistema:</strong> {{ $material->is_active ? 'Ativo' : 'Inativo' }}</p>
 </div>
 
-{{-- 1. IDENTIFICAÇÃO --}}
 <x-pdf.section-title title="1. Identificação do Recurso" />
+
 <x-pdf.table>
     <x-pdf.row>
         <x-pdf.info-item label="Nome" :value="$material->name" colspan="2" />
@@ -62,25 +62,21 @@
 </x-pdf.table>
 <x-pdf.text-area label="Descrição Detalhada" :value="$material->notes ?: '---'" />
 
-{{-- 2. GESTÃO E PÚBLICO --}}
 <x-pdf.section-title title="2. Gestão e Público" />
+
 <x-pdf.table>
-    {{-- Linha 1 --}}
     <x-pdf.row>
         <x-pdf.info-item label="Status do Recurso" :value="$material->status?->label() ?? '---'" />
         <x-pdf.info-item label="Permite Empréstimos" :value="$material->is_loanable ? 'Sim' : 'Não'" />
-        {{-- Adicionado colspan="2" abaixo para fechar a grade de 4 colunas --}}
         <x-pdf.info-item label="Quantidade Disponível" :value="$material->quantity_available ?? '---'" colspan="2" />
     </x-pdf.row>
 
-    {{-- Linha 2 --}}
     <x-pdf.row>
         <x-pdf.info-item label="Público-Alvo (Deficiências Atendidas)" :value="$material->deficiencies->pluck('name')->join(', ') ?: '---'" colspan="2" />
         <x-pdf.info-item label="Recursos de Acessibilidade" :value="$material->accessibilityFeatures->pluck('name')->join(', ') ?: '---'" colspan="2" />
     </x-pdf.row>
 </x-pdf.table>
 
-{{-- 3. ÚLTIMA VISTORIA --}}
 <x-pdf.section-title title="3. Última Vistoria" />
 @php
     $lastInspection = $material->inspections->sortByDesc('inspection_date')->first();

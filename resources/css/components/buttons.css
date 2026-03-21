@@ -8,7 +8,7 @@
     --btn-transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 
     --btn-primary: #3d35a5;
-    --btn-info: #5284e0;
+    --btn-info: #2e5cb8;
     --btn-dark: #212529;
     --btn-warning: #ffc107;
     --btn-danger: #dc3545;
@@ -75,7 +75,7 @@
     color: #fff;
 }
 .btn-action.info:hover {
-    background-color: #3f6fd1;
+    background-color: #244a96;
 }
 
 .btn-action.dark {

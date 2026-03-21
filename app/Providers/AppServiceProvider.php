@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\InclusiveRadar\Institution;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -88,6 +89,15 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'deficiencies' => Deficiency::orderBy('name')->get(),
             ]);
+        });
+
+        // View Composer para a Navbar (INSTITUIÇÃO)
+        View::composer('layouts.master', function ($view) {
+            $institution = cache()->remember('institution_data', 86400, function () {
+                return Institution::first();
+            });
+
+            $view->with('institution', $institution);
         });
     }
 }

@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const availableItems = loanData.items[selectedType] || [];
 
-        // FILTRO DIGITAL: digitais sempre aparecem, físicos só se quantity_available > 0
         const filteredItems = availableItems.filter(item => {
             if (item.is_digital) return true;
             return (item.quantity_available ?? 0) > 0;
@@ -29,11 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
             filteredItems.forEach(item => {
                 const option = document.createElement('option');
                 option.value = String(item.id);
-                const displayName = item.name || item.title || item.description || 'Item sem identificação';
+                const displayName = item.name || 'Item sem identificação';
                 const assetCode = item.asset_code || 'S/N';
                 option.text = `${displayName} (${assetCode})`;
 
-                if (String(item.id) === String(loanData.oldId)) {
+                if (String(item.id) === String(loanData.targetId)) {
                     option.selected = true;
                 }
 

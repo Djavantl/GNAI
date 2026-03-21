@@ -10,15 +10,11 @@
         ]" />
     </div>
 
-    {{-- CARD UNIFICADO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
-
-        {{-- HEADER --}}
         <x-table.page-header
             title="Recursos de Acessibilidade"
-            subtitle="Gestão de serviços, adaptações e recursos promotores de acessibilidade."
+            subtitle="Gerencie as categorias de recursos de acessibilidade disponíveis."
         >
-            {{-- Botão de ação --}}
             <x-buttons.link-button
                 :href="route('inclusive-radar.accessibility-features.create')"
                 variant="new"
@@ -28,7 +24,6 @@
             </x-buttons.link-button>
         </x-table.page-header>
 
-        {{-- FILTROS --}}
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
@@ -44,11 +39,9 @@
             />
         </div>
 
-        {{-- TABELA --}}
         <div id="features-table" class="p-3">
             @include('pages.inclusive-radar.accessibility-features.partials.table')
         </div>
-
     </div>
 
     @push('scripts')

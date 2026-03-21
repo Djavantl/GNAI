@@ -29,7 +29,6 @@
     </div>
 
     {{-- Lista de notificações --}}
-    
 
     @forelse($notifications as $notification)
 
@@ -59,10 +58,9 @@
                 <div class="d-flex flex-column gap-2 align-items-end">
 
                     @if(isset($data['url']))
-                    <x-buttons.link-button href="{{ $data['url']  }}" variant="success">
-                        <i class="fas fa-arrow-right"></i>
-                            Abrir
-                    </x-buttons.link-button>
+                        <x-buttons.link-button href="{!! $data['url'] !!}" variant="success">
+                            <i class="fas fa-arrow-right"></i> Abrir
+                        </x-buttons.link-button>
                     @endif
 
                     @if($isUnread)
@@ -74,9 +72,7 @@
                             </x-buttons.submit-button>
                         </form>
                     @endif
-
                 </div>
-
             </div>
         </div>
 
@@ -91,8 +87,5 @@
     <div class="mt-4">
         {{ $notifications->links() }}
     </div>
-
-
-
 
 @endsection

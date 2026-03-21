@@ -6,6 +6,21 @@
   /* essa classe no seu original só tinha word-break e pre-line */
 }
 
+.text-info {
+    color: #057997 !important;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+    transition: transform 0.1s ease-in-out, background-color 0.2s;
+}
+
+.cursor-pointer:hover, .cursor-pointer:focus {
+    background-color: #f8f9fa;
+    transform: scale(1.01);
+    outline: 2px solid #322B75E5;
+}
+
 .italic { font-style: italic; }
 
 /* repetidos já removidos: keep only one declaration for .sidebar-menu earlier (em base/sidebar) */

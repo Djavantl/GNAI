@@ -57,8 +57,13 @@ class LoanController extends Controller
         );
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
+        $selectedStudentId      = $request->query('student_id');
+        $selectedProfessionalId = $request->query('professional_id');
+        $selectedItemId         = $request->query('item_id');
+        $selectedItemType       = $request->query('item_type');
+
         $students = Student::with('person')->get()->sortBy('person.name');
         $professionals = Professional::with('person')->get()->sortBy('person.name');
 
@@ -96,6 +101,10 @@ class LoanController extends Controller
             'assistive_technologies' => $assistiveTechnologies,
             'educational_materials'  => $educationalMaterials,
             'authUser'               => auth()->user(),
+            'selectedStudentId'      => $selectedStudentId,
+            'selectedProfessionalId' => $selectedProfessionalId,
+            'selectedItemId'         => $selectedItemId,
+            'selectedItemType'       => $selectedItemType,
         ]);
     }
 

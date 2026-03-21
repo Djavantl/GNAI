@@ -7,22 +7,17 @@
 ])
 
 @php
-    $sizeClass = $size !== 'md' ? $size : '';
+    $sizeClass = $size !== 'md' ? "btn-{$size}" : '';
     $classes = "btn-action {$variant} {$sizeClass}";
     $tag = $href ? 'a' : 'button';
 @endphp
 
 <{{ $tag }}
-    @if($href)
-    href="{{ $href }}"
-@else
-    type="{{ $type }}"
-@endif
-
-{{ $attributes->merge([
-    'class' => $classes,
-    'aria-label' => $label
-]) }}
+    {{ $href ? "href=$href role=button" : "type=$type" }}
+    {{ $attributes->merge([
+        'class' => $classes,
+        'aria-label' => $label
+    ]) }}
 >
-{{ $slot }}
+    {{ $slot }}
 </{{ $tag }}>

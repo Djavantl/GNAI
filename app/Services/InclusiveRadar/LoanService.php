@@ -2,17 +2,21 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Models\InclusiveRadar\Loan;
-use App\Models\InclusiveRadar\Waitlist;
 use App\Enums\InclusiveRadar\LoanStatus;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Enums\InclusiveRadar\WaitlistStatus;
+use App\Models\InclusiveRadar\Loan;
+use App\Models\InclusiveRadar\Waitlist;
+use App\Notifications\InclusiveRadar\ItemAvailableNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class LoanService
 {
+    public function __construct(
+        protected WaitlistService $waitlistService
+    ) {}
 
     public function store(array $data): Loan
     {
@@ -69,7 +73,16 @@ class LoanService
             /* Se um empréstimo ativo for deletado (ex: erro operacional), o estoque
                deve ser restaurado imediatamente para refletir a disponibilidade real. */
             if ($loan->return_date === null) {
-                $this->handleStockIncrement($loan->loanable, LoanStatus::RETURNED);
+                $item = $loan->loanable()->lockForUpdate()->first();
+
+                $this->handleStockIncrement($item, LoanStatus::RETURNED);
+
+                // Verifica se há alguém na fila esperando por este item que acabou de ser liberado
+                $nextWaitlist = $this->waitlistService->notifyNext($item);
+
+                if ($nextWaitlist) {
+                    auth()->user()->notify(new ItemAvailableNotification($nextWaitlist));
+                }
             }
 
             $loan->delete();
@@ -104,6 +117,14 @@ class LoanService
             ]);
 
             $this->handleStockIncrement($item, $statusEnum);
+
+            if (!$isDamaged) {
+                $nextWaitlist = $this->waitlistService->notifyNext($item);
+
+                if ($nextWaitlist) {
+                    auth()->user()->notify(new ItemAvailableNotification($nextWaitlist));
+                }
+            }
 
             return $loan->fresh();
         });
@@ -267,7 +288,10 @@ class LoanService
     {
         $query = Waitlist::where('waitlistable_id', $item->id)
             ->where('waitlistable_type', $item->getMorphClass())
-            ->where('status', WaitlistStatus::WAITING->value);
+            ->whereIn('status', [
+                WaitlistStatus::WAITING->value,
+                WaitlistStatus::NOTIFIED->value
+            ]);
 
         if ($studentId) {
             $query->where('student_id', $studentId);
@@ -278,7 +302,7 @@ class LoanService
         $waitlist = $query->first();
 
         /* Ao efetivar o empréstimo, damos baixa automática na intenção de reserva
-           do usuário para manter a fila de espera atualizada. */
+           do usuário mudando o status para Atendido. */
         if ($waitlist) {
             $waitlist->update([
                 'status' => WaitlistStatus::FULFILLED->value

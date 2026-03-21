@@ -3,7 +3,6 @@
 @section('title', "Editar - $material->name")
 
 @section('content')
-    {{-- Breadcrumb --}}
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
@@ -13,15 +12,13 @@
         ]" />
     </div>
 
-    {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3 align-items-center">
-        <div>
+        <header>
             <h2 class="text-title">Editar Material Pedagógico Acessível</h2>
-            <p class="text-muted">
-                Atualizando informações de:
-                <strong>{{ $material->name }}</strong>
+            <p class="text-muted mb-0">
+                Atualizando informações de: <strong>{{ $material->name }}</strong>
             </p>
-        </div>
+        </header>
 
         <x-buttons.link-button
             :href="route('inclusive-radar.accessible-educational-materials.show', $material)"
@@ -30,7 +27,6 @@
         </x-buttons.link-button>
     </div>
 
-    {{-- Formulário --}}
     <div class="mt-3">
         <x-forms.form-card
             action="{{ route('inclusive-radar.accessible-educational-materials.update', $material) }}"
@@ -40,7 +36,6 @@
             @csrf
             @method('PUT')
 
-            {{-- IDENTIFICAÇÃO --}}
             <x-forms.section title="Identificação do Recurso" />
 
             <div class="col-md-12">
@@ -52,17 +47,7 @@
                 />
             </div>
 
-            <div class="col-md-12">
-                <x-forms.textarea
-                    name="notes"
-                    label="Descrição Detalhada"
-                    rows="3"
-                    :value="old('notes', $material->notes)"
-                />
-            </div>
-
-            {{-- Natureza do Recurso --}}
-            <div class="col-md-6" id="is_digital_container">
+            <div class="col-md-6">
                 <x-forms.select
                     name="is_digital"
                     label="Natureza do Recurso"
@@ -72,7 +57,6 @@
                 />
             </div>
 
-            {{-- Patrimônio / Tombamento --}}
             <div class="col-md-6" id="asset_code_container">
                 <x-forms.input
                     name="asset_code"
@@ -81,7 +65,15 @@
                 />
             </div>
 
-            {{-- RECURSOS DE ACESSIBILIDADE --}}
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="notes"
+                    label="Descrição"
+                    rows="3"
+                    :value="old('notes', $material->notes)"
+                />
+            </div>
+
             <x-forms.section title="Recursos de Acessibilidade" />
 
             <div class="col-md-12 mb-4">
@@ -89,7 +81,7 @@
                     Recursos presentes no material
                 </span>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('accessibility_features') border-danger @enderror">
-                    @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->orderBy('name')->get() as $feature)
+                    @foreach($accessibilityFeatures as $feature)
                         <x-forms.checkbox
                             name="accessibility_features[]"
                             id="feat_{{ $feature->id }}"
@@ -99,21 +91,39 @@
                         />
                     @endforeach
                 </div>
-
                 @error('accessibility_features')
                 <small class="text-danger d-block mt-1">{{ $message }}</small>
                 @enderror
             </div>
 
-            {{-- NOVA VISTORIA --}}
-            <x-forms.section title="Nova Atualização de Estado / Vistoria" />
+            <x-forms.section title="Nova Vistoria" />
 
-            <div class="col-md-6" id="conservation_container">
+            <div class="col-md-6">
+                <x-forms.select
+                    name="inspection_type"
+                    label="Tipo de Inspeção"
+                    required
+                    :options="$inspectionTypes"
+                    :selected="old('inspection_type', $defaultInspection)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input
+                    name="inspection_date"
+                    label="Data da Inspeção"
+                    type="date"
+                    required
+                    :value="old('inspection_date', date('Y-m-d'))"
+                />
+            </div>
+
+            <div class="col-md-6">
                 <x-forms.select
                     name="conservation_state"
-                    label="Estado de Conservação Atual"
-                    :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())
-                        ->mapWithKeys(fn($item)=>[$item->value=>$item->label()])"
+                    label="Estado de Conservação"
+                    required
+                    :options="$conservationStates"
                     :selected="old('conservation_state', $material->conservation_state?->value)"
                 />
             </div>
@@ -130,66 +140,58 @@
                     name="inspection_description"
                     label="Parecer Técnico"
                     rows="3"
+                    placeholder="Descreva o motivo da mudança de estado ou detalhes da nova vistoria..."
+                    :value="old('inspection_description')"
                 />
             </div>
 
-            {{-- GESTÃO E PÚBLICO --}}
             <x-forms.section title="Gestão e Público" />
 
-            @php
-                $activeLoans = $material->loans()->whereIn('status',['active','late'])->count();
-            @endphp
+            <div class="col-md-6 d-flex flex-column gap-3">
+                <x-forms.input
+                    name="quantity"
+                    label="Quantidade Total"
+                    type="number"
+                    :value="old('quantity', $material->quantity)"
+                    :min="$activeLoans"
+                />
 
-            <div class="col-md-12 mb-4 mt-4 row d-flex justify-content-between">
-                {{-- Coluna da esquerda --}}
-                <div class="col-md-5 d-flex flex-column gap-3">
-                    <x-forms.input
-                        name="quantity"
-                        label="Quantidade Total"
-                        type="number"
-                        :value="old('quantity', $material->quantity)"
-                        :min="$activeLoans"
-                    />
-
-                    @if($activeLoans > 0)
-                        <small class="text-danger fw-bold d-block mt-1">
-                            <i class="fas fa-lock"></i>
-                            {{ $activeLoans }} unidades em uso (não é possível reduzir)
+                @if($activeLoans > 0)
+                    <div class="alert alert-warning py-2 mb-0">
+                        <small class="fw-bold">
+                            <i class="fas fa-lock"></i> {{ $activeLoans }} unidades em uso.
                         </small>
-                    @endif
+                    </div>
+                @endif
 
-                    <x-forms.checkbox
-                        name="is_loanable"
-                        label="Permitir Empréstimos"
-                        description="Marque se este recurso pode ser emprestado"
-                        :checked="old('is_loanable', $material->is_loanable)"
-                    />
-                </div>
-
-                {{-- Coluna da direita --}}
-                <div class="col-md-5 d-flex flex-column gap-3">
-                    <x-forms.select
-                        name="status"
-                        label="Status do Recurso"
-                        :options="collect(\App\Enums\InclusiveRadar\ResourceStatus::cases())
-                            ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                        :selected="old('status', $material->status?->value)"
-                    />
-
-                    <x-forms.checkbox
-                        name="is_active"
-                        label="Ativar no Sistema"
-                        description="Disponível para visualização e empréstimos"
-                        :checked="old('is_active', $material->is_active)"
-                    />
-                </div>
+                <x-forms.checkbox
+                    name="is_loanable"
+                    label="Permitir Empréstimos"
+                    description="Marque se este material pode ser emprestado"
+                    :checked="old('is_loanable', $material->is_loanable)"
+                />
             </div>
-            {{-- DEFICIÊNCIAS --}}
+
+            <div class="col-md-6 d-flex flex-column gap-3">
+                <x-forms.select
+                    name="status"
+                    label="Status do Recurso"
+                    :options="$resourceStatuses"
+                    :selected="old('status', $material->status?->value)"
+                />
+
+                <x-forms.checkbox
+                    name="is_active"
+                    label="Ativar no Sistema"
+                    description="Disponível para visualização e empréstimos"
+                    :checked="old('is_active', $material->is_active)"
+                />
+            </div>
+
             <div class="col-md-12 mb-4 mt-4">
                 <span class="d-block form-label fw-bold text-purple-dark mb-3">
                     Público-alvo (Deficiências Atendidas)
                 </span>
-
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
                     @foreach($deficiencies as $def)
                         <x-forms.checkbox
@@ -201,22 +203,21 @@
                         />
                     @endforeach
                 </div>
-
                 @error('deficiencies')
                 <small class="text-danger d-block mt-1">{{ $message }}</small>
                 @enderror
             </div>
 
-            {{-- BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
                 <x-buttons.link-button
                     :href="route('inclusive-radar.accessible-educational-materials.show', $material)"
-                    variant="secondary">
+                    variant="secondary"
+                >
                     Cancelar
                 </x-buttons.link-button>
 
-                <x-buttons.submit-button type="submit">
-                    <i class="fas fa-save"></i> Salvar
+                <x-buttons.submit-button>
+                    <i class="fas fa-save me-1"></i> Salvar Alterações
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

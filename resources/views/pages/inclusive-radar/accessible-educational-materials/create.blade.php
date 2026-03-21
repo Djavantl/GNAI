@@ -18,6 +18,7 @@
                 Cadastre materiais adaptados e realize a vistoria inicial.
             </p>
         </header>
+
         <div>
             <x-buttons.link-button
                 :href="route('inclusive-radar.accessible-educational-materials.index')"
@@ -36,7 +37,6 @@
         >
             @csrf
 
-            {{-- IDENTIFICAÇÃO --}}
             <x-forms.section title="Identificação do Recurso" />
 
             <div class="col-md-12">
@@ -76,7 +76,6 @@
                 />
             </div>
 
-            {{-- RECURSOS DE ACESSIBILIDADE --}}
             <x-forms.section title="Recursos de Acessibilidade" />
 
             <div class="col-md-12 mb-4">
@@ -85,7 +84,7 @@
                 </span>
 
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('accessibility_features') border-danger @enderror">
-                    @foreach(\App\Models\InclusiveRadar\AccessibilityFeature::where('is_active', true)->orderBy('name')->get() as $feature)
+                    @foreach($accessibilityFeatures as $feature)
                         <x-forms.checkbox
                             name="accessibility_features[]"
                             id="feat_{{ $feature->id }}"
@@ -101,7 +100,6 @@
                 @enderror
             </div>
 
-            {{-- VISTORIA --}}
             <x-forms.section title="Vistoria Inicial" />
 
             <div class="col-md-6">
@@ -109,10 +107,8 @@
                     name="inspection_type"
                     label="Tipo de Inspeção"
                     required
-                    :options="collect(\App\Enums\InclusiveRadar\InspectionType::cases())
-                        ->filter(fn($item) => $item !== \App\Enums\InclusiveRadar\InspectionType::MAINTENANCE)
-                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                    :selected="old('inspection_type', \App\Enums\InclusiveRadar\InspectionType::INITIAL->value)"
+                    :options="$inspectionTypes"
+                    :selected="old('inspection_type', $defaultInspection)"
                 />
             </div>
 
@@ -121,6 +117,7 @@
                     name="inspection_date"
                     label="Data da Inspeção"
                     type="date"
+                    required
                     :value="old('inspection_date', date('Y-m-d'))"
                 />
             </div>
@@ -130,8 +127,7 @@
                     name="conservation_state"
                     label="Estado de Conservação"
                     required
-                    :options="collect(\App\Enums\InclusiveRadar\ConservationState::cases())
-                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
+                    :options="$conservationStates"
                     :selected="old('conservation_state')"
                 />
             </div>
@@ -148,11 +144,11 @@
                     name="inspection_description"
                     label="Parecer Técnico"
                     rows="3"
+                    placeholder="Descreva o estado do item ou detalhes da vistoria inicial..."
                     :value="old('inspection_description')"
                 />
             </div>
 
-            {{-- GESTÃO --}}
             <x-forms.section title="Gestão e Público" />
 
             <div class="col-md-6 d-flex flex-column gap-3">
@@ -176,9 +172,8 @@
                 <x-forms.select
                     name="status"
                     label="Status do Recurso"
-                    :options="collect(\App\Enums\InclusiveRadar\ResourceStatus::cases())
-                        ->mapWithKeys(fn($item) => [$item->value => $item->label()])"
-                    :selected="old('status', \App\Enums\InclusiveRadar\ResourceStatus::AVAILABLE->value)"
+                    :options="$resourceStatuses"
+                    :selected="old('status', $defaultStatus)"
                 />
 
                 <x-forms.checkbox
@@ -189,14 +184,13 @@
                 />
             </div>
 
-            {{-- DEFICIÊNCIAS --}}
             <div class="col-md-12 mb-4 mt-4">
                 <span class="d-block form-label fw-bold text-purple-dark mb-3">
                     Público-alvo (Deficiências Atendidas)
                 </span>
 
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
-                    @foreach($deficiencies->sortBy('name') as $def)
+                    @foreach($deficiencies as $def)
                         <x-forms.checkbox
                             name="deficiencies[]"
                             id="def_{{ $def->id }}"
@@ -212,7 +206,6 @@
                 @enderror
             </div>
 
-            {{-- BOTÕES --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
                 <x-buttons.link-button
                     :href="route('inclusive-radar.accessible-educational-materials.index')"

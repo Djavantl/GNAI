@@ -4,7 +4,6 @@
 >
     @forelse($materials as $material)
         <tr>
-            {{-- NOME --}}
             <x-table.td>{{ $material->name }}</x-table.td>
 
             {{-- NATUREZA --}}
@@ -12,7 +11,6 @@
                 {{ $material->is_digital ? 'Digital' : 'Físico' }}
             </x-table.td>
 
-            {{-- ESTOQUE --}}
             <x-table.td>
                 @if($material->is_digital)
                     <span class="text-info fw-bold text-uppercase" style="font-size: 0.85rem;">Ilimitado</span>
@@ -24,7 +22,6 @@
                 @endif
             </x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 @php
                     $isUnavailable = !$material->is_digital && (($material->quantity_available ?? 0) <= 0);
@@ -38,10 +35,8 @@
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
-                    {{-- Botão Ver --}}
                     <x-buttons.link-button
                         :href="route('inclusive-radar.accessible-educational-materials.show', $material)"
                         variant="info"
@@ -49,7 +44,6 @@
                         <i class="fas fa-eye"></i> Ver
                     </x-buttons.link-button>
 
-                    {{-- Botão Excluir --}}
                     <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}"
                           method="POST" class="d-inline">
                         @csrf

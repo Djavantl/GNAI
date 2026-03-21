@@ -15,8 +15,11 @@
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Recurso de Acessibilidade</h2>
-            <p class="text-muted">Atualizando informações de: <strong>{{ $accessibilityFeature->name }}</strong></p>
+            <p class="text-muted">
+                Atualizando informações de: <strong>{{ $accessibilityFeature->name }}</strong>
+            </p>
         </div>
+
         <div>
             <x-buttons.link-button href="{{ route('inclusive-radar.accessibility-features.show', $accessibilityFeature) }}" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
@@ -68,7 +71,6 @@
                     <i class="fas fa-save mr-2"></i> Salvar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 @endsection

@@ -4,7 +4,6 @@
 >
     @forelse($features as $feature)
         <tr>
-            {{-- NOME --}}
             <x-table.td>
                 {{ $feature->name }}
             </x-table.td>
@@ -15,7 +14,6 @@
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
 
@@ -39,7 +37,6 @@
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-
                 </x-table.actions>
             </x-table.td>
         </tr>

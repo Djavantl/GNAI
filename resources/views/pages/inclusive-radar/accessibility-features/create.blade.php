@@ -14,8 +14,11 @@
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Novo Recurso de Acessibilidade</h2>
-            <p class="text-muted">Cadastre novos recursos e serviços que promovem a acessibilidade no ambiente escolar.</p>
+            <p class="text-muted">
+                Defina uma nova categoria de acessibilidade.
+            </p>
         </div>
+
         <div>
             <x-buttons.link-button href="{{ route('inclusive-radar.accessibility-features.index') }}" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
@@ -25,7 +28,6 @@
 
     <div class="mt-3">
         <x-forms.form-card action="{{ route('inclusive-radar.accessibility-features.store') }}" method="POST">
-
             <x-forms.section title="Identificação do Recurso" />
 
             <div class="col-md-12">
@@ -68,7 +70,6 @@
                     <i class="fas fa-save mr-2"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 @endsection

@@ -20,7 +20,6 @@
         flex-wrap: wrap;
         list-style: none;
         padding: 0;
-        /* O margin-top negativo "puxa" o componente para cima, compensando o padding do main-content */
         margin: -0.8rem 0 1rem 0 !important;
         font-size: 0.95rem;
         background-color: transparent;
@@ -30,45 +29,39 @@
         display: flex;
         align-items: center;
         padding-left: 0 !important;
-        /* Define a espessura da fonte para todos os itens */
         font-weight: 600;
     }
 
-    /* Remove definitivamente a barra "/" do Bootstrap */
     .breadcrumb-item::before {
         display: none !important;
         content: "" !important;
-        padding: 0 !important;
     }
 
-    /* Estilização do separador ">" */
     .breadcrumb-item:not(:last-child)::after {
         content: ">";
         margin-left: 0.6rem;
         margin-right: 0.6rem;
-        /* Cor roxa para combinar com sua identidade visual */
-        color: var(--primary-color, #4D44B5);
-        font-weight: 400; /* O separador não precisa ser grosso */
+        color: #5A4FCF;
+        font-weight: 400;
         display: inline-block;
+        aria-hidden: true;
     }
 
     .breadcrumb-item a {
         text-decoration: none;
-        /* Cor cinza para links (não ativos) para dar contraste */
-        color: #6c757d;
+        color: #555e66;
         font-weight: inherit;
-        transition: color 0.2s;
+        transition: color 0.2s, text-decoration 0.2s;
     }
 
-    .breadcrumb-item a:hover {
+    .breadcrumb-item a:hover, .breadcrumb-item a:focus {
         text-decoration: underline;
-        color: var(--primary-color, #4D44B5);
+        color: #4D44B5;
+        outline: none;
     }
 
-    /* Item atual (último) */
     .breadcrumb-item.active {
-        /* Roxo escuro e mais grosso para destacar a página atual */
-        color: #303972;
+        color: #2D335B;
         font-weight: 700;
     }
 </style>

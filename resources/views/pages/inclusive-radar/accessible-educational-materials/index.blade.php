@@ -10,15 +10,11 @@
         ]" />
     </div>
 
-    {{-- CARD UNIFICADO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
-
-        {{-- HEADER --}}
         <x-table.page-header
             title="Materiais Pedagógicos Acessíveis"
             subtitle="Gestão de recursos didáticos, livros e jogos adaptados."
         >
-            {{-- Botão de ação --}}
             <x-buttons.link-button
                 :href="route('inclusive-radar.accessible-educational-materials.create')"
                 variant="new"
@@ -28,7 +24,6 @@
             </x-buttons.link-button>
         </x-table.page-header>
 
-        {{-- FILTROS --}}
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
@@ -55,7 +50,6 @@
             />
         </div>
 
-        {{-- TABELA --}}
         <div id="materials-table" class="p-3">
             @include('pages.inclusive-radar.accessible-educational-materials.partials.table')
         </div>
