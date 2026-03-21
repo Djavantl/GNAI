@@ -30,7 +30,7 @@
 
             <div class="col-lg-5 border-end">
 
-                <x-forms.section title="1. Detalhes da Ocorrência" />
+                <x-forms.section title="Detalhes da Ocorrência" />
 
                 <div class="px-4">
                     <div class="row g-3">
@@ -174,7 +174,7 @@
 
             <div class="col-lg-7 bg-light px-0">
 
-                <x-forms.section title="2. Localização no Mapa" id="map-section-title" />
+                <x-forms.section title="Localização no Mapa" id="map-section-title" />
 
                 <div class="sticky-top" style="top:20px; z-index:1;">
                     <div class="mb-4">
@@ -204,7 +204,7 @@
 
                     <div class="mt-3">
 
-                        <x-forms.section title="3. Vistoria Inicial" />
+                        <x-forms.section title="Vistoria Inicial" />
 
                         <div class="px-4">
                             <div class="row g-3">

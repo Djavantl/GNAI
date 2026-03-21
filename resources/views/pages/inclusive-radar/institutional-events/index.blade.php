@@ -10,15 +10,12 @@
         ]"/>
     </div>
 
-    {{-- CARD UNIFICADO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
 
-        {{-- HEADER --}}
         <x-table.page-header
             title="Agenda Institucional"
             subtitle="Gerenciamento de eventos institucionais."
         >
-            {{-- Botão de ação --}}
             <x-buttons.link-button
                 :href="route('inclusive-radar.institutional-events.create')"
                 variant="new"
@@ -28,7 +25,6 @@
             </x-buttons.link-button>
         </x-table.page-header>
 
-        {{-- FILTROS --}}
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
@@ -44,11 +40,9 @@
             />
         </div>
 
-        {{-- TABELA --}}
         <div id="events-table" class="p-3">
             @include('pages.inclusive-radar.institutional-events.partials.table', ['events' => $events])
         </div>
-
     </div>
 
     @push('scripts')

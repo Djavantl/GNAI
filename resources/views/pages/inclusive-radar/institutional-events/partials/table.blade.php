@@ -1,30 +1,24 @@
 <x-table.table :headers="['Nome', 'Data Inicial', 'Data Final', 'Horário', 'Status', 'Ações']" :records="$events">
     @forelse($events as $event)
         <tr>
-            {{-- NOME --}}
             <x-table.td>{{ $event->title }}</x-table.td>
 
-            {{-- DATA INICIAL --}}
             <x-table.td>{{ $event->start_date->format('d/m/Y') }}</x-table.td>
 
-            {{-- DATA FINAL --}}
             <x-table.td>{{ $event->end_date->format('d/m/Y') }}</x-table.td>
 
-            {{-- HORÁRIO --}}
             <x-table.td>
                 {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }}
                 -
                 {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }}
             </x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 <span class="text-{{ $event->is_active ? 'success' : 'secondary' }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $event->is_active ? 'Ativo' : 'Inativo' }}
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button

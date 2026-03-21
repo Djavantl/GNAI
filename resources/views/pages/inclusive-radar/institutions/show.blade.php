@@ -11,7 +11,6 @@
         ]" />
     </div>
 
-    {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes da Instituição</h2>
@@ -34,12 +33,10 @@
 
     <div class="mt-3">
         <x-show.display-card>
-            {{-- ROW PRINCIPAL --}}
             <div class="row g-0">
-
-                {{-- LADO ESQUERDO --}}
                 <div class="col-lg-5 border-end">
-                    <x-forms.section title="1. Informações Gerais" />
+
+                    <x-forms.section title="Informações Gerais" />
 
                     <div class="row g-3 mb-0">
                         <x-show.info-item label="Nome da Instituição" column="col-12" isBox="true">
@@ -71,7 +68,7 @@
                         </x-show.info-item>
                     </div>
 
-                    <x-forms.section title="2. Configurações do Mapa" />
+                    <x-forms.section title="Configurações do Mapa" />
 
                     <div class="row g-3 mb-0">
                         <x-show.info-item label="Zoom Padrão" column="col-12" isBox="true">
@@ -88,9 +85,9 @@
                     </div>
                 </div>
 
-                {{-- LADO DIREITO — MAPA --}}
                 <div class="col-lg-7 bg-light">
-                    <x-forms.section title="3. Localização no Mapa" id="map-section-title" />
+
+                    <x-forms.section title="Localização no Mapa" id="map-section-title" />
 
                     <div class="sticky-top" style="top:20px; z-index:1;">
                         <section aria-labelledby="map-section-title">
@@ -105,10 +102,8 @@
                         </section>
                     </div>
                 </div>
+            </div>
 
-            </div> {{-- fim row principal --}}
-
-            {{-- RODAPÉ DE AÇÕES --}}
             <div class="col-12 border-top d-flex justify-content-between align-items-center bg-light no-print mt-4 p-4">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $institution->id }}
@@ -124,6 +119,7 @@
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+
                     <x-buttons.link-button :href="route('inclusive-radar.institutions.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>

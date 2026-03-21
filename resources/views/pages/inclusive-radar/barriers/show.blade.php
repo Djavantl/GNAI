@@ -35,7 +35,7 @@
             <div class="row g-0">
                 <div class="col-lg-5 border-end">
 
-                    <x-forms.section title="1. Detalhes da Ocorrência" class="mx-n4" />
+                    <x-forms.section title="Detalhes da Ocorrência" class="mx-n4" />
 
                     <div class="px-4">
                         <div class="row g-3">
@@ -158,7 +158,7 @@
 
                 <div class="col-lg-7 bg-light">
 
-                    <x-forms.section title="2. Localização no Mapa"/>
+                    <x-forms.section title="Localização no Mapa"/>
 
                     <div style="position: relative;">
                         <x-show.maps.barrier
@@ -178,7 +178,7 @@
                         @endif
                     </div>
 
-                    <x-forms.section title="3. Histórico de Vistorias"/>
+                    <x-forms.section title="Histórico de Vistorias"/>
 
                     <div class="px-4 pb-4 mt-3">
                         <div class="history-timeline custom-scrollbar p-3 border border-secondary-subtle rounded bg-white"

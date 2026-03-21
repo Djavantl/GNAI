@@ -4,12 +4,10 @@
 >
     @forelse($institutions as $inst)
         <tr>
-            {{-- NOME --}}
             <x-table.td>
                 {{ $inst->name }}
             </x-table.td>
 
-            {{-- LOCALIZAÇÃO --}}
             <x-table.td>
                 {{ $inst->city }} - {{ $inst->state }}
             </x-table.td>
@@ -20,13 +18,11 @@
                     $statusLabel = $inst->is_active ? 'Ativo' : 'Inativo';
                 @endphp
 
-                {{-- Status da instituição seguindo o padrão Clean & Bold do sistema --}}
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button

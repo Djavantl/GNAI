@@ -18,6 +18,7 @@
             <h1 class="text-title h2">Editar Registro da Agenda</h1>
             <p class="text-muted mb-0">Atualize as informações do evento ou compromisso na agenda institucional.</p>
         </header>
+
         <div>
             <x-buttons.link-button
                 href="{{ route('inclusive-radar.institutional-events.index') }}"
@@ -158,7 +159,7 @@
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit" aria-label="Salvar alterações">
-                    <i class="fas fa-save me-1" aria-hidden="true"></i> Atualizar
+                    <i class="fas fa-save me-1" aria-hidden="true"></i> Salvar
                 </x-buttons.submit-button>
             </div>
         </x-forms.form-card>

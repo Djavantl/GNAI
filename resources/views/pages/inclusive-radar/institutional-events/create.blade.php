@@ -18,6 +18,7 @@
             <h1 class="text-title h2">Novo Registro na Agenda</h1>
             <p class="text-muted mb-0">Cadastre eventos ou compromissos para a agenda institucional.</p>
         </header>
+
         <div>
             <x-buttons.link-button
                 href="{{ route('inclusive-radar.institutional-events.index') }}"
