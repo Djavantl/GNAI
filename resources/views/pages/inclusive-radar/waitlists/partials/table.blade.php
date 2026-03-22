@@ -1,7 +1,6 @@
 <x-table.table :headers="['Item', 'Beneficiário', 'Data Solicitação', 'Status', 'Usuário', 'Ações']">
     @forelse($waitlists as $waitlist)
         <tr>
-            {{-- ITEM --}}
             <x-table.td>
                 @php
                     $resourceRoute = match($waitlist->waitlistable_type) {
@@ -15,7 +14,6 @@
                 </a>
             </x-table.td>
 
-            {{-- BENEFICIÁRIO --}}
             <x-table.td>
                 @if($waitlist->student)
                     {{ $waitlist->student->person->name }}
@@ -27,28 +25,23 @@
                 @endif
             </x-table.td>
 
-            {{-- DATA SOLICITAÇÃO --}}
             <x-table.td>{{ $waitlist->requested_at->format('d/m/Y') }}</x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 @php
                     $currentStatus = \App\Enums\InclusiveRadar\WaitlistStatus::tryFrom($waitlist->status);
                     $statusColor = $currentStatus?->color() ?? 'secondary';
                 @endphp
 
-                {{-- Status em texto puro, negrito e caixa alta para manter o padrão visual do sistema --}}
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $currentStatus?->label() ?? $waitlist->status }}
                 </span>
             </x-table.td>
 
-            {{-- USUÁRIO RESPONSÁVEL --}}
             <x-table.td>
                 {{ $waitlist->user->name ?? '—' }}
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button

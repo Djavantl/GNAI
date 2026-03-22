@@ -8,14 +8,16 @@
             'Home' => route('dashboard'),
             'Empréstimos' => route('inclusive-radar.loans.index'),
             'Cadastrar' => null
-        ]" />
+            ]"
+        />
     </div>
 
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Registrar Novo Empréstimo</h2>
-            <p class="text-muted">Vincule um recurso de acessibilidade a um estudante e defina os prazos de devolução.</p>
+            <p class="text-muted">Vincule um recurso de acessibilidade a um beneficiário e defina os prazos de devolução.</p>
         </div>
+
         <div>
             <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
@@ -38,7 +40,6 @@
         <x-forms.form-card action="{{ route('inclusive-radar.loans.store') }}" method="POST">
             @csrf
 
-            {{-- SEÇÃO 1: Recurso Solicitado --}}
             <x-forms.section title="Seleção do Recurso" />
 
             <div class="col-md-6">
@@ -49,10 +50,10 @@
                     required
                     aria-controls="loanable_id"
                     :options="[
-                        'assistive_technology' => 'Tecnologia Assistiva',
-                        'accessible_educational_material' => 'Material Pedagógico'
-                    ]"
-                    :selected="old('loanable_type') ?? $selectedItemType"
+                    'assistive_technology' => 'Tecnologia Assistiva',
+                    'accessible_educational_material' => 'Material Pedagógico'
+                ]"
+                    :selected="old('loanable_type', $selectedItemType)"
                 />
             </div>
 
@@ -68,7 +69,6 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO 2: Envolvidos --}}
             <x-forms.section title="Beneficiário e Responsável" />
 
             <div class="col-md-6">
@@ -76,9 +76,8 @@
                     name="student_id"
                     id="student_id"
                     label="Estudante (Beneficiário)"
-                    required
-                    :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person->name . ' (' . $s->registration . ')'])"
-                    :selected="old('student_id') ?? $selectedStudentId"
+                    :options="$students"
+                    :selected="old('student_id', $selectedStudentId)"
                 />
             </div>
 
@@ -87,13 +86,11 @@
                     name="professional_id"
                     id="professional_id"
                     label="Profissional (Beneficiário)"
-                    required
-                    :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name . ' - ' . $p->registration])"
-                    :selected="old('professional_id') ?? $selectedProfessionalId"
+                    :options="$professionals"
+                    :selected="old('professional_id', $selectedProfessionalId)"
                 />
             </div>
 
-            {{-- USUÁRIO AUTENTICADO --}}
             <div class="col-md-12">
                 <x-forms.input
                     name="user_id_display"
@@ -104,7 +101,6 @@
                 <input type="hidden" name="user_id" value="{{ $authUser->id }}">
             </div>
 
-            {{-- SEÇÃO 3: Prazos e Condições --}}
             <x-forms.section title="Prazos e Observações" />
 
             <div class="col-md-6">
@@ -138,7 +134,6 @@
                 />
             </div>
 
-            {{-- Ações --}}
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.loans.index') }}" variant="secondary">
                     <i class="fas fa-times"></i> Cancelar
@@ -148,7 +143,6 @@
                     <i class="fas fa-save me-1"></i> Cadastrar
                 </x-buttons.submit-button>
             </div>
-
         </x-forms.form-card>
     </div>
 
@@ -158,7 +152,7 @@
                 'assistive_technology': @json($assistive_technologies),
                 'accessible_educational_material': @json($educational_materials)
             },
-            targetId: "{{ old('loanable_id') ?? $selectedItemId }}"
+            targetId: "{{ old('loanable_id', $selectedItemId) }}"
         };
     </script>
 

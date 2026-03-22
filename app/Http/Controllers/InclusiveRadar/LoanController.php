@@ -64,33 +64,44 @@ class LoanController extends Controller
         $selectedItemId         = $request->query('item_id');
         $selectedItemType       = $request->query('item_type');
 
-        $students = Student::with('person')->get()->sortBy('person.name');
-        $professionals = Professional::with('person')->get()->sortBy('person.name');
+        $students = Student::with('person')
+            ->get()
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($s) => [
+                $s->id => $s->person?->name . " ({$s->registration})"
+            ]);
+
+        $professionals = Professional::with('person')
+            ->get()
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($p) => [
+                $p->id => $p->person?->name . " - " . $p->registration
+            ]);
 
         $assistiveTechnologies = AssistiveTechnology::where('is_active', true)
             ->where('is_loanable', true)
+            ->where('status', ResourceStatus::AVAILABLE)
             ->get()
-            ->filter(fn($item) => $item->status === ResourceStatus::AVAILABLE)
             ->filter(fn($item) => $item->is_digital || ($item->quantity_available ?? 0) > 0)
             ->map(fn($item) => [
-                'id' => $item->id,
-                'name' => $item->name,
-                'asset_code' => $item->asset_code ?? 'S/N',
-                'is_digital' => (bool)$item->is_digital,
+                'id'                 => $item->id,
+                'name'               => $item->name,
+                'asset_code'         => $item->asset_code ?? 'S/N',
+                'is_digital'         => (bool)$item->is_digital,
                 'quantity_available' => $item->quantity_available,
             ])
             ->values();
 
         $educationalMaterials = AccessibleEducationalMaterial::where('is_active', true)
             ->where('is_loanable', true)
+            ->where('status', ResourceStatus::AVAILABLE)
             ->get()
-            ->filter(fn($item) => $item->status === ResourceStatus::AVAILABLE)
             ->filter(fn($item) => $item->is_digital || ($item->quantity_available ?? 0) > 0)
             ->map(fn($item) => [
-                'id' => $item->id,
-                'name' => $item->name,
-                'asset_code' => $item->asset_code ?? 'S/N',
-                'is_digital' => (bool)$item->is_digital,
+                'id'                 => $item->id,
+                'name'               => $item->name,
+                'asset_code'         => $item->asset_code ?? 'S/N',
+                'is_digital'         => (bool)$item->is_digital,
                 'quantity_available' => $item->quantity_available,
             ])
             ->values();
@@ -131,32 +142,44 @@ class LoanController extends Controller
             'loanable',
             'student.person',
             'professional.person',
+            'user'
         ]);
 
-        $authUser = auth()->user();
+        $currentStatus = $loan->status instanceof LoanStatus
+            ? $loan->status
+            : LoanStatus::tryFrom($loan->status);
 
-        return view(
-            'pages.inclusive-radar.loans.show',
-            compact('loan', 'authUser')
-        );
+        $isOverdue = ($currentStatus === LoanStatus::ACTIVE && $loan->due_date->isPast());
+
+        $statusLabel = $isOverdue ? 'Em Atraso' : ($currentStatus?->label() ?? $loan->status);
+        $statusColor = $isOverdue ? 'danger' : ($currentStatus?->color() ?? 'secondary');
+
+        return view('pages.inclusive-radar.loans.show', [
+            'loan'        => $loan,
+            'statusLabel' => $statusLabel,
+            'statusColor' => $statusColor,
+            'isOverdue'   => $isOverdue,
+            'authUser'    => auth()->user(),
+        ]);
     }
 
     public function edit(Loan $loan): View
     {
         $students = Student::with('person')
             ->get()
-            ->sortBy('person.name');
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($s) => [
+                $s->id => $s->person?->name . " ({$s->registration})"
+            ]);
 
         $professionals = Professional::with('person')
             ->get()
-            ->sortBy('person.name');
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($p) => [
+                $p->id => $p->person?->name . " - " . $p->registration
+            ]);
 
-        $loan->load([
-            'loanable',
-            'student.person',
-            'professional.person'
-        ]);
-
+        $loan->load(['loanable', 'student.person', 'professional.person']);
         $authUser = auth()->user();
 
         return view('pages.inclusive-radar.loans.edit', compact(

@@ -11,7 +11,6 @@
     ]" />
     </div>
 
-    {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes da Fila de Espera</h2>
@@ -32,7 +31,6 @@
     <div class="mt-3">
         <div class="custom-table-card bg-white shadow-sm">
 
-            {{-- SEÇÃO 1: Recurso Solicitado --}}
             <x-forms.section title="Recurso Solicitado" />
 
             <div class="col-md-12 mb-4 px-4">
@@ -47,7 +45,6 @@
                                 $type = $waitlist->waitlistable_type;
                                 $id = $waitlist->waitlistable_id;
 
-                                // Lógica de rota usando os aliases do MorphMap
                                 $resourceRoute = match($type) {
                                     'assistive_technology'            => route('inclusive-radar.assistive-technologies.show', $id),
                                     'accessible_educational_material' => route('inclusive-radar.accessible-educational-materials.show', $id),
@@ -68,8 +65,8 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO 2: Beneficiário e Usuário --}}
             <x-forms.section title="Beneficiário e Usuário Responsável" />
+
             <div class="row g-3 mb-4">
                 <x-show.info-item label="Estudante (Beneficiário)" column="col-md-6" isBox="true">
                     {{ $waitlist->student->person->name ?? '---' }}
@@ -84,38 +81,31 @@
                 </x-show.info-item>
             </div>
 
-            {{-- SEÇÃO 3: Datas e Status --}}
             <x-forms.section title="Status e Datas" />
+
             <div class="row g-3 mb-4">
                 <x-show.info-item label="Data da Solicitação" column="col-md-6" isBox="true">
                     {{ $waitlist->requested_at->format('d/m/Y H:i') }}
                 </x-show.info-item>
 
-                @php
-                    $currentStatus = $waitlist->status instanceof \App\Enums\InclusiveRadar\WaitlistStatus
-                        ? $waitlist->status
-                        : \App\Enums\InclusiveRadar\WaitlistStatus::tryFrom($waitlist->status);
-
-                    $statusColor = $currentStatus?->color() ?? 'secondary';
-                @endphp
-
-                {{-- Status da solicitação seguindo o padrão minimalista de TA: Negrito + Uppercase --}}
                 <x-show.info-item label="Status da Solicitação" column="col-md-6" isBox="true">
                     <span class="text-{{ $statusColor }} fw-bold text-uppercase">
-                        {{ $currentStatus?->label() ?? $waitlist->status }}
+                        {{ $statusLabel }}
                     </span>
                 </x-show.info-item>
             </div>
 
-            {{-- SEÇÃO 4: Observações --}}
             <x-forms.section title="Observações" />
+
             <div class="row g-3 mb-4">
-                <x-show.info-item label="Observações" column="col-md-12" isBox="true">
-                    {{ $waitlist->observation ?? '---' }}
-                </x-show.info-item>
+                <x-show.info-textarea
+                    label="Observações"
+                    column="col-md-12"
+                    :value="$waitlist->observation ?? '---'"
+                    :rich="true"
+                />
             </div>
 
-            {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $waitlist->id }}
@@ -123,14 +113,11 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    @if($currentStatus === \App\Enums\InclusiveRadar\WaitlistStatus::WAITING)
+                    @if($canCancel)
                         <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja cancelar esta solicitação?')"
-                            >
+                            <x-buttons.submit-button variant="danger" onclick="return confirm('Deseja cancelar?')">
                                 <i class="fas fa-times"></i> Cancelar
                             </x-buttons.submit-button>
                         </form>
@@ -152,7 +139,6 @@
                     </x-buttons.link-button>
                 </div>
             </div>
-
         </div>
     </div>
 

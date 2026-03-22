@@ -26,6 +26,7 @@
                 variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+
             <x-buttons.link-button
                 :href="route('inclusive-radar.barrier-categories.index')"
                 variant="secondary">
@@ -40,21 +41,16 @@
             <x-forms.section title="Informações da Categoria" />
 
             <div class="row g-3 mb-4">
-
                 <x-show.info-item label="Nome da Categoria" column="col-md-12" isBox="true">
                     {{ $barrierCategory->name }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Descrição Detalhada" column="col-md-12" isBox="true">
-                    {{ $barrierCategory->description ?: '— Não informada —' }}
-                </x-show.info-item>
-
+                <x-show.info-textarea label="Descrição Detalhada" column="col-md-12" :value="$barrierCategory->description ?: '— Não informada —'" :rich="true"/>
             </div>
 
             <x-forms.section title="Status e Visibilidade" />
 
             <div class="row g-3 mb-4">
-
                 <x-show.info-item label="Ativo no Sistema" column="col-6" isBox="true">
                     {{ $barrierCategory->is_active ? 'Sim' : 'Não' }}
                 </x-show.info-item>
@@ -62,7 +58,6 @@
                 <x-show.info-item label="Mapa se Aplica" column="col-6" isBox="true">
                     {{ !$barrierCategory->blocks_map ? 'Sim' : 'Não' }}
                 </x-show.info-item>
-
             </div>
 
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">

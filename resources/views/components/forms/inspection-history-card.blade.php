@@ -41,12 +41,13 @@
 
                 @if($inspection->description)
                     <div class="mt-3">
-                        <span class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1;">
-                            Parecer Técnico
+                        <span class="d-block text-muted uppercase fw-bold mb-2" style="font-size: 0.65rem; line-height: 1; text-transform: uppercase;">
+                            Parecer Técnico / Descrição
                         </span>
-                        <p class="history-description-text mb-0" style="font-size: 0.85rem; color: #666;">
-                            {{ $inspection->description }}
-                        </p>
+
+                        <div class="history-description-text">
+                            {!! $inspection->description !!}
+                        </div>
                     </div>
                 @endif
             </div>

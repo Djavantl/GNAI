@@ -39,18 +39,25 @@ class LocationController extends Controller
 
     public function create(): View
     {
-        $institutions = Institution::with(['locations' => function ($query) {
-            $query->where('is_active', true)
-                ->orderBy('name');
-        }])
-            ->where('is_active', true)
+        $institutionsQuery = Institution::where('is_active', true)
             ->orderBy('name')
             ->get();
 
-        return view(
-            'pages.inclusive-radar.locations.create',
-            compact('institutions')
-        );
+        $institutionsOptions = $institutionsQuery->pluck('name', 'id');
+
+        $institutionsData = $institutionsQuery->mapWithKeys(fn($inst) => [
+            $inst->id => [
+                'latitude'     => $inst->latitude,
+                'longitude'    => $inst->longitude,
+                'default_zoom' => $inst->default_zoom ?? 16,
+            ]
+        ]);
+
+        return view('pages.inclusive-radar.locations.create', [
+            'institutions'        => $institutionsOptions,
+            'institutionsData'    => $institutionsData,
+            'selectedInstitution' => null,
+        ]);
     }
 
     public function store(LocationRequest $request): RedirectResponse
@@ -72,19 +79,28 @@ class LocationController extends Controller
 
     public function edit(Location $location): View
     {
-        $institutions = Institution::with([
-            'locations' => fn ($q) =>
-            $q->where('is_active', true)
-                ->orderBy('name')
-        ])
-            ->where('is_active', true)
+        $institutionsQuery = Institution::where('is_active', true)
             ->orderBy('name')
             ->get();
 
-        return view(
-            'pages.inclusive-radar.locations.edit',
-            compact('location', 'institutions')
-        );
+        $institutionsOptions = $institutionsQuery->pluck('name', 'id');
+
+        $institutionsData = $institutionsQuery->mapWithKeys(fn($inst) => [
+            $inst->id => [
+                'latitude'     => $inst->latitude,
+                'longitude'    => $inst->longitude,
+                'default_zoom' => $inst->default_zoom ?? 16,
+            ]
+        ]);
+
+        $selectedInstitution = $institutionsQuery->firstWhere('id', $location->institution_id);
+
+        return view('pages.inclusive-radar.locations.edit', [
+            'location'            => $location,
+            'institutions'        => $institutionsOptions,
+            'institutionsData'    => $institutionsData,
+            'selectedInstitution' => $selectedInstitution,
+        ]);
     }
 
     public function update(LocationRequest $request, Location $location): RedirectResponse

@@ -5,18 +5,18 @@
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
-        'Home' => route('dashboard'),
-        'Fila de Espera' => route('inclusive-radar.waitlists.index'),
-        'Cadastrar' => null
-    ]" />
+            'Home' => route('dashboard'),
+            'Fila de Espera' => route('inclusive-radar.waitlists.index'),
+            'Cadastrar' => null
+        ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Nova Solicitação de Fila</h2>
             <p class="text-muted">
-                Registre um estudante ou profissional na fila para um recurso indisponível. <br>
-                <strong>Importante:</strong> selecione apenas um: aluno ou profissional.
+                Registre um beneficiário para um recurso atualmente indisponível. <br>
+                <small class="text-purple-dark fw-bold">Selecione apenas um: aluno ou profissional.</small>
             </p>
         </div>
         <div>
@@ -26,25 +26,9 @@
         </div>
     </div>
 
-    @if($errors->any())
-        <div class="alert alert-danger border-0 shadow-sm mb-4">
-            <p class="font-weight-bold mb-1">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                Atenção: Existem erros no preenchimento.
-            </p>
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <div class="mt-3">
         <x-forms.form-card action="{{ route('inclusive-radar.waitlists.store') }}" method="POST">
-            @csrf
 
-            {{-- SEÇÃO 1: Recurso --}}
             <x-forms.section title="Seleção do Recurso" />
 
             <div class="col-md-6">
@@ -71,15 +55,14 @@
                 />
             </div>
 
-            {{-- SEÇÃO 2: Solicitante --}}
             <x-forms.section title="Solicitante" />
 
             <div class="col-md-6">
                 <x-forms.select
                     name="student_id"
                     id="student_id"
-                    label="Aluno"
-                    :options="$students->mapWithKeys(fn($s) => [$s->id => $s->person->name . ' (' . $s->registration . ')'])"
+                    label="Aluno (Beneficiário)"
+                    :options="$students"
                     :selected="old('student_id')"
                 />
             </div>
@@ -88,38 +71,35 @@
                 <x-forms.select
                     name="professional_id"
                     id="professional_id"
-                    label="Profissional"
-                    :options="$professionals->mapWithKeys(fn($p) => [$p->id => $p->person->name])"
+                    label="Profissional (Beneficiário)"
+                    :options="$professionals"
                     :selected="old('professional_id')"
                 />
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <x-forms.input
                     name="user_id_display"
-                    label="Usuário Responsável"
+                    label="Usuário Responsável pelo Registro"
                     :value="$authUser->name"
                     disabled
                 />
                 <input type="hidden" name="user_id" value="{{ $authUser->id }}">
             </div>
 
-            {{-- SEÇÃO 3: Observações --}}
             <x-forms.section title="Observações" />
 
             <div class="col-12">
                 <x-forms.textarea
                     name="observation"
-                    id="observation"
-                    label="Observações"
+                    label="Observações Adicionais"
                     :value="old('observation')"
-                    placeholder="Digite alguma observação sobre a solicitação (opcional)"
+                    placeholder="Relate o motivo da urgência ou detalhes da solicitação..."
                     rows="3"
                 />
             </div>
 
-            {{-- Ações --}}
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button href="{{ route('inclusive-radar.waitlists.index') }}" variant="secondary">
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
@@ -131,7 +111,6 @@
         </x-forms.form-card>
     </div>
 
-    {{-- Script para popular itens dinamicamente --}}
     <script>
         window.waitlistData = {
             items: {

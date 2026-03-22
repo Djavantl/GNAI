@@ -1,13 +1,10 @@
 <x-table.table :headers="['Nome', 'Instituição', 'Tipo', 'Status', 'Ações']" :records="$locations">
     @forelse($locations as $loc)
         <tr>
-            {{-- NOME --}}
             <x-table.td>{{ $loc->name ?? 'N/A' }}</x-table.td>
 
-            {{-- INSTITUIÇÃO --}}
             <x-table.td>{{ $loc->institution->name ?? 'N/A' }}</x-table.td>
 
-            {{-- TIPO --}}
             <x-table.td>{{ $loc->type ?? 'N/A' }}</x-table.td>
 
             <x-table.td>
@@ -16,13 +13,11 @@
                     $statusLabel = $loc->is_active ? 'Ativo' : 'Inativo';
                 @endphp
 
-                {{-- Status da localização seguindo o padrão Clean & Bold do sistema --}}
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button

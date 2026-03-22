@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use App\Enums\InclusiveRadar\WaitlistStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\WaitlistRequest;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
@@ -58,8 +59,15 @@ class WaitlistController extends Controller
 
     public function create(): View
     {
-        $students = Student::with('person')->get()->sortBy('person.name');
-        $professionals = Professional::with('person')->get()->sortBy('person.name');
+        $students = Student::with('person')
+            ->get()
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($s) => [$s->id => $s->person?->name . " ({$s->registration})"]);
+
+        $professionals = Professional::with('person')
+            ->get()
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($p) => [$p->id => $p->person?->name]);
 
         $assistive_technologies = AssistiveTechnology::get()
             ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
@@ -71,12 +79,13 @@ class WaitlistController extends Controller
             ->sortBy('name')
             ->values();
 
-        $authUser = auth()->user();
-
-        return view(
-            'pages.inclusive-radar.waitlists.create',
-            compact('students','professionals','assistive_technologies','educational_materials','authUser')
-        );
+        return view('pages.inclusive-radar.waitlists.create', [
+            'students'              => $students,
+            'professionals'         => $professionals,
+            'assistive_technologies' => $assistive_technologies,
+            'educational_materials'  => $educational_materials,
+            'authUser'               => auth()->user(),
+        ]);
     }
 
     public function store(WaitlistRequest $request): RedirectResponse
@@ -96,31 +105,41 @@ class WaitlistController extends Controller
 
     public function show(Waitlist $waitlist): View
     {
-        $waitlist->load(['waitlistable','student.person','professional.person','user']);
+        $waitlist->load(['waitlistable', 'student.person', 'professional.person', 'user']);
         $authUser = auth()->user();
+        $enumStatus = WaitlistStatus::tryFrom($waitlist->status);
 
-        return view('pages.inclusive-radar.waitlists.show', compact('waitlist','authUser'));
+        return view('pages.inclusive-radar.waitlists.show', [
+            'waitlist'    => $waitlist,
+            'authUser'    => $authUser,
+            'statusLabel' => $enumStatus?->label() ?? $waitlist->status,
+            'statusColor' => $enumStatus?->color() ?? 'secondary',
+            'canCancel'   => $waitlist->status === WaitlistStatus::WAITING->value,
+        ]);
     }
 
     public function edit(Waitlist $waitlist): View
     {
-        $waitlist->load(['waitlistable','student.person','professional.person','user']);
+        $waitlist->load(['waitlistable', 'student.person', 'professional.person', 'user']);
 
-        $students = Student::with('person')->get()->sortBy('person.name');
-        $professionals = Professional::with('person')->get()->sortBy('person.name');
+        $students = Student::with('person')->get()
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($s) => [$s->id => "{$s->person->name} ({$s->registration})"]);
 
-        $assistive_technologies = AssistiveTechnology::get()
-            ->sortBy('name');
+        $professionals = Professional::with('person')->get()
+            ->sortBy('person.name')
+            ->mapWithKeys(fn($p) => [$p->id => $p->person->name]);
 
-        $educational_materials = AccessibleEducationalMaterial::get()
-            ->sortBy('name');
+        $statusLabel = WaitlistStatus::tryFrom($waitlist->status)?->label()
+            ?? 'Status Indefinido';
 
-        $authUser = auth()->user();
-
-        return view(
-            'pages.inclusive-radar.waitlists.edit',
-            compact('waitlist','students','professionals','assistive_technologies','educational_materials','authUser')
-        );
+        return view('pages.inclusive-radar.waitlists.edit', [
+            'waitlist'      => $waitlist,
+            'students'      => $students,
+            'professionals' => $professionals,
+            'statusLabel'   => $statusLabel,
+            'authUser'      => auth()->user(),
+        ]);
     }
 
     public function update(WaitlistRequest $request, Waitlist $waitlist): RedirectResponse

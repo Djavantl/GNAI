@@ -40,9 +40,7 @@
                     <strong>{{ $feature->name }}</strong>
                 </x-show.info-item>
 
-                <x-show.info-item label="Descrição Detalhada" column="col-md-12" isBox="true">
-                    {{ $feature->description ?? '---' }}
-                </x-show.info-item>
+                <x-show.info-textarea label="Descrição Detalhada" column="col-md-12" :value="$feature->description ?: '---'" :rich="true"/>
             </div>
 
             <x-forms.section title="Configurações de Status" />

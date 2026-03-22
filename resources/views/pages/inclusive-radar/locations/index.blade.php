@@ -10,15 +10,12 @@
         ]" />
     </div>
 
-    {{-- CARD UNIFICADO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
 
-        {{-- HEADER --}}
         <x-table.page-header
             title="Pontos de Referência"
             subtitle="Gerencie os prédios, salas e locais específicos dentro de cada instituição."
         >
-            {{-- Botão de ação --}}
             <x-buttons.link-button
                 :href="route('inclusive-radar.locations.create')"
                 variant="new"
@@ -28,7 +25,6 @@
             </x-buttons.link-button>
         </x-table.page-header>
 
-        {{-- FILTROS --}}
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
@@ -45,11 +41,9 @@
             />
         </div>
 
-        {{-- TABELA --}}
         <div id="locations-table" class="p-3">
             @include('pages.inclusive-radar.locations.partials.table')
         </div>
-
     </div>
 
     @push('scripts')

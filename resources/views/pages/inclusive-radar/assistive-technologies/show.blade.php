@@ -44,9 +44,7 @@
                     {{ $assistiveTechnology->name }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Descrição Detalhada" column="col-md-12" isBox="true">
-                    {!! nl2br(e($assistiveTechnology->notes)) ?: '---' !!}
-                </x-show.info-item>
+                <x-show.info-textarea label="Descrição Detalhada" column="col-md-12" :value="$assistiveTechnology->notes ?: '---'" :rich="true"/>
 
                 <x-show.info-item label="Natureza do Recurso" column="col-md-6" isBox="true">
                     {{ $assistiveTechnology->is_digital ? 'Recurso Digital' : 'Recurso Físico' }}

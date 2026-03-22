@@ -48,11 +48,7 @@
                     {{ $event->title }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Descrição" column="col-md-12" isBox="true">
-                    <div class="text-dark">
-                        {!! nl2br(e($event->description)) ?: '<span class="text-muted">Nenhuma descrição fornecida.</span>' !!}
-                    </div>
-                </x-show.info-item>
+                <x-show.info-textarea label="Descrição" column="col-md-12" :value="$event->description ?: 'Nenhuma descrição fornecida.'" :rich="true"/>
 
                 <x-show.info-item label="Data de Início" column="col-md-6" isBox="true">
                     {{ $event->start_date?->format('d/m/Y') }}

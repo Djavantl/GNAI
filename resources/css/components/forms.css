@@ -110,8 +110,39 @@ form .col-12:not(.mb-4) { /* Aplica padding apenas onde não é seção */
     color: #4a5568;
     line-height: 1.5;
     background-color: #f8fafc;
-    padding: 8px 12px;
+    padding: 10px 15px;
     border-left: 3px solid #4D44B5;
+    margin-bottom: 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.history-description-text p:first-child,
+.history-description-text ul:first-child,
+.history-description-text ol:first-child {
+    margin-top: 0;
+}
+
+.history-description-text p:last-child,
+.history-description-text ul:last-child,
+.history-description-text ol:last-child {
+    margin-bottom: 0;
+}
+
+.history-description-text p {
+    margin-bottom: 0.5rem;
+}
+
+.history-description-text ul,
+.history-description-text ol {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+.history-description-text li {
+    margin-bottom: 0.25rem;
+}
+
+.history-description-text li:last-child {
     margin-bottom: 0;
 }
 
@@ -130,32 +161,29 @@ form .col-12:not(.mb-4) { /* Aplica padding apenas onde não é seção */
     width: 100%;
     min-height: 3rem;
     padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    color: var(--text-purple-dark);
+    background-color: #fbf9fc;
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
-    background-color: #fbf9fc;
-    line-height: 1.6;
+    color: var(--text-purple-dark);
 }
 
 .custom-display-box-textarea {
+    display: block;
     width: 100%;
-    min-height: 3rem;
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    color: var(--text-purple-dark);
+    min-height: 3.5rem;
+    height: auto;
+    padding: 0.75rem 1rem;
+    background-color: #fbf9fc;
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
-    background-color: #fbf9fc;
+    color: var(--text-purple-dark);
     line-height: 1.6;
     word-wrap: break-word;
 }
 
-.custom-display-box-textarea {
-    min-height: 250px;
-    max-height: 700px;
-    overflow-y: auto;
-    line-height: 1.6;
+.custom-display-box-textarea p {
+    margin-bottom: 1rem;
+    display: block;
 }
 
 .custom-display-box-textarea p {

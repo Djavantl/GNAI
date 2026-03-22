@@ -67,14 +67,10 @@
                             </x-show.info-item>
 
                             @if($barrier->location_specific_details)
-                                <x-show.info-item label="Complemento" column="col-12" isBox="true">
-                                    {{ $barrier->location_specific_details }}
-                                </x-show.info-item>
+                                <x-show.info-textarea label="Complemento" column="col-12" :value="$barrier->location_specific_details" :rich="true"/>
                             @endif
 
-                            <x-show.info-item label="Descrição Detalhada" column="col-12" isBox="true">
-                                {{ $barrier->description ?: 'Sem descrição detalhada.' }}
-                            </x-show.info-item>
+                            <x-show.info-textarea label="Descrição Detalhada" column="col-12" :value="$barrier->description ?: 'Sem descrição detalhada.'" :rich="true"/>
                         </div>
                     </div>
 

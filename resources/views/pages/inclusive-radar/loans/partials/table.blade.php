@@ -4,10 +4,8 @@
 >
     @forelse($loans as $loan)
         <tr>
-            {{-- ITEM --}}
             <x-table.td>{{ $loan->loanable->name ?? ($loan->loanable->title ?? 'Item Removido') }}</x-table.td>
 
-            {{-- BENEFICIÁRIO --}}
             <x-table.td>
                 @if($loan->student)
                     {{ $loan->student->person->name }}
@@ -19,14 +17,12 @@
                 @endif
             </x-table.td>
 
-            {{-- PRAZO ENTREGA --}}
             <x-table.td>
                 <span class="{{ $loan->status === 'active' && $loan->due_date->isPast() ? 'text-danger fw-bold' : '' }}">
                     {{ $loan->due_date->format('d/m/Y') }}
                 </span>
             </x-table.td>
 
-            {{-- STATUS --}}
             <x-table.td>
                 @php
                     $currentStatus = $loan->status instanceof \App\Enums\InclusiveRadar\LoanStatus
@@ -40,16 +36,13 @@
                     $statusColor = $isOverdue ? 'danger' : ($currentStatus?->color() ?? 'secondary');
                 @endphp
 
-                {{-- Padronização TA: Texto puro, negrito, colorido e em caixa alta --}}
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>
 
-            {{-- USUÁRIO RESPONSÁVEL --}}
             <x-table.td>{{ $loan->user->name ?? '—' }}</x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button

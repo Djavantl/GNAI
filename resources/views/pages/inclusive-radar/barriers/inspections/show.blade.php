@@ -40,9 +40,7 @@
                     {{ $inspection->type?->label() ?? '---' }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Parecer Técnico / Descrição" column="col-12" isBox="true">
-                    {!! nl2br(e($inspection->description)) ?: '<span class="text-muted small">Nenhum parecer técnico registrado.</span>' !!}
-                </x-show.info-item>
+                <x-show.info-textarea label="Parecer Técnico / Descrição" column="col-12" :value="$inspection->description ?: 'Nenhum parecer técnico registrado.'" :rich="true"/>
             </div>
 
             <x-forms.section title="Evidências Visuais" />
