@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Http\Controllers\Concerns\ResolvesBackRoute;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\InstitutionalEventRequest;
 use App\Models\InclusiveRadar\InstitutionalEvent;
 use App\Services\InclusiveRadar\InstitutionalEventService;
+
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InstitutionalEventController extends Controller
@@ -17,7 +20,7 @@ class InstitutionalEventController extends Controller
     use ResolvesBackRoute;
 
     public function __construct(
-        protected InstitutionalEventService $service
+        private InstitutionalEventService $service
     ) {}
 
     public function index(Request $request): View
@@ -90,4 +93,17 @@ class InstitutionalEventController extends Controller
                 ->with('error', $e->getMessage());
         }
     }
+
+    public function generatePdf(InstitutionalEvent $event)
+    {
+        $pdf = Pdf::loadView(
+            'pages.inclusive-radar.institutional-events.pdf',
+            compact('event')
+        )
+            ->setPaper('a4', 'portrait')
+            ->setOption(['enable_php' => true]);
+
+        return $pdf->stream("Evento_{$event->id}.pdf");
+    }
+
 }

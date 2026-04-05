@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\InstitutionRequest;
 use App\Models\InclusiveRadar\Institution;
 use App\Services\InclusiveRadar\InstitutionService;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,7 +14,7 @@ use Illuminate\View\View;
 class InstitutionController extends Controller
 {
     public function __construct(
-        protected InstitutionService $service,
+        private InstitutionService $service,
     ) {}
 
     public function index(Request $request): View

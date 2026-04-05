@@ -78,7 +78,7 @@
                     {{ $event->organizer ?: '-' }}
                 </x-show.info-item>
 
-                <x-show.info-item label="Público Alvo" column="col-md-12" isBox="true">
+                <x-show.info-item label="Ouvintes" column="col-md-12" isBox="true">
                     {{ $event->audience ?: '-' }}
                 </x-show.info-item>
             </div>
@@ -95,6 +95,7 @@
             <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $event->id }}
+                    <x-buttons.pdf-button :href="route('inclusive-radar.institutional-events.pdf', $event)" class="ms-1" />
                 </div>
 
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão do registro">

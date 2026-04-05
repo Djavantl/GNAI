@@ -119,7 +119,7 @@ class BarrierSeeder extends Seeder
                     'resolved_at' => null,
                     'priority' => Priority::HIGH->value,
                     'is_active' => true,
-                    'is_anonymous' => false,
+                    'is_anonymous' => true,
                     'deficiencies' => ['Física','Intelectual'],
                     'inspections' => [
                         ['status' => BarrierStatus::IDENTIFIED, 'date' => Carbon::create(2025,6,26), 'type' => InspectionType::INITIAL],
@@ -141,6 +141,8 @@ class BarrierSeeder extends Seeder
                     'is_active' => true,
                     'is_anonymous' => false,
                     'deficiencies' => ['Auditiva','Intelectual','Psicossocial'],
+                    'affected_student_name' => 'Djavan', // tentamos vincular
+                    'affected_professional_name' => 'Jo', // tentamos vincular
                     'inspections' => [
                         ['status' => BarrierStatus::IDENTIFIED, 'date' => Carbon::create(2025,11,21), 'type' => InspectionType::INITIAL],
                         ['status' => BarrierStatus::UNDER_ANALYSIS, 'date' => Carbon::create(2025,12,21), 'type' => InspectionType::PERIODIC],

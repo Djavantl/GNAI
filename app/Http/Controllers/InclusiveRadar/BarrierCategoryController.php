@@ -6,14 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\BarrierCategoryRequest;
 use App\Models\InclusiveRadar\BarrierCategory;
 use App\Services\InclusiveRadar\BarrierCategoryService;
+
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class BarrierCategoryController extends Controller
 {
     public function __construct(
-        protected BarrierCategoryService $service
+        private BarrierCategoryService $service
     ) {}
 
     public function index(Request $request): View|string

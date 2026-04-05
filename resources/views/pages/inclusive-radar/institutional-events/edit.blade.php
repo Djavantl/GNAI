@@ -132,7 +132,7 @@
             <div class="col-md-12">
                 <x-forms.input
                     name="audience"
-                    label="Público Alvo"
+                    label="Ouvintes"
                     placeholder="Ex: Professores, Equipe Administrativa"
                     :value="$event->audience"
                 />

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Enums\InclusiveRadar\WaitlistStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\WaitlistRequest;
@@ -11,15 +13,15 @@ use App\Models\InclusiveRadar\Waitlist;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Services\InclusiveRadar\WaitlistService;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
+
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class WaitlistController extends Controller
 {
     public function __construct(
-        protected WaitlistService $service
+        private WaitlistService $service
     ) {}
 
     public function index(Request $request): View

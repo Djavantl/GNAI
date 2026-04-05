@@ -4,9 +4,10 @@ namespace App\Http\Controllers\InclusiveRadar;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LocationRequest;
-use App\Models\InclusiveRadar\Location;
 use App\Models\InclusiveRadar\Institution;
+use App\Models\InclusiveRadar\Location;
 use App\Services\InclusiveRadar\LocationService;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,7 +15,7 @@ use Illuminate\View\View;
 class LocationController extends Controller
 {
     public function __construct(
-        protected LocationService $service,
+        private LocationService $service,
     ) {}
 
     public function index(Request $request)

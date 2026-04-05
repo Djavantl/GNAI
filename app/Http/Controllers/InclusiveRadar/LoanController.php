@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Enums\InclusiveRadar\LoanStatus;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LoanRequest;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\InclusiveRadar\{Loan, AccessibleEducationalMaterial, AssistiveTechnology};
-use App\Models\SpecializedEducationalSupport\{Student, Professional};
+use App\Models\InclusiveRadar\{AccessibleEducationalMaterial, AssistiveTechnology, Loan};
+use App\Models\SpecializedEducationalSupport\{Professional, Student};
 use App\Services\InclusiveRadar\LoanService;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class LoanController extends Controller
 {
     public function __construct(
-        protected LoanService $service
+        private LoanService $service
     ) {}
 
     public function index(Request $request): View

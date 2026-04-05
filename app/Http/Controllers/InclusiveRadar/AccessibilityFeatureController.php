@@ -6,14 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\AccessibilityFeatureRequest;
 use App\Models\InclusiveRadar\AccessibilityFeature;
 use App\Services\InclusiveRadar\AccessibilityFeatureService;
-use Illuminate\Http\Request;
+
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AccessibilityFeatureController extends Controller
 {
     public function __construct(
-        protected AccessibilityFeatureService $service
+        private AccessibilityFeatureService $service
     ) {}
 
     public function index(Request $request): View

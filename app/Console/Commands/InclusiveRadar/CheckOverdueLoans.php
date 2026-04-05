@@ -17,7 +17,7 @@ class CheckOverdueLoans extends Command
     {
         // Pega todos os empréstimos ativos cuja data de entrega já passou
         $overdueLoans = Loan::where('status', LoanStatus::ACTIVE)
-            ->where('due_date', '<', now()->startOfDay())
+            ->where('due_date', '<=', today())
             ->get();
 
         if ($overdueLoans->isEmpty()) {

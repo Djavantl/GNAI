@@ -121,10 +121,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [AssistiveTechnologyController::class, 'generatePdf'])
         ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/excel', [AssistiveTechnologyController::class, 'exportExcel'])
-        ->name('assistive-technologies.excel')->middleware('can:assistive-technology.excel');
-
-
     Route::get('/assistive-technologies/{assistiveTechnology}/logs', [AssistiveTechnologyLogController::class, 'index'])
         ->name('assistive-technologies.logs')
         ->middleware('can:assistive-technology.logs');
@@ -218,6 +214,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/institutional-events/{event}', [InstitutionalEventController::class, 'destroy'])
         ->name('institutional-events.destroy')->middleware('can:institutional-event.destroy');
+
+    Route::get('/institutional-events/{event}/pdf', [InstitutionalEventController::class, 'generatePdf'])
+        ->name('institutional-events.pdf')->middleware('can:institutional-event.pdf');
 
 
     // ------------------- EMPRÉSTIMOS -------------------

@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Enums\Priority;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\BarrierRequest;
 use App\Models\InclusiveRadar\{Barrier, BarrierCategory, Inspection, Institution};
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\SpecializedEducationalSupport\{Deficiency, Professional, Student};
 use App\Services\InclusiveRadar\BarrierService;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,7 +19,7 @@ use Illuminate\View\View;
 class BarrierController extends Controller
 {
     public function __construct(
-        protected BarrierService $service
+        private BarrierService $service
     ) {}
 
     public function index(Request $request): View

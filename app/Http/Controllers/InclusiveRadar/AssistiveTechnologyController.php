@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\InclusiveRadar;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ResourceStatus;
@@ -11,15 +13,15 @@ use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\Inspection;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
+
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AssistiveTechnologyController extends Controller
 {
     public function __construct(
-        protected AssistiveTechnologyService $service
+        private AssistiveTechnologyService $service
     ) {}
 
     public function index(Request $request): View

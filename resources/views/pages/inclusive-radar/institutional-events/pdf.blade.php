@@ -27,7 +27,7 @@
             <x-pdf.info-item label="Organizador" :value="$event->organizer ?: '---'" colspan="2" />
         </x-pdf.row>
         <x-pdf.row>
-            <x-pdf.info-item label="Público Alvo" :value="$event->audience ?: '---'" colspan="4" />
+            <x-pdf.info-item label="Ouvintes" :value="$event->audience ?: '---'" colspan="4" />
         </x-pdf.row>
     </x-pdf.table>
 
