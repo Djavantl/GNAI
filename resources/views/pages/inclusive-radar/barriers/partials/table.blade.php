@@ -1,19 +1,9 @@
-<x-table.table :headers="['Nome', 'Categoria', 'Relator', 'Prioridade', 'Status', 'Ações']" :records="$barriers">
+<x-table.table :headers="['Nome', 'Categoria', 'Prioridade', 'Status', 'Ações']" :records="$barriers">
     @forelse($barriers as $barrier)
         <tr>
-            {{-- NOME --}}
             <x-table.td>{{ $barrier->name }}</x-table.td>
 
-            {{-- CATEGORIA --}}
             <x-table.td>{{ $barrier->category?->name ?? '-' }}</x-table.td>
-
-            {{-- RELATOR --}}
-            <x-table.td>
-                {{ $barrier->is_anonymous ? 'Anônimo' : ($barrier->registeredBy?->name ?? 'Sistema') }}
-                @if($barrier->affected_person_role)
-                    <small class="text-muted d-block">{{ $barrier->affected_person_role }}</small>
-                @endif
-            </x-table.td>
 
             <x-table.td>
                 @php
@@ -36,7 +26,6 @@
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES --}}
             <x-table.td>
                 <x-table.actions>
                     <x-buttons.link-button
