@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\InclusiveRadar\DemoLoanWaitlistSeeder;
+use Database\Seeders\InclusiveRadar\InstitutionalEventSeeder;
 use Database\Seeders\InclusiveRadar\InstitutionSeeder;
 use Database\Seeders\InclusiveRadar\LocationSeeder;
 use Database\Seeders\InclusiveRadar\BarrierSeeder;
@@ -61,6 +63,8 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             AssistiveTechnologySeeder::class,
             BarrierSeeder::class,
+            InstitutionalEventSeeder::class,
+            DemoLoanWaitlistSeeder::class,
         ]);
     }
 }
