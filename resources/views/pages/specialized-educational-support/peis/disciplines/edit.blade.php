@@ -32,21 +32,19 @@
             <x-forms.section title="Identificação (Somente Leitura)" />
 
             <div class="col-md-6">
-                <x-forms.select
-                    name="discipline_display"
-                    label="Disciplina"
-                    :options="[$peiDiscipline->discipline_id => $peiDiscipline->discipline->name]"
-                    :selected="$peiDiscipline->discipline_id"
+                <x-forms.input
+                    name="teacher_display"
+                    label="Professor Responsável"
+                    value="{{ $peiDiscipline->teacher->person->name }}"
                     disabled
                 />
             </div>
 
             <div class="col-md-6">
-                <x-forms.select
-                    name="teacher_display"
-                    label="Professor Responsável"
-                    :options="[$peiDiscipline->teacher_id => $peiDiscipline->teacher->person->name]"
-                    :selected="$peiDiscipline->teacher_id"
+                <x-forms.input
+                    name="discipline_display"
+                    label="Disciplina"
+                    value="{{ $peiDiscipline->discipline->name }}"
                     disabled
                 />
             </div>

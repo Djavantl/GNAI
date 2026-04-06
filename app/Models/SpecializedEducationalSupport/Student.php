@@ -3,7 +3,7 @@
 namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\GlobalSearchable;
+use App\Models\Traits\Reportable;
 use App\Models\Traits\Auditable; 
 use App\Models\AuditLog;       
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -11,33 +11,21 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Student extends Model
 {
-    use GlobalSearchable;
+    use Reportable;
 
     protected $fillable = [
         'person_id',
         'registration',
-        'student_code',
         'entry_date',
         'status',
-        'education_level',
-        'modality',
-        'notes',
     ];
 
-    protected array $searchable = [
-        'registration',
-        'status',
-        'person.name',
-        'person.email',
-    ];
 
-    protected array $searchAliases = [
-        'ativo' => ['active'],
-        'trancado' => ['locked'],
-        'concluido' => ['completed'],
-        'concluído' => ['completed'],
-        'evadido' => ['dropped'],
-    ];
+    /*
+    |--------------------------------------------------------------------------
+    | Auditoria
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * Relacionamento de Logs
@@ -55,12 +43,8 @@ class Student extends Model
         return [
             'person_id'       => 'Pessoa/Usuário',
             'registration'    => 'Matrícula',
-            'student_code'    => 'Código do Aluno',
             'entry_date'      => 'Data de Ingresso',
             'status'          => 'Status Acadêmico',
-            'education_level' => 'Nível de Escolaridade',
-            'modality'        => 'Modalidade',
-            'notes'           => 'Observações',
         ];
     }
 
@@ -74,7 +58,6 @@ class Student extends Model
         }
 
         if ($field === 'person_id') {
-            // Tenta buscar o nome da pessoa para não mostrar apenas o ID
             return \App\Models\SpecializedEducationalSupport\Person::find($value)?->name ?? "ID: $value";
         }
 
@@ -82,32 +65,83 @@ class Student extends Model
             return \Carbon\Carbon::parse($value)->format('d/m/Y');
         }
 
-        return null; // Se retornar null, o sistema usa o valor original
+        return null;
     }
 
 
-    // Relacionamentos
+    /*
+    |--------------------------------------------------------------------------
+    | Configuração do Report Builder
+    |--------------------------------------------------------------------------
+    */
 
-    // pessoa
+    public static function getEmbeddedRelations(): array
+    {
+        return ['person'];
+    }
 
+    public static function getReportColumns(): ?array
+    {
+        return ['person.name', 'registration', 'status', 'entry_date', 'person.email', 'person.document', 'person.birth_date', 'person.gender', 'person.phone', 'person.address'];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'registration' => 'Matrícula',
+            'person.name'  => 'Nome do Aluno',
+            'entry_date'   => 'Data de Ingresso',
+            'person.email' => 'E-mail',
+            'person.document'=> 'CPF',
+            'person.birth_date'=> 'Data de Nascimento',
+            'person.gender'=> 'Gênero',
+            'person.phone'=> 'Telefone',
+            'person.address'=> 'Endereço',
+        ];
+    }
+
+    public static function getReportLabel()
+    {
+        return 'Alunos';
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Pessoa
+     */
     public function person()
     {
         return $this->belongsTo(Person::class);
     }
 
-    // responsaveis
-
+    /**
+     * Responsáveis
+     */
     public function guardians()
     {
         return $this->hasMany(Guardian::class);
     }
 
+    /**
+     * Documentos
+     */
     public function documents()
     {
         return $this->hasMany(StudentDocument::class);
     }
 
-    // Contexto educacional
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contexto Educacional
+    |--------------------------------------------------------------------------
+    */
 
     public function contexts()
     {
@@ -116,18 +150,21 @@ class Student extends Model
 
     public function currentContext()
     {
-        // Retorna apenas um registro onde is_current é verdadeiro
         return $this->hasOne(StudentContext::class)->where('is_current', true);
     }
 
-   // Deficiências do aluno
+
+    /*
+    |--------------------------------------------------------------------------
+    | Deficiências do Aluno
+    |--------------------------------------------------------------------------
+    */
 
     public function deficiencies()
     {
         return $this->belongsToMany(Deficiency::class, 'students_deficiencies')
-            ->using(StudentDeficiencies::class) // pivot model
+            ->using(StudentDeficiencies::class)
             ->withPivot([
-                'id',
                 'severity',
                 'uses_support_resources',
                 'notes'
@@ -135,10 +172,24 @@ class Student extends Model
             ->withTimestamps();
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | PEI
+    |--------------------------------------------------------------------------
+    */
+
     public function peis()
     {
         return $this->hasMany(Pei::class, 'student_id');
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cursos
+    |--------------------------------------------------------------------------
+    */
 
     public function studentCourses()
     {
@@ -155,7 +206,9 @@ class Student extends Model
         );
     }
 
-    // Cursos do aluno 
+    /**
+     * Cursos do aluno
+     */
     public function courses()
     {
         return $this->belongsToMany(
@@ -166,7 +219,9 @@ class Student extends Model
         ->withTimestamps();
     }
 
-    // Curso atual do aluno
+    /**
+     * Curso atual do aluno
+     */
     public function currentCourse()
     {
         return $this->hasOne(StudentCourse::class)
@@ -174,7 +229,12 @@ class Student extends Model
             ->with('course');
     }
 
-    // Helpers
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
 
     public static function statusOptions(): array
     {
@@ -186,7 +246,16 @@ class Student extends Model
         ];
     }
 
-    // Buscar por nome, email ou matrícula
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Busca
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Buscar por nome
+     */
     public function scopeName(Builder $query, ?string $term): Builder
     {
         if (!$term) return $query;
@@ -196,6 +265,9 @@ class Student extends Model
         );
     }
 
+    /**
+     * Buscar por matrícula
+     */
     public function scopeRegistration(Builder $query, ?string $term): Builder
     {
         if (!$term) return $query;
@@ -203,6 +275,9 @@ class Student extends Model
         return $query->where('registration', 'like', "%{$term}%");
     }
 
+    /**
+     * Buscar por email
+     */
     public function scopeEmail(Builder $query, ?string $term): Builder
     {
         if (!$term) return $query;
@@ -212,7 +287,9 @@ class Student extends Model
         );
     }
 
-    // Filtrar por status do aluno
+    /**
+     * Filtrar por status
+     */
     public function scopeStatus(Builder $query, ?string $status): Builder
     {
         if (!is_null($status) && $status !== '') {
@@ -223,7 +300,12 @@ class Student extends Model
     }
 
 
-    // // Filtrar por semestre
+    /*
+    |--------------------------------------------------------------------------
+    | Filtros Futuramente Utilizados
+    |--------------------------------------------------------------------------
+    */
+
     // public function scopeSemester(Builder $query, $semesterId): Builder
     // {
     //     if (!is_null($semesterId) && $semesterId !== '') {

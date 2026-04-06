@@ -98,6 +98,11 @@ class User extends Authenticatable
         return $this->belongsTo(Teacher::class);
     }
 
+    public function isImpersonating()
+    {
+        return session()->has('impersonator_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

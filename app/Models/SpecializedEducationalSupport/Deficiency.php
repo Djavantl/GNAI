@@ -4,10 +4,13 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Reportable;
 
 class Deficiency extends Model
 {
+    
     use hasFactory;
+    use Reportable;
 
     protected $fillable = [
         'name',
@@ -51,5 +54,36 @@ class Deficiency extends Model
     {
         if ($isActive === null || $isActive === '') return $query;
         return $query->where('is_active', (bool) $isActive);
+    }
+
+     /*
+    |--------------------------------------------------------------------------
+    | Configuração do Report Builder
+    |--------------------------------------------------------------------------
+    */
+
+    public static function getReportColumns(): ?array
+    {
+        return [
+            'name',
+            'cid_code',
+            'description',
+            'is_active',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'name' => 'Nome da Deficiência',
+            'cid_code' => 'Código CID',
+            'description'=> 'Descrição',
+            'is_active'=> 'Ativa',
+        ];
+    }
+
+    public static function getReportLabel()
+    {
+        return 'Deficiência';
     }
 }

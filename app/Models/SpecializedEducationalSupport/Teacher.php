@@ -4,14 +4,24 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SpecializedEducationalSupport\Person;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Traits\Reportable;
+
 
 class Teacher extends Model
 {
+    use Reportable;
+
     protected $fillable = ['person_id', 'registration'];
 
     public function person() {
         return $this->belongsTo(Person::class);
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'teacher_id');
     }
 
     public function disciplines() {

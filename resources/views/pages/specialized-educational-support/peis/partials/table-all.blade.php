@@ -1,4 +1,4 @@
-<x-table.table :headers="['Estudante', 'Semestre', 'Curso', 'Status', 'Ações']"
+<x-table.table :headers="['Estudante', 'Semestre', 'Curso', 'Status', 'Versão', 'Ações']"
 :records="$peis">
     @forelse($peis as $pei)
         <tr>
@@ -17,7 +17,7 @@
             </x-table.td>
 
             <x-table.td>
-                <strong>{{ $pei->course->name ?? 'N/A' }}</strong><br>
+                <strong>{{ $pei->course->name ?? 'N/A' }}</strong>
             </x-table.td>
 
             <x-table.td>
@@ -30,6 +30,10 @@
                         EM ABERTO
                     </span>
                 @endif
+            </x-table.td>
+
+            <x-table.td>
+                <strong>V{{ $pei->version ?? 'N/A' }}</strong>
             </x-table.td>
 
             <x-table.td>

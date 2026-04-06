@@ -4,9 +4,12 @@ namespace App\Models\SpecializedEducationalSupport;
 use App\Models\Permission;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Reportable;
 
 class Position extends Model
 {
+    use Reportable;
+    
     protected $fillable = [
         'name',
         'description',

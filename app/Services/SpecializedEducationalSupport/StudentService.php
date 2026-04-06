@@ -47,10 +47,7 @@ class StudentService
             'guardians',
             'currentContext',
             'deficiencies',
-            'peis' => fn ($query) =>
-            $query->visibleToUser(auth()->user())
-                ->with(['semester'])
-                ->latest(),
+            'peis',
             'studentCourses',
             'courses',
             'currentCourse',

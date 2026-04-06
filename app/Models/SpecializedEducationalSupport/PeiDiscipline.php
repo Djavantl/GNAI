@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
+use App\Models\Traits\Reportable;
 
 class PeiDiscipline extends Model
 {
     use HasFactory;
+    use Reportable;
 
     protected $fillable = [
         'pei_id',

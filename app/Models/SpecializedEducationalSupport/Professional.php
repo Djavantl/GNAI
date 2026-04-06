@@ -4,13 +4,13 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Traits\GlobalSearchable;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\User;
+use App\Models\Traits\Reportable;
 
 class Professional extends Model
 {   
-    use GlobalSearchable;
+    use Reportable;
     
     protected $fillable = [
         'person_id',

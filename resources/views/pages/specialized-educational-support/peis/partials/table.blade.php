@@ -1,4 +1,4 @@
-<x-table.table :headers="['Semestre','Curso', 'Status', 'Ações']"
+<x-table.table :headers="['Semestre', 'Curso', 'Status', 'Atual', 'Versão', 'Ações']"
 :records="$peis">
         @forelse($peis as $pei)
             <tr>
@@ -21,6 +21,22 @@
                             EM ABERTO
                         </span>
                     @endif
+                </x-table.td>
+
+                 <x-table.td>
+                    @if($pei->is_current)
+                        <span class=" text-success ">
+                            SIM
+                        </span>
+                    @else
+                        <span class=" text-black">
+                            NÃO
+                        </span>
+                    @endif
+                </x-table.td>
+
+                 <x-table.td>
+                    <strong>V{{ $pei->version ?? 'N/A' }}</strong>
                 </x-table.td>
 
                 <x-table.td>
@@ -50,7 +66,7 @@
             </tr> 
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-5">
+                <td colspan="6" class="text-center text-muted py-5">
                     <i class="fas fa-folder-open d-block mb-2" style="font-size: 2rem;"></i>
                     Nenhum PEI do aluno encontrado no sistema.
                 </td>

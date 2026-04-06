@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
+use App\Models\Traits\Reportable;
 
 class Pei extends Model
 {
     use HasFactory;
+    use Reportable;
 
     protected $fillable = [
         'student_id',
@@ -19,10 +21,13 @@ class Pei extends Model
         'course_id',
         'student_context_id',
         'is_finished',
+        'version',
+        'is_current',
     ];
 
     protected $casts = [
         'is_finished' => 'boolean',
+        'is_current' => 'boolean',
     ];
 
     

@@ -33,6 +33,15 @@ class PeiService
                 'semester',
             ]);
 
+        // 🔹 se for professor, filtra pelos cursos dele
+        if ($user->teacher_id) {
+            $teacherCourseIds = $user->teacher
+                ->courses()
+                ->pluck('courses.id');
+
+            $query->whereIn('course_id', $teacherCourseIds);
+        }
+
         return $query
             ->student($filters['student_id'] ?? null)
             ->semester($filters['semester_id'] ?? null)
@@ -48,9 +57,21 @@ class PeiService
      */
     public function index(Student $student, array $filters = [])
     {
-        return Pei::query()
+        $user = auth()->user();
+
+        $query = Pei::query()
             ->where('student_id', $student->id)
-            ->with(['student.person', 'semester'])
+            ->with(['student.person', 'semester']);
+
+        if ($user->teacher_id) {
+            $teacherCourseIds = $user->teacher
+                ->courses()
+                ->pluck('courses.id');
+
+            $query->whereIn('course_id', $teacherCourseIds);
+        }
+
+        return $query
             ->semester($filters['semester_id'] ?? null)
             ->finished($filters['is_finished'] ?? null)
             ->version($filters['version'] ?? null)
@@ -65,78 +86,79 @@ class PeiService
     public function create(Student $student): Pei
     {
         return DB::transaction(function () use ($student) {
+            // Verifica se já existe qualquer PEI para este aluno
+            $currentPei = $this->getCurrent($student);
 
+            if ($currentPei) {
+                // Se já existe, redireciona para a lógica de nova versão
+                return $this->createVersion($student);
+            }
+
+            // Lógica para o PRIMEIRO PEI (Versão 1)
             $studentCourse = $student->currentCourse()->first();
             if (!$studentCourse) {
                 throw new \Exception('Este aluno não possui matrícula vigente');
             }
+            
             $course = $studentCourse->course;
-
-            $exists = Pei::where('student_id', $student->id)->where('course_id', $course->id)->exists();
-
-            if ($exists) {
-                throw new \Exception('Este aluno já possui um Pei. Crie uma nova versão.');
-            }
-
             $semesterId = $this->semesterService->getCurrent()?->id;
+
             if (!$semesterId) {
                 throw new \Exception('O sistema não possui semestre atual cadastrado');
             }
 
-
             $currentContext = $student->contexts()->where('is_current', true)->first();
-             if (!$currentContext) {
+            if (!$currentContext) {
                 throw new \Exception('Este aluno não possui um contexto atual');
             }
 
-
-            $data['student_id'] = $student->id;
-            $data['creator_id'] = Auth::id();
-            $data['semester_id'] = $semesterId;
-            $data['course_id'] = $course->id;
-            $data['student_context_id'] = $currentContext->id;
-            $data['is_finished'] = false;
-            $data['version'] = 1;
-            $data['is_current'] = true;
-
-        
-            return Pei::create($data);
+            return Pei::create([
+                'student_id'         => $student->id,
+                'creator_id'         => Auth::id(),
+                'semester_id'        => $semesterId,
+                'course_id'          => $course->id,
+                'student_context_id' => $currentContext->id,
+                'is_finished'        => false,
+                'version'            => 1,
+                'is_current'         => true,
+            ]);
         });
     }
 
+    /**
+     * Cria uma nova versão limpa a partir de um PEI finalizado.
+     */
     public function createVersion(Student $student): Pei
     {
         return DB::transaction(function () use ($student) {
-            $user = auth()->user();
-
-            $pei =  $this->getCurrent($student);
+            $pei = $this->getCurrent($student);
 
             if (!$pei) {
-                throw new \DomainException('Aluno não possui PEI atual');
+                throw new \DomainException('Aluno não possui PEI para gerar versão.');
             }
 
+            // Regra: Só cria nova versão se o atual estiver finalizado
             if (!$pei->is_finished) {
-                throw new \Exception('Só é possível criar nova versão a partir de um PEI atual finalizado.');
+                throw new \Exception('O PEI atual ainda está em andamento. Finalize-o antes de criar uma nova versão.');
             }
 
             $semesterId = $this->semesterService->getCurrent()?->id;
-
             if (!$semesterId) {
                 throw new \DomainException('O sistema não possui semestre atual cadastrado');
             }
 
-            $student = $pei->student;
-            $studentContext = $student->currentContext()->first();
-
+            $studentContext = $student->contexts()->where('is_current', true)->first();
             if (!$studentContext) {
                 throw new \Exception('Este aluno não possui um Contexto atual definido.');
             }
 
+            // Remove o flag de 'atual' do antigo
             $this->removeCurrent($pei);
 
-            $new = Pei::create([
-                'creator_id'         => $user->id,
-                'student_id'         => $pei->student_id,
+            // Cria o novo PEI (apenas cabeçalho, sem replicar disciplinas)
+            return Pei::create([
+                'creator_id'         => Auth::id(),
+                'student_id'         => $student->id,
                 'semester_id'        => $semesterId,
                 'course_id'          => $pei->course_id,
                 'student_context_id' => $studentContext->id,
@@ -144,13 +166,6 @@ class PeiService
                 'version'            => ($pei->version ?? 1) + 1,
                 'is_current'         => true,
             ]);
-
-            // Copiar pei_disciplines
-            foreach ($pei->peiDisciplines as $obj) {
-                $new->peiDisciplines()->create($obj->replicate()->toArray());
-            }
-
-            return $new;
         });
     }
 
@@ -164,7 +179,7 @@ class PeiService
         }
 
         DB::transaction(function () use ($pei) {
-            $pei->update(['is_finished' => true]);
+            $pei->update(['is_finished' => true, 'is_current' => true,]);
         });
 
         return $pei;

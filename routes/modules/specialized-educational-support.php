@@ -192,7 +192,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/peis/{pei}', [PeiController::class, 'update'])->name('pei.update')->middleware('can:pei.update');
     Route::delete('/peis/{pei}', [PeiController::class, 'destroy'])->name('pei.destroy')->middleware('can:pei.delete');
     Route::patch('/peis/{pei}/finish', [PeiController::class, 'finish'])->name('pei.finish')->middleware('can:pei.update');
-    Route::post('peis/{pei}/version', [PeiController::class, 'createVersion'])->name('pei.version.newVersion')->middleware('can:pei.create');
+    Route::post('peis/{student}/version', [PeiController::class, 'createVersion'])->name('pei.version.newVersion')->middleware('can:pei.create');
     Route::get('/peis/{pei}/pdf', [PeiController::class, 'generatePdf'])->name('pei.pdf')->middleware('can:pei.view');
 
     // Rotas de Adaptações de Disciplinas (PEI Discipline)

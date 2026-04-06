@@ -24,8 +24,8 @@
 
         @can('report.reports.index')
         <li>
-            <a href="{{ route('report.reports.index') }}"
-               class="{{ request()->routeIs('report.reports*') ? 'active' : '' }}">
+            <a href="{{ route('reports.index') }}"
+            class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-bar-chart"></i></span>
                 <span class="text">Relatórios</span>
             </a>

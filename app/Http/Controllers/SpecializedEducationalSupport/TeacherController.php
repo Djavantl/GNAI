@@ -99,7 +99,15 @@ class TeacherController extends Controller
     public function permissions()
     {
         $permissions = Permission::all()->groupBy(function ($permission) {
-            return explode('.', $permission->slug)[0]; // módulo
+            $prefix = explode('.', $permission->slug)[0];
+            
+            // Busca no arquivo lang/pt_BR/permissions.php
+            $translationKey = "permissions.entities.{$prefix}";
+            $translated = __($translationKey);
+
+            // Se a tradução não existir, o Laravel retorna a própria chave. 
+            // Nesse caso, formatamos o prefixo manualmente.
+            return $translated === $translationKey ? ucfirst(str_replace('-', ' ', $prefix)) : $translated;
         });
 
         $globalPermissionsIds = $this->service->getGlobalPermissionsIds();

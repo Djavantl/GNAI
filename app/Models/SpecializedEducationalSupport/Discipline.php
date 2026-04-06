@@ -4,10 +4,12 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Reportable;
 
 class Discipline extends Model
 {
     use HasFactory;
+    use Reportable;
 
     protected $fillable = [
         'name',

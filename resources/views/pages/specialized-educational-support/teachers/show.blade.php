@@ -19,6 +19,16 @@
         </div>
         <div class="d-flex gap-2">
             {{-- Novo Botão de Disciplinas --}}
+            @if($teacher->user && auth()->user()->is_admin)
+            <form method="POST"
+                action="{{ route('admin.impersonate', $teacher->user) }}"
+                onsubmit="return confirm('Tem certeza que deseja entrar como {{ $teacher->person->name }}?')">
+                @csrf
+                <x-buttons.submit-button type="submit" class="btn-action new submit">
+                    <i class="fas fa-right-to-bracket"></i> Entrar como
+                </x-buttons.submit-button>
+            </form>
+            @endif
             <x-buttons.link-button :href="route('specialized-educational-support.teachers.disciplines', $teacher->id)" variant="info">
                 <i class="fas fa-book"></i> Gerenciar Disciplinas
             </x-buttons.link-button>

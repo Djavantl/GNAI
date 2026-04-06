@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
 use App\Enums\Priority;
+use App\Models\Traits\Reportable;
 
 class Pendency extends Model
 {
     use HasFactory;
+    use Reportable;
 
     protected $table = 'pendencies';
 

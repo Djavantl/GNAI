@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Auditable; // 1. Importar a Trait
 use App\Models\AuditLog;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\Traits\Reportable;
 
 class StudentContext extends Model
 {
-    use HasFactory, Auditable; // 2. Adicionar a Trait
+    use HasFactory, Auditable;
+    use Reportable;
     
     protected $table = 'student_contexts';
 

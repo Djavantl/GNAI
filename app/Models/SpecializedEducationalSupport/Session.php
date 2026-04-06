@@ -5,10 +5,13 @@ namespace App\Models\SpecializedEducationalSupport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Traits\Reportable;
 
 class Session extends Model
 {
     use SoftDeletes;
+    use Reportable;
+    
     protected $table = 'attendance_sessions';
     
     protected $fillable = [

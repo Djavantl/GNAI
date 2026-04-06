@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminController;
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -19,4 +20,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+    
+    Route::post('/impersonate/leave', [AdminController::class, 'leaveImpersonate'])
+    ->name('admin.impersonate.leave');
+
+    Route::post('/impersonate/{user}', [AdminController::class, 'impersonate'])
+        ->name('admin.impersonate')
+        ->middleware('admin');
+   
 });

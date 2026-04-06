@@ -43,10 +43,7 @@ class PositionController extends Controller
 
     public function create()
     {
-        $permissions = Permission::all()->groupBy(function ($permission) {
-            return explode('.', $permission->slug)[0];
-        });
-
+        $permissions = $this->getGroupedPermissions();
         return view('pages.specialized-educational-support.positions.create', compact('permissions'));
     }
 
@@ -60,13 +57,10 @@ class PositionController extends Controller
     
     public function edit(Position $position)
     {
-        $permissions = Permission::all()->groupBy(function ($permission) {
-            return explode('.', $permission->slug)[0];
-        });
-
+        $permissions = $this->getGroupedPermissions();
         $selectedPermissions = $position->permissions->pluck('id')->toArray();
 
-        return view('pages.specialized-educational-support.positions.edit',
+        return view('pages.specialized-educational-support.positions.edit', 
             compact('position', 'permissions', 'selectedPermissions')
         );
     }
@@ -95,5 +89,17 @@ class PositionController extends Controller
         $this->service->delete($position);
 
         return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo removido!');
+    }
+
+    private function getGroupedPermissions()
+    {
+        return Permission::all()->groupBy(function ($permission) {
+    
+            $prefix = explode('.', $permission->slug)[0];
+
+            return __("permissions.entities.{$prefix}") !== "permissions.entities.{$prefix}" 
+                ? __("permissions.entities.{$prefix}") 
+                : ucfirst($prefix);
+        });
     }
 }

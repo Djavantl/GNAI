@@ -171,42 +171,44 @@ class PeiController extends Controller
             return redirect()
                 ->back()
                 ->with('error', $e->getMessage());
-        }
+        } 
     }
 
-    public function createVersion(Pei $pei)
-    {
-        try {
-            $new = $this->service->createVersion($pei);
+    // public function createVersion(Student $student)
+    // {
+    //     try {
+    //         $new = $this->service->createVersion($student);
 
-            return redirect()
-                ->route('specialized-educational-support.pei.show', $new)
-                ->with('success', 'Nova versão criada com sucesso.');
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
-    }
+    //         return redirect()
+    //             ->route('specialized-educational-support.pei.show', $new)
+    //             ->with('success', 'Nova versão criada com sucesso.');
+    //     } catch (\Exception $e) {
+    //         return back()->with('error', $e->getMessage());
+    //     }
+    // }
 
     public function generatePdf(Pei $pei)
     {
-        if (! $pei->is_finished) {
-            return redirect()
-                ->back()
-                ->with('error', 'Somente PEIs finalizados podem gerar PDF.');
-        }
 
         $pei->load([
             'student.person',
             'studentContext',
+            'course',
+            'semester',
             'peiDisciplines.discipline',
-            'peiDisciplines.teacher.person'
+            'peiDisciplines.teacher.person',
+            'professional.person'
         ]);
 
         $pdf = app('dompdf.wrapper')
             ->loadView('pages.specialized-educational-support.peis.pdf', compact('pei'))
             ->setPaper('a4', 'portrait');
 
-        return $pdf->stream("PEI_{$pei->student->person->name}_{$pei->discipline->name}.pdf");
+        // Para o nome do arquivo, pegamos a disciplina da primeira relação vinculada (se existir)
+        $studentName = $pei->student->person->name ?? 'Estudante';
+        $version = $pei->version ?? 'Geral';
+
+        return $pdf->stream("PEI_{$studentName}_v{$version}.pdf");
     }
 
     public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)

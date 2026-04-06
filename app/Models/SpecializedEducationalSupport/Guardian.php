@@ -4,10 +4,12 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Traits\Reportable;
 
 class Guardian extends Model
 {
     use HasFactory;
+    use Reportable;
 
     protected $table = 'student_guardians';
 

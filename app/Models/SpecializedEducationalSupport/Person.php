@@ -13,7 +13,7 @@ use App\Models\AuditLog;
 class Person extends Model
 {
     // 2. Adicionar a Trait Auditable aqui
-    use HasFactory, Auditable;
+    use HasFactory, Auditable, \App\Models\Traits\Reportable;
 
     protected $fillable = [
         'name',
@@ -153,6 +153,29 @@ class Person extends Model
     public function guardians()
     {
         return $this->hasMany(Guardian::class);
+    }
+
+    public static function getReportColumns(): ?array
+    {
+        return ['name', 'email', 'document', 'birth_date', 'gender', 'phone', 'address'];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'name'  => 'Nome Completo',
+            'email' => 'E-mail',
+            'document'=> 'CPF',
+            'birth_date'=> 'Data de Nascimento',
+            'gender'=> 'Gênero',
+            'phone'=> 'Telefone',
+            'address'=> 'Endereço',
+        ];
+    }
+
+    public static function getReportLabel()
+    {
+        return 'Pessoas';
     }
 
 }

@@ -30,17 +30,9 @@
     <div class="d-flex gap-2">
         
 
-        @if($pei->is_finished)
-            <form action="{{ route('specialized-educational-support.pei.version.newVersion', $pei) }}" method="POST"
-                onsubmit="return confirm('Criar nova versão baseada neste PEI?')">
-                @csrf
-                <x-buttons.submit-button class="btn-action new">
-                    <i class="fas fa-plus"></i> Nova Versão
-                </x-buttons.submit-button>
-            </form>
-
-            <x-buttons.pdf-button :href="route('specialized-educational-support.pei.pdf', $pei)" />
-        @endif
+        
+        <x-buttons.pdf-button :href="route('specialized-educational-support.pei.pdf', $pei)" />
+        
 
         @if(!$pei->is_finished)
             <form method="POST"

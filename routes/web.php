@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReportController;
 
 Route::middleware('web')->group(function () {
 
@@ -17,9 +18,14 @@ Route::middleware('web')->group(function () {
         ->name('backup.')
         ->group(base_path('routes/modules/backup.php'));
 
-    Route::prefix('report')
-        ->name('report.')
-        ->group(base_path('routes/report.php'));
+    Route::middleware(['auth'])->prefix('reports')->group(function () {
+        Route::get('/', [ReportController::class, 'builder'])->name('reports.index');
+        Route::get('/builder', [ReportController::class, 'builder'])->name('reports.builder');
+        Route::get('/builder/available', [ReportController::class, 'availableEntities'])->name('reports.available');
+        Route::get('/builder/meta', [ReportController::class, 'meta'])->name('reports.meta');
+        Route::post('/builder/run', [ReportController::class, 'run'])->name('reports.run');
+        Route::post('/builder/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
+    });
 
     Route::prefix('auth')
         ->name('')

@@ -94,11 +94,18 @@
                 <i class="bi bi-person me-2 text-muted"></i> Perfil
             </a>
         </li>
+        @if(session()->has('impersonator_id'))
+        <li><hr class="dropdown-divider"></li>
         <li>
-            <a class="dropdown-item py-2" href="#">
-                <i class="bi bi-gear me-2 text-muted"></i> Configurações
-            </a>
+            <form method="POST" action="{{ route('admin.impersonate.leave') }}">
+                @csrf
+                <button class="dropdown-item text-warning py-2">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i>
+                    Voltar para Admin
+                </button>
+            </form>
         </li>
+        @endif
         <li><hr class="dropdown-divider"></li>
         <li>
             <a class="dropdown-item text-danger py-2" href="{{ route('logout') }}"
