@@ -98,7 +98,7 @@
 
                 <li>
                     <a href="{{ route('inclusive-radar.accessibility-features.index') }}"
-                       class="{{ request()->routeIs('accessibility-features.*') ? 'active' : '' }}">
+                       class="{{ request()->routeIs('inclusive-radar.accessibility-features.*') ? 'active' : '' }}">
                         <span class="icon"><i class="bi bi-universal-access"></i></span>
                         <span class="text">Recursos de Acessibilidade</span>
                     </a>
@@ -106,7 +106,7 @@
 
                 <li>
                     <a href="{{ route('inclusive-radar.barrier-categories.index') }}"
-                       class="{{ request()->routeIs('barrier-categories.*') ? 'active' : '' }}">
+                       class="{{ request()->routeIs('inclusive-radar.barrier-categories.*') ? 'active' : '' }}">
                         <span class="icon"><i class="bi bi-grid"></i></span>
                         <span class="text">Categorias de Barreiras</span>
                     </a>
@@ -114,7 +114,7 @@
 
                 <li>
                     <a href="{{ route('inclusive-radar.institutions.index') }}"
-                       class="{{ request()->routeIs('institutions.*') ? 'active' : '' }}">
+                       class="{{ request()->routeIs('inclusive-radar.institutions.*') ? 'active' : '' }}">
                         <span class="icon"><i class="bi bi-building-fill"></i></span>
                         <span class="text">Instituições</span>
                     </a>
@@ -122,7 +122,7 @@
 
                 <li>
                     <a href="{{ route('inclusive-radar.locations.index') }}"
-                       class="{{ request()->routeIs('locations.*') ? 'active' : '' }}">
+                       class="{{ request()->routeIs('inclusive-radar.locations.*') ? 'active' : '' }}"">
                         <span class="icon"><i class="bi bi-geo-alt"></i></span>
                         <span class="text">Localizações</span>
                     </a>
@@ -243,7 +243,7 @@
         @can('waitlist.index')
             <li>
                 <a href="{{ route('inclusive-radar.waitlists.index') }}"
-                   class="{{ request()->routeIs('waitlists.*') ? 'active' : '' }}">
+                   class="{{ request()->routeIs('inclusive-radar.waitlists.*') ? 'active' : '' }}">
                     <span class="icon"><i class="bi bi-hourglass-split"></i></span>
                     <span class="text">Fila de Espera</span>
                 </a>
@@ -253,29 +253,32 @@
         @can('institutional-event.index')
             <li>
                 <a href="{{ route('inclusive-radar.institutional-events.index') }}"
-                   class="{{ request()->routeIs('trainings.*') ? 'active' : '' }}">
+                   class="{{ request()->routeIs('inclusive-radar.institutional-events.*') ? 'active' : '' }}">
                     <span class="icon"><i class="fa-solid fa-calendar-day"></i></span>
                     <span class="text">Agenda Institucional</span>
                 </a>
             </li>
         @endcan
 
-        <li class="menu-divider">Outros</li>
+{{--        <li class="menu-divider">Outros</li>--}}
 
-        <li>
-            <a href="{{ url('/acessibilidade') }}"
-               class="{{ request()->is('acessibilidade*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-universal-access"></i></span>
-                <span class="text">Acessibilidade</span>
-            </a>
-        </li>
+{{--        <li>--}}
+{{--            <a href="{{ url('/acessibilidade') }}"--}}
+{{--               class="{{ request()->is('acessibilidade*') ? 'active' : '' }}">--}}
+{{--                <span class="icon"><i class="bi bi-universal-access"></i></span>--}}
+{{--                <span class="text">Acessibilidade</span>--}}
+{{--            </a>--}}
+{{--        </li>--}}
 
-        <li>
-            <a href="{{ url('/sobre') }}"
-               class="{{ request()->is('sobre*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-info-circle"></i></span>
-                <span class="text">Sobre</span>
-            </a>
-        </li>
+{{--        <li>--}}
+{{--            <a href="{{ url('/sobre') }}"--}}
+{{--               class="{{ request()->is('sobre*') ? 'active' : '' }}">--}}
+{{--                <span class="icon"><i class="bi bi-info-circle"></i></span>--}}
+{{--                <span class="text">Sobre</span>--}}
+{{--            </a>--}}
+{{--        </li>--}}
+        <br>
+        <br>
+        <br>
     </ul>
 </aside>
