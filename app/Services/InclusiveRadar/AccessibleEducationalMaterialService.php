@@ -2,9 +2,9 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Audit\AuditLogger;
 use App\Exceptions\InclusiveRadar\CannotChangeStatusWithActiveLoansException;
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
-use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +16,7 @@ class AccessibleEducationalMaterialService
     public function __construct(
         protected InspectionService $inspectionService,
         protected LoanService $loanService,
+        protected AuditLogger $auditLogger,
     ) {}
 
     public function store(array $data): AccessibleEducationalMaterial
@@ -173,39 +174,21 @@ class AccessibleEducationalMaterialService
         if ($material->wasRecentlyCreated) return;
 
         if (isset($data['deficiencies'])) {
-            $this->auditIfChanged($material, 'deficiencies', $oldDef, $data['deficiencies']);
+            $this->auditLogger->logRelationIfChanged(
+                $material,
+                'deficiencies',
+                $oldDef,
+                array_map('intval', $data['deficiencies'])
+            );
         }
 
         if (isset($data['accessibility_features'])) {
-            $this->auditIfChanged($material, 'accessibility_features', $oldFeatures, $data['accessibility_features']);
+            $this->auditLogger->logRelationIfChanged(
+                $material,
+                'accessibility_features',
+                $oldFeatures,
+                array_map('intval', $data['accessibility_features'])
+            );
         }
-    }
-
-    protected function auditIfChanged($model, string $field, array $old, ?array $new): void
-    {
-        if ($new === null) return;
-
-        $new = array_map('intval', $new);
-
-        sort($old);
-        sort($new);
-
-        if ($old !== $new) {
-            $this->logRelationChange($model, $field, $old, $new);
-        }
-    }
-
-    protected function logRelationChange($model, string $field, array $old, array $new): void
-    {
-        AuditLog::create([
-            'user_id'        => auth()->id(),
-            'action'         => 'updated',
-            'auditable_type' => $model->getMorphClass(),
-            'auditable_id'   => $model->id,
-            'old_values'     => [$field => $old],
-            'new_values'     => [$field => $new],
-            'ip_address'     => request()?->ip(),
-            'user_agent'     => request()?->userAgent(),
-        ]);
     }
 }

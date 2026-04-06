@@ -2,6 +2,8 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Audit\Contracts\Auditable as AuditableContract;
+use App\Audit\Formatters\InclusiveRadar\AssistiveTechnologyFormatter;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Enums\InclusiveRadar\ConservationState;
@@ -14,7 +16,7 @@ use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class AssistiveTechnology extends Model
+class AssistiveTechnology extends Model implements AuditableContract
 {
     use HasFactory, SoftDeletes, Auditable;
 
@@ -40,6 +42,28 @@ class AssistiveTechnology extends Model
         'conservation_state' => ConservationState::class,
         'status' => ResourceStatus::class,
     ];
+
+    protected array $auditExclude = ['quantity_available'];
+
+    public static function auditLabels(): array
+    {
+        return [
+            'name'               => 'Tipo da Tecnologia',
+            'is_digital'         => 'Tecnologia Digital',
+            'notes'              => 'Descrição',
+            'asset_code'         => 'Código de Patrimônio',
+            'quantity'           => 'Quantidade Total',
+            'conservation_state' => 'Estado de Conservação',
+            'status'             => 'Status do Recurso',
+            'is_active'          => 'Cadastro Ativo',
+            'deficiencies'       => 'Público-Alvo (Deficiências)',
+        ];
+    }
+
+    public static function auditFormatter(): string
+    {
+        return AssistiveTechnologyFormatter::class;
+    }
 
     public function deficiencies(): BelongsToMany
     {
@@ -105,43 +129,5 @@ class AssistiveTechnology extends Model
             $query->where('is_digital', $isDigital == '1');
         }
         return $query;
-    }
-
-    public static function getAuditLabels(): array
-    {
-        return [
-            'name' => 'Tipo da Tecnologia',
-            'is_digital' => 'Tecnologia Digital',
-            'notes' => 'Descrição',
-            'asset_code' => 'Código de Patrimônio',
-            'quantity' => 'Quantidade Total',
-            'conservation_state' => 'Estado de Conservação',
-            'status' => 'Status do Recurso',
-            'is_active' => 'Cadastro Ativo',
-            'deficiencies' => 'Público-Alvo (Deficiências)',
-        ];
-    }
-
-    public static function formatAuditValue(string $field, $value): ?string
-    {
-        if ($field === 'deficiencies' && is_array($value)) {
-            return Deficiency::whereIn('id', $value)
-                ->pluck('name')
-                ->join(', ') ?: 'Nenhuma';
-        }
-
-        if ($field === 'is_digital') {
-            return $value ? 'Digital' : 'Físico';
-        }
-
-        if ($field === 'status' && $value) {
-            return ResourceStatus::from($value)->label();
-        }
-
-        if ($field === 'conservation_state' && $value) {
-            return ConservationState::from($value)->label();
-        }
-
-        return null;
     }
 }

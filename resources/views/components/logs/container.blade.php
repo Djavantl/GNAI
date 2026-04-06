@@ -1,24 +1,20 @@
 @props(['logs'])
 
-<div class="custom-table-card overflow-hidden">
-    <div class="bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 text-purple-dark fw-bold">Histórico de Alterações</h5>
-        <span class="badge bg-purple px-3">{{ $logs->total() }} Registros</span>
-    </div>
-
-    <div class="log-timeline-container p-0">
-        @forelse($logs as $log)
-            <x-logs.item :log="$log" />
-        @empty
-            <div class="p-5 text-center text-muted">
-                <i class="fas fa-clipboard-list fa-3x mb-3 opacity-25"></i>
-                <p>Nenhum registro de auditoria encontrado.</p>
+<div class="log-timeline-wrapper p-4 p-lg-5">
+    @forelse($logs as $log)
+        <x-logs.item :log="$log" />
+    @empty
+        <div class="empty-history text-center py-5">
+            <div class="empty-history-icon mb-3">
+                <i class="fas fa-clipboard-list"></i>
             </div>
+            <h6 class="mb-1 text-purple-dark">Nenhum registro encontrado</h6>
+            <p class="text-muted mb-0">Não há alterações registradas para este item.</p>
+        </div>
         @endforelse
-    </div>
 
     @if($logs->hasPages())
-        <div class="p-3 border-top bg-light">
+        <div class="pt-4 mt-4 border-top">
             {{ $logs->links() }}
         </div>
     @endif

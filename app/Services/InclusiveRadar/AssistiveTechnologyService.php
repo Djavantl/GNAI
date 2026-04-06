@@ -2,9 +2,9 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Audit\AuditLogger;
 use App\Exceptions\InclusiveRadar\CannotChangeStatusWithActiveLoansException;
 use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
-use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +16,7 @@ class AssistiveTechnologyService
     public function __construct(
         protected InspectionService $inspectionService,
         protected LoanService $loanService,
+        protected AuditLogger $auditLogger,
     ) {}
 
     public function store(array $data): AssistiveTechnology
@@ -48,7 +49,7 @@ class AssistiveTechnologyService
     {
         $this->validateBusinessRules($at, $data);
 
-        [$oldDef] = $this->captureOriginalState($at);
+        $oldDef = $this->captureOriginalState($at);
 
         $data = $this->processStock($at, $data);
 
@@ -91,12 +92,9 @@ class AssistiveTechnologyService
 
     private function captureOriginalState(AssistiveTechnology $at): array
     {
-        $oldDeficiencies = $at->exists
+        return $at->exists
             ? $at->deficiencies()->pluck('deficiencies.id')->toArray()
             : [];
-
-
-        return [$oldDeficiencies];
     }
 
     private function processStock(AssistiveTechnology $at, array $data): array
@@ -152,28 +150,12 @@ class AssistiveTechnologyService
         if ($at->wasRecentlyCreated) return;
 
         if (isset($data['deficiencies'])) {
-            $newDef = array_map('intval', $data['deficiencies']);
-            /* Ordenamos os arrays para garantir que a comparação identifique
-               apenas mudanças reais de conteúdo, ignorando a ordem da requisição. */
-            sort($oldDef);
-            sort($newDef);
-            if ($oldDef !== $newDef) {
-                $this->logRelationChange($at, 'deficiencies', $oldDef, $newDef);
-            }
+            $this->auditLogger->logRelationIfChanged(
+                $at,
+                'deficiencies',
+                $oldDef,
+                array_map('intval', $data['deficiencies'])
+            );
         }
-    }
-
-    protected function logRelationChange(AssistiveTechnology $model, string $field, array $old, array $new): void
-    {
-        AuditLog::create([
-            'user_id'        => auth()->id(),
-            'action'         => 'updated',
-            'auditable_type' => $model->getMorphClass(),
-            'auditable_id'   => $model->id,
-            'old_values'     => [$field => $old],
-            'new_values'     => [$field => $new],
-            'ip_address'     => request()?->ip(),
-            'user_agent'     => request()?->userAgent(),
-        ]);
     }
 }

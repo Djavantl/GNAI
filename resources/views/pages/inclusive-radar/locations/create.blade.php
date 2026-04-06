@@ -36,7 +36,7 @@
                         id="institution_select"
                         label="Instituição Base"
                         required
-                        :options="$institutions"
+                        :options="$institutions->pluck('name', 'id')"
                         :selected="old('institution_id')"
                     />
                 </div>

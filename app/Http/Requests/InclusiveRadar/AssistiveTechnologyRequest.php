@@ -40,7 +40,7 @@ class AssistiveTechnologyRequest extends FormRequest
                estoque físico, tornando a quantidade um campo opcional. */
             'quantity' => $isDigital ? 'nullable|integer' : 'required|integer',
 
-            'quantity_available' => 'nullable|integer',
+            'quantity_available' => 'nullable|integer|min:0',
             'is_active' => 'sometimes|boolean',
 
             /* No cadastro inicial, é obrigatório definir o estado operacional e

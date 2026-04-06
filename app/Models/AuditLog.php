@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -35,11 +36,18 @@ class AuditLog extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function auditable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function scopeForModel(Builder $query, Model $model): Builder
+    {
+        return $query
+            ->where('auditable_type', $model->getMorphClass())
+            ->where('auditable_id', $model->getKey());
     }
 }

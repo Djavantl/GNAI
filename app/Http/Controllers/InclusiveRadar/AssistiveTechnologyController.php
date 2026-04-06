@@ -14,6 +14,7 @@ use App\Models\InclusiveRadar\Inspection;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
 
+use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -145,7 +146,7 @@ class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia removida com sucesso!');
     }
 
-    public function generatePdf(AssistiveTechnology $assistiveTechnology)
+    public function generatePdf(AssistiveTechnology $assistiveTechnology): Response
     {
         $assistiveTechnology->load([
             'deficiencies',

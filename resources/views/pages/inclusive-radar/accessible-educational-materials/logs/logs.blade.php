@@ -20,12 +20,10 @@
         </div>
 
         <div class="d-flex gap-2">
-            @if($material->asset_code)
-                <div class="text-end me-3">
-                    <span class="d-block text-muted small uppercase fw-bold">Patrimônio</span>
-                    <span class="badge bg-purple fs-6">{{ $material->asset_code }}</span>
-                </div>
-            @endif
+            <div class="text-end me-3">
+                <span class="d-block text-muted small uppercase fw-bold">Registros</span>
+                <span class="badge bg-purple fs-6">{{ $logs->total() }}</span>
+            </div>
 
             <x-buttons.link-button
                 href="{{ route('inclusive-radar.accessible-educational-materials.show', $material) }}"

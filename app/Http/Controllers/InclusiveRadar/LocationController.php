@@ -40,13 +40,11 @@ class LocationController extends Controller
 
     public function create(): View
     {
-        $institutionsQuery = Institution::where('is_active', true)
+        $institutions = Institution::where('is_active', true)
             ->orderBy('name')
             ->get();
 
-        $institutionsOptions = $institutionsQuery->pluck('name', 'id');
-
-        $institutionsData = $institutionsQuery->mapWithKeys(fn($inst) => [
+        $institutionsData = $institutions->mapWithKeys(fn($inst) => [
             $inst->id => [
                 'latitude'     => $inst->latitude,
                 'longitude'    => $inst->longitude,
@@ -55,7 +53,7 @@ class LocationController extends Controller
         ]);
 
         return view('pages.inclusive-radar.locations.create', [
-            'institutions'        => $institutionsOptions,
+            'institutions'        => $institutions,
             'institutionsData'    => $institutionsData,
             'selectedInstitution' => null,
         ]);

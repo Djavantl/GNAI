@@ -4,16 +4,13 @@ namespace App\Http\Controllers\InclusiveRadar\Logs;
 
 use App\Http\Controllers\Controller;
 use App\Models\InclusiveRadar\AssistiveTechnology;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Contracts\View\View;
 
 class AssistiveTechnologyLogController extends Controller
 {
-    public function index(AssistiveTechnology $assistiveTechnology)
+    public function index(AssistiveTechnology $assistiveTechnology): View
     {
-        $logs = $assistiveTechnology->logs()
-            ->with('user')
-            ->latest()
-            ->paginate(20);
+        $logs = $this->fetchLogs($assistiveTechnology, paginate: true);
 
         return view(
             'pages.inclusive-radar.assistive-technologies.logs.logs',
@@ -21,33 +18,12 @@ class AssistiveTechnologyLogController extends Controller
         );
     }
 
-    public function generatePdf(AssistiveTechnology $assistiveTechnology)
+    private function fetchLogs(AssistiveTechnology $assistiveTechnology, bool $paginate): mixed
     {
-        $logs = $assistiveTechnology->logs()
+        $query = $assistiveTechnology->logs()
             ->with('user')
-            ->latest()
-            ->get();
+            ->latest();
 
-        $fieldLabels = [
-            'name' => 'Nome',
-            'description' => 'Descrição',
-            'status_id' => 'Status',
-            'is_active' => 'Ativo',
-            'type_id' => 'Tipo',
-            'quantity' => 'Quantidade',
-            'quantity_available' => 'Quantidade disponível',
-            'requires_training' => 'Requer treinamento',
-            'notes' => 'Notas',
-            'conservation_state' => 'Conservação',
-        ];
-
-        $pdf = Pdf::loadView(
-            'pages.inclusive-radar.assistive-technologies.logs.logs-pdf',
-            compact('assistiveTechnology', 'logs', 'fieldLabels')
-        )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
-
-        return $pdf->stream("Histórico_{$assistiveTechnology->name}.pdf");
+        return $paginate ? $query->paginate(20) : $query->get();
     }
 }

@@ -3,7 +3,6 @@
 @section('title', "Histórico - $assistiveTechnology->name")
 
 @section('content')
-    {{-- 1. Cabeçalho e Breadcrumb --}}
     <div class="mb-4">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
@@ -20,12 +19,10 @@
         </div>
 
         <div class="d-flex gap-2">
-            @if($assistiveTechnology->asset_code)
-                <div class="text-end me-3">
-                    <span class="d-block text-muted small uppercase fw-bold">Patrimônio</span>
-                    <span class="badge bg-purple fs-6">{{ $assistiveTechnology->asset_code }}</span>
-                </div>
-            @endif
+            <div class="text-end me-3">
+                <span class="d-block text-muted small uppercase fw-bold">Registros</span>
+                <span class="badge bg-purple fs-6">{{ $logs->total() }}</span>
+            </div>
 
             <x-buttons.link-button
                 href="{{ route('inclusive-radar.assistive-technologies.show', $assistiveTechnology) }}"
@@ -34,7 +31,6 @@
                 <i class="fas fa-arrow-left"></i> Voltar
             </x-buttons.link-button>
             <x-buttons.pdf-button :href="route('inclusive-radar.assistive-technologies.logs.pdf', $assistiveTechnology)" class="ms-3" />
-
         </div>
     </div>
     <x-logs.container :logs="$logs" />
