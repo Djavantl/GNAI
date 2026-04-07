@@ -9,11 +9,12 @@ use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\AuditLog;
+use \App\Models\Traits\Reportable;
 
 class Person extends Model
 {
     // 2. Adicionar a Trait Auditable aqui
-    use HasFactory, Auditable, \App\Models\Traits\Reportable;
+    use HasFactory, Auditable, Reportable;
 
     protected $fillable = [
         'name',

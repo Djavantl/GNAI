@@ -8,7 +8,6 @@ use App\Models\Traits\Reportable;
 
 class Position extends Model
 {
-    use Reportable;
     
     protected $fillable = [
         'name',

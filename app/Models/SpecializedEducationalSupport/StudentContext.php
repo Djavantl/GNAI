@@ -12,7 +12,6 @@ use App\Models\Traits\Reportable;
 class StudentContext extends Model
 {
     use HasFactory, Auditable;
-    use Reportable;
     
     protected $table = 'student_contexts';
 

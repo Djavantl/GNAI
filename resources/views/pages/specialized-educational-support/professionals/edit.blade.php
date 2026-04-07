@@ -140,6 +140,16 @@
                 />
             </div>
 
+            @if(auth()->check() && auth()->user()->isAdmin())
+                <div class="col-12 mt-3">
+                    <x-forms.checkbox 
+                        name="is_admin" 
+                        label="Definir este profissional como administrador do sistema" 
+                        :checked="old('is_admin', optional($professional->user)->is_admin)" 
+                    />
+                </div>
+            @endif
+
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.show', $professional) }}" variant="secondary">
                     <i class="fas fa-times"></i>Cancelar

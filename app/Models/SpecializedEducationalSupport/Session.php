@@ -10,7 +10,6 @@ use App\Models\Traits\Reportable;
 class Session extends Model
 {
     use SoftDeletes;
-    use Reportable;
     
     protected $table = 'attendance_sessions';
     

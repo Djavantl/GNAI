@@ -577,8 +577,18 @@
                 if (!meta) return key
 
                 const normalized = key.replace(/__/g, '.')
-                if (!normalized.includes('.')) return meta.columns[normalized] ?? normalized
 
+                // 1) se o backend já definiu o rótulo exato, usa ele
+                if (meta.columns && meta.columns[normalized]) {
+                    return meta.columns[normalized]
+                }
+
+                // 2) fallback para colunas simples
+                if (!normalized.includes('.')) {
+                    return meta.columns?.[normalized] ?? normalized
+                }
+
+                // 3) fallback para relações
                 const [rel, ...rest] = normalized.split('.')
                 const r = addedRelations.find(r => r.name === rel) ?? (meta.relations ?? []).find(r => r.name === rel)
 
@@ -586,7 +596,7 @@
                     return `${r?.label ?? rel} (vínculo) › ${r?.pivot?.columns?.[rest[1]] ?? rest[1]}`
                 }
 
-                return `${r?.label ?? rel} › ${r?.columns?.[rest[0]] ?? rest[0]}`
+                return `${r?.label ?? rel} › ${r?.columns?.[rest.join('.')] ?? r?.columns?.[rest[0]] ?? rest.join('.')}`
             }
 
             function resetAll () {

@@ -10,7 +10,6 @@ use App\Models\Traits\Reportable;
 class StudentSessionEvaluation extends Model
 {
     use SoftDeletes;
-    use Reportable;
 
     protected $fillable = [
         'session_record_id',

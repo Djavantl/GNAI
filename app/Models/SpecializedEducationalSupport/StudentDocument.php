@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class StudentDocument extends Model
 {
-    use Auditable; // 2. Adicionar a Trait
+    use Auditable; 
 
     protected $fillable = [
         'student_id',

@@ -30,6 +30,43 @@ class Pei extends Model
         'is_current' => 'boolean',
     ];
 
+    public static function getReportLabel(): string
+    {
+        return 'Planos Educacionais Individualizados (PEI)';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'version',
+            'is_finished',
+            'created_at',
+
+            // relações principais
+            'student.person.name',
+            'course.name',
+            'semester.label',
+            'creator.name',
+        ];
+    }
+
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id' => 'ID do PEI',
+            'version' => 'Versão',
+            'is_finished' => 'Finalizado',
+            'is_current' => 'Versão Atual',
+            'created_at' => 'Data de Criação',
+
+            'student.person.name' => 'Aluno',
+            'course.name' => 'Curso',
+            'semester.label' => 'Semestre',
+            'creator.name' => 'Criado por',
+        ];
+    }
     
     /**
      * Relacionamentos Principais

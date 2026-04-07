@@ -11,7 +11,6 @@ use App\Models\Traits\Reportable;
 class Pendency extends Model
 {
     use HasFactory;
-    use Reportable;
 
     protected $table = 'pendencies';
 

@@ -89,6 +89,11 @@ class ProfessionalRequest extends FormRequest
                 'nullable',
                 'boolean' 
             ],
+
+            'is_admin' => [
+                'nullable',
+                'boolean',
+            ],
         ];
     }
 }

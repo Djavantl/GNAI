@@ -67,13 +67,19 @@ class ProfessionalService
             ]);
 
             // 4. Cria o Usuário de acesso
+            $isAdmin = false;
+
+            if (auth()->check() && auth()->user()->isAdmin()) {
+                $isAdmin = (bool) ($data['is_admin'] ?? false);
+            }
+
             User::create([
                 'name'             => $person->name,
                 'email'            => $person->email,
                 'password'         => Hash::make('napne2026'),
                 'role'             => 'professional',
                 'professional_id'  => $professional->id,
-                'is_admin'         => false,
+                'is_admin'         => $isAdmin,
             ]);
 
             return $professional;
@@ -121,6 +127,14 @@ class ProfessionalService
                 'registration' => $data['registration'],
                 'status'       => $data['status'] ?? $professional->status,
             ]);
+
+            $user = $professional->user;
+
+            if ($user && auth()->check() && auth()->user()->isAdmin()) {
+                $user->update([
+                    'is_admin' => (bool) ($data['is_admin'] ?? false),
+                ]);
+            }
 
             return $professional;
         });

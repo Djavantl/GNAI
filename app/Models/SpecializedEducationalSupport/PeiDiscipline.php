@@ -12,7 +12,6 @@ use App\Models\Traits\Reportable;
 class PeiDiscipline extends Model
 {
     use HasFactory;
-    use Reportable;
 
     protected $fillable = [
         'pei_id',

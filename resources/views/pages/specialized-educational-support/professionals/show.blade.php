@@ -97,6 +97,20 @@
                 {{ $professional->entry_date ? \Carbon\Carbon::parse($professional->entry_date)->diffForHumans(null, true) : '---' }}
             </x-show.info-item>
 
+            @if(auth()->check() && auth()->user()->isAdmin())
+                <x-show.info-item label="Administrador do Sistema" column="col-md-6" isBox="true">
+                    @if(optional($professional->user)->is_admin)
+                        <span class="text-success fw-bold">
+                            <i class="fas fa-user-shield"></i> SIM
+                        </span>
+                    @else
+                        <span class="text-muted fw-bold">
+                            NÃO
+                        </span>
+                    @endif
+                </x-show.info-item>
+            @endif
+
             {{-- RODAPÉ --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
