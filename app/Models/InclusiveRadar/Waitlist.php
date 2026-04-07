@@ -4,6 +4,7 @@ namespace App\Models\InclusiveRadar;
 
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Professional;
+use App\Models\Traits\Reportable;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Waitlist extends Model
 {
-    use HasFactory;
+    use HasFactory, Reportable;
 
     protected $fillable = [
         'waitlistable_id',
@@ -30,6 +31,33 @@ class Waitlist extends Model
         'created_at'   => 'datetime',
         'updated_at'   => 'datetime',
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Lista de Espera';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'status',
+            'observation',
+            'requested_at',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'           => 'ID',
+            'status'       => 'Status',
+            'observation'  => 'Observação',
+            'requested_at' => 'Data da Solicitação',
+            'created_at'   => 'Data de Cadastro',
+        ];
+    }
 
     public function waitlistable(): MorphTo
     {

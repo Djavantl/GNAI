@@ -2,13 +2,14 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Models\Traits\Reportable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 
 class InstitutionalEvent extends Model
 {
-    use HasFactory;
+    use HasFactory, Reportable;
 
     protected $table = 'institutional_events';
 
@@ -32,6 +33,43 @@ class InstitutionalEvent extends Model
         'end_time' => 'datetime:H:i',
         'is_active' => 'boolean',
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Eventos Institucionais';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'title',
+            'description',
+            'organizer',
+            'audience',
+            'location',
+            'start_date',
+            'end_date',
+            'is_active',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'          => 'ID',
+            'title'       => 'Título',
+            'description' => 'Descrição',
+            'organizer'   => 'Organizador',
+            'audience'    => 'Público-Alvo',
+            'location'    => 'Local',
+            'start_date'  => 'Data de Início',
+            'end_date'    => 'Data de Término',
+            'is_active'   => 'Ativo',
+            'created_at'  => 'Data de Cadastro',
+        ];
+    }
 
     /**
      * Scope para buscar por título

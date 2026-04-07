@@ -128,6 +128,13 @@ class ReportController extends Controller
 
         $relation = $model->$relationName();
 
+        if (
+            $relation instanceof \Illuminate\Database\Eloquent\Relations\MorphMany ||
+            $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany
+        ) {
+            continue;
+        }
+
         $related = $relation->getRelated();
 
         $relatedClass = get_class($related);
@@ -432,13 +439,35 @@ public function run(Request $request)
 
                 $value = data_get($row, $colKey);
 
-                if ($value instanceof \Illuminate\Support\Collection) {
+                if ($value === null && str_contains($colKey, '.')) {
+                    [$relationName, $relCol] = explode('.', $colKey, 2);
+                    $relationValue = $row->$relationName ?? null;
 
-                    $value = $value
-                        ->filter()
-                        ->unique()
-                        ->values()
-                        ->implode(', ');
+                    if ($relationValue instanceof \Illuminate\Support\Collection) {
+                        $value = $relationValue
+                            ->map(fn($item) => data_get($item, $relCol))
+                            ->filter()
+                            ->unique()
+                            ->values()
+                            ->implode(', ');
+                    }
+                }
+
+                if ($value instanceof \Illuminate\Support\Collection) {
+                    $value = $value->filter()->unique()->values()->implode(', ');
+                }
+
+                if (is_bool($value)) {
+                    $value = $value ? 'Sim' : 'Não';
+                }
+
+                if ($value instanceof \BackedEnum) {
+                    $value = method_exists($value, 'label') ? $value->label() : $value->value;
+                }
+
+                if ($value instanceof \Carbon\CarbonInterface) {
+                    $hasTime = $value->hour > 0 || $value->minute > 0 || $value->second > 0;
+                    $value = $value->format($hasTime ? 'd/m/Y H:i' : 'd/m/Y');
                 }
 
                 if (is_object($value) && !method_exists($value, '__toString')) {

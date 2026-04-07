@@ -2,14 +2,16 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Models\Traits\Reportable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Institution extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Reportable;
 
     protected $table = 'institutions';
 
@@ -32,6 +34,47 @@ class Institution extends Model
         'default_zoom' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Instituições';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'name',
+            'short_name',
+            'city',
+            'state',
+            'district',
+            'address',
+            'is_active',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'         => 'ID',
+            'name'       => 'Nome',
+            'short_name' => 'Nome Abreviado',
+            'city'       => 'Cidade',
+            'state'      => 'Estado',
+            'district'   => 'Bairro',
+            'address'    => 'Endereço',
+            'is_active'  => 'Ativo',
+            'created_at' => 'Data de Cadastro',
+        ];
+    }
+
+    public function latestInspection(): MorphOne
+    {
+        return $this->morphOne(Inspection::class, 'inspectable')
+            ->latestOfMany('inspection_date');
+    }
 
     public function locations(): HasMany
     {

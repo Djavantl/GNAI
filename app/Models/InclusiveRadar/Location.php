@@ -2,6 +2,7 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Models\Traits\Reportable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Location extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Reportable;
 
     protected $table = 'locations';
 
@@ -31,6 +32,35 @@ class Location extends Model
         'longitude' => 'float',
         'is_active' => 'boolean',
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Locais';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'name',
+            'type',
+            'description',
+            'is_active',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'          => 'ID',
+            'name'        => 'Nome',
+            'type'        => 'Tipo',
+            'description' => 'Descrição',
+            'is_active'   => 'Ativo',
+            'created_at'  => 'Data de Cadastro',
+        ];
+    }
 
     public function institution(): BelongsTo
     {

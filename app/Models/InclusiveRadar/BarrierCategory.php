@@ -2,6 +2,7 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Models\Traits\Reportable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BarrierCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Reportable;
 
     protected $table = 'barrier_categories';
 
@@ -25,6 +26,35 @@ class BarrierCategory extends Model
         'is_active' => 'boolean',
         'blocks_map' => 'boolean'
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Categorias de Barreira';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'name',
+            'description',
+            'is_active',
+            'blocks_map',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'          => 'ID',
+            'name'        => 'Nome',
+            'description' => 'Descrição',
+            'is_active'   => 'Ativo',
+            'blocks_map'  => 'Bloqueia Mapa',
+            'created_at'  => 'Data de Cadastro',
+        ];
+    }
 
     public function barriers(): HasMany
     {

@@ -8,9 +8,11 @@ use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\ResourceStatus;
+use App\Models\Traits\Reportable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class AssistiveTechnology extends Model implements AuditableContract
 {
-    use HasFactory, SoftDeletes, Auditable;
+    use HasFactory, SoftDeletes, Auditable, Reportable;
 
     protected $table = 'assistive_technologies';
 
@@ -65,6 +67,47 @@ class AssistiveTechnology extends Model implements AuditableContract
         return AssistiveTechnologyFormatter::class;
     }
 
+    public static function getReportLabel(): string
+    {
+        return 'Tecnologias Assistivas';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'name',
+            'is_digital',
+            'asset_code',
+            'quantity',
+            'quantity_available',
+            'conservation_state',
+            'status',
+            'is_active',
+            'is_loanable',
+            'notes',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'                  => 'ID',
+            'name'                => 'Nome',
+            'is_digital'          => 'Digital',
+            'asset_code'          => 'Código de Patrimônio',
+            'quantity'            => 'Quantidade Total',
+            'quantity_available'  => 'Quantidade Disponível',
+            'conservation_state'  => 'Estado de Conservação',
+            'status'              => 'Status',
+            'is_active'           => 'Ativo',
+            'is_loanable'         => 'Emprestável',
+            'notes'               => 'Observações',
+            'created_at'          => 'Data de Cadastro',
+        ];
+    }
+
     public function deficiencies(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -81,6 +124,12 @@ class AssistiveTechnology extends Model implements AuditableContract
             ->with('images')
             ->orderByDesc('inspection_date')
             ->orderByDesc('created_at');
+    }
+
+    public function latestInspection(): MorphOne
+    {
+        return $this->morphOne(Inspection::class, 'inspectable')
+            ->latestOfMany('inspection_date');
     }
 
     public function loans(): MorphMany

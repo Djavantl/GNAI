@@ -7,6 +7,7 @@ use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\Traits\Reportable;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,10 +16,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Barrier extends Model
 {
-    use HasFactory;
+    use HasFactory, Reportable;
 
     protected $fillable = [
         'name',
@@ -52,6 +54,49 @@ class Barrier extends Model
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Barreiras';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'name',
+            'description',
+            'priority',
+            'is_active',
+            'is_anonymous',
+            'not_applicable',
+            'affected_person_name',
+            'affected_person_role',
+            'location_specific_details',
+            'identified_at',
+            'resolved_at',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'                       => 'ID',
+            'name'                     => 'Nome',
+            'description'              => 'Descrição',
+            'priority'                 => 'Prioridade',
+            'is_active'                => 'Ativo',
+            'is_anonymous'             => 'Anônimo',
+            'not_applicable'           => 'Não Aplicável',
+            'affected_person_name'     => 'Pessoa Afetada',
+            'affected_person_role'     => 'Papel da Pessoa Afetada',
+            'location_specific_details'=> 'Detalhes do Local',
+            'identified_at'            => 'Data de Identificação',
+            'resolved_at'              => 'Data de Resolução',
+            'created_at'               => 'Data de Cadastro',
+        ];
+    }
 
     public function getReporterDisplayNameAttribute(): string
     {
@@ -117,6 +162,12 @@ class Barrier extends Model
             ->with('images')
             ->orderByDesc('inspection_date')
             ->orderByDesc('created_at');
+    }
+
+    public function latestInspection(): MorphOne
+    {
+        return $this->morphOne(Inspection::class, 'inspectable')
+            ->latestOfMany('inspection_date');
     }
 
     public function allImages(): HasManyThrough

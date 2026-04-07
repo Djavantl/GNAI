@@ -5,6 +5,7 @@ namespace App\Models\InclusiveRadar;
 use App\Enums\InclusiveRadar\LoanStatus;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\Traits\Reportable;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Loan extends Model
 {
-    use HasFactory;
+    use HasFactory, Reportable;
 
     protected $table = 'loans';
 
@@ -36,6 +37,37 @@ class Loan extends Model
         'return_date' => 'datetime',
         'status'      => LoanStatus::class,
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Empréstimos';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'id',
+            'status',
+            'loan_date',
+            'due_date',
+            'return_date',
+            'observation',
+            'created_at',
+        ];
+    }
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'id'          => 'ID',
+            'status'      => 'Status',
+            'loan_date'   => 'Data do Empréstimo',
+            'due_date'    => 'Data de Devolução Prevista',
+            'return_date' => 'Data de Devolução Efetiva',
+            'observation' => 'Observação',
+            'created_at'  => 'Data de Cadastro',
+        ];
+    }
 
     public function loanable(): MorphTo
     {
