@@ -6,10 +6,9 @@ RUN apk add --no-cache \
     libxml2-dev libpng-dev libjpeg-turbo-dev \
     freetype-dev libwebp-dev libzip-dev icu-dev zlib-dev
 
+# Extensões PHP necessárias
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install gd zip pcntl pdo pdo_mysql opcache intl \
-    && pecl install xlswriter pcov \
-    && docker-php-ext-enable xlswriter pcov
+    && docker-php-ext-install gd zip pcntl pdo pdo_mysql opcache intl
 
 # --- ESTÁGIO 2: Imagem Final (Runtime) ---
 FROM php:8.4-fpm-alpine
@@ -19,7 +18,7 @@ ARG GROUP_ID=1000
 
 WORKDIR /var/www
 
-# Adicionando dependências de runtime e o mysql-client para o restore
+# Dependências de runtime
 RUN apk add --no-cache \
     curl git unzip shadow \
     libxml2 libpng libjpeg-turbo freetype libwebp libzip icu-libs zlib \
@@ -41,7 +40,6 @@ RUN composer install --no-scripts --no-autoloader --prefer-dist
 
 COPY . .
 
-# Garante que o usuário www-data tenha poder sobre a storage e logs
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
     && composer dump-autoload --optimize --no-scripts
@@ -50,5 +48,4 @@ USER www-data
 
 EXPOSE 9000
 
-# Link da storage e limpeza de cache ao subir
 CMD ["sh", "-c", "php artisan storage:link --force && php artisan config:clear && php-fpm"]
