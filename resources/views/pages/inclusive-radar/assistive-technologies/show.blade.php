@@ -51,7 +51,7 @@
                 </x-show.info-item>
 
                 <x-show.info-item label="Patrimônio / Tombamento" column="col-md-6" isBox="true">
-                    {{ $assistiveTechnology->asset_code ?? 'SEM CÓDIGO' }}
+                    {{ $assistiveTechnology->asset_code ?? 'Não se Aplica' }}
                 </x-show.info-item>
             </div>
 
