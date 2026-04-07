@@ -4,7 +4,7 @@
 <div class="mt-4">
 
     @if($peiDisciplines->isEmpty())
-        <div class="alert alert-secondary">Nenhuma adaptação por disciplina cadastrada.</div>
+        <div class="alert alert-secondary">Nenhuma Adaptações Razoáveis e/ou Acessibilidades Curriculares cadastrada.</div>
     @else
         <div class="row g-3">
             @foreach($peiDisciplines as $item)
@@ -29,6 +29,10 @@
                             description=""
                         >
                             <x-slot:actions>
+                                <x-buttons.pdf-button 
+                                        :href="route('specialized-educational-support.pei.discipline.pdf', [$pei, $item])" 
+                                        target="_blank" 
+                                    />
                                 <x-buttons.link-button 
                                     href="{{ route('specialized-educational-support.pei-discipline.show', [$pei, $item]) }}"
                                     variant="info">

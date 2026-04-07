@@ -51,7 +51,7 @@
                 </x-show.info-item>
 
                 <x-show.info-item label="Patrimônio / Tombamento" column="col-md-6" isBox="true">
-                    {{ $material->asset_code ?? 'SEM CÓDIGO' }}
+                    {{ $material->asset_code ?? 'Não se Aplica' }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Recursos de Acessibilidade" column="col-md-12" isBox="true">

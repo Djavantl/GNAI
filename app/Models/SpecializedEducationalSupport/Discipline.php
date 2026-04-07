@@ -17,6 +17,30 @@ class Discipline extends Model
         'is_active',
     ];
 
+    public static function getReportLabel(): string
+    {
+        return 'Disciplinas';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'name',
+            'description',
+            'is_active',
+        ];
+    }
+
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'name' => 'Nome',
+            'description' => 'Descrição',
+            'is_active' => 'Ativo',
+        ];
+    }
+
 
     public function courses()
     {

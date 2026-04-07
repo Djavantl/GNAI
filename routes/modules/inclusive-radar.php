@@ -12,7 +12,6 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
     LocationController,
     Logs\AccessibleEducationalMaterialLogController,
     Logs\AssistiveTechnologyLogController,
-    TrainingController,
     WaitlistController};
 
 /*
@@ -22,7 +21,7 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
-    // ------------------- BARREIRAS E CATEGORIAS -------------------
+    // ------------------- CATEGORIAS DAS BARREIRAS -------------------
     Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])
         ->name('barrier-categories.index');
     Route::get('/barrier-categories/create', [BarrierCategoryController::class, 'create'])
@@ -38,7 +37,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'destroy'])
         ->name('barrier-categories.destroy');
 
-    // ------------------- INSTITUIÇÕES E LOCALIZAÇÕES -------------------
+    // ------------------- INSTITUIÇÕES -------------------
     Route::get('/institutions', [InstitutionController::class, 'index'])
         ->name('institutions.index');
     Route::get('/institutions/create', [InstitutionController::class, 'create'])
@@ -54,6 +53,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/institutions/{institution}', [InstitutionController::class, 'destroy'])
         ->name('institutions.destroy');
 
+    // ------------------- LOCALIZAÇÕES -------------------
     Route::get('/locations', [LocationController::class, 'index'])
         ->name('locations.index');
     Route::get('/locations/create', [LocationController::class, 'create'])
@@ -125,12 +125,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('assistive-technologies.logs')
         ->middleware('can:assistive-technology.logs');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/logs/pdf', [AssistiveTechnologyLogController::class, 'generatePdf']
-    )->name('assistive-technologies.logs.pdf')
-    ->middleware('can:assistive-technology.logs.pdf');
-
-    // ------------------- BARREIRAS (RADAR INCLUSIVO) -------------------
-
+    // ------------------- BARREIRAS -------------------
     Route::get('/barriers', [BarrierController::class, 'index'])
         ->name('barriers.index')->middleware('can:barrier.index');
 
@@ -189,11 +184,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/accessible-educational-materials/{material}/logs', [AccessibleEducationalMaterialLogController::class, 'index'])
         ->name('accessible-educational-materials.logs')->middleware('can:material.logs');
 
-    Route::get('/accessible-educational-materials/{material}/logs/pdf', [AccessibleEducationalMaterialLogController::class, 'generatePdf'])
-        ->name('accessible-educational-materials.logs.pdf')->middleware('can:material.logs.pdf');
-
-
-
+    // ------------------- AGENDA INSTITUCIONAL -------------------
     Route::get('/institutional-events', [InstitutionalEventController::class, 'index'])
         ->name('institutional-events.index')->middleware('can:institutional-event.index');
 

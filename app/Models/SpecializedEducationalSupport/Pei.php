@@ -44,9 +44,6 @@ class Pei extends Model
             'created_at',
 
             // relações principais
-            'student.person.name',
-            'course.name',
-            'semester.label',
             'creator.name',
         ];
     }
@@ -61,9 +58,6 @@ class Pei extends Model
             'is_current' => 'Versão Atual',
             'created_at' => 'Data de Criação',
 
-            'student.person.name' => 'Aluno',
-            'course.name' => 'Curso',
-            'semester.label' => 'Semestre',
             'creator.name' => 'Criado por',
         ];
     }

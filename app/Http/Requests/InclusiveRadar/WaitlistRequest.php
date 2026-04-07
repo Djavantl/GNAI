@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\InclusiveRadar;
 
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AssistiveTechnology;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

@@ -15,6 +15,37 @@ class Teacher extends Model
 
     protected $fillable = ['person_id', 'registration'];
 
+     public static function getEmbeddedRelations(): array
+    {
+        return ['person'];
+    }
+
+
+    public static function getReportLabel(): string
+    {
+        return 'Professores';
+    }
+
+    public static function getReportColumns(): ?array
+    {
+        return ['person.name', 'registration', 'person.email', 'person.document', 'person.birth_date', 'person.gender', 'person.phone', 'person.address'];
+    }
+
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'registration' => 'Matrícula',
+            'person.name'  => 'Nome do Professor',
+            'person.email' => 'E-mail',
+            'person.document'=> 'CPF',
+            'person.birth_date'=> 'Data de Nascimento',
+            'person.gender'=> 'Gênero',
+            'person.phone'=> 'Telefone',
+            'person.address'=> 'Endereço',
+        ];
+    }
+
     public function person() {
         return $this->belongsTo(Person::class);
     }

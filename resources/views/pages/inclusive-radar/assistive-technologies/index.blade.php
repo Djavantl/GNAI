@@ -30,7 +30,6 @@
                 data-target="#assistive-technologies-table"
                 :fields="[
                     ['name' => 'name', 'placeholder' => 'Filtrar por nome...'],
-                    ['name' => 'type', 'placeholder' => 'Filtrar por tipo...'],
                     ['name' => 'is_digital', 'type' => 'select', 'options' => [
                         '' => 'Natureza (Todos)',
                         '1' => 'Digital',
