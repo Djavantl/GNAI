@@ -58,7 +58,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
             $assetCode = $isDigital ? null : 'PAT-MPA-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
             $conservationState = $isDigital ? 'naoaplicavel' : $allowedStates[array_rand($allowedStates)];
             $notes = $this->generateNotes($material['name'], $conservationState, $isDigital);
-            $quantity = $isDigital ? 999 : rand(1, 5);
+            $quantity = $isDigital ? 999 : rand(1, 1);
             $quantityAvailable = $quantity;
 
             // Criar o material
