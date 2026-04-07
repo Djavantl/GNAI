@@ -32,6 +32,38 @@ class Professional extends Model
         'inativo' => ['inactive'],
     ];
 
+    public static function getEmbeddedRelations(): array
+    {
+        return ['person'];
+    }
+
+
+    public static function getReportLabel(): string
+    {
+        return 'Profissionais';
+    }
+
+    public static function getReportColumns(): ?array
+    {
+        return ['person.name', 'registration', 'status', 'entry_date', 'person.email', 'person.document', 'person.birth_date', 'person.gender', 'person.phone', 'person.address'];
+    }
+
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'registration' => 'Matrícula',
+            'person.name'  => 'Nome do Profissional',
+            'entry_date'   => 'Data de Ingresso',
+            'person.email' => 'E-mail',
+            'person.document'=> 'CPF',
+            'person.birth_date'=> 'Data de Nascimento',
+            'person.gender'=> 'Gênero',
+            'person.phone'=> 'Telefone',
+            'person.address'=> 'Endereço',
+        ];
+    }
+
     public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class);

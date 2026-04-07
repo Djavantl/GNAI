@@ -187,30 +187,31 @@ class PeiController extends Controller
     //     }
     // }
 
-    public function generatePdf(Pei $pei)
+   public function generateDisciplinePdf(Pei $pei, PeiDiscipline $peiDiscipline)
     {
+        // Garante que a disciplina pertence ao PEI informado
+        if ($peiDiscipline->pei_id !== $pei->id) {
+            abort(404);
+        }
 
         $pei->load([
             'student.person',
+            'student.deficiencies',
             'studentContext',
             'course',
-            'semester',
-            'peiDisciplines.discipline',
-            'peiDisciplines.teacher.person',
-            'professional.person'
+            'semester'
         ]);
 
-        $pdf = app('dompdf.wrapper')
-            ->loadView('pages.specialized-educational-support.peis.pdf', compact('pei'))
-            ->setPaper('a4', 'portrait');
+        $peiDiscipline->load(['discipline', 'teacher.person']);
 
-        // Para o nome do arquivo, pegamos a disciplina da primeira relação vinculada (se existir)
-        $studentName = $pei->student->person->name ?? 'Estudante';
-        $version = $pei->version ?? 'Geral';
+        $pdf = Pdf::loadView('pages.specialized-educational-support.peis.pdf', [
+            'pei' => $pei,
+            'item' => $peiDiscipline
+        ])->setPaper('a4', 'portrait');
 
-        return $pdf->stream("PEI_{$studentName}_v{$version}.pdf");
+        $disciplineName = str_replace(' ', '_', $peiDiscipline->discipline->name);
+        return $pdf->stream("PEI_{$disciplineName}.pdf");
     }
-
     public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)
     {
         $peiDiscipline->load(['teacher.person', 'discipline', 'creator']);

@@ -68,7 +68,7 @@
             </div>
         </div>
         {{-- DEFICIÊNCIAS --}}
-        <div class="col-md-12 border-top pt-4 ">
+        <!-- <div class="col-md-12 border-top pt-4 ">
             <div class="row g-2">
                 @forelse($student->deficiencies as $def)
                     <div class="col-md-6">
@@ -90,7 +90,7 @@
                     </div>
                 @endforelse
             </div>
-        </div>
+        </div> -->
     </div>
 
     {{-- ================= INFORMAÇÕES DA AVALIAÇÃO ================= --}}

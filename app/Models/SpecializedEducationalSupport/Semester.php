@@ -4,10 +4,13 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Reportable;
 
 class Semester extends Model
 {
     use HasFactory;
+    use Reportable;
+
 
     protected $table = 'semesters';
 
@@ -27,6 +30,30 @@ class Semester extends Model
         'end_date'   => 'date',
         'is_current' => 'boolean',
     ];
+
+    public static function getReportLabel(): string
+    {
+        return 'Semestres';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'label',
+            'term',
+            'year',
+        ];
+    }
+
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'label' => 'Nome',
+            'year' => 'Ano',
+            'term' => 'Termo',
+        ];
+    }
 
     /**
      * Retorna o semestre atual do sistema

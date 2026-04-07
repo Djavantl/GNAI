@@ -14,7 +14,7 @@ use \App\Models\Traits\Reportable;
 class Person extends Model
 {
     // 2. Adicionar a Trait Auditable aqui
-    use HasFactory, Auditable, Reportable;
+    use HasFactory, Auditable;
 
     protected $fillable = [
         'name',

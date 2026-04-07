@@ -30,10 +30,6 @@
     <div class="d-flex gap-2">
         
 
-        
-        <x-buttons.pdf-button :href="route('specialized-educational-support.pei.pdf', $pei)" />
-        
-
         @if(!$pei->is_finished)
             <form method="POST"
                 action="{{ route('specialized-educational-support.pei.finish', $pei) }}"
@@ -114,9 +110,9 @@
                             column="col-md-6"
                             :value="$def->name"
                         >
-                            <span class="small text-muted">
+                            <!-- <span class="small text-muted">
                                 Grau: {{ $def->pivot->severity ?? '—' }}
-                            </span>
+                            </span> -->
                         </x-ui.info-card>
                     @empty
                         <x-ui.info-card
@@ -182,7 +178,7 @@
             ])
         </div>
 
-        <x-forms.section title="Adaptações Específicas" />
+        <x-forms.section title="Adaptações Razoáveis e/ou Acessibilidades Curriculares" />
 
         <div class="px-4 pt-3 pb-2 d-flex justify-content-end align-items-center">
             @if(!$pei->is_finished)

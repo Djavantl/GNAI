@@ -1,116 +1,128 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-    <title>PEI - {{ $pei->student->person->name }}</title>
+    <meta charset="UTF-8">
+    <title>PEI - {{ $item->discipline->name }} - {{ $pei->student->person->name }}</title>
     <style>
-        /* 1. IMPORTANTE: Use DejaVu Sans para corrigir o ç e ã */
-        body {
-            font-family: 'DejaVu Sans', sans-serif;
-            line-height: 1.5;
-            color: #333;
-        }
-
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
+        @page { margin: 1.5cm; }
+        body { font-family: "Times New Roman", Times, serif; font-size: 12px; color: #000; line-height: 1.4; background: #fff; }
         
-        table, tr, td, th { page-break-inside: avoid !important; }
+        .header { text-align: center; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; }
+        .header p { margin: 2px 0; font-size: 11px; }
+        .header h1 { font-size: 14px; margin-top: 10px; border: 1px solid #000; padding: 8px; }
+
+        .section-title { font-weight: bold; text-transform: uppercase; margin-top: 20px; margin-bottom: 5px; border-bottom: 2px solid #000; font-size: 11px; padding-bottom: 2px; }
+        .field-label { font-weight: bold; display: block; margin-top: 12px; text-transform: uppercase; font-size: 10px; color: #333; }
         
-        .adaptation-block {
-            margin-bottom: 30px;
-            border: 1px solid #eee;
-            padding: 10px;
-        }
+        .content-box { border: 1px solid #000; padding: 10px; min-height: 40px; margin-top: 5px; width: 100%; box-sizing: border-box; text-align: justify; }
+        
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .info-table td { border: 1px solid #000; padding: 8px; vertical-align: top; }
+        
+        .signature-table { width: 100%; margin-top: 40px; border-collapse: collapse; }
+        .signature-table td { width: 50%; padding: 20px 10px 0 10px; text-align: center; }
+        .sig-line { border-top: 1px solid #000; font-size: 9px; text-transform: uppercase; padding-top: 5px; }
+        
+        .page-break { page-break-after: always; }
+        .clear { clear: both; }
 
-        .discipline-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-left: 4px solid #333;
-            margin-bottom: 15px;
-        }
-
-        .field-group { margin-bottom: 15px; }
-        .field-label { 
-            font-weight: bold; 
-            font-size: 11px; 
-            color: #555; 
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        /* Ajuste para que o HTML renderizado não quebre o layout */
-        .field-value { 
-            font-size: 12px; 
-            text-align: justify;
-        }
-        .field-value p { margin-bottom: 5px; }
-
-        @page { margin: 80px 25px; }
-        footer {
-            position: fixed; bottom: -60px; left: 0px; right: 0px; 
-            height: 50px; text-align: center; font-size: 10px; color: #777;
-        }
-        .pagenum:before { content: counter(page); }
+        /* Renderização de HTML */
+        .content-box p { margin: 0 0 10px 0; }
+        .content-box ul, .content-box ol { margin-left: 20px; }
     </style>
 </head>
 <body>
-    <footer>Página <span class="pagenum"></span></footer>
 
     <div class="header">
-        <h1>Plano Educacional Individualizado (PEI)</h1>
-        <p><strong>Aluno(a):</strong> {{ $pei->student->person->name }} | <strong>Matrícula:</strong> {{ $pei->student->registration ?? 'N/A' }}</p>
-        <p><strong>Curso:</strong> {{ $pei->course->name }} | <strong>Semestre/Ano:</strong> {{ $pei->semester->label }}</p>
+        <h1>PLANO EDUCACIONAL INDIVIDUALIZADO (PEI)</h1>
     </div>
 
-    <x-pdf.section-title title="1. IDENTIFICAÇÃO E CONTEXTO" />
-    <x-pdf.table>
-        <x-pdf.row>
-            <x-pdf.info-item label="CURSO" :value="$pei->course->name" colspan="2" />
-            <x-pdf.info-item label="VERSÃO" :value="$pei->version ?? '1'" colspan="2" /> 
-        </x-pdf.row>
-        <x-pdf.row>
-             <x-pdf.info-item label="PROFISSIONAL RESPONSÁVEL (AEE)" :value="$pei->professional->person->name ?? '---'" colspan="4" /> 
-        </x-pdf.row>
-    </x-pdf.table>
+    <table class="info-table">
+        <tr>
+            <td colspan="2"><span class="field-label">Nome do Estudante:</span> {{ $pei->student->person->name }}</td>
+        </tr>
+        <tr>
+            <td width="60%"><span class="field-label">Curso:</span> {{ $pei->course->name }}</td>
+            <td width="40%"><span class="field-label">Ano - Semestre/Trimestre:</span> {{ $pei->semester->label }}</td>
+        </tr>
+        <tr>
+            <td width="60%"><span class="field-label">Componente Curricular:</span> {{ mb_strtoupper($item->discipline->name, 'UTF-8') }}</td>
+            <td width="40%"><span class="field-label">Docente:</span> {{ $item->teacher->person->name }}</td>
+        </tr>
+    </table>
 
-    <h2 style="text-align: center; color: #333; margin-top: 20px;">2. ADAPTAÇÕES POR DISCIPLINA</h2>
+    <div class="section-title">Informações de Apoio Pedagógico (NAPNE)</div>
+    
+    <span class="field-label">Histórico (Trajetória do Estudante):</span>
+    <div class="content-box">{{ $pei->studentContext->history }}</div>
 
-    @forelse($pei->peiDisciplines as $item)
-        <div class="adaptation-block">
-            <div class="discipline-header">
-                <span style="font-size: 14px; font-weight: bold;">DISCIPLINA: {{ mb_strtoupper($item->discipline->name, 'UTF-8') }}</span><br>
-                <span style="font-size: 11px;">Professor(a): {{ $item->teacher->person->name }}</span>
-            </div>
+    <span class="field-label">Necessidades Educacionais Específicas:</span>
+    <div class="content-box">{{ $pei->studentContext->specific_educational_needs }}</div>
 
-            <div class="field-group">
-                <span class="field-label">Conteúdo Programático Adaptado</span>
-                <div class="field-value">{!! $item->content_programmatic !!}</div>
-            </div>
+    <span class="field-label">Conhecimentos, Habilidades, Capacidades e Interesses:</span>
+    <div class="content-box">{{ $pei->studentContext->strengths }}</div>
 
-            <div class="field-group">
-                <span class="field-label">Objetivos Específicos</span>
-                <div class="field-value">{!! $item->specific_objectives !!}</div>
-            </div>
+    <span class="field-label">Dificuldades Apresentadas:</span>
+    <div class="content-box">{{ $pei->studentContext->difficulties }}</div>
 
-            <div class="field-group">
-                <span class="field-label">Metodologias e Recursos</span>
-                <div class="field-value">{!! $item->methodologies !!}</div>
-            </div>
+    <div class="section-title">Adaptações Razoáveis e/ou Acessibilidades Curriculares</div>
 
-            <div class="field-group">
-                <span class="field-label">Processo de Avaliação</span>
-                <div class="field-value">{!! $item->evaluations !!}</div>
-            </div>
+    <span class="field-label">Objetivos Específicos:</span>
+    <div class="content-box">{!! $item->specific_objectives !!}</div>
+
+    <span class="field-label">Conteúdos Programáticos:</span>
+    <div class="content-box">{!! $item->content_programmatic !!}</div>
+
+    <span class="field-label">Metodologia:</span>
+    <div class="content-box">{!! $item->methodologies !!}</div>
+
+    <span class="field-label">Avaliação:</span>
+    <div class="content-box">{!! $item->evaluations !!}</div>
+
+    <table class="signature-table">
+        <tr>
+            <td><div class="sig-line">Assinatura do Docente</div></td>
+            <td><div class="sig-line">Assinatura do Coordenador de Curso</div></td>
+        </tr>
+        <tr>
+            <td style="padding-top: 40px;"><div class="sig-line">NAPNE / NAAf</div></td>
+            <td style="padding-top: 40px;"><div class="sig-line">Setor Pedagógico / Assistência Estudantil</div></td>
+        </tr>
+    </table>
+
+    {{-- Anexo II anexado ao final do documento individual --}}
+    <div class="page-break"></div>
+    
+    <div class="header">
+        <p>Instituto Federal de Educação, Ciência e Tecnologia do Rio Grande do Sul</p>
+        <h1>ANEXO II - DECLARAÇÃO</h1>
+    </div>
+
+    <div style="text-align: justify; margin-top: 40px; line-height: 2;">
+        <p>
+            Declaro para os devidos fins que eu, <strong>{{ $pei->student->person->name }}</strong>, 
+            CPF nº <strong>{{ $pei->student->person->document ?? '___________' }}</strong>, na condição de pessoa com deficiência 
+            e tendo ingressado por reserva de vagas nesta instituição, estou ciente de que tenho direito ao apoio, 
+            acompanhamentos e demais procedimentos previstos no processo de acessibilidade curricular - 
+            Plano Educacional Individualizado (PEI).
+        </p>
+
+        <p style="margin-top: 20px;">
+            ( &nbsp; ) Desejo receber os acompanhamentos previstos.
+        </p>
+        <p>
+            ( &nbsp; ) Declaro, outrossim, que me <strong>recuso</strong> a receber os acompanhamentos e demais procedimentos supramencionados.
+        </p>
+
+        <div style="margin-top: 50px; text-align: right;">
+            {{ config('app.city', 'Guanambi - BA') }}, {{ date('d') }} de {{ date('m') }} de {{ date('Y') }}.
         </div>
-    @empty
-        <p style="text-align: center;">Nenhuma adaptação curricular registrada.</p>
-    @endforelse
 
-    <div class="signature-wrapper" style="margin-top: 50px;">
-        <x-pdf.table-signatures>
-             <x-pdf.table-signature-label label="RESPONSÁVEL TÉCNICO (AEE)" />
-             <x-pdf.table-signature-label label="COORDENAÇÃO PEDAGÓGICA" />
-        </x-pdf.table-signatures>
+        <div style="margin-top: 80px; text-align: center;">
+            <div style="border-top: 1px solid #000; width: 300px; margin: 0 auto;"></div>
+            <p style="font-size: 10px; text-transform: uppercase;">Assinatura do estudante ou responsável legal</p>
+        </div>
     </div>
+
 </body>
 </html>

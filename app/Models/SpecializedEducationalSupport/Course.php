@@ -17,6 +17,30 @@ class Course extends Model
         'is_active',
     ];
 
+    public static function getReportLabel(): string
+    {
+        return 'Cursos';
+    }
+
+    public static function getReportColumns(): array
+    {
+        return [
+            'name',
+            'description',
+            'is_active',
+        ];
+    }
+
+
+    public static function getReportColumnLabels(): array
+    {
+        return [
+            'name' => 'Nome',
+            'description' => 'Descrição',
+            'is_active' => 'Ativo',
+        ];
+    }
+
     public function studentCourses()
     {
         return $this->hasMany(StudentCourse::class);
