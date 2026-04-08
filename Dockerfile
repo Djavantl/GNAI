@@ -1,5 +1,5 @@
 # --- ESTÁGIO 1: Construção (Build) ---
-FROM php:8.4-fpm-alpine AS builder
+FROM php:8.2-fpm-alpine AS builder
 
 RUN apk add --no-cache \
     $PHPIZE_DEPS \
@@ -11,7 +11,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install gd zip pcntl pdo pdo_mysql opcache intl
 
 # --- ESTÁGIO 2: Imagem Final (Runtime) ---
-FROM php:8.4-fpm-alpine
+FROM php:8.2-fpm-alpine
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -34,7 +34,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN usermod -u ${USER_ID} www-data && groupmod -g ${GROUP_ID} www-data \
     && git config --global --add safe.directory /var/www
 
-COPY composer.json composer.lock ./
+COPY composer.json ./
 
 RUN composer install --no-scripts --no-autoloader --prefer-dist
 
