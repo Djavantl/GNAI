@@ -62,10 +62,10 @@ return [
                 (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
             'dump' => [
-                'dump_binary_path' => '/usr/bin',
-                'use_single_transaction',
+                'dump_binary_path' => env('BACKUP_MYSQL_BINARY_PATH', '/usr/bin'),
+                'use_single_transaction' => true,
                 'timeout' => 60 * 5,
-                'add_extra_option' => '--protocol=tcp --skip-ssl',
+                'add_extra_option' => env('BACKUP_MYSQL_EXTRA_OPTIONS', '--protocol=tcp --skip-ssl'),
             ],
         ],
 
