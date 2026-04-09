@@ -2,9 +2,9 @@
 
 namespace App\Services\InclusiveRadar;
 
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\InstitutionalEvent;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 
 class InstitutionalEventService
@@ -56,16 +56,12 @@ class InstitutionalEventService
 
         // Data final não pode ser antes da inicial
         if ($endDate->lt($startDate)) {
-            throw ValidationException::withMessages([
-                'end_date' => 'A data de término não pode ser anterior à data de início.',
-            ]);
+            throw new BusinessRuleException('A data de término não pode ser anterior à data de início.');
         }
 
         // Se a data final for o mesmo dia da inicial, hora final deve ser maior que a inicial
         if ($startDate->eq($endDate) && $endTime->lte($startTime)) {
-            throw ValidationException::withMessages([
-                'end_time' => 'O horário de término deve ser maior que o horário de início para o mesmo dia.',
-            ]);
+            throw new BusinessRuleException('O horário de término deve ser maior que o horário de início para o mesmo dia.');
         }
     }
 }

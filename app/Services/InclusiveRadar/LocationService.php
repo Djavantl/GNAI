@@ -5,7 +5,6 @@ namespace App\Services\InclusiveRadar;
 use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Location;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class LocationService
 {
@@ -32,9 +31,7 @@ class LocationService
                     ->exists();
 
                 if ($hasUnresolvedBarriers) {
-                    throw ValidationException::withMessages([
-                        'is_active' => 'Existem barreiras não resolvidas vinculadas a este local. Resolva-as antes de desativá-lo.'
-                    ]);
+                    throw new BusinessRuleException('Existem barreiras não resolvidas vinculadas a este local. Resolva-as antes de desativá-lo.');
                 }
             }
 

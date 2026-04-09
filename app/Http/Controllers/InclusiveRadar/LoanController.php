@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\InclusiveRadar;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-
 use App\Enums\InclusiveRadar\LoanStatus;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LoanRequest;
 use App\Models\InclusiveRadar\{AccessibleEducationalMaterial, AssistiveTechnology, Loan};
+use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use App\Models\SpecializedEducationalSupport\{Professional, Student};
 use App\Services\InclusiveRadar\LoanService;
-
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -24,171 +24,75 @@ class LoanController extends Controller
 
     public function index(Request $request): View
     {
-        $studentName      = $request->student ?? null;
-        $professionalName = $request->professional ?? null;
-        $status           = $request->status
-            ? LoanStatus::tryFrom($request->status)
-            : null;
-        $itemName         = $request->item ?? null;
-
-        $loans = Loan::with([
-            'loanable',
-            'student.person',
-            'professional.person',
-            'user'
-        ])
-            ->student($studentName)
-            ->professional($professionalName)
-            ->item($itemName)
-            ->byStatus($status)
+        $loans = Loan::with(['loanable', 'student.person', 'professional.person', 'user'])
+            ->student($request->student)
+            ->professional($request->professional)
+            ->item($request->item)
+            ->byStatus($request->status ? LoanStatus::tryFrom($request->status) : null)
             ->orderByDesc('loan_date')
             ->paginate(10)
             ->withQueryString();
 
         if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.loans.partials.table',
-                compact('loans')
-            );
+            return view('pages.inclusive-radar.loans.partials.table', compact('loans'));
         }
 
-        return view(
-            'pages.inclusive-radar.loans.index',
-            compact('loans')
-        );
+        return view('pages.inclusive-radar.loans.index', compact('loans'));
     }
 
     public function create(Request $request): View
     {
-        $selectedStudentId      = $request->query('student_id');
-        $selectedProfessionalId = $request->query('professional_id');
-        $selectedItemId         = $request->query('item_id');
-        $selectedItemType       = $request->query('item_type');
-
-        $students = Student::with('person')
-            ->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($s) => [
-                $s->id => $s->person?->name . " ({$s->registration})"
-            ]);
-
-        $professionals = Professional::with('person')
-            ->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($p) => [
-                $p->id => $p->person?->name . " - " . $p->registration
-            ]);
-
-        $assistiveTechnologies = AssistiveTechnology::where('is_active', true)
-            ->where('is_loanable', true)
-            ->where('status', ResourceStatus::AVAILABLE)
-            ->get()
-            ->filter(fn($item) => $item->is_digital || ($item->quantity_available ?? 0) > 0)
-            ->map(fn($item) => [
-                'id'                 => $item->id,
-                'name'               => $item->name,
-                'asset_code'         => $item->asset_code ?? 'S/N',
-                'is_digital'         => (bool)$item->is_digital,
-                'quantity_available' => $item->quantity_available,
-            ])
-            ->values();
-
-        $educationalMaterials = AccessibleEducationalMaterial::where('is_active', true)
-            ->where('is_loanable', true)
-            ->where('status', ResourceStatus::AVAILABLE)
-            ->get()
-            ->filter(fn($item) => $item->is_digital || ($item->quantity_available ?? 0) > 0)
-            ->map(fn($item) => [
-                'id'                 => $item->id,
-                'name'               => $item->name,
-                'asset_code'         => $item->asset_code ?? 'S/N',
-                'is_digital'         => (bool)$item->is_digital,
-                'quantity_available' => $item->quantity_available,
-            ])
-            ->values();
-
-        return view('pages.inclusive-radar.loans.create', [
-            'students'               => $students,
-            'professionals'          => $professionals,
-            'assistive_technologies' => $assistiveTechnologies,
-            'educational_materials'  => $educationalMaterials,
-            'authUser'               => auth()->user(),
-            'selectedStudentId'      => $selectedStudentId,
-            'selectedProfessionalId' => $selectedProfessionalId,
-            'selectedItemId'         => $selectedItemId,
-            'selectedItemType'       => $selectedItemType,
-        ]);
+        return view('pages.inclusive-radar.loans.create',
+            $this->formData() + [
+                'assistive_technologies' => $this->loanableItems(AssistiveTechnology::class),
+                'educational_materials' => $this->loanableItems(AccessibleEducationalMaterial::class),
+                'authUser' => auth()->user(),
+                'selectedStudentId' => $request->query('student_id'),
+                'selectedProfessionalId' => $request->query('professional_id'),
+                'selectedItemId' => $request->query('item_id'),
+                'selectedItemType' => $request->query('item_type'),
+            ]
+        );
     }
 
     public function store(LoanRequest $request): RedirectResponse
     {
-        try {
-            $this->service->store($request->validated());
+        $this->service->store($request->validated());
 
-            return redirect()
-                ->route('inclusive-radar.loans.index')
-                ->with('success', 'Empréstimo realizado com sucesso!');
-        } catch (\Throwable $e) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'loanable_id' => $e->getMessage()
-                ]);
-        }
+        return redirect()
+            ->route('inclusive-radar.loans.index')
+            ->with('success', 'Empréstimo realizado com sucesso!');
     }
 
     public function show(Loan $loan): View
     {
-        $loan->load([
-            'loanable',
-            'student.person',
-            'professional.person',
-            'user'
-        ]);
+        $loan->load(['loanable', 'student.person', 'professional.person', 'user']);
 
         $currentStatus = $loan->status instanceof LoanStatus
             ? $loan->status
             : LoanStatus::tryFrom($loan->status);
 
-        $isOverdue = ($currentStatus === LoanStatus::ACTIVE && $loan->due_date->isPast());
-
-        $statusLabel = $isOverdue ? 'Em Atraso' : ($currentStatus?->label() ?? $loan->status);
-        $statusColor = $isOverdue ? 'danger' : ($currentStatus?->color() ?? 'secondary');
+        $isOverdue = $currentStatus === LoanStatus::ACTIVE && $loan->due_date->isPast();
 
         return view('pages.inclusive-radar.loans.show', [
-            'loan'        => $loan,
-            'statusLabel' => $statusLabel,
-            'statusColor' => $statusColor,
-            'isOverdue'   => $isOverdue,
-            'authUser'    => auth()->user(),
+            'loan' => $loan,
+            'statusLabel' => $isOverdue ? 'Em Atraso' : ($currentStatus?->label() ?? $loan->status),
+            'statusColor' => $isOverdue ? 'danger' : ($currentStatus?->color() ?? 'secondary'),
+            'isOverdue' => $isOverdue,
+            'authUser' => auth()->user(),
         ]);
     }
 
     public function edit(Loan $loan): View
     {
-        $students = Student::with('person')
-            ->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($s) => [
-                $s->id => $s->person?->name . " ({$s->registration})"
-            ]);
-
-        $professionals = Professional::with('person')
-            ->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($p) => [
-                $p->id => $p->person?->name . " - " . $p->registration
-            ]);
-
         $loan->load(['loanable', 'student.person', 'professional.person']);
-        $authUser = auth()->user();
 
-        return view('pages.inclusive-radar.loans.edit', compact(
-            'loan',
-            'students',
-            'professionals',
-            'authUser'
-        ));
+        return view('pages.inclusive-radar.loans.edit',
+            $this->formData() + [
+                'loan' => $loan,
+                'authUser' => auth()->user(),
+            ]
+        );
     }
 
     public function update(LoanRequest $request, Loan $loan): RedirectResponse
@@ -204,7 +108,7 @@ class LoanController extends Controller
     {
         $this->service->markAsReturned($loan, [
             'is_damaged' => $request->boolean('is_damaged'),
-            'observation' => $request->input('observation')
+            'observation' => $request->input('observation'),
         ]);
 
         return redirect()
@@ -221,21 +125,52 @@ class LoanController extends Controller
             ->with('success', 'Registro de empréstimo removido com sucesso!');
     }
 
-    public function generatePdf(Loan $loan)
+    public function generatePdf(Loan $loan): Response
     {
-        $loan->load([
-            'loanable',
-            'student.person',
-            'professional.person'
-        ]);
+        $loan->load(['loanable', 'student.person', 'professional.person']);
 
-        $pdf = Pdf::loadView(
-            'pages.inclusive-radar.loans.pdf',
-            compact('loan')
-        )
+        $pdf = Pdf::loadView('pages.inclusive-radar.loans.pdf', compact('loan'))
             ->setPaper('a4', 'portrait')
             ->setOption(['enable_php' => true]);
 
         return $pdf->stream("Loan_{$loan->id}.pdf");
+    }
+
+    // -------------------------------------------------------------------------
+
+    private function formData(): array
+    {
+        return [
+            'students' => Student::with('person')
+                ->get()
+                ->sortBy('person.name')
+                ->mapWithKeys(fn($s) => [$s->id => $s->person?->name . " ({$s->registration})"]),
+
+            'professionals' => Professional::with('person')
+                ->get()
+                ->sortBy('person.name')
+                ->mapWithKeys(fn($p) => [$p->id => $p->person?->name . " - " . $p->registration]),
+        ];
+    }
+
+    /**
+     * Retorna itens disponíveis para empréstimo de um modelo específico,
+     * já formatados para o select da view.
+     */
+    private function loanableItems(string $model): Collection
+    {
+        return $model::where('is_active', true)
+            ->where('is_loanable', true)
+            ->where('status', ResourceStatus::AVAILABLE)
+            ->get()
+            ->filter(fn($item) => $item->is_digital || ($item->quantity_available ?? 0) > 0)
+            ->map(fn($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'asset_code' => $item->asset_code ?? 'S/N',
+                'is_digital' => (bool) $item->is_digital,
+                'quantity_available' => $item->quantity_available,
+            ])
+            ->values();
     }
 }

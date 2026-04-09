@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\InclusiveRadar;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ResourceStatus;
@@ -13,10 +12,9 @@ use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\Inspection;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\AssistiveTechnologyService;
-
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AssistiveTechnologyController extends Controller
@@ -27,23 +25,14 @@ class AssistiveTechnologyController extends Controller
 
     public function index(Request $request): View
     {
-        $name = trim($request->name ?? '');
+        $name  = trim($request->name ?? '');
+        $status = ResourceStatus::tryFrom($request->status ?? '');
 
-        $query = AssistiveTechnology::with([
-            'deficiencies'
-        ])
+        $assistiveTechnologies = AssistiveTechnology::with('deficiencies')
             ->filterName($name ?: null)
             ->active($request->is_active)
-            ->digital($request->is_digital);
-
-        if ($request->filled('status')) {
-            $status = ResourceStatus::tryFrom($request->status);
-            if ($status) {
-                $query->where('status', $status->value);
-            }
-        }
-
-        $assistiveTechnologies = $query
+            ->digital($request->is_digital)
+            ->when($status, fn($q) => $q->where('status', $status->value))
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
@@ -63,22 +52,10 @@ class AssistiveTechnologyController extends Controller
 
     public function create(): View
     {
-        return view('pages.inclusive-radar.assistive-technologies.create', [
-
-            'deficiencies' => Deficiency::orderBy('name')->get(),
-
-            'inspectionTypes' => collect(InspectionType::cases())
-                ->filter(fn($item) => $item !== InspectionType::MAINTENANCE)
-                ->mapWithKeys(fn($item) => [$item->value => $item->label()]),
-            'defaultInspection' => InspectionType::INITIAL->value,
-
-            'resourceStatuses' => collect(ResourceStatus::cases())
-                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
-            'defaultStatus' => ResourceStatus::AVAILABLE->value,
-
-            'conservationStates' => collect(ConservationState::cases())
-                ->mapWithKeys(fn($item) => [$item->value => $item->label()]),
-        ]);
+        return view(
+            'pages.inclusive-radar.assistive-technologies.create',
+            $this->formData(InspectionType::INITIAL->value)
+        );
     }
 
     public function store(AssistiveTechnologyRequest $request): RedirectResponse
@@ -109,23 +86,16 @@ class AssistiveTechnologyController extends Controller
     {
         $assistiveTechnology->load(['deficiencies', 'inspections.images']);
 
-        return view('pages.inclusive-radar.assistive-technologies.edit', [
-            'assistiveTechnology' => $assistiveTechnology,
-
-            'resourceStatuses' => collect(ResourceStatus::cases())
-                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
-
-            'conservationStates' => collect(ConservationState::cases())
-                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
-
-            'inspectionTypes' => collect(InspectionType::cases())
-                ->mapWithKeys(fn($item) => [$item->value => $item->label()]),
-            'defaultInspection' => InspectionType::PERIODIC->value,
-
-            'deficiencies' => Deficiency::orderBy('name')->get(),
-
-            'activeLoans' => $assistiveTechnology->loans()->whereIn('status', ['active', 'late'])->count(),
-        ]);
+        return view(
+            'pages.inclusive-radar.assistive-technologies.edit',
+            $this->formData(InspectionType::PERIODIC->value) + [
+                'assistiveTechnology' => $assistiveTechnology,
+                'activeLoans' => $assistiveTechnology
+                    ->loans()
+                    ->whereIn('status', ['active', 'late'])
+                    ->count(),
+            ]
+        );
     }
 
     public function update(AssistiveTechnologyRequest $request, AssistiveTechnology $assistiveTechnology): RedirectResponse
@@ -148,10 +118,7 @@ class AssistiveTechnologyController extends Controller
 
     public function generatePdf(AssistiveTechnology $assistiveTechnology): Response
     {
-        $assistiveTechnology->load([
-            'deficiencies',
-            'inspections.images',
-        ]);
+        $assistiveTechnology->load(['deficiencies', 'inspections.images']);
 
         $pdf = Pdf::loadView(
             'pages.inclusive-radar.assistive-technologies.pdf',
@@ -177,5 +144,20 @@ class AssistiveTechnologyController extends Controller
             'assistiveTechnology' => $assistiveTechnology,
             'inspection'          => $inspection,
         ]);
+    }
+
+    private function formData(string $defaultInspection): array
+    {
+        return [
+            'deficiencies' => Deficiency::orderBy('name')->get(),
+            'resourceStatuses' => collect(ResourceStatus::cases())
+                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
+            'conservationStates' => collect(ConservationState::cases())
+                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
+            'inspectionTypes' => collect(InspectionType::cases())
+                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
+            'defaultInspection' => $defaultInspection,
+            'defaultStatus' => ResourceStatus::AVAILABLE->value,
+        ];
     }
 }

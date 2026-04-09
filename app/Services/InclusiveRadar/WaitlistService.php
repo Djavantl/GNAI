@@ -3,11 +3,11 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\WaitlistStatus;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Loan;
 use App\Models\InclusiveRadar\Waitlist;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class WaitlistService
 {
@@ -31,14 +31,14 @@ class WaitlistService
             $this->validateNewWaitlist($item, $data);
 
             return Waitlist::create([
-                'waitlistable_id'   => $item->id,
+                'waitlistable_id' => $item->id,
                 'waitlistable_type' => $data['waitlistable_type'],
-                'student_id'        => $data['student_id'] ?? null,
-                'professional_id'   => $data['professional_id'] ?? null,
-                'user_id'           => $data['user_id'],
-                'requested_at'      => now(),
-                'status'            => WaitlistStatus::WAITING->value,
-                'observation'       => $data['observation'] ?? null,
+                'student_id' => $data['student_id'] ?? null,
+                'professional_id' => $data['professional_id'] ?? null,
+                'user_id' => $data['user_id'],
+                'requested_at' => now(),
+                'status' => WaitlistStatus::WAITING->value,
+                'observation' => $data['observation'] ?? null,
             ]);
         });
     }
@@ -63,9 +63,7 @@ class WaitlistService
         $currentStatus = WaitlistStatus::tryFrom($waitlist->status);
 
         if ($currentStatus !== WaitlistStatus::WAITING) {
-            throw ValidationException::withMessages([
-                'status' => 'Apenas solicitações em espera podem ser canceladas.'
-            ]);
+            throw new BusinessRuleException('Apenas solicitações em espera podem ser canceladas.');
         }
 
         $waitlist->update(['status' => WaitlistStatus::CANCELLED->value]);
@@ -91,12 +89,6 @@ class WaitlistService
         return $next->fresh();
     }
 
-    public function fulfill(Waitlist $waitlist): Waitlist
-    {
-        $waitlist->update(['status' => WaitlistStatus::FULFILLED->value]);
-        return $waitlist->fresh();
-    }
-
     private function validateNewWaitlist($item, array $data): void
     {
         /* Centralizamos as validações de integridade de beneficiário e disponibilidade. */
@@ -113,15 +105,11 @@ class WaitlistService
         /* Regra de Negócio: O registro na lista de espera deve estar obrigatoriamente
            vinculado a um único beneficiário para evitar ambiguidades no atendimento. */
         if (empty($student) && empty($professional)) {
-            throw ValidationException::withMessages([
-                'student_id' => 'É necessário informar um aluno ou um profissional.'
-            ]);
+            throw new BusinessRuleException('É necessário informar um aluno ou um profissional.');
         }
 
         if (!empty($student) && !empty($professional)) {
-            throw ValidationException::withMessages([
-                'student_id' => 'Não é permitido informar aluno e profissional ao mesmo tempo.'
-            ]);
+            throw new BusinessRuleException('Não é permitido informar aluno e profissional ao mesmo tempo.');
         }
     }
 
@@ -132,9 +120,7 @@ class WaitlistService
         /* A fila de espera só é permitida se o recurso estiver de fato indisponível.
            Isso força o fluxo de empréstimo direto enquanto houver unidades em estoque. */
         if (!$status->blocksLoan() && $item->quantity_available > 0) {
-            throw ValidationException::withMessages([
-                'waitlistable_id' => 'Este recurso ainda possui unidades disponíveis e pode ser emprestado, portanto não é possível criar uma fila de espera.'
-            ]);
+            throw new BusinessRuleException('Este recurso ainda possui unidades disponíveis e pode ser emprestado, portanto não é possível criar uma fila de espera.');
         }
     }
 
@@ -154,10 +140,7 @@ class WaitlistService
         else $existsQuery->where('professional_id', $professional);
 
         if ($existsQuery->exists()) {
-            throw ValidationException::withMessages([
-                $student ? 'student_id' : 'professional_id' =>
-                    'Este beneficiário já possui uma solicitação ativa para este recurso.'
-            ]);
+            throw new BusinessRuleException('Este beneficiário já possui uma solicitação ativa para este recurso.');
         }
 
         $loanQuery = Loan::where('loanable_id', $item->id)
@@ -168,10 +151,7 @@ class WaitlistService
         else $loanQuery->where('professional_id', $professional);
 
         if ($loanQuery->exists()) {
-            throw ValidationException::withMessages([
-                $student ? 'student_id' : 'professional_id' =>
-                    'Este beneficiário já possui um empréstimo ativo deste recurso.'
-            ]);
+            throw new BusinessRuleException('Este beneficiário já possui um empréstimo ativo deste recurso.');
         }
     }
 
@@ -187,9 +167,7 @@ class WaitlistService
         /* Travamos estados finalizados para garantir a imutabilidade do histórico
            de atendimento, permitindo apenas correções textuais em observações. */
         if (!$onlyObservation && in_array($currentStatus, [WaitlistStatus::FULFILLED, WaitlistStatus::CANCELLED], true)) {
-            throw ValidationException::withMessages([
-                'status' => 'Solicitação já finalizada não pode ser alterada, exceto observações.'
-            ]);
+            throw new BusinessRuleException('Solicitação já finalizada não pode ser alterada, exceto observações.');
         }
     }
 
@@ -198,9 +176,7 @@ class WaitlistService
         $currentStatus = WaitlistStatus::tryFrom($waitlist->status);
 
         if ($currentStatus === WaitlistStatus::FULFILLED) {
-            throw ValidationException::withMessages([
-                'status' => 'Solicitações já atendidas não podem ser removidas.'
-            ]);
+            throw new BusinessRuleException('Solicitações já atendidas não podem ser removidas.');
         }
     }
 

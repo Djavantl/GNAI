@@ -19,12 +19,12 @@ class InspectionService
     {
         return DB::transaction(function () use ($model, $data) {
             $inspection = $model->inspections()->create([
-                'state'           => $data['state'] ?? ConservationState::NOT_APPLICABLE->value,
-                'status'          => $data['status'] ?? BarrierStatus::IDENTIFIED->value,
+                'state' => $data['state'] ?? ConservationState::NOT_APPLICABLE->value,
+                'status' => $data['status'] ?? BarrierStatus::IDENTIFIED->value,
                 'inspection_date' => $data['inspection_date'],
-                'description'     => $data['description'] ?? null,
-                'type'            => $data['type'],
-                'user_id'         => Auth::id(),
+                'description' => $data['description'] ?? null,
+                'type' => $data['type'],
+                'user_id' => Auth::id(),
             ]);
 
             if (!empty($data['images'])) {
@@ -43,10 +43,10 @@ class InspectionService
                     Storage::disk('public')->put($path, (string) $optimizedImage);
 
                     $inspection->images()->create([
-                        'path'          => $path,
+                        'path' => $path,
                         'original_name' => $image->getClientOriginalName(),
-                        'mime_type'     => 'image/webp',
-                        'size'          => strlen((string) $optimizedImage),
+                        'mime_type' => 'image/webp',
+                        'size' => strlen((string) $optimizedImage),
                     ]);
                 }
             }
@@ -74,11 +74,11 @@ class InspectionService
         return $this->createForModel(
             $model,
             [
-                'state'           => $data['state'] ?? $model->conservation_state,
+                'state' => $data['state'] ?? $model->conservation_state,
                 'inspection_date' => $data['inspection_date'] ?? now(),
-                'type'            => $type ?? ($isUpdate ? InspectionType::PERIODIC->value : InspectionType::INITIAL->value),
-                'description'     => $description ?? ($isUpdate ? 'Atualização de estado via edição de material.' : 'Vistoria inicial de entrada.'),
-                'images'          => $data['images'] ?? []
+                'type' => $type ?? ($isUpdate ? InspectionType::PERIODIC->value : InspectionType::INITIAL->value),
+                'description' => $description ?? ($isUpdate ? 'Atualização de estado via edição de material.' : 'Vistoria inicial de entrada.'),
+                'images' => $data['images'] ?? []
             ]
         );
     }

@@ -74,19 +74,19 @@ class AssistiveTechnologyService
         $available = isset($data['quantity_available']) ? (int)$data['quantity_available'] : $at->quantity_available;
 
         if (isset($data['deficiencies']) && empty($data['deficiencies'])) {
-            throw new InvalidArgumentException("Selecione pelo menos um público-alvo.");
+            throw new BusinessRuleException("Selecione pelo menos um público-alvo.");
         }
 
         if (!$isDigital && $quantity <= 0) {
-            throw new DomainException("Para recursos físicos, a quantidade deve ser no mínimo 1.");
+            throw new BusinessRuleException("Para recursos físicos, a quantidade deve ser no mínimo 1.");
         }
 
         if ($isLoanable && $quantity <= 0) {
-            throw new DomainException("Recursos marcados como emprestáveis devem ter quantidade maior que zero.");
+            throw new BusinessRuleException("Recursos marcados como emprestáveis devem ter quantidade maior que zero.");
         }
 
         if ($available > $quantity) {
-            throw new DomainException("A quantidade disponível ({$available}) não pode ser maior que a quantidade total ({$quantity}).");
+            throw new BusinessRuleException("A quantidade disponível ({$available}) não pode ser maior que a quantidade total ({$quantity}).");
         }
     }
 

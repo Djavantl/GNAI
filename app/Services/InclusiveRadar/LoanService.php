@@ -5,12 +5,12 @@ namespace App\Services\InclusiveRadar;
 use App\Enums\InclusiveRadar\LoanStatus;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Enums\InclusiveRadar\WaitlistStatus;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Loan;
 use App\Models\InclusiveRadar\Waitlist;
 use App\Notifications\InclusiveRadar\ItemAvailableNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 
 class LoanService
 {
@@ -94,9 +94,7 @@ class LoanService
         return DB::transaction(function () use ($loan, $data) {
 
             if ($loan->return_date !== null) {
-                throw ValidationException::withMessages([
-                    'loan' => 'Este empréstimo já foi finalizado.'
-                ]);
+                throw new BusinessRuleException('Este empréstimo já foi finalizado.');
             }
 
             $item = $loan->loanable()->lockForUpdate()->first();
@@ -135,9 +133,7 @@ class LoanService
         if ($item->is_digital) return;
 
         if ($item->quantity_available <= 0) {
-            throw ValidationException::withMessages([
-                'stock' => 'Não há unidades disponíveis em estoque.'
-            ]);
+            throw new BusinessRuleException('Não há unidades disponíveis em estoque.');
         }
 
         $item->decrement('quantity_available');
@@ -179,9 +175,7 @@ class LoanService
         /* Impede que a edição de um material reduza a quantidade total abaixo
            do número de itens que estão fisicamente na rua com alunos/profissionais. */
         if ($quantity < $activeLoans) {
-            throw ValidationException::withMessages([
-                'quantity' => "Impossível reduzir estoque: existem {$activeLoans} unidades emprestadas."
-            ]);
+            throw new BusinessRuleException("Impossível reduzir estoque: existem {$activeLoans} unidades emprestadas.");
         }
     }
 
@@ -219,15 +213,11 @@ class LoanService
         if ($item->is_digital) return;
 
         if ($item->status->blocksLoan()) {
-            throw ValidationException::withMessages([
-                'status' => "O recurso está com status '{$item->status->label()}', que bloqueia empréstimos."
-            ]);
+            throw new BusinessRuleException("O recurso está com status '{$item->status->label()}', que bloqueia empréstimos.");
         }
 
         if ($item->conservation_state?->blocksLoan()) {
-            throw ValidationException::withMessages([
-                'conservation_state' => "O estado '{$item->conservation_state->label()}' bloqueia empréstimos."
-            ]);
+            throw new BusinessRuleException("O estado '{$item->conservation_state->label()}' bloqueia empréstimos.");
         }
     }
 
@@ -248,9 +238,7 @@ class LoanService
         /* Regra de negócio: Um mesmo beneficiário não pode ter duas unidades do
            mesmo recurso simultaneamente para garantir a rotatividade do acervo. */
         if ($exists) {
-            throw ValidationException::withMessages([
-                'loanable_id' => 'Este beneficiário já possui um empréstimo ativo deste recurso.'
-            ]);
+            throw new BusinessRuleException('Este beneficiário já possui um empréstimo ativo deste recurso.');
         }
     }
 
@@ -264,15 +252,11 @@ class LoanService
         $professional = $data['professional_id'] ?? null;
 
         if (empty($student) && empty($professional)) {
-            throw ValidationException::withMessages([
-                'student_id' => 'É necessário informar um aluno ou um profissional.'
-            ]);
+            throw new BusinessRuleException('É necessário informar um aluno ou um profissional.');
         }
 
         if (!empty($student) && !empty($professional)) {
-            throw ValidationException::withMessages([
-                'student_id' => 'Não é permitido informar aluno e profissional ao mesmo tempo.'
-            ]);
+            throw new BusinessRuleException('Não é permitido informar aluno e profissional ao mesmo tempo.');
         }
     }
 

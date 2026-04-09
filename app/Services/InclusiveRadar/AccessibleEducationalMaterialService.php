@@ -7,8 +7,6 @@ use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Support\Facades\DB;
-use DomainException;
-use InvalidArgumentException;
 
 class AccessibleEducationalMaterialService
 {
@@ -79,25 +77,25 @@ class AccessibleEducationalMaterialService
             : $material->quantity_available;
 
         if (isset($data['deficiencies']) && empty($data['deficiencies'])) {
-            throw new InvalidArgumentException(
+            throw new BusinessRuleException(
                 "Selecione pelo menos um público-alvo."
             );
         }
 
         if (!$isDigital && $quantity <= 0) {
-            throw new DomainException(
+            throw new BusinessRuleException(
                 "Para materiais físicos, a quantidade deve ser no mínimo 1."
             );
         }
 
         if ($isLoanable && $quantity <= 0) {
-            throw new DomainException(
+            throw new BusinessRuleException(
                 "Materiais marcados como emprestáveis devem ter quantidade maior que zero."
             );
         }
 
         if ($available > $quantity) {
-            throw new DomainException(
+            throw new BusinessRuleException(
                 "A quantidade disponível ({$available}) não pode ser maior que a quantidade total ({$quantity})."
             );
         }

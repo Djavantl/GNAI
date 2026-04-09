@@ -65,12 +65,12 @@ class BarrierService
     {
         // Estado padrão (limpo)
         $cleanFields = [
-            'affected_student_id'      => null,
+            'affected_student_id' => null,
             'affected_professional_id' => null,
-            'affected_person_name'     => null,
-            'affected_person_role'     => null,
-            'is_anonymous'             => false,
-            'not_applicable'           => false,
+            'affected_person_name' => null,
+            'affected_person_role' => null,
+            'is_anonymous' => false,
+            'not_applicable' => false,
         ];
 
         // REGRA 1: Prioridade Anônima (Limpa absolutamente tudo)
@@ -81,7 +81,7 @@ class BarrierService
         // REGRA 2: Relato Geral (Limpa os IDs do sistema, mantém o texto livre)
         if (!empty($data['not_applicable'])) {
             return array_merge($data, $cleanFields, [
-                'not_applicable'       => true,
+                'not_applicable' => true,
                 'affected_person_name' => $data['affected_person_name'] ?? null,
                 'affected_person_role' => $data['affected_person_role'] ?? null,
             ]);
@@ -89,11 +89,11 @@ class BarrierService
 
         // REGRA 3: Identificado (Limpa os textos livres, mantém os IDs)
         return array_merge($data, [
-            'is_anonymous'         => false,
-            'not_applicable'       => false,
+            'is_anonymous' => false,
+            'not_applicable' => false,
             'affected_person_name' => null,
             'affected_person_role' => null,
-            'affected_student_id'  => $data['affected_student_id'] ?? null,
+            'affected_student_id' => $data['affected_student_id'] ?? null,
             'affected_professional_id' => $data['affected_professional_id'] ?? null,
         ]);
     }
@@ -129,12 +129,12 @@ class BarrierService
         }
 
         $this->inspectionService->createForModel($barrier, [
-            'state'           => null,
-            'status'          => $newStatus,
+            'state' => null,
+            'status' => $newStatus,
             'inspection_date' => $data['inspection_date'] ?? now(),
-            'type'            => $data['inspection_type'] ?? ($isUpdate ? InspectionType::PERIODIC->value : InspectionType::INITIAL->value),
-            'description'     => $data['inspection_description'] ?? ($isUpdate ? null : 'Registro inicial da barreira.'),
-            'images'          => $data['images'] ?? [],
+            'type' => $data['inspection_type'] ?? ($isUpdate ? InspectionType::PERIODIC->value : InspectionType::INITIAL->value),
+            'description' => $data['inspection_description'] ?? ($isUpdate ? null : 'Registro inicial da barreira.'),
+            'images' => $data['images'] ?? [],
         ]);
     }
 }

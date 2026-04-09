@@ -3,19 +3,16 @@
 namespace App\Http\Controllers\InclusiveRadar;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-
 use App\Enums\InclusiveRadar\WaitlistStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\WaitlistRequest;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\Waitlist;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\InclusiveRadar\{AccessibleEducationalMaterial, AssistiveTechnology, Waitlist};
+use Illuminate\Http\Response;
+use App\Models\SpecializedEducationalSupport\{Professional, Student};
 use App\Services\InclusiveRadar\WaitlistService;
-
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class WaitlistController extends Controller
@@ -26,68 +23,34 @@ class WaitlistController extends Controller
 
     public function index(Request $request): View
     {
-        $studentName      = $request->student ?? null;
-        $professionalName = $request->professional ?? null;
-        $status           = $request->status ?? null;
-        $startDate        = $request->start_date ?? null;
-        $endDate          = $request->end_date ?? null;
-
-        $waitlists = Waitlist::with([
-            'waitlistable',
-            'student.person',
-            'professional.person',
-            'user'
-        ])
-            ->student($studentName)
-            ->professional($professionalName)
-            ->when($status, fn($q) => $q->where('status', $status))
-            ->when($startDate && $endDate, fn($q) => $q->whereBetween('requested_at', [$startDate, $endDate]))
+        $waitlists = Waitlist::with(['waitlistable', 'student.person', 'professional.person', 'user'])
+            ->student($request->student)
+            ->professional($request->professional)
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when(
+                $request->start_date && $request->end_date,
+                fn($q) => $q->whereBetween('requested_at', [$request->start_date, $request->end_date])
+            )
             ->orderByDesc('created_at')
             ->paginate(10)
             ->withQueryString();
 
         if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.waitlists.partials.table',
-                compact('waitlists')
-            );
+            return view('pages.inclusive-radar.waitlists.partials.table', compact('waitlists'));
         }
 
-        return view(
-            'pages.inclusive-radar.waitlists.index',
-            compact('waitlists')
-        );
+        return view('pages.inclusive-radar.waitlists.index', compact('waitlists'));
     }
 
     public function create(): View
     {
-        $students = Student::with('person')
-            ->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($s) => [$s->id => $s->person?->name . " ({$s->registration})"]);
-
-        $professionals = Professional::with('person')
-            ->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($p) => [$p->id => $p->person?->name]);
-
-        $assistive_technologies = AssistiveTechnology::get()
-            ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
-            ->sortBy('name')
-            ->values();
-
-        $educational_materials = AccessibleEducationalMaterial::get()
-            ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
-            ->sortBy('name')
-            ->values();
-
-        return view('pages.inclusive-radar.waitlists.create', [
-            'students'              => $students,
-            'professionals'         => $professionals,
-            'assistive_technologies' => $assistive_technologies,
-            'educational_materials'  => $educational_materials,
-            'authUser'               => auth()->user(),
-        ]);
+        return view('pages.inclusive-radar.waitlists.create',
+            $this->formData() + [
+                'assistive_technologies' => $this->waitlistableItems(AssistiveTechnology::class),
+                'educational_materials'  => $this->waitlistableItems(AccessibleEducationalMaterial::class),
+                'authUser'               => auth()->user(),
+            ]
+        );
     }
 
     public function store(WaitlistRequest $request): RedirectResponse
@@ -102,12 +65,12 @@ class WaitlistController extends Controller
     public function show(Waitlist $waitlist): View
     {
         $waitlist->load(['waitlistable', 'student.person', 'professional.person', 'user']);
-        $authUser = auth()->user();
+
         $enumStatus = WaitlistStatus::tryFrom($waitlist->status);
 
         return view('pages.inclusive-radar.waitlists.show', [
             'waitlist'    => $waitlist,
-            'authUser'    => $authUser,
+            'authUser'    => auth()->user(),
             'statusLabel' => $enumStatus?->label() ?? $waitlist->status,
             'statusColor' => $enumStatus?->color() ?? 'secondary',
             'canCancel'   => $waitlist->status === WaitlistStatus::WAITING->value,
@@ -118,24 +81,13 @@ class WaitlistController extends Controller
     {
         $waitlist->load(['waitlistable', 'student.person', 'professional.person', 'user']);
 
-        $students = Student::with('person')->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($s) => [$s->id => "{$s->person->name} ({$s->registration})"]);
-
-        $professionals = Professional::with('person')->get()
-            ->sortBy('person.name')
-            ->mapWithKeys(fn($p) => [$p->id => $p->person->name]);
-
-        $statusLabel = WaitlistStatus::tryFrom($waitlist->status)?->label()
-            ?? 'Status Indefinido';
-
-        return view('pages.inclusive-radar.waitlists.edit', [
-            'waitlist'      => $waitlist,
-            'students'      => $students,
-            'professionals' => $professionals,
-            'statusLabel'   => $statusLabel,
-            'authUser'      => auth()->user(),
-        ]);
+        return view('pages.inclusive-radar.waitlists.edit',
+            $this->formData() + [
+                'waitlist'    => $waitlist,
+                'statusLabel' => WaitlistStatus::tryFrom($waitlist->status)?->label() ?? 'Status Indefinido',
+                'authUser'    => auth()->user(),
+            ]
+        );
     }
 
     public function update(WaitlistRequest $request, Waitlist $waitlist): RedirectResponse
@@ -160,24 +112,14 @@ class WaitlistController extends Controller
     {
         $this->service->cancel($waitlist);
 
-        return redirect()
-            ->back()
-            ->with('success', 'Solicitação cancelada com sucesso!');
+        return redirect()->back()->with('success', 'Solicitação cancelada com sucesso!');
     }
 
-    public function generatePdf(Waitlist $waitlist)
+    public function generatePdf(Waitlist $waitlist): Response
     {
-        $waitlist->load([
-            'waitlistable',
-            'student.person',
-            'professional.person',
-            'user'
-        ]);
+        $waitlist->load(['waitlistable', 'student.person', 'professional.person', 'user']);
 
-        $pdf = Pdf::loadView(
-            'pages.inclusive-radar.waitlists.pdf',
-            compact('waitlist')
-        )
+        $pdf = Pdf::loadView('pages.inclusive-radar.waitlists.pdf', compact('waitlist'))
             ->setPaper('a4', 'portrait')
             ->setOptions([
                 'enable_php' => true,
@@ -187,5 +129,31 @@ class WaitlistController extends Controller
             ]);
 
         return $pdf->stream("Fila_Espera_{$waitlist->id}.pdf");
+    }
+
+    private function formData(): array
+    {
+        return [
+            'students' => Student::with('person')
+                ->get()
+                ->sortBy('person.name')
+                ->mapWithKeys(fn($s) => [$s->id => $s->person?->name . " ({$s->registration})"]),
+
+            'professionals' => Professional::with('person')
+                ->get()
+                ->sortBy('person.name')
+                ->mapWithKeys(fn($p) => [$p->id => $p->person?->name]),
+        ];
+    }
+
+    /**
+     * Retorna itens indisponíveis para empréstimo (candidatos à fila de espera).
+     */
+    private function waitlistableItems(string $model): Collection
+    {
+        return $model::get()
+            ->filter(fn($item) => $item->quantity_available <= 0 || $item->status->blocksLoan())
+            ->sortBy('name')
+            ->values();
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\InclusiveRadar;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ResourceStatus;
@@ -14,7 +13,6 @@ use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\Inspection;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\AccessibleEducationalMaterialService;
-
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -27,28 +25,15 @@ class AccessibleEducationalMaterialController extends Controller
 
     public function index(Request $request): View
     {
-        $name = trim($request->name ?? '');
+        $name   = trim($request->name ?? '');
+        $status = ResourceStatus::tryFrom($request->status ?? '');
 
-        $query = AccessibleEducationalMaterial::with([
-            'deficiencies',
-            'accessibilityFeatures',
-        ])
+        $materials = AccessibleEducationalMaterial::with(['deficiencies', 'accessibilityFeatures'])
             ->filterName($name ?: null)
             ->active($request->is_active)
-            ->digital($request->is_digital);
-
-        if ($request->filled('status')) {
-            $status = ResourceStatus::tryFrom($request->status);
-            if ($status) {
-                $query->where('status', $status->value);
-            }
-        }
-
-        if ($request->filled('available')) {
-            $query->where('status', ResourceStatus::AVAILABLE->value);
-        }
-
-        $materials = $query
+            ->digital($request->is_digital)
+            ->when($status, fn($q) => $q->where('status', $status->value))
+            ->when($request->filled('available'), fn($q) => $q->where('status', ResourceStatus::AVAILABLE->value))
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
@@ -68,24 +53,10 @@ class AccessibleEducationalMaterialController extends Controller
 
     public function create(): View
     {
-        return view('pages.inclusive-radar.accessible-educational-materials.create', [
-
-            'accessibilityFeatures' => AccessibilityFeature::where('is_active', true)->orderBy('name')->get(),
-
-            'deficiencies' => Deficiency::orderBy('name')->get(),
-
-            'inspectionTypes' => collect(InspectionType::cases())
-                ->filter(fn($item) => $item !== InspectionType::MAINTENANCE)
-                ->mapWithKeys(fn($item) => [$item->value => $item->label()]),
-            'defaultInspection' => InspectionType::INITIAL->value,
-
-            'resourceStatuses' => collect(ResourceStatus::cases())
-                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
-            'defaultStatus' => ResourceStatus::AVAILABLE->value,
-
-            'conservationStates' => collect(ConservationState::cases())
-                ->mapWithKeys(fn($item) => [$item->value => $item->label()]),
-        ]);
+        return view(
+            'pages.inclusive-radar.accessible-educational-materials.create',
+            $this->formData(InspectionType::INITIAL->value)
+        );
     }
 
     public function store(AccessibleEducationalMaterialRequest $request): RedirectResponse
@@ -100,17 +71,17 @@ class AccessibleEducationalMaterialController extends Controller
     public function show(AccessibleEducationalMaterial $material): View
     {
         $material->load([
-            'deficiencies' => fn($q) => $q->orderBy('name'),
+            'deficiencies'          => fn($q) => $q->orderBy('name'),
             'accessibilityFeatures' => fn($q) => $q->orderBy('name'),
-            'inspections' => fn($q) => $q->with('images')->latest('inspection_date'),
+            'inspections'           => fn($q) => $q->with('images')->latest('inspection_date'),
             'loans',
         ]);
 
         return view('pages.inclusive-radar.accessible-educational-materials.show', [
-            'material'       => $material,
-            'deficiencies'   => $material->deficiencies,
-            'features'       => $material->accessibilityFeatures,
-            'inspections'    => $material->inspections,
+            'material'    => $material,
+            'deficiencies'=> $material->deficiencies,
+            'features'    => $material->accessibilityFeatures,
+            'inspections' => $material->inspections,
         ]);
     }
 
@@ -118,24 +89,13 @@ class AccessibleEducationalMaterialController extends Controller
     {
         $material->load(['deficiencies', 'accessibilityFeatures', 'inspections.images']);
 
-        return view('pages.inclusive-radar.accessible-educational-materials.edit', [
-            'material' => $material,
-
-            'resourceStatuses' => collect(ResourceStatus::cases())
-                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
-
-            'conservationStates' => collect(ConservationState::cases())
-                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
-
-            'inspectionTypes' => collect(InspectionType::cases())
-                ->mapWithKeys(fn($item) => [$item->value => $item->label()]),
-            'defaultInspection' => InspectionType::PERIODIC->value,
-
-            'accessibilityFeatures' => AccessibilityFeature::where('is_active', true)->orderBy('name')->get(),
-            'deficiencies' => Deficiency::orderBy('name')->get(),
-
-            'activeLoans' => $material->loans()->whereIn('status', ['active', 'late'])->count(),
-        ]);
+        return view(
+            'pages.inclusive-radar.accessible-educational-materials.edit',
+            $this->formData(InspectionType::PERIODIC->value) + [
+                'material'    => $material,
+                'activeLoans' => $material->loans()->whereIn('status', ['active', 'late'])->count(),
+            ]
+        );
     }
 
     public function update(AccessibleEducationalMaterialRequest $request, AccessibleEducationalMaterial $material): RedirectResponse
@@ -156,13 +116,9 @@ class AccessibleEducationalMaterialController extends Controller
             ->with('success', 'Material removido!');
     }
 
-    public function generatePdf(AccessibleEducationalMaterial $material)
+    public function generatePdf(AccessibleEducationalMaterial $material): \Illuminate\Http\Response
     {
-        $material->load([
-            'deficiencies',
-            'accessibilityFeatures',
-            'inspections.images',
-        ]);
+        $material->load(['deficiencies', 'accessibilityFeatures', 'inspections.images']);
 
         $pdf = Pdf::loadView(
             'pages.inclusive-radar.accessible-educational-materials.pdf',
@@ -188,5 +144,21 @@ class AccessibleEducationalMaterialController extends Controller
             'material'   => $material,
             'inspection' => $inspection,
         ]);
+    }
+
+    private function formData(string $defaultInspection): array
+    {
+        return [
+            'deficiencies'          => Deficiency::orderBy('name')->get(),
+            'accessibilityFeatures' => AccessibilityFeature::where('is_active', true)->orderBy('name')->get(),
+            'resourceStatuses'      => collect(ResourceStatus::cases())
+                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
+            'conservationStates'    => collect(ConservationState::cases())
+                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
+            'inspectionTypes'       => collect(InspectionType::cases())
+                ->mapWithKeys(fn($i) => [$i->value => $i->label()]),
+            'defaultInspection'     => $defaultInspection,
+            'defaultStatus'         => ResourceStatus::AVAILABLE->value,
+        ];
     }
 }
