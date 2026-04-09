@@ -64,28 +64,32 @@ make:
 	$(COMPOSE) exec app php artisan make:migration $(filter-out $@,$(MAKECMDGOALS))
 
 # -----------------------------
-# commands.sh — PHP/Laravel
+# PHP/Laravel - Comandos Diretos
 # -----------------------------
 composer:
-	$(COMPOSE) exec app sh /usr/local/bin/commands.sh composer
+	$(COMPOSE) exec app composer install
 
 storage-link:
-	$(COMPOSE) exec app sh /usr/local/bin/commands.sh storage-link
+	$(COMPOSE) exec app php artisan storage:link
 
 cache-dev:
-	$(COMPOSE) exec app sh /usr/local/bin/commands.sh cache-dev
+	$(COMPOSE) exec app php artisan config:clear
+	$(COMPOSE) exec app php artisan cache:clear
+	$(COMPOSE) exec app php artisan view:clear
 
 cache-prod:
-	$(COMPOSE) exec app sh /usr/local/bin/commands.sh cache-prod
+	$(COMPOSE) exec app php artisan config:cache
+	$(COMPOSE) exec app php artisan route:cache
+	$(COMPOSE) exec app php artisan view:cache
 
 migrate:
-	$(COMPOSE) exec app sh /usr/local/bin/commands.sh migrate
+	$(COMPOSE) exec app php artisan migrate
 
 seed:
-	$(COMPOSE) exec app sh /usr/local/bin/commands.sh seed
+	$(COMPOSE) exec app php artisan db:seed
 
 npm-build:
-	$(COMPOSE) exec app sh /usr/local/bin/commands.sh npm-build
+	$(COMPOSE) exec node npm run build
 
 # -----------------------------
 # Frontend

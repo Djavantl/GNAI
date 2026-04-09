@@ -46,16 +46,8 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
     && composer dump-autoload --optimize --no-scripts
 
-# ==============================
-# Scripts de boot
-# ==============================
-COPY docker/php/commands.sh /usr/local/bin/commands.sh
-COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/commands.sh /usr/local/bin/entrypoint.sh
-
 USER www-data
 
 EXPOSE 9000
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
