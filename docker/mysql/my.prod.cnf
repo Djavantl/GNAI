@@ -1,0 +1,15 @@
+[mysqld]
+innodb_buffer_pool_size = 512M
+innodb_buffer_pool_instances = 1
+innodb_log_file_size = 64M
+innodb_log_buffer_size = 16M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method = O_DIRECT
+
+log-bin = mysql-bin
+binlog_format = ROW
+expire_logs_days = 7
+max_binlog_size = 100M
+
+max_connections = 100
+performance_schema = ON

@@ -33,7 +33,14 @@ export default defineConfig({
             protocol: 'ws'
         },
         watch: {
-            usePolling: true
+            usePolling: true,
+            ignored: [
+                '**/vendor/**',
+                '**/storage/**',
+                '**/node_modules/**',
+                '**/public/build/**',
+                '**/.git/**',
+            ]
         }
     }
 });

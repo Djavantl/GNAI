@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
         Relation::enforceMorphMap([
             'student'            => Student::class,
             'person'             => Person::class,
@@ -44,60 +45,46 @@ class AppServiceProvider extends ServiceProvider
             'accessible_educational_material' => AccessibleEducationalMaterial::class,
             'barrier'                         => Barrier::class,
             'inspection'                      => Inspection::class,
-            'user' => User::class,
+            'user'                            => User::class,
         ]);
 
-        // --- SISTEMA DE PERMISSÕES ---
-        // Verifica se a tabela existe para evitar erros em novas instalações/migrations
-        if (Schema::hasTable('permissions')) {
-            try {
+        // PROTEÇÃO: Só executa se NÃO estiver rodando via linha de comando (CLI/Migrations)
+        if (!$this->app->runningInConsole()) {
 
-                // ADMIN TEM TODAS PERMISSÕES
-                Gate::before(function ($user, $ability) {
-                    if ($user->is_admin) {
-                        return true;
-                    }
-                });
-
-                $permissions = Permission::all();
-
-                foreach ($permissions as $permission) {
-                    Gate::define($permission->slug, function ($user) use ($permission) {
-                        return $user->hasPermission($permission->slug);
+            // --- SISTEMA DE PERMISSÕES ---
+            if (Schema::hasTable('permissions')) {
+                try {
+                    Gate::before(function ($user, $ability) {
+                        if ($user->is_admin) return true;
                     });
+
+                    $permissions = Permission::all();
+                    foreach ($permissions as $permission) {
+                        Gate::define($permission->slug, function ($user) use ($permission) {
+                            return $user->hasPermission($permission->slug);
+                        });
+                    }
+                } catch (\Exception $e) {
+                    // Silencia erros de conexão temporária
                 }
-
-            } catch (\Exception $e) {
-                // Silencia erros
             }
-        }
 
-        // View Composer para Accessible Educational Materials
-        View::composer(['pages.inclusive-radar.accessible-educational-materials.create',
-            'pages.inclusive-radar.accessible-educational-materials.edit',
-        ], function ($view) {
-            $view->with([
-                'deficiencies' => Deficiency::orderBy('name')->get(),
-            ]);
-        });
-
-        // View Composer para Assistive Technologies (se quiser fazer o mesmo)
-        View::composer([
-            'pages.inclusive-radar.assistive-technologies.create',
-            'pages.inclusive-radar.assistive-technologies.edit',
-        ], function ($view) {
-            $view->with([
-                'deficiencies' => Deficiency::orderBy('name')->get(),
-            ]);
-        });
-
-        // View Composer para a Navbar (INSTITUIÇÃO)
-        View::composer('layouts.master', function ($view) {
-            $institution = cache()->remember('institution_data', 86400, function () {
-                return Institution::first();
+            // --- VIEW COMPOSERS (Também protegidos) ---
+            View::composer(['pages.inclusive-radar.accessible-educational-materials.*'], function ($view) {
+                $view->with('deficiencies', Deficiency::orderBy('name')->get());
             });
 
-            $view->with('institution', $institution);
-        });
+            View::composer(['pages.inclusive-radar.assistive-technologies.*'], function ($view) {
+                $view->with('deficiencies', Deficiency::orderBy('name')->get());
+            });
+
+            View::composer('layouts.master', function ($view) {
+                $institution = cache()->remember('institution_data', 86400, function () {
+                    // Usamos o optional() ou null coalescing para evitar quebra se a tabela estiver vazia
+                    return Institution::first() ?? new Institution();
+                });
+                $view->with('institution', $institution);
+            });
+        }
     }
 }

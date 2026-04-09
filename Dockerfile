@@ -6,9 +6,11 @@ RUN apk add --no-cache \
     libxml2-dev libpng-dev libjpeg-turbo-dev \
     freetype-dev libwebp-dev libzip-dev icu-dev zlib-dev
 
-# Extensões PHP necessárias
+# Extensões PHP + phpredis
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install gd zip pcntl pdo pdo_mysql opcache intl
+    && docker-php-ext-install gd zip pcntl pdo pdo_mysql opcache intl \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
 # --- ESTÁGIO 2: Imagem Final (Runtime) ---
 FROM php:8.2-fpm-alpine
@@ -18,25 +20,25 @@ ARG GROUP_ID=1000
 
 WORKDIR /var/www
 
-# Dependências de runtime
 RUN apk add --no-cache \
     curl git unzip shadow \
     libxml2 libpng libjpeg-turbo freetype libwebp libzip icu-libs zlib \
     mysql-client \
-    tzdata
+    tzdata \
+    && cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime \
+    && echo "America/Sao_Paulo" > /etc/timezone \
+    && apk del tzdata
 
-# Copia extensões do estágio anterior
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Ajuste de permissões e fuso horário
-RUN usermod -u ${USER_ID} www-data && groupmod -g ${GROUP_ID} www-data \
+RUN usermod -u ${USER_ID} www-data \
+    && groupmod -g ${GROUP_ID} www-data \
     && git config --global --add safe.directory /var/www
 
-COPY composer.json ./
-
-RUN composer install --no-scripts --no-autoloader --prefer-dist
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts --no-autoloader --prefer-dist --no-interaction
 
 COPY . .
 
@@ -44,8 +46,16 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
     && composer dump-autoload --optimize --no-scripts
 
+# ==============================
+# Scripts de boot
+# ==============================
+COPY docker/php/commands.sh /usr/local/bin/commands.sh
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/commands.sh /usr/local/bin/entrypoint.sh
+
 USER www-data
 
 EXPOSE 9000
 
-CMD ["sh", "-c", "php artisan storage:link --force && php artisan config:clear && php-fpm"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm"]

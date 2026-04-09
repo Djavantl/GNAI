@@ -1,0 +1,30 @@
+[mysqld]
+
+# ==============================
+# Memória reduzida para dev
+# ==============================
+innodb_buffer_pool_size = 128M
+innodb_buffer_pool_instances = 1
+innodb_redo_log_capacity = 33554432
+innodb_log_buffer_size = 8M
+innodb_flush_log_at_trx_commit = 2
+innodb_flush_method = O_DIRECT
+
+# ==============================
+# BINLOG — DESATIVAR em dev!
+# ==============================
+skip-log-bin
+
+# ==============================
+# Performance básica
+# ==============================
+max_connections = 20
+table_open_cache = 64
+thread_cache_size = 4
+tmp_table_size = 16M
+max_heap_table_size = 16M
+
+# ==============================
+# Desativa features pesadas desnecessárias em dev
+# ==============================
+performance_schema = OFF
