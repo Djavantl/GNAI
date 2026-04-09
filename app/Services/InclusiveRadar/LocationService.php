@@ -2,7 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Location;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -56,7 +56,7 @@ class LocationService
                 ->exists();
 
             if ($hasActiveBarriers) {
-                throw new CannotDeleteLinkedBarrierException();
+                throw new BusinessRuleException("Não é possível excluir este ponto de referência pois ele possui barreiras ativas.");
             }
 
             $location->delete();

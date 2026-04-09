@@ -1,12 +1,14 @@
 <?php
 
-use App\Exceptions\InclusiveRadar\CannotChangeStatusWithActiveLoansException;
-use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
-use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use App\Exceptions\BusinessRuleException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,53 +25,47 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\CheckAdmin::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
+    ->withExceptions(function (Exceptions $exceptions) {
 
-        // Empréstimos ativos
-        $exceptions->render(function (
-            CannotDeleteWithActiveLoansException $e,
-                                        $request
-        ) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => $e->getMessage()
-                ], 422);
-            }
-
-            return back()->withErrors([
-                'delete' => $e->getMessage()
-            ]);
-        });
-
-        $exceptions->render(function (CannotDeleteWithActiveLoansException $e, Request $request) {
+        // Tratamento para Regras de Negócio
+        $exceptions->render(function (BusinessRuleException $e, Request $request) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => $e->getMessage()], 422);
             }
-            return back()->withErrors(['delete' => $e->getMessage()]);
+            return redirect()->back()->with('error', $e->getMessage());
         });
 
-        $exceptions->render(function (CannotDeleteLinkedBarrierException $e, Request $request) {
+        // Validação
+        $exceptions->render(function (ValidationException $e, Request $request) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => $e->getMessage()], 422);
+                return response()->json(['message' => 'Dados inválidos.', 'errors' => $e->errors()], 422);
             }
-            return back()->withErrors(['delete' => $e->getMessage()]);
+            return redirect()->back()->withErrors($e->errors())->withInput();
         });
 
-        $exceptions->render(function (
-            DomainException|InvalidArgumentException $e,
-            Request $request
-        ) {
+        // Não Autenticado
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => $e->getMessage()
-                ], 422);
+                return response()->json(['message' => 'Não autenticado.'], 401);
             }
+            return redirect()->guest(route('login'))->with('error', 'Faça login para continuar.');
+        });
 
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'business_rule' => $e->getMessage()
-                ]);
+        // Model Not Found (404 de Banco)
+        $exceptions->render(function (ModelNotFoundException $e, Request $request) {
+            $msg = 'Recurso não encontrado.';
+            return $request->expectsJson()
+                ? response()->json(['message' => $msg], 404)
+                : redirect()->back()->with('error', $msg);
+        });
+
+        // Erro de Banco (Query)
+        $exceptions->render(function (QueryException $e, Request $request) {
+            logger()->error('Erro de Banco: ' . $e->getMessage());
+            $msg = 'Erro interno no servidor.';
+            return $request->expectsJson()
+                ? response()->json(['message' => $msg], 500)
+                : redirect()->back()->with('error', $msg);
         });
 
     })->create();

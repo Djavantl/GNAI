@@ -14,7 +14,6 @@ use App\Services\InclusiveRadar\LoanService;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class LoanController extends Controller
@@ -194,61 +193,32 @@ class LoanController extends Controller
 
     public function update(LoanRequest $request, Loan $loan): RedirectResponse
     {
-        try {
-            $this->service->update(
-                $loan,
-                $request->validated()
-            );
+        $this->service->update($loan, $request->validated());
 
-            return redirect()
-                ->route('inclusive-radar.loans.index')
-                ->with('success', 'Empréstimo atualizado com sucesso!');
-        } catch (ValidationException $e) {
-            return back()
-                ->withInput()
-                ->withErrors($e->errors());
-        } catch (\Throwable $e) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'loan' => $e->getMessage()
-                ]);
-        }
+        return redirect()
+            ->route('inclusive-radar.loans.index')
+            ->with('success', 'Empréstimo atualizado com sucesso!');
     }
 
     public function returnItem(Request $request, Loan $loan): RedirectResponse
     {
-        try {
-            $this->service->markAsReturned($loan, [
-                'is_damaged' => $request->boolean('is_damaged'),
-                'observation' => $request->input('observation')
-            ]);
+        $this->service->markAsReturned($loan, [
+            'is_damaged' => $request->boolean('is_damaged'),
+            'observation' => $request->input('observation')
+        ]);
 
-            return redirect()
-                ->route('inclusive-radar.loans.index')
-                ->with('success', 'Devolução registrada com sucesso!');
-        } catch (ValidationException $e) {
-            return back()->withErrors($e->errors());
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'loan' => $e->getMessage()
-            ]);
-        }
+        return redirect()
+            ->route('inclusive-radar.loans.index')
+            ->with('success', 'Devolução registrada com sucesso!');
     }
 
     public function destroy(Loan $loan): RedirectResponse
     {
-        try {
-            $this->service->delete($loan);
+        $this->service->delete($loan);
 
-            return redirect()
-                ->route('inclusive-radar.loans.index')
-                ->with('success', 'Registro de empréstimo removido com sucesso!');
-        } catch (\Throwable $e) {
-            return back()->withErrors([
-                'loan' => $e->getMessage()
-            ]);
-        }
+        return redirect()
+            ->route('inclusive-radar.loans.index')
+            ->with('success', 'Registro de empréstimo removido com sucesso!');
     }
 
     public function generatePdf(Loan $loan)

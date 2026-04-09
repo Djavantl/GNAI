@@ -2,7 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Institution;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -76,7 +76,7 @@ class InstitutionService
                 });
 
             if ($hasActiveBarrier) {
-                throw new CannotDeleteLinkedBarrierException();
+                throw new BusinessRuleException("Não é possível excluir esta instituição pois ela possui barreiras ativas.");
             }
 
             // Remove todos os pontos de referencias desta instituicao

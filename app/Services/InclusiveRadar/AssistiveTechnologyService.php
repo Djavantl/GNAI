@@ -3,8 +3,7 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Audit\AuditLogger;
-use App\Exceptions\InclusiveRadar\CannotChangeStatusWithActiveLoansException;
-use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +38,8 @@ class AssistiveTechnologyService
             /* Impedimos a exclusão para manter a integridade histórica dos
                empréstimos ativos e evitar órfãos no sistema de rastreio. */
             if ($assistiveTechnology->loans()->whereNull('return_date')->exists()) {
-                throw new CannotDeleteWithActiveLoansException();
+                throw new BusinessRuleException("Não é possível excluir um item com empréstimos ativos.");
+
             }
             $assistiveTechnology->delete();
         });
@@ -131,7 +131,7 @@ class AssistiveTechnologyService
         /* Bloqueamos a mudança de status (ex: para Manutenção) se houver
            empréstimos em aberto para evitar inconsistência no inventário. */
         if ($hasActiveLoans && $at->status->value != $data['status']) {
-            throw new CannotChangeStatusWithActiveLoansException();
+            throw new BusinessRuleException("Não é possível alterar o status do item enquanto houver empréstimos ativos.");
         }
     }
 

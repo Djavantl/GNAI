@@ -92,17 +92,11 @@ class WaitlistController extends Controller
 
     public function store(WaitlistRequest $request): RedirectResponse
     {
-        try {
-            $this->service->store($request->validated());
+        $this->service->store($request->validated());
 
-            return redirect()
-                ->route('inclusive-radar.waitlists.index')
-                ->with('success', 'Solicitação de fila criada com sucesso!');
-        } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->withErrors(['waitlistable_id' => $e->getMessage()]);
-        }
+        return redirect()
+            ->route('inclusive-radar.waitlists.index')
+            ->with('success', 'Solicitação de fila criada com sucesso!');
     }
 
     public function show(Waitlist $waitlist): View

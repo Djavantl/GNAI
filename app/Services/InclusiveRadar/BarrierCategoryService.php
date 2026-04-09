@@ -2,7 +2,7 @@
 
 namespace App\Services\InclusiveRadar;
 
-use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\BarrierCategory;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +44,7 @@ class BarrierCategoryService
                 });
 
             if ($hasActiveBarrier) {
-                throw new CannotDeleteLinkedBarrierException();
+                throw new BusinessRuleException("Esta categoria não pode ser excluída pois possui barreiras ativas.");
             }
 
             $category->delete();

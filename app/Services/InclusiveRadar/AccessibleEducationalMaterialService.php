@@ -3,8 +3,7 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Audit\AuditLogger;
-use App\Exceptions\InclusiveRadar\CannotChangeStatusWithActiveLoansException;
-use App\Exceptions\InclusiveRadar\CannotDeleteWithActiveLoansException;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +38,7 @@ class AccessibleEducationalMaterialService
             /* Impedimos a remoção para evitar a perda do histórico de movimentação
                de itens que ainda estão sob posse de terceiros. */
             if ($material->loans()->whereNull('return_date')->exists()) {
-                throw new CannotDeleteWithActiveLoansException();
+                throw new BusinessRuleException("Não é possível excluir um item com empréstimos ativos.");
             }
             $material->delete();
         });
@@ -155,7 +154,7 @@ class AccessibleEducationalMaterialService
         /* Mudanças de status (ex: Inativo ou Manutenção) são bloqueadas se houver
            empréstimos ativos para não gerar inconsistência no fluxo de devolução. */
         if ($hasActiveLoans && $material->status->value != $data['status']) {
-            throw new CannotChangeStatusWithActiveLoansException();
+            throw new BusinessRuleException("Não é possível alterar o status do item enquanto houver empréstimos ativos.");
         }
     }
 

@@ -188,25 +188,16 @@ class BarrierController extends Controller
     public function generatePdf(Barrier $barrier)
     {
         $barrier->load([
-            'category', 'location', 'institution', 'deficiencies',
-            'inspections.images', 'registeredBy',
-            'affectedStudent.person', 'affectedProfessional.person'
+            'category',
+            'location',
+            'institution',
+            'deficiencies',
+            'inspections.images',
+            'affectedStudent.person',
+            'affectedProfessional.person'
         ]);
 
-        $mapBase64 = null;
-        if ($barrier->latitude && $barrier->longitude) {
-            try {
-                $url = "https://staticmap.de/staticmap.php?center={$barrier->latitude},{$barrier->longitude}&zoom=16&size=700x350&markers={$barrier->latitude},{$barrier->longitude},red-pushpin";
-                $response = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(5)->get($url);
-                if ($response->successful()) {
-                    $mapBase64 = 'data:image/png;base64,' . base64_encode($response->body());
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Erro mapa PDF: " . $e->getMessage());
-            }
-        }
-
-        $pdf = Pdf::loadView('pages.inclusive-radar.barriers.pdf', compact('barrier', 'mapBase64'))
+        $pdf = Pdf::loadView('pages.inclusive-radar.barriers.pdf', compact('barrier'))
             ->setPaper('a4', 'portrait')
             ->setOptions([
                 'enable_php' => true,

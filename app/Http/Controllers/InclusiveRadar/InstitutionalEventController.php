@@ -10,7 +10,6 @@ use App\Http\Requests\InclusiveRadar\InstitutionalEventRequest;
 use App\Models\InclusiveRadar\InstitutionalEvent;
 use App\Services\InclusiveRadar\InstitutionalEventService;
 
-use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -81,17 +80,11 @@ class InstitutionalEventController extends Controller
 
     public function destroy(InstitutionalEvent $event): RedirectResponse
     {
-        try {
-            $this->service->delete($event);
+        $this->service->delete($event);
 
-            return redirect()
-                ->route('inclusive-radar.institutional-events.index')
-                ->with('success', 'Evento removido com sucesso!');
-        } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', $e->getMessage());
-        }
+        return redirect()
+            ->route('inclusive-radar.institutional-events.index')
+            ->with('success', 'Evento removido com sucesso!');
     }
 
     public function generatePdf(InstitutionalEvent $event)
