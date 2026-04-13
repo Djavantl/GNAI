@@ -23,6 +23,7 @@ class PeiDiscipline extends Model
         'content_programmatic',
         'methodologies',
         'evaluations',
+        'opinion',
     ];
 
     /**

@@ -94,6 +94,12 @@ class ProfessionalRequest extends FormRequest
                 'nullable',
                 'boolean',
             ],
+
+            'status' => [
+                'required',
+                'in:active,inactive',
+            ],
+
         ];
     }
 }

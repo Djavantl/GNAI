@@ -5,6 +5,8 @@ namespace App\Services\SpecializedEducationalSupport;
 
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Support\Facades\DB;
+use DomainException;
+use App\Models\SpecializedEducationalSupport\Student;
 
 class DeficiencyService
 {
@@ -36,7 +38,14 @@ class DeficiencyService
     public function toggleActive(Deficiency $deficiency): Deficiency
     {
         return DB::transaction(function () use ($deficiency) {
-            $deficiency->update(['is_active' => ! $deficiency->is_active]);
+
+            if ($deficiency->is_active) {
+                $deficiency->ensureCanBeDeactivated();
+            }
+
+            $deficiency->update([
+                'is_active' => ! $deficiency->is_active
+            ]);
 
             return $deficiency;
         });
@@ -45,6 +54,9 @@ class DeficiencyService
     public function delete(Deficiency $deficiency): void
     {
         DB::transaction(function () use ($deficiency) {
+
+            $deficiency->ensureCanBeDeactivated();
+
             $deficiency->delete();
         });
     }

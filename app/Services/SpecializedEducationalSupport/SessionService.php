@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SessionNotification;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
@@ -55,6 +56,29 @@ class SessionService
                 new SessionNotification($session, $subject, $text)
             );
         }
+    }
+
+    public function getMySessions(array $filters = [])
+    {
+        $professional = Auth::user()?->professional;
+
+        if (!$professional) {
+            abort(403, 'Acesso permitido apenas para profissionais.');
+        }
+
+        return Session::query()
+            ->with([
+                'students.person',
+                'professional.person',
+                'sessionRecord'
+            ])
+            ->where('professional_id', $professional->id)
+            ->student($filters['student'] ?? null)
+            ->type($filters['type'] ?? null)
+            ->status($filters['status'] ?? null)
+            ->orderByDesc('session_date')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     private function normalizeTime(array &$data): void
@@ -120,6 +144,9 @@ class SessionService
     public function create(array $data): Session
     {
         return DB::transaction(function () use ($data) {
+            $this->ensureProfessionalIsActive($data['professional_id']);
+            $this->ensureStudentsAreActive($data['student_ids']);
+            
             $this->normalizeTime($data);
             $conflict = $this->detectConflict($data);
 
@@ -246,23 +273,20 @@ class SessionService
             ->get();
     }
 
-    /**
-     * Busca todas as sessões de um profissional específico
-     */
-    public function getSessionsByProfessional(int $professionalId)
-    {
-        return Session::where('professional_id', $professionalId)
-            ->with(['student.person', 'sessionRecord'])
-            ->orderBy('session_date', 'desc')
-            ->orderBy('start_time', 'desc')
-            ->get();
-    }
-
     //atualizar
 
     public function update(Session $session, array $data): Session
     {
         return DB::transaction(function () use ($session, $data) {
+            $professionalId = $data['professional_id']
+                ?? $session->professional_id;
+
+            $this->ensureProfessionalIsActive($professionalId);
+
+            $studentIds = $data['student_ids']
+                ?? $session->students()->pluck('students.id')->toArray();
+
+            $this->ensureStudentsAreActive($studentIds);
             // 1. Normaliza o tempo (gera o end_time se estiver vazio)
             $this->normalizeTime($data);
 
@@ -322,5 +346,47 @@ class SessionService
     public function forceDelete(Session $session): void
     {
         $session->forceDelete();
+    }
+
+    private function ensureStudentsAreActive(array $studentIds): void
+    {
+        $inactiveStudents = \App\Models\SpecializedEducationalSupport\Student::whereIn('id', $studentIds)
+            ->where('status', '!=', 'active')
+            ->with('person')
+            ->get()
+            ->pluck('person.name')
+            ->toArray();
+
+        if (!empty($inactiveStudents)) {
+
+            $names = implode(', ', $inactiveStudents);
+
+            throw ValidationException::withMessages([
+                'student_ids' =>
+                    "Não é possível agendar ou editar sessão para aluno inativo: {$names}."
+            ]);
+        }
+    }
+
+    private function ensureProfessionalIsActive(int $professionalId): void
+    {
+        $professional = \App\Models\SpecializedEducationalSupport\Professional::with('person')
+            ->find($professionalId);
+
+        if (!$professional) {
+            throw ValidationException::withMessages([
+                'professional_id' => 'Profissional não encontrado.'
+            ]);
+        }
+
+        if ($professional->status !== 'active') {
+
+            $name = $professional->person->name ?? 'Profissional';
+
+            throw ValidationException::withMessages([
+                'professional_id' =>
+                    "Não é possível agendar ou editar sessão para profissional inativo: {$name}."
+            ]);
+        }
     }
 }

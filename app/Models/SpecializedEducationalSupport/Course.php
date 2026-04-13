@@ -5,6 +5,7 @@ namespace App\Models\SpecializedEducationalSupport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
+use DomainException;
 
 class Course extends Model
 {
@@ -62,4 +63,30 @@ class Course extends Model
         if ($isActive === null || $isActive === '') return $query;
         return $query->where('is_active', (bool) $isActive);
     }
+
+        public function ensureCanBeDeactivated(): void
+    {
+        if ($this->studentCourses()->exists()) {
+            throw new DomainException(
+                'Este curso está vinculado a um ou mais alunos e não pode ser desativado.'
+            );
+        }
+
+        // Se você tiver vínculo com professor, descomente e ajuste a relação:
+        // if ($this->professors()->exists()) {
+        //     throw new DomainException(
+        //         'Este curso está vinculado a um ou mais professores e não pode ser desativado.'
+        //     );
+        // }
+    }
+
+    public function ensureIsActive(): void
+    {
+        if (! $this->is_active) {
+            throw new DomainException(
+                'Este curso está desativado e não pode ser vinculado.'
+            );
+        }
+    }
 }
+

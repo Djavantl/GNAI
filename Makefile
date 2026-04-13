@@ -88,8 +88,14 @@ migrate:
 seed:
 	$(COMPOSE) exec app php artisan db:seed
 
+reset-db:
+	$(COMPOSE) exec app php artisan migrate:fresh --seed
+
 npm-build:
 	$(COMPOSE) exec node npm run build
+
+npm-dev:
+	$(COMPOSE) exec node npm run dev
 
 # -----------------------------
 # Frontend

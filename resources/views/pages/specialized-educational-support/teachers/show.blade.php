@@ -93,22 +93,74 @@
                 {{ $teacher->created_at->format('d/m/Y') }}
             </x-show.info-item>
 
-            <x-show.info-item label="Status de Acesso" column="col-md-4" isBox="true">
-                {{-- No seu caso, o status costuma estar atrelado ao User ou Teacher --}}
-                <span class="text-success fw-bold">ATIVO</span>
-            </x-show.info-item>
+            <div class="col-12 mb-4 px-4">
 
-            <x-show.info-item label="Disciplinas Atribuídas" column="col-md-12" isBox="true">
-                <div class="d-flex flex-wrap gap-2">
-                    @forelse($teacher->disciplines as $discipline)
-                        <span class="badge bg-purple-light text-purple-dark border px-3 py-2">
-                            <i class="fas fa-book me-1"></i> {{ $discipline->name }}
-                        </span>
-                    @empty
-                        <span class="text-muted small italic">Nenhuma disciplina vinculada.</span>
-                    @endforelse
-                </div>
-            </x-show.info-item>
+                @php
+                    $grouped = $teacher->courseDisciplines
+                        ->groupBy(fn($item) => $item->course->name);
+                @endphp
+
+                @forelse($grouped as $courseName => $items)
+
+                    <div class="card border-0 shadow-sm rounded-3 mb-4">
+
+                        {{-- Cabeçalho do Curso --}}
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+
+                            <div class="fw-bold text-purple-dark">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                {{ $courseName }}
+                            </div>
+
+                            <span class="badge bg-secondary">
+                                {{ $items->count() }}
+                                {{ $items->count() === 1 ? 'disciplina' : 'disciplinas' }}
+                            </span>
+
+                        </div>
+
+                        {{-- Disciplinas --}}
+                        <div class="card-body">
+
+                            <div class="d-flex flex-wrap gap-2">
+
+                                @foreach($items as $assignment)
+
+                                    <span class="badge bg-purple-light text-purple-dark border px-3 py-2">
+
+                                        <i class="fas fa-book me-1"></i>
+
+                                        {{ $assignment->discipline->name }}
+
+                                    </span>
+
+                                @endforeach
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @empty
+
+                    <div class="text-center py-5 text-muted">
+
+                        <i class="fas fa-book-open mb-3" style="font-size: 32px;"></i>
+
+                        <div class="fw-semibold">
+                            Nenhuma disciplina atribuída
+                        </div>
+
+                        <div class="small">
+                            Utilize o botão <strong>Gerenciar Disciplinas</strong> para realizar as atribuições.
+                        </div>
+
+                    </div>
+
+                @endforelse
+
+            </div>
 
             {{-- RODAPÉ --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">

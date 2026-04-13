@@ -21,6 +21,11 @@
     </div>
 
     <div class="d-flex gap-2">
+        <x-buttons.pdf-button 
+                :href="route('specialized-educational-support.student-context.pdf', $studentContext)" 
+                target="_blank" 
+            />
+
         @if($studentContext->is_current)
             <x-buttons.link-button 
                 href="{{ route('specialized-educational-support.student-context.edit', $studentContext) }}" 
@@ -55,13 +60,10 @@
                         <span class="small text-muted d-block">
                             Matrícula: {{ $student->registration ?? '—' }}
                         </span>
-                        <span class="small text-muted">
-                            Status:
-                            @if($student->status === 'active')
-                                <span class="text-success fw-semibold">ATIVO</span>
-                            @else
-                                <span class="text-danger fw-semibold">{{ strtoupper($student->status) }}</span>
-                            @endif
+                        <span class="small">
+                            <span class="text-{{ $student->status->color() }} text-uppercase fw-bold">
+                                {{ $student->status->label() ?? '—' }}
+                            </span>
                         </span>
                     </div>
                 </div>

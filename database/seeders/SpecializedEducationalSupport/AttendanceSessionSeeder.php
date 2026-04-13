@@ -10,48 +10,55 @@ use Carbon\Carbon;
 
 class AttendanceSessionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $students = Student::all();
-        $professional = Professional::first(); // Profissional responsável
+        $students = Student::all()->values();
+        $professionals = Professional::all()->values();
 
-        if (!$professional) {
-            $this->command->error("Nenhum profissional encontrado. Rode a PSPUSeeder primeiro.");
+        if ($professionals->isEmpty()) {
+            $this->command->error('Nenhum profissional encontrado.');
             return;
         }
 
-        foreach ($students as $student) {
-            // Gerar 15 sessões para cada aluno
-            for ($i = 0; $i < 2; $i++) {
-                
-                // Lógica de datas: 10 sessões no passado e 5 no futuro
-                // Subtrai de 1 a 10 semanas ou soma de 1 a 5 semanas
-                if ($i < 10) {
-                    $date = Carbon::now()->subWeeks($i + 1)->subDays(rand(0, 5));
-                    $status = 'Realizada';
-                } else {
-                    $date = Carbon::now()->addWeeks($i - 9)->addDays(rand(0, 5));
-                    $status = 'Agendada';
-                }
+        if ($students->isEmpty()) {
+            $this->command->error('Nenhum aluno encontrado.');
+            return;
+        }
 
-                // 1. Criar a Sessão de Atendimento
-                $sessionId = DB::table('attendance_sessions')->insertGetId([
-                    'professional_id' => $professional->id,
-                    'session_date'    => $date->format('Y-m-d'),
-                    'start_time'      => '14:00:00',
-                    'end_time'        => '15:00:00',
-                    'type'            => $this->getRandomType(),
-                    'location'        => 'Sala do AEE',
-                    'session_objective' => 'Acompanhamento pedagógico e avaliação de progresso do PEI.',
-                    'status'          => $status,
-                    'created_at'      => now(),
-                    'updated_at'      => now(),
-                ]);
+        // Máximo de 15 sessões
+        $maxSessions = min(15, $students->count());
+        $usedDates = [];
 
-                // 2. Vincular o aluno à sessão (Relação Many-to-Many)
+        for ($i = 0; $i < $maxSessions; $i++) {
+
+            // DEFINIÇÃO DO PROFESSIONAL (aqui estava faltando)
+            $professional = $professionals[$i % $professionals->count()];
+
+            // Alterna tipo
+            $type = ($i % 3 === 0) ? 'group' : 'individual';
+
+            if ($type === 'group' && $students->count() < 2) {
+                $type = 'individual';
+            }
+
+            $date = $this->generateUniqueDate($usedDates, $i);
+
+            $sessionId = DB::table('attendance_sessions')->insertGetId([
+                'professional_id'   => $professional->id,
+                'session_date'      => $date->format('Y-m-d'),
+                'start_time'        => $i % 2 === 0 ? '08:00:00' : '14:00:00',
+                'end_time'          => $i % 2 === 0 ? '09:00:00' : '15:00:00',
+                'type'              => $type,
+                'location'          => 'Sala do AEE',
+                'session_objective' => 'Acompanhamento pedagógico e evolução do atendimento especializado.',
+                'status'            => 'Agendada',
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ]);
+
+            $selectedStudents = $this->pickStudentsForSession($students, $type);
+
+            foreach ($selectedStudents as $student) {
                 DB::table('attendance_session_student')->insert([
                     'attendance_session_id' => $sessionId,
                     'student_id'            => $student->id,
@@ -60,12 +67,33 @@ class AttendanceSessionSeeder extends Seeder
         }
     }
 
-    /**
-     * Tipos aleatórios de atendimento
-     */
-    private function getRandomType(): string
+    private function pickStudentsForSession($students, string $type)
     {
-        $types = ['Individual', 'Avaliação', 'Apoio Pedagógico', 'Orientação'];
-        return $types[array_rand($types)];
+        if ($type === 'individual') {
+            return collect([$students->random()]);
+        }
+
+        $quantity = min(3, $students->count());
+
+        return $students
+            ->shuffle()
+            ->take($quantity)
+            ->values();
+    }
+
+    private function generateUniqueDate(array &$usedDates, int $index): Carbon
+    {
+        do {
+            $date = Carbon::now()
+                ->subDays(rand(1, 120))
+                ->addDays($index);
+
+            $dateKey = $date->format('Y-m-d');
+
+        } while (in_array($dateKey, $usedDates, true));
+
+        $usedDates[] = $dateKey;
+
+        return $date;
     }
 }

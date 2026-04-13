@@ -52,6 +52,12 @@ class Pendency extends Model
             : '—';
     }
 
+    public function canBeCompletedByCurrentUser(): bool
+    {
+        return $this->assigned_to === auth()->user()->professional->id
+            && !$this->is_completed;
+    }
+
     public function getUpdatedAtFormattedAttribute()
     {
         return $this->updated_at

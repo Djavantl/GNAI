@@ -88,12 +88,9 @@
                             </span>
 
                             <span class="small text-muted">
-                                Status:
-                                @if($student->status === 'active')
-                                    <span class="text-success fw-semibold">ATIVO</span>
-                                @else
-                                    <span class="text-danger fw-semibold">{{ strtoupper($student->status) }}</span>
-                                @endif
+                                <span class="text-{{ $student->status->color() }} text-uppercase fw-bold">
+                                    {{ $student->status->label() ?? '—' }}
+                                </span>
                             </span>
                         </div>
                     </div>

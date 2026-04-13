@@ -21,6 +21,7 @@ return new class extends Migration
             $table->longText('content_programmatic');
             $table->longText('methodologies');
             $table->longText('evaluations');
+            $table->longText('opinion');
             $table->timestamps();
         });
     }

@@ -68,6 +68,8 @@ class StudentContextController extends Controller
 
     public function create(Student $student)
     {
+        $student->ensureIsActive();
+        
         $exists = StudentContext::where('student_id', $student->id)->exists();
 
         if ($exists) {

@@ -91,6 +91,16 @@
                 />
             </div>
 
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="opinion"
+                    label="Parecer"
+                    rows="4"
+                    required
+                    :value="old('opinion', $peiDiscipline->opinion)"
+                />
+            </div>
+
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei) }}" variant="secondary">
                     <i class="fas fa-times"></i>Cancelar

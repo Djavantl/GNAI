@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
 use App\Models\Traits\Reportable;
+use App\Models\SpecializedEducationalSupport\PeiDiscipline;
 
 class Pei extends Model
 {

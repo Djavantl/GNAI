@@ -30,13 +30,6 @@
                             <i class="fas fa-eye"></i>ver
                         </x-buttons.link-button>
 
-                        <x-buttons.link-button
-                            :href="route('specialized-educational-support.semesters.edit', $semester)"
-                            variant="warning"
-                        >
-                           <i class="fas fa-edit"></i> Editar
-                        </x-buttons.link-button>
-
                         @if(!$semester->is_current)
                             <form action="{{ route('specialized-educational-support.semesters.setCurrent', $semester) }}" method="POST" class="d-inline">
                                 @csrf

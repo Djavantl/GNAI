@@ -5,6 +5,7 @@ use App\Models\Permission;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
+use DomainException;
 
 class Position extends Model
 {
@@ -55,5 +56,34 @@ class Position extends Model
         if ($isActive === null || $isActive === '') return $query;
 
         return $query->where('is_active', (bool) $isActive);
+    }
+
+    public function ensureCanBeDeactivated(): void
+    {
+        if ($this->professionals()->exists()) {
+            throw new DomainException(
+                "Este cargo está vinculado a um ou mais profissionais e não pode ser desativado."
+            );
+        }
+    }
+
+    public function ensureIsActive(): void
+    {
+        if (! $this->is_active) {
+            throw new DomainException(
+                "Este cargo está desativado e não pode ser vinculado a um profissional."
+            );
+        }
+    }
+
+    public function ensureCanBeDeleted(): void
+    {
+        if ($this->professionals()->exists()) {
+
+            throw new DomainException(
+                "Este cargo está vinculado a um ou mais profissionais e não pode ser removido."
+            );
+
+        }
     }
 }

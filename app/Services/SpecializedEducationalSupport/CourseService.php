@@ -19,9 +19,12 @@ class CourseService
 
     public function show(Course $course)
     {
-        return $course->load('disciplines');
+        return $course->load([
+            'disciplines' => function ($query) {
+                $query->orderBy('name', 'asc');
+            }
+        ]);
     }
-
     public function create(array $data): Course
     {
         return DB::transaction(function () use ($data) {
@@ -42,10 +45,17 @@ class CourseService
     public function update(Course $course, array $data): Course
     {
         return DB::transaction(function () use ($course, $data) {
+
+            $newStatus = $data['is_active'];
+
+            if ($course->is_active && !$newStatus) {
+                $course->ensureCanBeDeactivated();
+            }
+
             $course->update([
                 'name'        => $data['name'],
                 'description' => $data['description'] ?? null,
-                'is_active'   => $data['is_active'],
+                'is_active'   => $newStatus,
             ]);
 
             if (isset($data['discipline_ids'])) {

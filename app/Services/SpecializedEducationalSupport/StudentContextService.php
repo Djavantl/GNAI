@@ -50,6 +50,8 @@ class StudentContextService
 
     public function create(Student $student, array $data): StudentContext
     {
+        $student->ensureIsActive();
+
         return DB::transaction(function () use ($student, $data) {
 
             $exists = StudentContext::where('student_id', $student->id)->exists();
@@ -76,6 +78,8 @@ class StudentContextService
 
     public function makeNewVersion(Student $student): StudentContext
     {
+        $student->ensureIsActive();
+
         $current = $this->showCurrent($student);
 
         if (!$current) {
@@ -83,7 +87,8 @@ class StudentContextService
         }
 
         $lastVersion = StudentContext::where('student_id', $student->id)
-            ->max('version');
+                ->lockForUpdate()
+                ->max('version');
 
         $newContext = $current->replicate();
         $newContext->version = $lastVersion + 1;
@@ -94,6 +99,8 @@ class StudentContextService
 
     public function createNewVersion(Student $student, array $data): StudentContext
     {
+        $student->ensureIsActive();
+
         return DB::transaction(function () use ($student, $data) {
 
             $current = $this->showCurrent($student);
@@ -126,6 +133,9 @@ class StudentContextService
 
     public function update(StudentContext $studentContext, array $data): StudentContext
     {
+        $student = $studentContext->student;
+        $student->ensureIsActive();
+
         return DB::transaction(function () use ($studentContext, $data) {
 
             if(!$studentContext->is_current){
@@ -170,6 +180,9 @@ class StudentContextService
 
     public function restoreVersion(StudentContext $studentContext)
     {
+        $student = $studentContext->student;
+        $student->ensureIsActive();
+        
         return DB::transaction(function () use ($studentContext) {
 
             $student = $studentContext->student;

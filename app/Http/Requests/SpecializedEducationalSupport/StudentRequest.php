@@ -4,6 +4,7 @@ namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Enums\SpecializedEducationalSupport\StudentStatus;
 use App\Rules\Cpf;
 
 class StudentRequest extends FormRequest
@@ -69,8 +70,8 @@ class StudentRequest extends FormRequest
             ],
 
             'status' => [
-                'sometimes',
-                'in:active,locked,completed,dropped'
+                'required',
+                Rule::enum(StudentStatus::class),
             ],
 
             'photo' => [

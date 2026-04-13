@@ -129,6 +129,27 @@ class SessionController extends Controller
         );
     }
 
+    public function mySessions(Request $request)
+    {
+        $sessions = $this->service->getMySessions($request->all());
+
+        if ($request->ajax()) {
+            return view(
+                'pages.specialized-educational-support.sessions.partials.my-table',
+                compact('sessions')
+            )->render();
+        }
+
+        $students = Student::with('person')
+            ->orderBy('id')
+            ->get(['id', 'person_id']);
+
+        return view(
+            'pages.specialized-educational-support.sessions.my-sessions',
+            compact('sessions', 'students')
+        );
+    }
+
     // 2. Create com Aluno Fixo
     public function createForStudent(Student $student)
     {
@@ -159,25 +180,6 @@ class SessionController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erro ao cancelar: ' . $e->getMessage());
         }
-    }
-
-
-    // 3. Index do Profissional Logado
-    public function mySessions()
-    {
-        $professionalId = auth()->user()->professional->id; 
-        $sessions = $this->service->getSessionsByProfessional($professionalId);
-        
-        return view('pages.specialized-educational-support.sessions.index', compact('sessions'));
-    }
-
-    public function update(Session $session, SessionRequest $request)
-    {
-        $this->service->update($session, $request->validated());
-
-        return redirect()
-            ->route('specialized-educational-support.sessions.show', $session)
-            ->with('success', 'Sessão atualizada com sucesso.');
     }
 
     public function destroy(Session $session)

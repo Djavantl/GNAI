@@ -134,9 +134,13 @@
                 <x-forms.select
                     name="status"
                     label="Status"
-                    :options="['active' => 'Ativo', 'inactive' => 'Inativo']"
+                    :options="[
+                        'active' => 'Ativo',
+                        'inactive' => 'Inativo'
+                    ]"
                     :value="old('status', $professional->status)"
                     :selected="old('status', $professional->status)"
+                    required
                 />
             </div>
 

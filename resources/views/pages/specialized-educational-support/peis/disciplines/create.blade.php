@@ -107,6 +107,17 @@
                 />
             </div>
 
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="opinion"
+                    label="Parecer"
+                    rows="4"
+                    :required="true"
+                    :value="old('opinion')"
+                    placeholder="Descrever avanços do estudante, considerando as metas previstas para ele e principais dificuldades."
+                />
+            </div>
+
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei) }}" variant="secondary">
                     <i class="fas fa-times"></i>Cancelar
@@ -120,101 +131,94 @@
         </x-forms.form-card>
     </div>
     @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const teacherSelect = document.getElementById('teacher-select');
-    const disciplineSelect = document.getElementById('discipline-select');
-    const form = document.querySelector('form');
+        const teacherSelect = document.getElementById('teacher-select');
+        const disciplineSelect = document.getElementById('discipline-select');
+        const form = document.querySelector('form');
 
-    const urlBase = "{{ route('specialized-educational-support.teacher-disciplines', $pei) }}";
-    const loggedTeacherId = {{ auth()->user()->teacher_id ?? 'null' }};
+        const urlBase = "{{ route('specialized-educational-support.teacher-disciplines', $pei) }}";
+        const loggedTeacherId = {{ auth()->user()->teacher_id ?? 'null' }};
 
-    function resetDisciplines() {
-        disciplineSelect.innerHTML = '<option value="">Selecione uma disciplina</option>';
-        disciplineSelect.disabled = true;
-    }
+        const oldDisciplineId = @json(old('discipline_id'));
 
-    function populateDisciplines(items, selectedId = null) {
+        function resetDisciplines() {
+            disciplineSelect.innerHTML = '<option value="">Selecione uma disciplina</option>';
+            disciplineSelect.disabled = true;
+        }
 
-        disciplineSelect.innerHTML = '';
+        function populateDisciplines(items, selectedId = null) {
+            disciplineSelect.innerHTML = '';
 
-        const emptyOpt = document.createElement('option');
-        emptyOpt.value = '';
-        emptyOpt.text = 'Selecione uma disciplina';
-        disciplineSelect.appendChild(emptyOpt);
+            const emptyOpt = document.createElement('option');
+            emptyOpt.value = '';
+            emptyOpt.text = 'Selecione uma disciplina';
+            disciplineSelect.appendChild(emptyOpt);
 
-        items.forEach(function (d) {
+            items.forEach(function (d) {
+                const opt = document.createElement('option');
+                opt.value = d.id;
+                opt.text = d.name;
 
-            const opt = document.createElement('option');
-            opt.value = d.id;
-            opt.text = d.name;
+                if (selectedId && String(d.id) === String(selectedId)) {
+                    opt.selected = true;
+                }
 
-            if (selectedId && String(d.id) === String(selectedId)) {
-                opt.selected = true;
+                disciplineSelect.appendChild(opt);
+            });
+
+            disciplineSelect.disabled = false;
+        }
+
+        function loadDisciplines(teacherId) {
+            if (!teacherId) {
+                resetDisciplines();
+                return;
             }
 
-            disciplineSelect.appendChild(opt);
-        });
+            const url = new URL(urlBase, window.location.origin);
+            url.searchParams.set('teacher_id', teacherId);
 
-        disciplineSelect.disabled = false;
-    }
-
-    function loadDisciplines(teacherId) {
-
-        if (!teacherId) {
-            resetDisciplines();
-            return;
+            fetch(url.toString(), {
+                headers: {
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin'
+            })
+            .then(res => res.json())
+            .then(data => {
+                populateDisciplines(data, oldDisciplineId);
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro ao buscar disciplinas do professor.');
+                resetDisciplines();
+            });
         }
 
-        const url = new URL(urlBase, window.location.origin);
-        url.searchParams.set('teacher_id', teacherId);
+        resetDisciplines();
 
-        fetch(url.toString(), {
-            headers: {
-                'Accept': 'application/json'
-            },
-            credentials: 'same-origin'
-        })
-        .then(res => res.json())
-        .then(data => {
-            populateDisciplines(data, "{{ old('discipline_id') }}");
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Erro ao buscar disciplinas do professor.');
-            resetDisciplines();
-        });
-    }
+        if (teacherSelect) {
+            teacherSelect.addEventListener('change', function () {
+                loadDisciplines(this.value);
+            });
 
-    // estado inicial
-    resetDisciplines();
-
-    // gestor/admin
-    if (teacherSelect) {
-
-        teacherSelect.addEventListener('change', function () {
-            loadDisciplines(this.value);
-        });
-
-        if (teacherSelect.value) {
-            loadDisciplines(teacherSelect.value);
+            if (teacherSelect.value) {
+                loadDisciplines(teacherSelect.value);
+            }
         }
-    }
 
-    // professor logado
-    if (!teacherSelect && loggedTeacherId) {
-        loadDisciplines(loggedTeacherId);
-    }
+        if (!teacherSelect && loggedTeacherId) {
+            loadDisciplines(loggedTeacherId);
+        }
 
-    // garantir que disabled não impeça o submit
-    if (form) {
-        form.addEventListener('submit', function () {
-            disciplineSelect.disabled = false;
-        });
-    }
-
-});
-</script>
-@endpush
+        if (form) {
+            form.addEventListener('submit', function () {
+                disciplineSelect.disabled = false;
+            });
+        }
+    });
+    </script>
+    @endpush
 @endsection

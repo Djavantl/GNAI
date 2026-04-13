@@ -21,6 +21,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Requests\SpecializedEducationalSupport\PeiDisciplineRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
 
 class PeiController extends Controller
 {
@@ -107,6 +108,8 @@ class PeiController extends Controller
 
     public function create(Student $student)
     {
+        $student->ensureIsActive();
+
         $studentCourse = $student->currentCourse()->first();
         if (!$studentCourse) {
             return redirect()->back()->with('error', 'Este aluno não possui matrícula vigente');
@@ -131,6 +134,8 @@ class PeiController extends Controller
 
     public function store(Student $student)
     {   
+        $student->ensureIsActive();
+
         try {
             $pei = $this->service->create($student);
  
@@ -225,6 +230,9 @@ class PeiController extends Controller
      */
     public function createDiscipline(Pei $pei)
     {
+        $student = $pei->student;
+        $student->ensureIsActive();
+
         if ($pei->is_finished) {
             return redirect()->back()->with('error', 'Não é possível adicionar disciplinas a um PEI finalizado.');
         }
@@ -253,6 +261,9 @@ class PeiController extends Controller
      */
     public function storeDiscipline(PeiDisciplineRequest $request, Pei $pei)
     {
+        $student = $pei->student;
+        $student->ensureIsActive();
+
         try {
             $this->disciplineService->store($pei, $request->validated());
 
@@ -270,6 +281,8 @@ class PeiController extends Controller
      */
     public function editDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)
     {
+        $student = $pei->student;
+        $student->ensureIsActive();
         // O Laravel já garante que $peiDiscipline pertence a $pei por causa do scopeBindings nas rotas
         if ($pei->is_finished) {
             return redirect()->back()->with('error', 'Não é possível editar disciplinas de um PEI finalizado.');
@@ -286,6 +299,9 @@ class PeiController extends Controller
      */
     public function updateDiscipline(PeiDisciplineRequest $request, Pei $pei, PeiDiscipline $peiDiscipline)
     {
+        $student = $pei->student;
+        $student->ensureIsActive();
+        
         try {
             $this->disciplineService->update($peiDiscipline, $request->validated());
 
@@ -317,36 +333,32 @@ class PeiController extends Controller
      * Retorna via JSON as disciplinas que o professor leciona dentro do curso do PEI.
      * Usa query param teacher_id (GET).
      */
-    public function teacherDisciplines(Pei $pei, Request $request)
+    public function teacherDisciplines(Request $request, $pei)
     {
-        $teacherId = $request->query('teacher_id');
-        $studentCourse = $pei->student->currentCourse()->first();
+        $teacherId = $request->integer('teacher_id');
 
-        if (!$studentCourse) {
-            return response()->json(['error' => 'Aluno sem matrícula vigente'], 422);
+        if (! $teacherId) {
+            return response()->json([]);
         }
 
-        $course = $studentCourse->course;
-
-        // disciplinas base do curso
-        $courseDisciplineIds = $course->disciplines()->pluck('disciplines.id')->toArray();
-
-        if (!$teacherId) {
-            // sem professor, retorna todas as disciplinas do curso
-            $disciplines = $course->disciplines()->orderBy('name')->get(['id', 'name']);
-            return response()->json($disciplines);
-        }
-
-        $teacher = Teacher::with('disciplines')->find($teacherId);
-        if (!$teacher) {
-            return response()->json(['error' => 'Professor não encontrado.'], 404);
-        }
-
-        // pega interseção entre as disciplinas que o prof leciona e as do curso
-        $teacherDisciplineIds = $teacher->disciplines->pluck('id')->toArray();
-        $intersection = array_values(array_intersect($courseDisciplineIds, $teacherDisciplineIds));
-
-        $disciplines = Discipline::whereIn('id', $intersection)->orderBy('name')->get(['id', 'name']);
+        $disciplines = TeacherCourseDiscipline::query()
+            ->where('teacher_id', $teacherId)
+            ->whereHas('discipline', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->whereHas('course', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->with('discipline')
+            ->get()
+            ->pluck('discipline')
+            ->unique('id')
+            ->sortBy('name')
+            ->values()
+            ->map(fn ($discipline) => [
+                'id' => $discipline->id,
+                'name' => $discipline->name,
+            ]);
 
         return response()->json($disciplines);
     }

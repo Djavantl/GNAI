@@ -3,12 +3,14 @@
 namespace Database\Seeders\SpecializedEducationalSupport;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Models\SpecializedEducationalSupport\Course;
-use App\Models\SpecializedEducationalSupport\Discipline;
+use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 class TeacherSeeder extends Seeder
 {
@@ -22,42 +24,56 @@ class TeacherSeeder extends Seeder
         ];
 
         foreach ($teachersData as $index => $data) {
+            DB::transaction(function () use ($data, $index) {
+                $person = Person::firstOrCreate(
+                    ['document' => '888' . str_pad($index, 8, '0', STR_PAD_LEFT)],
+                    [
+                        'name'       => $data['name'],
+                        'birth_date' => now()->subYears(rand(28, 55))->format('Y-m-d'),
+                        'gender'     => $data['gender'],
+                        'email'      => strtolower(str_replace(' ', '.', $data['name'])) . '@escola.com',
+                    ]
+                );
 
-            // 1. Criar a Pessoa
-            $person = Person::create([
-                'name' => $data['name'],
-                'document' => '888' . str_pad($index, 8, '0', STR_PAD_LEFT),
-                'birth_date' => now()->subYears(rand(28, 55))->format('Y-m-d'),
-                'gender' => $data['gender'],
-                'email' => strtolower(str_replace(' ', '.', $data['name'])) . '@escola.com',
-            ]);
+                $teacher = Teacher::firstOrCreate(
+                    ['person_id' => $person->id],
+                    [
+                        'registration' => 'DOC' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                    ]
+                );
+                $course = Course::where('name', $data['course'])->first();
 
-            // 2. Criar o Professor
-            $teacher = Teacher::create([
-                'person_id' => $person->id,
-                'registration' => 'DOC' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
-            ]);
+                if ($course) {
+                    // Vínculo professor -> curso
+                    $teacher->courses()->syncWithoutDetaching([$course->id]);
 
-            // 3. Vincular ao curso
-            $course = Course::where('name', $data['course'])->first();
-            if ($course) {
-                $teacher->courses()->syncWithoutDetaching([$course->id]);
+                    // Pega algumas disciplinas reais do curso
+                    $disciplineIds = $course->disciplines()
+                        ->orderBy('name')
+                        ->limit(7)
+                        ->pluck('disciplines.id')
+                        ->toArray();
 
-                // opcional → vincula automaticamente disciplinas do curso
-                $disciplines = $course->disciplines()->pluck('disciplines.id')->toArray();
-                if (!empty($disciplines)) {
-                    $teacher->disciplines()->syncWithoutDetaching($disciplines);
+                    // Vínculo professor -> curso -> disciplina
+                    foreach ($disciplineIds as $disciplineId) {
+                        TeacherCourseDiscipline::firstOrCreate([
+                            'teacher_id'    => $teacher->id,
+                            'course_id'     => $course->id,
+                            'discipline_id' => $disciplineId,
+                        ]);
+                    }
                 }
-            }
 
-            // 4. Criar usuário para login
-            User::create([
-                'name' => $person->name,
-                'email' => $person->email,
-                'password' => Hash::make('napne2026'),
-                'role' => 'teacher',
-                'teacher_id' => $teacher->id,
-            ]);
+                User::firstOrCreate(
+                    ['email' => $person->email],
+                    [
+                        'name'       => $person->name,
+                        'password'   => Hash::make('napne2026'),
+                        'role'       => 'teacher',
+                        'teacher_id' => $teacher->id,
+                    ]
+                );
+            });
         }
     }
 }

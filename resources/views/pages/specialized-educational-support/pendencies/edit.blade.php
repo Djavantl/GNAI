@@ -83,22 +83,6 @@
                 />
             </div>
 
-            <div class="col-md-12 mt-2">
-                <div class="form-check">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="is_completed"
-                        id="is_completed"
-                        value="1"
-                        {{ old('is_completed', $pendency->is_completed) ? 'checked' : '' }}
-                    >
-                    <label class="form-check-label" for="is_completed">
-                        Concluída
-                    </label>
-                </div>
-            </div>
-
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.pendencies.index') }}" variant="secondary">
                     <i class="fas fa-times"></i>Cancelar

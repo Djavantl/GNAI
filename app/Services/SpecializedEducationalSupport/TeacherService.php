@@ -8,6 +8,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\SpecializedEducationalSupport\Course;
+use App\Models\SpecializedEducationalSupport\Discipline;
+use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
+use DomainException;
 
 class TeacherService
 {
@@ -25,9 +29,13 @@ class TeacherService
 
     public function show(Teacher $teacher)
     {
-        return $teacher->load('person', 'disciplines');
+        return $teacher->load([
+            'person',
+            'courses',
+            'courseDisciplines.discipline',
+            'courseDisciplines.course',
+        ]);
     }
-
     /**
      * Cria Pessoa + Professor + Usuario + Disciplinas
      */
@@ -172,28 +180,41 @@ class TeacherService
         });
     }
 
-    /**
-     * Sincroniza as disciplinas de um professor específico com segurança de transação
-     */
-    public function syncDisciplines(Teacher $teacher, array $disciplineIds): void
-    {
-        DB::transaction(function () use ($teacher, $disciplineIds) {
-            // O sync remove o que não está no array e adiciona o que é novo
-            $teacher->disciplines()->sync($disciplineIds);
-            
-            // Se você quiser registrar um log ou atualizar um timestamp de 'última alteração' 
-            // no professor, faria aqui dentro também.
-        });
-    }
 
-    public function syncGrade(Teacher $teacher, array $courseIds, array $disciplineIds): void
+
+    public function syncGrade(Teacher $teacher, array $assignments): void
     {
-        DB::transaction(function () use ($teacher, $courseIds, $disciplineIds) {
-            // Sincroniza os cursos vinculados
-            $teacher->courses()->sync($courseIds);
-            
-            // Sincroniza as disciplinas selecionadas
-            $teacher->disciplines()->sync($disciplineIds);
+        DB::transaction(function () use ($teacher, $assignments) {
+            TeacherCourseDiscipline::where('teacher_id', $teacher->id)->delete();
+
+            foreach ($assignments as $courseId => $disciplineIds) {
+                $course = Course::findOrFail($courseId);
+                $course->ensureIsActive();
+
+                $disciplineIds = array_unique($disciplineIds);
+
+                $validDisciplineIds = $course->disciplines()
+                    ->whereIn('disciplines.id', $disciplineIds)
+                    ->pluck('disciplines.id')
+                    ->toArray();
+
+                if (count($validDisciplineIds) !== count($disciplineIds)) {
+                    throw new DomainException(
+                        "Uma ou mais disciplinas informadas não pertencem ao curso {$course->name}."
+                    );
+                }
+
+                foreach ($validDisciplineIds as $disciplineId) {
+                    $discipline = Discipline::findOrFail($disciplineId);
+                    $discipline->ensureIsActive();
+
+                    TeacherCourseDiscipline::create([
+                        'teacher_id'    => $teacher->id,
+                        'course_id'     => $course->id,
+                        'discipline_id' => $discipline->id,
+                    ]);
+                }
+            }
         });
     }
 }

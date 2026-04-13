@@ -42,7 +42,7 @@
                 {{ $course->description ?? 'Nenhuma descrição informada.' }}
             </x-show.info-item>
 
-            <x-forms.section title="Grade Curricular (Disciplinas)" />
+            <x-forms.section title="Matriz Curricular (Disciplinas)" />
 
             <div class="col-12 p-4">
                 @if($course->disciplines->isEmpty())

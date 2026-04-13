@@ -11,8 +11,10 @@ class PendencySeeder extends Seeder
 {
     public function run(): void
     {
-        // Pegamos todos os usuários (quem cria) e todos os profissionais (quem recebe)
+        // Usuários que podem criar pendências
         $users = User::where('role', 'professional')->get();
+
+        // Profissionais que recebem pendências
         $professionals = Professional::all();
 
         if ($users->isEmpty() || $professionals->isEmpty()) {
@@ -32,29 +34,27 @@ class PendencySeeder extends Seeder
             'Digitalizar documentos de matrícula'
         ];
 
-        $priorities = ['urgent', 'high', 'medium', 'low'];
+        // Somente as prioridades permitidas
+        $priorities = ['low', 'medium', 'high'];
 
         foreach ($professionals as $index => $professional) {
-            
-            // Definimos quem será o criador (usamos o índice para variar os usuários criadores)
+
+            // Alterna o criador entre os usuários
             $creator = $users[$index % $users->count()];
 
-            for ($i = 1; $i <= 5; $i++) {
-                
-                $titleIndex = array_rand($titles);
-                
-                Pendency::create([
-                    'created_by'   => $creator->id,
-                    'assigned_to'  => $professional->id,
-                    'title'        => $titles[$titleIndex] . " (#$i)",
-                    'description'  => "Tarefa detalhada referente a " . strtolower($titles[$titleIndex]) . " para o fluxo de trabalho do NAPNE.",
-                    'priority'     => $priorities[array_rand($priorities)],
-                    'due_date'     => now()->addDays(rand(1, 30)),
-                    'is_completed' => (rand(1, 10) > 8), // 20% de chance de já estar concluída
-                    'created_at'   => now()->subDays(rand(1, 5)),
-                    'updated_at'   => now(),
-                ]);
-            }
+            $titleIndex = array_rand($titles);
+
+            Pendency::create([
+                'created_by'   => $creator->id,
+                'assigned_to'  => $professional->id,
+                'title'        => $titles[$titleIndex],
+                'description'  => "Tarefa referente a " . strtolower($titles[$titleIndex]) . ".",
+                'priority'     => $priorities[array_rand($priorities)],
+                'due_date'     => now()->addDays(rand(1, 30)),
+                'is_completed' => false,
+                'created_at'   => now()->subDays(rand(1, 5)),
+                'updated_at'   => now(),
+            ]);
         }
     }
 }

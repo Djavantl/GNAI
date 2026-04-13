@@ -63,6 +63,8 @@ class StudentDeficienciesController extends Controller
     // Exibe o formulário de criação
     public function create(Student $student)
     {
+        $student->ensureIsActive();
+
         $deficienciesList = Deficiency::orderBy('name')->get();
 
         return view(
@@ -74,6 +76,8 @@ class StudentDeficienciesController extends Controller
     // Salva o vínculo da deficiência
     public function store(Student $student, StudentDeficienciesRequest $request)
     {
+        $student->ensureIsActive();
+
         $this->service->create($student, $request->validated());
 
         return redirect()
@@ -85,6 +89,8 @@ class StudentDeficienciesController extends Controller
     public function edit(Student $student, StudentDeficiencies $student_deficiency)
     {
         abort_if($student_deficiency->student_id !== $student->id, 404);
+
+        $student->ensureIsActive();
 
         return view(
             'pages.specialized-educational-support.student-deficiencies.edit',
@@ -99,6 +105,8 @@ class StudentDeficienciesController extends Controller
         StudentDeficienciesRequest $request
     ){
         abort_if($student_deficiency->student_id !== $student->id, 404);
+
+        $student->ensureIsActive();
 
         $this->service->update($student_deficiency, $request->validated());
 

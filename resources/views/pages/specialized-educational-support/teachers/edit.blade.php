@@ -35,7 +35,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome Completo *" 
+                    label="Nome Completo" 
                     required 
                     :value="old('name', $teacher->person->name)" 
                 />
@@ -44,7 +44,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="CPF*" 
+                    label="CPF" 
                     class="cpf-mask"
                     maxlength="14"  
                     placeholder="000.000.000-00"
@@ -56,7 +56,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="birth_date" 
-                    label="Data de Nascimento *" 
+                    label="Data de Nascimento" 
                     type="date" 
                     required 
                     :value="old('birth_date', optional($teacher->person->birth_date)->format('Y-m-d'))" 
@@ -92,7 +92,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="email" 
-                    label="E-mail *" 
+                    label="E-mail" 
                     type="email" 
                     required 
                     :value="old('email', $teacher->person->email)" 
@@ -113,24 +113,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="registration" 
-                    label="Matrícula *" 
+                    label="Matrícula" 
                     required 
                     :value="old('registration', $teacher->registration)" 
                 />
-            </div>
-
-            <div class="col-md-6">
-                {{-- No edit, o value/selected deve ser o array de IDs já vinculados --}}
-                <x-forms.select
-                    name="disciplines[]"
-                    label="Disciplinas Lecionadas *"
-                    required
-                    multiple
-                    :options="$disciplines->pluck('name', 'id')"
-                    :value="old('disciplines', $selectedDisciplines)"
-                    :selected="old('disciplines', $selectedDisciplines)"
-                />
-                <small class="text-muted">Pressione Ctrl/Cmd para gerenciar as disciplinas.</small>
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">

@@ -58,7 +58,7 @@ class DatabaseSeeder extends Seeder
             DisciplineSeeder::class,
             AttendanceSessionSeeder::class,
             TeacherSeeder::class,
-            // PeiSeeder::class,
+            PeiSeeder::class,
             InstitutionSeeder::class,
             LocationSeeder::class,
             AssistiveTechnologySeeder::class,

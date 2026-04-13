@@ -75,6 +75,7 @@ class PeiDisciplineService
                 'content_programmatic' => $data['content_programmatic'] ?? null,
                 'methodologies' => $data['methodologies'] ?? null,
                 'evaluations' => $data['evaluations'] ?? null,
+                'opinion' => $data['opinion'] ?? null,
             ]);
         });
     }
@@ -111,6 +112,7 @@ class PeiDisciplineService
                 'content_programmatic' => $data['content_programmatic'] ?? $peiDiscipline->content_programmatic,
                 'methodologies' => $data['methodologies'] ?? $peiDiscipline->methodologies,
                 'evaluations' => $data['evaluations'] ?? $peiDiscipline->evaluations,
+                'opinion' => $data['opinion'] ?? $peiDiscipline->evaluations,
             ]);
 
             return $peiDiscipline;

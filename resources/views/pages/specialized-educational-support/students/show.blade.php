@@ -39,11 +39,11 @@
             <div class="text-center position-relative">
                 <img src="{{ $student->person->photo_url }}" class="avatar-show-lg">
                 <div class="mt-2">
-                    @if($student->status === 'active')
-                        <span class="badge bg-success">ATIVO</span>
-                    @else
-                        <span class="badge bg-danger">{{ strtoupper($student->status) }}</span>
-                    @endif
+                   
+                    <span class="badge bg-{{ $student->status?->color() ?? 'secondary' }}">
+                        {{ $student->status?->label() ?? '—' }}
+                    </span>
+                    
                 </div>
                 <h4 class="mt-2 text-title mb-0">{{ $student->person->name }}</h4>
                 <p class="text-muted small">Matrícula: {{ $student->registration }}</p>

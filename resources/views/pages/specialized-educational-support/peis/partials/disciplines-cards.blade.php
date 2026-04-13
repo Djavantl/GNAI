@@ -33,11 +33,6 @@
                                         :href="route('specialized-educational-support.pei.discipline.pdf', [$pei, $item])" 
                                         target="_blank" 
                                     />
-                                <x-buttons.link-button 
-                                    href="{{ route('specialized-educational-support.pei-discipline.show', [$pei, $item]) }}"
-                                    variant="info">
-                                    <i class="fas fa-eye"></i> Ver
-                                </x-buttons.link-button>
                             </x-slot:actions>
                         </x-ui.section-header>
 
@@ -72,6 +67,14 @@
                                     <x-ui.info-card-textarea
                                         label="Avaliações"
                                         :value="$item->evaluations"
+                                        rows="4"
+                                    />
+                                </div>
+
+                                <div class="col-12">
+                                    <x-ui.info-card-textarea
+                                        label="Parecer"
+                                        :value="$item->opinion"
                                         rows="4"
                                     />
                                 </div>

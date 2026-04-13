@@ -1,30 +1,22 @@
 @extends('layouts.master')
 
-@section('title', 'Sessões de Atendimento')
+@section('title', 'Minhas Sessões')
 
 @section('content')
 
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => null
+            'Sessões' => route('specialized-educational-support.sessions.index'),
+            'Minhas Sessões' => null
         ]" />
     </div>
 
-    {{-- CARD UNIFICADO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
-        {{-- HEADER --}}
         <x-table.page-header
-            title="Sessões de Atendimento"
-            subtitle="Gerencie os atendimentos realizados com estudantes."
+            title="Minhas Sessões"
+            subtitle="Visualize as sessões em que você está vinculado como profissional responsável."
         >
-            <x-buttons.link-button
-                :href="route('specialized-educational-support.sessions.my-sessions')"
-                variant="info"
-            >
-                <i class="fas fa-calendar-check"></i> Minhas Sessões
-            </x-buttons.link-button>
-            
             <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
@@ -32,13 +24,19 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
+            <x-buttons.link-button
+                :href="route('specialized-educational-support.sessions.index')"
+                variant="secondary"
+                title="Voltar para sessões"
+            >
+                <i class="fas fa-arrow-left"></i>
+            </x-buttons.link-button>
         </x-table.page-header>
 
-        {{-- FILTROS --}}
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
-                data-target="#sessions-table"
+                data-target="#my-sessions-table"
                 :fields="[
                     [
                         'name' => 'student',
@@ -46,14 +44,6 @@
                         'options' => ['' => 'Aluno (Todos)'] +
                             collect($students)->mapWithKeys(fn($s) => [
                                 $s->id => $s->person->name ?? 'Aluno'
-                            ])->toArray()
-                    ],
-                    [
-                        'name' => 'professional',
-                        'type' => 'select',
-                        'options' => ['' => 'Profissional (Todos)'] +
-                            collect($professionals)->mapWithKeys(fn($p) => [
-                                $p->id => $p->person->name ?? 'Profissional'
                             ])->toArray()
                     ],
                     [
@@ -79,9 +69,8 @@
             />
         </div>
 
-        {{-- TABELA --}}
-        <div id="sessions-table" class="p-3">
-            @include('pages.specialized-educational-support.sessions.partials.table')
+        <div id="my-sessions-table" class="p-3">
+            @include('pages.specialized-educational-support.sessions.partials.my-table')
         </div>
     </div>
 

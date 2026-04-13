@@ -3,6 +3,7 @@
 namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PositionRequest extends FormRequest
 {
@@ -37,8 +38,9 @@ class PositionRequest extends FormRequest
 
             'is_active' => [
                 'sometimes',
-                'boolean',
+                Rule::in([0, 1]),
             ],
+
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['exists:permissions,id'],
         ];

@@ -51,15 +51,10 @@
                         <span class="small text-muted d-block">
                             Matrícula: {{ $student->registration ?? '—' }}
                         </span>
-                        <span class="small text-muted">
-                            Status:
-                            @if($student->status === 'active')
-                                <span class="text-success fw-semibold">ATIVO</span>
-                            @else
-                                <span class="text-danger fw-semibold">
-                                    {{ strtoupper($student->status) }}
-                                </span>
-                            @endif
+                        <span class="small">
+                            <span class="text-{{ $student->status->color() }} text-uppercase fw-bold">
+                                {{ $student->status->label() ?? '—' }}
+                            </span>
                         </span>
                     </div>
                 </div>
@@ -119,6 +114,29 @@
                 placeholder="Descreva as necessidades educacionais específicas"
                 :value="old('specific_educational_needs')"
             />
+        </div>
+
+    </div>
+
+    {{-- ================= FINAL ================= --}}
+    <x-forms.section title="Síntese Avaliativa" />
+
+    <div class="row g-2 px-4 pb-3">
+
+        <div class="col-md-12">
+            <x-forms.textarea name="knowledge" label="Conhecimentos e Interesses"
+            rows="4"
+            placeholder="O que sabe? Do que gosta/afinidades?"
+            :value="old('strengths')" 
+            required/>
+        </div>
+
+        <div class="col-md-12">
+            <x-forms.textarea name="difficulties" label="Dificuldades"
+            rows="4"
+            placeholder="Principais dificuldades observadas"
+            :value="old('difficulties')"
+            required />
         </div>
 
     </div>
@@ -298,40 +316,6 @@
 
     </div>
 
-    {{-- ================= FINAL ================= --}}
-    <x-forms.section title="Síntese Avaliativa" />
-
-    <div class="row g-2 px-4 pb-3">
-
-        <div class="col-md-6">
-            <x-forms.textarea name="strengths" label="Pontos Fortes"
-            rows="4"
-            placeholder="Potencialidades do aluno"
-            :value="old('strengths')" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="difficulties" label="Dificuldades"
-            rows="4"
-            placeholder="Principais dificuldades observadas"
-            :value="old('difficulties')" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="recommendations" label="Recomendações"
-            rows="4"
-            placeholder="Encaminhamentos pedagógicos"
-            :value="old('recommendations')" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="general_observation" label="Observação Geral"
-            rows="4"
-            placeholder="Síntese final do contexto"
-            :value="old('general_observation')" />
-        </div>
-
-    </div>
 
     {{-- ================= AÇÕES ================= --}}
     <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">

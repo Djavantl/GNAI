@@ -8,6 +8,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use DomainException;
+use App\Models\SpecializedEducationalSupport\Session;
+use App\Models\SpecializedEducationalSupport\Pendency;
+use App\Models\SpecializedEducationalSupport\Position;
 
 class ProfessionalService
 {
@@ -39,6 +43,8 @@ class ProfessionalService
     public function create(array $data): Professional
     {
         return DB::transaction(function () use ($data) {
+            $this->ensurePositionIsActive($data['position_id']);
+            
             // 1. Processa a foto
             if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
                 $data['photo'] = $data['photo']->store('photos', 'public');
@@ -92,22 +98,25 @@ class ProfessionalService
     public function update(Professional $professional, array $data): Professional 
     {
         return DB::transaction(function () use ($professional, $data) {
+            $this->ensurePositionIsActive($data['position_id']);
+
             $person = $professional->person;
 
-            // Lógica de substituição da foto
             if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
                 if ($person->photo) {
                     Storage::disk('public')->delete($person->photo);
                 }
+
                 $data['photo'] = $data['photo']->store('photos', 'public');
             } 
-            // Lógica para remover a foto se houver um checkbox 'remove_photo'
             elseif (!empty($data['remove_photo'])) {
                 if ($person->photo) {
                     Storage::disk('public')->delete($person->photo);
                 }
+
                 $data['photo'] = null;
-            } else {
+            } 
+            else {
                 $data['photo'] = $person->photo;
             }
 
@@ -119,13 +128,26 @@ class ProfessionalService
                 'email'      => $data['email'],
                 'phone'      => $data['phone'] ?? null,
                 'address'    => $data['address'] ?? null,
-                'photo'      => $data['photo'], 
+                'photo'      => $data['photo'],
             ]);
+
+            $statusAntigo = $professional->status;
+            $statusNovo   = $data['status'] ?? $professional->status;
+
+            if ($statusAntigo !== $statusNovo) {
+
+                if ($statusNovo === 'inactive') {
+
+                    $this->ensureCanBeInactivated($professional);
+
+                }
+
+            }
 
             $professional->update([
                 'position_id'  => $data['position_id'],
                 'registration' => $data['registration'],
-                'status'       => $data['status'] ?? $professional->status,
+                'status'       => $statusNovo,
             ]);
 
             $user = $professional->user;
@@ -153,5 +175,33 @@ class ProfessionalService
 
             $professional->delete();
         });
+    }
+
+    private function ensureCanBeInactivated(Professional $professional): void
+    {
+        $hasPendingPendencies = Pendency::where('assigned_to', $professional->id)
+            ->where('is_completed', false)
+            ->exists();
+
+        if ($hasPendingPendencies) {
+            throw new DomainException(
+                "O profissional {$professional->person->name} possui pendências em aberto e não pode ser inativado."
+            );
+        }
+
+        $hasActiveSessions = Session::where('professional_id', $professional->id)
+            ->exists();
+
+        if ($hasActiveSessions) {
+            throw new DomainException(
+                "O profissional {$professional->person->name} possui sessões registradas e não pode ser inativado."
+            );
+        }
+    }
+
+    private function ensurePositionIsActive(int $positionId): void
+    {
+        $position = Position::findOrFail($positionId);
+        $position->ensureIsActive();
     }
 }

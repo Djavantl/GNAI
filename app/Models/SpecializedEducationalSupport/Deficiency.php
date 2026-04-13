@@ -5,6 +5,7 @@ namespace App\Models\SpecializedEducationalSupport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
+use DomainException;
 
 class Deficiency extends Model
 {
@@ -85,5 +86,27 @@ class Deficiency extends Model
     public static function getReportLabel()
     {
         return 'Deficiência';
+    }
+
+    public function ensureCanBeDeactivated(): void
+    {
+        if ($this->students()->exists()) {
+
+            throw new DomainException(
+                "Esta deficiência está vinculada a um ou mais alunos e não pode ser desativada."
+            );
+
+        }
+    }
+
+    public function ensureIsActive(): void
+    {
+        if (! $this->is_active) {
+
+            throw new DomainException(
+                "Esta deficiência está desativada e não pode ser vinculada a um aluno."
+            );
+
+        }
     }
 }

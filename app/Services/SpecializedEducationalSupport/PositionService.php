@@ -43,6 +43,10 @@ class PositionService
     {
         return DB::transaction(function () use ($position, $data) {
 
+            if ($position->is_active) {
+                $position->ensureCanBeDeactivated();
+            }
+
             $permissions = $data['permissions'] ?? [];
             unset($data['permissions']);
 
@@ -56,7 +60,14 @@ class PositionService
     public function toggleActive(Position $position): Position
     {
         return DB::transaction(function () use ($position) {
-            $position->update(['is_active' => ! $position->is_active]);
+
+            if ($position->is_active) {
+                $position->ensureCanBeDeactivated();
+            }
+
+            $position->update([
+                'is_active' => ! $position->is_active
+            ]);
 
             return $position;
         });
@@ -65,6 +76,8 @@ class PositionService
     public function delete(Position $position): void
     {
         DB::transaction(function () use ($position) {
+            $position->ensureCanBeDeleted();
+            
             $position->delete();
         });
     }

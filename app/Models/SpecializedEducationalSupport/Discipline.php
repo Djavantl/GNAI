@@ -5,6 +5,7 @@ namespace App\Models\SpecializedEducationalSupport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
+use DomainException;
 
 class Discipline extends Model
 {
@@ -68,8 +69,22 @@ class Discipline extends Model
         });
     }
 
+    public function scopeOnlyActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     public function teachers()
     {
         return $this->belongsToMany(Teacher::class); 
+    }
+
+    public function ensureIsActive(): void
+    {
+        if (!$this->is_active) {
+            throw new \DomainException(
+                "A disciplina '{$this->name}' está inativa e não pode ser utilizada."
+            );
+        }
     }
 }

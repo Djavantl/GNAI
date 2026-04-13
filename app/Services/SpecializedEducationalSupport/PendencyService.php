@@ -3,11 +3,14 @@
 namespace App\Services\SpecializedEducationalSupport;
 
 use App\Models\SpecializedEducationalSupport\Pendency;
+use App\Models\SpecializedEducationalSupport\Professional;
 use Illuminate\Database\Eloquent\Collection;
+use DomainException;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\Priority;
 use App\Notifications\NewPendencyNotification;
 use App\Notifications\PendencyCompletedNotification;
+
 
 class PendencyService
 {
@@ -29,6 +32,8 @@ class PendencyService
     //criar
     public function create(array $data): Pendency
     {
+        $this->ensureProfessionalIsActive($data['assigned_to']);
+
         $pendency = Pendency::create([
             'created_by'   => Auth::id(),
             'assigned_to'  => $data['assigned_to'],
@@ -39,8 +44,6 @@ class PendencyService
             'is_completed' => false,
         ]);
 
-        // ----- notificar o profissional/usuário associado -----
-        // assumindo que assignedProfessional->user existe
         $assignedProfessional = $pendency->assignedProfessional;
         if ($assignedProfessional && $assignedProfessional->user) {
             $user = $assignedProfessional->user;
@@ -114,13 +117,29 @@ class PendencyService
     //atualizar
     public function update(Pendency $pendency, array $data): Pendency
     {
+        if ($pendency->created_by !== Auth::id()) {
+            throw new DomainException(
+                'Somente o criador pode editar a pendência.'
+            );
+        }
+
+        if ($pendency->is_completed) {
+            throw new DomainException(
+                'Não é possível editar uma pendência já concluída.'
+            );
+        }
+
+        $professionalId = $data['assigned_to'] ?? $pendency->assigned_to;
+
+        $this->ensureProfessionalIsActive($professionalId);
+
         $pendency->update([
-            'assigned_to'  => $data['assigned_to'],
-            'title'        => $data['title'],
-            'description'  => $data['description'] ?? null,
-            'priority'     => $data['priority'],
-            'due_date'     => $data['due_date'] ?? null,
-            'is_completed' => $data['is_completed'] ?? $pendency->is_completed,
+            'assigned_to' => $data['assigned_to'] ?? $pendency->assigned_to,
+            'title'       => $data['title'],
+            'description' => $data['description'] ?? null,
+            'priority'    => $data['priority'],
+            'due_date'    => $data['due_date'] ?? null,
+
         ]);
 
         return $pendency;
@@ -129,6 +148,14 @@ class PendencyService
     //completar
     public function markAsCompleted(Pendency $pendency): Pendency
     {
+        $professionalId = Auth::user()->professional->id;
+
+        if ( $pendency->assigned_to !== $professionalId ) {
+            throw new \DomainException(
+                'Somente o responsavel pode concluir a pendência.'
+            );
+        }
+
         $pendency->markAsCompleted();
 
         // notificar quem criou
@@ -145,5 +172,13 @@ class PendencyService
     public function delete(Pendency $pendency): void
     {
         $pendency->delete();
+    }
+
+    private function ensureProfessionalIsActive(int $professionalId): void
+    {
+        $professional = Professional::with('person')
+            ->findOrFail($professionalId);
+
+        $professional->ensureIsActive();
     }
 }

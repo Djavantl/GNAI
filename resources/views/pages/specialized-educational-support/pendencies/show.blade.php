@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    @if(!$pendency->is_completed)
+                    @if($pendency->canBeCompletedByCurrentUser())
                         <form action="{{ route('specialized-educational-support.pendencies.complete', $pendency) }}" method="POST" onsubmit="return confirm('Marcar como concluída?')">
                             @csrf
                             @method('PUT')

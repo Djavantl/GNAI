@@ -4,12 +4,10 @@
     <div class="pb-3 ps-3 pe-3">
         <div class="row g-3 mt-1">
             <x-show.info-item label="Status Atual" column="col-md-6" isBox="true">
-                <span class="{{ $student->status === 'active' ? 'text-success' : 'text-danger' }} fw-bold">
-                    @if($student->status === 'active')
-                        <span class="badge bg-success">ATIVO</span>
-                    @else
-                        <span class="badge bg-danger">{{ strtoupper($student->status) }}</span>
-                    @endif
+                <span class="text-{{ $student->status?->color() ?? 'secondary' }} fw-bold">
+                   
+                    <span>{{ $student->status->label() }}</span>
+                   
                 </span>
             </x-show.info-item>
             <x-show.info-item label="Data de Ingresso" column="col-md-6" isBox="true">

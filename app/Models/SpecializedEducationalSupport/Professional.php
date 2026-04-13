@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\User;
 use App\Models\Traits\Reportable;
+use DomainException;
 
 class Professional extends Model
 {   
@@ -124,5 +125,14 @@ class Professional extends Model
         }
 
         return $query;
+    }
+
+    public function ensureIsActive(): void
+    {
+        if ($this->status !== 'active') {
+            throw new DomainException(
+                "O profissional {$this->person->name} não está ativo e não pode realizar esta ação."
+            );
+        }
     }
 }

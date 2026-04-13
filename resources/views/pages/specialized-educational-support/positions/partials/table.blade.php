@@ -24,7 +24,7 @@
                         <form action="{{ route('specialized-educational-support.positions.deactivate', $item) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
-                            <x-buttons.submit-button variant="success">
+                            <x-buttons.submit-button variant="secondary">
                                <i class="fas fa-check"></i> Ativar/Desativar
                             </x-buttons.submit-button>
                         </form>

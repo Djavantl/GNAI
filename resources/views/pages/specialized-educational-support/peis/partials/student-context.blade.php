@@ -63,6 +63,26 @@
         </div>
     </div>
 
+    {{-- ================= SÍNTESE AVALIATIVA ================= --}}
+    <x-ui.section-header 
+        target="ctx-sintese"
+        title="Síntese Avaliativa"
+    />
+
+    <div id="ctx-sintese" class="ctx-collapsed">
+        <div class="row g-3 px-3 pb-3">
+
+            <div class="col-md-6">
+                <x-ui.info-card-textarea label="Conhecimentos e Interesses" :value="$context->knowledge" rows="4" />
+            </div>
+
+            <div class="col-md-6">
+                <x-ui.info-card-textarea label="Dificuldades" :value="$context->difficulties" rows="4" />
+            </div>
+
+        </div>
+    </div>
+
 
     {{-- ================= APRENDIZAGEM E COGNIÇÃO ================= --}}
     <x-ui.section-header 
@@ -192,35 +212,6 @@
                     rows="4"
                 />
             </div>
-        </div>
-    </div>
-
-
-    {{-- ================= SÍNTESE AVALIATIVA ================= --}}
-    <x-ui.section-header 
-        target="ctx-sintese"
-        title="Síntese Avaliativa"
-    />
-
-    <div id="ctx-sintese" class="ctx-collapsed">
-        <div class="row g-3 px-3 pb-3">
-
-            <div class="col-md-6">
-                <x-ui.info-card-textarea label="Pontos Fortes" :value="$context->strengths" rows="4" />
-            </div>
-
-            <div class="col-md-6">
-                <x-ui.info-card-textarea label="Dificuldades" :value="$context->difficulties" rows="4" />
-            </div>
-
-            <div class="col-md-6 mt-2">
-                <x-ui.info-card-textarea label="Recomendações" :value="$context->recommendations" rows="4" />
-            </div>
-
-            <div class="col-md-6 mt-2">
-                <x-ui.info-card-textarea label="Observação Geral" :value="$context->general_observation" rows="4" />
-            </div>
-
         </div>
     </div>
 

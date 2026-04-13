@@ -73,6 +73,8 @@ class StudentDocumentController extends Controller
 
     public function create(Student $student)
     {
+        $student->ensureIsActive();
+
         $semester = Semester::current();
         $types = StudentDocumentType::labels();
 
@@ -81,6 +83,7 @@ class StudentDocumentController extends Controller
 
     public function store(StudentDocumentRequest $request, Student $student)
     {
+        $student->ensureIsActive();
         $this->service->create($student, $request->validated());
 
         return redirect()
@@ -90,6 +93,9 @@ class StudentDocumentController extends Controller
 
     public function edit(StudentDocument $studentDocument)
     {
+        $student = $studentDocument->student;
+        $student->ensureIsActive();
+
         $types = StudentDocumentType::labels();
         $student = $studentDocument->student;
         $semester = Semester::current();
@@ -99,6 +105,9 @@ class StudentDocumentController extends Controller
 
     public function update(StudentDocumentRequest $request, StudentDocument $studentDocument)
     {
+        $student = $studentDocument->student;
+        $student->ensureIsActive();
+        
         $this->service->update($studentDocument, $request->validated());
 
         return redirect()

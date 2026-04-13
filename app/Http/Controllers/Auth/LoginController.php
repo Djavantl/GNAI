@@ -36,11 +36,23 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
+            if ($user->professional) {
+
+                if ($user->professional->status === 'inactive') {
+
+                    Auth::logout();
+
+                    return back()->withErrors([
+                        'email' => 'Este profissional está inativo e não pode acessar o sistema.'
+                    ]);
+                }
+
+            }
+
             if ($user->is_admin || $user->professional_id || $user->teacher_id) {
                 return redirect()->route('dashboard')
                     ->with('success', 'Login realizado com sucesso.');
             }
-
 
             Auth::logout();
             return back()->with('error', 'Usuário sem permissão de acesso.');

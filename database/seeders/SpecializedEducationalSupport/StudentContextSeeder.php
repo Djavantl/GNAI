@@ -2,7 +2,6 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\SpecializedEducationalSupport\Semester;
 use App\Models\SpecializedEducationalSupport\Student;
@@ -32,7 +31,7 @@ class StudentContextSeeder extends Seeder
 
         foreach ($students as $student) {
 
-            // Contexto antigo
+            // Contexto antigo (Versão 1)
             StudentContext::create([
                 'student_id' => $student->id,
                 'semester_id' => $previousSemester->id,
@@ -71,15 +70,14 @@ class StudentContextSeeder extends Seeder
                 'uses_medication' => false,
                 'medical_notes' => 'Laudo médico arquivado.',
 
-                // Avaliação geral
-                'strengths' => 'Boa memória visual.',
+                // Observações gerais (Ajustado)
+                'knowledge' => 'Boa memória visual e conhecimentos básicos de rotina escolar.', 
                 'difficulties' => 'Dificuldade de concentração prolongada.',
-                'recommendations' => 'Uso de atividades curtas e mediadas.',
-                'general_observation' => 'Contexto inicial do aluno.',
+                
                 'version' => 1,
             ]);
 
-            // Contexto atual
+            // Contexto atual (Versão 2)
             StudentContext::create([
                 'student_id' => $student->id,
                 'semester_id' => $currentSemester->id,
@@ -118,11 +116,10 @@ class StudentContextSeeder extends Seeder
                 'uses_medication' => false,
                 'medical_notes' => null,
 
-                // Avaliação geral
-                'strengths' => 'Boa participação e autonomia.',
+                // Observações gerais (Ajustado)
+                'knowledge' => 'Boa participação, autonomia e domínio dos conteúdos ministrados no semestre anterior.',
                 'difficulties' => 'Ainda apresenta dificuldade em atividades longas.',
-                'recommendations' => 'Manter estratégias já aplicadas.',
-                'general_observation' => 'Contexto atual do aluno.',
+                
                 'version' => 2,
             ]);
         }

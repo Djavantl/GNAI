@@ -59,8 +59,8 @@
     <span class="field-label">Necessidades Educacionais Específicas:</span>
     <div class="content-box">{{ $pei->studentContext->specific_educational_needs }}</div>
 
-    <span class="field-label">Conhecimentos, Habilidades, Capacidades e Interesses:</span>
-    <div class="content-box">{{ $pei->studentContext->strengths }}</div>
+    <span class="field-label">Conhecimentos e Interesses:</span>
+    <div class="content-box">{{ $pei->studentContext->knowledge }}</div>
 
     <span class="field-label">Dificuldades Apresentadas:</span>
     <div class="content-box">{{ $pei->studentContext->difficulties }}</div>
@@ -78,6 +78,9 @@
 
     <span class="field-label">Avaliação:</span>
     <div class="content-box">{!! $item->evaluations !!}</div>
+
+    <span class="field-label">Parecer:</span>
+    <div class="content-box">{!! $item->opinion !!}</div>
 
     <table class="signature-table">
         <tr>

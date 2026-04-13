@@ -30,6 +30,7 @@ class StudentCourseService
     public function enroll(Student $student, array $data): StudentCourse
     {
         return DB::transaction(function () use ($student, $data) {
+            $this->ensureCourseIsActive((int) $data['course_id']);
             // Se for marcado como atual, desativamos o anterior
             if ($data['is_current'] ?? true) {
                 StudentCourse::where('student_id', $student->id)
@@ -52,6 +53,9 @@ class StudentCourseService
     public function updateEnrollment(StudentCourse $studentCourse, array $data): StudentCourse
     {
         return DB::transaction(function () use ($studentCourse, $data) {
+            if (isset($data['course_id'])) {
+                $this->ensureCourseIsActive((int) $data['course_id']);
+            }
             // Se estiver mudando este registro para 'is_current', desativa os outros
             if (($data['is_current'] ?? false) && !$studentCourse->is_current) {
                 StudentCourse::where('student_id', $studentCourse->student_id)
@@ -68,4 +72,12 @@ class StudentCourseService
     {
         $studentCourse->delete();
     } 
+
+    private function ensureCourseIsActive(int $courseId): Course
+    {
+        $course = Course::findOrFail($courseId);
+        $course->ensureIsActive();
+
+        return $course;
+    }
 }

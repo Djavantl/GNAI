@@ -8,6 +8,9 @@ use App\Models\Traits\Auditable;
 use App\Models\AuditLog;       
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Builder;
+use App\Enums\SpecializedEducationalSupport\StudentStatus;
+use DomainException;
+
 
 class Student extends Model
 {
@@ -20,6 +23,9 @@ class Student extends Model
         'status',
     ];
 
+    protected $casts = [
+        'status' => StudentStatus::class,
+    ];
 
     /*
     |--------------------------------------------------------------------------
@@ -242,7 +248,6 @@ class Student extends Model
             'active'    => 'Ativo',
             'locked'    => 'Trancado',
             'completed' => 'Concluído',
-            'dropped'   => 'Evadido',
         ];
     }
 
@@ -316,4 +321,13 @@ class Student extends Model
 
     //     return $query;
     // }
+
+    public function ensureIsActive(): void
+    {
+        if ($this->status !== StudentStatus::ACTIVE) {
+            throw new DomainException(
+                "O aluno {$this->person->name} não está ativo e não pode realizar esta ação."
+            );
+        }
+    }
 }

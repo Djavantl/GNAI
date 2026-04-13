@@ -59,14 +59,20 @@ class DeficiencyController extends Controller
 
     public function toggleActive(Deficiency $deficiency)
     {
-        $this->service->toggleActive($deficiency);
+        try {
+            $this->service->toggleActive($deficiency);
 
-        if ($deficiency->is_active) {
-            return redirect()->route('specialized-educational-support.deficiencies.index')->with('success', 'Deficiência ativada com sucesso!');
-        } else {
-           return redirect()->route('specialized-educational-support.deficiencies.index')->with('success', 'Deficiência desativada com sucesso!');
+            if ($deficiency->fresh()->is_active) {
+                return redirect()->route('specialized-educational-support.deficiencies.index')
+                    ->with('success', 'Deficiência ativada com sucesso!');
+            }
+
+            return redirect()->route('specialized-educational-support.deficiencies.index')
+                ->with('success', 'Deficiência desativada com sucesso!');
+        } catch (DomainException $e) {
+            return redirect()->route('specialized-educational-support.deficiencies.index')
+                ->with('error', $e->getMessage());
         }
-
     }
 
     public function destroy(Deficiency $deficiency)

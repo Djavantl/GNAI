@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Traits\Reportable;
 
 
@@ -55,10 +56,16 @@ class Teacher extends Model
         return $this->hasOne(User::class, 'teacher_id');
     }
 
-    public function disciplines() {
-        return $this->belongsToMany(Discipline::class);
+    public function disciplines()
+    {
+        // Usando a tabela teacher_course_disciplines como pivô
+        return $this->belongsToMany(Discipline::class, 'teacher_course_disciplines', 'teacher_id', 'discipline_id');
     }
 
+    public function courseDisciplines()
+    {
+        return $this->hasMany(TeacherCourseDiscipline::class);
+    }
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'teacher_courses')->withTimestamps();

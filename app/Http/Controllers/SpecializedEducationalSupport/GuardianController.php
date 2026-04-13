@@ -52,11 +52,13 @@ class GuardianController extends Controller
 
     public function create(Student $student)
     {
+        $student->ensureIsActive();
         return view('pages.specialized-educational-support.guardians.create', compact('student'));
     }
 
     public function store(GuardianRequest $request, Student $student)
     {
+        $student->ensureIsActive();
         $guardian = $this->service->create($student, $request->validated());
 
         return redirect()
@@ -69,12 +71,14 @@ class GuardianController extends Controller
         if ($guardian->student_id !== $student->id) {
             abort(404);
         }
+        $student->ensureIsActive();
         $guardian->load('person');
         return view('pages.specialized-educational-support.guardians.edit', compact('student', 'guardian'));
     }
 
     public function update(GuardianRequest $request, Student $student, Guardian $guardian)
     {
+        $student->ensureIsActive();
         $guardian = $this->service->update($guardian, $request->validated());
 
         return redirect()

@@ -137,7 +137,7 @@ class TeacherController extends Controller
 
     public function disciplines(Teacher $teacher)
     {
-        $teacher->load(['person', 'disciplines', 'courses']);
+        $teacher->load(['person', 'courses', 'courseDisciplines.discipline']);
 
         $courses = Course::with(['disciplines' => function ($q) {
                 $q->where('is_active', true)->orderBy('name');
@@ -146,13 +146,14 @@ class TeacherController extends Controller
             ->orderBy('name')
             ->get();
 
-        $selectedDisciplinesIds = $teacher->disciplines->pluck('id')->toArray();
-        // Adicione esta linha para pegar os cursos atuais do professor
-        $selectedCoursesIds = $teacher->courses->pluck('id')->toArray();
+        $selectedByCourse = $teacher->courseDisciplines
+            ->groupBy('course_id')
+            ->map(fn ($items) => $items->pluck('discipline_id')->toArray())
+            ->toArray();
 
         return view(
             'pages.specialized-educational-support.teachers.disciplines',
-            compact('teacher', 'courses', 'selectedDisciplinesIds', 'selectedCoursesIds')
+            compact('teacher', 'courses', 'selectedByCourse')
         );
     }
 
@@ -162,21 +163,16 @@ class TeacherController extends Controller
     public function updateDisciplines(Request $request, Teacher $teacher)
     {
         $request->validate([
-            'courses'       => 'array',
-            'courses.*'     => 'exists:courses,id',
-            'disciplines'   => 'array',
-            'disciplines.*' => 'exists:disciplines,id'
+            'assignments' => 'array',
         ]);
 
-        // Chamamos o novo método do Service que salva ambos
         $this->service->syncGrade(
-            $teacher, 
-            $request->courses ?? [], 
-            $request->disciplines ?? []
+            $teacher,
+            $request->assignments ?? []
         );
 
         return redirect()
             ->route('specialized-educational-support.teachers.show', $teacher)
-            ->with('success', 'Grade curricular (cursos e disciplinas) atualizada com sucesso!');
+            ->with('success', 'Matriz curricular atualizada com sucesso!');
     }
 }

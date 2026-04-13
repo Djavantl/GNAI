@@ -122,11 +122,8 @@ return new class extends Migration
 
             // observações gerais
 
-            $table->text('strengths')->nullable();      
-            $table->text('difficulties')->nullable();       
-            $table->text('recommendations')->nullable();    
-
-            $table->text('general_observation')->nullable();
+            $table->text('knowledge');      
+            $table->text('difficulties');       
 
             $table->unsignedInteger('version')->default(1);
             $table->unique(['student_id', 'version']);

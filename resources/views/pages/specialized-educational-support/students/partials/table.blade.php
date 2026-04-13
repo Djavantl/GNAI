@@ -14,12 +14,8 @@
             <x-table.td>{{ $student->person->email }}</x-table.td>
             <x-table.td>{{ $student->registration }}</x-table.td>
             <x-table.td >
-                @php
-                    $statusColor = $student->status === 'active' ? 'success' : 'danger';
-                    $statusLabel = $student->status === 'active' ? 'Ativo' : 'Inativo';
-                @endphp
-                <span class="text-{{ $statusColor }} text-uppercase fw-bold">
-                    {{ $statusLabel }}
+                <span class="text-{{ $student->status->color() }} text-uppercase fw-bold">
+                    {{ $student->status->label() }}
                 </span>
             </x-table.td>
             <x-table.td>{{ \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') }}</x-table.td>

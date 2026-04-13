@@ -51,13 +51,10 @@
                         <span class="small text-muted d-block">
                             Matrícula: {{ $student->registration ?? '—' }}
                         </span>
-                        <span class="small text-muted">
-                            Status:
-                            @if($student->status === 'active')
-                                <span class="text-success fw-semibold">ATIVO</span>
-                            @else
-                                <span class="text-danger fw-semibold">{{ strtoupper($student->status) }}</span>
-                            @endif
+                        <span class="small">
+                            <span class="text-{{ $student->status->color() }} text-uppercase fw-bold">
+                                {{ $student->status->label() ?? '—' }}
+                            </span>
                         </span>
                     </div>
                 </div>
@@ -116,6 +113,23 @@
             />
         </div>
     </div>
+
+    {{-- ================= SÍNTESE ================= --}}
+    <x-forms.section title="Síntese Avaliativa" />
+
+    <div class="row g-2 px-4 pb-3">
+        <div class="col-md-12">
+            <x-forms.textarea name="knowledge" label="Conhecimentos e Interesses" rows="4"
+                :value="old('knowledge', $studentContext->knowledge)" aria-label="O que sabe? Do que gosta/afinidades?" required />
+        </div>
+
+        <div class="col-md-12">
+            <x-forms.textarea name="difficulties" label="Dificuldades" rows="4"
+                :value="old('difficulties', $studentContext->difficulties)" aria-label="Dificuldades" required />
+        </div>
+
+    </div>
+
 
     {{-- ================= APRENDIZAGEM ================= --}}
     <x-forms.section title="Aprendizagem e Cognição" />
@@ -261,31 +275,6 @@
         <div class="col-md-12">
             <x-forms.textarea name="medical_notes" label="Observações Médicas" rows="3"
                 :value="old('medical_notes', $studentContext->medical_notes)" />
-        </div>
-    </div>
-
-    {{-- ================= SÍNTESE ================= --}}
-    <x-forms.section title="Síntese Avaliativa" />
-
-    <div class="row g-2 px-4 pb-3">
-        <div class="col-md-6">
-            <x-forms.textarea name="strengths" label="Pontos Fortes" rows="4"
-                :value="old('strengths', $studentContext->strengths)" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="difficulties" label="Dificuldades" rows="4"
-                :value="old('difficulties', $studentContext->difficulties)" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="recommendations" label="Recomendações" rows="4"
-                :value="old('recommendations', $studentContext->recommendations)" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="general_observation" label="Observação Geral" rows="4"
-                :value="old('general_observation', $studentContext->general_observation)" />
         </div>
     </div>
 

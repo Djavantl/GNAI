@@ -5,6 +5,8 @@ namespace App\Services\SpecializedEducationalSupport;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use Illuminate\Support\Facades\DB;
+use App\Models\SpecializedEducationalSupport\Deficiency;
+use DomainException;
 
 class StudentDeficienciesService
 {
@@ -32,6 +34,7 @@ class StudentDeficienciesService
     public function create(Student $student, array $data)
     {
         return DB::transaction(function () use ($student, $data) {
+            $this->ensureDeficiencyIsActive($data['deficiency_id']);
 
             $student->deficiencies()->attach($data['deficiency_id'], [
                 'severity' => $data['severity'] ?? null,
@@ -46,6 +49,9 @@ class StudentDeficienciesService
     public function update(StudentDeficiencies $pivot, array $data)
     {
         return DB::transaction(function () use ($pivot, $data) {
+            if (isset($data['deficiency_id'])) {
+                $this->ensureDeficiencyIsActive($data['deficiency_id']);
+            }
 
             return $pivot->update([
                 'severity' => $data['severity'],
@@ -60,5 +66,12 @@ class StudentDeficienciesService
     public function delete(StudentDeficiencies $pivot)
     {
         DB::transaction(fn() => $pivot->delete());
+    }
+
+    private function ensureDeficiencyIsActive(int $deficiencyId): void
+    {
+        $deficiency = Deficiency::findOrFail($deficiencyId);
+
+        $deficiency->ensureIsActive();
     }
 }

@@ -59,6 +59,8 @@ class StudentCourseController extends Controller
     }
     public function create(Student $student)
     {
+        $student->ensureIsActive();
+
         $courses = Course::where('is_active', true)->orderBy('name')->get();
     
         return view('pages.specialized-educational-support.student-courses.create', compact('student', 'courses'));
@@ -66,6 +68,8 @@ class StudentCourseController extends Controller
 
     public function store(Student $student, StudentCourseRequest $request)
     {
+        $student->ensureIsActive();
+
         $this->service->enroll($student, $request->validated());
 
         return redirect()
@@ -75,12 +79,18 @@ class StudentCourseController extends Controller
 
     public function edit(StudentCourse $studentCourse)
     {
+        $student = $studentCourse->student;
+        $student->ensureIsActive();
+
         $courses = Course::where('is_active', true)->orderBy('name')->get();
         return view('pages.specialized-educational-support.student-courses.edit', compact('studentCourse', 'courses'));
     }
 
     public function update(StudentCourseRequest $request, StudentCourse $studentCourse)
     {
+        $student = $studentCourse->student;
+        $student->ensureIsActive();
+
         $this->service->updateEnrollment($studentCourse, $request->validated());
 
         return redirect()

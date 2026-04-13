@@ -8,7 +8,7 @@
         'Alunos' => route('specialized-educational-support.students.index'),
         $student->person->name => route('specialized-educational-support.students.show', $student),
         'Contextos' => route('specialized-educational-support.student-context.index', $student),
-        'Novo Contexto v' . ($studentContext->version + 1) => null
+        'Novo Contexto v' . ($studentContext->version) => null
     ]" />
 </div>
 
@@ -16,7 +16,7 @@
     <div>
         <h2 class="text-title">Nova Versão do Contexto</h2>
         <p class="text-muted">
-            Registre uma versão atualizada (v{{ $studentContext->version + 1 }}) preservando os registros anteriores de {{ $student->person->name }}.
+            Registre uma versão atualizada (v{{ $studentContext->version }}) preservando os registros anteriores de {{ $student->person->name }}.
         </p>
     </div>
 
@@ -39,6 +39,7 @@
 
     <div class="row g-2 px-4 pb-3">
         {{-- MINI PERFIL --}}
+        {{-- MINI PERFIL --}}
         <div class="col-md-12">
             <div class="card p-3 border-light bg-soft-info">
                 <div class="d-flex align-items-center gap-3">
@@ -49,12 +50,12 @@
                     <div>
                         <strong class="d-block">{{ $student->person->name }}</strong>
                         <span class="small text-muted d-block">
-                            Matrícula: {{ $student->registration ?? '—' }} | Status: 
-                            @if($student->status === 'active')
-                                <span class="text-success fw-semibold">ATIVO</span>
-                            @else
-                                <span class="text-danger fw-semibold">{{ strtoupper($student->status) }}</span>
-                            @endif
+                            Matrícula: {{ $student->registration ?? '—' }}
+                        </span>
+                        <span class="small">
+                            <span class="text-{{ $student->status->color() }} text-uppercase fw-bold">
+                                {{ $student->status->label() ?? '—' }}
+                            </span>
                         </span>
                     </div>
                 </div>
@@ -107,6 +108,22 @@
                 :value="old('specific_educational_needs', $studentContext->specific_educational_needs)"
             />
         </div>
+    </div>
+
+    {{-- ================= SÍNTESE ================= --}}
+    <x-forms.section title="Síntese Avaliativa" />
+
+    <div class="row g-2 px-4 pb-3">
+        <div class="col-md-12">
+            <x-forms.textarea name="knowledge" label="Conhecimentos e Interesses" rows="4"
+                :value="old('knowledge', $studentContext->knowledge)" aria-label="O que sabe? Do que gosta/afinidades?" required />
+        </div>
+
+        <div class="col-md-12">
+            <x-forms.textarea name="difficulties" label="Dificuldades" rows="4"
+                :value="old('difficulties', $studentContext->difficulties)" aria-label="Dificuldades" required />
+        </div>
+
     </div>
 
     {{-- ================= APRENDIZAGEM ================= --}}
@@ -256,30 +273,7 @@
         </div>
     </div>
 
-    {{-- ================= SÍNTESE ================= --}}
-    <x-forms.section title="Síntese Avaliativa" />
-
-    <div class="row g-2 px-4 pb-3">
-        <div class="col-md-6">
-            <x-forms.textarea name="strengths" label="Pontos Fortes" rows="4"
-                :value="old('strengths', $studentContext->strengths)" aria-label="Pontos fortes" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="difficulties" label="Dificuldades" rows="4"
-                :value="old('difficulties', $studentContext->difficulties)" aria-label="Dificuldades" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="recommendations" label="Recomendações" rows="4"
-                :value="old('recommendations', $studentContext->recommendations)" aria-label="Recomendações" />
-        </div>
-
-        <div class="col-md-6">
-            <x-forms.textarea name="general_observation" label="Observação Geral" rows="4"
-                :value="old('general_observation', $studentContext->general_observation)" aria-label="Observação geral" />
-        </div>
-    </div>
+    
 
     {{-- ================= AÇÕES ================= --}}
     <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
