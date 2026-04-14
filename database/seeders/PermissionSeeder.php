@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             // --- ADMINISTRAÇÃO / CADASTROS ---
-    
+
             // Pessoas
             ['name' => 'Visualizar Pessoas', 'slug' => 'people.view'],
             ['name' => 'Criar Pessoa',      'slug' => 'people.create'],
@@ -133,98 +133,126 @@ class PermissionSeeder extends Seeder
             ['name' => 'Editar Documento',     'slug' => 'student-document.update'],
             ['name' => 'Excluir Documento',    'slug' => 'student-document.delete'],
 
-            // --- RADAAAAR ---
+            // Tecnologias Assistivas
+            ['name' => 'Listar Tecnologias Assistivas',          'slug' => 'assistive-technology.index'],
+            ['name' => 'Formulário Criar Tecnologia Assistiva',  'slug' => 'assistive-technology.create'],
+            ['name' => 'Salvar Tecnologia Assistiva',            'slug' => 'assistive-technology.store'],
+            ['name' => 'Visualizar Tecnologia Assistiva',        'slug' => 'assistive-technology.show'],
+            ['name' => 'Formulário Editar Tecnologia Assistiva', 'slug' => 'assistive-technology.edit'],
+            ['name' => 'Atualizar Tecnologia Assistiva',         'slug' => 'assistive-technology.update'],
+            ['name' => 'Excluir Tecnologia Assistiva',           'slug' => 'assistive-technology.destroy'],
+            ['name' => 'Gerar PDF de Tecnologia Assistiva',      'slug' => 'assistive-technology.pdf'],
+            ['name' => 'Ver Logs de Tecnologia Assistiva',       'slug' => 'assistive-technology.logs'],
+            ['name' => 'Ver Inspeção de Tecnologia Assistiva',   'slug' => 'assistive-technology.inspection.show'],
 
-            // Radar Inclusivo – Tecnologias Assistivas
+            // Materiais Pedagógicos Acessíveis
+            ['name' => 'Listar Materiais Pedagógicos',          'slug' => 'material.index'],
+            ['name' => 'Formulário Criar Material Pedagógico',  'slug' => 'material.create'],
+            ['name' => 'Salvar Material Pedagógico',            'slug' => 'material.store'],
+            ['name' => 'Visualizar Material Pedagógico',        'slug' => 'material.show'],
+            ['name' => 'Formulário Editar Material Pedagógico', 'slug' => 'material.edit'],
+            ['name' => 'Atualizar Material Pedagógico',         'slug' => 'material.update'],
+            ['name' => 'Excluir Material Pedagógico',           'slug' => 'material.destroy'],
+            ['name' => 'Gerar PDF de Material Pedagógico',      'slug' => 'material.pdf'],
+            ['name' => 'Ver Logs de Material Pedagógico',       'slug' => 'material.logs'],
+            ['name' => 'Ver Inspeção de Material Pedagógico',   'slug' => 'material.inspection.show'],
 
-            ['name' => 'Visualizar TAs (lista)', 'slug' => 'assistive-technology.index'],
-            ['name' => 'Criar TA (form)', 'slug' => 'assistive-technology.create'],
-            ['name' => 'Salvar TA', 'slug' => 'assistive-technology.store'],
-            ['name' => 'Visualizar TA (show)', 'slug' => 'assistive-technology.show'],
-            ['name' => 'Editar TA (form)', 'slug' => 'assistive-technology.edit'],
-            ['name' => 'Atualizar TA', 'slug' => 'assistive-technology.update'],
-            ['name' => 'Ativar/Desativar TA', 'slug' => 'assistive-technology.toggle'],
-            ['name' => 'Excluir TA', 'slug' => 'assistive-technology.destroy'],
-            ['name' => 'Gerar PDF da TA', 'slug' => 'assistive-technology.pdf'],
+            // Barreiras
+            ['name' => 'Listar Barreiras',          'slug' => 'barrier.index'],
+            ['name' => 'Formulário Criar Barreira',  'slug' => 'barrier.create'],
+            ['name' => 'Salvar Barreira',            'slug' => 'barrier.store'],
+            ['name' => 'Visualizar Barreira',        'slug' => 'barrier.show'],
+            ['name' => 'Formulário Editar Barreira', 'slug' => 'barrier.edit'],
+            ['name' => 'Atualizar Barreira',         'slug' => 'barrier.update'],
+            ['name' => 'Excluir Barreira',           'slug' => 'barrier.destroy'],
+            ['name' => 'Gerar PDF de Barreira',      'slug' => 'barrier.pdf'],
+            ['name' => 'Ver Inspeção de Barreira',   'slug' => 'barrier.inspection.show'],
 
-            // Radar Inclusivo – Materiais Pedagógicos Acessíveis
+            // Empréstimos
+            ['name' => 'Listar Empréstimos',          'slug' => 'loan.index'],
+            ['name' => 'Formulário Criar Empréstimo',  'slug' => 'loan.create'],
+            ['name' => 'Salvar Empréstimo',            'slug' => 'loan.store'],
+            ['name' => 'Visualizar Empréstimo',        'slug' => 'loan.show'],
+            ['name' => 'Formulário Editar Empréstimo', 'slug' => 'loan.edit'],
+            ['name' => 'Atualizar Empréstimo',         'slug' => 'loan.update'],
+            ['name' => 'Registrar Devolução',          'slug' => 'loan.return'],
+            ['name' => 'Excluir Empréstimo',           'slug' => 'loan.destroy'],
+            ['name' => 'Gerar PDF de Empréstimo',      'slug' => 'loan.pdf'],
 
-            ['name' => 'Visualizar Materiais (lista)', 'slug' => 'material.index'],
-            ['name' => 'Criar Material (form)', 'slug' => 'material.create'],
-            ['name' => 'Salvar Material', 'slug' => 'material.store'],
-            ['name' => 'Visualizar Material (show)', 'slug' => 'material.show'],
-            ['name' => 'Editar Material (form)', 'slug' => 'material.edit'],
-            ['name' => 'Atualizar Material', 'slug' => 'material.update'],
-            ['name' => 'Ativar/Desativar Material', 'slug' => 'material.toggle'],
-            ['name' => 'Excluir Material', 'slug' => 'material.destroy'],
-            ['name' => 'Gerar PDF do Material', 'slug' => 'material.pdf'],
+            // Agenda Institucional
+            ['name' => 'Listar Eventos Institucionais',          'slug' => 'institutional-event.index'],
+            ['name' => 'Formulário Criar Evento Institucional',  'slug' => 'institutional-event.create'],
+            ['name' => 'Salvar Evento Institucional',            'slug' => 'institutional-event.store'],
+            ['name' => 'Visualizar Evento Institucional',        'slug' => 'institutional-event.show'],
+            ['name' => 'Formulário Editar Evento Institucional', 'slug' => 'institutional-event.edit'],
+            ['name' => 'Atualizar Evento Institucional',         'slug' => 'institutional-event.update'],
+            ['name' => 'Excluir Evento Institucional',           'slug' => 'institutional-event.destroy'],
+            ['name' => 'Gerar PDF de Evento Institucional',      'slug' => 'institutional-event.pdf'],
 
-            // Radar Inclusivo – Barreiras (operacional)
+            // Fila de Espera (Waitlist)
+            ['name' => 'Listar Fila de Espera',           'slug' => 'waitlist.index'],
+            ['name' => 'Formulário Criar Fila de Espera', 'slug' => 'waitlist.create'],
+            ['name' => 'Salvar Fila de Espera',           'slug' => 'waitlist.store'],
+            ['name' => 'Visualizar Fila de Espera',       'slug' => 'waitlist.show'],
+            ['name' => 'Formulário Editar Fila de Espera','slug' => 'waitlist.edit'],
+            ['name' => 'Atualizar Fila de Espera',        'slug' => 'waitlist.update'],
+            ['name' => 'Excluir Fila de Espera',          'slug' => 'waitlist.destroy'],
+            ['name' => 'Cancelar Fila de Espera',         'slug' => 'waitlist.cancel'],
+            ['name' => 'Gerar PDF de Fila de Espera',     'slug' => 'waitlist.pdf'],
 
-            ['name' => 'Visualizar Barreiras (lista)', 'slug' => 'barrier.index'],
-            ['name' => 'Criar Barreira (form)', 'slug' => 'barrier.create'],
-            ['name' => 'Salvar Barreira', 'slug' => 'barrier.store'],
-            ['name' => 'Visualizar Barreira (detalhes)', 'slug' => 'barrier.show'],
-            ['name' => 'Editar Barreira (form)', 'slug' => 'barrier.edit'],
-            ['name' => 'Atualizar Barreira', 'slug' => 'barrier.update'],
-            ['name' => 'Ativar/Desativar Barreira', 'slug' => 'barrier.toggle'],
-            ['name' => 'Excluir Barreira', 'slug' => 'barrier.destroy'],
+            // Categorias de Barreira
+            ['name' => 'Listar Categorias de Barreira',          'slug' => 'barrier-category.index'],
+            ['name' => 'Formulário Criar Categoria de Barreira',  'slug' => 'barrier-category.create'],
+            ['name' => 'Salvar Categoria de Barreira',            'slug' => 'barrier-category.store'],
+            ['name' => 'Visualizar Categoria de Barreira',        'slug' => 'barrier-category.show'],
+            ['name' => 'Formulário Editar Categoria de Barreira', 'slug' => 'barrier-category.edit'],
+            ['name' => 'Atualizar Categoria de Barreira',         'slug' => 'barrier-category.update'],
+            ['name' => 'Excluir Categoria de Barreira',           'slug' => 'barrier-category.destroy'],
 
-            // Radar Inclusivo – Empréstimos
+            // Instituições
+            ['name' => 'Listar Instituições',          'slug' => 'institution.index'],
+            ['name' => 'Formulário Criar Instituição',  'slug' => 'institution.create'],
+            ['name' => 'Salvar Instituição',            'slug' => 'institution.store'],
+            ['name' => 'Visualizar Instituição',        'slug' => 'institution.show'],
+            ['name' => 'Formulário Editar Instituição', 'slug' => 'institution.edit'],
+            ['name' => 'Atualizar Instituição',         'slug' => 'institution.update'],
+            ['name' => 'Excluir Instituição',           'slug' => 'institution.destroy'],
 
-            ['name' => 'Visualizar Empréstimos (lista)', 'slug' => 'loan.index'],
-            ['name' => 'Criar Empréstimo (form)', 'slug' => 'loan.create'],
-            ['name' => 'Salvar Empréstimo', 'slug' => 'loan.store'],
-            ['name' => 'Visualizar Empréstimo (show)', 'slug' => 'loan.show'],
-            ['name' => 'Editar Empréstimo (form)', 'slug' => 'loan.edit'],
-            ['name' => 'Atualizar Empréstimo', 'slug' => 'loan.update'],
-            ['name' => 'Registrar Devolução', 'slug' => 'loan.return'],
-            ['name' => 'Excluir Empréstimo', 'slug' => 'loan.destroy'],
+            // Localizações
+            ['name' => 'Listar Localizações',          'slug' => 'location.index'],
+            ['name' => 'Formulário Criar Localização',  'slug' => 'location.create'],
+            ['name' => 'Salvar Localização',            'slug' => 'location.store'],
+            ['name' => 'Visualizar Localização',        'slug' => 'location.show'],
+            ['name' => 'Formulário Editar Localização', 'slug' => 'location.edit'],
+            ['name' => 'Atualizar Localização',         'slug' => 'location.update'],
+            ['name' => 'Excluir Localização',           'slug' => 'location.destroy'],
 
-            // Radar Inclusivo – Relatórios (se houver)
-
-            ['name' => 'Acessar Relatórios', 'slug' => 'report.index'],
-            ['name' => 'Configurar Relatório', 'slug' => 'report.configure'],
-            ['name' => 'Exportar Relatório (PDF/Excel)', 'slug' => 'report.export'],
-
-            // Permissões para cadastros ADMIN (apenas middleware admin)
-
-            ['name' => 'Gerenciar Tipos de Recurso', 'slug' => 'resource-type.manage'],
-            ['name' => 'Gerenciar Atributos de Tipo', 'slug' => 'type-attribute.manage'],
-            ['name' => 'Gerenciar Atribuições Tipo-Atributo', 'slug' => 'type-attribute-assignment.manage'],
-            ['name' => 'Gerenciar Categorias de Barreira', 'slug' => 'barrier-category.manage'],
-            ['name' => 'Gerenciar Instituições', 'slug' => 'institution.manage'],
-            ['name' => 'Gerenciar Localizações', 'slug' => 'location.manage'],
-            ['name' => 'Gerenciar Recursos de Acessibilidade', 'slug' => 'accessibility-feature.manage'],
-            ['name' => 'Gerenciar Status de Recurso', 'slug' => 'resource-status.manage'],
-
-            // Relatórios
-            ['name' => 'Acessar Relatórios (lista)', 'slug' => 'report.index'],
-            ['name' => 'Configurar Filtros do Relatório', 'slug' => 'report.configure'],
-            ['name' => 'Gerar Relatório', 'slug' => 'report.generate'],          // <-- nova
-            ['name' => 'Exportar Relatório (PDF/Excel/HTML)', 'slug' => 'report.export'],
+            // Recursos de Acessibilidade
+            ['name' => 'Listar Recursos de Acessibilidade',          'slug' => 'accessibility-feature.index'],
+            ['name' => 'Formulário Criar Recurso de Acessibilidade',  'slug' => 'accessibility-feature.create'],
+            ['name' => 'Salvar Recurso de Acessibilidade',            'slug' => 'accessibility-feature.store'],
+            ['name' => 'Visualizar Recurso de Acessibilidade',        'slug' => 'accessibility-feature.show'],
+            ['name' => 'Formulário Editar Recurso de Acessibilidade', 'slug' => 'accessibility-feature.edit'],
+            ['name' => 'Atualizar Recurso de Acessibilidade',         'slug' => 'accessibility-feature.update'],
+            ['name' => 'Excluir Recurso de Acessibilidade',           'slug' => 'accessibility-feature.destroy'],
         ];
 
         foreach ($permissions as $p) {
             Permission::firstOrCreate(['slug' => $p['slug']], ['name' => $p['name']]);
         }
 
-        // 2. Atribuir todas as permissões ao Professor AEE
+        // Atribuir todas as permissões ao Professor AEE
         $professorAee = Position::where('name', 'Professor AEE')->first();
 
         if ($professorAee) {
-            // Pegamos os IDs de todas as permissões criadas acima
             $allPermissionIds = Permission::pluck('id')->toArray();
-            
-            // Sincroniza sem remover as existentes (ou use sync para resetar)
-            // Se o seu model Position tiver a relação permissions():
+
             if (method_exists($professorAee, 'permissions')) {
                 $professorAee->permissions()->sync($allPermissionIds);
             } else {
-                // Caso você não tenha o relacionamento no model, inserimos via DB na tabela pivô
-                $pivotData = array_map(function($id) use ($professorAee) {
+                $pivotData = array_map(function ($id) use ($professorAee) {
                     return [
-                        'position_id' => $professorAee->id,
+                        'position_id'   => $professorAee->id,
                         'permission_id' => $id,
                     ];
                 }, $allPermissionIds);

@@ -23,67 +23,67 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     // ------------------- CATEGORIAS DAS BARREIRAS -------------------
     Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])
-        ->name('barrier-categories.index');
+        ->name('barrier-categories.index')->middleware('can:barrier-category.index');
     Route::get('/barrier-categories/create', [BarrierCategoryController::class, 'create'])
-        ->name('barrier-categories.create');
+        ->name('barrier-categories.create')->middleware('can:barrier-category.create');
     Route::post('/barrier-categories/store', [BarrierCategoryController::class, 'store'])
-        ->name('barrier-categories.store');
+        ->name('barrier-categories.store')->middleware('can:barrier-category.store');
     Route::get('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'show'])
-        ->name('barrier-categories.show');
+        ->name('barrier-categories.show')->middleware('can:barrier-category.show');
     Route::get('/barrier-categories/{barrierCategory}/edit', [BarrierCategoryController::class, 'edit'])
-        ->name('barrier-categories.edit');
+        ->name('barrier-categories.edit')->middleware('can:barrier-category.edit');
     Route::put('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'update'])
-        ->name('barrier-categories.update');
+        ->name('barrier-categories.update')->middleware('can:barrier-category.update');
     Route::delete('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'destroy'])
-        ->name('barrier-categories.destroy');
+        ->name('barrier-categories.destroy')->middleware('can:barrier-category.destroy');
 
     // ------------------- INSTITUIÇÕES -------------------
     Route::get('/institutions', [InstitutionController::class, 'index'])
-        ->name('institutions.index');
+        ->name('institutions.index')->middleware('can:institution.index');
     Route::get('/institutions/create', [InstitutionController::class, 'create'])
-        ->name('institutions.create');
+        ->name('institutions.create')->middleware('can:institution.create');
     Route::post('/institutions/store', [InstitutionController::class, 'store'])
-        ->name('institutions.store');
+        ->name('institutions.store')->middleware('can:institution.store');
     Route::get('/institutions/{institution}', [InstitutionController::class, 'show'])
-        ->name('institutions.show');
+        ->name('institutions.show')->middleware('can:institution.show');
     Route::get('/institutions/{institution}/edit', [InstitutionController::class, 'edit'])
-        ->name('institutions.edit');
+        ->name('institutions.edit')->middleware('can:institution.edit');
     Route::put('/institutions/{institution}', [InstitutionController::class, 'update'])
-        ->name('institutions.update');
+        ->name('institutions.update')->middleware('can:institution.update');
     Route::delete('/institutions/{institution}', [InstitutionController::class, 'destroy'])
-        ->name('institutions.destroy');
+        ->name('institutions.destroy')->middleware('can:institution.destroy');
 
     // ------------------- LOCALIZAÇÕES -------------------
     Route::get('/locations', [LocationController::class, 'index'])
-        ->name('locations.index');
+        ->name('locations.index')->middleware('can:location.index');
     Route::get('/locations/create', [LocationController::class, 'create'])
-        ->name('locations.create');
+        ->name('locations.create')->middleware('can:location.create');
     Route::post('/locations/store', [LocationController::class, 'store'])
-        ->name('locations.store');
+        ->name('locations.store')->middleware('can:location.store');
     Route::get('/locations/{location}', [LocationController::class, 'show'])
-        ->name('locations.show');
+        ->name('locations.show')->middleware('can:location.show');
     Route::get('/locations/{location}/edit', [LocationController::class, 'edit'])
-        ->name('locations.edit');
+        ->name('locations.edit')->middleware('can:location.edit');
     Route::put('/locations/{location}', [LocationController::class, 'update'])
-        ->name('locations.update');
+        ->name('locations.update')->middleware('can:location.update');
     Route::delete('/locations/{location}', [LocationController::class, 'destroy'])
-        ->name('locations.destroy');
+        ->name('locations.destroy')->middleware('can:location.destroy');
 
     // ------------------- RECURSOS DE ACESSIBILIDADE -------------------
     Route::get('/accessibility-features', [AccessibilityFeatureController::class, 'index'])
-        ->name('accessibility-features.index');
+        ->name('accessibility-features.index')->middleware('can:accessibility-feature.index');
     Route::get('/accessibility-features/create', [AccessibilityFeatureController::class, 'create'])
-        ->name('accessibility-features.create');
+        ->name('accessibility-features.create')->middleware('can:accessibility-feature.create');
     Route::post('/accessibility-features/store', [AccessibilityFeatureController::class, 'store'])
-        ->name('accessibility-features.store');
+        ->name('accessibility-features.store')->middleware('can:accessibility-feature.store');
     Route::get('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'show'])
-        ->name('accessibility-features.show');
+        ->name('accessibility-features.show')->middleware('can:accessibility-feature.show');
     Route::get('/accessibility-features/{accessibilityFeature}/edit', [AccessibilityFeatureController::class, 'edit'])
-        ->name('accessibility-features.edit');
+        ->name('accessibility-features.edit')->middleware('can:accessibility-feature.edit');
     Route::put('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'update'])
-        ->name('accessibility-features.update');
+        ->name('accessibility-features.update')->middleware('can:accessibility-feature.update');
     Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])
-        ->name('accessibility-features.destroy');
+        ->name('accessibility-features.destroy')->middleware('can:accessibility-feature.destroy');
 });
 
 /*
@@ -104,7 +104,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('assistive-technologies.store')->middleware('can:assistive-technology.store');
 
     Route::get('assistive-technologies/{assistiveTechnology}/inspection/{inspection}', [AssistiveTechnologyController::class, 'showInspection'])
-        ->name('assistive-technologies.inspection.show')->middleware('can:assistive-technology.inspection.show');;
+        ->name('assistive-technologies.inspection.show')->middleware('can:assistive-technology.inspection.show');
 
     Route::get('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'show'])
         ->name('assistive-technologies.show')->middleware('can:assistive-technology.show');
@@ -122,8 +122,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
 
     Route::get('/assistive-technologies/{assistiveTechnology}/logs', [AssistiveTechnologyLogController::class, 'index'])
-        ->name('assistive-technologies.logs')
-        ->middleware('can:assistive-technology.logs');
+        ->name('assistive-technologies.logs')->middleware('can:assistive-technology.logs');
 
     // ------------------- BARREIRAS -------------------
     Route::get('/barriers', [BarrierController::class, 'index'])
@@ -209,7 +208,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/institutional-events/{event}/pdf', [InstitutionalEventController::class, 'generatePdf'])
         ->name('institutional-events.pdf')->middleware('can:institutional-event.pdf');
 
-
     // ------------------- EMPRÉSTIMOS -------------------
     Route::get('/loans', [LoanController::class, 'index'])
         ->name('loans.index')->middleware('can:loan.index');
@@ -239,7 +237,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('loans.pdf')->middleware('can:loan.pdf');
 
     // ------------------- FILA DE ESPERA -------------------
-
     Route::get('/waitlists', [WaitlistController::class, 'index'])
         ->name('waitlists.index')->middleware('can:waitlist.index');
 
