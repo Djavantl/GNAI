@@ -10,6 +10,7 @@ use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Models\Permission;
 use App\Services\SpecializedEducationalSupport\TeacherService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class TeacherController extends Controller
 {
@@ -22,31 +23,47 @@ class TeacherController extends Controller
 
     public function index(Request $request)
     {
-        $teachers = $this->service->index($request->all());
-        $disciplines = Discipline::orderBy('name')->get(['id', 'name']);
+        try {
+            $teachers = $this->service->index($request->all());
+            $disciplines = Discipline::orderBy('name')->get(['id', 'name']);
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.teachers.partials.table',
+                    compact('teachers', 'disciplines')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.teachers.partials.table',
+                'pages.specialized-educational-support.teachers.index',
                 compact('teachers', 'disciplines')
-            )->render();
-        }
+            );
 
-        return view(
-            'pages.specialized-educational-support.teachers.index',
-            compact('teachers', 'disciplines')
-        );
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao listar professores.');
+        }
     }
 
     public function show(Teacher $teacher)
     {
-        $teacher = $this->service->show($teacher);
-        return view('pages.specialized-educational-support.teachers.show', compact('teacher'));
+        try {
+            $teacher = $this->service->show($teacher);
+
+            return view(
+                'pages.specialized-educational-support.teachers.show',
+                compact('teacher')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao exibir professor.');
+        }
     }
 
     public function create()
     {
-        $disciplines = Discipline::where('is_active', true)->orderBy('name')->get();
+        $disciplines = Discipline::where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
         return view(
             'pages.specialized-educational-support.teachers.create',
@@ -56,18 +73,28 @@ class TeacherController extends Controller
 
     public function store(TeacherRequest $request)
     {
-        $this->service->create($request->validated());
+        try {
+            $this->service->create($request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.teachers.index')
-            ->with('success', 'Professor cadastrado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.teachers.index')
+                ->with('success', 'Professor cadastrado com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao cadastrar professor.');
+        }
     }
 
     public function edit(Teacher $teacher)
     {
-        $disciplines = Discipline::where('is_active', true)->orderBy('name')->get();
+        $disciplines = Discipline::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
         // Pluck IDs para marcar os checkboxes/select no formulário
-        $selectedDisciplines = $teacher->disciplines->pluck('id')->toArray();
+        $selectedDisciplines = $teacher->disciplines
+            ->pluck('id')
+            ->toArray();
 
         return view(
             'pages.specialized-educational-support.teachers.edit',
@@ -77,20 +104,30 @@ class TeacherController extends Controller
 
     public function update(TeacherRequest $request, Teacher $teacher)
     {
-        $this->service->update($teacher, $request->validated());
+        try {
+            $this->service->update($teacher, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.teachers.index')
-            ->with('success', 'Professor atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.teachers.index')
+                ->with('success', 'Professor atualizado com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar professor.');
+        }
     }
 
     public function destroy(Teacher $teacher)
     {
-        $this->service->delete($teacher);
+        try {
+            $this->service->delete($teacher);
 
-        return redirect()
-            ->route('specialized-educational-support.teachers.index')
-            ->with('success', 'Professor removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.teachers.index')
+                ->with('success', 'Professor removido com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao remover professor.');
+        }
     }
 
     /**
@@ -98,24 +135,28 @@ class TeacherController extends Controller
      */
     public function permissions()
     {
-        $permissions = Permission::all()->groupBy(function ($permission) {
-            $prefix = explode('.', $permission->slug)[0];
-            
-            // Busca no arquivo lang/pt_BR/permissions.php
-            $translationKey = "permissions.entities.{$prefix}";
-            $translated = __($translationKey);
+        try {
+            $permissions = Permission::all()->groupBy(function ($permission) {
+                $prefix = explode('.', $permission->slug)[0];
+                
+                $translationKey = "permissions.entities.{$prefix}";
+                $translated = __($translationKey);
 
-            // Se a tradução não existir, o Laravel retorna a própria chave. 
-            // Nesse caso, formatamos o prefixo manualmente.
-            return $translated === $translationKey ? ucfirst(str_replace('-', ' ', $prefix)) : $translated;
-        });
+                return $translated === $translationKey
+                    ? ucfirst(str_replace('-', ' ', $prefix))
+                    : $translated;
+            });
 
-        $globalPermissionsIds = $this->service->getGlobalPermissionsIds();
+            $globalPermissionsIds = $this->service->getGlobalPermissionsIds();
 
-        return view(
-            'pages.specialized-educational-support.teachers.global-permissions',
-            compact('permissions', 'globalPermissionsIds')
-        );
+            return view(
+                'pages.specialized-educational-support.teachers.global-permissions',
+                compact('permissions', 'globalPermissionsIds')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao carregar permissões globais.');
+        }
     }
 
     /**
@@ -123,16 +164,21 @@ class TeacherController extends Controller
      */
     public function updatePermissions(Request $request)
     {
-        $request->validate([
-            'permissions'   => 'array',
-            'permissions.*' => 'exists:permissions,id'
-        ]);
+        try {
+            $request->validate([
+                'permissions'   => 'array',
+                'permissions.*' => 'exists:permissions,id'
+            ]);
 
-        $this->service->updateGlobalPermissions($request->permissions ?? []);
+            $this->service->updateGlobalPermissions($request->permissions ?? []);
 
-        return redirect()
-            ->route('specialized-educational-support.teachers.index')
-            ->with('success', 'Permissões globais de professores atualizadas!');
+            return redirect()
+                ->route('specialized-educational-support.teachers.index')
+                ->with('success', 'Permissões globais de professores atualizadas!');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar permissões globais.');
+        }
     }
 
     public function disciplines(Teacher $teacher)
@@ -162,17 +208,22 @@ class TeacherController extends Controller
      */
     public function updateDisciplines(Request $request, Teacher $teacher)
     {
-        $request->validate([
-            'assignments' => 'array',
-        ]);
+        try {
+            $request->validate([
+                'assignments' => 'array',
+            ]);
 
-        $this->service->syncGrade(
-            $teacher,
-            $request->assignments ?? []
-        );
+            $this->service->syncGrade(
+                $teacher,
+                $request->assignments ?? []
+            );
 
-        return redirect()
-            ->route('specialized-educational-support.teachers.show', $teacher)
-            ->with('success', 'Matriz curricular atualizada com sucesso!');
+            return redirect()
+                ->route('specialized-educational-support.teachers.show', $teacher)
+                ->with('success', 'Matriz curricular atualizada com sucesso!');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar matriz curricular.');
+        }
     }
 }

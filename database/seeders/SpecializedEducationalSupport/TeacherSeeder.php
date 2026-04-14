@@ -17,16 +17,18 @@ class TeacherSeeder extends Seeder
     public function run(): void
     {
         $teachersData = [
-            ['name' => 'Carlos Eduardo Lima', 'gender' => 'male', 'course' => 'Técnico em Informática'],
-            ['name' => 'Juliana Martins', 'gender' => 'female', 'course' => 'Técnico em Administração'],
-            ['name' => 'Ricardo Gomes', 'gender' => 'male', 'course' => 'Técnico em Mecânica'],
-            ['name' => 'Fernanda Souza', 'gender' => 'female', 'course' => 'Técnico em Informática'],
+            ['name' => 'Carlos Anderson', 'gender' => 'male', 'course' => 'Técnico em Informática'],
+            ['name' => 'Maria Eugenia', 'gender' => 'female', 'course' => 'Técnico em Administração'],
+            ['name' => 'Welisson Brito', 'gender' => 'male', 'course' => 'Técnico em Mecânica'],
+            ['name' => 'Woquiton Lima', 'gender' => 'male', 'course' => 'Técnico em Informática'],
         ];
 
         foreach ($teachersData as $index => $data) {
             DB::transaction(function () use ($data, $index) {
+                $cpf = $this->generateValidCpf($index + 1);
+
                 $person = Person::firstOrCreate(
-                    ['document' => '888' . str_pad($index, 8, '0', STR_PAD_LEFT)],
+                    ['document' => $cpf],
                     [
                         'name'       => $data['name'],
                         'birth_date' => now()->subYears(rand(28, 55))->format('Y-m-d'),
@@ -41,20 +43,18 @@ class TeacherSeeder extends Seeder
                         'registration' => 'DOC' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
                     ]
                 );
+
                 $course = Course::where('name', $data['course'])->first();
 
                 if ($course) {
-                    // Vínculo professor -> curso
                     $teacher->courses()->syncWithoutDetaching([$course->id]);
 
-                    // Pega algumas disciplinas reais do curso
                     $disciplineIds = $course->disciplines()
                         ->orderBy('name')
                         ->limit(7)
                         ->pluck('disciplines.id')
                         ->toArray();
 
-                    // Vínculo professor -> curso -> disciplina
                     foreach ($disciplineIds as $disciplineId) {
                         TeacherCourseDiscipline::firstOrCreate([
                             'teacher_id'    => $teacher->id,
@@ -75,5 +75,29 @@ class TeacherSeeder extends Seeder
                 );
             });
         }
+    }
+
+    private function generateValidCpf(int $seed = 1): string
+    {
+        $base = str_pad((string) (100000000 + ($seed * 12345) % 900000000), 9, '0', STR_PAD_LEFT);
+
+        $digits = array_map('intval', str_split($base));
+
+        $sum1 = 0;
+        for ($i = 0; $i < 9; $i++) {
+            $sum1 += $digits[$i] * (10 - $i);
+        }
+        $remainder1 = $sum1 % 11;
+        $digit1 = ($remainder1 < 2) ? 0 : 11 - $remainder1;
+
+        $sum2 = 0;
+        for ($i = 0; $i < 9; $i++) {
+            $sum2 += $digits[$i] * (11 - $i);
+        }
+        $sum2 += $digit1 * 2;
+        $remainder2 = $sum2 % 11;
+        $digit2 = ($remainder2 < 2) ? 0 : 11 - $remainder2;
+
+        return $base . $digit1 . $digit2;
     }
 }

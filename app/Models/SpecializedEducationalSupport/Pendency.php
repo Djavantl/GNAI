@@ -32,9 +32,9 @@ class Pendency extends Model
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        // Mudamos de User::class para Professional::class
+        return $this->belongsTo(Professional::class, 'created_by');
     }
-
     public function assignedProfessional()
     {
         return $this->belongsTo(Professional::class, 'assigned_to');
@@ -54,8 +54,13 @@ class Pendency extends Model
 
     public function canBeCompletedByCurrentUser(): bool
     {
-        return $this->assigned_to === auth()->user()->professional->id
-            && !$this->is_completed;
+        $professional = auth()->user()->professional;
+
+        if (!$professional) {
+            return false;
+        }
+
+        return $this->assigned_to === $professional->id && !$this->is_completed;
     }
 
     public function getUpdatedAtFormattedAttribute()

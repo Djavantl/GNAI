@@ -35,17 +35,6 @@
                 />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="is_active"
-                    label="Status "
-                    required
-                    :options="['1' => 'Ativo', '0' => 'Inativo']"
-                    :value="old('is_active', $position->is_active)"
-                    :selected="old('is_active', $position->is_active)"
-                />
-            </div>
-
             <div class="col-md-12">
                 <x-forms.textarea 
                     name="description" 

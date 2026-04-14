@@ -9,6 +9,7 @@ use App\Services\SpecializedEducationalSupport\SessionRecordService;
 use App\Http\Requests\SpecializedEducationalSupport\SessionRecordRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Throwable;
 
 class SessionRecordController extends Controller
 {
@@ -21,12 +22,16 @@ class SessionRecordController extends Controller
 
     public function index()
     {
-        $sessionRecords = $this->service->index();
+        try {
+            $sessionRecords = $this->service->index();
 
-        return view(
-            'pages.specialized-educational-support.session-records.index',
-            compact('sessionRecords')
-        );
+            return view(
+                'pages.specialized-educational-support.session-records.index',
+                compact('sessionRecords')
+            );
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao listar os registros da sessão.');
+        }
     }
 
     /**
@@ -46,22 +51,30 @@ class SessionRecordController extends Controller
 
     public function store(SessionRecordRequest $request)
     {
-        $sessionRecord = $this->service->create($request->validated());
+        try {
+            $sessionRecord = $this->service->create($request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.session-records.show', $sessionRecord)
-            ->with('success', 'Registro da sessão criado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.session-records.show', $sessionRecord)
+                ->with('success', 'Registro da sessão criado com sucesso.');
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao criar o registro da sessão.');
+        }
     }
 
     public function show(SessionRecord $sessionRecord)
     {
-        $sessionRecord = $this->service->show($sessionRecord);
-        $session = $sessionRecord->attendanceSession;
+        try {
+            $sessionRecord = $this->service->show($sessionRecord);
+            $session = $sessionRecord->attendanceSession;
 
-        return view(
-            'pages.specialized-educational-support.session-records.show',
-            compact('sessionRecord', 'session')
-        );
+            return view(
+                'pages.specialized-educational-support.session-records.show',
+                compact('sessionRecord', 'session')
+            );
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao exibir o registro da sessão.');
+        }
     }
 
     public function edit(SessionRecord $sessionRecord)
@@ -78,37 +91,53 @@ class SessionRecordController extends Controller
 
     public function update(SessionRecordRequest $request, SessionRecord $sessionRecord)
     {
-        $this->service->update($sessionRecord, $request->validated());
+        try {
+            $this->service->update($sessionRecord, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.session-records.show', $sessionRecord)
-            ->with('success', 'Registro da sessão atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.session-records.show', $sessionRecord)
+                ->with('success', 'Registro da sessão atualizado com sucesso.');
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao atualizar o registro da sessão.');
+        }
     }
 
     public function destroy(SessionRecord $sessionRecord)
     {
-        $sessionId = $sessionRecord->attendance_session_id;
-        $this->service->delete($sessionRecord);
+        try {
+            $sessionId = $sessionRecord->attendance_session_id;
+            $this->service->delete($sessionRecord);
 
-        return redirect()
-            ->route('specialized-educational-support.sessions.show', $sessionId)
-            ->with('success', 'Registro da sessão removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.sessions.show', $sessionId)
+                ->with('success', 'Registro da sessão removido com sucesso.');
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao remover o registro da sessão.');
+        }
     }
 
     public function restore(SessionRecord $sessionRecord)
     {
-        $this->service->restore($sessionRecord);
+        try {
+            $this->service->restore($sessionRecord);
 
-        return redirect()
-            ->route('specialized-educational-support.session-records.index')
-            ->with('success', 'Registro restaurado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.session-records.index')
+                ->with('success', 'Registro restaurado com sucesso.');
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao restaurar o registro da sessão.');
+        }
     }
 
     public function forceDelete(SessionRecord $sessionRecord)
     {
-        $this->service->forceDelete($sessionRecord);
+        try {
+            $this->service->forceDelete($sessionRecord);
 
-        return redirect()->back()->with('success', 'Removido permanentemente.');
+            return redirect()->back()->with('success', 'Removido permanentemente.');
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao remover permanentemente o registro da sessão.');
+        }
     }
 
     /**

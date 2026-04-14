@@ -9,6 +9,7 @@ use App\Http\Requests\SpecializedEducationalSupport\StudentCourseRequest;
 use App\Models\SpecializedEducationalSupport\StudentCourse;
 use App\Services\SpecializedEducationalSupport\StudentCourseService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class StudentCourseController extends Controller
 {
@@ -21,27 +22,32 @@ class StudentCourseController extends Controller
 
     public function index(Request $request, Student $student)
     {
+        try {
+            $studentCourses = $this->service->getHistoryByStudent($student->id, $request->all());
 
-        $studentCourses = $this->service->getHistoryByStudent($student->id, $request->all());
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.student-courses.partials.table', 
+                    compact('student', 'studentCourses')
+                )->render();
+            }
 
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.student-courses.partials.table', 
-                compact('student', 'studentCourses')
-            )->render();
+            $filterCourses = Course::whereHas('studentCourses', function ($query) use ($student) {
+                $query->where('student_id', $student->id);
+            })
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+
+            return view('pages.specialized-educational-support.student-courses.index', [
+                'student' => $student,
+                'studentCourses' => $studentCourses,
+                'courses' => $filterCourses 
+            ]);
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao listar histórico do aluno.');
         }
-
-        $filterCourses = Course::whereHas('studentCourses', function ($query) use ($student) {
-            $query->where('student_id', $student->id);
-        })
-        ->orderBy('name')
-        ->pluck('name', 'id')
-        ->toArray();
-
-        return view('pages.specialized-educational-support.student-courses.index', [
-            'student' => $student,
-            'studentCourses' => $studentCourses,
-            'courses' => $filterCourses 
-        ]);
     }
 
     public function show(StudentCourse $studentCourse)
@@ -57,24 +63,35 @@ class StudentCourseController extends Controller
             compact('studentCourse')
         );
     }
+
     public function create(Student $student)
     {
         $student->ensureIsActive();
 
-        $courses = Course::where('is_active', true)->orderBy('name')->get();
+        $courses = Course::where('is_active', true)
+            ->orderBy('name')
+            ->get();
     
-        return view('pages.specialized-educational-support.student-courses.create', compact('student', 'courses'));
+        return view(
+            'pages.specialized-educational-support.student-courses.create',
+            compact('student', 'courses')
+        );
     }
 
     public function store(Student $student, StudentCourseRequest $request)
     {
-        $student->ensureIsActive();
+        try {
+            $student->ensureIsActive();
 
-        $this->service->enroll($student, $request->validated());
+            $this->service->enroll($student, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.student-courses.history', $student)
-            ->with('success', 'Matrícula realizada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.student-courses.history', $student)
+                ->with('success', 'Matrícula realizada com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao realizar matrícula.');
+        }
     }
 
     public function edit(StudentCourse $studentCourse)
@@ -82,29 +99,46 @@ class StudentCourseController extends Controller
         $student = $studentCourse->student;
         $student->ensureIsActive();
 
-        $courses = Course::where('is_active', true)->orderBy('name')->get();
-        return view('pages.specialized-educational-support.student-courses.edit', compact('studentCourse', 'courses'));
+        $courses = Course::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return view(
+            'pages.specialized-educational-support.student-courses.edit',
+            compact('studentCourse', 'courses')
+        );
     }
 
     public function update(StudentCourseRequest $request, StudentCourse $studentCourse)
     {
-        $student = $studentCourse->student;
-        $student->ensureIsActive();
+        try {
+            $student = $studentCourse->student;
+            $student->ensureIsActive();
 
-        $this->service->updateEnrollment($studentCourse, $request->validated());
+            $this->service->updateEnrollment($studentCourse, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.student-courses.show', $studentCourse)
-            ->with('success', 'Dados da matrícula atualizados.');
+            return redirect()
+                ->route('specialized-educational-support.student-courses.show', $studentCourse)
+                ->with('success', 'Dados da matrícula atualizados.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar matrícula.');
+        }
     }
 
     public function destroy(StudentCourse $studentCourse)
     {
-        $student = $studentCourse->student_id;
-        $this->service->deleteEnrollment($studentCourse);
+        try {
+            $student = $studentCourse->student_id;
 
-        return redirect()
-            ->route('specialized-educational-support.student-courses.history', $student)
-            ->with('success', 'Registro de histórico removido.');
+            $this->service->deleteEnrollment($studentCourse);
+
+            return redirect()
+                ->route('specialized-educational-support.student-courses.history', $student)
+                ->with('success', 'Registro de histórico removido.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao remover registro de histórico.');
+        }
     }
 }

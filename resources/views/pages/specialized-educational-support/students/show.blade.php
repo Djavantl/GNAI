@@ -17,6 +17,13 @@
     </div>
     <div class="d-flex gap-2">
         {{-- Permissão para EDITAR o cadastro do aluno --}}
+        @can('student.view')
+            <x-buttons.pdf-button 
+                :href="route('specialized-educational-support.students.pdf', $student)" 
+                target="_blank" 
+            />
+        @endcan
+
         @can('student.update')
             <x-buttons.link-button :href="route('specialized-educational-support.students.edit', $student)" variant="warning">
                 <i class="fas fa-edit"></i> Editar Cadastro

@@ -1,7 +1,5 @@
 <?php
 
-namespace App\Http\Controllers;
-
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
 use App\Http\Controllers\Controller;
@@ -10,7 +8,7 @@ use App\Models\SpecializedEducationalSupport\Course;
 use App\Http\Requests\SpecializedEducationalSupport\DisciplineRequest;
 use App\Services\SpecializedEducationalSupport\DisciplineService;
 use Illuminate\Http\Request;
-
+use Exception;
 
 class DisciplineController extends Controller
 {
@@ -23,56 +21,102 @@ class DisciplineController extends Controller
 
     public function index(Request $request)
     {
-        $disciplines = $this->service->index($request->all());
-        
-        $courses = Course::orderBy('name')->pluck('name', 'id')->toArray();
+        try {
+            $disciplines = $this->service->index($request->all());
+            $courses = Course::orderBy('name')->pluck('name', 'id')->toArray();
 
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.disciplines.partials.table', compact('disciplines'))->render();
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.disciplines.partials.table',
+                    compact('disciplines')
+                )->render();
+            }
+
+            return view(
+                'pages.specialized-educational-support.disciplines.index',
+                compact('disciplines', 'courses')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar disciplinas: ' . $e->getMessage());
         }
-
-        return view('pages.specialized-educational-support.disciplines.index', compact('disciplines', 'courses'));
     }
 
     public function show(Discipline $discipline)
     {
-        return view('pages.specialized-educational-support.disciplines.show', compact('discipline'));
+        try {
+            $discipline->load('courses');
+
+            return view(
+                'pages.specialized-educational-support.disciplines.show',
+                compact('discipline')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao exibir disciplina: ' . $e->getMessage());
+        }
     }
 
     public function create()
     {
-        return view('pages.specialized-educational-support.disciplines.create');
+        try {
+            return view('pages.specialized-educational-support.disciplines.create');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao abrir formulário de criação: ' . $e->getMessage());
+        }
     }
 
     public function store(DisciplineRequest $request)
     {
-        $this->service->create($request->validated());
+        try {
+            $this->service->create($request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.disciplines.index')
-            ->with('success', 'Disciplina cadastrada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.disciplines.index')
+                ->with('success', 'Disciplina cadastrada com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Erro ao salvar disciplina: ' . $e->getMessage());
+        }
     }
 
     public function edit(Discipline $discipline)
     {
-        return view('pages.specialized-educational-support.disciplines.edit', compact('discipline'));
+        try {
+            return view('pages.specialized-educational-support.disciplines.edit', compact('discipline'));
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao abrir formulário de edição: ' . $e->getMessage());
+        }
     }
 
     public function update(DisciplineRequest $request, Discipline $discipline)
     {
-        $this->service->update($discipline, $request->validated());
+        try {
+            $this->service->update($discipline, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.disciplines.index')
-            ->with('success', 'Disciplina atualizada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.disciplines.index')
+                ->with('success', 'Disciplina atualizada com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Erro ao atualizar disciplina: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Discipline $discipline)
     {
-        $this->service->delete($discipline);
+        try {
+            $this->service->delete($discipline);
 
-        return redirect()
-            ->route('specialized-educational-support.disciplines.index')
-            ->with('success', 'Disciplina removida com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.disciplines.index')
+                ->with('success', 'Disciplina removida com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Erro ao remover disciplina: ' . $e->getMessage());
+        }
     }
 }

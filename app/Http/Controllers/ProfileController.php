@@ -19,9 +19,12 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->is_admin) {
+        if ($user->is_admin && !$user->professional_id) {
             return redirect()->route('dashboard')
-                ->with('error', 'Administradores não possuem perfil de dados pessoais para edição.');
+                ->with(
+                    'error',
+                    'Administradores sem vínculo profissional não possuem perfil de dados pessoais para edição.'
+                );
         }
 
         $person = $user->professional?->person ?? $user->teacher?->person;
@@ -35,9 +38,12 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->is_admin) {
+        if ($user->is_admin && !$user->professional_id) {
             return redirect()->route('dashboard')
-                ->with('error', 'Administradores não possuem perfil de dados pessoais para edição.');
+                ->with(
+                    'error',
+                    'Administradores sem vínculo profissional não possuem perfil de dados pessoais para edição.'
+                );
         }
 
         try {

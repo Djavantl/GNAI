@@ -95,7 +95,7 @@
                                 <p>Tem certeza que deseja cancelar esta sessão? Esta ação enviará um e-mail de notificação para os participantes.</p>
                                 
                                 <div class="form-group">
-                                    <label for="cancellation_reason" class="form-label">Motivo do Cancelamento *</label>
+                                    <label for="cancellation_reason" class="form-label">Motivo do Cancelamento <span class="text-danger">*</span></label>
                                     <textarea 
                                         name="cancellation_reason" 
                                         id="cancellation_reason" 

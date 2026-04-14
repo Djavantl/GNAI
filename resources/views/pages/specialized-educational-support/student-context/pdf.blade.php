@@ -117,16 +117,6 @@
                 <div class="long-text">{!! $renderHtml($context->difficulties) !!}</div>
             </td>
         </tr>
-        <tr>
-            <td class="pdf-cell" colspan="2">
-                <strong>Recomendações</strong>
-                <div class="long-text">{!! $renderHtml($context->recommendations) !!}</div>
-            </td>
-            <td class="pdf-cell" colspan="2">
-                <strong>Observação Geral</strong>
-                <div class="long-text">{!! $renderHtml($context->general_observation) !!}</div>
-            </td>
-        </tr>
     </table>
 
     {{-- ================= APRENDIZAGEM E COGNIÇÃO ================= --}}

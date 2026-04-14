@@ -12,7 +12,7 @@ use App\Models\SpecializedEducationalSupport\Semester;
 use Illuminate\Support\Facades\Response; 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-
+use Throwable;
 
 class StudentDocumentController extends Controller
 {
@@ -25,35 +25,40 @@ class StudentDocumentController extends Controller
 
     public function index(Student $student, Request $request)
     {
-        $documents = $this->service->getByStudent($student, $request->all());
+        try {
+            $documents = $this->service->getByStudent($student, $request->all());
 
-        $semesters = Semester::query()
-            ->orderByDesc('year')
-            ->orderByDesc('term')
-            ->get()
-            ->pluck('label', 'id')
-            ->prepend('Semestre (Todos)', '');
+            $semesters = Semester::query()
+                ->orderByDesc('year')
+                ->orderByDesc('term')
+                ->get()
+                ->pluck('label', 'id')
+                ->prepend('Semestre (Todos)', '');
 
-        $types = collect(StudentDocumentType::labels())
-            ->prepend('Tipo (Todos)', '')
-            ->toArray();
+            $types = collect(StudentDocumentType::labels())
+                ->prepend('Tipo (Todos)', '')
+                ->toArray();
 
-        $versions = StudentDocument::where('student_id', $student->id)
-            ->orderByDesc('version')
-            ->pluck('version', 'version')
-            ->prepend('Versão (Todas)', '');
+            $versions = StudentDocument::where('student_id', $student->id)
+                ->orderByDesc('version')
+                ->pluck('version', 'version')
+                ->prepend('Versão (Todas)', '');
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.student-documents.partials.table',
+                    compact('documents', 'student')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.student-documents.partials.table',
-                compact('documents', 'student')
-            )->render();
-        }
+                'pages.specialized-educational-support.student-documents.index',
+                compact('documents', 'student', 'semesters', 'versions', 'types')
+            );
 
-        return view(
-            'pages.specialized-educational-support.student-documents.index',
-            compact('documents', 'student', 'semesters', 'versions', 'types')
-        );
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao listar documentos do aluno.');
+        }
     }
 
     public function show(StudentDocument $studentDocument)
@@ -78,17 +83,26 @@ class StudentDocumentController extends Controller
         $semester = Semester::current();
         $types = StudentDocumentType::labels();
 
-        return view('pages.specialized-educational-support.student-documents.create', compact('student', 'types', 'semester'));
+        return view(
+            'pages.specialized-educational-support.student-documents.create',
+            compact('student', 'types', 'semester')
+        );
     }
 
     public function store(StudentDocumentRequest $request, Student $student)
     {
-        $student->ensureIsActive();
-        $this->service->create($student, $request->validated());
+        try {
+            $student->ensureIsActive();
 
-        return redirect()
-            ->route('specialized-educational-support.student-documents.index', $student)
-            ->with('success', 'Documento enviado com sucesso.');
+            $this->service->create($student, $request->validated());
+
+            return redirect()
+                ->route('specialized-educational-support.student-documents.index', $student)
+                ->with('success', 'Documento enviado com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao enviar documento.');
+        }
     }
 
     public function edit(StudentDocument $studentDocument)
@@ -97,36 +111,54 @@ class StudentDocumentController extends Controller
         $student->ensureIsActive();
 
         $types = StudentDocumentType::labels();
-        $student = $studentDocument->student;
         $semester = Semester::current();
 
-        return view('pages.specialized-educational-support.student-documents.edit', compact('studentDocument', 'student', 'types', 'semester'));
+        return view(
+            'pages.specialized-educational-support.student-documents.edit',
+            compact('studentDocument', 'student', 'types', 'semester')
+        );
     }
 
     public function update(StudentDocumentRequest $request, StudentDocument $studentDocument)
     {
-        $student = $studentDocument->student;
-        $student->ensureIsActive();
-        
-        $this->service->update($studentDocument, $request->validated());
+        try {
+            $student = $studentDocument->student;
+            $student->ensureIsActive();
+            
+            $this->service->update($studentDocument, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.student-documents.index', $studentDocument->student_id)
-            ->with('success', 'Documento atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.student-documents.index', $studentDocument->student_id)
+                ->with('success', 'Documento atualizado com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar documento.');
+        }
     }
 
     public function destroy(StudentDocument $studentDocument)
     {
-        $studentId = $studentDocument->student_id;
-        $this->service->delete($studentDocument);
+        try {
+            $studentId = $studentDocument->student_id;
 
-        return redirect()
-            ->route('specialized-educational-support.student-documents.index', $studentId)
-            ->with('success', 'Documento removido com sucesso.');
+            $this->service->delete($studentDocument);
+
+            return redirect()
+                ->route('specialized-educational-support.student-documents.index', $studentId)
+                ->with('success', 'Documento removido com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao remover documento.');
+        }
     }
 
     public function download(StudentDocument $studentDocument)
     {
-        return $this->service->download($studentDocument);
+        try {
+            return $this->service->download($studentDocument);
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao realizar download do documento.');
+        }
     }
 }

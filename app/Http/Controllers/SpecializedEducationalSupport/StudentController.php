@@ -9,6 +9,8 @@ use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Semester;
 use App\Services\SpecializedEducationalSupport\StudentService;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Throwable;
 
 class StudentController extends Controller
 {
@@ -21,68 +23,121 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
-        $students = $this->service->index($request->all());
-        $semesters = $this->semesters();
+        try {
+            $students = $this->service->index($request->all());
+            $semesters = $this->semesters();
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.students.partials.table',
+                    compact('students','semesters')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.students.partials.table',
+                'pages.specialized-educational-support.students.index',
                 compact('students','semesters')
-            )->render();
-        }
+            );
 
-        return view(
-            'pages.specialized-educational-support.students.index',
-            compact('students','semesters')
-        );
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao listar alunos.');
+        }
     }
 
     public function show(Student $student)
     {
-        $student = $this->service->show($student);
+        try {
+            $student = $this->service->show($student);
 
-        return view(
-            'pages.specialized-educational-support.students.show',
-            compact('student')
-        );
+            return view(
+                'pages.specialized-educational-support.students.show',
+                compact('student')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao exibir aluno.');
+        }
     }
 
     public function create()
     {
         $people = Person::orderBy('name')->get();
-        return view('pages.specialized-educational-support.students.create', compact('people'));
+
+        return view(
+            'pages.specialized-educational-support.students.create',
+            compact('people')
+        );
     }
 
     public function store(StudentRequest $request)
     {
-        $student = $this->service->create($request->validated());
+        try {
+            $student = $this->service->create($request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.students.show', $student)
-            ->with('success', 'Aluno cadastrado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.students.show', $student)
+                ->with('success', 'Aluno cadastrado com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao cadastrar aluno.');
+        }
     }
 
     public function edit(Student $student)
     {
         $people = Person::orderBy('name')->get();
-        return view('pages.specialized-educational-support.students.edit', compact('student', 'people'));
+
+        return view(
+            'pages.specialized-educational-support.students.edit',
+            compact('student', 'people')
+        );
     }
 
     public function update(StudentRequest $request, Student $student)
     {
-        $student = $this->service->update($student, $request->validated());
+        try {
+            $student = $this->service->update($student, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.students.show', $student)
-            ->with('success', 'Aluno atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.students.show', $student)
+                ->with('success', 'Aluno atualizado com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar aluno.');
+        }
     }
 
     public function destroy(Student $student)
     {
-        $this->service->delete($student);
+        try {
+            $this->service->delete($student);
 
-        return redirect()
-            ->route('specialized-educational-support.students.index')
-            ->with('success', 'Aluno removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.students.index')
+                ->with('success', 'Aluno removido com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao remover aluno.');
+        }
     }
+
+    public function pdf(Student $student)
+    {
+        try {
+            $student = $this->service->pdfData($student);
+
+            $pdf = Pdf::loadView(
+                'pages.specialized-educational-support.students.pdf',
+                compact('student')
+            );
+
+            return $pdf->stream(
+                "ficha-aluno-{$student->registration}.pdf"
+            );
+
+        } catch (Throwable $e) {
+            throw $e;
+        }
+    }
+    
 }

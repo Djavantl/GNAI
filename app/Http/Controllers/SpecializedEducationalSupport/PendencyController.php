@@ -9,7 +9,7 @@ use App\Http\Requests\SpecializedEducationalSupport\PendencyRequest;
 use App\Services\SpecializedEducationalSupport\PendencyService;
 use App\Enums\Priority;
 use Illuminate\Http\Request;
-
+use Exception;
 
 class PendencyController extends Controller
 {
@@ -22,115 +22,161 @@ class PendencyController extends Controller
 
     public function index(Request $request)
     {
-        $pendencies = $this->service->index($request->all());
+        try {
+            $pendencies = $this->service->index($request->all());
 
-        $professionals = Professional::with('person')
-            ->orderBy('id')
-            ->get();
+            $professionals = Professional::with('person')
+                ->orderBy('id')
+                ->get();
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.pendencies.partials.table',
+                    compact('pendencies')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.pendencies.partials.table',
-                compact('pendencies')
-            )->render();
+                'pages.specialized-educational-support.pendencies.index',
+                compact('pendencies', 'professionals')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar pendências: ' . $e->getMessage());
         }
-
-        return view(
-            'pages.specialized-educational-support.pendencies.index',
-            compact('pendencies', 'professionals')
-        );
     }
 
     public function show(Pendency $pendency)
     {
-        $pendency = $this->service->findById($pendency->id);
+        try {
+            $pendency = $this->service->findById($pendency->id);
 
-        return view(
-            'pages.specialized-educational-support.pendencies.show',
-            compact('pendency')
-        );
+            return view(
+                'pages.specialized-educational-support.pendencies.show',
+                compact('pendency')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao exibir pendência: ' . $e->getMessage());
+        }
     }
 
     public function create()
     {
-        $professionals = Professional::get();
-        $priorities = collect(Priority::cases())
-            ->mapWithKeys(fn($priority) => [
-                $priority->value => $priority->label()
-            ])
-            ->toArray();
+        try {
+            $professionals = Professional::get();
+            $priorities = collect(Priority::cases())
+                ->mapWithKeys(fn($priority) => [
+                    $priority->value => $priority->label()
+                ])
+                ->toArray();
 
-        return view(
-            'pages.specialized-educational-support.pendencies.create',
-            compact('professionals', 'priorities')
-        );
+            return view(
+                'pages.specialized-educational-support.pendencies.create',
+                compact('professionals', 'priorities')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar formulário de criação: ' . $e->getMessage());
+        }
     }
 
     public function store(PendencyRequest $request)
     {
-        $this->service->create($request->validated());
+        try {
+            $this->service->create($request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.pendencies.index')
-            ->with('success', 'Pendência criada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pendencies.index')
+                ->with('success', 'Pendência criada com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function edit(Pendency $pendency)
     {
-        $professionals = Professional::get();
-        $priorities = collect(Priority::cases())
-            ->mapWithKeys(fn($priority) => [
-                $priority->value => $priority->label()
-            ])
-            ->toArray();
+        try {
+            $professionals = Professional::get();
+            $priorities = collect(Priority::cases())
+                ->mapWithKeys(fn($priority) => [
+                    $priority->value => $priority->label()
+                ])
+                ->toArray();
 
-        return view(
-            'pages.specialized-educational-support.pendencies.edit',
-            compact('pendency', 'professionals', 'priorities')
-        );
+            return view(
+                'pages.specialized-educational-support.pendencies.edit',
+                compact('pendency', 'professionals', 'priorities')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar formulário de edição: ' . $e->getMessage());
+        }
     }
 
     public function update(PendencyRequest $request, Pendency $pendency)
     {
-        $this->service->update($pendency, $request->validated());
+        try {
+            $this->service->update($pendency, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.pendencies.index')
-            ->with('success', 'Pendência atualizada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pendencies.index')
+                ->with('success', 'Pendência atualizada com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function destroy(Pendency $pendency)
     {
-        $this->service->delete($pendency);
+        try {
+            $this->service->delete($pendency);
 
-        return redirect()
-            ->route('specialized-educational-support.pendencies.index')
-            ->with('success', 'Pendência removida com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pendencies.index')
+                ->with('success', 'Pendência removida com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Erro ao remover pendência: ' . $e->getMessage());
+        }
     }
 
     public function myPendencies(Request $request)
     {
-        $pendencies = $this->service->getMyPendencies($request->all());
+        try {
+            $pendencies = $this->service->getMyPendencies($request->all());
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.pendencies.partials.table',
+                    compact('pendencies')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.pendencies.partials.table',
+                'pages.specialized-educational-support.pendencies.my',
                 compact('pendencies')
-            )->render();
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar minhas pendências: ' . $e->getMessage());
         }
-
-        return view(
-            'pages.specialized-educational-support.pendencies.my',
-            compact('pendencies')
-        );
     }
 
     public function markAsCompleted(Pendency $pendency)
     {
-        $this->service->markAsCompleted($pendency);
+        try {
+            $this->service->markAsCompleted($pendency);
 
-        return redirect()
-            ->route('specialized-educational-support.pendencies.my')
-            ->with('success', 'Pendência completada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.pendencies.my')
+                ->with('success', 'Pendência completada com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage());
+        }
     }
 }

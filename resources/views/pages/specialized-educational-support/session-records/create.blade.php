@@ -122,6 +122,7 @@
                                             rows="2" 
                                             placeholder="Informe o motivo da ausência do aluno..." 
                                             :value="old('evaluations.'.$index.'.absence_reason')"
+                                            required
                                         />
                                     </div>
 

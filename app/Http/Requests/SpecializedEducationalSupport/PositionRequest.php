@@ -36,11 +36,6 @@ class PositionRequest extends FormRequest
                 'string',
             ],
 
-            'is_active' => [
-                'sometimes',
-                Rule::in([0, 1]),
-            ],
-
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['exists:permissions,id'],
         ];

@@ -42,6 +42,26 @@
                 {{ $discipline->description ?? 'Nenhuma descrição informada.' }}
             </x-show.info-item>
 
+            <x-show.info-item 
+                label="Cursos vinculados" 
+                column="col-md-12" 
+                isBox="true"
+            >
+                @if($discipline->courses->isEmpty())
+                    <span class="text-muted">
+                        Nenhum curso vinculado.
+                    </span>
+                @else
+                    <ul class="mb-0">
+                        @foreach($discipline->courses as $course)
+                            <li>
+                                {{ $course->name }}
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </x-show.info-item>
+
             {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">

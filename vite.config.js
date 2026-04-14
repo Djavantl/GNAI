@@ -20,6 +20,7 @@ export default defineConfig({
                 'resources/js/components/dynamicFilters.js',
                 'resources/js/pages/inclusive-radar/file-uploader.js',
                 'resources/js/pages/inclusive-radar/waitlists.js',
+                'resources/css/pages/errors.css',
             ],
             refresh: true,
         }),

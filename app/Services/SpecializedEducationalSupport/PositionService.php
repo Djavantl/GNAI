@@ -43,10 +43,6 @@ class PositionService
     {
         return DB::transaction(function () use ($position, $data) {
 
-            if ($position->is_active) {
-                $position->ensureCanBeDeactivated();
-            }
-
             $permissions = $data['permissions'] ?? [];
             unset($data['permissions']);
 

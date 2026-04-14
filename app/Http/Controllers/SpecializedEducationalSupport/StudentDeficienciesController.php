@@ -9,6 +9,7 @@ use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\SpecializedEducationalSupport\StudentDeficienciesService;
 use App\Http\Requests\SpecializedEducationalSupport\StudentDeficienciesRequest;
 use Illuminate\Http\Request;
+use Throwable;
 
 class StudentDeficienciesController extends Controller
 {
@@ -22,29 +23,34 @@ class StudentDeficienciesController extends Controller
     // Lista todas as deficiências de um aluno específico.
     public function index(Request $request, Student $student)
     {
-        // 1. Busca as deficiências vinculadas ao aluno com os filtros aplicados
-        $deficiencies = $this->service->index($student, $request->all());
+        try {
+            // 1. Busca as deficiências vinculadas ao aluno com os filtros aplicados
+            $deficiencies = $this->service->index($student, $request->all());
 
-        // 2. Resposta AJAX para o filtro dinâmico
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.student-deficiencies.partials.table', 
-                compact('student', 'deficiencies')
-            )->render();
+            // 2. Resposta AJAX para o filtro dinâmico
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.student-deficiencies.partials.table', 
+                    compact('student', 'deficiencies')
+                )->render();
+            }
+
+            // 3. Pegar apenas as deficiências que este aluno já possui
+            $filterDeficiencies = Deficiency::whereHas('students', function($q) use ($student) {
+                $q->where('student_id', $student->id);
+            })
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+
+            return view(
+                'pages.specialized-educational-support.student-deficiencies.index',
+                compact('student', 'deficiencies', 'filterDeficiencies')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao listar deficiências do aluno.');
         }
-
-        // 3. CORREÇÃO AQUI: Pegar apenas as deficiências que este aluno já possui
-        // Usamos o relacionamento 'students' que está definido no seu model Deficiency
-        $filterDeficiencies = Deficiency::whereHas('students', function($q) use ($student) {
-            $q->where('student_id', $student->id);
-        })
-        ->orderBy('name')
-        ->pluck('name', 'id')
-        ->toArray();
-
-        return view(
-            'pages.specialized-educational-support.student-deficiencies.index',
-            compact('student', 'deficiencies', 'filterDeficiencies')
-        );
     }
 
     // Mostra uma deficiência específica vinculada ao aluno
@@ -52,12 +58,17 @@ class StudentDeficienciesController extends Controller
     {
         abort_if($student_deficiency->student_id !== $student->id, 404);
 
-        $deficiency = $this->service->show($student_deficiency);
+        try {
+            $deficiency = $this->service->show($student_deficiency);
 
-        return view(
-            'pages.specialized-educational-support.student-deficiencies.show',
-            compact('deficiency', 'student')
-        );
+            return view(
+                'pages.specialized-educational-support.student-deficiencies.show',
+                compact('deficiency', 'student')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao exibir deficiência do aluno.');
+        }
     }
 
     // Exibe o formulário de criação
@@ -76,13 +87,18 @@ class StudentDeficienciesController extends Controller
     // Salva o vínculo da deficiência
     public function store(Student $student, StudentDeficienciesRequest $request)
     {
-        $student->ensureIsActive();
+        try {
+            $student->ensureIsActive();
 
-        $this->service->create($student, $request->validated());
+            $this->service->create($student, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.student-deficiencies.index', $student)
-            ->with('success', 'Deficiência vinculada com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.student-deficiencies.index', $student)
+                ->with('success', 'Deficiência vinculada com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao vincular deficiência.');
+        }
     }
 
     // Exibe o formulário de edição (somente contexto)
@@ -106,13 +122,18 @@ class StudentDeficienciesController extends Controller
     ){
         abort_if($student_deficiency->student_id !== $student->id, 404);
 
-        $student->ensureIsActive();
+        try {
+            $student->ensureIsActive();
 
-        $this->service->update($student_deficiency, $request->validated());
+            $this->service->update($student_deficiency, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.student-deficiencies.index', $student)
-            ->with('success', 'Informações da deficiência atualizadas.');
+            return redirect()
+                ->route('specialized-educational-support.student-deficiencies.index', $student)
+                ->with('success', 'Informações da deficiência atualizadas.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao atualizar deficiência.');
+        }
     }
 
     // Remove o vínculo
@@ -120,10 +141,15 @@ class StudentDeficienciesController extends Controller
     {
         abort_if($student_deficiency->student_id !== $student->id, 404);
 
-        $this->service->delete($student_deficiency);
+        try {
+            $this->service->delete($student_deficiency);
 
-        return redirect()
-            ->route('specialized-educational-support.student-deficiencies.index', $student)
-            ->with('success', 'Vínculo removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.student-deficiencies.index', $student)
+                ->with('success', 'Vínculo removido com sucesso.');
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao remover vínculo da deficiência.');
+        }
     }
 }

@@ -149,4 +149,41 @@ class StudentService
             $student->delete();
         });
     }
+
+    public function pdfData(Student $student): Student
+    {
+        return $student->load([
+            // dados básicos do aluno + pessoa
+            'person',
+            'deficiencies',
+
+            // curso atual
+            'currentCourse.course',
+
+            // responsáveis
+            'guardians',
+
+            // contexto atual
+            'currentContext',
+            'currentContext.semester',
+            'currentContext.evaluator.person',
+
+            'peis' => function ($query) {
+                $query->with([
+                    'semester',
+                    'course',
+                    'studentContext',
+                    'creator',
+                    'peiDisciplines' => function ($q) {
+                        $q->with([
+                            'discipline',
+                            'teacher.person',
+                            'creator',
+                        ])->orderBy('id');
+                    },
+                ])
+                ->orderBy('version'); 
+            },
+        ]);
+    }
 }

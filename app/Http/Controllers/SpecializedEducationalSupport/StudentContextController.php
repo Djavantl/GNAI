@@ -23,47 +23,66 @@ class StudentContextController extends Controller
 
     public function index(Student $student, Request $request)
     {
-        $contexts = $this->service->getByStudent($student, $request->all());
+        try {
+            $contexts = $this->service->getByStudent($student, $request->all());
 
-        $semesters = \App\Models\SpecializedEducationalSupport\Semester::query()
-            ->orderByDesc('year')
-            ->orderByDesc('term')
-            ->get()
-            ->pluck('label', 'id')
-            ->prepend('Semestre (Todos)', '');
+            $semesters = \App\Models\SpecializedEducationalSupport\Semester::query()
+                ->orderByDesc('year')
+                ->orderByDesc('term')
+                ->get()
+                ->pluck('label', 'id')
+                ->prepend('Semestre (Todos)', '');
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.student-context.partials.table',
+                    compact('contexts', 'student')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.student-context.partials.table',
-                compact('contexts', 'student')
-            )->render();
-        }
+                'pages.specialized-educational-support.student-context.index',
+                compact('contexts', 'student', 'semesters')
+            );
 
-        return view(
-            'pages.specialized-educational-support.student-context.index',
-            compact('contexts', 'student', 'semesters')
-        );
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao listar contextos.');
+        }
     }
 
     public function show(StudentContext $studentContext)
     {
-        $student = $studentContext->student;
-        $student->load('deficiencies');
-        $studentContext = $this->service->show($studentContext);
-        $deficiencies = $student->deficiencies;
-        return view('pages.specialized-educational-support.student-context.show', compact('student', 'studentContext', 'deficiencies'));
+        try {
+            $student = $studentContext->student;
+            $student->load('deficiencies');
+            $studentContext = $this->service->show($studentContext);
+            $deficiencies = $student->deficiencies;
+
+            return view(
+                'pages.specialized-educational-support.student-context.show',
+                compact('student', 'studentContext', 'deficiencies')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao exibir contexto.');
+        }
     }
 
     public function showCurrent(Student $student)
     {
-        $context = $this->service->showCurrent($student);
+        try {
+            $context = $this->service->showCurrent($student);
 
-        $student->load('deficiencies');
+            $student->load('deficiencies');
 
-        return view(
-            'pages.specialized-educational-support.student-context.show',
-            compact('student', 'context')
-        );
+            return view(
+                'pages.specialized-educational-support.student-context.show',
+                compact('student', 'context')
+            );
+
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao exibir contexto atual.');
+        }
     }
 
     public function create(Student $student)
@@ -77,6 +96,7 @@ class StudentContextController extends Controller
                 ->back()
                 ->with('error', 'Este aluno já possui contexto. Use "Nova Versão".');
         }
+
         $student->load('deficiencies');
         $deficiencies = $student->deficiencies;
         $professionals = Professional::with('person')->get();
@@ -103,7 +123,7 @@ class StudentContextController extends Controller
 
     public function edit(StudentContext $studentContext)
     {
-        if(!$studentContext->is_current){
+        if (!$studentContext->is_current) {
             return redirect()
                 ->route('specialized-educational-support.student-context.show', $studentContext)
                 ->with('error', 'Não é possível editar um contexto que não é atual.');
@@ -184,7 +204,7 @@ class StudentContextController extends Controller
                 ->with('success', 'Contexto restaurado e definido como atual.');
 
         } catch (Throwable $e) {
-           return $this->handleException($e, 'Erro ao restaurar versão.');
+            return $this->handleException($e, 'Erro ao restaurar versão.');
         }
     }
 

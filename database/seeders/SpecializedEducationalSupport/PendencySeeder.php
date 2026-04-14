@@ -11,13 +11,16 @@ class PendencySeeder extends Seeder
 {
     public function run(): void
     {
-        // Usuários que podem criar pendências
-        $users = User::where('role', 'professional')->get();
+        // Pega apenas usuários que possuem um perfil de profissional vinculado
+        // e já carrega a relação para evitar múltiplas queries (Eager Loading)
+        $usersWithProfessional = User::whereHas('professional')
+            ->with('professional')
+            ->get();
 
         // Profissionais que recebem pendências
         $professionals = Professional::all();
 
-        if ($users->isEmpty() || $professionals->isEmpty()) {
+        if ($usersWithProfessional->isEmpty() || $professionals->isEmpty()) {
             return;
         }
 
@@ -34,18 +37,19 @@ class PendencySeeder extends Seeder
             'Digitalizar documentos de matrícula'
         ];
 
-        // Somente as prioridades permitidas
         $priorities = ['low', 'medium', 'high'];
 
         foreach ($professionals as $index => $professional) {
-
-            // Alterna o criador entre os usuários
-            $creator = $users[$index % $users->count()];
+            // Seleciona um usuário que tem perfil profissional
+            $userCreator = $usersWithProfessional[$index % $usersWithProfessional->count()];
+            
+            // Pega o ID do Profissional vinculado a esse usuário
+            $creatorProfessionalId = $userCreator->professional->id;
 
             $titleIndex = array_rand($titles);
 
             Pendency::create([
-                'created_by'   => $creator->id,
+                'created_by'   => $creatorProfessionalId, // Agora usa o ID do profissional
                 'assigned_to'  => $professional->id,
                 'title'        => $titles[$titleIndex],
                 'description'  => "Tarefa referente a " . strtolower($titles[$titleIndex]) . ".",

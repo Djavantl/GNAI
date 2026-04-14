@@ -25,46 +25,60 @@ class PSPUSeeder extends Seeder
             // students
 
             Person::create([
-                'name' => 'Marley',
-                'document' => '11111111111',
+                'name' => 'Marley Teixeira Meira',
+                'document' => '28057515074',
                 'birth_date' => '2012-01-10',
                 'gender' => 'male',
                 'email' => 'mxrlrey@gmail.com',
             ]),
             Person::create([
-                'name' => 'Djavan',
-                'document' => '22222222222',
+                'name' => 'Djavan Teixeira Lopes',
+                'document' => '68425710065',
                 'birth_date' => '2011-03-15',
                 'gender' => 'male',
                 'email' => 'djvnsala2@gmail.com',
             ]),
             Person::create([
-                'name' => 'Péricles',
-                'document' => '33333333333',
+                'name' => 'Péricles Caires',
+                'document' => '75261909023',
                 'birth_date' => '2010-07-20',
                 'gender' => 'male',
                 'email' => 'djvnsala5@gmail.com',
+            ]),
+            Person::create([
+                'name' => 'Gabriel Rocha',
+                'document' => '48668088025',
+                'birth_date' => '2010-07-20',
+                'gender' => 'male',
+                'email' => 'djavansala7@gmail.com',
+            ]),
+            Person::create([
+                'name' => 'Jader Adriel',
+                'document' => '98378092054',
+                'birth_date' => '2010-07-20',
+                'gender' => 'male',
+                'email' => 'djavansala8@gmail.com',
             ]),
 
             // professionals
 
             Person::create([
-                'name' => 'Adriany Oliveira',
-                'document' => '44444444444',
+                'name' => 'Adriany',
+                'document' => '59271956010',
                 'birth_date' => '1990-05-10',
                 'gender' => 'female',
                 'email' => 'adriany.prof@teste.com',
             ]),
             Person::create([
-                'name' => 'João Santos',
-                'document' => '55555555555',
+                'name' => 'Marta',
+                'document' => '98800858090',
                 'birth_date' => '1988-08-22',
                 'gender' => 'male',
-                'email' => 'djvnsala4@gmail.com',
+                'email' => 'marta.prof@teste.com',
             ]),
             Person::create([
                 'name' => 'Paula Mendes',
-                'document' => '66666666666',
+                'document' => '97849285077',
                 'birth_date' => '1992-11-30',
                 'gender' => 'female',
                 'email' => 'paula.prof@teste.com',
@@ -91,24 +105,36 @@ class PSPUSeeder extends Seeder
             'entry_date' => now(),
         ]);
 
+        Student::create([
+            'person_id' => $people[3]->id,
+            'registration' => 'ALU004',
+            'entry_date' => now(),
+        ]);
+
+        Student::create([
+            'person_id' => $people[4]->id,
+            'registration' => 'ALU005',
+            'entry_date' => now(),
+        ]);
+
         // Professionals (últimas 3 pessoas)
 
         $prof1 = Professional::create([
-            'person_id' => $people[3]->id,
+            'person_id' => $people[5]->id,
             'position_id' => 1,
             'registration' => 'PROF001',
             'entry_date' => now(),
         ]);
 
         $prof2 = Professional::create([
-            'person_id' => $people[4]->id,
-            'position_id' => 1,
+            'person_id' => $people[6]->id,
+            'position_id' => 2,
             'registration' => 'PROF002',
             'entry_date' => now(),
         ]);
 
         $prof3 = Professional::create([
-            'person_id' => $people[5]->id,
+            'person_id' => $people[7]->id,
             'position_id' => 1,
             'registration' => 'PROF003',
             'entry_date' => now(),
@@ -117,24 +143,24 @@ class PSPUSeeder extends Seeder
         // Logins (SÓ profissionais)
 
         User::create([
-            'name' => $people[3]->name,
-            'email' => $people[3]->email,
+            'name' => $people[5]->name,
+            'email' => $people[5]->email,
             'password' => Hash::make('napne2026'),
             'role' => 'professional',
             'professional_id' => $prof1->id,
         ]);
 
         User::create([
-            'name' => $people[4]->name,
-            'email' => $people[4]->email,
+            'name' => $people[6]->name,
+            'email' => $people[6]->email,
             'password' => Hash::make('napne2026'),
             'role' => 'professional',
             'professional_id' => $prof2->id,
         ]);
 
         User::create([
-            'name' => $people[5]->name,
-            'email' => $people[5]->email,
+            'name' => $people[7]->name,
+            'email' => $people[7]->email,
             'password' => Hash::make('napne2026'),
             'role' => 'professional',
             'professional_id' => $prof3->id,

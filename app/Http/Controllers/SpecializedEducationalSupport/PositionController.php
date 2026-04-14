@@ -49,9 +49,23 @@ class PositionController extends Controller
 
     public function store(PositionRequest $request)
     {
-        $this->service->store($request->validated());
+        try {
+            $this->service->store($request->validated());
 
-        return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo criado com sucesso!');
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('success', 'Cargo criado com sucesso!');
+        } catch (\DomainException $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Erro inesperado ao criar o cargo.');
+        }
     }
 
     
@@ -67,28 +81,71 @@ class PositionController extends Controller
 
     public function update(PositionRequest $request, Position $position)
     {
-        $this->service->update($position, $request ->validated());
+        try {
+            $this->service->update($position, $request->validated());
 
-        return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo atualizado com sucesso!');
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('success', 'Cargo atualizado com sucesso!');
+        } catch (\DomainException $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Erro inesperado ao atualizar o cargo.');
+        }
     }
 
-    public function toggleActive(Position $Position)
+    public function toggleActive(Position $position)
     {
-        $this->service->toggleActive($Position);
+        try {
+            $this->service->toggleActive($position);
 
-        if ($Position->is_active) {
-            return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo ativado com sucesso!');
-        } else {
-           return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo desativado com sucesso!');
+            $message = $position->is_active
+                ? 'Cargo ativado com sucesso!'
+                : 'Cargo desativado com sucesso!';
+
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('success', $message);
+
+        } catch (\DomainException $e) {
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('error', $e->getMessage());
+
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('error', 'Erro inesperado ao alterar o status do cargo.');
         }
-
     }
 
     public function destroy(Position $position)
     {
-        $this->service->delete($position);
+        try {
+            $this->service->delete($position);
 
-        return redirect()->route('specialized-educational-support.positions.index')->with('success', 'Cargo removido!');
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('success', 'Cargo removido!');
+        } catch (\DomainException $e) {
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('specialized-educational-support.positions.index')
+                ->with('error', 'Erro inesperado ao remover o cargo.');
+        }
     }
 
     private function getGroupedPermissions()

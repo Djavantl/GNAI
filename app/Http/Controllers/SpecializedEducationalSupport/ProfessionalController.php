@@ -10,6 +10,7 @@ use App\Models\SpecializedEducationalSupport\Professional;
 use App\Services\SpecializedEducationalSupport\ProfessionalService;
 use App\Models\SpecializedEducationalSupport\Semester;
 use Illuminate\Http\Request;
+use Exception;
 
 class ProfessionalController extends Controller
 {
@@ -22,78 +23,114 @@ class ProfessionalController extends Controller
 
     public function index(Request $request)
     {
-        $professionals = $this->service->index($request->all());
+        try {
+            $professionals = $this->service->index($request->all());
 
-        $semesters = $this->semesters();
-        $positions = Position::orderBy('name')
-            ->get(['id', 'name']);
+            $semesters = $this->semesters();
+            $positions = Position::orderBy('name')
+                ->get(['id', 'name']);
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.professionals.partials.table',
+                    compact('professionals', 'semesters', 'positions')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.professionals.partials.table',
+                'pages.specialized-educational-support.professionals.index',
                 compact('professionals', 'semesters', 'positions')
-            )->render();
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao listar profissionais: ' . $e->getMessage());
         }
-
-        return view(
-            'pages.specialized-educational-support.professionals.index',
-            compact('professionals', 'semesters', 'positions')
-        );
     }
 
     public function show(Professional $professional)
     {
-        $professional = $this->service->show($professional);
-        return view('pages.specialized-educational-support.professionals.show', compact('professional'));
+        try {
+            $professional = $this->service->show($professional);
+            return view('pages.specialized-educational-support.professionals.show', compact('professional'));
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao exibir profissional: ' . $e->getMessage());
+        }
     }
 
 
     public function create()
     {
-        $positions = Position::orderBy('name')->get();
+        try {
+            $positions = Position::orderBy('name')->get();
 
-        return view(
-            'pages.specialized-educational-support.professionals.create',
-            compact('positions')
-        );
+            return view(
+                'pages.specialized-educational-support.professionals.create',
+                compact('positions')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar formulário: ' . $e->getMessage());
+        }
     }
 
     public function store(ProfessionalRequest $request)
     {
-        $this->service->create($request->validated());
+        try {
+            $this->service->create($request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.professionals.index')
-            ->with('success', 'Profissional cadastrado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.professionals.index')
+                ->with('success', 'Profissional cadastrado com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function edit(Professional $professional)
     {
-        $positions = Position::orderBy('name')->get();
+        try {
+            $positions = Position::orderBy('name')->get();
 
-        return view(
-            'pages.specialized-educational-support.professionals.edit',
-            compact('professional', 'positions')
-        );
+            return view(
+                'pages.specialized-educational-support.professionals.edit',
+                compact('professional', 'positions')
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar edição: ' . $e->getMessage());
+        }
     }
 
     public function update(
         ProfessionalRequest $request,
         Professional $professional
     ) {
-        $this->service->update($professional, $request->validated());
+        try {
+            $this->service->update($professional, $request->validated());
 
-        return redirect()
-            ->route('specialized-educational-support.professionals.index')
-            ->with('success', 'Profissional atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.professionals.index')
+                ->with('success', 'Profissional atualizado com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function destroy(Professional $professional)
     {
-        $this->service->delete($professional);
+        try {
+            $this->service->delete($professional);
 
-        return redirect()
-            ->route('specialized-educational-support.professionals.index')
-            ->with('success', 'Profissional removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.professionals.index')
+                ->with('success', 'Profissional removido com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Erro ao remover profissional: ' . $e->getMessage());
+        }
     }
 }

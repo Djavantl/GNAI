@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SpecializedEducationalSupport\SessionRequest;
+use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Session;
 use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\Professional;
 use App\Services\SpecializedEducationalSupport\SessionService;
-use App\Http\Requests\SpecializedEducationalSupport\SessionRequest;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
@@ -26,11 +26,20 @@ class SessionController extends Controller
 
         $students = Student::with('person')
             ->orderBy('id')
-            ->get(['id','person_id']);
+            ->get(['id', 'person_id']);
 
         $professionals = Professional::with('person')
             ->orderBy('id')
-            ->get(['id','person_id']);
+            ->get(['id', 'person_id']);
+
+        $agenda = $this->service->getWeeklyAgenda([
+            'week' => $request->input('week', now()->toDateString()),
+        ]);
+
+        $weekNavigation = $this->buildWeekNavigation(
+            $request,
+            'specialized-educational-support.sessions.index'
+        );
 
         if ($request->ajax()) {
             return view(
@@ -41,15 +50,20 @@ class SessionController extends Controller
 
         return view(
             'pages.specialized-educational-support.sessions.index',
-            compact('sessions', 'students', 'professionals')
+            compact('sessions', 'students', 'professionals', 'agenda', 'weekNavigation')
         );
     }
-    
+
     public function create()
     {
-        $students = Student::all();
-        $professionals = Professional::all();
-        
+        $students = Student::with('person')
+            ->orderBy('id')
+            ->get();
+
+        $professionals = Professional::with('person')
+            ->orderBy('id')
+            ->get();
+
         $timeOptions = $this->service->getAvailableTimeOptions();
 
         return view('pages.specialized-educational-support.sessions.create', [
@@ -68,43 +82,57 @@ class SessionController extends Controller
             return redirect()
                 ->route('specialized-educational-support.sessions.index')
                 ->with('success', 'Sessão agendada com sucesso.');
-
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Deixa o Laravel tratar o erro de validação (volta com os erros)
-            throw $e; 
+            throw $e;
         } catch (\Exception $e) {
-            // Para qualquer outro erro (banco de dados, email, etc) volta com uma mensagem geral
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Ocorreu um erro inesperado: ' . $e->getMessage());
         }
     }
 
-    
     public function show(Session $session)
     {
         $session = $this->service->show($session);
+
         return view('pages.specialized-educational-support.sessions.show', compact('session'));
     }
 
     public function edit(Session $session)
     {
         $timeOptions = $this->service->getAvailableTimeOptions();
-        $session->load('students.person');
+        $session->load(['students.person', 'professional.person']);
 
         return view('pages.specialized-educational-support.sessions.edit', [
             'startTimes' => $timeOptions['start'],
-            'endTimes'   => $timeOptions['end'],
-            'session'    => $session, 
+            'endTimes' => $timeOptions['end'],
+            'session' => $session,
         ]);
     }
 
-    // 1. Index filtrada por Aluno
+    public function update(SessionRequest $request, Session $session)
+    {
+        try {
+            $this->service->update($session, $request->validated());
+
+            return redirect()
+                ->route('specialized-educational-support.sessions.show', $session)
+                ->with('success', 'Sessão atualizada com sucesso.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Erro ao atualizar: ' . $e->getMessage());
+        }
+    }
+
     public function indexByStudent(Student $student, Request $request)
     {
         $sessions = Session::query()
             ->with(['professional.person', 'students.person', 'sessionRecord'])
-            ->student($student->id) // fixa o aluno
+            ->student($student->id)
             ->professional($request->professional ?? null)
             ->type($request->type ?? null)
             ->status($request->status ?? null)
@@ -114,7 +142,7 @@ class SessionController extends Controller
 
         $professionals = Professional::with('person')
             ->orderBy('id')
-            ->get(['id','person_id']);
+            ->get(['id', 'person_id']);
 
         if ($request->ajax()) {
             return view(
@@ -133,6 +161,19 @@ class SessionController extends Controller
     {
         $sessions = $this->service->getMySessions($request->all());
 
+        $students = Student::with('person')
+            ->orderBy('id')
+            ->get(['id', 'person_id']);
+
+        $agenda = $this->service->getMyWeeklyAgenda([
+            'week' => $request->input('week', now()->toDateString()),
+        ]);
+
+        $weekNavigation = $this->buildWeekNavigation(
+            $request,
+            'specialized-educational-support.sessions.my-sessions'
+        );
+
         if ($request->ajax()) {
             return view(
                 'pages.specialized-educational-support.sessions.partials.my-table',
@@ -140,29 +181,24 @@ class SessionController extends Controller
             )->render();
         }
 
-        $students = Student::with('person')
-            ->orderBy('id')
-            ->get(['id', 'person_id']);
-
         return view(
             'pages.specialized-educational-support.sessions.my-sessions',
-            compact('sessions', 'students')
+            compact('sessions', 'students', 'agenda', 'weekNavigation')
         );
     }
 
-    // 2. Create com Aluno Fixo
     public function createForStudent(Student $student)
     {
-        $professionals = Professional::all();
+        $professionals = Professional::with('person')->orderBy('id')->get();
         $timeOptions = $this->service->getAvailableTimeOptions();
         $students = Student::with('person')->get();
 
         return view('pages.specialized-educational-support.sessions.create-fixed', [
-            'student'      => $student,
-            'students'      => $students,
-            'professionals'=> $professionals,
-            'startTimes'   => $timeOptions['start'],
-            'endTimes'     => $timeOptions['end'],
+            'student' => $student,
+            'students' => $students,
+            'professionals' => $professionals,
+            'startTimes' => $timeOptions['start'],
+            'endTimes' => $timeOptions['end'],
         ]);
     }
 
@@ -224,13 +260,20 @@ class SessionController extends Controller
                     $sq->whereIn('students.id', $studentIds);
                 });
             })
-            ->with(['students.person', 'professional.person']) // Carregar nomes
+            ->where(function ($q) {
+                $q->whereNull('status')
+                ->orWhereRaw('LOWER(status) <> ?', ['cancelada']);
+            })
+            ->with(['students.person', 'professional.person'])
             ->get();
 
         $slots = [];
-        $periods = [['start' => '08:00', 'end' => '12:00'], ['start' => '14:00', 'end' => '17:00']];
+        $periods = [
+            ['start' => '08:00', 'end' => '12:00'],
+            ['start' => '14:00', 'end' => '17:00']
+        ];
 
-        foreach ($periods as $period) { 
+        foreach ($periods as $period) {
             $time = Carbon::parse($period['start']);
             $endTime = Carbon::parse($period['end']);
 
@@ -238,7 +281,6 @@ class SessionController extends Controller
                 $slotStart = $time->copy();
                 $slotEnd = $time->copy()->addMinutes(30);
 
-                // Filtrar todas as sessões que batem com este horário (pode ser mais de uma)
                 $conflicts = $sessions->filter(function ($s) use ($slotStart, $slotEnd) {
                     $sessionStart = Carbon::parse($s->start_time);
                     $sessionEnd = Carbon::parse($s->end_time);
@@ -246,17 +288,17 @@ class SessionController extends Controller
                 });
 
                 $occupants = [];
+
                 if ($conflicts->isNotEmpty()) {
                     foreach ($conflicts as $session) {
-                        // Se o profissional da sessão for o que estamos buscando
                         if ($session->professional_id == $professionalId) {
                             $occupants[] = 'Profissional';
                         }
-                        
-                        // Alunos desta sessão que estão no nosso array de busca
+
                         $intersect = $session->students->whereIn('id', $studentIds);
+
                         foreach ($intersect as $student) {
-                            $occupants[] = explode(' ', $student->person->name)[0]; // Apenas primeiro nome
+                            $occupants[] = explode(' ', $student->person->name)[0];
                         }
                     }
                 }
@@ -266,11 +308,35 @@ class SessionController extends Controller
                 $slots[] = [
                     'time' => $slotStart->format('H:i'),
                     'busy' => !empty($occupants),
-                    'busy_type' => implode(', ', $occupants) // Ex: "Profissional, João, Maria"
+                    'busy_type' => implode(', ', $occupants)
                 ];
+
                 $time->addMinutes(30);
             }
         }
+
         return response()->json(['slots' => $slots]);
+    }
+
+    private function buildWeekNavigation(Request $request, string $routeName): array
+    {
+        $referenceWeek = Carbon::parse($request->input('week', now()->toDateString()))
+            ->startOfWeek(Carbon::MONDAY);
+
+        $baseParams = collect($request->except(['week', 'page']))
+            ->filter(fn ($value) => $value !== null && $value !== '')
+            ->toArray();
+
+        return [
+            'previous' => route($routeName, array_merge($baseParams, [
+                'week' => $referenceWeek->copy()->subWeek()->toDateString(),
+            ])),
+            'current' => route($routeName, array_merge($baseParams, [
+                'week' => now()->toDateString(),
+            ])),
+            'next' => route($routeName, array_merge($baseParams, [
+                'week' => $referenceWeek->copy()->addWeek()->toDateString(),
+            ])),
+        ];
     }
 }

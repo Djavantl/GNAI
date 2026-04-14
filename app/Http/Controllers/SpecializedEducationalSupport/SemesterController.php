@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SpecializedEducationalSupport\Semester;
 use App\Services\SpecializedEducationalSupport\SemesterService;
 use Illuminate\Http\Request;
+use Exception;
 
 class SemesterController extends Controller
 {
@@ -21,24 +22,32 @@ class SemesterController extends Controller
      */
     public function index(Request $request)
     {
-        $semesters = $this->service->index($request->all());
+        try {
+            $semesters = $this->service->index($request->all());
 
-        if ($request->ajax()) {
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.semesters.partials.table',
+                    compact('semesters')
+                )->render();
+            }
+
             return view(
-                'pages.specialized-educational-support.semesters.partials.table',
+                'pages.specialized-educational-support.semesters.index',
                 compact('semesters')
-            )->render();
+            );
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao listar semestres: ' . $e->getMessage());
         }
-
-        return view(
-            'pages.specialized-educational-support.semesters.index',
-            compact('semesters')
-        );
     }
 
     public function show(Semester $semester)
     {
-        return view('pages.specialized-educational-support.semesters.show', compact('semester'));
+        try {
+            return view('pages.specialized-educational-support.semesters.show', compact('semester'));
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao exibir semestre: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -46,7 +55,11 @@ class SemesterController extends Controller
      */
     public function create()
     {
-        return view('pages.specialized-educational-support.semesters.create');
+        try {
+            return view('pages.specialized-educational-support.semesters.create');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar formulário: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -54,20 +67,27 @@ class SemesterController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'year'       => ['required', 'integer'],
-            'term'       => ['required', 'integer', 'min:1'],
-            'label'      => ['nullable', 'string'],
-            'start_date' => ['nullable', 'date'],
-            'end_date'   => ['nullable', 'date'],
-            'is_current' => ['boolean'],
-        ]);
+        try {
+            $data = $request->validate([
+                'year'       => ['required', 'integer'],
+                'term'       => ['required', 'integer', 'min:1'],
+                'label'      => ['nullable', 'string'],
+                'start_date' => ['nullable', 'date'],
+                'end_date'   => ['nullable', 'date'],
+                'is_current' => ['boolean'],
+            ]);
 
-        $this->service->create($data);
+            $this->service->create($data);
 
-        return redirect()
-            ->route('specialized-educational-support.semesters.index')
-            ->with('success', 'Semestre criado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.semesters.index')
+                ->with('success', 'Semestre criado com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Erro ao criar semestre: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -75,7 +95,11 @@ class SemesterController extends Controller
      */
     public function edit(Semester $semester)
     {
-        return view('pages.specialized-educational-support.semesters.edit', compact('semester'));
+        try {
+            return view('pages.specialized-educational-support.semesters.edit', compact('semester'));
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao carregar edição: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -83,20 +107,27 @@ class SemesterController extends Controller
      */
     public function update(Request $request, Semester $semester)
     {
-        $data = $request->validate([
-            'year'       => ['required', 'integer'],
-            'term'       => ['required', 'integer', 'min:1'],
-            'label'      => ['nullable', 'string'],
-            'start_date' => ['nullable', 'date'],
-            'end_date'   => ['nullable', 'date'],
-            'is_current' => ['boolean'],
-        ]);
+        try {
+            $data = $request->validate([
+                'year'       => ['required', 'integer'],
+                'term'       => ['required', 'integer', 'min:1'],
+                'label'      => ['nullable', 'string'],
+                'start_date' => ['nullable', 'date'],
+                'end_date'   => ['nullable', 'date'],
+                'is_current' => ['boolean'],
+            ]);
 
-        $this->service->update($semester, $data);
+            $this->service->update($semester, $data);
 
-        return redirect()
-            ->route('specialized-educational-support.semesters.index')
-            ->with('success', 'Semestre atualizado com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.semesters.index')
+                ->with('success', 'Semestre atualizado com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Erro ao atualizar semestre: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -104,11 +135,15 @@ class SemesterController extends Controller
      */
     public function setCurrent(Semester $semester)
     {
-        $this->service->setCurrent($semester);
+        try {
+            $this->service->setCurrent($semester);
 
-        return redirect()
-            ->route('specialized-educational-support.semesters.index')
-            ->with('success', 'Semestre definido como atual.');
+            return redirect()
+                ->route('specialized-educational-support.semesters.index')
+                ->with('success', 'Semestre definido como atual.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -116,10 +151,16 @@ class SemesterController extends Controller
      */
     public function destroy(Semester $semester)
     {
-        $this->service->delete($semester);
+        try {
+            $this->service->delete($semester);
 
-        return redirect()
-            ->route('specialized-educational-support.semesters.index')
-            ->with('success', 'Semestre removido com sucesso.');
+            return redirect()
+                ->route('specialized-educational-support.semesters.index')
+                ->with('success', 'Semestre removido com sucesso.');
+        } catch (Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Erro ao remover semestre: ' . $e->getMessage());
+        }
     }
 }

@@ -121,11 +121,11 @@ class PermissionSeeder extends Seeder
             ['name' => 'Editar PEI',     'slug' => 'pei.update'],
             ['name' => 'Excluir PEI',    'slug' => 'pei.delete'],
 
-            // Avaliações do PEI
-            ['name' => 'Visualizar Avaliação PEI', 'slug' => 'pei-evaluation.view'],
-            ['name' => 'Criar Avaliação PEI',      'slug' => 'pei-evaluation.create'],
-            ['name' => 'Editar Avaliação PEI',     'slug' => 'pei-evaluation.update'],
-            ['name' => 'Excluir Avaliação PEI',    'slug' => 'pei-evaluation.delete'],
+            // Adaptações por disciplinas do PEI
+            ['name' => 'Visualizar Adaptação do PEI', 'slug' => 'pei-discipline.view'],
+            ['name' => 'Criar Adaptação do PEI',      'slug' => 'pei-discipline.create'],
+            ['name' => 'Editar Adaptação do PEI',     'slug' => 'pei-discipline.update'],
+            ['name' => 'Excluir Adaptação do PEI',    'slug' => 'pei-discipline.delete'],
 
             // Documentos do Aluno
             ['name' => 'Visualizar Documentos', 'slug' => 'student-document.view'],

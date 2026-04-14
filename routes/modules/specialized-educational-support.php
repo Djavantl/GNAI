@@ -79,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit')->middleware('can:student.update');
     Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update')->middleware('can:student.update');
     Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy')->middleware('can:student.delete');
+    Route::get('/students/{student}/pdf', [StudentController::class, 'pdf'])->name('students.pdf')->middleware('can:student.view');
 
     /* 2. GUARDIANS */
     Route::get('/students/{student}/guardians', [GuardianController::class, 'index'])->name('guardians.index')->middleware('can:guardian.view');
@@ -196,14 +197,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/peis/{pei}/disciplinas/{peiDiscipline}/pdf', [PeiController::class, 'generateDisciplinePdf'])->name('pei.discipline.pdf')->middleware('can:pei.view');
 
     // Rotas de Adaptações de Disciplinas (PEI Discipline)
-    Route::get('/peis/{pei}/disciplines/create', [PeiController::class, 'createDiscipline'])->name('pei-discipline.create')->middleware('can:pei.create');
-    Route::post('/peis/{pei}/disciplines/store', [PeiController::class, 'storeDiscipline'])->name('pei-discipline.store')->middleware('can:pei.create');
-    Route::get('/peis/{pei}/disciplines/{peiDiscipline}/show', [PeiController::class, 'showDiscipline'])->name('pei-discipline.show')->middleware('can:pei.view')->scopeBindings();
-    Route::get('/peis/{pei}/disciplines/{peiDiscipline}/edit', [PeiController::class, 'editDiscipline'])->name('pei-discipline.edit')->middleware('can:pei.update')->scopeBindings();
-    Route::put('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'updateDiscipline'])->name('pei-discipline.update')->middleware('can:pei.update')->scopeBindings();
-    Route::delete('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'destroyDiscipline'])->name('pei-discipline.destroy')->middleware('can:pei.delete')->scopeBindings();
-    Route::get('specialized-educational-support/pei/{pei}/teacher-disciplines', [PeiController::class, 'teacherDisciplines'])
-    ->name('teacher-disciplines');
+    Route::get('/peis/{pei}/disciplines/create', [PeiController::class, 'createDiscipline'])->name('pei-discipline.create')->middleware('can:pei-discipline.create');
+    Route::post('/peis/{pei}/disciplines/store', [PeiController::class, 'storeDiscipline'])->name('pei-discipline.store')->middleware('can:pei-discipline.create');
+    Route::get('/peis/{pei}/disciplines/{peiDiscipline}/show', [PeiController::class, 'showDiscipline'])->name('pei-discipline.show')->middleware('can:pei-discipline.view')->scopeBindings();
+    Route::get('/peis/{pei}/disciplines/{peiDiscipline}/edit', [PeiController::class, 'editDiscipline'])->name('pei-discipline.edit')->middleware('can:pei-discipline.update')->scopeBindings();
+    Route::put('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'updateDiscipline'])->name('pei-discipline.update')->middleware('can:pei-discipline.update')->scopeBindings();
+    Route::delete('/peis/{pei}/disciplines/{peiDiscipline}', [PeiController::class, 'destroyDiscipline'])->name('pei-discipline.destroy')->middleware('can:pei-discipline.delete')->scopeBindings();
+    Route::get('specialized-educational-support/pei/{pei}/teacher-disciplines', [PeiController::class, 'teacherDisciplines'])->name('teacher-disciplines');
 
     /* 13. STUDENT DOCUMENTS */
     Route::get('/students/{student}/documents', [StudentDocumentController::class, 'index'])->name('student-documents.index')->middleware('can:student-document.view');

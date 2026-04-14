@@ -18,12 +18,14 @@
             subtitle="Gerencie as pendências e seus responsáveis."
         >
             <div class="d-flex gap-2">
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.pendencies.my')"
-                    variant="info"
-                >
-                    <i class="fas fa-user-check"></i> Minhas Pendências
-                </x-buttons.link-button>
+               @if(auth()->user()->professional)
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.pendencies.my')"
+                        variant="info"
+                    >
+                        <i class="fas fa-user-check"></i> Minhas Pendências
+                    </x-buttons.link-button>
+                @endif
 
                 <x-buttons.link-button 
                     :href="route('specialized-educational-support.pendencies.create')" 
