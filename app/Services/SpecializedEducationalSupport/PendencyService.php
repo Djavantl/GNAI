@@ -159,8 +159,8 @@ class PendencyService
         $pendency->markAsCompleted();
 
         // notificar quem criou
-        if ($pendency->creator) {
-            $pendency->creator->notify(
+        if ($pendency->creator && $pendency->creator->user) {
+            $pendency->creator->user->notify(
                 new PendencyCompletedNotification($pendency)
             );
         }

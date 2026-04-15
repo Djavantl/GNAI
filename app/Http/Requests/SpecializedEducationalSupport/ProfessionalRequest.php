@@ -96,7 +96,7 @@ class ProfessionalRequest extends FormRequest
             ],
 
             'status' => [
-                'required',
+                'sometimes',
                 'in:active,inactive',
             ],
 

@@ -100,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/professionals/{professional}', [ProfessionalController::class, 'destroy'])->name('professionals.destroy')->middleware('can:professional.delete');
 
     /* 4. TEACHERS */
-    Route::get('/teachers/permissions', [TeacherController::class, 'permissions'])->name('teachers.permissions')->middleware('can:teacher.view');
+    Route::get('/teachers/permissions', [TeacherController::class, 'permissions'])->name('teachers.permissions')->middleware('can:teacher.update');
     Route::put('/teachers/permissions/update', [TeacherController::class, 'updatePermissions'])->name('teachers.permissions.update')->middleware('can:teacher.update');
     Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers.index')->middleware('can:teacher.view');
     Route::get('/teachers/{teacher}/show', [TeacherController::class, 'show'])->name('teachers.show')->middleware('can:teacher.view');
@@ -109,7 +109,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/teachers/{teacher}/edit', [TeacherController::class, 'edit'])->name('teachers.edit')->middleware('can:teacher.update');
     Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])->name('teachers.update')->middleware('can:teacher.update');
     Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy')->middleware('can:teacher.delete');
-    Route::get('/teachers/{teacher}/disciplines', [TeacherController::class, 'disciplines'])->name('teachers.disciplines')->middleware('can:teacher.view');
+    Route::get('/teachers/{teacher}/disciplines', [TeacherController::class, 'disciplines'])->name('teachers.disciplines')->middleware('can:teacher.update');
     Route::put('/teachers/{teacher}/disciplines', [TeacherController::class, 'updateDisciplines'])->name('teachers.disciplines.update')->middleware('can:teacher.update');
 
     /* 5. STUDENT CONTEXT */

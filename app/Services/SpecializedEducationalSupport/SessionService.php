@@ -17,11 +17,7 @@ class SessionService
     public function index(array $filters = [])
     {
         return Session::query()
-            ->with([
-                'students.person',
-                'professional.person',
-                'sessionRecord'
-            ])
+            ->with(['students.person', 'professional.person', 'sessionRecord'])
             ->student($filters['student'] ?? null)
             ->professional($filters['professional'] ?? null)
             ->type($filters['type'] ?? null)
@@ -56,7 +52,7 @@ class SessionService
 
     public function getWeeklyAgenda(array $filters = []): array
     {
-        return $this->buildWeeklyAgenda($filters, null);
+        return $this->buildWeeklyAgenda($filters);
     }
 
     public function getMyWeeklyAgenda(array $filters = []): array
@@ -70,67 +66,69 @@ class SessionService
         return $this->buildWeeklyAgenda($filters, $professional->id);
     }
 
-    private function buildWeeklyAgenda(array $filters = [], ?int $fixedProfessionalId = null): array
+   private function buildWeeklyAgenda(array $filters = [], ?int $fixedProfessionalId = null): array
     {
         $referenceDate = Carbon::parse($filters['week'] ?? now()->toDateString());
         $weekStart = $referenceDate->copy()->startOfWeek(Carbon::MONDAY)->startOfDay();
         $weekEnd = $referenceDate->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay();
 
-        $query = Session::query()
-            ->with([
-                'students.person',
-                'professional.person',
-                'sessionRecord'
-            ])
-            ->whereBetween('session_date', [
-                $weekStart->toDateString(),
-                $weekEnd->toDateString()
-            ]);
-
-        if ($fixedProfessionalId) {
-            $query->where('professional_id', $fixedProfessionalId);
-        }
-
-        $sessions = $query
+        // 1. Buscar sessões aplicando filtros de período E filtros de usuário
+        $sessions = Session::query()
+            ->with(['students.person', 'professional.person', 'sessionRecord'])
+            ->whereBetween('session_date', [$weekStart, $weekEnd])
+            // Aplica filtro de profissional se vier do "MySessions" ou do filtro da tela
+            ->where(function($q) use ($filters, $fixedProfessionalId) {
+                if ($fixedProfessionalId) {
+                    $q->where('professional_id', $fixedProfessionalId);
+                } elseif (!empty($filters['professional'])) {
+                    $q->where('professional_id', $filters['professional']);
+                }
+            })
+            // Aplica filtro de aluno se selecionado
+            ->when($filters['student'] ?? null, function($q, $studentId) {
+                $q->whereHas('students', function($sq) use ($studentId) {
+                    $sq->where('students.id', $studentId);
+                });
+            })
             ->orderBy('session_date')
             ->orderBy('start_time')
             ->get();
 
+        // 2. Montar estrutura da agenda por dias
         $days = [];
-        for ($i = 0; $i < 7; $i++) {
-            $date = $weekStart->copy()->addDays($i);
+        $currentDate = $weekStart->copy();
 
+        while ($currentDate <= $weekEnd) {
+            $dateString = $currentDate->toDateString();
+            
             $days[] = [
-                'date' => $date,
-                'label' => $this->formatWeekDayLabel($date),
-                'sessions' => $sessions->filter(function (Session $session) use ($date) {
-                    return optional($session->session_date)->toDateString() === $date->toDateString();
-                })->values(),
+                'date'     => $currentDate->copy(),
+                'label'    => $this->getTranslatedDayName($currentDate),
+                'sessions' => $sessions->filter(fn($s) => $s->session_date->toDateString() === $dateString)
             ];
+
+            $currentDate->addDay();
         }
 
         return [
-            'referenceDate' => $referenceDate,
             'weekStart' => $weekStart,
-            'weekEnd' => $weekEnd,
-            'days' => $days,
-            'totalSessions' => $sessions->count(),
-            'hasSessions' => $sessions->isNotEmpty(),
+            'weekEnd'   => $weekEnd,
+            'days'      => $days
         ];
     }
 
-    private function formatWeekDayLabel(Carbon $date): string
+    private function getTranslatedDayName(Carbon $date): string
     {
-        return match ($date->dayOfWeekIso) {
+        $days = [
+            0 => 'Domingo',
             1 => 'Segunda-feira',
             2 => 'Terça-feira',
             3 => 'Quarta-feira',
             4 => 'Quinta-feira',
             5 => 'Sexta-feira',
             6 => 'Sábado',
-            7 => 'Domingo',
-            default => $date->format('d/m/Y'),
-        };
+        ];
+        return $days[$date->dayOfWeek];
     }
 
     private function sendSessionEmails(Session $session, string $subject, string $text)

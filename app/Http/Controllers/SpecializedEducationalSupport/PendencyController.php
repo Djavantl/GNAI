@@ -174,9 +174,7 @@ class PendencyController extends Controller
                 ->route('specialized-educational-support.pendencies.my')
                 ->with('success', 'Pendência completada com sucesso.');
         } catch (Exception $e) {
-            return redirect()
-                ->back()
-                ->with('error', $e->getMessage());
+            throw $e;
         }
     }
 }

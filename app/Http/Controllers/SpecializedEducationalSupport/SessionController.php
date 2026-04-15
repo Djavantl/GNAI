@@ -22,20 +22,21 @@ class SessionController extends Controller
 
     public function index(Request $request)
     {
+        // 1. Sessões para a Tabela (mantém filtros originais)
         $sessions = $this->service->index($request->all());
 
-        $students = Student::with('person')
-            ->orderBy('id')
-            ->get(['id', 'person_id']);
+        // 2. Dados para os Selects (usados na tabela e na agenda)
+        $students = Student::with('person')->orderBy('id')->get();
+        $professionals = Professional::with('person')->orderBy('id')->get();
 
-        $professionals = Professional::with('person')
-            ->orderBy('id')
-            ->get(['id', 'person_id']);
-
+        // 3. Agenda Semanal com filtros específicos
         $agenda = $this->service->getWeeklyAgenda([
-            'week' => $request->input('week', now()->toDateString()),
+            'week'         => $request->input('week', now()->toDateString()),
+            'student'      => $request->input('student_agenda'),      // Novo filtro
+            'professional' => $request->input('professional_agenda'), // Novo filtro
         ]);
 
+        // 4. Navegação de semanas (preservando filtros da agenda)
         $weekNavigation = $this->buildWeekNavigation(
             $request,
             'specialized-educational-support.sessions.index'
@@ -44,7 +45,7 @@ class SessionController extends Controller
         if ($request->ajax()) {
             return view(
                 'pages.specialized-educational-support.sessions.partials.table',
-                compact('sessions', 'students', 'professionals')
+                compact('sessions')
             )->render();
         }
 
@@ -167,6 +168,7 @@ class SessionController extends Controller
 
         $agenda = $this->service->getMyWeeklyAgenda([
             'week' => $request->input('week', now()->toDateString()),
+            'student' => $request->input('student_agenda'),
         ]);
 
         $weekNavigation = $this->buildWeekNavigation(
@@ -323,6 +325,7 @@ class SessionController extends Controller
         $referenceWeek = Carbon::parse($request->input('week', now()->toDateString()))
             ->startOfWeek(Carbon::MONDAY);
 
+        // Inclui student_agenda e professional_agenda nos links de navegação
         $baseParams = collect($request->except(['week', 'page']))
             ->filter(fn ($value) => $value !== null && $value !== '')
             ->toArray();
