@@ -241,5 +241,5 @@
     @push('scripts')
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     @endpush
-    @vite('./resources/js/pages/inclusive-radar/barriers.js')
+    @vite('resources/js/pages/inclusive-radar/barriers.js')
 @endsection
