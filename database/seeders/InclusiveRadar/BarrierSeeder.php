@@ -75,8 +75,8 @@ class BarrierSeeder extends Seeder
                     'is_active' => true,
                     'is_anonymous' => false,
                     'deficiencies' => ['Visual','Física'],
-                    'affected_student_name' => 'Marley',
-                    'affected_professional_name' => 'Adriany Oliveira',
+                    'affected_student_name' => 'Cauan Castro',
+                    'affected_professional_name' => 'Professor(a) AEE',
                     'inspections' => [
                         ['status' => BarrierStatus::IDENTIFIED, 'date' => Carbon::create(2025,10,1), 'type' => InspectionType::INITIAL],
                         ['status' => BarrierStatus::UNDER_ANALYSIS, 'date' => Carbon::create(2025,11,1), 'type' => InspectionType::PERIODIC],
@@ -141,11 +141,9 @@ class BarrierSeeder extends Seeder
                     'priority' => Priority::MEDIUM->value,
                     'is_active' => true,
                     'is_anonymous' => false,
-                    'affected_student_name' => 'Djavan',
-                    'affected_professional_name' => 'João Santos',
+                    'affected_student_name' => 'Gustavo Natan',
+                    'affected_professional_name' => 'Professor(a) AEE',
                     'deficiencies' => ['Auditiva','Intelectual','Psicossocial'],
-                    'affected_student_name' => 'Djavan', // tentamos vincular
-                    'affected_professional_name' => 'Jo', // tentamos vincular
                     'inspections' => [
                         ['status' => BarrierStatus::IDENTIFIED, 'date' => Carbon::create(2025,11,21), 'type' => InspectionType::INITIAL],
                         ['status' => BarrierStatus::UNDER_ANALYSIS, 'date' => Carbon::create(2025,12,21), 'type' => InspectionType::PERIODIC],
@@ -187,7 +185,7 @@ class BarrierSeeder extends Seeder
                     'priority' => Priority::HIGH->value,
                     'is_active' => true,
                     'is_anonymous' => false,
-                    'affected_student_name' => 'Djavan',
+                    'affected_student_name' => 'Cleiton Araújo',
                     'deficiencies' => ['Física'],
                     'inspections' => [
                         ['status' => BarrierStatus::IDENTIFIED, 'date' => Carbon::create(2025,10,30), 'type' => InspectionType::INITIAL],
@@ -210,7 +208,7 @@ class BarrierSeeder extends Seeder
                     'priority' => Priority::MEDIUM->value,
                     'is_active' => true,
                     'is_anonymous' => false,
-                    'affected_professional_name' => 'João Santos',
+                    'affected_professional_name' => 'Secretario(a)',
                     'deficiencies' => ['Física'],
                     'inspections' => [
                         ['status' => BarrierStatus::UNDER_ANALYSIS, 'date' => Carbon::create(2026,2,15), 'type' => InspectionType::INITIAL],
@@ -231,7 +229,7 @@ class BarrierSeeder extends Seeder
                     'priority' => Priority::LOW->value,
                     'is_active' => true,
                     'is_anonymous' => false,
-                    'affected_professional_name' => 'Paula Mendes',
+                    'affected_professional_name' => 'Secretario(a)',
                     'deficiencies' => ['Física','Visual'],
                     'inspections' => [
                         ['status' => BarrierStatus::IDENTIFIED, 'date' => Carbon::create(2025,12,1), 'type' => InspectionType::INITIAL],
@@ -273,7 +271,7 @@ class BarrierSeeder extends Seeder
                     'priority' => Priority::MEDIUM->value,
                     'is_active' => true,
                     'is_anonymous' => false,
-                    'affected_student_name' => 'Péricles',
+                    'affected_student_name' => 'Deyverson Neves',
                     'deficiencies' => ['Física'],
                     'inspections' => [
                         ['status' => BarrierStatus::IDENTIFIED, 'date' => Carbon::create(2025,11,15), 'type' => InspectionType::INITIAL],
