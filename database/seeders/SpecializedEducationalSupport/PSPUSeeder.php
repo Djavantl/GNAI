@@ -63,25 +63,25 @@ class PSPUSeeder extends Seeder
             // professionals
 
             Person::create([
-                'name' => 'Adriany',
+                'name' => 'Professor(a) AEE',
                 'document' => '59271956010',
                 'birth_date' => '1990-05-10',
                 'gender' => 'female',
-                'email' => 'adriany.prof@teste.com',
+                'email' => 'prof.aee@napne.com',
             ]),
             Person::create([
-                'name' => 'Marta',
+                'name' => 'Cordenador(a)',
                 'document' => '98800858090',
                 'birth_date' => '1988-08-22',
                 'gender' => 'male',
-                'email' => 'marta.prof@teste.com',
+                'email' => 'coordenacao@napne.com',
             ]),
             Person::create([
-                'name' => 'Paula Mendes',
+                'name' => 'Secretario(a)',
                 'document' => '97849285077',
                 'birth_date' => '1992-11-30',
                 'gender' => 'female',
-                'email' => 'paula.prof@teste.com',
+                'email' => 'secretaria@napne.com',
             ]),
         ];
 
@@ -135,7 +135,7 @@ class PSPUSeeder extends Seeder
 
         $prof3 = Professional::create([
             'person_id' => $people[7]->id,
-            'position_id' => 1,
+            'position_id' => 8,
             'registration' => 'PROF003',
             'entry_date' => now(),
         ]);

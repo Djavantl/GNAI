@@ -41,6 +41,10 @@ class PositionSeeder extends Seeder
                 'name' => 'Terapeuta Ocupacional',
                 'description' => 'Desenvolve intervenções voltadas à funcionalidade, autonomia e acessibilidade do estudante.'
             ],
+            [
+                'name' => 'Secretário',
+                'description' => 'Responsável pelo apoio administrativo, organização de documentos, atendimento ao público e suporte às atividades do NAPNE.'
+            ],
         ]);
     }
 }
