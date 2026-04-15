@@ -79,6 +79,21 @@ class Waitlist extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function scopeItem($query, $name = null)
+    {
+        if (!$name) return $query;
+
+        $name = strtolower($name);
+
+        return $query->whereHasMorph(
+            'waitlistable',
+            [AssistiveTechnology::class, AccessibleEducationalMaterial::class],
+            function ($q) use ($name) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$name}%"]);
+            }
+        );
+    }
+
     public function scopeStudent($query, $name = null)
     {
         if (!$name) return $query;

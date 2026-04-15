@@ -24,6 +24,7 @@ class WaitlistController extends Controller
     public function index(Request $request): View
     {
         $waitlists = Waitlist::with(['waitlistable', 'student.person', 'professional.person', 'user'])
+            ->item($request->item)
             ->student($request->student)
             ->professional($request->professional)
             ->when($request->status, fn($q) => $q->where('status', $request->status))

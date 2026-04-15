@@ -31,6 +31,7 @@
                 data-dynamic-filter
                 data-target="#waitlists-table"
                 :fields="[
+                    ['name' => 'item', 'placeholder' => 'Filtrar por item...'],
                     ['name' => 'student', 'placeholder' => 'Filtrar por aluno...'],
                     ['name' => 'professional', 'placeholder' => 'Filtrar por profissional...'],
                     ['name' => 'status', 'type' => 'select', 'options' => [
