@@ -29,10 +29,10 @@ class InstitutionMap {
         this.zoomBadge = document.getElementById('zoom_val');
 
         // Elementos de busca - usar os IDs exatos do seu form
-        this.cityInput = this.getRealInput('city_search');
-        this.stateInput = this.getRealInput('state_search');
-        this.districtInput = this.getRealInput('district_search');
-        this.addressInput = this.getRealInput('address_search');
+        this.cityInput = this.getRealInput('city');
+        this.stateInput = this.getRealInput('state');
+        this.districtInput = this.getRealInput('district');
+        this.addressInput = this.getRealInput('address');
 
         // Elementos manuais
         this.latManual = document.getElementById('lat_manual');

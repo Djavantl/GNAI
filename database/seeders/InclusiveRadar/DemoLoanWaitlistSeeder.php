@@ -19,16 +19,32 @@ class DemoLoanWaitlistSeeder extends Seeder
     {
         DB::transaction(function () {
             $user = User::firstOrFail();
-            $studentLoan = Student::firstOrFail();
-            $studentWaitlist = Student::skip(1)->first() ?? $studentLoan;
+
+            $students = Student::orderBy('id')->get();
+            if ($students->count() < 2) {
+                throw new \RuntimeException('É necessário ter pelo menos 2 alunos cadastrados.');
+            }
+
             $deficiencyIds = DB::table('deficiencies')->pluck('id')->toArray();
             $featureIds = DB::table('accessibility_features')->pluck('id')->toArray();
-            $item = AccessibleEducationalMaterial::updateOrCreate(
+
+            $studentA = $students->get(0);
+            $studentB = $students->get(1);
+            $studentC = $students->get(2) ?? $students->get(0);
+            $studentD = $students->get(3) ?? $students->get(1);
+            $studentE = $students->get(4) ?? $students->get(0);
+            $studentF = $students->get(5) ?? $students->get(1);
+
+            /*
+            |--------------------------------------------------------------------------
+            | ITEM 1
+            |--------------------------------------------------------------------------
+            */
+            $item1 = AccessibleEducationalMaterial::updateOrCreate(
                 ['asset_code' => 'AEM-LOAN-001'],
                 [
                     'name' => 'Leitor Portátil com Áudio',
                     'is_digital' => false,
-                    'notes' => 'Item indisponível com empréstimo ativo e fila de espera.',
                     'quantity' => 1,
                     'quantity_available' => 0,
                     'conservation_state' => ConservationState::GOOD->value,
@@ -38,46 +54,205 @@ class DemoLoanWaitlistSeeder extends Seeder
                 ]
             );
 
-            if (!empty($deficiencyIds)) {
-                $item->deficiencies()->sync(
-                    collect($deficiencyIds)->random(min(2, count($deficiencyIds)))->toArray()
-                );
-            }
+            $this->attachRandomRelations($item1, $deficiencyIds, $featureIds);
 
-            if (!empty($featureIds)) {
-                $item->accessibilityFeatures()->sync(
-                    collect($featureIds)->random(min(2, count($featureIds)))->toArray()
-                );
-            }
+            // Devolvido
+            $this->createLoan(
+                $item1,
+                $studentA->id,
+                $user->id,
+                now()->subDays(10),
+                now()->subDays(5),
+                'Devolvido no prazo.',
+                LoanStatus::RETURNED,
+                now()->subDays(5)
+            );
 
-            $item->loans()->updateOrCreate(
+            // Ativo
+            $this->createLoan(
+                $item1,
+                $studentB->id,
+                $user->id,
+                now()->subDays(2),
+                now()->addDays(5),
+                'Empréstimo atual.',
+                LoanStatus::ACTIVE
+            );
+
+            $this->createWaitlist($item1, $studentC->id, $user->id, now()->subDays(2)->setTime(8, 0), 'Fila 1');
+            $this->createWaitlist($item1, $studentD->id, $user->id, now()->subDay()->setTime(10, 0), 'Fila 2');
+
+            // Cancelado
+            $this->createWaitlist(
+                $item1,
+                $studentE->id,
+                $user->id,
+                now()->subDay()->setTime(12, 0),
+                'Cancelado',
+                WaitlistStatus::CANCELLED
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | ITEM 2
+            |--------------------------------------------------------------------------
+            */
+            $item2 = AccessibleEducationalMaterial::updateOrCreate(
+                ['asset_code' => 'AEM-LOAN-002'],
                 [
-                    'student_id' => $studentLoan->id,
-                    'status' => LoanStatus::ACTIVE->value,
-                ],
-                [
-                    'professional_id' => null,
-                    'user_id' => $user->id,
-                    'loan_date' => now()->subDays(2),
-                    'due_date' => now()->addDays(5),
-                    'return_date' => null,
-                    'observation' => 'Empréstimo automático para item sem estoque.',
+                    'name' => 'Mapa Tátil',
+                    'is_digital' => false,
+                    'quantity' => 1,
+                    'quantity_available' => 0,
+                    'conservation_state' => ConservationState::GOOD->value,
+                    'is_loanable' => true,
+                    'status' => ResourceStatus::IN_USE->value,
+                    'is_active' => true,
                 ]
             );
 
-            $item->waitlists()->updateOrCreate(
+            $this->attachRandomRelations($item2, $deficiencyIds, $featureIds);
+
+            // Atrasado
+            $this->createLoan(
+                $item2,
+                $studentF->id,
+                $user->id,
+                now()->subDays(8),
+                now()->subDays(3),
+                'Devolvido com atraso.',
+                LoanStatus::LATE,
+                now()->subDay()
+            );
+
+            $this->createWaitlist($item2, $studentA->id, $user->id, now()->subDays(3), 'Fila item 2');
+
+            /*
+            |--------------------------------------------------------------------------
+            | ITEM 3 (Digital)
+            |--------------------------------------------------------------------------
+            */
+            $item3 = AccessibleEducationalMaterial::updateOrCreate(
+                ['asset_code' => 'AEM-DIG-001'],
                 [
-                    'student_id' => $studentWaitlist->id,
-                    'status' => WaitlistStatus::WAITING->value,
-                ],
-                [
-                    'professional_id' => null,
-                    'user_id' => $user->id,
-                    'requested_at' => now()->subDay(),
-                    'observation' => 'Usuário aguardando devolução do item.',
+                    'name' => 'Software Leitor de Tela',
+                    'is_digital' => true,
+                    'quantity' => 999,
+                    'quantity_available' => 999,
+                    'conservation_state' => ConservationState::NOT_APPLICABLE->value,
+                    'is_loanable' => true,
+                    'status' => ResourceStatus::AVAILABLE->value,
+                    'is_active' => true,
                 ]
             );
 
+            $this->attachRandomRelations($item3, $deficiencyIds, $featureIds);
+
+            $this->createLoan($item3, $studentB->id, $user->id, now()->subDay(), now()->addDays(10), 'Digital', LoanStatus::ACTIVE);
+            $this->createLoan($item3, $studentC->id, $user->id, now()->subDays(2), now()->addDays(8), 'Digital 2', LoanStatus::ACTIVE);
+
+            /*
+            |--------------------------------------------------------------------------
+            | ITEM 4
+            |--------------------------------------------------------------------------
+            */
+            $item4 = AccessibleEducationalMaterial::updateOrCreate(
+                ['asset_code' => 'AEM-LOAN-003'],
+                [
+                    'name' => 'Livro em Braille',
+                    'is_digital' => false,
+                    'quantity' => 1,
+                    'quantity_available' => 0,
+                    'conservation_state' => ConservationState::GOOD->value,
+                    'is_loanable' => true,
+                    'status' => ResourceStatus::IN_USE->value,
+                    'is_active' => true,
+                ]
+            );
+
+            $this->attachRandomRelations($item4, $deficiencyIds, $featureIds);
+
+            $this->createLoan(
+                $item4,
+                $studentD->id,
+                $user->id,
+                now()->subDays(12),
+                now()->subDays(6),
+                'Devolvido normal.',
+                LoanStatus::RETURNED,
+                now()->subDays(6)
+            );
+
+            $this->createLoan(
+                $item4,
+                $studentE->id,
+                $user->id,
+                now()->subDays(1),
+                now()->addDays(4),
+                'Novo empréstimo.',
+                LoanStatus::ACTIVE
+            );
+
+            $this->createWaitlist($item4, $studentF->id, $user->id, now()->subDays(2), 'Fila');
+
+            $this->command->info('Seeder atualizado com múltiplos status.');
         });
+    }
+
+    private function attachRandomRelations($item, $deficiencyIds, $featureIds): void
+    {
+        if ($deficiencyIds) {
+            $item->deficiencies()->sync(collect($deficiencyIds)->random(min(2, count($deficiencyIds))));
+        }
+
+        if ($featureIds) {
+            $item->accessibilityFeatures()->sync(collect($featureIds)->random(min(2, count($featureIds))));
+        }
+    }
+
+    private function createLoan(
+        $item,
+        int $studentId,
+        int $userId,
+        Carbon $loanDate,
+        Carbon $dueDate,
+        string $obs,
+        LoanStatus $status,
+        ?Carbon $returnDate = null
+    ): void {
+        $item->loans()->updateOrCreate(
+            [
+                'student_id' => $studentId,
+                'loan_date' => $loanDate,
+            ],
+            [
+                'user_id' => $userId,
+                'due_date' => $dueDate,
+                'return_date' => $returnDate,
+                'status' => $status->value,
+                'observation' => $obs,
+            ]
+        );
+    }
+
+    private function createWaitlist(
+        $item,
+        int $studentId,
+        int $userId,
+        Carbon $date,
+        string $obs,
+        WaitlistStatus $status = WaitlistStatus::WAITING
+    ): void {
+        $item->waitlists()->updateOrCreate(
+            [
+                'student_id' => $studentId,
+                'requested_at' => $date,
+            ],
+            [
+                'user_id' => $userId,
+                'status' => $status->value,
+                'observation' => $obs,
+            ]
+        );
     }
 }
