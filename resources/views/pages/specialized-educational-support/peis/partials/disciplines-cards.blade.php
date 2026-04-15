@@ -83,11 +83,14 @@
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
                                    
                                     @if(!$pei->is_finished && auth()->user()->teacher?->id == $item->teacher_id)
+                                        @can('pei-discipline.update')
                                         <x-buttons.link-button Dados do PEI
                                            href="{{ route('specialized-educational-support.pei-discipline.edit', [$pei, $item]) }}"
                                             variant="warning">
                                             <i class="fas fa-edit"></i> Editar
                                         </x-buttons.link-button>
+                                        @endcan
+                                        @can('pei-discipline.delete')
                                         <form action="{{ route('specialized-educational-support.pei-discipline.destroy', [$pei, $item]) }}"
                                             method="POST" class="d-inline"
                                             onsubmit="return confirm('Deseja realmente excluir esta Adaptação?')">
@@ -97,6 +100,7 @@
                                                 <i class="fas fa-trash-alt"></i> Excluir
                                             </x-buttons.submit-button>
                                         </form>
+                                        @endcan
                                     @endif
                                 </div>
                             </div>

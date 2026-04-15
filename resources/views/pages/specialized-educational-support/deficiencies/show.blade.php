@@ -19,9 +19,11 @@
             </p>
         </div>
         <div class="d-flex gap-2">
+            @can('deficiency.update')
             <x-buttons.link-button :href="route('specialized-educational-support.deficiencies.edit', $deficiency->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.deficiencies.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
@@ -70,6 +72,7 @@
                 </div>
                 
                 <div class="d-flex gap-3">
+                    @can('deficiency.delete')
                     <form action="{{ route('specialized-educational-support.deficiencies.destroy', $deficiency->id) }}" 
                           method="POST" 
                           onsubmit="return confirm('Excluir esta deficiência? Alunos vinculados a este registro podem ser afetados.')">
@@ -79,6 +82,7 @@
                             <i class="fas fa-trash"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
                 </div>
             </div>
         </div>

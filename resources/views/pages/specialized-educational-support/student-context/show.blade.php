@@ -27,11 +27,13 @@
             />
 
         @if($studentContext->is_current)
+        @can('student-context.update')
             <x-buttons.link-button 
                 href="{{ route('specialized-educational-support.student-context.edit', $studentContext) }}" 
                 variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+        @endcan
         @endif
 
         <x-buttons.link-button 
@@ -249,21 +251,14 @@
     <x-forms.section title="Síntese Avaliativa" />
 
     <div class="row g-3 px-4 pb-3">
-        <x-show.info-textarea label="Pontos Fortes" column="col-md-6" isBox="true">
-            {!! nl2br(e($studentContext->strengths ?? '—')) !!}
+        <x-show.info-textarea label="Conhecimentos e Interesses" column="col-md-6" isBox="true">
+            {!! nl2br(e($studentContext->knowledge ?? '—')) !!}
         </x-show.info-textarea>
 
         <x-show.info-textarea label="Dificuldades" column="col-md-6" isBox="true">
             {!! nl2br(e($studentContext->difficulties ?? '—')) !!}
         </x-show.info-textarea>
 
-        <x-show.info-textarea label="Recomendações" column="col-md-6" isBox="true">
-            {!! nl2br(e($studentContext->recommendations ?? '—')) !!}
-        </x-show.info-textarea>
-
-        <x-show.info-textarea label="Observação Geral" column="col-md-6" isBox="true">
-            {!! nl2br(e($studentContext->general_observation ?? '—')) !!}
-        </x-show.info-textarea>
     </div>
 
     {{-- ================= INFORMAÇÕES DO SISTEMA ================= --}}
@@ -291,6 +286,7 @@
 
         <div class="d-flex gap-3">
             @if(!$studentContext->is_current)
+            @can('student-context.update')
                 <form action="{{ route('specialized-educational-support.student-context.restore', $studentContext) }}"
                     method="POST" class="d-inline">
                     @csrf
@@ -300,8 +296,9 @@
                         <i class="fas fa-history"></i> Restaurar esta Versão
                     </x-buttons.submit-button>
                 </form>
+            @endcan
             @endif
-
+            @can('student-context.delete')
             <form action="{{ route('specialized-educational-support.student-context.destroy', $studentContext) }}" 
                 method="POST" class="d-inline"
                 onsubmit="return confirm('ATENÇÃO: Deseja realmente excluir este registro de contexto?')">
@@ -311,6 +308,7 @@
                     <i class="fas fa-trash-alt"></i> Excluir
                 </x-buttons.submit-button>
             </form>
+            @endcan
         </div>
     </div>
 </div>

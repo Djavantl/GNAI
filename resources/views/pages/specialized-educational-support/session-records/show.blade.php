@@ -5,7 +5,7 @@
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
             'Sessões' => route('specialized-educational-support.sessions.index'),
-            'Sessão' => route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id),
+            'Sessão #' . $sessionRecord->attendance_session_id => route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id),
             'Registro' => null
         ]" />
     </div>
@@ -20,10 +20,13 @@
             </p>
         </div>
         <div class="d-flex gap-2">
+            <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.session-records.pdf', $sessionRecord)" />
 
+            @can('session-record.update')
             <x-buttons.link-button :href="route('specialized-educational-support.session-records.edit', $sessionRecord)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id)" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
@@ -139,17 +142,18 @@
                 <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $sessionRecord->id }}
 
-                    <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.session-records.pdf', $sessionRecord)" />
+                    
 
                 </div>
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
-                    
+                    @can('session-record.delete')
                     <form action="{{ route('specialized-educational-support.session-records.destroy', $sessionRecord) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
                         @csrf @method('DELETE')
                         <x-buttons.submit-button variant="danger">
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
                     <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id)" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>

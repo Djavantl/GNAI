@@ -24,6 +24,7 @@
 
         <x-table.td>
             <x-table.actions>
+                @can('teacher.view')
                 <x-buttons.link-button 
                     :href="route('specialized-educational-support.teachers.show', $teacher)"
                     variant="info"
@@ -31,8 +32,10 @@
                 >
                     <i class="fas fa-eye" aria-hidden="true"></i> ver
                 </x-buttons.link-button>
+                @endcan
 
-                <!-- <form action="{{ route('specialized-educational-support.teachers.destroy', $teacher) }}"
+                @can('teacher.delete')
+                <form action="{{ route('specialized-educational-support.teachers.destroy', $teacher) }}"
                     method="POST"
                     class="d-inline">
                     @csrf
@@ -45,7 +48,8 @@
                     >
                        <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
-                </form> -->
+                </form>
+                @endcan
             </x-table.actions>
         </x-table.td>
     </tr>

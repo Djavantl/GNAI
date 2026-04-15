@@ -18,13 +18,15 @@
             subtitle="Gerencie os estudantes e seus documentos de apoio especializado."
         >
             {{-- Botão de ação --}}
-            <x-buttons.link-button
-                :href="route('specialized-educational-support.students.create')"
-                variant="new"
-                title="Adicionar alunos"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('student.create')
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.students.create')"
+                    variant="new"
+                    title="Adicionar alunos"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

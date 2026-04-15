@@ -46,7 +46,7 @@
                         {{-- AÇÕES --}}
                         <x-table.td>
                             <x-table.actions>
-
+                                @can('pei.view')
                                 <x-buttons.link-button
                                     :href="route('specialized-educational-support.pei.show', $pei->id)"
                                     variant="info"
@@ -54,7 +54,7 @@
                                 >
                                     <i class="fas fa-eye"></i>
                                 </x-buttons.link-button>
-
+                                @endcan
                             </x-table.actions>
                         </x-table.td>
 
@@ -74,12 +74,14 @@
 
         {{-- BOTÃO GERENCIAR --}}
         <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+            @can('pei.view')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.pei.index', $student)"
                 variant="warning"
                 class="btn-sm">
                 <i class="fas fa-folder-open"></i> Gerenciar PEIs
             </x-buttons.link-button>
+            @endcan
         </div>
 
     </div>

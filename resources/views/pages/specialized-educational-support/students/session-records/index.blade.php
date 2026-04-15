@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Responsáveis do Aluno')
+@section('title', 'Registros de Sessões do Aluno')
 
 @section('content')
     <div class="mb-5">
@@ -8,16 +8,14 @@
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
             $student->person->name => route('specialized-educational-support.students.show', $student),
-            'Responsáveis' => null
+            'Registros de Sessões' => null
         ]" />
     </div>
 
-    {{-- CARD UNIFICADO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
-        {{-- HEADER --}}
         <x-table.page-header
-            title="Responsáveis — {{ $student->person->name }}"
-            subtitle="Gerenciamento de vínculos familiares e contatos de emergência."
+            title="Histórico de Registros de Sessões"
+            subtitle="Aluno: {{ $student->person->name }}"
         >
             <div class="d-flex gap-2">
                 <x-buttons.link-button
@@ -26,49 +24,41 @@
                 >
                     <i class="fas fa-arrow-left"></i> Voltar
                 </x-buttons.link-button>
-                @can('guardian.create')
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.guardians.create', $student)"
-                    variant="new"
-                    title="Adicionar responsável"
-                >
-                    <i class="fas fa-plus"></i>
-                </x-buttons.link-button>
-                @endcan
             </div>
         </x-table.page-header>
 
-        {{-- FILTROS --}}
         <div class="px-3 pt-3">
             <x-table.filters.form
                 data-dynamic-filter
-                data-target="#guardians-table"
+                data-target="#session-records-index-table"
                 :fields="[
                     [
-                        'name' => 'name',
-                        'placeholder' => 'Nome do responsável...'
-                    ],
-                    [
-                        'name' => 'email',
-                        'placeholder' => 'E-mail...'
-                    ],
-                    [
-                        'name' => 'relationship',
+                        'name' => 'professional_id',
                         'type' => 'select',
-                        'options' => ['' => 'Parentesco (Todos)'] + $relationships
+                        'options' => ['' => 'Profissional (Todos)'] +
+                            collect($professionals)->mapWithKeys(fn($p) => [
+                                $p->id => $p->person->name ?? ('ID ' . $p->id)
+                            ])->toArray()
+                    ],
+                    [
+                        'name' => 'is_present',
+                        'type' => 'select',
+                        'options' => [
+                            '' => 'Presença (Todos)',
+                            '1' => 'Presente',
+                            '0' => 'Ausente',
+                        ]
                     ],
                 ]"
             />
         </div>
 
-        {{-- TABELA --}}
-        <div id="guardians-table" class="p-3">
-            @include('pages.specialized-educational-support.guardians.partials.table')
+        <div id="session-records-index-table" class="p-3">
+            @include('pages.specialized-educational-support.students.session-records.partials.table')
         </div>
     </div>
 
     @push('scripts')
         @vite('resources/js/components/dynamicFilters.js')
     @endpush
-    
 @endsection

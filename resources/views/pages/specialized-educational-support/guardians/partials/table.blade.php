@@ -19,13 +19,15 @@
 
                 <x-table.td>
                     <x-table.actions>
+                        @can('guardian.view')
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.guardians.show', $guardian)"
                             variant="info"
                         >
                             <i class="fas fa-eye"></i> ver
                         </x-buttons.link-button>
-
+                        @endcan
+                        @can('guardian.delete')
                         <form action="{{ route('specialized-educational-support.guardians.destroy', [$student, $guardian]) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
@@ -36,6 +38,7 @@
                                 <i class="fas fa-trash"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
+                        @endcan
                     </x-table.actions>
                 </x-table.td>
             </tr>

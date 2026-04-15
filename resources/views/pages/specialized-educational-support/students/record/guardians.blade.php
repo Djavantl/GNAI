@@ -56,12 +56,14 @@
         </div>
 
         <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+            @can('guardian.view')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.guardians.index', $student)"
                 variant="warning"
                 class="btn-sm">
                 <i class="fas fa-folder-open"></i> Gerenciar Responsáveis
             </x-buttons.link-button>
+            @endcan
         </div>
     </div>
 </section>

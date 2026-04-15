@@ -17,6 +17,7 @@
             title="Disciplinas"
             subtitle="Gerencie as disciplinas cadastradas no sistema."
         >
+        @can('discipline.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.disciplines.create')"
                 variant="new"
@@ -24,6 +25,7 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
+        @endcan
         </x-table.page-header>
 
         {{-- FILTROS --}}

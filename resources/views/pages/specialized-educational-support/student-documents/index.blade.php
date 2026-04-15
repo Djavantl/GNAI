@@ -26,7 +26,7 @@
                 >
                     <i class="fas fa-arrow-left"></i>
                 </x-buttons.link-button>
-
+                @can('student-document.create')
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.student-documents.create', $student)"
                     variant="new"
@@ -34,6 +34,7 @@
                 >
                     <i class="fas fa-plus"></i>
                 </x-buttons.link-button>
+                @endcan
             </div>
         </x-table.page-header>
 

@@ -20,12 +20,14 @@
         </div>
 
         <div class="d-flex gap-2">
+            @can('student-course.update')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-courses.edit', $studentCourse)"
                 variant="warning"
                 aria-label="Editar matrícula">
                 <i class="fas fa-edit me-1" aria-hidden="true"></i> Editar
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-courses.history', $studentCourse->student)"
@@ -96,7 +98,7 @@
                 </div>
 
                 <div class="d-flex gap-3">
-
+                @can('student-course.delete')
                     <form
                         action="{{ route('specialized-educational-support.student-courses.destroy', $studentCourse) }}"
                         method="POST"
@@ -109,7 +111,7 @@
                             <i class="fas fa-trash-alt me-1" aria-hidden="true"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-
+                @endcan
                 </div>
             </div>
 

@@ -10,7 +10,10 @@
         </x-table.td>
         <x-table.td>
             <x-table.actions>
+                @can('course.view')
                 <x-buttons.link-button :href="route('specialized-educational-support.courses.show', $course)" variant="info"><i class="fas fa-eye"></i>Ver</x-buttons.link-button>
+                @endcan
+                @can('course.delete')
                 <form
                     action="{{ route('specialized-educational-support.courses.destroy', $course) }}"
                     method="POST"
@@ -22,6 +25,7 @@
                        <i class="fas fa-trash"></i>  Excluir
                     </x-buttons.submit-button>
                 </form>
+                @endcan
             </x-table.actions>
         </x-table.td>
     </tr>

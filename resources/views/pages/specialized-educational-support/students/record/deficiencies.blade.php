@@ -38,6 +38,7 @@
         </div>
 
         <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+            @can('student-deficiency.view')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-deficiencies.index', $student)"
                 variant="warning"
@@ -45,6 +46,7 @@
             >
                 <i class="fas fa-folder-open"></i> Gerenciar Deficiências
             </x-buttons.link-button>
+            @endcan
         </div>
     </div>
 </section>

@@ -16,7 +16,8 @@
         <x-table.page-header
             title="Lista de Deficiências"
             subtitle="Categorias e códigos CID registrados."
-        >
+        >   
+        @can('deficiency.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.deficiencies.create')"
                 variant="new"
@@ -24,6 +25,7 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
+        @endcan
         </x-table.page-header>
 
         {{-- FILTROS --}}

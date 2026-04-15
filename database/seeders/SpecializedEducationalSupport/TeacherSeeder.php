@@ -17,10 +17,10 @@ class TeacherSeeder extends Seeder
     public function run(): void
     {
         $teachersData = [
-            ['name' => 'Carlos Anderson', 'gender' => 'male', 'course' => 'Técnico em Informática'],
-            ['name' => 'Maria Eugenia', 'gender' => 'female', 'course' => 'Técnico em Administração'],
-            ['name' => 'Welisson Brito', 'gender' => 'male', 'course' => 'Técnico em Mecânica'],
-            ['name' => 'Woquiton Lima', 'gender' => 'male', 'course' => 'Técnico em Informática'],
+            ['name' => 'João Neves', 'gender' => 'male', 'course' => 'Técnico em Informática'],
+            ['name' => 'Maria Da Conseição', 'gender' => 'female', 'course' => 'Técnico em Administração'],
+            ['name' => 'Roberto Brito', 'gender' => 'male', 'course' => 'Técnico em Mecânica'],
+            ['name' => 'Marcio Lima', 'gender' => 'male', 'course' => 'Técnico em Informática'],
         ];
 
         foreach ($teachersData as $index => $data) {

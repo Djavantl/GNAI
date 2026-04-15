@@ -33,28 +33,31 @@
 
         <x-table.td>
             <x-table.actions>
-                <x-buttons.link-button 
-                    :href="route('specialized-educational-support.professionals.show', $professional)"
-                    variant="info"
-                    aria-label="Visualizar prontuário de {{ $professional->person->name }}"
-                >
-                <i class="fas fa-eye" aria-hidden="true"></i> ver
-                </x-buttons.link-button>
-
-                <form action="{{ route('specialized-educational-support.professionals.destroy', $professional) }}"
-                    method="POST"
-                    class="d-inline">
-                    @csrf
-                    @method('DELETE')
-
-                    <x-buttons.submit-button 
-                        variant="danger"
-                        onclick="return confirm('Deseja remover este profissional?')"
-                        aria-label="Excluir profissional {{ $professional->person->name }} do sistema"
+                @can('professional.view')
+                    <x-buttons.link-button 
+                        :href="route('specialized-educational-support.professionals.show', $professional)"
+                        variant="info"
+                        aria-label="Visualizar prontuário de {{ $professional->person->name }}"
                     >
-                       <i class="fas fa-trash" aria-hidden="true"></i> Excluir
-                    </x-buttons.submit-button>
-                </form>
+                    <i class="fas fa-eye" aria-hidden="true"></i> ver
+                    </x-buttons.link-button>
+                @endcan
+                @can('professional.delete')
+                    <form action="{{ route('specialized-educational-support.professionals.destroy', $professional) }}"
+                        method="POST"
+                        class="d-inline">
+                        @csrf
+                        @method('DELETE')
+
+                        <x-buttons.submit-button 
+                            variant="danger"
+                            onclick="return confirm('Deseja remover este profissional?')"
+                            aria-label="Excluir profissional {{ $professional->person->name }} do sistema"
+                        >
+                        <i class="fas fa-trash" aria-hidden="true"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
+                @endcan
             </x-table.actions>
         </x-table.td>
     </tr>
@@ -62,7 +65,7 @@
     <tr>
         <td colspan="5" class="text-center text-muted fw-bold py-5">
             <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
-            Nenhum aluno encontrado.
+            Nenhum profissional encontrado.
         </td>
     </tr>
 @endforelse

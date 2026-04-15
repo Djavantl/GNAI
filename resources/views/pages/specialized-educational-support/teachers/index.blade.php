@@ -19,21 +19,25 @@
         >
             <div class="d-flex gap-2">
                 {{-- Permissões --}}
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.teachers.permissions')"
-                    variant="secondary"
-                >
-                    <i class="fas fa-shield-alt"></i> Permissões Para Professores
-                </x-buttons.link-button>
+                @can('teacher.update')
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.teachers.permissions')"
+                        variant="secondary"
+                    >
+                        <i class="fas fa-shield-alt"></i> Permissões Para Professores
+                    </x-buttons.link-button>
+                @endcan
 
                 {{-- Novo professor (padrão igual ao de alunos) --}}
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.teachers.create')"
-                    variant="new"
-                    title="Adicionar professor"
-                >
-                    <i class="fas fa-plus"></i>
-                </x-buttons.link-button>
+                @can('teacher.create')
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.teachers.create')"
+                        variant="new"
+                        title="Adicionar professor"
+                    >
+                        <i class="fas fa-plus"></i>
+                    </x-buttons.link-button>
+                @endcan
             </div>
         </x-table.page-header>
 

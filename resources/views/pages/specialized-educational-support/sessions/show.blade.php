@@ -14,12 +14,13 @@
             <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
         </div>
         <div class="d-flex gap-2">
-            
+            @can('session.update')
             @if($session->status !== 'cancelled' && $session->status !== 'Cancelado')
                 <x-buttons.link-button :href="route('specialized-educational-support.sessions.edit', $session->id)" variant="warning">
                    <i class="fas fa-edit" aria-hidden="true"></i>  Editar 
                 </x-buttons.link-button>
             @endif
+            @endcan
             <x-buttons.link-button :href="route('specialized-educational-support.sessions.index')" variant="secondary">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
             </x-buttons.link-button>
@@ -117,12 +118,15 @@
             {{-- Rodapé do Card --}}
             <div class="col-12 border-top p-4  d-flex justify-content-end gap-3">
                 @if($session->status !== 'Cancelada' && $session->status !== 'Realizada')
-                    <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelSessao" type="button">
-                        <i class="fas fa-times" aria-hidden="true"></i> Cancelar Sessão
-                    </x-buttons.submit-button>
+                    @can('session.update')
+                        <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelSessao" type="button">
+                            <i class="fas fa-times" aria-hidden="true"></i> Cancelar Sessão
+                        </x-buttons.submit-button>
+                    @endcan
                 @endif
                  {{-- Lógica do Registro --}}
                 @if($session->sessionRecord)
+                    @can('session-record.view')
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
                         variant="info"
@@ -130,22 +134,26 @@
                     >
                         <i class="fas fa-eye" aria-hidden="true"></i>  Ver Registro
                     </x-buttons.link-button>
+                    @endcan
                 @else
+                    @can('session-record.create')
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.session-records.create', $session->id)"
                         variant="new"
                     >
                         <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro
                     </x-buttons.link-button>
+                    @endcan
                 @endif
-               
-                 <form action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}" method="POST">
+                @can('session.delete')
+                <form action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir esta sessão permanentemente?')">
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
                 </form>
+                @endcan
             </div>
         </div>
     </div>

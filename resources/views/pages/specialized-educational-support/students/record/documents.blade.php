@@ -30,7 +30,7 @@
                         {{-- AÇÕES --}}
                         <x-table.td>
                             <x-table.actions>
-
+                                @can('student-document.view')
                                 <x-buttons.link-button
                                     :href="route('specialized-educational-support.student-documents.view', $document)"
                                     target="_blank"
@@ -39,7 +39,7 @@
                                 >
                                     <i class="fas fa-eye"></i>
                                 </x-buttons.link-button>
-
+                                @endcan
                             </x-table.actions>
                         </x-table.td>
 
@@ -59,12 +59,14 @@
 
         {{-- BOTÃO GERENCIAR --}}
         <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+            @can('student-document.view')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-documents.index', $student)"
                 variant="warning"
                 class="btn-sm">
                 <i class="fas fa-folder-open"></i> Gerenciar Documentos
             </x-buttons.link-button>
+            @endcan
         </div>
 
     </div>

@@ -25,12 +25,14 @@
                 :href="route('specialized-educational-support.pei.discipline.pdf', [$pei, $peiDiscipline])" 
                 target="_blank" 
             />
+
+        @can('pei-discipline.update')
         <x-buttons.link-button 
             href="{{ route('specialized-educational-support.pei-discipline.edit', [$pei, $peiDiscipline]) }}"
             variant="warning">
             <i class="fas fa-edit"></i> Editar
         </x-buttons.link-button>
-
+        @endcan
         <x-buttons.link-button 
             href="{{ route('specialized-educational-support.pei.show', $pei) }}" 
             variant="secondary">
@@ -75,6 +77,7 @@
 
         <div class="d-flex gap-2">
             @if(!$pei->is_finished)
+            @can('pei-discipline.delete')
                 <form action="{{ route('specialized-educational-support.pei-discipline.destroy', [$pei, $peiDiscipline]) }}" 
                     method="POST" class="d-inline"
                     onsubmit="return confirm('Deseja realmente excluir esta adaptação?')">
@@ -84,6 +87,7 @@
                         <i class="fas fa-trash-alt"></i> Excluir Adaptação
                     </x-buttons.submit-button>
                 </form>
+            @endcan
             @endif
         </div>
     </div>

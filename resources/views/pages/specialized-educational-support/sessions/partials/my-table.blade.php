@@ -44,13 +44,15 @@
 
         <x-table.td>
             <x-table.actions>
+                @can('session.view')
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.sessions.show', $session)"
                     variant="info"
                 >
                     <i class="fas fa-eye" aria-hidden="true"></i> Ver
                 </x-buttons.link-button>
-
+                @endcan
+                @can('session.delete')
                 <form action="{{ route('specialized-educational-support.sessions.destroy', $session) }}" method="POST">
                     @csrf
                     @method('DELETE')
@@ -61,6 +63,7 @@
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
                 </form>
+                @endcan
             </x-table.actions>
         </x-table.td>
     </tr>

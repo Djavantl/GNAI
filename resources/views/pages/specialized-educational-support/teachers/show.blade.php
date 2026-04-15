@@ -29,12 +29,16 @@
                 </x-buttons.submit-button>
             </form>
             @endif
+            @can('teacher.update')
             <x-buttons.link-button :href="route('specialized-educational-support.teachers.disciplines', $teacher->id)" variant="info">
                 <i class="fas fa-book"></i> Gerenciar Disciplinas
             </x-buttons.link-button>
+            @endcan
+            @can('teacher.update')
             <x-buttons.link-button :href="route('specialized-educational-support.teachers.edit', $teacher->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar Perfil
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.teachers.index')" variant="secondary">
                <i class="fas fa-arrow-left"></i> Voltar
@@ -169,6 +173,7 @@
                 </div>
                 
                 <div class="d-flex gap-3">
+                    @can('teacher.delete')
                     <form action="{{ route('specialized-educational-support.teachers.destroy', $teacher->id) }}" 
                           method="POST" 
                           onsubmit="return confirm('Excluir permanentemente este professor e seu acesso ao sistema?')">
@@ -178,6 +183,7 @@
                             <i class="fas fa-trash-alt"></i> Excluir Registro
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
 
                     <x-buttons.link-button :href="route('specialized-educational-support.teachers.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar

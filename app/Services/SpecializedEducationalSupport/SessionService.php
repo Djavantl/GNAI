@@ -104,7 +104,7 @@ class SessionService
             $days[] = [
                 'date'     => $currentDate->copy(),
                 'label'    => $this->getTranslatedDayName($currentDate),
-                'sessions' => $sessions->filter(fn($s) => $s->session_date->toDateString() === $dateString)
+                'sessions' => $sessions->filter(fn($s) => $s->session_date->toDateString() === $dateString)->values()
             ];
 
             $currentDate->addDay();

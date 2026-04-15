@@ -27,6 +27,7 @@
                     <i class="fas fa-arrow-left"></i> Voltar 
                 </x-buttons.link-button>
 
+                @can('pei.create')
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.pei.create', $student->id)"
                     variant="new"
@@ -34,6 +35,7 @@
                 >
                     <i class="fas fa-plus"></i>
                 </x-buttons.link-button>
+                @endcan
             </div>
         </x-table.page-header>
 

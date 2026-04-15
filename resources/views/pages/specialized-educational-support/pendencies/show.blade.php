@@ -15,12 +15,14 @@
         </div>
 
         <div class="d-flex gap-2">
+            @can('pendency.update')
             <x-buttons.link-button :href="route('specialized-educational-support.pendencies.edit', $pendency)" variant="warning">
                 <i class="fas fa-edit "></i> Editar
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.pendencies.index')" variant="secondary">
-                <i class="fas fa-arrow-left"></i>Voltar para Lista
+                <i class="fas fa-arrow-left"></i>Voltar
             </x-buttons.link-button>
         </div>
     </div>
@@ -83,6 +85,7 @@
 
                 <div class="d-flex gap-3">
                     @if($pendency->canBeCompletedByCurrentUser())
+                    @can('pendency.update')
                         <form action="{{ route('specialized-educational-support.pendencies.complete', $pendency) }}" method="POST" onsubmit="return confirm('Marcar como concluída?')">
                             @csrf
                             @method('PUT')
@@ -90,8 +93,9 @@
                                 <i class="fas fa-check "></i> Marcar como Concluída
                             </x-buttons.submit-button>
                         </form>
+                        @endcan
                     @endif
-
+                    @can('pendency.delete')
                     <form action="{{ route('specialized-educational-support.pendencies.destroy', $pendency) }}" method="POST" onsubmit="return confirm('Deseja excluir esta pendência?')">
                         @csrf
                         @method('DELETE')
@@ -99,6 +103,7 @@
                             <i class="fas fa-trash-alt "></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
                 </div>
             </div>
 

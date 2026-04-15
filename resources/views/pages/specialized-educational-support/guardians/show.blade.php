@@ -19,9 +19,11 @@
             </p>
         </div>
         <div class="d-flex gap-2">
+            @can('guardian.update')
             <x-buttons.link-button :href="route('specialized-educational-support.guardians.edit', [$guardian->student_id, $guardian->id])" variant="warning">
                 <i class="fas fa-edit"></i> Editar 
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.guardians.index', $guardian->student_id)" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar 
@@ -98,6 +100,7 @@
                 </div>
                 
                 <div class="d-flex gap-3">
+                    @can('guardian.delete')
                     <form action="{{ route('specialized-educational-support.guardians.destroy', [$guardian->student_id, $guardian->id]) }}" 
                           method="POST" 
                           onsubmit="return confirm('Remover este responsável? Os dados pessoais da pessoa não serão excluídos, apenas o vínculo com o aluno.')">
@@ -107,7 +110,7 @@
                             <i class="fas fa-trash"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
-
+                    @endcan
                 </div>
             </div>
         </div>

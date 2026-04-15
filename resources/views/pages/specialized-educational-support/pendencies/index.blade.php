@@ -19,14 +19,16 @@
         >
             <div class="d-flex gap-2">
                @if(auth()->user()->professional)
+               @can('pendency.view')
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.pendencies.my')"
                         variant="info"
                     >
                         <i class="fas fa-user-check"></i> Minhas Pendências
                     </x-buttons.link-button>
+                @endcan
                 @endif
-
+                @can('pendency.create')
                 <x-buttons.link-button 
                     :href="route('specialized-educational-support.pendencies.create')" 
                     variant="new"
@@ -34,6 +36,7 @@
                 >
                     <i class="fas fa-plus"></i>
                 </x-buttons.link-button>
+                @endcan
             </div>
         </x-table.page-header>
 

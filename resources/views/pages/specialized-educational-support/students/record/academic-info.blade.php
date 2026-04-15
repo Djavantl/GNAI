@@ -40,12 +40,14 @@
         </div>
          {{-- BOTÃO GERENCIAR --}}
         <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+            @can('student-course.view')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-courses.history', $student)"
                 variant="warning"
                 class="btn-sm">
                 <i class="fas fa-folder-open"></i> Gerenciar Cursos
             </x-buttons.link-button>
+            @endcan
         </div>
     </div>
 </section>

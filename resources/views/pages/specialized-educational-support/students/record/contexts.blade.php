@@ -33,12 +33,14 @@
                         </div>
 
                         <div class="col-md-4 text-md-end">
+                            @can('student-context.view')
                             <x-buttons.link-button
                                 :href="route('specialized-educational-support.student-context.show', [$student->currentContext->id])"
                                 variant="info"
                                 class="btn-sm">
                                 <i class="fas fa-eye"></i> 
                             </x-buttons.link-button>
+                            @endcan
                         </div>
 
                     </div>
@@ -54,12 +56,14 @@
         @endif
 
         <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+            @can('student-context.view')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-context.index', $student)"
                 variant="warning"
                 class="btn-sm">
                 <i class="fas fa-folder-open"></i> Gerenciar Contextos
             </x-buttons.link-button>
+            @endcan
         </div>
 
     </div>

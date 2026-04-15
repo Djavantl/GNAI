@@ -17,6 +17,7 @@
             title="Cursos e Séries"
             subtitle="Gerencie cursos e suas respectivas séries."
         >
+        @can('course.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.courses.create')"
                 variant="new"
@@ -24,6 +25,7 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
+        @endcan
         </x-table.page-header>
 
         {{-- FILTROS --}}

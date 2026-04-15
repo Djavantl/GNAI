@@ -65,12 +65,12 @@
                     <i class="fas fa-file-alt me-3 fa-2x"></i>
                     <div>
                         <strong>Arquivo Atual:</strong> {{ $studentDocument->original_name }}<br>
-                        <small>Versão atual: <strong>v{{ $studentDocument->version }}</strong>. Ao enviar um novo arquivo, a versão será incrementada automaticamente.</small>
+                        <small class="text-muted">Deixe em branco para manter o arquivo atual. Formatos: PDF, DOC, DOCX, Imagens (Máx: 10MB).</small>
                     </div>
                 </div>
 
                 <input type="file" name="file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.png">
-                <small class="text-muted">Deixe em branco para manter o arquivo atual. Formatos: PDF, DOC, DOCX, Imagens (Máx: 10MB).</small>
+                
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">

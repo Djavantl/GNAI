@@ -18,9 +18,11 @@
             </p>
         </div>
         <div class="d-flex gap-2">
+            @can('position.update')
             <x-buttons.link-button :href="route('specialized-educational-support.positions.edit', $position->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar 
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.positions.index')" variant="secondary">
                <i class="fas fa-arrow-left"></i> Voltar
@@ -84,6 +86,7 @@
                 </div>
                 
                 <div class="d-flex gap-3">
+                    @can('position.delete')
                     <form action="{{ route('specialized-educational-support.positions.destroy', $position->id) }}" 
                           method="POST" 
                           onsubmit="return confirm('Excluir este cargo? Isso pode afetar profissionais vinculados.')">
@@ -93,6 +96,7 @@
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
                 </div>
             </div>
         </div>

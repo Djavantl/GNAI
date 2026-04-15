@@ -18,9 +18,11 @@
             </p>
         </div>
         <div class="d-flex gap-2">
+            @can('semester.update')
             <x-buttons.link-button :href="route('specialized-educational-support.semesters.edit', $semester->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar 
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.semesters.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i>Voltar
@@ -84,6 +86,7 @@
                 </div>
                 
                 <div class="d-flex gap-3">
+                    @can('semester.delete')
                     <form action="{{ route('specialized-educational-support.semesters.destroy', $semester->id) }}" 
                           method="POST" 
                           onsubmit="return confirm('Excluir este semestre? Isso pode afetar os registros de frequência e sessões vinculados a este período.')">
@@ -93,6 +96,7 @@
                             <i class="fas fa-trash-alt me-1"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
                 </div>
             </div>
         </div>

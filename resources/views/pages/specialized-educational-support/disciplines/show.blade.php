@@ -15,9 +15,11 @@
             <p class="text-muted">Informações cadastrais e descrição da matéria.</p>
         </div>
         <div class="d-flex gap-2">
+            @can('discipline.update')
             <x-buttons.link-button :href="route('specialized-educational-support.disciplines.edit', $discipline)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+            @endcan
             <x-buttons.link-button :href="route('specialized-educational-support.disciplines.index')" variant="secondary">
                <i class="fas fa-arrow-left"></i>  Voltar
             </x-buttons.link-button>
@@ -69,6 +71,7 @@
                 </div>
                 
                 <div class="d-flex gap-3">
+                    @can('discipline.delete')
                     <form action="{{ route('specialized-educational-support.disciplines.destroy', $discipline) }}" 
                           method="POST" 
                           onsubmit="return confirm('Deseja realmente excluir esta disciplina?')">
@@ -78,6 +81,7 @@
                             <i class="fas fa-trash-alt me-1"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
                 </div>
             </div>
         </div>

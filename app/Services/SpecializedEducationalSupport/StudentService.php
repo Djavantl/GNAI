@@ -6,6 +6,7 @@ use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
 
 class StudentService
 {
@@ -40,8 +41,6 @@ class StudentService
 
     public function show(Student $student): Student
     {
-        $user = auth()->user();
-
         return $student->load([
             'person',
             'guardians',
@@ -51,7 +50,6 @@ class StudentService
             'studentCourses',
             'courses',
             'currentCourse',
-            'sessions' => fn($q) => $q->with(['professional.person', 'sessionRecord'])->orderBy('session_date', 'desc'),
         ]);
     }
 
@@ -185,5 +183,17 @@ class StudentService
                 ->orderBy('version'); 
             },
         ]);
+    }
+
+    public function studentSessionEvaluations(Student $student, int $perPage = 5)
+    {
+        return StudentSessionEvaluation::query()
+            ->with([
+                'sessionRecord.attendanceSession.professional.person',
+            ])
+            ->where('student_id', $student->id)
+            ->orderByDesc('id')
+            ->paginate($perPage)
+            ->withQueryString();
     }
 }

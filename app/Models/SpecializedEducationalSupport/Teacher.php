@@ -71,6 +71,11 @@ class Teacher extends Model
         return $this->belongsToMany(Course::class, 'teacher_courses')->withTimestamps();
     }
 
+    public function peiDisciplines()
+    {
+        return $this->hasMany(PeiDiscipline::class, 'teacher_id');
+    }
+
     public function scopeName($query, ?string $term)
     {
         if (!$term) return $query;

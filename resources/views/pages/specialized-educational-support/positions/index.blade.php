@@ -17,6 +17,7 @@
             title="Lista de Cargos"
             subtitle="Gerenciamento de funções para o suporte especializado."
         >
+        @can('position.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.positions.create')"
                 variant="new"
@@ -24,6 +25,7 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
+        @endcan
         </x-table.page-header>
 
         {{-- FILTROS --}}

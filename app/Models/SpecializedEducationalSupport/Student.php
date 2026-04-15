@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\SpecializedEducationalSupport\StudentStatus;
 use DomainException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 class Student extends Model
@@ -124,6 +125,11 @@ class Student extends Model
     public function person()
     {
         return $this->belongsTo(Person::class);
+    }
+
+    public function sessionEvaluations(): HasMany
+    {
+        return $this->hasMany(StudentSessionEvaluation::class);
     }
 
     /**

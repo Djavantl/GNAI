@@ -41,12 +41,15 @@
 
                 <x-table.td>
                     <x-table.actions>
+                        @can('pei.view')
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.pei.show', $pei->id)"
                             variant="info"
                         >
                             <i class="fas fa-eye" aria-hidden="true"></i> ver
                         </x-buttons.link-button>
+                        @endcan
+                        @can('pei.delete')
                         <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
                             method="POST"
                             class="d-inline">
@@ -61,6 +64,7 @@
                             <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
+                        @endcan
                     </x-table.actions>
                 </x-table.td>
             </tr> 

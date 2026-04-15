@@ -10,7 +10,7 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     PeiEvaluationController, StudentDocumentController, TeacherController
 };
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // People
     Route::get('/people', [PersonController::class, 'index'])->name('people.index')->middleware('can:people.view');
@@ -162,6 +162,28 @@ Route::middleware(['auth'])->group(function () {
     Route::post('session-records/{sessionRecord}/restore', [SessionRecordController::class, 'restore'])->name('session-records.restore')->middleware('can:session-record.update');
     Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->middleware('can:session-record.delete');
     Route::get('session-records/{sessionRecord}/pdf', [SessionRecordController::class, 'generatePdf'])->name('session-records.pdf')->middleware('can:session-record.view');
+    Route::get('students/{student}/session-records', [SessionRecordController::class, 'studentIndex'])
+    ->name('students.session-records.index')
+    ->middleware('can:session-record.view');
+    Route::get('students/{student}/session-records/{evaluation}/show', [SessionRecordController::class, 'studentShow'])
+        ->name('students.session-records.show')
+        ->middleware('can:session-record.view');
+
+    Route::get('students/{student}/session-records/{evaluation}/edit', [SessionRecordController::class, 'studentEdit'])
+        ->name('students.session-records.edit')
+        ->middleware('can:session-record.update');
+
+    Route::put('students/{student}/session-records/{evaluation}', [SessionRecordController::class, 'studentUpdate'])
+        ->name('students.session-records.update')
+        ->middleware('can:session-record.update');
+
+    Route::delete('students/{student}/session-records/{evaluation}', [SessionRecordController::class, 'studentDestroy'])
+        ->name('students.session-records.destroy')
+        ->middleware('can:session-record.delete');
+    Route::get('students/{student}/session-records/{sessionRecord}/pdf', [SessionRecordController::class, 'generateStudentPdf'])
+    ->name('students.session-records.pdf')
+    ->middleware('can:session-record.view');
+
 
     /* 9. STUDENT COURSES */
     Route::get('/student-courses/{student}/create', [StudentCourseController::class, 'create'])->name('student-courses.create')->middleware('can:student-course.create');

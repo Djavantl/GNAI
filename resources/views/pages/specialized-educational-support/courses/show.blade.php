@@ -15,9 +15,11 @@
             <p class="text-muted">Informações estruturais e grade de disciplinas.</p>
         </div>
         <div class="d-flex gap-2">
+            @can('course.update')
             <x-buttons.link-button :href="route('specialized-educational-support.courses.edit', $course)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+            @endcan
             <x-buttons.link-button :href="route('specialized-educational-support.courses.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i>Voltar
             </x-buttons.link-button>
@@ -67,7 +69,7 @@
             </div>
 
             <div class="d-flex gap-3">
-        
+                @can('course.delete')
                 <form
                     action="{{ route('specialized-educational-support.courses.destroy', $course) }}"
                     method="POST"
@@ -79,6 +81,7 @@
                        <i class="fas fa-trash"></i>  Excluir
                     </x-buttons.submit-button>
                 </form>
+                @endcan
             </div>
         </div>
     </div>

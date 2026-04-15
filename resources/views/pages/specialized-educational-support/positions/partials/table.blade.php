@@ -13,14 +13,15 @@
 
                 <x-table.td>
                     <x-table.actions>
-
+                        @can('position.view')
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.positions.show', $item)"
                             variant="info"
                         >
                             <i class="fas fa-eye"></i>ver
                         </x-buttons.link-button>
-
+                        @endcan
+                        @can('position.update')
                         <form action="{{ route('specialized-educational-support.positions.deactivate', $item) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
@@ -28,7 +29,8 @@
                                <i class="fas fa-check"></i> Ativar/Desativar
                             </x-buttons.submit-button>
                         </form>
-
+                        @endcan
+                        @can('position.delete')
                         <form action="{{ route('specialized-educational-support.positions.destroy', $item) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
@@ -39,6 +41,7 @@
                                 <i class="fas fa-trash"></i>Excluir
                             </x-buttons.submit-button>
                         </form>
+                        @endcan
                     </x-table.actions>
                 </x-table.td>
             </tr>

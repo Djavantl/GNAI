@@ -17,6 +17,7 @@
             title="Minha agenda semanal"
             subtitle="Visão das suas sessões, organizada por dia da semana."
         >
+        @can('session.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
@@ -24,7 +25,8 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
-
+        @endcan
+        
             <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.index')"
                 variant="secondary"

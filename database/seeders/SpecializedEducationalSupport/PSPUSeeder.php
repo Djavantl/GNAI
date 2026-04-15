@@ -25,39 +25,39 @@ class PSPUSeeder extends Seeder
             // students
 
             Person::create([
-                'name' => 'Marley Teixeira Meira',
+                'name' => 'Luis Soares',
                 'document' => '28057515074',
                 'birth_date' => '2012-01-10',
                 'gender' => 'male',
-                'email' => 'mxrlrey@gmail.com',
+                'email' => 'luis@gmail.com',
             ]),
             Person::create([
-                'name' => 'Djavan Teixeira Lopes',
+                'name' => 'Deyverson Neves',
                 'document' => '68425710065',
                 'birth_date' => '2011-03-15',
                 'gender' => 'male',
-                'email' => 'djvnsala2@gmail.com',
+                'email' => 'deyverson@gmail.com',
             ]),
             Person::create([
-                'name' => 'Péricles Caires',
+                'name' => 'Cauan Castro',
                 'document' => '75261909023',
                 'birth_date' => '2010-07-20',
                 'gender' => 'male',
-                'email' => 'djvnsala5@gmail.com',
+                'email' => 'cauan@gmail.com',
             ]),
             Person::create([
-                'name' => 'Gabriel Rocha',
+                'name' => 'Cleiton Araújo',
                 'document' => '48668088025',
                 'birth_date' => '2010-07-20',
                 'gender' => 'male',
-                'email' => 'djavansala7@gmail.com',
+                'email' => 'cleiton@gmail.com',
             ]),
             Person::create([
-                'name' => 'Jader Adriel',
+                'name' => 'Gustavo Natan',
                 'document' => '98378092054',
                 'birth_date' => '2010-07-20',
                 'gender' => 'male',
-                'email' => 'djavansala8@gmail.com',
+                'email' => 'gustavo@gmail.com',
             ]),
 
             // professionals

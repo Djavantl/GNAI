@@ -167,6 +167,10 @@ class ProfessionalService
      */
     public function delete(Professional $professional): void
     {
+        if (auth()->check() && auth()->user()->professional_id === $professional->id) {
+            throw new DomainException("Você não pode excluir seu próprio registro de profissional.");
+        }
+
         DB::transaction(function () use ($professional) {
             // Deleta a foto física antes de apagar o registro
             if ($professional->person && $professional->person->photo) {

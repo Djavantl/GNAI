@@ -17,6 +17,7 @@
             title="Profissionais"
             subtitle="Gerencie os profissionais e seus documentos de apoio especializado."
         >
+        @can('professional.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.professionals.create')"
                 variant="new"
@@ -24,6 +25,7 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
+        @endcan
         </x-table.page-header>
 
         {{-- FILTROS --}}

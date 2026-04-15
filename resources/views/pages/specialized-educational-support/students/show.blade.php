@@ -88,8 +88,8 @@
         @endcan
             
         {{-- Seção de Sessões --}}
-        @can('session.view')
-            @include('pages.specialized-educational-support.students.record.sessions')
+        @can('session-record.view')
+            @include('pages.specialized-educational-support.students.record.session-records')
         @endcan
         
 

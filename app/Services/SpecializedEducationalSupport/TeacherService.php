@@ -136,11 +136,22 @@ class TeacherService
      */
     public function delete(Teacher $teacher): void
     {
+        // Verifica se o professor possui vínculos com disciplinas de PEIs
+        if ($teacher->peiDisciplines()->exists()) {
+            throw new DomainException(
+                "Não é possível excluir este professor pois ele possui registros de acompanhamento em Planos Educacionais Individualizados (PEI)."
+            );
+        }
+
         DB::transaction(function () use ($teacher) {
             // Remove foto física
             if ($teacher->person && $teacher->person->photo) {
                 Storage::disk('public')->delete($teacher->person->photo);
             }
+
+            // Deleta o usuário vinculado primeiro (se existir)
+            // Isso evita erros de integridade se a FK não for cascade
+            $teacher->user()->delete();
 
             $teacher->person->delete(); 
             $teacher->delete();

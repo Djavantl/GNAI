@@ -31,6 +31,7 @@
         
 
         @if(!$pei->is_finished)
+        @can('pei.update')
             <form method="POST"
                 action="{{ route('specialized-educational-support.pei.finish', $pei) }}"
                 onsubmit="return confirm('Após finalizar, o plano não poderá ser editado. Confirmar?')">
@@ -40,8 +41,9 @@
                     <i class="fas fa-check"></i> Finalizar
                 </x-buttons.submit-button>
             </form>
+        @endcan
         @endif
-
+        @can('pei.delete')
         <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}" method="POST"
             onsubmit="return confirm('Excluir permanentemente este PEI?')">
             @csrf 
@@ -50,7 +52,7 @@
                 <i class="fas fa-trash-alt"></i> Excluir
             </x-buttons.submit-button>
         </form>
-
+        @endcan
         <x-buttons.link-button 
             :href="route('specialized-educational-support.pei.index', $pei->student)" 
             variant="secondary">
@@ -165,7 +167,7 @@
 
         </div>
 
-
+        @can('student-context.view')
         {{-- ================= CONTEXTO COMPLETO ================= --}}
         <x-forms.section title="Contexto do Estudante" />
 
@@ -174,19 +176,21 @@
                 'context' => $studentContext
             ])
         </div>
+        @endcan
+
 
         <x-forms.section title="Adaptações Razoáveis e/ou Acessibilidades Curriculares" />
 
-        <div class="px-4 pt-3 pb-2 d-flex justify-content-end align-items-center">
-            @if(!$pei->is_finished)
+        <div class="px-4 pt-3 pb-2 d-flex justify-content-end align-items-center">         
+            @can('pei-discipline.create')
                 <x-buttons.link-button 
                     href="{{ route('specialized-educational-support.pei-discipline.create', $pei) }}" 
                     variant="primary">
                     <i class="fas fa-plus"></i> Adicionar Adaptação
                 </x-buttons.link-button>
-            @endif
+            @endcan
         </div>
-
+        @can('pei-discipline.view')
         {{-- adaptações por disciplina (cards paginados) --}}
         <div class="px-4 pb-4">
             @include('pages.specialized-educational-support.peis.partials.disciplines-cards', [
@@ -194,6 +198,7 @@
                 'pei' => $pei
             ])
         </div>
+        @endcan
     </div>
 </div>
 

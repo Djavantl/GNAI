@@ -17,6 +17,7 @@
             subtitle="Visão da equipe inteira, organizada por dia da semana."
         >
             {{-- BOTÕES ORIGINAIS MOVIDOS PARA O HEADER DA AGENDA --}}
+            @can('session.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
@@ -24,8 +25,10 @@
             >
                 <i class="fas fa-plus"></i> 
             </x-buttons.link-button>
+            @endcan
 
             @if(auth()->user()->professional)
+            @can('session.view')
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.sessions.my-sessions')"
                     variant="secondary"
@@ -33,6 +36,7 @@
                 >
                     <i class="fas fa-user-clock"></i> Minhas sessões
                 </x-buttons.link-button>
+                @endcan
             @endif
         </x-table.page-header>
 

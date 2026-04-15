@@ -33,13 +33,14 @@
 
             <x-table.td>
                 <x-table.actions>
+                    @can('pendency.view')
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.pendencies.show', $pendency)"
                         variant="info"
                     >
                         <i class="fas fa-eye"></i>Ver
                     </x-buttons.link-button>
-
+                    @endcan
                 </x-table.actions>
             </x-table.td>
         </tr>

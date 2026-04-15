@@ -22,15 +22,17 @@
 
                 <x-table.td>
                     <x-table.actions>
-
+                        @can('semester.view')
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.semesters.show', $semester)"
                             variant="info"
                         >
                             <i class="fas fa-eye"></i>ver
                         </x-buttons.link-button>
+                        @endcan
 
                         @if(!$semester->is_current)
+                        @can('semester.update')
                             <form action="{{ route('specialized-educational-support.semesters.setCurrent', $semester) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('PATCH')
@@ -38,8 +40,10 @@
                                     <i class="fas fa-check"></i>Definir Atual
                                 </x-buttons.submit-button>
                             </form>
+                        @endcan
                         @endif
 
+                        @can('semester.delete')
                         <form action="{{ route('specialized-educational-support.semesters.destroy', $semester) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
@@ -50,6 +54,7 @@
                                 <i class="fas fa-trash"></i>Excluir
                             </x-buttons.submit-button>
                         </form>
+                        @endcan
                     </x-table.actions>
                 </x-table.td>
             </tr>

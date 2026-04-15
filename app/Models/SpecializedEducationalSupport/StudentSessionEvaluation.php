@@ -2,10 +2,10 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Traits\Reportable;
 
 class StudentSessionEvaluation extends Model
 {
@@ -24,19 +24,22 @@ class StudentSessionEvaluation extends Model
         'next_session_adjustments',
     ];
 
-    /**
-     * Relacionamento com o registro geral da sessão
-     */
+    protected $casts = [
+        'is_present' => 'boolean',
+    ];
+
     public function sessionRecord(): BelongsTo
     {
         return $this->belongsTo(SessionRecord::class, 'session_record_id');
     }
 
-    /**
-     * Relacionamento com o Aluno
-     */
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Student::class); // Ajuste o namespace se necessário
+        return $this->belongsTo(Student::class);
+    }
+
+    public function scopeOfStudent(Builder $query, int $studentId): Builder
+    {
+        return $query->where('student_id', $studentId);
     }
 }

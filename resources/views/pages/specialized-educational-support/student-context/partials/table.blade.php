@@ -31,13 +31,15 @@
 
                 <x-table.td>
                     <x-table.actions>
+                        @can('student-context.view')
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.student-context.show', $context)"
                             variant="info"
                         >
                             <i class="fas fa-eye" aria-hidden="true"></i> Ver
                         </x-buttons.link-button>
-
+                        @endcan
+                        @can('student-context.delete')
                         <form action="{{ route('specialized-educational-support.student-context.destroy', $context->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
@@ -45,6 +47,7 @@
                                 <i class="fas fa-trash" aria-hidden="true"></i>Excluir
                             </x-buttons.submit-button>
                         </form>
+                        @endcan
                     </x-table.actions>
                 </x-table.td>
             </tr>

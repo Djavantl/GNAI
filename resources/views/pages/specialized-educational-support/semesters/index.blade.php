@@ -17,6 +17,7 @@
             title="Semestres Letivos"
             subtitle="Configuração de períodos para organização dos atendimentos e relatórios."
         >
+        @can('semester.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.semesters.create')"
                 variant="new"
@@ -24,6 +25,7 @@
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
+        @endcan
         </x-table.page-header>
 
         {{-- FILTROS --}}

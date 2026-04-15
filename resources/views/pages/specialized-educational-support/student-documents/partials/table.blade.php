@@ -1,4 +1,4 @@
-<x-table.table :headers="['Título', 'Tipo', 'Semestre', 'Versão', 'Tamanho', 'Data de Upload', 'Ações']">
+<x-table.table :headers="['Título', 'Tipo', 'Semestre', 'Tamanho', 'Data de Upload', 'Ações']">
     @forelse($documents as $document)
         <tr>
             <x-table.td>
@@ -12,10 +12,6 @@
             </x-table.td>
 
             <x-table.td>{{ $document->semester->label }}</x-table.td>
-
-            <x-table.td>
-                v{{ $document->version }}
-            </x-table.td>
 
             <x-table.td>
                 {{ number_format($document->file_size / 1024 / 1024, 2) }} MB
@@ -38,6 +34,7 @@
                             : "https://docs.google.com/gview?url=" . Storage::disk('public')->url($document->file_path) . "&embedded=true";
                     @endphp
 
+                    @can('student-document.view')
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.student-documents.view', $document)" {{-- Rota interna segura --}}
                         target="_blank"
@@ -46,6 +43,7 @@
                     >
                         <i class="fas fa-eye" aria-hidden="true"></i>
                     </x-buttons.link-button>
+                
 
                     {{-- 2. BOTÃO BAIXAR (Download forçado) --}}
                     <x-buttons.link-button
@@ -55,7 +53,8 @@
                     >
                         <i class="fas fa-download" aria-hidden="true"></i>
                     </x-buttons.link-button>
-
+                    @endcan
+                    @can('student-document.update')
                     {{-- 3. BOTÃO EDITAR --}}
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.student-documents.edit', $document)"
@@ -64,6 +63,8 @@
                     >
                         <i class="fas fa-edit" aria-hidden="true"></i>
                     </x-buttons.link-button>
+                    @endcan
+                    @can('student-document.delete')
 
                     {{-- 4. BOTÃO EXCLUIR --}}
                     <form action="{{ route('specialized-educational-support.student-documents.destroy', $document) }}" method="POST" class="d-inline">
@@ -77,6 +78,7 @@
                             <i class="fas fa-trash" aria-hidden="true"></i>
                         </x-buttons.submit-button>
                     </form>
+                    @endcan
                 </x-table.actions>
             </x-table.td>
         </tr>

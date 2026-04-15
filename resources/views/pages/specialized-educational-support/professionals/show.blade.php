@@ -19,9 +19,11 @@
             </p>
         </div>
         <div class="d-flex gap-2">
+            @can('professional.update')
             <x-buttons.link-button :href="route('specialized-educational-support.professionals.edit', $professional->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.professionals.index')" variant="secondary">
                <i class="fas fa-arrow-left "></i>  Voltar
@@ -118,16 +120,17 @@
                 </div>
                 
                 <div class="d-flex gap-3">
-                    <form action="{{ route('specialized-educational-support.professionals.destroy', $professional->id) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('Excluir este profissional do sistema?')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
-
+                    @can('professional.delete')
+                        <form action="{{ route('specialized-educational-support.professionals.destroy', $professional->id) }}" 
+                            method="POST" 
+                            onsubmit="return confirm('Excluir este profissional do sistema?')">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button variant="danger">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
                     <x-buttons.link-button :href="route('specialized-educational-support.professionals.index')" variant="secondary">
                         <i class="fas fa-arrow-left "></i>  Voltar
                     </x-buttons.link-button>

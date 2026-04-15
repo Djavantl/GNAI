@@ -28,10 +28,12 @@
 
         <x-table.td>
             <x-table.actions>
+                @can('pendency.view')
                 <x-buttons.link-button :href="route('specialized-educational-support.pendencies.show', $pendency)" variant="info">
                     <i class="fas fa-eye"></i> ver
                 </x-buttons.link-button>
-
+                @endcan
+                @can('pendency.delete')
                 <form action="{{ route('specialized-educational-support.pendencies.destroy', $pendency) }}" method="POST" onsubmit="return confirm('Deseja excluir esta pendência?')">
                     @csrf
                     @method('DELETE')
@@ -39,6 +41,7 @@
                         <i class="fas fa-trash"></i> Excluir
                     </x-buttons.submit-button>
                 </form>
+                @endcan
             </x-table.actions>
         </x-table.td>
     </tr>

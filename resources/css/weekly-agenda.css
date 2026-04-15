@@ -1,0 +1,148 @@
+:root {
+  /* Paleta principal do sistema */
+  --primary-color: rgba(50, 43, 117, 0.9);
+  --primary-color-medium: #6c63ff;
+  --primary-color-light: #8a7fd4;
+  --primary-color-dark: #3d35a5;
+  --bg-soft-info: #eef0f3;
+
+  --bs-success: #198754;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+}
+
+/* Escopo exclusivo da agenda semanal */
+.weekly-agenda {
+  --agenda-border: rgba(61, 53, 165, 0.18);
+  --agenda-card-bg: #ffffff;
+  --agenda-day-bg: linear-gradient(180deg, #ffffff 0%, #f7f7ff 100%);
+  --agenda-session-bg: #fdfdff;
+  --agenda-muted: #6c757d;
+  --agenda-shadow: 0 8px 24px rgba(50, 43, 117, 0.08);
+}
+
+.weekly-agenda .weekly-day-card {
+  background: var(--agenda-day-bg);
+  border: 1px solid var(--primary-color-medium) !important;
+  box-shadow: var(--agenda-shadow);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.weekly-agenda .weekly-day-card .card-header {
+  background: var(--primary-color) !important; /* Fundo Roxo */
+  border-bottom: none;
+  padding: 0.9rem 1rem;
+}
+
+.weekly-agenda .weekly-day-card .weekly-day-title {
+  color: #ffffff !important; /* Texto Segunda-feira em Branco */
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.weekly-agenda .weekly-day-card .weekly-day-date {
+  color: rgba(255, 255, 255, 0.8) !important; /* Data em branco levemente transparente */
+  font-size: 0.85rem;
+}
+
+/* Ajuste do badge (número de sessões) para combinar */
+.weekly-agenda .weekly-day-card .badge.bg-secondary {
+  background-color: rgba(255, 255, 255, 0.2) !important; /* Fundo semi-transparente */
+  color: #ffffff !important; /* Número em branco */
+  border: 1px solid #ffffff;
+  border-radius: 999px;
+  padding: 0.45rem 0.65rem;
+}
+
+.weekly-agenda .weekly-sessions-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.weekly-agenda .weekly-sessions-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.weekly-agenda .weekly-sessions-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.weekly-agenda .weekly-sessions-list::-webkit-scrollbar-thumb {
+  background: rgba(50, 43, 117, 0.18);
+  border-radius: 999px;
+}
+
+.weekly-agenda .weekly-sessions-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(50, 43, 117, 0.3);
+}
+
+.weekly-agenda .weekly-session-card {
+  background: var(--agenda-session-bg);
+  border: 1px solid rgba(108, 99, 255, 0.14) !important;
+  border-left: 4px solid var(--primary-color-medium);
+  border-radius: 0.9rem;
+  box-shadow: 0 4px 14px rgba(50, 43, 117, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.weekly-agenda .weekly-session-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(50, 43, 117, 0.09);
+  border-color: rgba(108, 99, 255, 0.28) !important;
+}
+
+.weekly-agenda .weekly-session-time {
+  color: var(--primary-color-dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.weekly-agenda .weekly-session-professional,
+.weekly-agenda .weekly-session-students {
+  color: #495057;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.weekly-agenda .weekly-session-record {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.weekly-agenda .weekly-session-record--missing {
+  color: #c98a00;
+}
+
+.weekly-agenda .weekly-session-record--done {
+  color: var(--bs-success);
+}
+
+.weekly-agenda .weekly-session-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.weekly-agenda .weekly-session-actions .btn,
+.weekly-agenda .weekly-session-actions a,
+.weekly-agenda .weekly-session-actions button {
+  border-radius: 0.75rem;
+}
+
+.weekly-agenda .weekly-empty-state {
+  color: var(--agenda-muted);
+  padding: 1.25rem 0;
+}
+
+.weekly-agenda .weekly-empty-state i {
+  color: var(--primary-color-light);
+}
+
+@media (max-width: 991.98px) {
+  .weekly-agenda .weekly-sessions-list {
+    max-height: 300px;
+  }
+}

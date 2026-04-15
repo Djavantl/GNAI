@@ -22,25 +22,28 @@
 
             <x-table.td>
                 <x-table.actions>
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.students.show', $student)"
-                        variant="info"
-                        title="Ver ficha do aluno"
-                    >
-                        <i class="fas fa-eye"></i>Ver
-                    </x-buttons.link-button>
-
-                    <form action="{{ route('specialized-educational-support.students.destroy', $student) }}"
-                        method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Deseja realmente excluir este aluno?')"
+                    @can('student.view')
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.students.show', $student)"
+                            variant="info"
+                            title="Ver ficha do aluno"
                         >
-                            <i class="fas fa-trash"></i>Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                            <i class="fas fa-eye"></i>Ver
+                        </x-buttons.link-button>
+                    @endcan
+                    @can('student.delete')
+                        <form action="{{ route('specialized-educational-support.students.destroy', $student) }}"
+                            method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja realmente excluir este aluno?')"
+                            >
+                                <i class="fas fa-trash"></i>Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
                 </x-table.actions>
             </x-table.td>
         </tr>
