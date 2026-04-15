@@ -26,23 +26,39 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const mapContainer = document.getElementById('leaflet-container-map-institution-show');
-            if (!mapContainer) return;
+            const container = document.getElementById('leaflet-container-map-institution-show');
+            if (!container) return;
 
-            const lat = parseFloat(mapContainer.dataset.lat);
-            const lng = parseFloat(mapContainer.dataset.lng);
-            const zoom = parseInt(mapContainer.dataset.zoom || {{ $zoom }});
+            const lat = parseFloat(container.dataset.lat);
+            const lng = parseFloat(container.dataset.lng);
+            const zoom = parseInt(container.dataset.zoom || {{ $zoom }});
 
-            // Cria mapa
-            const map = L.map('map-institution-show').setView([lat, lng], zoom);
-
-            // Camada base OSM
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap',
                 maxZoom: 19
-            }).addTo(map);
+            });
 
-            // Marcador fixo
+            const satelliteLayer = L.tileLayer(
+                'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+                {
+                    attribution: '© Google',
+                    maxZoom: 21
+                }
+            );
+
+            const map = L.map('map-institution-show', {
+                center: [lat, lng],
+                zoom: zoom,
+                layers: [streetLayer]
+            });
+
+            const baseMaps = {
+                "Mapa de Ruas": streetLayer,
+                "Satélite": satelliteLayer
+            };
+
+            L.control.layers(baseMaps).addTo(map);
+
             L.marker([lat, lng])
                 .addTo(map)
                 .bindTooltip('{{ $label }}', {

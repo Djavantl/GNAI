@@ -32,14 +32,32 @@
             const lng = parseFloat(container.dataset.lng);
             const zoom = parseInt(container.dataset.zoom);
 
-            const map = L.map('map-location-show').setView([lat, lng], zoom);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap',
                 maxZoom: 19
-            }).addTo(map);
+            });
 
-            // Marker principal (Location)
+            const satelliteLayer = L.tileLayer(
+                'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+                {
+                    attribution: '© Google',
+                    maxZoom: 21
+                }
+            );
+
+            const map = L.map('map-location-show', {
+                center: [lat, lng],
+                zoom: zoom,
+                layers: [streetLayer]
+            });
+
+            const baseMaps = {
+                "Mapa de Ruas": streetLayer,
+                "Satélite": satelliteLayer
+            };
+
+            L.control.layers(baseMaps).addTo(map);
+
             L.marker([lat, lng])
                 .addTo(map)
                 .bindTooltip('{{ $label }}', {
@@ -50,6 +68,5 @@
                 });
 
         });
-
     </script>
 @endpush

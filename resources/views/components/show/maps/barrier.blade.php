@@ -6,7 +6,6 @@
 ])
 
 @php
-    // Prioridade: coordenadas da barreira → coordenadas da instituição → fallback
     $lat = $barrier->latitude ?? $institution->latitude ?? -14.2350;
     $lng = $barrier->longitude ?? $institution->longitude ?? -51.9253;
     $zoom = $institution->default_zoom ?? 16;
@@ -32,14 +31,32 @@
             const lng = parseFloat(container.dataset.lng);
             const zoom = parseInt(container.dataset.zoom);
 
-            const map = L.map('map-barrier-show').setView([lat, lng], zoom);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap',
                 maxZoom: 19
-            }).addTo(map);
+            });
 
-            // Marcador principal da barreira
+            const satelliteLayer = L.tileLayer(
+                'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+                {
+                    attribution: '© Google',
+                    maxZoom: 21
+                }
+            );
+
+            const map = L.map('map-barrier-show', {
+                center: [lat, lng],
+                zoom: zoom,
+                layers: [streetLayer]
+            });
+
+            const baseMaps = {
+                "Mapa de Ruas": streetLayer,
+                "Satélite": satelliteLayer
+            };
+
+            L.control.layers(baseMaps).addTo(map);
+
             L.marker([lat, lng])
                 .addTo(map)
                 .bindTooltip('{{ $label }}', {
