@@ -44,23 +44,31 @@
 
             <x-table.td>
                 <x-table.actions>
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.waitlists.show', $waitlist)"
-                        variant="info"
-                    >
-                        <i class="fas fa-eye"></i> Ver
-                    </x-buttons.link-button>
+                    @canany(['waitlist.show', 'waitlist.destroy'])
+                        @can('waitlist.show')
+                            <x-buttons.link-button
+                                :href="route('inclusive-radar.waitlists.show', $waitlist)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye"></i> Ver
+                            </x-buttons.link-button>
+                        @endcan
 
-                    <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Deseja excluir esta solicitação?')"
-                        >
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                        @can('waitlist.destroy')
+                            <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <x-buttons.submit-button
+                                    variant="danger"
+                                    onclick="return confirm('Deseja excluir esta solicitação?')"
+                                >
+                                    <i class="fas fa-trash-alt"></i> Excluir
+                                </x-buttons.submit-button>
+                            </form>
+                        @endcan
+                    @else
+                        <span class="text-purple-light">Nenhuma ação</span>
+                    @endcanany
                 </x-table.actions>
             </x-table.td>
         </tr>

@@ -15,13 +15,15 @@
             title="Fila de Espera"
             subtitle="Gerencie solicitações de recursos que estão indisponíveis para empréstimo."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.waitlists.create')"
-                variant="new"
-                title="Adicionar Fila de Espera"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('waitlist.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.waitlists.create')"
+                    variant="new"
+                    title="Adicionar Fila de Espera"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

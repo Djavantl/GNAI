@@ -48,8 +48,7 @@
             </a>
         </li>
 
-        @auth
-            @if(auth()->user()->is_admin)
+
 
                 <li class="menu-divider">Configurações do Sistema</li>
 
@@ -128,8 +127,6 @@
                     </a>
                 </li>
 
-            @endif
-        @endauth
 
         <li class="menu-divider">Atendimento AEE</li>
 

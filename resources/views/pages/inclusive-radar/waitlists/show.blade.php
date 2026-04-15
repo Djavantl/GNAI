@@ -18,10 +18,11 @@
         </div>
 
         <div>
-            <x-buttons.link-button :href="route('inclusive-radar.waitlists.edit', $waitlist)" variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
-
+            @can('waitlist.edit')
+                <x-buttons.link-button :href="route('inclusive-radar.waitlists.edit', $waitlist)" variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
             <x-buttons.link-button :href="route('inclusive-radar.waitlists.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
             </x-buttons.link-button>
@@ -109,31 +110,35 @@
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small d-flex align-items-center">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $waitlist->id }}
-                    <x-buttons.pdf-button :href="route('inclusive-radar.waitlists.pdf', $waitlist)" class="ms-1" />
+                    @can('waitlist.pdf')
+                        <x-buttons.pdf-button :href="route('inclusive-radar.waitlists.pdf', $waitlist)" class="ms-1" />
+                    @endcan
                 </div>
 
                 <div class="d-flex gap-3">
-                    @if($canCancel)
-                        <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
+                    @can('waitlist.cancel')
+                        @if($canCancel)
+                            <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('PATCH')
+                                <x-buttons.submit-button variant="danger" onclick="return confirm('Deseja cancelar?')">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </x-buttons.submit-button>
+                            </form>
+                        @endif
+                    @endcan
+                    @can('waitlist.destroy')
+                        <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
                             @csrf
-                            @method('PATCH')
-                            <x-buttons.submit-button variant="danger" onclick="return confirm('Deseja cancelar?')">
-                                <i class="fas fa-times"></i> Cancelar
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja excluir esta solicitação?')"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
                             </x-buttons.submit-button>
                         </form>
-                    @endif
-
-                    <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Deseja excluir esta solicitação?')"
-                        >
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
-
+                    @endcan
                     <x-buttons.link-button :href="route('inclusive-radar.waitlists.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>
