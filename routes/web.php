@@ -19,12 +19,12 @@ Route::middleware('web')->group(function () {
         ->group(base_path('routes/modules/backup.php'));
 
     Route::middleware(['auth'])->prefix('reports')->group(function () {
-        Route::get('/', [ReportController::class, 'builder'])->name('reports.index');
-        Route::get('/builder', [ReportController::class, 'builder'])->name('reports.builder');
-        Route::get('/builder/available', [ReportController::class, 'availableEntities'])->name('reports.available');
-        Route::get('/builder/meta', [ReportController::class, 'meta'])->name('reports.meta');
-        Route::post('/builder/run', [ReportController::class, 'run'])->name('reports.run');
-        Route::post('/builder/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
+        Route::get('/', [ReportController::class, 'builder'])->name('reports.index')->middleware('can:report.index');
+        Route::get('/builder', [ReportController::class, 'builder'])->name('reports.builder')->middleware('can:report.builder');
+        Route::get('/builder/available', [ReportController::class, 'availableEntities'])->name('reports.available')->middleware('can:report.available');
+        Route::get('/builder/meta', [ReportController::class, 'meta'])->name('reports.meta')->middleware('can:report.meta');
+        Route::post('/builder/run', [ReportController::class, 'run'])->name('reports.run')->middleware('can:report.run');
+        Route::post('/builder/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf')->middleware('can:report.pdf');
     });
 
     Route::prefix('auth')

@@ -244,6 +244,14 @@ class PermissionSeeder extends Seeder
             ['name' => 'Excluir Backup',       'slug' => 'backup.destroy'],
             ['name' => 'Restaurar Backup',     'slug' => 'backup.restore'],
             ['name' => 'Enviar Backup',        'slug' => 'backup.upload'],
+
+            // Relatórios
+            ['name' => 'Listar Relatórios',              'slug' => 'report.index'],
+            ['name' => 'Construtor de Relatórios',       'slug' => 'report.builder'],
+            ['name' => 'Listar Entidades de Relatórios', 'slug' => 'report.available'],
+            ['name' => 'Metadados de Relatórios',        'slug' => 'report.meta'],
+            ['name' => 'Executar Relatórios',            'slug' => 'report.run'],
+            ['name' => 'Exportar Relatórios em PDF',     'slug' => 'report.pdf'],
         ];
 
         foreach ($permissions as $p) {

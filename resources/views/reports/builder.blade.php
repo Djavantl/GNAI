@@ -99,14 +99,16 @@
 
                         <div class="col-12 col-md-4 ">
                             <div class="w-100">
-                                <x-buttons.submit-button
-                                    type="button"
-                                    id="btn-add-relation"
-                                    variant="new"
-                                    class=" mb-4"
-                                >
-                                    <i class="fas fa-plus"></i> Adicionar
-                                </x-buttons.submit-button>
+                                @can('report.builder')
+                                    <x-buttons.submit-button
+                                        type="button"
+                                        id="btn-add-relation"
+                                        variant="new"
+                                        class=" mb-4"
+                                    >
+                                        <i class="fas fa-plus"></i> Adicionar
+                                    </x-buttons.submit-button>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -146,13 +148,16 @@
                     </div>
 
                     <div class="d-flex flex-wrap gap-2">
-                        <x-buttons.submit-button type="button" id="btn-run" variant="new" onclick="runReport()" disabled>
-                            <i class="fas fa-table"></i> Gerar prévia
-                        </x-buttons.submit-button>
-
-                        <x-buttons.submit-button type="button" id="btn-pdf" variant="secondary" onclick="exportPdf()" disabled>
-                            <i class="fas fa-file-pdf"></i> Exportar PDF
-                        </x-buttons.submit-button>
+                        @can('report.run')
+                            <x-buttons.submit-button type="button" id="btn-run" variant="new" onclick="runReport()" disabled>
+                                <i class="fas fa-table"></i> Gerar prévia
+                            </x-buttons.submit-button>
+                        @endcan
+                        @can('report.pdf')
+                            <x-buttons.submit-button type="button" id="btn-pdf" variant="secondary" onclick="exportPdf()" disabled>
+                                <i class="fas fa-file-pdf"></i> Exportar PDF
+                            </x-buttons.submit-button>
+                        @endcan
                     </div>
                 </div>
             </div>

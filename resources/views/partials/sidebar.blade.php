@@ -258,14 +258,15 @@
         @endcan
 
         <li class="menu-divider">Outros</li>
-
-        <li>
-            <a href="{{ route('reports.index') }}"
-            class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-bar-chart"></i></span>
-                <span class="text">Relatórios</span>
-            </a>
-        </li>
+        @can('report.index')
+            <li>
+                <a href="{{ route('reports.index') }}"
+                   class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="bi bi-bar-chart"></i></span>
+                    <span class="text">Relatórios</span>
+                </a>
+            </li>
+        @endcan
 
         @can('backup.index')
             <li>
