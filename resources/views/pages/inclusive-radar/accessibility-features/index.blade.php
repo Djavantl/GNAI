@@ -15,13 +15,15 @@
             title="Recursos de Acessibilidade"
             subtitle="Gerencie as categorias de recursos de acessibilidade disponíveis."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.accessibility-features.create')"
-                variant="new"
-                title="Adicionar Recursos de Acessibilidade"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('accessibility-feature.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.accessibility-features.create')"
+                    variant="new"
+                    title="Adicionar Recursos de Acessibilidade"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

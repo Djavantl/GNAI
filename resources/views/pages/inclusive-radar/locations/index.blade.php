@@ -16,13 +16,15 @@
             title="Pontos de Referência"
             subtitle="Gerencie os prédios, salas e locais específicos dentro de cada instituição."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.locations.create')"
-                variant="new"
-                title="Adicionar Ponto de Referência"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('location.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.locations.create')"
+                    variant="new"
+                    title="Adicionar Ponto de Referência"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

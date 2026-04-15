@@ -21,12 +21,14 @@
         </div>
 
         <div>
-            <x-buttons.link-button
-                :href="route('inclusive-radar.locations.edit', $location)"
-                variant="warning"
-            >
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
+            @can('location.edit')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.locations.edit', $location)"
+                    variant="warning"
+                >
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button
                 :href="route('inclusive-radar.locations.index')"
@@ -101,16 +103,18 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    <form action="{{ route('inclusive-radar.locations.destroy', $location) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Deseja remover este ponto de referência?')"
-                        >
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                    @can('location.destroy')
+                        <form action="{{ route('inclusive-radar.locations.destroy', $location) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja remover este ponto de referência?')"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
 
                     <x-buttons.link-button
                         :href="route('inclusive-radar.locations.index')"

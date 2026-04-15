@@ -18,9 +18,11 @@
         </div>
 
         <div class="d-flex gap-2">
-            <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
+            @can('loan.edit')
+                <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('inclusive-radar.loans.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
@@ -103,19 +105,22 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    @if($loan->status->value === 'active')
-                        <x-buttons.submit-button type="button" variant="success" data-bs-toggle="modal" data-bs-target="#returnLoanModal">
-                            <i class="fas fa-undo"></i> Devolver
-                        </x-buttons.submit-button>
-                    @endif
-
-                    <form action="{{ route('inclusive-radar.loans.destroy', $loan) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este empréstimo permanentemente?')">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                    @can('loan.return')
+                        @if($loan->status->value === 'active')
+                            <x-buttons.submit-button type="button" variant="success" data-bs-toggle="modal" data-bs-target="#returnLoanModal">
+                                <i class="fas fa-undo"></i> Devolver
+                            </x-buttons.submit-button>
+                        @endif
+                    @endcan
+                    @can('loan.destroy')
+                        <form action="{{ route('inclusive-radar.loans.destroy', $loan) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este empréstimo permanentemente?')">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
                 </div>
             </div>
         </div>

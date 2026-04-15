@@ -11,7 +11,6 @@
         ]" />
     </div>
 
-    {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Detalhes do Registro de Backup</h2>
@@ -28,7 +27,6 @@
     <div class="mt-3">
         <div class="custom-table-card bg-white shadow-sm rounded overflow-hidden">
 
-            {{-- SEÇÃO 1: Detalhes do Arquivo (Mesma posição do Edit) --}}
             <x-forms.section title="Identificação do Arquivo Físico" />
 
             <div class="col-md-12 mb-4 px-4">
@@ -48,7 +46,6 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO 2: Metadados --}}
             <x-forms.section title="Metadados para Exibição" />
 
             <div class="px-4">
@@ -71,7 +68,6 @@
                 </div>
             </div>
 
-            {{-- SEÇÃO 3: Status e Governança --}}
             <x-forms.section title="Status e Governança" />
 
             <div class="px-4">
@@ -111,28 +107,29 @@
                 </div>
             </div>
 
-            {{-- Rodapé de Ações --}}
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
                 <div class="text-muted small">
                     <i class="fas fa-database me-1"></i> ID do Registro: #{{ $backup->id }}
                 </div>
 
                 <div class="d-flex gap-3">
-                    <x-buttons.link-button :href="route('backup.backups.download', $backup->id)" variant="success">
-                        <i class="fas fa-download"></i> Baixar Backup
-                    </x-buttons.link-button>
-
-                    <form action="{{ route('backup.backups.destroy', $backup->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Deseja excluir este backup permanentemente?')"
-                        >
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
-
+                    @can('backup.download')
+                        <x-buttons.link-button :href="route('backup.backups.download', $backup->id)" variant="success">
+                            <i class="fas fa-download"></i> Baixar Backup
+                        </x-buttons.link-button>
+                    @endcan
+                    @can('backup.destroy')
+                        <form action="{{ route('backup.backups.destroy', $backup->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button
+                                variant="danger"
+                                onclick="return confirm('Deseja excluir este backup permanentemente?')"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
                     <x-buttons.link-button :href="route('backup.backups.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>

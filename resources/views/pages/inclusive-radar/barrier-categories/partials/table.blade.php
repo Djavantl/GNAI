@@ -18,24 +18,31 @@
 
             <x-table.td>
                 <x-table.actions>
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.barrier-categories.show', $category)"
-                        variant="info"
-                    >
-                        <i class="fas fa-eye"></i> Ver
-                    </x-buttons.link-button>
-
-                    <form action="{{ route('inclusive-radar.barrier-categories.destroy', $category) }}"
-                          method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Tem certeza que deseja excluir?')"
-                        >
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                    @canany(['barrier-category.show', 'barrier-category.destroy'])
+                        @can('barrier-category.show')
+                            <x-buttons.link-button
+                                :href="route('inclusive-radar.barrier-categories.show', $category)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye"></i> Ver
+                            </x-buttons.link-button>
+                        @endcan
+                        @can('barrier-category.destroy')
+                            <form action="{{ route('inclusive-radar.barrier-categories.destroy', $category) }}"
+                                  method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <x-buttons.submit-button
+                                    variant="danger"
+                                    onclick="return confirm('Tem certeza que deseja excluir?')"
+                                >
+                                    <i class="fas fa-trash-alt"></i> Excluir
+                                </x-buttons.submit-button>
+                            </form>
+                        @endcan
+                    @else
+                        <span class="text-purple-light">Nenhuma ação</span>
+                    @endcanany
                 </x-table.actions>
             </x-table.td>
         </tr>

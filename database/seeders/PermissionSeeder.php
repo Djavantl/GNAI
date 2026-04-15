@@ -235,6 +235,15 @@ class PermissionSeeder extends Seeder
             ['name' => 'Formulário Editar Recurso de Acessibilidade', 'slug' => 'accessibility-feature.edit'],
             ['name' => 'Atualizar Recurso de Acessibilidade',         'slug' => 'accessibility-feature.update'],
             ['name' => 'Excluir Recurso de Acessibilidade',           'slug' => 'accessibility-feature.destroy'],
+
+            // Backups
+            ['name' => 'Listar Backups',        'slug' => 'backup.index'],
+            ['name' => 'Criar Backup',         'slug' => 'backup.store'],
+            ['name' => 'Visualizar Backup',    'slug' => 'backup.show'],
+            ['name' => 'Baixar Backup',        'slug' => 'backup.download'],
+            ['name' => 'Excluir Backup',       'slug' => 'backup.destroy'],
+            ['name' => 'Restaurar Backup',     'slug' => 'backup.restore'],
+            ['name' => 'Enviar Backup',        'slug' => 'backup.upload'],
         ];
 
         foreach ($permissions as $p) {

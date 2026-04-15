@@ -21,6 +21,14 @@ use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
+});
+
+/*
+|--------------------------------------------------------------------------
+| OPERACIONAL – Recursos e Ações do Dia a Dia (autenticado + permissões)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
     // ------------------- CATEGORIAS DAS BARREIRAS -------------------
     Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])
         ->name('barrier-categories.index')->middleware('can:barrier-category.index');
@@ -84,14 +92,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('accessibility-features.update')->middleware('can:accessibility-feature.update');
     Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])
         ->name('accessibility-features.destroy')->middleware('can:accessibility-feature.destroy');
-});
-
-/*
-|--------------------------------------------------------------------------
-| OPERACIONAL – Recursos e Ações do Dia a Dia (autenticado + permissões)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth'])->group(function () {
 
     // ------------------- TECNOLOGIAS ASSISTIVAS -------------------
     Route::get('/assistive-technologies', [AssistiveTechnologyController::class, 'index'])

@@ -15,13 +15,15 @@
             title="Materiais Pedagógicos Acessíveis"
             subtitle="Gestão de recursos didáticos, livros e jogos adaptados."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.accessible-educational-materials.create')"
-                variant="new"
-                title="Adicionar Materiais Pedagógicos Acessíveis"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('material.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.accessible-educational-materials.create')"
+                    variant="new"
+                    title="Adicionar Materiais Pedagógicos Acessíveis"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

@@ -49,53 +49,60 @@
                 </span>
             </x-table.td>
 
-            {{-- AÇÕES (Estilo TA: Botão 'Ver' em Info e Ícones) --}}
             <x-table.td>
                 <x-table.actions>
-                    {{-- Download (Mantive apenas ícone para não poluir, como nas TA) --}}
-                    <x-buttons.link-button
-                        :href="route('backup.backups.download', $backup->id)"
-                        variant="success"
-                    >
-                        <i class="fas fa-download"></i> Baixar
-                    </x-buttons.link-button>
-
-                    {{-- Restaurar --}}
-                    @if($backup->status === 'success')
-                        <form action="{{ route('backup.backups.restore', $backup->id) }}"
-                              method="POST"
-                              class="d-inline form-restore">
-                            @csrf
-                            <x-buttons.submit-button
-                                variant="warning"
-                                class="btn-restore"
-                                data-filename="{{ $backup->file_name }}"
+                    @canany(['backup.download', 'backup.restore', 'backup.show', 'backup.destroy'])
+                         @can('backup.download')
+                            <x-buttons.link-button
+                                :href="route('backup.backups.download', $backup->id)"
+                                variant="success"
                             >
-                                <i class="fas fa-history"></i> Restaurar
-                            </x-buttons.submit-button>
-                        </form>
-                    @endif
+                                <i class="fas fa-download"></i> Baixar
+                            </x-buttons.link-button>
+                        @endcan
 
-                    {{-- Ver --}}
-                    <x-buttons.link-button
-                        :href="route('backup.backups.show', $backup->id)"
-                        variant="info"
-                    >
-                        <i class="fas fa-eye"></i> Ver
-                    </x-buttons.link-button>
+                        @can('backup.restore')
+                            @if($backup->status === 'success')
+                                <form action="{{ route('backup.backups.restore', $backup->id) }}"
+                                      method="POST"
+                                      class="d-inline form-restore">
+                                    @csrf
+                                    <x-buttons.submit-button
+                                        variant="warning"
+                                        class="btn-restore"
+                                        data-filename="{{ $backup->file_name }}"
+                                    >
+                                        <i class="fas fa-history"></i> Restaurar
+                                    </x-buttons.submit-button>
+                                </form>
+                            @endif
+                        @endcan
 
-                    {{-- Excluir --}}
-                    <form action="{{ route('backup.backups.destroy', $backup->id) }}"
-                          method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Deseja remover este backup?')"
-                        >
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                        @can('backup.show')
+                            <x-buttons.link-button
+                                :href="route('backup.backups.show', $backup->id)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye"></i> Ver
+                            </x-buttons.link-button>
+                        @endcan
+
+                        @can('backup.destroy')
+                            <form action="{{ route('backup.backups.destroy', $backup->id) }}"
+                                  method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <x-buttons.submit-button
+                                    variant="danger"
+                                    onclick="return confirm('Deseja remover este backup?')"
+                                >
+                                    <i class="fas fa-trash-alt"></i> Excluir
+                                </x-buttons.submit-button>
+                            </form>
+                        @endcan
+                    @else
+                        <span class="text-purple-light">Nenhuma ação</span>
+                    @endcanany
                 </x-table.actions>
             </x-table.td>
         </tr>

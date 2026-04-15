@@ -21,9 +21,11 @@
         </div>
 
         <div>
-            <x-buttons.link-button :href="route('inclusive-radar.institutions.edit', $institution)" variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
+            @can('institution.edit')
+                <x-buttons.link-button :href="route('inclusive-radar.institutions.edit', $institution)" variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('inclusive-radar.institutions.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
@@ -110,15 +112,17 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    <form action="{{ route('inclusive-radar.institutions.destroy', $institution) }}"
-                          method="POST"
-                          onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do recurso. Confirmar?')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                    @can('institution.destroy')
+                        <form action="{{ route('inclusive-radar.institutions.destroy', $institution) }}"
+                              method="POST"
+                              onsubmit="return confirm('ATENÇÃO: Esta ação excluirá todos os dados do recurso. Confirmar?')">
+                            @csrf
+                            @method('DELETE')
+                            <x-buttons.submit-button variant="danger">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
 
                     <x-buttons.link-button :href="route('inclusive-radar.institutions.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar

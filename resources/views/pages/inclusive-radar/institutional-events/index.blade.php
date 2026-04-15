@@ -16,13 +16,15 @@
             title="Agenda Institucional"
             subtitle="Gerenciamento de eventos institucionais."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.institutional-events.create')"
-                variant="new"
-                title="Adicionar Evento"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('institutional-event.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.institutional-events.create')"
+                    variant="new"
+                    title="Adicionar Evento"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

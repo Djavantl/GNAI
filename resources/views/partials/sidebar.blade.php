@@ -120,7 +120,7 @@
             </li>
         @endcan
 
-        @can('barriers.index')
+        @can('barrier.index')
         <li>
             <a href="{{ route('inclusive-radar.barriers.index') }}"
                class="{{ request()->routeIs('inclusive-radar.barriers.*') ? 'active' : '' }}">
@@ -159,7 +159,7 @@
                 </a>
             </li>
         @endcan
-        
+
 
         <li class="menu-divider">Configurações do Sistema</li>
 
@@ -267,13 +267,15 @@
             </a>
         </li>
 
-        <li>
-            <a href="{{ route('backup.backups.index') }}"
-                class="{{ request()->routeIs('backup.backups.*') ? 'active' : '' }}">
-                <span class="icon"><i class="fas fa-cloud-download"></i></span>
-                <span class="text">Backups</span>
-            </a>
-        </li>
+        @can('backup.index')
+            <li>
+                <a href="{{ route('backup.backups.index') }}"
+                   class="{{ request()->routeIs('backup.backups.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="fas fa-cloud-download"></i></span>
+                    <span class="text">Backups</span>
+                </a>
+            </li>
+        @endcan
 
 {{--        <li class="menu-divider">Outros</li>--}}
 

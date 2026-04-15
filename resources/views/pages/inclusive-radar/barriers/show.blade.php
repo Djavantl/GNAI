@@ -20,9 +20,11 @@
             </p>
         </div>
         <div class="d-flex gap-2">
-            <x-buttons.link-button :href="route('inclusive-radar.barriers.edit', $barrier)" variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
+            @can('barrier.edit')
+                <x-buttons.link-button :href="route('inclusive-radar.barriers.edit', $barrier)" variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('inclusive-radar.barriers.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
@@ -173,47 +175,52 @@
                             </div>
                         @endif
                     </div>
+                    @can('barrier.inspection.show')
+                        <x-forms.section title="Histórico de Vistorias"/>
 
-                    <x-forms.section title="Histórico de Vistorias"/>
+                        <div class="px-4 pb-4 mt-3">
+                            <div class="history-timeline custom-scrollbar p-3 border border-secondary-subtle rounded bg-white"
+                                 style="max-height: 450px; overflow-y:auto;">
 
-                    <div class="px-4 pb-4 mt-3">
-                        <div class="history-timeline custom-scrollbar p-3 border border-secondary-subtle rounded bg-white"
-                             style="max-height: 450px; overflow-y:auto;">
-
-                            @forelse($barrier->inspections as $inspection)
-                                <div class="mb-3 cursor-pointer p-2 rounded border shadow-sm transition-hover"
-                                     role="button"
-                                     tabindex="0"
-                                     data-url="{{ route('inclusive-radar.barriers.inspection.show', [$barrier, $inspection]) }}"
-                                     aria-label="Ver detalhes da vistoria de {{ $inspection->inspection_date?->format('d/m/Y') ?? $inspection->created_at->format('d/m/Y') }}">
-                                    <x-forms.inspection-history-card :inspection="$inspection" />
-                                </div>
-                            @empty
-                                <div class="text-center py-5 bg-light rounded border border-dashed">
-                                    <i class="fas fa-history fa-2x text-secondary mb-2 opacity-50"></i>
-                                    <p class="fw-bold text-dark mb-0">Nenhuma vistoria registrada para esta barreira.</p>
-                                    <small class="text-muted">As vistorias ajudam a monitorar o status da resolução.</small>
-                                </div>
-                            @endforelse
+                                @forelse($barrier->inspections as $inspection)
+                                    <div class="mb-3 cursor-pointer p-2 rounded border shadow-sm transition-hover"
+                                         role="button"
+                                         tabindex="0"
+                                         data-url="{{ route('inclusive-radar.barriers.inspection.show', [$barrier, $inspection]) }}"
+                                         aria-label="Ver detalhes da vistoria de {{ $inspection->inspection_date?->format('d/m/Y') ?? $inspection->created_at->format('d/m/Y') }}">
+                                        <x-forms.inspection-history-card :inspection="$inspection" />
+                                    </div>
+                                @empty
+                                    <div class="text-center py-5 bg-light rounded border border-dashed">
+                                        <i class="fas fa-history fa-2x text-secondary mb-2 opacity-50"></i>
+                                        <p class="fw-bold text-dark mb-0">Nenhuma vistoria registrada para esta barreira.</p>
+                                        <small class="text-muted">As vistorias ajudam a monitorar o status da resolução.</small>
+                                    </div>
+                                @endforelse
+                            </div>
                         </div>
-                    </div>
+                    @endcan
                 </div>
             </div>
 
             <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-white no-print">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1"></i> ID: #{{ $barrier->id }}
-                    <x-buttons.pdf-button :href="route('inclusive-radar.barriers.pdf', $barrier)" class="ms-1" />
+                    @can('barrier.pdf')
+                        <x-buttons.pdf-button :href="route('inclusive-radar.barriers.pdf', $barrier)" class="ms-1" />
+                    @endcan
                 </div>
 
                 <div class="d-flex gap-2">
-                    <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}" method="POST"
-                          onsubmit="return confirm('Deseja realmente excluir este registro?')">
-                        @csrf @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                    @can('barrier.destroy')
+                        <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}" method="POST"
+                              onsubmit="return confirm('Deseja realmente excluir este registro?')">
+                            @csrf @method('DELETE')
+                            <x-buttons.submit-button variant="danger">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
 
                     <x-buttons.link-button :href="route('inclusive-radar.barriers.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar

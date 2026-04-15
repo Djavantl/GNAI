@@ -20,9 +20,11 @@
         </div>
 
         <div class="d-flex gap-2">
-            <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.edit', $feature)" variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
+            @can('accessibility-feature.edit')
+                <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.edit', $feature)" variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
@@ -57,16 +59,18 @@
                 </div>
 
                 <div class="d-flex gap-3">
-                    <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}"
-                          method="POST"
-                          onsubmit="return confirm('Deseja excluir permanentemente?')">
-                        @csrf
-                        @method('DELETE')
+                    @can('accessibility-feature.destroy')
+                        <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}"
+                              method="POST"
+                              onsubmit="return confirm('Deseja excluir permanentemente?')">
+                            @csrf
+                            @method('DELETE')
 
-                        <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                            <x-buttons.submit-button variant="danger">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
 
                     <x-buttons.link-button :href="route('inclusive-radar.accessibility-features.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar

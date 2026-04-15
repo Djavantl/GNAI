@@ -25,26 +25,33 @@
 
             <x-table.td>
                 <x-table.actions>
-                    <x-buttons.link-button
-                        :href="route('inclusive-radar.institutions.show', $inst)"
-                        variant="info"
-                    >
-                        <i class="fas fa-eye"></i> Ver
-                    </x-buttons.link-button>
+                    @canany(['institution.show', 'institution.destroy'])
+                        @can('institution.show')
+                            <x-buttons.link-button
+                                :href="route('inclusive-radar.institutions.show', $inst)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye"></i> Ver
+                            </x-buttons.link-button>
+                        @endcan
+                        @can('institution.destroy')
+                            <form action="{{ route('inclusive-radar.institutions.destroy', $inst) }}"
+                                  method="POST"
+                                  class="d-inline">
+                                @csrf
+                                @method('DELETE')
 
-                    <form action="{{ route('inclusive-radar.institutions.destroy', $inst) }}"
-                          method="POST"
-                          class="d-inline">
-                        @csrf
-                        @method('DELETE')
-
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Tem certeza que deseja excluir esta instituição?')"
-                        >
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                                <x-buttons.submit-button
+                                    variant="danger"
+                                    onclick="return confirm('Tem certeza que deseja excluir esta instituição?')"
+                                >
+                                    <i class="fas fa-trash-alt"></i> Excluir
+                                </x-buttons.submit-button>
+                            </form>
+                        @endcan
+                    @else
+                        <span class="text-purple-light">Nenhuma ação</span>
+                    @endcanany
                 </x-table.actions>
             </x-table.td>
         </tr>

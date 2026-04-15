@@ -20,13 +20,15 @@
         </header>
 
         <div role="group" aria-label="Ações principais">
-            <x-buttons.link-button
-                :href="route('inclusive-radar.institutional-events.edit', $event)"
-                variant="warning"
-                label="Editar informações deste registro"
-            >
-                <i class="fas fa-edit" aria-hidden="true"></i> Editar
-            </x-buttons.link-button>
+            @can('institutional-event.edit')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.institutional-events.edit', $event)"
+                    variant="warning"
+                    label="Editar informações deste registro"
+                >
+                    <i class="fas fa-edit" aria-hidden="true"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button
                 href="{{ route('inclusive-radar.institutional-events.index') }}"
@@ -95,17 +97,20 @@
             <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
                 <div class="text-muted small">
                     <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $event->id }}
-                    <x-buttons.pdf-button :href="route('inclusive-radar.institutional-events.pdf', $event)" class="ms-1" />
+                    @can('institutional-event.pdf')
+                        <x-buttons.pdf-button :href="route('inclusive-radar.institutional-events.pdf', $event)" class="ms-1" />
+                    @endcan
                 </div>
 
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão do registro">
-                    <form action="{{ route('inclusive-radar.institutional-events.destroy', $event) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente este registro?')">
-                        @csrf @method('DELETE')
-                        <x-buttons.submit-button variant="danger" label="Excluir este registro">
-                            <i class="fas fa-trash-alt" aria-hidden="true"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
-
+                    @can('institutional-event.destroy')
+                        <form action="{{ route('inclusive-radar.institutional-events.destroy', $event) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente este registro?')">
+                            @csrf @method('DELETE')
+                            <x-buttons.submit-button variant="danger" label="Excluir este registro">
+                                <i class="fas fa-trash-alt" aria-hidden="true"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
                     <x-buttons.link-button
                         href="{{ route('inclusive-radar.institutional-events.index') }}"
                         variant="secondary"

@@ -20,11 +20,13 @@
         </header>
 
         <div role="group" aria-label="Ações principais">
-            <x-buttons.link-button
-                :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"
-                variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
+            @can('material.edit')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"
+                    variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button
                 :href="route('inclusive-radar.accessible-educational-materials.index')"
@@ -64,25 +66,26 @@
                     </div>
                 </x-show.info-item>
             </div>
+            @can('material.inspection.show')
+                <x-forms.section title="Histórico de Vistorias" />
 
-            <x-forms.section title="Histórico de Vistorias" />
-
-            <div class="history-timeline p-4 border border-secondary-subtle rounded bg-white" style="max-height: 450px; overflow-y:auto;">
-                @forelse($material->inspections as $inspection)
-                    <div class="mb-3 cursor-pointer p-2 rounded border shadow-sm hover-shadow"
-                         role="button"
-                         tabindex="0"
-                         data-url="{{ route('inclusive-radar.accessible-educational-materials.inspection.show', [$material, $inspection]) }}"
-                         aria-label="Ver detalhes da vistoria de {{ $inspection->inspection_date->format('d/m/Y') }}">
-                        <x-forms.inspection-history-card :inspection="$inspection"/>
-                    </div>
-                @empty
-                    <div class="text-center py-5 bg-light rounded border border-dashed">
-                        <i class="fas fa-clipboard-list fa-2x text-secondary mb-2"></i>
-                        <p class="fw-bold text-dark mb-0">Nenhum histórico de vistoria encontrado.</p>
-                    </div>
-                @endforelse
-            </div>
+                <div class="history-timeline p-4 border border-secondary-subtle rounded bg-white" style="max-height: 450px; overflow-y:auto;">
+                    @forelse($material->inspections as $inspection)
+                        <div class="mb-3 cursor-pointer p-2 rounded border shadow-sm hover-shadow"
+                             role="button"
+                             tabindex="0"
+                             data-url="{{ route('inclusive-radar.accessible-educational-materials.inspection.show', [$material, $inspection]) }}"
+                             aria-label="Ver detalhes da vistoria de {{ $inspection->inspection_date->format('d/m/Y') }}">
+                            <x-forms.inspection-history-card :inspection="$inspection"/>
+                        </div>
+                    @empty
+                        <div class="text-center py-5 bg-light rounded border border-dashed">
+                            <i class="fas fa-clipboard-list fa-2x text-secondary mb-2"></i>
+                            <p class="fw-bold text-dark mb-0">Nenhum histórico de vistoria encontrado.</p>
+                        </div>
+                    @endforelse
+                </div>
+            @endcan
 
             <x-forms.section title="Gestão e Público" />
 
@@ -122,20 +125,24 @@
             <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
                 <div class="text-muted small">
                     ID no Sistema: #{{ $material->id }}
-                    <x-buttons.pdf-button :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)" class="ms-1" />
+                    @can('material.pdf')
+                        <x-buttons.pdf-button :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)" class="ms-1" />
+                    @endcan
                 </div>
                 <div class="d-flex gap-2">
-                    <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.logs', $material)" variant="secondary-outline">
-                        <i class="fas fa-history"></i> Logs
-                    </x-buttons.link-button>
-
-                    <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
-                        @csrf @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
-
+                    @can('material.logs')
+                        <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.logs', $material)" variant="secondary-outline">
+                            <i class="fas fa-history"></i> Logs
+                        </x-buttons.link-button>
+                    @endcan
+                    @can('material.destroy')
+                        <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
+                            @csrf @method('DELETE')
+                            <x-buttons.submit-button variant="danger">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
                     <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>

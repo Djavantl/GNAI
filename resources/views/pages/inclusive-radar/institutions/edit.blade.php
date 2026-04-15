@@ -171,10 +171,11 @@
                 <x-buttons.link-button href="{{ route('inclusive-radar.institutions.show', $institution) }}" variant="secondary">
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
-
-                <x-buttons.submit-button type="submit" class="btn-action new submit">
-                    <i class="fas fa-save mr-2"></i> Salvar
-                </x-buttons.submit-button>
+                @can('institution.update')
+                    <x-buttons.submit-button type="submit" class="btn-action new submit">
+                        <i class="fas fa-save mr-2"></i> Salvar
+                    </x-buttons.submit-button>
+                @endcan
             </div>
         </x-forms.form-card>
     </div>

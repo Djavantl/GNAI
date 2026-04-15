@@ -21,11 +21,13 @@
         </div>
 
         <div>
-            <x-buttons.link-button
-                :href="route('inclusive-radar.barrier-categories.edit', $barrierCategory)"
-                variant="warning">
-                <i class="fas fa-edit"></i> Editar
-            </x-buttons.link-button>
+            @can('barrier-category.edit')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.barrier-categories.edit', $barrierCategory)"
+                    variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
 
             <x-buttons.link-button
                 :href="route('inclusive-radar.barrier-categories.index')"
@@ -66,17 +68,18 @@
                 </div>
 
                 <div class="d-flex gap-3">
+                    @can('barrier-category.destroy')
+                        <form action="{{ route('inclusive-radar.barrier-categories.destroy', $barrierCategory) }}"
+                              method="POST"
+                              onsubmit="return confirm('ATENÇÃO: Esta ação excluirá esta categoria de barreira. Confirmar?')">
+                            @csrf
+                            @method('DELETE')
 
-                    <form action="{{ route('inclusive-radar.barrier-categories.destroy', $barrierCategory) }}"
-                          method="POST"
-                          onsubmit="return confirm('ATENÇÃO: Esta ação excluirá esta categoria de barreira. Confirmar?')">
-                        @csrf
-                        @method('DELETE')
-
-                        <x-buttons.submit-button variant="danger">
-                            <i class="fas fa-trash-alt"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
+                            <x-buttons.submit-button variant="danger">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
+                        </form>
+                    @endcan
 
                     <x-buttons.link-button
                         :href="route('inclusive-radar.barrier-categories.index')"

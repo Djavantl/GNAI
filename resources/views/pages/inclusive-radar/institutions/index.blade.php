@@ -15,13 +15,15 @@
             title="Instituições Base"
             subtitle="Gerencie os locais centrais onde o radar de acessibilidade opera."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.institutions.create')"
-                variant="new"
-                title="Adicionar Instituição"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('institution.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.institutions.create')"
+                    variant="new"
+                    title="Adicionar Instituição"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

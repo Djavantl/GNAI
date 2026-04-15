@@ -157,10 +157,11 @@
                 >
                     <i class="fas fa-times" aria-hidden="true"></i> Cancelar
                 </x-buttons.link-button>
-
-                <x-buttons.submit-button type="submit" class="btn-action new submit" aria-label="Salvar alterações">
-                    <i class="fas fa-save me-1" aria-hidden="true"></i> Salvar
-                </x-buttons.submit-button>
+                @can('institutional-event.update')
+                    <x-buttons.submit-button type="submit" class="btn-action new submit" aria-label="Salvar alterações">
+                        <i class="fas fa-save me-1" aria-hidden="true"></i> Salvar
+                    </x-buttons.submit-button>
+                @endcan
             </div>
         </x-forms.form-card>
     </div>

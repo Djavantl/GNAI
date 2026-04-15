@@ -15,13 +15,15 @@
             title="Tecnologias Assistivas"
             subtitle="Gerenciamento de periféricos, softwares e equipamentos de acessibilidade."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.assistive-technologies.create')"
-                variant="new"
-                title="Adicionar Tecnologias Assistivas"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('assistive-technology.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.assistive-technologies.create')"
+                    variant="new"
+                    title="Adicionar Tecnologias Assistivas"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

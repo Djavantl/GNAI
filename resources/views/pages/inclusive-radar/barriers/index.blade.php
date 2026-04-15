@@ -15,13 +15,15 @@
             title="Mapa de Barreiras"
             subtitle="Contribuições da comunidade para uma instituição mais acessível."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.barriers.create')"
-                variant="new"
-                title="Adicionar Barreiras"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('barrier.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.barriers.create')"
+                    variant="new"
+                    title="Adicionar Barreiras"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">

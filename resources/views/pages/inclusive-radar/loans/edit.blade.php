@@ -160,15 +160,17 @@
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                @if(!$isReturned)
-                    <x-buttons.submit-button type="submit" class="btn-action new submit">
-                        <i class="fas fa-save me-1"></i> Salvar
-                    </x-buttons.submit-button>
-                @else
-                    <x-buttons.submit-button type="submit" class="btn-action new submit">
-                        <i class="fas fa-save me-1"></i> Atualizar Observações
-                    </x-buttons.submit-button>
-                @endif
+                @can('loan.update')
+                    @if(!$isReturned)
+                        <x-buttons.submit-button type="submit" class="btn-action new submit">
+                            <i class="fas fa-save me-1"></i> Salvar
+                        </x-buttons.submit-button>
+                    @else
+                        <x-buttons.submit-button type="submit" class="btn-action new submit">
+                            <i class="fas fa-save me-1"></i> Atualizar Observações
+                        </x-buttons.submit-button>
+                    @endif
+                @endcan
             </div>
         </x-forms.form-card>
     </div>

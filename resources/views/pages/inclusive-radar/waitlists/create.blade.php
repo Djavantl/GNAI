@@ -103,7 +103,7 @@
                 <x-buttons.link-button href="{{ route('inclusive-radar.waitlists.index') }}" variant="secondary">
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
-                @can('waitlist:store')
+                @can('waitlist.store')
                     <x-buttons.submit-button type="submit" class="btn-action new submit">
                         <i class="fas fa-save me-1"></i> Cadastrar
                     </x-buttons.submit-button>

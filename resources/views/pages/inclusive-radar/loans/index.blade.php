@@ -16,13 +16,15 @@
             title="Empréstimos de Recursos"
             subtitle="Controle de saídas e devoluções de tecnologias e materiais pedagógicos."
         >
-            <x-buttons.link-button
-                :href="route('inclusive-radar.loans.create')"
-                variant="new"
-                title="Adicionar Empréstimo"
-            >
-                <i class="fas fa-plus"></i>
-            </x-buttons.link-button>
+            @can('loan.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.loans.create')"
+                    variant="new"
+                    title="Adicionar Empréstimo"
+                >
+                    <i class="fas fa-plus"></i>
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">
