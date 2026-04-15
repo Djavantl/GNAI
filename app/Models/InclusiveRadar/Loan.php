@@ -121,24 +121,23 @@ class Loan extends Model
 
         $name = strtolower($name);
 
-        $query->where(function ($q) use ($name) {
+        return $query->where(function ($q) use ($name) {
 
-            $q->where('loanable_type', AssistiveTechnology::class)
-                ->whereHas('loanable', function ($q2) use ($name) {
-                    $q2->whereRaw('LOWER(name) LIKE ?', ["%$name%"]);
-                });
-
+            $q->where(function ($q1) use ($name) {
+                $q1->where('loanable_type', 'assistive_technology')
+                    ->whereHas('loanable', function ($q2) use ($name) {
+                        $q2->whereRaw('LOWER(name) LIKE ?', ["%{$name}%"]);
+                    });
+            });
 
             $q->orWhere(function ($q2) use ($name) {
-                $q2->where('loanable_type', AccessibleEducationalMaterial::class)
+                $q2->where('loanable_type', 'accessible_educational_material')
                     ->whereHas('loanable', function ($q3) use ($name) {
-                        $q3->whereRaw('LOWER(name) LIKE ?', ["%$name%"]);
+                        $q3->whereRaw('LOWER(name) LIKE ?', ["%{$name}%"]);
                     });
             });
 
         });
-
-        return $query;
     }
 
     public function scopeByUser($query, ?int $userId)
