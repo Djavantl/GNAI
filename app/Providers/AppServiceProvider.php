@@ -93,11 +93,7 @@ class AppServiceProvider extends ServiceProvider
 
         // View Composer para a Navbar (INSTITUIÇÃO)
         View::composer('layouts.master', function ($view) {
-            $institution = cache()->remember('institution_data', 86400, function () {
-                return Institution::first();
-            });
-
-            $view->with('institution', $institution);
+            $view->with('institution', Institution::first());
         });
     }
 }
