@@ -97,8 +97,7 @@
     <div class="page-break"></div>
     
     <div class="header">
-        <p>Instituto Federal de Educação, Ciência e Tecnologia do Rio Grande do Sul</p>
-        <h1>ANEXO II - DECLARAÇÃO</h1>
+        <h1>DECLARAÇÃO</h1>
     </div>
 
     <div style="text-align: justify; margin-top: 40px; line-height: 2;">

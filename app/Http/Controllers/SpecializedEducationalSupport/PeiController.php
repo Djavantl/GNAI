@@ -217,6 +217,33 @@ class PeiController extends Controller
         $disciplineName = str_replace(' ', '_', $peiDiscipline->discipline->name);
         return $pdf->stream("PEI_{$disciplineName}.pdf");
     }
+
+    public function generateCompletePdf(Pei $pei)
+    {
+        $pei->load([
+            'student.person',
+            'student.deficiencies',
+            'studentContext',
+            'course',
+            'semester'
+        ]);
+
+        $peiDisciplines = $pei->peiDisciplines()
+            ->with(['discipline', 'teacher.person', 'creator'])
+            ->orderBy('id')
+            ->get();
+
+        $pdf = Pdf::loadView('pages.specialized-educational-support.peis.pdf-complete', [
+            'pei' => $pei,
+            'peiDisciplines' => $peiDisciplines
+        ])->setPaper('a4', 'portrait');
+
+        $studentName = str_replace(' ', '_', $pei->student->person->name);
+
+        return $pdf->stream("PEI_COMPLETO_{$studentName}_v{$pei->version}.pdf");
+    }
+
+
     public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)
     {
         $peiDiscipline->load(['teacher.person', 'discipline', 'creator']);

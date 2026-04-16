@@ -43,6 +43,10 @@
             </form>
         @endcan
         @endif
+        <x-buttons.pdf-button 
+            :href="route('specialized-educational-support.pei.pdf', $pei)" 
+            target="_blank" 
+        />
         @can('pei.delete')
         <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}" method="POST"
             onsubmit="return confirm('Excluir permanentemente este PEI?')">
