@@ -67,7 +67,7 @@
                 <p class="section-label">Funcionalidades</p>
                 <h2 class="section-title">Tudo que você precisa<br>em um só lugar</h2>
                 <p class="section-desc">
-                    O GNAI reúne dois grandes sistemas integrados: o <strong>Atendimento AEE</strong>
+                    O GNAI reúne dois grandes sistemas integrados: o <strong>Atendimento Educacional Especializado</strong>
                     e o <strong>Radar Inclusivo</strong>, cobrindo desde o cadastro até o acompanhamento completo.
                 </p>
             </div>
@@ -75,7 +75,7 @@
             <div class="feature-tabs" role="tablist">
                 <button class="feature-tab active" onclick="filterFeatures('all', this)">Todos</button>
                 <button class="feature-tab" onclick="filterFeatures('sistema', this)">Sistema</button>
-                <button class="feature-tab" onclick="filterFeatures('aee', this)">Atendimento AEE</button>
+                <button class="feature-tab" onclick="filterFeatures('aee', this)">AEE</button>
                 <button class="feature-tab" onclick="filterFeatures('radar', this)">Radar Inclusivo</button>
             </div>
 
@@ -201,7 +201,7 @@
                     <div class="sistema-card-header">
                         <div class="sistema-icon"><i class="bi bi-people-fill"></i></div>
                         <div>
-                            <div class="sistema-name">Atendimento AEE</div>
+                            <div class="sistema-name">Atendimento Educacional Especializado</div>
                             <div class="sistema-tagline">Foco no aluno e na equipe</div>
                         </div>
                     </div>
