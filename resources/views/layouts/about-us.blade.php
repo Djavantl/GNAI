@@ -296,8 +296,8 @@
                     </div>
                     <span class="team-role-badge role-orient">Orientação</span>
                     <div class="team-name">Prof. Woquiton Fernandes</div>
-                    <a href="mailto:woquiton@email.com" class="team-email">
-                        <i class="bi bi-envelope"></i> woquiton@email.com
+                    <a href="mailto:woquiton@gmail.com" class="team-email">
+                        <i class="bi bi-envelope"></i> woquiton@gmail.com
                     </a>
                     <a href="https://github.com/Woquiton" target="_blank" class="team-email">
                         <i class="bi bi-github"></i> github.com/Woquiton
