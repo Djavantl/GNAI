@@ -6,6 +6,12 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
+});
+
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
@@ -20,12 +26,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
-    
+
     Route::post('/impersonate/leave', [AdminController::class, 'leaveImpersonate'])
     ->name('admin.impersonate.leave');
 
     Route::post('/impersonate/{user}', [AdminController::class, 'impersonate'])
         ->name('admin.impersonate')
         ->middleware('admin');
-   
+
 });

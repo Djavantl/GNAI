@@ -1,22 +1,32 @@
-/* main-content.css */
-
+/* ================= main content ================= */
 .main-content {
-  margin-left: var(--sidebar-current-width);
-  padding-top: calc(var(--navbar-height) + 1rem);
-  padding-left: 2rem;
-  padding-right: 2rem;
-  padding-bottom: 5rem;
-  min-height: 100vh;
-  transition: all 0.3s;
-  background-color: var(--main-bg);
+    margin-left: 250px;
+    padding-top: 80px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-bottom: 5rem;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+    background-color: var(--main-bg);
 }
 
-/* Ajuste para telas pequenas (quando sidebar é off-canvas) */
-@media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); width: 280px; }
-  .sidebar.show { transform: translateX(0); }
-  .main-content {
-    margin-left: 0;
-    padding-top: calc(var(--navbar-height) + 0.5rem);
-  }
+body.sidebar-collapsed .main-content {
+    margin-left: 70px;
+}
+
+@media (max-width: 865px) {
+
+    .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding-top: 70px;
+    }
 }

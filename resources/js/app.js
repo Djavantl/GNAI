@@ -5,10 +5,9 @@ import './pages/specialized-educational-support/session.js';
 import './components/search-filter.js';
 import './utils/cpf.js';
 import './utils/phone.js';
-import './partials/sidebar.js';
 import './components/collapsible-section';
 
-// App principal - Sidebar e Navbar
+// App principal - Sidebar, Navbar e Dropdowns
 class App {
     constructor() {
         this.init();
@@ -17,245 +16,250 @@ class App {
     init() {
         this.initSidebar();
         this.initActiveMenu();
-        // this.initMobileBehavior();
-        this.initDropdowns();
+        this.initNavbarScrollHide(); // Novo: esconde navbar no scroll mobile
+        // Não chame initDropdowns manualmente – o Bootstrap já faz isso
     }
 
-    // Inicializar sidebar
+    // ==================== SIDEBAR ====================
     initSidebar() {
         this.sidebar = document.querySelector('.sidebar');
-        this.navbarToggler = document.querySelector('.navbar-toggler');
+        this.toggleBtn = document.querySelector('#sidebarToggle');
+        this.overlay = null;
 
-        if (this.navbarToggler) {
-            this.navbarToggler.addEventListener('click', () => this.toggleSidebar());
+        if (!this.sidebar) return;
+
+        // Botão hambúrguer
+        if (this.toggleBtn) {
+            this.toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggleSidebar();
+            });
         }
 
-        // Fechar sidebar ao clicar fora (em mobile)
+        this.createOverlayElement();
+
+        // Fecha ao clicar no overlay
+        if (this.overlay) {
+            this.overlay.addEventListener('click', () => this.closeSidebar());
+        }
+
+        // Fecha ao clicar fora (mobile)
         document.addEventListener('click', (e) => {
-            if (window.innerWidth < 769 &&
-                this.sidebar.classList.contains('show') &&
-                !this.sidebar.contains(e.target) &&
-                !this.navbarToggler.contains(e.target)) {
-                this.sidebar.classList.remove('show');
+            const isMobile = window.innerWidth <= 865;
+            if (!isMobile) return;
+
+            const isOpen = this.sidebar.classList.contains('show');
+            const insideSidebar = this.sidebar.contains(e.target);
+            const clickedToggle = this.toggleBtn?.contains(e.target);
+
+            if (isOpen && !insideSidebar && !clickedToggle) {
+                this.closeSidebar();
             }
         });
+
+        this.handleResize();
+        window.addEventListener('resize', () => this.handleResize());
     }
 
-    // Alternar sidebar (mobile)
-    toggleSidebar() {
-        this.sidebar.classList.toggle('show');
+// ==================== OVERLAY ====================
+    createOverlayElement() {
+        let overlay = document.querySelector('.sidebar-overlay');
 
-        // Adicionar overlay em mobile
-        if (window.innerWidth < 769) {
-            if (this.sidebar.classList.contains('show')) {
-                this.addOverlay();
-            } else {
-                this.removeOverlay();
-            }
-        }
-    }
-
-    // Adicionar overlay em mobile
-    addOverlay() {
-        if (!document.querySelector('.sidebar-overlay')) {
-            const overlay = document.createElement('div');
+        if (!overlay) {
+            overlay = document.createElement('div');
             overlay.className = 'sidebar-overlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.5);
-                z-index: 999;
-                display: block;
-            `;
-            overlay.addEventListener('click', () => this.toggleSidebar());
             document.body.appendChild(overlay);
-            document.body.style.overflow = 'hidden';
+        }
+
+        this.overlay = overlay;
+        this.overlay.classList.remove('show');
+        this.overlay.style.display = 'none';
+    }
+
+// ==================== TOGGLE ====================
+    toggleSidebar() {
+        const isMobile = window.innerWidth <= 865;
+
+        // 🔥 DESKTOP
+        if (!isMobile) {
+            document.body.classList.toggle('sidebar-collapsed');
+            return;
+        }
+
+        // 🔥 MOBILE
+        const isOpen = this.sidebar.classList.contains('show');
+
+        if (!isOpen) {
+            this.openSidebarMobile();
+        } else {
+            this.closeSidebar();
         }
     }
 
-    // Remover overlay
-    removeOverlay() {
-        const overlay = document.querySelector('.sidebar-overlay');
-        if (overlay) {
-            overlay.remove();
-            document.body.style.overflow = '';
+// ==================== OPEN MOBILE ====================
+    openSidebarMobile() {
+        this.sidebar.classList.add('show');
+
+        if (this.overlay) {
+            this.overlay.style.display = 'block';
+            this.overlay.offsetHeight; // força reflow
+            this.overlay.classList.add('show');
+        }
+
+        document.body.classList.add('sidebar-mobile-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+// ==================== CLOSE ====================
+    closeSidebar() {
+        this.sidebar.classList.remove('show');
+
+        if (this.overlay) {
+            this.overlay.classList.remove('show');
+
+            setTimeout(() => {
+                if (!this.sidebar.classList.contains('show')) {
+                    this.overlay.style.display = 'none';
+                }
+            }, 300);
+        }
+
+        document.body.classList.remove('sidebar-mobile-open');
+        document.body.style.overflow = '';
+    }
+
+// ==================== RESIZE ====================
+    handleResize() {
+        const isMobile = window.innerWidth <= 865;
+
+        if (!isMobile) {
+            // Saiu do mobile → limpa estado mobile
+            this.closeSidebar();
+        } else {
+            // Entrou no mobile → remove estado desktop
+            document.body.classList.remove('sidebar-collapsed');
         }
     }
 
-    // Marcar item ativo no menu
+    // ==================== MENU ATIVO ====================
     initActiveMenu() {
         const currentPath = window.location.pathname;
         const menuItems = document.querySelectorAll('.sidebar-menu a');
 
         menuItems.forEach(item => {
             const href = item.getAttribute('href');
-            if (href && currentPath.includes(href.replace('/', ''))) {
+            if (href && href !== '#' && currentPath.includes(href.replace(/^\//, ''))) {
                 item.classList.add('active');
-
-                // Expandir grupo se existir
+                // Expande grupo se existir
                 const parentGroup = item.closest('.menu-group');
-                if (parentGroup) {
-                    parentGroup.classList.add('expanded');
-                }
+                if (parentGroup) parentGroup.classList.add('expanded');
             }
         });
     }
 
-    // // Comportamento mobile
-    // initMobileBehavior() {
-    //     // Fechar sidebar ao clicar em um link em mobile
-    //     if (window.innerWidth < 769) {
-    //         const menuLinks = document.querySelectorAll('.sidebar-menu a');
-    //         menuLinks.forEach(link => {
-    //             link.addEventListener('click', () => {
-    //                 this.sidebar.classList.remove('show');
-    //                 this.removeOverlay();
-    //             });
-    //         });
-    //     }
-    //
-    //     // Ajustar altura do conteúdo
-    //     this.adjustContentHeight();
-    //     window.addEventListener('resize', () => this.adjustContentHeight());
-    // }
+    // ==================== NAVBAR SCROLL HIDE (mobile) ====================
+    initNavbarScrollHide() {
+        const navbar = document.querySelector('.navbar-custom');
+        if (!navbar) return;
 
-    // // Ajustar altura do conteúdo
-    // adjustContentHeight() {
-    //     const navbarHeight = document.querySelector('.navbar-custom').offsetHeight;
-    //     const mainContent = document.querySelector('.main-content');
-    //
-    //     if (mainContent) {
-    //         if (window.innerWidth >= 769) {
-    //             mainContent.style.marginTop = navbarHeight + 'px';
-    //         } else {
-    //             mainContent.style.marginTop = '0';
-    //         }
-    //     }
-    // }
+        let lastScroll = 0;
+        let ticking = false;
+        const isMobile = () => window.innerWidth <= 865;
 
-    // Inicializar dropdowns
-    initDropdowns() {
-        const dropdowns = document.querySelectorAll('.dropdown-toggle');
-        dropdowns.forEach(dropdown => {
-            dropdown.addEventListener('click', function(e) {
-                if (window.innerWidth < 769) {
-                    e.preventDefault();
-                    const menu = this.nextElementSibling;
-                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-                }
+        const handleScroll = () => {
+            if (!isMobile()) {
+                navbar.classList.remove('navbar-hidden');
+                return;
+            }
+
+            // Se algum dropdown do Bootstrap estiver aberto, não esconde a navbar
+            const openDropdown = document.querySelector('.dropdown-menu.show');
+            if (openDropdown) {
+                navbar.classList.remove('navbar-hidden');
+                lastScroll = window.scrollY;
+                return;
+            }
+
+            const currentScroll = window.scrollY;
+            if (currentScroll > lastScroll && currentScroll > 10) {
+                navbar.classList.add('navbar-hidden');
+            } else {
+                navbar.classList.remove('navbar-hidden');
+            }
+            lastScroll = currentScroll;
+        };
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    handleScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // Ao abrir/fechar dropdowns do Bootstrap, reavalia o estado da navbar
+        document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+            btn.addEventListener('shown.bs.dropdown', () => {
+                navbar.classList.remove('navbar-hidden');
+            });
+            btn.addEventListener('hidden.bs.dropdown', () => {
+                handleScroll(); // reaparece se estiver no topo
             });
         });
-
-        // Fechar dropdowns ao clicar fora
-        document.addEventListener('click', (e) => {
-            if (!e.target.matches('.dropdown-toggle')) {
-                document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                    if (window.innerWidth < 769) {
-                        menu.style.display = 'none';
-                    }
-                });
-            }
-        });
-    }
-
-    // Método para mostrar notificações
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type} alert-dismissible fade show`;
-        notification.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-
-        const container = document.querySelector('.main-content');
-        if (container) {
-            container.insertBefore(notification, container.firstChild);
-
-            // Auto-remover após 5 segundos
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
     }
 }
 
-document.addEventListener('click', function(e) {
-    const el = e.target.closest('.notify-item');
-    if (!el) return;
-
-    e.preventDefault();
-
-    const id = el.dataset.id;
-    const href = el.getAttribute('href');
-
-    // marcar como lida
-    axios.post(`/notifications/${id}/read`)
-        .then(() => {
-            // reduzir contador visualmente
-            const badge = document.getElementById('notif-count');
-            if (badge) {
-                const value = parseInt(badge.textContent) - 1;
-                if (value <= 0) badge.remove();
-                else badge.textContent = value;
-            }
-            // redirecionar ao link da notificação
-            if (href && href !== '#') window.location = href;
-        })
-        .catch((err) => {
-            console.error(err);
-            // mesmo se falhar, podemos ir ao link
-            if (href && href !== '#') window.location = href;
-        });
-});
-
+// ==================== NOTIFICAÇÕES (leitura assíncrona) ====================
 document.addEventListener('click', function(e) {
     const item = e.target.closest('.notify-item');
     if (!item) return;
 
     e.preventDefault();
-
     const id = item.dataset.id;
     const url = item.getAttribute('href');
 
-    axios.post(`/notifications/${id}/read`)
-        .then(() => window.location = url)
-        .catch(() => window.location = url);
+    if (id) {
+        axios.post(`/notifications/${id}/read`)
+            .then(() => {
+                // Atualiza contador
+                const badge = document.getElementById('notif-count');
+                if (badge) {
+                    let count = parseInt(badge.textContent);
+                    if (!isNaN(count) && count > 0) {
+                        count--;
+                        if (count === 0) badge.remove();
+                        else badge.textContent = count;
+                    }
+                }
+                if (url && url !== '#') window.location.href = url;
+            })
+            .catch(() => {
+                if (url && url !== '#') window.location.href = url;
+            });
+    } else {
+        if (url && url !== '#') window.location.href = url;
+    }
 });
 
-// Inicializar app quando o DOM estiver carregado
+// ==================== INICIALIZAÇÃO ====================
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
 
-    // Adicionar ano atual no footer se existir
+    // Ano atual no footer
     const yearElement = document.querySelector('[data-year]');
-    if (yearElement) {
-        yearElement.textContent = new Date().getFullYear();
-    }
+    if (yearElement) yearElement.textContent = new Date().getFullYear();
 
-    // Tooltips do Bootstrap
+    // Bootstrap tooltips & popovers
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
 
-    // Popovers do Bootstrap
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.map(function (popoverTriggerEl) {
-        return new bootstrap.Popover(popoverTriggerEl);
-    });
+    popoverTriggerList.map(el => new bootstrap.Popover(el));
 });
 
-// Funções globais
-function toggleSidebar() {
-    if (window.app) {
-        window.app.toggleSidebar();
-    }
-}
-
-// Exportar para uso global
-window.toggleSidebar = toggleSidebar;
+// Função global para compatibilidade com onclick (caso exista)
+window.toggleSidebar = () => {
+    if (window.app) window.app.toggleSidebar();
+};

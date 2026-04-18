@@ -21,6 +21,7 @@ export default defineConfig({
                 'resources/js/pages/inclusive-radar/file-uploader.js',
                 'resources/js/pages/inclusive-radar/waitlists.js',
                 'resources/css/pages/errors.css',
+                'resources/css/pages/about-us.css'
             ],
             refresh: true,
         }),

@@ -1,87 +1,191 @@
-/* Avatar na Tabela (Index) */
+/* ============================================================
+   photos.css – Menu do usuário, avatares e dropdown (clean)
+   ============================================================ */
+
+/* ─────────────────────────────────────────────
+   1. BOTÃO PRINCIPAL (navbar)
+   ───────────────────────────────────────────── */
+.btn-user-profile {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 2px solid transparent;
+    padding: 5px 12px;
+    transition: 0.15s ease;
+    color: var(--text-inverse, #ffffff) !important;
+    border-radius: 6px;
+}
+
+/* Hover / ativo */
+.btn-user-profile:hover,
+.btn-user-profile:focus,
+.btn-user-profile.show,
+.btn-user-profile:active {
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-inverse, #ffffff) !important;
+    box-shadow: none !important;
+}
+
+/* Texto */
+.user-info-text {
+    text-align: right;
+    line-height: 1.1;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: block;
+    color: var(--text-inverse, #ffffff);
+}
+
+.user-role {
+    font-size: 0.7rem;
+    display: block;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Avatar */
+.user-avatar-img {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Remove seta bootstrap */
+.dropdown-toggle::after {
+    display: none;
+}
+
+/* ─────────────────────────────────────────────
+   2. DROPDOWN
+   ───────────────────────────────────────────── */
+.dropdown-menu {
+    border-radius: 6px;
+    min-width: 200px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-color, #dee2e6);
+    background-color: var(--bg-surface, #ffffff);
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: var(--text-primary, #212529);
+    transition: 0.15s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: rgba(var(--color-primary-rgb, 50, 43, 117), 0.08);
+    color: var(--primary-color-dark, #3d35a5);
+}
+
+.dropdown-item.text-danger {
+    color: var(--color-danger, #dc3545) !important;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.dropdown-item.text-warning {
+    color: var(--color-warning-text, #664d03) !important;
+}
+
+.dropdown-item.text-warning:hover {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.dropdown-divider {
+    border-top-color: var(--border-color, #dee2e6);
+}
+
+/* Ícones */
+.dropdown-item i {
+    margin-right: 0.5rem;
+    color: var(--text-secondary, #6c757d);
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover i {
+    color: inherit;
+}
+
+/* ─────────────────────────────────────────────
+   3. AVATAR TABELA
+   ───────────────────────────────────────────── */
 .avatar-table {
     width: 45px;
     height: 45px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #e1ebf8;
-    margin-right: 12px;
+    border: 2px solid var(--main-bg, #e1ebf8);
+    margin-right: 0.75rem;
 }
 
-/* Avatar no Prontuário (Show) */
+/* ─────────────────────────────────────────────
+   4. AVATAR SHOW
+   ───────────────────────────────────────────── */
 .avatar-show {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #4D44B5;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    background-color: #fff;
+    border: 4px solid var(--primary-color, #4D44B5);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    background-color: var(--bg-surface, #ffffff);
 }
 
-/* Preview no Formulário (Edit) */
+/* ─────────────────────────────────────────────
+   5. PREVIEW
+   ───────────────────────────────────────────── */
 .photo-preview-container {
     position: relative;
     display: inline-block;
-    margin-bottom: 15px;
+    margin-bottom: 0.75rem;
 }
 
 .img-preview {
     width: 100px;
     height: 100px;
-    border-radius: 10px;
+    border-radius: 8px;
     object-fit: cover;
-    border: 2px dashed #ddd;
+    border: 2px dashed var(--border-color-strong, #ced4da);
 }
 
-/* Alinhamento da coluna de nome com foto */
+/* ─────────────────────────────────────────────
+   6. UTIL
+   ───────────────────────────────────────────── */
 .name-with-photo {
     display: flex;
     align-items: center;
 }
 
 .nav-profile-img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    margin-right: 8px;
-}
-
-.dropdown-toggle::after {
-    vertical-align: middle; /* Alinha a setinha do dropdown com a foto */
-}
-
-/* Botão do Usuário na Navbar */
-.nav-user-dropdown {
-    /* Cor da borda com a sua variável */
-    border: none !important; 
-    background-color: transparent !important;
-    color: white !important; 
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-    transition: all 0.3s ease;
-}
-
-.nav-user-dropdown:hover {
-    color:  #b7b3cf !important;  
-}
-
-/* Efeito de Hover (passar o mouse) */
-.nav-user-dropdown:hover {
-    background-color: var(--text-purple-dark) !important;
-    
-}
-
-/* Ajuste na imagem dentro desse botão */
-.nav-profile-img {
     width: 32px;
     height: 32px;
     border-radius: 50%;
     object-fit: cover;
-    /* Borda fininha branca na foto para destacar do fundo roxo */
-    border: 1px solid rgba(255, 255, 255, 0.5); 
-    margin-right: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    margin-right: 0.5rem;
+}
+
+/* Alternativo */
+.nav-user-dropdown {
+    border: none !important;
+    background-color: transparent !important;
+    color: var(--text-inverse, #ffffff) !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.15s ease;
+}
+
+.nav-user-dropdown:hover {
+    color: var(--primary-color-light, #b7b3cf) !important;
+    background-color: var(--text-purple-dark, #303972) !important;
 }

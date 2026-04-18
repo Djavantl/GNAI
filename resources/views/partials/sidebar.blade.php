@@ -120,24 +120,14 @@
             </li>
         @endcan
 
-        @can('barrier.index')
-        <li>
-            <a href="{{ route('inclusive-radar.barriers.index') }}"
-               class="{{ request()->routeIs('inclusive-radar.barriers.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-slash-circle"></i></span>
-                <span class="text">Barreiras</span>
-            </a>
-        </li>
-        @endcan
-
         @can('loan.index')
-        <li>
-            <a href="{{ route('inclusive-radar.loans.index') }}"
-               class="{{ request()->routeIs('inclusive-radar.loans.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-arrow-left-right"></i></span>
-                <span class="text">Empréstimos</span>
-            </a>
-        </li>
+            <li>
+                <a href="{{ route('inclusive-radar.loans.index') }}"
+                   class="{{ request()->routeIs('inclusive-radar.loans.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="bi bi-arrow-left-right"></i></span>
+                    <span class="text">Empréstimos</span>
+                </a>
+            </li>
         @endcan
 
         @can('waitlist.index')
@@ -148,6 +138,16 @@
                     <span class="text">Fila de Espera</span>
                 </a>
             </li>
+        @endcan
+
+        @can('barrier.index')
+        <li>
+            <a href="{{ route('inclusive-radar.barriers.index') }}"
+               class="{{ request()->routeIs('inclusive-radar.barriers.*') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-slash-circle"></i></span>
+                <span class="text">Barreiras</span>
+            </a>
+        </li>
         @endcan
 
         @can('institutional-event.index')
@@ -287,15 +287,12 @@
 {{--                <span class="text">Acessibilidade</span>--}}
 {{--            </a>--}}
 {{--        </li>--}}
-
-{{--        <li>--}}
-{{--            <a href="{{ url('/sobre') }}"--}}
-{{--               class="{{ request()->is('sobre*') ? 'active' : '' }}">--}}
-{{--                <span class="icon"><i class="bi bi-info-circle"></i></span>--}}
-{{--                <span class="text">Sobre</span>--}}
-{{--            </a>--}}
-{{--        </li>--}}
-        <br>
+        <li>
+            <a href="{{ route('about-us') }}">
+                <span class="icon"><i class="bi bi-info-circle"></i></span>
+                <span class="text">Sobre o Sistema</span>
+            </a>
+        </li>
         <br>
         <br>
     </ul>

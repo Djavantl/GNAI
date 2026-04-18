@@ -1,29 +1,99 @@
-/* navbar.css */
+/* ============================================================
+   navbar.css
+   ============================================================ */
 
 .navbar-custom {
-  background-color: #322B75;
-  height: var(--navbar-height);
-  position: fixed;
-  top: 0;
-  left: var(--sidebar-current-width);
-  right: 0;
-  z-index: 1001;
-  padding: 0 1rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-  transition: left 0.3s ease;
+    background-color: var(--navbar-bg, #322B75);
+    height: 80px;
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-current-width, 250px);
+    right: 0;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    transition: left 0.3s ease;
 }
 
 .navbar-logo {
-  height: 40px;        /* tamanho padrão */
-  width: auto;         /* mantém proporção */
-  max-height: 100%;    /* nunca ultrapassa a navbar */
-  object-fit: contain; /* evita distorção */
+    height: 40px;
+    width: auto;
+    object-fit: contain;
 }
 
-/* Responsividade (mostra/oculta o toggler) */
 @media (max-width: 768px) {
-  .navbar-toggler { display: block !important; }
+    .navbar-toggler {
+        display: block !important;
+    }
 }
+
 @media (min-width: 769px) {
-  .navbar-toggler { display: none !important; }
+    .navbar-toggler {
+        display: none !important;
+    }
+}
+
+#sidebarToggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    transition: 0.15s ease;
+}
+
+#sidebarToggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+    color: white;
+    transition: 0.15s ease;
+    text-decoration: none;
+}
+
+.navbar-brand:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    color: #856404;
+    border-radius: 6px;
+}
+
+@media (max-width: 865px) {
+
+    .navbar-brand .fw-bold {
+        display: none;
+    }
+
+    .navbar-custom .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .d-flex.align-items-center.gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    .btn-notif-circle,
+    .btn-user-profile {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .user-info-text {
+        display: none;
+    }
+
+    .user-avatar-img {
+        width: 32px;
+        height: 32px;
+    }
 }

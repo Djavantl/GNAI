@@ -14,7 +14,7 @@
                 aria-expanded="false"
                 aria-label="{{ $unreadCount > 0 ? 'Ver ' . $unreadCount . ' notificações não lidas' : 'Ver notificações (Nenhuma nova)' }}">
 
-            <i class="fa fa-regular fa-bell" style="color: #4D44B5" aria-hidden="true"></i>
+            <i class="fa fa-regular fa-bell" aria-hidden="true"></i>
 
             @if($unreadCount > 0)
                 <span id="notif-count"

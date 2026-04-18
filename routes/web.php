@@ -45,4 +45,6 @@ Route::middleware('web')->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.readAll');
     });
+
+    Route::get('/about-us', fn() => view('layouts.about-us'))->name('about-us');
 });

@@ -1,30 +1,169 @@
-/* Estilização do botão circular */
+/* ============================================================
+   Notificações – botão circular e dropdown (clean)
+   ============================================================ */
+
+/* Botão circular do sino */
 .btn-notif-circle {
-    background-color: white !important; /* Círculo branco */
+    background-color: var(--bg-surface, #ffffff) !important;
     width: 40px;
     height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s ease-in-out; /* Suaviza o aumento de escala */
+    transition: 0.15s ease;
     border: none;
     padding: 0;
+    cursor: pointer;
 }
 
-/* Cor do ícone (Pega a cor da sua Navbar Custom) */
+/* Ícone dentro do botão */
 .btn-notif-circle i {
-    color: var(--navbar-bg-color, #000); /* Substitua pelo código da cor da sua navbar se não usar variável */
+    color: var(--primary-color, #4D44B5);
     font-size: 1.2rem;
+    transition: 0.15s ease;
 }
 
-/* Efeito de Hover: Aumenta a escala */
+/* Hover */
 .btn-notif-circle:hover {
-    transform: scale(1.15); /* Aumenta 15% */
-    background-color: #f8f9fa !important; /* Um branco levemente acinzentado no hover */
+    transform: scale(1.1);
+    background-color: var(--bg-surface-secondary, #f8f9fa) !important;
 }
 
-/* Garante que o dropdown não quebre o alinhamento */
-.dropdown-toggle::after {
-    display: none !important; /* Remove a setinha se ela aparecer no sino */
+.btn-notif-circle:hover i {
+    color: var(--primary-color-dark, #3d35a5);
+}
+
+/* Badge */
+.notif-badge-custom {
+    font-size: 0.7rem;
+    padding: 0.25em 0.5em;
+    background-color: var(--color-danger, #dc3545) !important;
+    border: 2px solid var(--bg-surface, #ffffff);
+    border-radius: 999px;
+}
+
+/* Dropdown */
+.dropdown-menu.notif-dropdown {
+    width: 320px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-color, #dee2e6);
+    margin-top: 0.5rem;
+}
+
+/* Header */
+.notif-header {
+    background-color: var(--bg-surface-secondary, #f8f9fa);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color, #dee2e6);
+}
+
+.notif-header h2 {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary, #212529);
+}
+
+/* Itens */
+.notify-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color-light, rgba(0,0,0,0.08));
+    transition: 0.15s ease;
+}
+
+.notify-item:hover {
+    background-color: rgba(var(--color-primary-rgb, 50, 43, 117), 0.04);
+}
+
+.notify-item .fw-semibold {
+    font-size: 0.9rem;
+    color: var(--text-primary, #212529);
+}
+
+.notify-item .text-muted {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #6c757d) !important;
+}
+
+.notify-item .text-primary {
+    font-size: 0.7rem;
+    color: var(--primary-color, #4D44B5) !important;
+}
+
+/* Footer */
+.notif-footer {
+    text-align: center;
+    padding: 0.75rem;
+    background-color: var(--bg-surface-secondary, #f8f9fa);
+    border-top: 1px solid var(--border-color, #dee2e6);
+}
+
+.notif-footer a {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-color, #4D44B5);
+    text-decoration: none;
+}
+
+.notif-footer a:hover {
+    color: var(--primary-color-dark, #3d35a5);
+    text-decoration: underline;
+}
+
+/* Scroll */
+.notification-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.notification-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400, #ced4da);
+    border-radius: 999px;
+}
+
+/* Empty */
+.empty-notifications {
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.empty-notifications i {
+    font-size: 1.5rem;
+    color: var(--text-muted, #adb5bd);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.empty-notifications span {
+    color: var(--text-secondary, #6c757d);
+    font-size: 0.8rem;
+}
+
+/* Mobile */
+@media (max-width: 865px) {
+    .dropdown-menu-end {
+        position: fixed !important;
+        right: 10px !important;
+        left: auto !important;
+        top: calc(var(--navbar-height, 80px) + 10px) !important;
+        width: calc(100% - 20px) !important;
+        max-width: 320px !important;
+        transform: none !important;
+    }
+
+    .navbar-custom .dropdown-menu {
+        right: 10px !important;
+        left: auto !important;
+    }
+
+    .navbar-custom .dropdown-menu-end {
+        top: calc(var(--navbar-height, 80px) + 5px) !important;
+    }
 }

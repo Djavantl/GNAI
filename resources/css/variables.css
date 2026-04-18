@@ -1,43 +1,112 @@
-:root{
-  /* Paleta / cores (mesmos valores que você tinha) */
-  --primary-color: rgba(50, 43, 117, 0.9);
-  --primary-color-medium: #6c63ff;
-  --primary-color-light: #8a7fd4;
-  --primary-color-dark: #3d35a5;
+/* =============================================================
+   variables.css — SOMENTE CORES (tema)
+   ============================================================= */
 
-  --sidebar-bg: #1d1c20;
-  --sidebar-text: #ffffff;
-  --sidebar-hover: rgba(255, 255, 255, 0.1);
-  --scrollbar-thumb: rgba(255, 255, 255, 0.3);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.5);
+/* ─────────────────────────────────────────────
+   1. CORES PRIMÁRIAS
+   ───────────────────────────────────────────── */
+:root {
+    --primary-color:          #322b75;
+    --primary-color-medium:   #6c63ff;
+    --primary-color-light:    #8a7fd4;
+    --primary-color-dark:     #3d35a5;
 
-  --body-bg: #f8f9fa;
-  --main-bg: #e1ebf8;
-  --breadcrumb-active: #6c757d;
-  --bg-soft-info: #eef0f3;
-
-  /* Tipografia / medidas */
-  --font-family-base: 'Inter', sans-serif;
-  --font-family-heading: 'Poppins', bold;
-
-  --sidebar-width: 250px;
-  --navbar-height: 80px;
-
-  /* Bootstrap-like helpers usados no stepper (mantive os nomes originais usados no CSS) */
-  --bs-primary: #0d6efd;
-  /* se necessário para o passo que usa --bs-success etc, deixei referência */
-  --bs-success: #198754;
-  --bs-primary-rgb: 13,110,253;
-  
+    --color-primary:          #322b75;
+    --color-primary-hover:    #3d35a5;
+    --color-primary-rgb:      50, 43, 117;
 }
 
-/* --- Valores dinâmicos (controlados via classes/body) --- */
-/* por padrão */
-body {
-  --sidebar-current-width: var(--sidebar-width);
+/* ─────────────────────────────────────────────
+   2. CORES DE STATUS
+   ───────────────────────────────────────────── */
+:root {
+    --color-success:         #198754;
+    --color-success-light:   #d1e7dd;
+    --color-success-text:    #0f5132;
+
+    --color-danger:          #dc3545;
+    --color-danger-light:    #f8d7da;
+    --color-danger-text:     #842029;
+
+    --color-warning:         #ffc107;
+    --color-warning-light:   #fff3cd;
+    --color-warning-text:    #664d03;
+
+    --color-info:            #0dcaf0;
+    --color-info-light:      #cff4fc;
+    --color-info-text:       #055160;
 }
-/* quando colapsada via classe no body (JS usa sidebar-collapsed) */
-body.sidebar-collapsed {
-  /* mantive o valor original que você usou (6rem) para não quebrar quem já depende disso */
-  --sidebar-current-width: 6rem;
+
+/* ─────────────────────────────────────────────
+   3. CORES NEUTRAS (cinzas e base)
+   ───────────────────────────────────────────── */
+:root {
+    --color-white:           #ffffff;
+    --color-black:           #000000;
+
+    --color-gray-100:        #f8f9fa;
+    --color-gray-200:        #e9ecef;
+    --color-gray-300:        #dee2e6;
+    --color-gray-400:        #ced4da;
+    --color-gray-500:        #adb5bd;
+    --color-gray-600:        #6c757d;
+    --color-gray-700:        #495057;
+    --color-gray-800:        #343a40;
+    --color-gray-900:        #212529;
+}
+
+/* ─────────────────────────────────────────────
+   4. FUNDO / SUPERFÍCIES
+   ───────────────────────────────────────────── */
+:root {
+    --body-bg:               #ffffff;
+    --main-bg:               #e1ebf8;
+
+    --bg-surface:            #ffffff;
+    --bg-surface-secondary:  #f8f9fa;
+    --bg-overlay:            rgba(0, 0, 0, 0.5);
+}
+
+/* ─────────────────────────────────────────────
+   5. TEXTO
+   ───────────────────────────────────────────── */
+:root {
+    --text-primary:          #212529;
+    --text-secondary:        #6c757d;
+    --text-muted:            #adb5bd;
+    --text-inverse:          #ffffff;
+
+    --text-link:             var(--primary-color);
+    --text-link-hover:       var(--primary-color-medium);
+}
+
+/* ─────────────────────────────────────────────
+   6. BORDAS
+   ───────────────────────────────────────────── */
+:root {
+    --border-color:          #dee2e6;
+    --border-color-strong:   #ced4da;
+    --border-color-light:    rgba(0, 0, 0, 0.08);
+}
+
+/* ─────────────────────────────────────────────
+   7. SOMBRAS (baseadas em cor)
+   ───────────────────────────────────────────── */
+:root {
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+    --shadow:    0 4px 12px rgba(0, 0, 0, 0.10);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ─────────────────────────────────────────────
+   8. BOOTSTRAP OVERRIDE (mantém compatibilidade)
+   ───────────────────────────────────────────── */
+:root {
+    --bs-success: var(--color-success);
+    --bs-danger:  var(--color-danger);
+    --bs-warning: var(--color-warning);
+    --bs-info:    var(--color-info);
+
+    --bs-body-bg:    var(--body-bg);
+    --bs-body-color: var(--text-primary);
 }
