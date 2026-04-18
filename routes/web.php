@@ -46,5 +46,5 @@ Route::middleware('web')->group(function () {
         ->name('notifications.readAll');
     });
 
-    Route::get('/about-us', fn() => view('layouts.about-us'))->name('about-us');
+    Route::get('/about-us', fn() => view('pages.about-us'))->name('about-us');
 });

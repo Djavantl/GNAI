@@ -6,6 +6,9 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/pages/errors.css',
+                'resources/css/pages/about-us.css',
+                'resources/css/pages/dashboard.css',
                 'resources/js/app.js',
                 'resources/js/pages/dashboard.js',
                 'resources/js/components/photos.js',
@@ -20,8 +23,6 @@ export default defineConfig({
                 'resources/js/components/dynamicFilters.js',
                 'resources/js/pages/inclusive-radar/file-uploader.js',
                 'resources/js/pages/inclusive-radar/waitlists.js',
-                'resources/css/pages/errors.css',
-                'resources/css/pages/about-us.css'
             ],
             refresh: true,
         }),

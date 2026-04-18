@@ -1,77 +1,235 @@
-/* Ajuste de altura para os containers dos gráficos */
-.chart-container {
-    position: relative;
-    height: 300px; /* Altura fixa para manter o layout estável */
-    width: 100%;
-}
+/* =====================================================
+   CARD BASE
+===================================================== */
 
 .card-custom {
-    transition: all 0.3s ease;
-}
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 1rem;
 
-/* Bordas coloridas nos KPIs para facilitar a leitura rápida */
-.border-primary { border-color: var(--primary-color) !important; }
-.border-info { border-color: #6c63ff !important; }
-.border-success { border-color: #28c76f !important; }
-.border-warning { border-color: #ff9f43 !important; }
-
-.text-success { color: #28c76f !important; }
-.text-warning { color: #ff9f43 !important; }
-
-/* Dashboard Specific */
-.chart-container {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.card-custom {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    cursor: pointer;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .card-custom:hover {
-    transform: translateY(-5px) !important;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
+
+.card-custom .card-body {
+    min-width: 0;
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   TEXTOS
+===================================================== */
 
 .text-title {
     color: #303972 !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
-.bg-primary-custom {
-    background-color: var(--primary-color) !important;
+/* TÍTULO DOS CARDS (resolve vazamento) */
+.card-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.2;
+
+    min-width: 0;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* limita em 2 linhas */
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+    word-break: break-word;
 }
 
-/* Ajuste para ícones circulares nos cards */
-.rounded-circle {
-    width: 56px;
-    height: 56px;
+
+/* =====================================================
+   KPI HEADER (ICONE + TEXTO)
+===================================================== */
+
+.dashboard-kpi-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+}
+
+.dashboard-kpi-icon {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border-radius: 10px;
+    color: #fff;
+
+    flex-shrink: 0; /* impede esmagamento */
 }
 
-.text-danger { color: #ea5455 !important; }
-.text-success { color: #28c76f !important; }
 
-/* Efeito nos Cards do Dashboard */
-.card-custom {
-    transition: transform 0.2s, box-shadow 0.2s;
+/* =====================================================
+   WAITLIST (PARTE MAIS SENSÍVEL)
+===================================================== */
+
+.dashboard-waitlist-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+
+    padding: 0.55rem 0.7rem;
+
+    background-color: rgba(0, 207, 232, 0.05);
+    border: 1px solid rgba(0, 207, 232, 0.3) !important;
+    border-radius: 10px;
+
+    text-decoration: none;
 }
 
-.card-custom:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+.dashboard-waitlist-text {
+    flex: 1 1 auto;
+    min-width: 0;
+
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
-/* Ajuste nos ícones redondos */
-.rounded-3 {
-    width: 45px;
-    height: 45px;
+.dashboard-waitlist-badge {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   ICON BOX (PADRÃO NOVO)
+===================================================== */
+
+.icon-box {
+    min-width: 40px;
+    height: 40px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+
+    border-radius: 8px;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   GRÁFICOS
+===================================================== */
+
+.dashboard-chart-shell {
+    width: 100%;
+    min-width: 0;
+}
+
+.dashboard-chart-shell--large {
+    height: 350px;
+}
+
+.dashboard-chart-shell--small {
+    height: 250px;
+}
+
+.dashboard-chart-shell canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+
+/* =====================================================
+   RESPONSIVIDADE
+===================================================== */
+
+@media (max-width: 991.98px) {
+
+    .card-custom .card-body {
+        padding: 0.85rem;
+    }
+
+    .dashboard-kpi-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .card-label {
+        font-size: 0.78rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .page-transition {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .row.g-4 {
+        --bs-gutter-x: 0.75rem;
+        --bs-gutter-y: 0.75rem;
+    }
+
+    .card-label {
+        font-size: 0.75rem;
+    }
+
+    .dashboard-waitlist-link {
+        padding: 0.5rem 0.6rem;
+    }
+
+    .dashboard-chart-shell--large {
+        height: 280px;
+    }
+
+    .dashboard-chart-shell--small {
+        height: 220px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .dashboard-kpi-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+
+    .dashboard-kpi-title {
+        display: block;
+        -webkit-line-clamp: unset;
+        white-space: normal;
+    }
+
+    .dashboard-waitlist-link {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dashboard-waitlist-badge {
+        align-self: flex-end;
+    }
 }
