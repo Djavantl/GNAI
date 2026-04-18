@@ -264,6 +264,9 @@
                     </div>
                     <span class="team-role-badge role-dev">Desenvolvimento</span>
                     <div class="team-name">Djavan Teixeira Lopes</div>
+                    <a href="mailto:djavanlopesteixeira@gmail.com" class="team-email">
+                        <i class="bi bi-envelope"></i> djavanlopesteixeira@gmail.com
+                    </a>
                     <a href="https://github.com/Djavantl" target="_blank" class="team-email">
                         <i class="bi bi-github"></i> github.com/Djavantl
                     </a>
@@ -277,6 +280,9 @@
                     </div>
                     <span class="team-role-badge role-dev">Desenvolvimento</span>
                     <div class="team-name">Marley Teixeira Meira</div>
+                    <a href="mailto:mxrlrey@gmail.com" class="team-email">
+                        <i class="bi bi-envelope"></i> mxrlrey@gmail.com
+                    </a>
                     <a href="https://github.com/Mxrlrey" target="_blank" class="team-email">
                         <i class="bi bi-github"></i> github.com/Mxrlrey
                     </a>
@@ -290,11 +296,13 @@
                     </div>
                     <span class="team-role-badge role-orient">Orientação</span>
                     <div class="team-name">Prof. Woquiton Fernandes</div>
+                    <a href="mailto:woquiton@email.com" class="team-email">
+                        <i class="bi bi-envelope"></i> woquiton@email.com
+                    </a>
                     <a href="https://github.com/Woquiton" target="_blank" class="team-email">
                         <i class="bi bi-github"></i> github.com/Woquiton
                     </a>
                 </div>
-
             </div>
         </div>
     </section>
