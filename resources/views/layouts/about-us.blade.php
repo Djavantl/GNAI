@@ -48,10 +48,6 @@
                     <span class="hero-stat-num">2</span>
                     <span class="hero-stat-label">Sistemas</span>
                 </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-num">AEE</span>
-                    <span class="hero-stat-label">Foco</span>
-                </div>
             </div>
         </div>
 
