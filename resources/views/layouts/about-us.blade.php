@@ -42,7 +42,7 @@
             <div class="hero-stats">
                 <div class="hero-stat">
                     <span class="hero-stat-num">25</span>
-                    <span class="hero-stat-label">Módulos</span>
+                    <span class="hero-stat-label">Funcionalidades</span>
                 </div>
                 <div class="hero-stat">
                     <span class="hero-stat-num">2</span>
