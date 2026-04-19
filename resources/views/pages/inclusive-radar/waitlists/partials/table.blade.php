@@ -1,7 +1,17 @@
-<x-table.table :headers="['Item', 'Beneficiário', 'Data Solicitação', 'Status', 'Usuário', 'Ações']">
+<x-table.table
+    :headers="[
+        ['label' => 'Item',              'responsive' => false],
+        ['label' => 'Beneficiário',      'responsive' => true],
+        ['label' => 'Data Solicitação',  'responsive' => true],
+        ['label' => 'Status',            'responsive' => true],
+        ['label' => 'Usuário',           'responsive' => true],
+        ['label' => 'Ações',             'responsive' => false],
+    ]"
+    :records="$waitlists"
+>
     @forelse($waitlists as $waitlist)
         <tr>
-            <x-table.td>
+            <x-table.td :responsive="false">
                 @php
                     $resourceRoute = match($waitlist->waitlistable_type) {
                         'assistive_technology'            => route('inclusive-radar.assistive-technologies.show', $waitlist->waitlistable_id),
@@ -9,6 +19,7 @@
                         default                           => '#',
                     };
                 @endphp
+
                 <a href="{{ $resourceRoute }}" class="text-purple-dark text-decoration-none" target="_blank">
                     {{ $waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Item Removido') }}
                 </a>
@@ -42,7 +53,7 @@
                 {{ $waitlist->user->name ?? '—' }}
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['waitlist.show', 'waitlist.destroy'])
                         @can('waitlist.show')

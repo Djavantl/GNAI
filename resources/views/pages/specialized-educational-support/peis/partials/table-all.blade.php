@@ -1,13 +1,25 @@
-<x-table.table :headers="['Estudante', 'Semestre', 'Curso', 'Status', 'Versão', 'Ações']"
-:records="$peis">
+<x-table.table
+    :headers="[
+        ['label' => 'Estudante', 'responsive' => false],
+        ['label' => 'Semestre',  'responsive' => true],
+        ['label' => 'Curso',     'responsive' => true],
+        ['label' => 'Status',    'responsive' => true],
+        ['label' => 'Versão',    'responsive' => true],
+        ['label' => 'Ações',     'responsive' => false],
+    ]"
+    :records="$peis"
+>
     @forelse($peis as $pei)
         <tr>
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <div class="d-flex align-items-center">
-                    
                     <div>
-                        <strong class="d-block">{{ $pei->student->person->name }}</strong>
-                        <small class="text-muted">Matrícula: {{ $pei->student->registration }}</small>
+                        <strong class="d-block">
+                            {{ $pei->student->person->name }}
+                        </strong>
+                        <small class="text-muted">
+                            Matrícula: {{ $pei->student->registration }}
+                        </small>
                     </div>
                 </div>
             </x-table.td>
@@ -21,56 +33,58 @@
             </x-table.td>
 
             <x-table.td>
-                @if($pei->is_finished)
-                    <span class=" text-success ">
-                        FINALIZADO
-                    </span>
-                @else
-                    <span class=" text-warning ">
-                        EM ABERTO
-                    </span>
-                @endif
+                @php
+                    $statusColor = $pei->is_finished ? 'success' : 'warning';
+                    $statusLabel = $pei->is_finished ? 'Finalizado' : 'Em aberto';
+                @endphp
+
+                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
+                    {{ $statusLabel }}
+                </span>
             </x-table.td>
 
             <x-table.td>
                 <strong>V{{ $pei->version ?? 'N/A' }}</strong>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
-                    @can('pei.view')
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.pei.show', $pei->id)"
-                        variant="info"
-                        title="Ver Detalhes"
-                    >
-                        <i class="fas fa-eye" aria-hidden="true"></i> Ver
-                    </x-buttons.link-button>
-                    @endcan
-                    @can('pei.delete')
-                    <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
-                        method="POST"
-                        class="d-inline">
-                        @csrf
-                        @method('DELETE')
+                    @canany(['pei.view', 'pei.delete'])
 
-                        <x-buttons.submit-button 
-                            variant="danger"
-                            onclick="return confirm('Deseja remover este pei?')"
-                            aria-label="Excluir pei do sistema"
-                        >
-                        <i class="fas fa-trash" aria-hidden="true"></i> Excluir
-                        </x-buttons.submit-button>
-                    </form>
-                    @endcan
+                        @can('pei.view')
+                            <x-buttons.link-button
+                                :href="route('specialized-educational-support.pei.show', $pei->id)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye"></i> Ver
+                            </x-buttons.link-button>
+                        @endcan
 
+                        @can('pei.delete')
+                            <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
+                                  method="POST"
+                                  class="d-inline">
+                                @csrf
+                                @method('DELETE')
+
+                                <x-buttons.submit-button
+                                    variant="danger"
+                                    onclick="return confirm('Deseja remover este PEI?')"
+                                >
+                                    <i class="fas fa-trash"></i> Excluir
+                                </x-buttons.submit-button>
+                            </form>
+                        @endcan
+
+                    @else
+                        <span class="text-purple-light">Nenhuma ação</span>
+                    @endcanany
                 </x-table.actions>
             </x-table.td>
         </tr>
     @empty
         <tr>
-            <td colspan="6" class="text-center text-muted py-5">
-                <i class="fas fa-folder-open d-block mb-2" style="font-size: 2rem;"></i>
+            <td colspan="6" class="text-center text-muted py-4">
                 Nenhum PEI do aluno encontrado no sistema.
             </td>
         </tr>

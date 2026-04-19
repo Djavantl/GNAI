@@ -1,10 +1,16 @@
 <x-table.table
-    :headers="['Nome', 'Natureza', 'Estoque', 'Status', 'Ações']"
+    :headers="[
+        ['label' => 'Nome',      'responsive' => false],
+        ['label' => 'Natureza',  'responsive' => true],
+        ['label' => 'Estoque',   'responsive' => true],
+        ['label' => 'Status',    'responsive' => true],
+        ['label' => 'Ações',     'responsive' => false],
+    ]"
     :records="$materials"
 >
     @forelse($materials as $material)
         <tr>
-            <x-table.td>{{ $material->name }}</x-table.td>
+            <x-table.td :responsive="false">{{ $material->name }}</x-table.td>
 
             <x-table.td>{{ $material->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
 
@@ -25,13 +31,12 @@
                     $stColor = $isUnavailable ? 'danger' : ($material->is_active ? 'success' : 'secondary');
                     $stLabel = $isUnavailable ? 'Esgotado' : ($material->is_active ? 'Ativo' : 'Inativo');
                 @endphp
-
                 <span class="text-{{ $stColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $stLabel }}
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['material.show', 'material.destroy'])
                         @can('material.show')
@@ -64,7 +69,7 @@
         </tr>
     @empty
         <tr>
-            <td colspan="6" class="text-center text-muted py-4">
+            <td colspan="5" class="text-center text-muted py-4">
                 Nenhum material pedagógico cadastrado.
             </td>
         </tr>

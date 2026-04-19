@@ -1,10 +1,15 @@
 <x-table.table
-    :headers="['Nome', 'Localização', 'Status', 'Ações']"
+    :headers="[
+        ['label' => 'Nome',        'responsive' => false],
+        ['label' => 'Localização', 'responsive' => true],
+        ['label' => 'Status',      'responsive' => true],
+        ['label' => 'Ações',       'responsive' => false],
+    ]"
     :records="$institutions"
 >
     @forelse($institutions as $inst)
         <tr>
-            <x-table.td>
+            <x-table.td :responsive="false">
                 {{ $inst->name }}
             </x-table.td>
 
@@ -17,13 +22,12 @@
                     $statusColor = $inst->is_active ? 'success' : 'danger';
                     $statusLabel = $inst->is_active ? 'Ativo' : 'Inativo';
                 @endphp
-
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['institution.show', 'institution.destroy'])
                         @can('institution.show')
@@ -40,7 +44,6 @@
                                   class="d-inline">
                                 @csrf
                                 @method('DELETE')
-
                                 <x-buttons.submit-button
                                     variant="danger"
                                     onclick="return confirm('Tem certeza que deseja excluir esta instituição?')"

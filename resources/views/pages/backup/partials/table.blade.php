@@ -1,58 +1,54 @@
-<x-table.table :headers="['Arquivo ZIP', 'Status', 'Tamanho', 'Criado em', 'Responsável', 'Ações']" :records="$backups">
+<x-table.table
+    :headers="[
+        ['label' => 'Arquivo ZIP', 'responsive' => false],
+        ['label' => 'Status',      'responsive' => true],
+        ['label' => 'Tamanho',     'responsive' => true],
+        ['label' => 'Criado em',   'responsive' => true],
+        ['label' => 'Responsável', 'responsive' => true],
+        ['label' => 'Ações',       'responsive' => false],
+    ]"
+    :records="$backups"
+>
     @forelse($backups as $backup)
         <tr>
-            {{-- ARQUIVO ZIP --}}
-            <x-table.td>
-                <a href="{{ route('backup.backups.show', $backup->id) }}" class="fw-medium text-decoration-none hover-underline text-dark">
+            <x-table.td :responsive="false">
+                <a href="{{ route('backup.backups.show', $backup->id) }}"
+                   class="fw-medium text-decoration-none text-dark">
                     <i class="fas fa-file-archive text-warning me-1"></i>
                     {{ $backup->file_name }}
                 </a>
             </x-table.td>
 
-            {{-- STATUS (Estilo TA: Texto colorido e negrito) --}}
             <x-table.td>
                 @php
-                    $statusConfig = [
-                        'success'  => 'success',
-                        'failed'   => 'danger',
-                        'archived' => 'info',
+                    $statusMap = [
+                        'success'  => ['label' => 'Sucesso',  'color' => 'success'],
+                        'failed'   => ['label' => 'Falha',    'color' => 'danger'],
+                        'archived' => ['label' => 'Arquivado','color' => 'info'],
                     ];
-                    $color = $statusConfig[$backup->status] ?? 'secondary';
-                    $label = [
-                        'success'  => 'Sucesso',
-                        'failed'   => 'Falha',
-                        'archived' => 'Arquivado',
-                    ][$backup->status] ?? $backup->status;
+
+                    $status = $statusMap[$backup->status] ?? [
+                        'label' => $backup->status,
+                        'color' => 'secondary'
+                    ];
                 @endphp
 
-                <span class="badge bg-{{ $color }}-subtle text-{{ $color }}-emphasis border px-2">
-                    {{ $label }}
+                <span class="text-{{ $status['color'] }} fw-bold text-uppercase"
+                      style="font-size: 0.85rem;">
+                    {{ $status['label'] }}
                 </span>
             </x-table.td>
 
-            {{-- TAMANHO --}}
-            <x-table.td>
-                <span class="text-primary fw-medium">{{ $backup->size }}</span>
-            </x-table.td>
+            <x-table.td>{{ $backup->size }}</x-table.td>
 
-            {{-- CRIADO EM --}}
-            <x-table.td>
-                <span class="text-muted small">
-                    {{ $backup->created_at->format('d/m/Y H:i') }}
-                </span>
-            </x-table.td>
+            <x-table.td>{{ $backup->created_at->format('d/m/Y H:i') }}</x-table.td>
 
-            {{-- RESPONSÁVEL --}}
-            <x-table.td>
-                <span class="text-secondary fw-medium">
-                    {{ $backup->user->name ?? 'Sistema' }}
-                </span>
-            </x-table.td>
+            <x-table.td>{{ $backup->user->name ?? 'Sistema' }}</x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['backup.download', 'backup.restore', 'backup.show', 'backup.destroy'])
-                         @can('backup.download')
+                        @can('backup.download')
                             <x-buttons.link-button
                                 :href="route('backup.backups.download', $backup->id)"
                                 variant="success"
@@ -89,7 +85,8 @@
 
                         @can('backup.destroy')
                             <form action="{{ route('backup.backups.destroy', $backup->id) }}"
-                                  method="POST" class="d-inline">
+                                  method="POST"
+                                  class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <x-buttons.submit-button
@@ -108,13 +105,9 @@
         </tr>
     @empty
         <tr>
-            <td colspan="6" class="text-center text-muted py-4">Nenhum backup encontrado no histórico.</td>
+            <td colspan="6" class="text-center text-muted py-4">
+                Nenhum backup encontrado no histórico.
+            </td>
         </tr>
     @endforelse
 </x-table.table>
-
-@if($backups->hasPages())
-    <div class="mt-3">
-        {{ $backups->links() }}
-    </div>
-@endif

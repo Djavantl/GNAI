@@ -1,7 +1,16 @@
-<x-table.table :headers="['Nome', 'Categoria', 'Prioridade', 'Status', 'Ações']" :records="$barriers">
+<x-table.table
+    :headers="[
+        ['label' => 'Nome',       'responsive' => false],
+        ['label' => 'Categoria',  'responsive' => true],
+        ['label' => 'Prioridade', 'responsive' => true],
+        ['label' => 'Status',     'responsive' => true],
+        ['label' => 'Ações',      'responsive' => false],
+    ]"
+    :records="$barriers"
+>
     @forelse($barriers as $barrier)
         <tr>
-            <x-table.td>{{ $barrier->name }}</x-table.td>
+            <x-table.td :responsive="false">{{ $barrier->name }}</x-table.td>
 
             <x-table.td>{{ $barrier->category?->name ?? '-' }}</x-table.td>
 
@@ -9,7 +18,6 @@
                 @php
                     $prioColor = $barrier->priority?->color() ?? 'secondary';
                 @endphp
-
                 <span class="text-{{ $prioColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $barrier->priority?->label() ?? '-' }}
                 </span>
@@ -20,16 +28,15 @@
                     $status = $barrier->latestStatus();
                     $statusColor = $status ? $status->color() : 'secondary';
                 @endphp
-
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $status ? $status->label() : 'Pendente' }}
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['barrier.show', 'barrier.destroy'])
-                         @can('barrier.show')
+                        @can('barrier.show')
                             <x-buttons.link-button
                                 :href="route('inclusive-radar.barriers.show', $barrier)"
                                 variant="info"
@@ -57,7 +64,7 @@
         </tr>
     @empty
         <tr>
-            <td colspan="6" class="text-center text-muted py-4">Nenhuma barreira identificada até o momento.</td>
+            <td colspan="5" class="text-center text-muted py-4">Nenhuma barreira identificada até o momento.</td>
         </tr>
     @endforelse
 </x-table.table>

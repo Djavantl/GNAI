@@ -1,10 +1,14 @@
 <x-table.table
-    :headers="['Nome', 'Status', 'Ações']"
+    :headers="[
+        ['label' => 'Nome',   'responsive' => false],
+        ['label' => 'Status', 'responsive' => true],
+        ['label' => 'Ações',  'responsive' => false],
+    ]"
     :records="$features"
 >
     @forelse($features as $feature)
         <tr>
-            <x-table.td>
+            <x-table.td :responsive="false">
                 {{ $feature->name }}
             </x-table.td>
 
@@ -14,7 +18,7 @@
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['accessibility-feature.show', 'accessibility-feature.destroy'])
                         @can('accessibility-feature.store')

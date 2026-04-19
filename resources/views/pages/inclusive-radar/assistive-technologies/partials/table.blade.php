@@ -1,7 +1,16 @@
-<x-table.table :headers="['Nome', 'Natureza', 'Estoque', 'Status', 'Ações']" :records="$assistiveTechnologies">
+<x-table.table
+    :headers="[
+        ['label' => 'Nome',      'responsive' => false],
+        ['label' => 'Natureza',  'responsive' => true],
+        ['label' => 'Estoque',   'responsive' => true],
+        ['label' => 'Status',    'responsive' => true],
+        ['label' => 'Ações',     'responsive' => false],
+    ]"
+    :records="$assistiveTechnologies"
+>
     @forelse($assistiveTechnologies as $tech)
         <tr>
-            <x-table.td>{{ $tech->name }}</x-table.td>
+            <x-table.td :responsive="false">{{ $tech->name }}</x-table.td>
 
             <x-table.td>{{ $tech->is_digital ? 'Digital' : 'Físico' }}</x-table.td>
 
@@ -22,13 +31,12 @@
                     $color = $isUnavailable ? 'danger' : ($tech->is_active ? 'success' : 'secondary');
                     $label = $isUnavailable ? 'Esgotado' : ($tech->is_active ? 'Ativo' : 'Inativo');
                 @endphp
-
                 <span class="text-{{ $color }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $label }}
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['assistive-technology.show', 'assistive-technology.destroy'])
                         @can('assistive-technology.show')

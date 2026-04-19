@@ -1,7 +1,16 @@
-<x-table.table :headers="['Nome', 'Instituição', 'Tipo', 'Status', 'Ações']" :records="$locations">
+<x-table.table
+    :headers="[
+        ['label' => 'Nome',        'responsive' => false],
+        ['label' => 'Instituição', 'responsive' => true],
+        ['label' => 'Tipo',        'responsive' => true],
+        ['label' => 'Status',      'responsive' => true],
+        ['label' => 'Ações',       'responsive' => false],
+    ]"
+    :records="$locations"
+>
     @forelse($locations as $loc)
         <tr>
-            <x-table.td>{{ $loc->name ?? 'N/A' }}</x-table.td>
+            <x-table.td :responsive="false">{{ $loc->name ?? 'N/A' }}</x-table.td>
 
             <x-table.td>{{ $loc->institution->name ?? 'N/A' }}</x-table.td>
 
@@ -18,7 +27,7 @@
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['location.show', 'location.destroy'])
                         @can('location.show')
@@ -29,8 +38,11 @@
                                 <i class="fas fa-eye"></i> Ver
                             </x-buttons.link-button>
                         @endcan
+
                         @can('location.destroy')
-                            <form action="{{ route('inclusive-radar.locations.destroy', $loc) }}" method="POST" class="d-inline">
+                            <form action="{{ route('inclusive-radar.locations.destroy', $loc) }}"
+                                  method="POST"
+                                  class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <x-buttons.submit-button
@@ -49,8 +61,9 @@
         </tr>
     @empty
         <tr>
-            <td colspan="5" class="text-center text-muted py-4">Nenhum ponto de referência encontrado.</td>
+            <td colspan="5" class="text-center text-muted py-4">
+                Nenhum ponto de referência encontrado.
+            </td>
         </tr>
     @endforelse
 </x-table.table>
-

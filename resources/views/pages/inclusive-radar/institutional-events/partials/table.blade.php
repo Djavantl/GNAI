@@ -1,7 +1,17 @@
-<x-table.table :headers="['Nome', 'Data Inicial', 'Data Final', 'Horário', 'Status', 'Ações']" :records="$events">
+<x-table.table
+    :headers="[
+        ['label' => 'Nome',         'responsive' => false],
+        ['label' => 'Data Inicial', 'responsive' => true],
+        ['label' => 'Data Final',   'responsive' => true],
+        ['label' => 'Horário',      'responsive' => true],
+        ['label' => 'Status',       'responsive' => true],
+        ['label' => 'Ações',        'responsive' => false],
+    ]"
+    :records="$events"
+>
     @forelse($events as $event)
         <tr>
-            <x-table.td>{{ $event->title }}</x-table.td>
+            <x-table.td :responsive="false">{{ $event->title }}</x-table.td>
 
             <x-table.td>{{ $event->start_date->format('d/m/Y') }}</x-table.td>
 
@@ -19,10 +29,10 @@
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['institutional-event.show', 'institutional-event.destroy'])
-                         @can('institutional-event.show')
+                        @can('institutional-event.show')
                             <x-buttons.link-button
                                 :href="route('inclusive-radar.institutional-events.show', $event)"
                                 variant="info"

@@ -56,7 +56,7 @@
                             @csrf
                             @method('DELETE')
 
-                            <x-buttons.submit-button 
+                            <x-buttons.submit-button
                                 variant="danger"
                                 onclick="return confirm('Deseja remover este pei?')"
                                 aria-label="Excluir pei do sistema"
@@ -67,7 +67,7 @@
                         @endcan
                     </x-table.actions>
                 </x-table.td>
-            </tr> 
+            </tr>
         @empty
             <tr>
                 <td colspan="6" class="text-center text-muted py-5">

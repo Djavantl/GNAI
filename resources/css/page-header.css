@@ -56,7 +56,7 @@
 
     .table-header-content {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-end;
         gap: 0.5rem;
     }
 }

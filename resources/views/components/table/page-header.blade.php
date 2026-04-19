@@ -2,7 +2,6 @@
     'title',
     'subtitle' => null,
     'image' => 'images/page-header3.png',
-    'actionButton' => null
 ])
 
 <div class="table-header" style="
@@ -21,7 +20,6 @@
             @endif
         </div>
 
-        {{-- Botão de ação via slot --}}
         @if($slot->isNotEmpty())
             <div class="table-header-action">
                 {{ $slot }}

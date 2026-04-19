@@ -1,7 +1,15 @@
-<x-table.table :headers="['Nome', 'Vínculos', 'Status', 'Ações']" :records="$categories">
+<x-table.table
+    :headers="[
+        ['label' => 'Nome',     'responsive' => false],
+        ['label' => 'Vínculos', 'responsive' => true],
+        ['label' => 'Status',   'responsive' => true],
+        ['label' => 'Ações',    'responsive' => false],
+    ]"
+    :records="$categories"
+>
     @forelse($categories as $category)
         <tr>
-            <x-table.td>{{ $category->name }}</x-table.td>
+            <x-table.td :responsive="false">{{ $category->name }}</x-table.td>
 
             <x-table.td>{{ $category->barriers_count ?? $category->barriers->count() }}</x-table.td>
 
@@ -10,13 +18,12 @@
                     $statusColor = $category->is_active ? 'success' : 'secondary';
                     $statusLabel = $category->is_active ? 'Ativo' : 'Inativo';
                 @endphp
-
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['barrier-category.show', 'barrier-category.destroy'])
                         @can('barrier-category.show')

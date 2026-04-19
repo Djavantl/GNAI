@@ -10,7 +10,10 @@
             <thead>
                 <tr>
                     @foreach($headers as $header)
-                        <x-table.th :class="$header['class'] ?? null">
+                        <x-table.th
+                            :responsive="isset($header['responsive']) ? $header['responsive'] : true"
+                            :class="$header['class'] ?? null"
+                        >
                             {{ $header['label'] ?? $header }}
                         </x-table.th>
                     @endforeach

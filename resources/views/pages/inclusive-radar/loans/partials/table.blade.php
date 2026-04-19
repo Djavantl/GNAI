@@ -1,10 +1,17 @@
 <x-table.table
-    :headers="['Item', 'Beneficiário', 'Prazo Entrega', 'Status', 'Usuário', 'Ações']"
+    :headers="[
+        ['label' => 'Item',          'responsive' => false],
+        ['label' => 'Beneficiário',  'responsive' => true],
+        ['label' => 'Prazo Entrega', 'responsive' => true],
+        ['label' => 'Status',        'responsive' => true],
+        ['label' => 'Usuário',       'responsive' => true],
+        ['label' => 'Ações',         'responsive' => false],
+    ]"
     :records="$loans"
 >
     @forelse($loans as $loan)
         <tr>
-            <x-table.td>{{ $loan->loanable->name ?? ($loan->loanable->title ?? 'Item Removido') }}</x-table.td>
+            <x-table.td :responsive="false">{{ $loan->loanable->name ?? ($loan->loanable->title ?? 'Item Removido') }}</x-table.td>
 
             <x-table.td>
                 @if($loan->student)
@@ -29,13 +36,11 @@
                         ? $loan->status
                         : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
 
-                    // Regra de negócio: Mesmo que esteja Ativo, se a data passou, o status visual é "Atraso"
                     $isOverdue = ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast());
 
                     $statusLabel = $isOverdue ? 'Em Atraso' : ($currentStatus?->label() ?? $loan->status);
                     $statusColor = $isOverdue ? 'danger' : ($currentStatus?->color() ?? 'secondary');
                 @endphp
-
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
                     {{ $statusLabel }}
                 </span>
@@ -43,10 +48,10 @@
 
             <x-table.td>{{ $loan->user->name ?? '—' }}</x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @canany(['loan.show', 'loan.destroy'])
-                         @can('loan.show')
+                        @can('loan.show')
                             <x-buttons.link-button
                                 :href="route('inclusive-radar.loans.show', $loan)"
                                 variant="info"
