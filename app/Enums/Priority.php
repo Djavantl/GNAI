@@ -7,6 +7,7 @@ enum Priority: string
     case LOW = 'low';
     case MEDIUM = 'medium';
     case HIGH = 'high';
+    case URGENT = 'urgent';
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum Priority: string
             self::LOW => 'Baixa',
             self::MEDIUM => 'Média',
             self::HIGH => 'Alta',
+            self::URGENT => 'Urgente',
         };
     }
 
@@ -23,6 +25,7 @@ enum Priority: string
             self::LOW => 'info',
             self::MEDIUM => 'warning',
             self::HIGH => 'danger',
+            self::URGENT => 'dark',
         };
     }
 }
