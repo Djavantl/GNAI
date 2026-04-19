@@ -136,30 +136,33 @@ class LoanService
             throw new BusinessRuleException('Não há unidades disponíveis em estoque.');
         }
 
-        $item->decrement('quantity_available');
+        $newAvailable = $item->quantity_available - 1;
 
-        if ($item->quantity_available <= 0) {
-            $item->update([
-                'status' => ResourceStatus::IN_USE
-            ]);
-        }
+        $item->update([
+            'quantity_available' => $newAvailable,
+            'status' => $newAvailable <= 0
+                ? ResourceStatus::IN_USE
+                : $item->status,
+        ]);
+
+        $item->refresh();
     }
 
     private function handleStockIncrement($item, LoanStatus $status): void
     {
         if (!$item || $item->is_digital) return;
 
-        $item->increment('quantity_available');
-
-        /* Itens devolvidos com dano recebem status específico para impedir novos
-           empréstimos automáticos até que passem por manutenção/inspeção. */
         $newStatus = $status === LoanStatus::DAMAGED
             ? ResourceStatus::DAMAGED
             : ResourceStatus::AVAILABLE;
 
         $item->update([
-            'status' => $newStatus
+            'quantity_available' => $item->quantity_available + 1,
+            'status'             => $newStatus,
         ]);
+
+        // Mantém o objeto em memória sincronizado
+        $item->refresh();
     }
 
     public function validateStockAvailability($item, int $quantity): void

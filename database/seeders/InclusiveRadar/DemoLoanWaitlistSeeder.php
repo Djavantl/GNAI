@@ -41,22 +41,21 @@ class DemoLoanWaitlistSeeder extends Seeder
             |--------------------------------------------------------------------------
             */
             $item1 = AccessibleEducationalMaterial::updateOrCreate(
-                ['asset_code' => 'AEM-LOAN-001'],
+                ['name' => 'Leitor Portátil com Áudio'],
                 [
-                    'name' => 'Leitor Portátil com Áudio',
-                    'is_digital' => false,
-                    'quantity' => 1,
+                    'asset_code'         => 'AEM-LOAN-001',
+                    'is_digital'         => false,
+                    'quantity'           => 1,
                     'quantity_available' => 0,
                     'conservation_state' => ConservationState::GOOD->value,
-                    'is_loanable' => true,
-                    'status' => ResourceStatus::IN_USE->value,
-                    'is_active' => true,
+                    'is_loanable'        => true,
+                    'status'             => ResourceStatus::IN_USE->value,
+                    'is_active'          => true,
                 ]
             );
 
             $this->attachRandomRelations($item1, $deficiencyIds, $featureIds);
 
-            // Devolvido
             $this->createLoan(
                 $item1,
                 $studentA->id,
@@ -68,7 +67,6 @@ class DemoLoanWaitlistSeeder extends Seeder
                 now()->subDays(5)
             );
 
-            // Ativo
             $this->createLoan(
                 $item1,
                 $studentB->id,
@@ -82,7 +80,6 @@ class DemoLoanWaitlistSeeder extends Seeder
             $this->createWaitlist($item1, $studentC->id, $user->id, now()->subDays(2)->setTime(8, 0), 'Fila 1');
             $this->createWaitlist($item1, $studentD->id, $user->id, now()->subDay()->setTime(10, 0), 'Fila 2');
 
-            // Cancelado
             $this->createWaitlist(
                 $item1,
                 $studentE->id,
@@ -98,22 +95,21 @@ class DemoLoanWaitlistSeeder extends Seeder
             |--------------------------------------------------------------------------
             */
             $item2 = AccessibleEducationalMaterial::updateOrCreate(
-                ['asset_code' => 'AEM-LOAN-002'],
+                ['name' => 'Mapa Tátil'],
                 [
-                    'name' => 'Mapa Tátil',
-                    'is_digital' => false,
-                    'quantity' => 1,
+                    'asset_code'         => 'AEM-LOAN-002',
+                    'is_digital'         => false,
+                    'quantity'           => 1,
                     'quantity_available' => 0,
                     'conservation_state' => ConservationState::GOOD->value,
-                    'is_loanable' => true,
-                    'status' => ResourceStatus::IN_USE->value,
-                    'is_active' => true,
+                    'is_loanable'        => true,
+                    'status'             => ResourceStatus::IN_USE->value,
+                    'is_active'          => true,
                 ]
             );
 
             $this->attachRandomRelations($item2, $deficiencyIds, $featureIds);
 
-            // Atrasado
             $this->createLoan(
                 $item2,
                 $studentF->id,
@@ -133,16 +129,16 @@ class DemoLoanWaitlistSeeder extends Seeder
             |--------------------------------------------------------------------------
             */
             $item3 = AccessibleEducationalMaterial::updateOrCreate(
-                ['asset_code' => 'AEM-DIG-001'],
+                ['name' => 'Software Leitor de Tela'],
                 [
-                    'name' => 'Software Leitor de Tela',
-                    'is_digital' => true,
-                    'quantity' => 999,
+                    'asset_code'         => 'AEM-DIG-001',
+                    'is_digital'         => true,
+                    'quantity'           => 999,
                     'quantity_available' => 999,
                     'conservation_state' => ConservationState::NOT_APPLICABLE->value,
-                    'is_loanable' => true,
-                    'status' => ResourceStatus::AVAILABLE->value,
-                    'is_active' => true,
+                    'is_loanable'        => true,
+                    'status'             => ResourceStatus::AVAILABLE->value,
+                    'is_active'          => true,
                 ]
             );
 
@@ -157,16 +153,16 @@ class DemoLoanWaitlistSeeder extends Seeder
             |--------------------------------------------------------------------------
             */
             $item4 = AccessibleEducationalMaterial::updateOrCreate(
-                ['asset_code' => 'AEM-LOAN-003'],
+                ['name' => 'Livro em Braille'],
                 [
-                    'name' => 'Livro em Braille',
-                    'is_digital' => false,
-                    'quantity' => 1,
+                    'asset_code'         => 'AEM-LOAN-003',
+                    'is_digital'         => false,
+                    'quantity'           => 1,
                     'quantity_available' => 0,
                     'conservation_state' => ConservationState::GOOD->value,
-                    'is_loanable' => true,
-                    'status' => ResourceStatus::IN_USE->value,
-                    'is_active' => true,
+                    'is_loanable'        => true,
+                    'status'             => ResourceStatus::IN_USE->value,
+                    'is_active'          => true,
                 ]
             );
 
@@ -223,14 +219,14 @@ class DemoLoanWaitlistSeeder extends Seeder
         $item->loans()->updateOrCreate(
             [
                 'student_id' => $studentId,
-                'loan_date' => $loanDate,
+                'loan_date'  => $loanDate,
             ],
             [
-                'user_id' => $userId,
-                'due_date' => $dueDate,
-                'return_date' => $returnDate,
-                'status' => $status->value,
-                'observation' => $obs,
+                'user_id'      => $userId,
+                'due_date'     => $dueDate,
+                'return_date'  => $returnDate,
+                'status'       => $status->value,
+                'observation'  => $obs,
             ]
         );
     }
@@ -245,12 +241,12 @@ class DemoLoanWaitlistSeeder extends Seeder
     ): void {
         $item->waitlists()->updateOrCreate(
             [
-                'student_id' => $studentId,
+                'student_id'   => $studentId,
                 'requested_at' => $date,
             ],
             [
-                'user_id' => $userId,
-                'status' => $status->value,
+                'user_id'     => $userId,
+                'status'      => $status->value,
                 'observation' => $obs,
             ]
         );

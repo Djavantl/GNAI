@@ -72,25 +72,6 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        // View Composer para Accessible Educational Materials
-        View::composer(['pages.inclusive-radar.accessible-educational-materials.create',
-            'pages.inclusive-radar.accessible-educational-materials.edit',
-        ], function ($view) {
-            $view->with([
-                'deficiencies' => Deficiency::orderBy('name')->get(),
-            ]);
-        });
-
-        // View Composer para Assistive Technologies
-        View::composer([
-            'pages.inclusive-radar.assistive-technologies.create',
-            'pages.inclusive-radar.assistive-technologies.edit',
-        ], function ($view) {
-            $view->with([
-                'deficiencies' => Deficiency::orderBy('name')->get(),
-            ]);
-        });
-
         // View Composer para a Navbar (INSTITUIÇÃO)
         View::composer('layouts.master', function ($view) {
             $view->with('institution', Institution::first());
