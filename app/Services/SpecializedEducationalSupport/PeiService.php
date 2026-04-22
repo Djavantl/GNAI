@@ -3,6 +3,7 @@
 namespace App\Services\SpecializedEducationalSupport;
 
 use App\Models\SpecializedEducationalSupport\Pei;
+use App\Models\SpecializedEducationalSupport\PeiDiscipline;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\SpecificObjective;
 use App\Models\SpecializedEducationalSupport\ContentProgrammatic;
@@ -176,6 +177,43 @@ class PeiService
     {
         if ($pei->creator_id !== auth()->id()) {
             throw new \Exception('Acesso negado: apenas o criador do PEI pode finaliza-lo');
+        }
+
+        $pei->loadMissing('peiDisciplines.discipline');
+
+        if ($pei->peiDisciplines->isEmpty()) {
+            throw new \Exception('O PEI precisa ter ao menos uma adaptação cadastrada antes de ser finalizado.');
+        }
+
+        $requiredFields = [
+            'specific_objectives' => 'objetivos específicos',
+            'content_programmatic' => 'conteúdo programático',
+            'methodologies' => 'metodologias e estratégias',
+            'evaluations' => 'processo de avaliação',
+            'opinion' => 'parecer',
+        ];
+
+        $incompleteDiscipline = $pei->peiDisciplines->first(function (PeiDiscipline $peiDiscipline) use ($requiredFields) {
+            foreach (array_keys($requiredFields) as $field) {
+                if (blank($peiDiscipline->{$field})) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        if ($incompleteDiscipline) {
+            $missingFields = collect($requiredFields)
+                ->filter(fn ($label, $field) => blank($incompleteDiscipline->{$field}))
+                ->values()
+                ->implode(', ');
+
+            $disciplineName = $incompleteDiscipline->discipline->name ?? 'disciplina sem identificação';
+
+            throw new \Exception(
+                "Não é possível finalizar o PEI. A adaptação da disciplina {$disciplineName} precisa preencher: {$missingFields}."
+            );
         }
 
         DB::transaction(function () use ($pei) {

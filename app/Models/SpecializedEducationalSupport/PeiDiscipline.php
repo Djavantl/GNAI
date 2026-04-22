@@ -24,6 +24,7 @@ class PeiDiscipline extends Model
         'methodologies',
         'evaluations',
         'opinion',
+        'complementary_records',
     ];
 
     /**

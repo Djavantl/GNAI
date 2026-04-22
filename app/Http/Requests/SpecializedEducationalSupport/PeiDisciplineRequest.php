@@ -20,7 +20,8 @@ class PeiDisciplineRequest extends FormRequest
             'content_programmatic' => 'required|string',
             'methodologies' => 'required|string',
             'evaluations' => 'required|string',
-            'opinion' => 'required|string',
+            'opinion' => 'nullable|string',
+            'complementary_records' => 'nullable|string',
         ];
     }
 }

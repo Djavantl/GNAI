@@ -73,16 +73,26 @@
 
                                 <div class="col-12">
                                     <x-ui.info-card-textarea
+                                        label="Registros Complementares"
+                                        :value="$item->complementary_records"
+                                        rows="4"
+                                    />
+                                </div>
+
+                                <div class="col-12">
+                                    <x-ui.info-card-textarea
                                         label="Parecer"
                                         :value="$item->opinion"
                                         rows="4"
                                     />
                                 </div>
 
+                                
+
                                 {{-- ações --}}
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
                                    
-                                    @if(!$pei->is_finished && auth()->user()->teacher?->id == $item->teacher_id)
+                                    @if(!$pei->is_finished && auth()->id() == $item->creator_id)
                                         @can('pei-discipline.update')
                                         <x-buttons.link-button Dados do PEI
                                            href="{{ route('specialized-educational-support.pei-discipline.edit', [$pei, $item]) }}"

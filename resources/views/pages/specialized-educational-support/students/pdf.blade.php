@@ -616,12 +616,23 @@ $relationshipMap = [
 
                 <tr>
                     <td class="pdf-cell" colspan="4">
+                        <strong>Registros Complementares</strong>
+                        <div class="long-text">
+                            {!! $renderHtml($item->complementary_records) !!}
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="pdf-cell" colspan="4">
                         <strong>Parecer</strong>
                         <div class="long-text">
                             {!! $renderHtml($item->opinion) !!}
                         </div>
                     </td>
                 </tr>
+
+                
 
             </table>
 

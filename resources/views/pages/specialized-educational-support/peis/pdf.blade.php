@@ -43,7 +43,7 @@
         </tr>
         <tr>
             <td width="60%"><span class="field-label">Curso:</span> {{ $pei->course->name }}</td>
-            <td width="40%"><span class="field-label">Ano - Semestre/Trimestre:</span> {{ $pei->semester->label }}</td>
+            <td width="40%"><span class="field-label">Ano - Semestre:</span> {{ $pei->semester->label }}</td>
         </tr>
         <tr>
             <td width="60%"><span class="field-label">Componente Curricular:</span> {{ mb_strtoupper($item->discipline->name, 'UTF-8') }}</td>
@@ -79,8 +79,13 @@
     <span class="field-label">Avaliação:</span>
     <div class="content-box">{!! $item->evaluations !!}</div>
 
+    <span class="field-label">Registros Complementares:</span>
+    <div class="content-box">{!! $item->complementary_records ?? '' !!}</div>
+
     <span class="field-label">Parecer:</span>
     <div class="content-box">{!! $item->opinion !!}</div>
+
+   
 
     <table class="signature-table">
         <tr>

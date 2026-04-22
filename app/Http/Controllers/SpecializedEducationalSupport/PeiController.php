@@ -315,6 +315,10 @@ class PeiController extends Controller
             return redirect()->back()->with('error', 'Não é possível editar disciplinas de um PEI finalizado.');
         }
 
+        if ((int) $peiDiscipline->creator_id !== (int) Auth::id()) {
+            return redirect()->back()->with('error', 'Apenas o criador desta adaptação pode editá-la.');
+        }
+
         $teachers = Teacher::all();
         $disciplines = Discipline::orderBy('name')->get();
 

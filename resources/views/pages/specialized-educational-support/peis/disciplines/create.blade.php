@@ -78,8 +78,8 @@
                 <x-forms.textarea
                     name="content_programmatic"
                     label="Conteúdo Programático"
-                    rows="4"
                     :required="true"
+                    rows="4"
                     :value="old('content_programmatic')"
                     placeholder="Liste os conteúdos que serão abordados nesta disciplina..."
                 />
@@ -89,8 +89,8 @@
                 <x-forms.textarea
                     name="methodologies"
                     label="Metodologias e Estratégias"
-                    rows="4"
                     :required="true"
+                    rows="4"
                     :value="old('methodologies')"
                     placeholder="Descreva como o conteúdo será ensinado (recursos, materiais, apoios)..."
                 />
@@ -100,10 +100,23 @@
                 <x-forms.textarea
                     name="evaluations"
                     label="Processo de Avaliação"
-                    rows="4"
                     :required="true"
+                    rows="4"
                     :value="old('evaluations')"
                     placeholder="Como a aprendizagem será avaliada nesta disciplina?"
+                />
+            </div>
+
+            <div class="col-md-12">
+                <p class="small text-muted mb-2">
+                    Espaço opcional destinado ao registro de informações relevantes que contribuam para o acompanhamento pedagógico do estudante e que não estejam contempladas nos campos anteriores.
+                </p>
+                <x-forms.textarea
+                    name="complementary_records"
+                    label="Registros Complementares"
+                    rows="4"
+                    :value="old('complementary_records')"
+                    placeholder="Registre aqui informações complementares relevantes para o acompanhamento pedagógico do estudante."
                 />
             </div>
 
@@ -112,11 +125,12 @@
                     name="opinion"
                     label="Parecer"
                     rows="4"
-                    :required="true"
                     :value="old('opinion')"
                     placeholder="Descrever avanços do estudante, considerando as metas previstas para ele e principais dificuldades."
                 />
             </div>
+
+            
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei) }}" variant="secondary">

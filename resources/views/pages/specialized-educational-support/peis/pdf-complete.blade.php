@@ -240,7 +240,7 @@
                 {{ $pei->course->name }}
             </td>
             <td width="40%">
-                <span class="field-label">Ano - Semestre/Trimestre:</span>
+                <span class="field-label">Ano - Semestre:</span>
                 {{ $pei->semester->label }}
             </td>
         </tr>
@@ -328,10 +328,16 @@
                 {!! $item->evaluations ?? '' !!}
             </div>
 
+            <span class="field-label">Registros Complementares:</span>
+            <div class="content-box">
+                {!! $item->complementary_records ?? '' !!}
+            </div>
+
             <span class="field-label">Parecer:</span>
             <div class="content-box">
                 {!! $item->opinion ?? '' !!}
             </div>
+
         
     @empty
         <div class="content-box">

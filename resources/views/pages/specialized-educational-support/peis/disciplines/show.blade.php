@@ -63,9 +63,15 @@
             {!! $peiDiscipline->evaluations !!}
         </x-show.info-textarea>
 
+        <x-show.info-textarea label="Registros Complementares" column="col-md-12" isBox="true">
+            {!! $peiDiscipline->complementary_records ?? 'Nenhum registro complementar informado.' !!}
+        </x-show.info-textarea>
+
         <x-show.info-textarea label="Parecer" column="col-md-12" isBox="true">
             {!! $peiDiscipline->opinion !!}
         </x-show.info-textarea>
+
+        
     </div>
 
 

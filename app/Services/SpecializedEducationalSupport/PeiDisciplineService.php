@@ -24,6 +24,16 @@ class PeiDisciplineService
     }
 
     /**
+     * Garante que apenas o criador da adaptação possa alterá-la ou removê-la.
+     */
+    private function checkOwnership(PeiDiscipline $peiDiscipline): void
+    {
+        if ((int) $peiDiscipline->creator_id !== (int) Auth::id()) {
+            throw new Exception("Apenas o criador desta adaptação pode editá-la ou excluí-la.");
+        }
+    }
+
+    /**
      * Lista adaptações (pei_disciplines) de um PEI
      */
     public function listByPei(Pei $pei)
@@ -76,6 +86,7 @@ class PeiDisciplineService
                 'methodologies' => $data['methodologies'] ?? null,
                 'evaluations' => $data['evaluations'] ?? null,
                 'opinion' => $data['opinion'] ?? null,
+                'complementary_records' => $data['complementary_records'] ?? null,
             ]);
         });
     }
@@ -87,6 +98,7 @@ class PeiDisciplineService
     {
         // Verifica o status através do relacionamento com o PEI pai
         $this->checkPeiStatus($peiDiscipline->pei);
+        $this->checkOwnership($peiDiscipline);
 
         // somente validar quando os campos relevantes mudarem ou estiverem presentes
         $disciplineId = $data['discipline_id'] ?? $peiDiscipline->discipline_id;
@@ -112,7 +124,8 @@ class PeiDisciplineService
                 'content_programmatic' => $data['content_programmatic'] ?? $peiDiscipline->content_programmatic,
                 'methodologies' => $data['methodologies'] ?? $peiDiscipline->methodologies,
                 'evaluations' => $data['evaluations'] ?? $peiDiscipline->evaluations,
-                'opinion' => $data['opinion'] ?? $peiDiscipline->evaluations,
+                'opinion' => $data['opinion'] ?? null,
+                'complementary_records' => $data['complementary_records'] ?? null,
             ]);
 
             return $peiDiscipline;
@@ -122,6 +135,7 @@ class PeiDisciplineService
     public function delete(PeiDiscipline $peiDiscipline): bool
     {
         $this->checkPeiStatus($peiDiscipline->pei);
+        $this->checkOwnership($peiDiscipline);
 
         return $peiDiscipline->delete();
     }

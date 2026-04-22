@@ -55,8 +55,8 @@
                 <x-forms.textarea
                     name="specific_objectives"
                     label="Objetivos Específicos"
+                    :required="true"
                     rows="4"
-                    required
                     :value="old('specific_objectives', $peiDiscipline->specific_objectives)"
                 />
             </div>
@@ -65,8 +65,8 @@
                 <x-forms.textarea
                     name="content_programmatic"
                     label="Conteúdo Programático"
+                    :required="true"
                     rows="4"
-                    required
                     :value="old('content_programmatic', $peiDiscipline->content_programmatic)"
                 />
             </div>
@@ -75,8 +75,8 @@
                 <x-forms.textarea
                     name="methodologies"
                     label="Metodologias e Estratégias"
+                    :required="true"
                     rows="4"
-                    required
                     :value="old('methodologies', $peiDiscipline->methodologies)"
                 />
             </div>
@@ -85,9 +85,22 @@
                 <x-forms.textarea
                     name="evaluations"
                     label="Processo de Avaliação"
+                    :required="true"
                     rows="4"
-                    required
                     :value="old('evaluations', $peiDiscipline->evaluations)"
+                />
+            </div>
+
+
+            <div class="col-md-12">
+                <p class="small text-muted mb-2">
+                    Espaço opcional destinado ao registro de informações relevantes que contribuam para o acompanhamento pedagógico do estudante e que não estejam contempladas nos campos anteriores.
+                </p>
+                <x-forms.textarea
+                    name="complementary_records"
+                    label="Registros Complementares"
+                    rows="4"
+                    :value="old('complementary_records', $peiDiscipline->complementary_records)"
                 />
             </div>
 
@@ -96,10 +109,10 @@
                     name="opinion"
                     label="Parecer"
                     rows="4"
-                    required
                     :value="old('opinion', $peiDiscipline->opinion)"
                 />
             </div>
+
 
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei) }}" variant="secondary">
