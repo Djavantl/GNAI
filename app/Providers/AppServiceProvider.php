@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\InclusiveRadar\Institution;
-use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use App\Models\SpecializedEducationalSupport\Student;
@@ -18,6 +17,7 @@ use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\Paginator;
+use Throwable;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use App\Models\SpecializedEducationalSupport\StudentDocument;
 use App\Models\SpecializedEducationalSupport\StudentCourse;
@@ -47,34 +47,62 @@ class AppServiceProvider extends ServiceProvider
             'user' => User::class,
         ]);
 
-        // --- SISTEMA DE PERMISSÕES ---
-        // Verifica se a tabela existe para evitar erros em novas instalações/migrations
-        if (Schema::hasTable('permissions')) {
-            try {
-
-                // ADMIN TEM TODAS PERMISSÕES
-                Gate::before(function ($user, $ability) {
-                    if ($user->is_admin) {
-                        return true;
-                    }
-                });
-
-                $permissions = Permission::all();
-
-                foreach ($permissions as $permission) {
-                    Gate::define($permission->slug, function ($user) use ($permission) {
-                        return $user->hasPermission($permission->slug);
-                    });
-                }
-
-            } catch (\Exception $e) {
-                // Silencia erros
+        Gate::before(function ($user) {
+            if ($user->is_admin) {
+                return true;
             }
-        }
+
+            return null;
+        });
+
+        $this->registerPermissionGates();
 
         // View Composer para a Navbar (INSTITUIÇÃO)
         View::composer('layouts.master', function ($view) {
-            $view->with('institution', Institution::first());
+            $view->with('institution', $this->resolveInstitutionForLayout());
         });
+    }
+
+    /**
+     * RF: registra permissões dinâmicas sem impedir o bootstrap em build, CI ou banco indisponível.
+     * Uso: autorização via Gate em toda a aplicação após migrations e banco acessível.
+     */
+    private function registerPermissionGates(): void
+    {
+        if (! $this->canUseTable('permissions')) {
+            return;
+        }
+
+        foreach (Permission::query()->get(['slug']) as $permission) {
+            Gate::define($permission->slug, function ($user) use ($permission) {
+                return $user->hasPermission($permission->slug);
+            });
+        }
+    }
+
+    /**
+     * RF: fornece a instituição padrão para a navbar sem acoplar o boot ao banco.
+     * Uso: layout principal e páginas administrativas que exibem a identificação institucional.
+     */
+    private function resolveInstitutionForLayout(): ?Institution
+    {
+        if (! $this->canUseTable('institutions')) {
+            return null;
+        }
+
+        return Institution::query()->first();
+    }
+
+    /**
+     * RF: evita falhas de bootstrap quando o banco ainda não existe, não respondeu ou a tabela não foi criada.
+     * Uso: guards de providers, builds Docker, package discovery, comandos artisan e ambientes recém-provisionados.
+     */
+    private function canUseTable(string $table): bool
+    {
+        try {
+            return Schema::hasTable($table);
+        } catch (Throwable) {
+            return false;
+        }
     }
 }

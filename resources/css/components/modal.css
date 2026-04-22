@@ -55,7 +55,7 @@
             var(--primary-color),
             color-mix(in srgb, var(--primary-color-dark) 72%, var(--sidebar-bg))
         ) !important;
-    color: var(--sidebar-text, #fff) !important;
+    color: var(--text-primary, #fff) !important;
     border-bottom: 1px solid color-mix(in srgb, var(--primary-color-light) 26%, transparent) !important;
     padding: 1.35rem 1.6rem !important;
     align-items: center;

@@ -1,4 +1,6 @@
 [mysqld]
+mysqlx = OFF
+pid-file = /tmp/mysqld.pid
 
 # ==============================
 # Memória reduzida para dev
