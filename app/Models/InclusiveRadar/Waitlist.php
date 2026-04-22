@@ -59,6 +59,16 @@ class Waitlist extends Model
         ];
     }
 
+    public static function getReportMorphTargets(): array
+    {
+        return [
+            'waitlistable' => [
+                AssistiveTechnology::class,
+                AccessibleEducationalMaterial::class,
+            ],
+        ];
+    }
+
     public function waitlistable(): MorphTo
     {
         return $this->morphTo();

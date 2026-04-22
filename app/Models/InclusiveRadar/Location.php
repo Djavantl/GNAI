@@ -62,6 +62,11 @@ class Location extends Model
         ];
     }
 
+    public static function getReportCollectionRelations(): array
+    {
+        return ['barriers'];
+    }
+
     public function institution(): BelongsTo
     {
         return $this->belongsTo(Institution::class);

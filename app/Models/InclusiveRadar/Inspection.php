@@ -71,6 +71,17 @@ class Inspection extends Model
         ];
     }
 
+    public static function getReportMorphTargets(): array
+    {
+        return [
+            'inspectable' => [
+                AssistiveTechnology::class,
+                AccessibleEducationalMaterial::class,
+                Barrier::class,
+            ],
+        ];
+    }
+
     public function inspectable(): MorphTo
     {
         return $this->morphTo();

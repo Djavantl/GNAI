@@ -2,10 +2,14 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Models\InclusiveRadar\AssistiveTechnology;
+use App\Models\InclusiveRadar\Barrier;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
 use DomainException;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Deficiency extends Model
 {
@@ -36,6 +40,36 @@ class Deficiency extends Model
                 'notes'
             ])
             ->withTimestamps();
+    }
+
+    public function assistiveTechnologies(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            AssistiveTechnology::class,
+            'assistive_technology_deficiency',
+            'deficiency_id',
+            'assistive_technology_id'
+        );
+    }
+
+    public function accessibleEducationalMaterials(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            AccessibleEducationalMaterial::class,
+            'accessible_educational_material_deficiency',
+            'deficiency_id',
+            'accessible_educational_material_id'
+        );
+    }
+
+    public function barriers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Barrier::class,
+            'barrier_deficiency',
+            'deficiency_id',
+            'barrier_id'
+        )->withTimestamps();
     }
 
     // Scopes para Filtros

@@ -69,6 +69,16 @@ class Loan extends Model
         ];
     }
 
+    public static function getReportMorphTargets(): array
+    {
+        return [
+            'loanable' => [
+                AssistiveTechnology::class,
+                AccessibleEducationalMaterial::class,
+            ],
+        ];
+    }
+
     public function loanable(): MorphTo
     {
         return $this->morphTo()->withTrashed();

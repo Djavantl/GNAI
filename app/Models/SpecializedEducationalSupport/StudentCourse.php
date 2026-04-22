@@ -3,12 +3,12 @@
 namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use App\Models\Traits\Auditable; // 1. Importar a Trait
 use App\Models\AuditLog;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class StudentCourse extends Model
+class StudentCourse extends Pivot
 {
     use HasFactory, Auditable; // 2. Adicionar a Trait
 

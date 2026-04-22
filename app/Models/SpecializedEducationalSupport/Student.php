@@ -227,6 +227,7 @@ class Student extends Model
             Course::class,
             'student_courses'
         )
+        ->using(StudentCourse::class)
         ->withPivot(['academic_year', 'is_current'])
         ->withTimestamps();
     }

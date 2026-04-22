@@ -70,6 +70,11 @@ class Institution extends Model
         ];
     }
 
+    public static function getReportCollectionRelations(): array
+    {
+        return ['locations', 'barriers'];
+    }
+
     public function latestInspection(): MorphOne
     {
         return $this->morphOne(Inspection::class, 'inspectable')

@@ -153,11 +153,6 @@
                                 <i class="fas fa-table"></i> Gerar prévia
                             </x-buttons.submit-button>
                         @endcan
-                        @can('report.pdf')
-                            <x-buttons.submit-button type="button" id="btn-pdf" variant="secondary" onclick="exportPdf()" disabled>
-                                <i class="fas fa-file-pdf"></i> Exportar PDF
-                            </x-buttons.submit-button>
-                        @endcan
                     </div>
                 </div>
             </div>
@@ -298,7 +293,6 @@
                     populateRelationSelect()
                     document.getElementById('relations-section').classList.remove('d-none')
                     document.getElementById('btn-run').removeAttribute('disabled')
-                    document.getElementById('btn-pdf').removeAttribute('disabled')
                     updateFilterOptions()
                 } catch {
                     toast('Falha ao carregar os dados da entidade.', 'danger')
@@ -613,62 +607,103 @@
                 document.getElementById('filters-list').innerHTML = ''
                 window.__filterOpts = []
                 document.getElementById('btn-run').setAttribute('disabled', true)
-                document.getElementById('btn-pdf').setAttribute('disabled', true)
                 hideStates()
                 document.getElementById('preview-empty').classList.remove('d-none')
             }
 
             async function copyTable () {
+                const headCells = Array.from(
+                    document.querySelectorAll('#preview-head th')
+                ).map(th => th.textContent.trim())
+
+                const rows = Array.from(
+                    document.querySelectorAll('#preview-body tr')
+                ).map(tr =>
+                    Array.from(tr.querySelectorAll('td'))
+                        .map(td => td.textContent.trim())
+                )
+
+                const textLines = [
+                    headCells.join('\t'),
+                    ...rows.map(r => r.join('\t'))
+                ].join('\n')
+
+                let html = '<table border="1" style="border-collapse:collapse;">'
+
+                html += '<thead><tr>'
+                headCells.forEach(h => {
+                    html += `<th style="padding:4px;">${esc(h)}</th>`
+                })
+                html += '</tr></thead>'
+
+                html += '<tbody>'
+                rows.forEach(r => {
+                    html += '<tr>'
+                    r.forEach(c => {
+                        html += `<td style="padding:4px;">${esc(c)}</td>`
+                    })
+                    html += '</tr>'
+                })
+                html += '</tbody></table>'
+
                 try {
-                    const headCells = Array.from(
-                        document.querySelectorAll('#preview-head th')
-                    ).map(th => th.textContent.trim())
+                    if (navigator.clipboard?.write && window.ClipboardItem) {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({
+                                'text/html': new Blob([html], { type: 'text/html' }),
+                                'text/plain': new Blob([textLines], { type: 'text/plain' })
+                            })
+                        ])
 
-                    const rows = Array.from(
-                        document.querySelectorAll('#preview-body tr')
-                    ).map(tr =>
-                        Array.from(tr.querySelectorAll('td'))
-                            .map(td => td.textContent.trim())
-                    )
-
-                    // TEXTO (fallback)
-                    const textLines = [
-                        headCells.join('\t'),
-                        ...rows.map(r => r.join('\t'))
-                    ].join('\n')
-
-                    // HTML (para Docs / Excel / etc)
-                    let html = '<table border="1" style="border-collapse:collapse;">'
-
-                    html += '<thead><tr>'
-                    headCells.forEach(h => {
-                        html += `<th style="padding:4px;">${esc(h)}</th>`
-                    })
-                    html += '</tr></thead>'
-
-                    html += '<tbody>'
-                    rows.forEach(r => {
-                        html += '<tr>'
-                        r.forEach(c => {
-                            html += `<td style="padding:4px;">${esc(c)}</td>`
-                        })
-                        html += '</tr>'
-                    })
-                    html += '</tbody></table>'
-
-                    await navigator.clipboard.write([
-                        new ClipboardItem({
-                            'text/html': new Blob([html], { type: 'text/html' }),
-                            'text/plain': new Blob([textLines], { type: 'text/plain' })
-                        })
-                    ])
-
-                    toast('Tabela copiada!', 'success')
-
-                } catch (err) {
-                    console.error(err)
-                    toast('Não foi possível copiar.', 'warning')
+                        toast('Tabela copiada!', 'success')
+                        return
+                    }
+                } catch (richErr) {
+                    console.warn('Cópia rica indisponível neste navegador.', richErr)
                 }
+
+                try {
+                    if (navigator.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(textLines)
+                        toast('Tabela copiada!', 'success')
+                        return
+                    }
+                } catch (textErr) {
+                    console.warn('Cópia por writeText falhou.', textErr)
+                }
+
+                if (legacyCopyText(textLines)) {
+                    toast('Tabela copiada!', 'success')
+                    return
+                }
+
+                toast('Não foi possível copiar.', 'warning')
+            }
+
+            function legacyCopyText (text) {
+                const textarea = document.createElement('textarea')
+                textarea.value = text
+                textarea.setAttribute('readonly', '')
+                textarea.style.position = 'fixed'
+                textarea.style.top = '-9999px'
+                textarea.style.left = '-9999px'
+
+                document.body.appendChild(textarea)
+                textarea.focus()
+                textarea.select()
+                textarea.setSelectionRange(0, textarea.value.length)
+
+                let copied = false
+
+                try {
+                    copied = document.execCommand('copy')
+                } catch (err) {
+                    console.warn('Fallback document.execCommand falhou.', err)
+                }
+
+                document.body.removeChild(textarea)
+
+                return copied
             }
 
             function esc (str) {

@@ -56,6 +56,11 @@ class BarrierCategory extends Model
         ];
     }
 
+    public static function getReportCollectionRelations(): array
+    {
+        return ['barriers'];
+    }
+
     public function barriers(): HasMany
     {
         return $this->hasMany(Barrier::class);
