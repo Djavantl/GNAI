@@ -13,13 +13,13 @@
         </nav>
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <header>
             <h1 class="text-title h2">Detalhes da Agenda Institucional</h1>
             <p class="text-muted mb-0">Visualize as informações do registro da agenda institucional.</p>
         </header>
 
-        <div role="group" aria-label="Ações principais">
+        <div class="d-flex gap-2 justify-content-end ms-md-auto" role="group" aria-label="Ações principais">
             @can('institutional-event.edit')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.institutional-events.edit', $event)"
@@ -94,15 +94,14 @@
                 </x-show.info-item>
             </div>
 
-            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
-                <div class="text-muted small">
-                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $event->id }}
+            <footer class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-light-subtle">
+                <div>
                     @can('institutional-event.pdf')
-                        <x-buttons.pdf-button :href="route('inclusive-radar.institutional-events.pdf', $event)" class="ms-1" />
+                        <x-buttons.pdf-button :href="route('inclusive-radar.institutional-events.pdf', $event)" />
                     @endcan
                 </div>
 
-                <div class="d-flex gap-2" role="group" aria-label="Ações de gestão do registro">
+                <div class="d-flex flex-wrap gap-2 justify-content-end" role="group" aria-label="Ações de gestão do registro">
                     @can('institutional-event.destroy')
                         <form action="{{ route('inclusive-radar.institutional-events.destroy', $event) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente este registro?')">
                             @csrf @method('DELETE')

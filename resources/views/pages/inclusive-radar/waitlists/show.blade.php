@@ -11,13 +11,13 @@
     ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Detalhes da Fila de Espera</h2>
             <p class="text-muted">Visualize informações da solicitação, status e histórico do recurso.</p>
         </div>
 
-        <div>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             @can('waitlist.edit')
                 <x-buttons.link-button :href="route('inclusive-radar.waitlists.edit', $waitlist)" variant="warning">
                     <i class="fas fa-edit"></i> Editar
@@ -107,15 +107,14 @@
                 />
             </div>
 
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small d-flex align-items-center">
-                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $waitlist->id }}
+            <div class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-light no-print">
+                <div>
                     @can('waitlist.pdf')
-                        <x-buttons.pdf-button :href="route('inclusive-radar.waitlists.pdf', $waitlist)" class="ms-1" />
+                        <x-buttons.pdf-button :href="route('inclusive-radar.waitlists.pdf', $waitlist)" />
                     @endcan
                 </div>
 
-                <div class="d-flex gap-3">
+                <div class="d-flex flex-wrap gap-3 justify-content-end">
                     @can('waitlist.cancel')
                         @if($canCancel)
                             <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">

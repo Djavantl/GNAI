@@ -11,12 +11,12 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Nova Instituição Base</h2>
             <p class="text-muted">Defina o ponto central e as informações da sede para o mapa de barreiras.</p>
         </div>
-        <div>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             <x-buttons.link-button href="{{ route('inclusive-radar.institutions.index') }}" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>

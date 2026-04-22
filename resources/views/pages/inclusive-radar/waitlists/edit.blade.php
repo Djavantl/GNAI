@@ -12,13 +12,13 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <header>
             <h2 class="text-title">Editar Solicitação de Fila</h2>
             <p class="text-muted mb-0">Atualize as informações. Campos de identificação são bloqueados para manter a integridade do histórico.</p>
         </header>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             <x-buttons.link-button :href="route('inclusive-radar.waitlists.show', $waitlist)" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>
@@ -41,7 +41,7 @@
                         <i class="fas {{ $waitlist->waitlistable_type === 'assistive_technology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
                     </div>
 
-                    <div>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
                         <h5 class="mb-0 fw-bold">
                             @php
                                 $resourceRoute = match($waitlist->waitlistable_type) {

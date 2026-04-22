@@ -11,13 +11,13 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Cadastrar Ponto de Referência</h2>
             <p class="text-muted">Vincule prédios ou áreas específicas a uma Instituição Base.</p>
         </div>
 
-        <div>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             <x-buttons.link-button href="{{ route('inclusive-radar.locations.index') }}" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>

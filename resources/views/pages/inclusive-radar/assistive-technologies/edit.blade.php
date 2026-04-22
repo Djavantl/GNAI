@@ -12,7 +12,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <header>
             <h2 class="text-title">Editar Tecnologia Assistiva</h2>
             <p class="text-muted mb-0">
@@ -20,11 +20,13 @@
             </p>
         </header>
 
-        <x-buttons.link-button
-            :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)"
-            variant="secondary">
-            <i class="fas fa-times"></i> Cancelar
-        </x-buttons.link-button>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
+            <x-buttons.link-button
+                :href="route('inclusive-radar.assistive-technologies.show', $assistiveTechnology)"
+                variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
+        </div>
     </div>
 
     <div class="mt-3">

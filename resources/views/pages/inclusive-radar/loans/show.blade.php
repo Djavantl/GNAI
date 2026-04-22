@@ -11,13 +11,13 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Detalhes do Empréstimo</h2>
             <p class="text-muted">Visualize as informações, prazos e histórico do recurso.</p>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             @can('loan.edit')
                 <x-buttons.link-button :href="route('inclusive-radar.loans.edit', $loan)" variant="warning">
                     <i class="fas fa-edit"></i> Editar
@@ -98,13 +98,12 @@
                 <x-show.info-textarea label="Observações" column="col-md-12" :value="$loan->observation ?? 'Nenhuma observação registrada.'" :rich="true"/>
             </div>
 
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small d-flex align-items-center">
-                    <i class="fas fa-fingerprint me-1"></i> ID: #{{ $loan->id }}
-                    <x-buttons.pdf-button :href="route('inclusive-radar.loans.pdf', $loan)" class="ms-3" />
+            <div class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-light no-print">
+                <div>
+                    <x-buttons.pdf-button :href="route('inclusive-radar.loans.pdf', $loan)" />
                 </div>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex flex-wrap gap-2 justify-content-end">
                     @can('loan.return')
                         @if($loan->status->value === 'active')
                             <x-buttons.submit-button type="button" variant="success" data-bs-toggle="modal" data-bs-target="#returnLoanModal">

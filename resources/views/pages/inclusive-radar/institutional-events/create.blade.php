@@ -13,13 +13,13 @@
         </nav>
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <header>
             <h1 class="text-title h2">Novo Registro na Agenda</h1>
             <p class="text-muted mb-0">Cadastre eventos ou compromissos para a agenda institucional.</p>
         </header>
 
-        <div>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             <x-buttons.link-button
                 href="{{ route('inclusive-radar.institutional-events.index') }}"
                 variant="secondary"

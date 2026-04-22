@@ -11,7 +11,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Detalhes do Ponto de Referência</h2>
             <p class="text-muted">
@@ -20,7 +20,7 @@
             </p>
         </div>
 
-        <div>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             @can('location.edit')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.locations.edit', $location)"
@@ -96,13 +96,8 @@
                 </div>
             </div>
 
-            <div class="col-12 border-top d-flex justify-content-between align-items-center bg-light no-print mt-4 p-4">
-
-                <div class="text-muted small">
-                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $location->id }}
-                </div>
-
-                <div class="d-flex gap-3">
+            <div class="col-12 border-top d-flex justify-content-end align-items-center bg-light no-print mt-4 p-4">
+                <div class="d-flex flex-wrap gap-3 justify-content-end">
                     @can('location.destroy')
                         <form action="{{ route('inclusive-radar.locations.destroy', $location) }}" method="POST" class="d-inline">
                             @csrf

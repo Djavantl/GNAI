@@ -11,7 +11,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <header>
             <h2 class="text-title">Detalhes do Material Pedagógico Acessível</h2>
             <p class="text-muted mb-0">
@@ -19,7 +19,7 @@
             </p>
         </header>
 
-        <div role="group" aria-label="Ações principais">
+        <div class="d-flex gap-2 justify-content-end ms-md-auto" role="group" aria-label="Ações principais">
             @can('material.edit')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"
@@ -122,14 +122,13 @@
                 </x-show.info-item>
             </div>
 
-            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
-                <div class="text-muted small">
-                    ID no Sistema: #{{ $material->id }}
+            <footer class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-light-subtle">
+                <div>
                     @can('material.pdf')
-                        <x-buttons.pdf-button :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)" class="ms-1" />
+                        <x-buttons.pdf-button :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)" />
                     @endcan
                 </div>
-                <div class="d-flex gap-2">
+                <div class="d-flex flex-wrap gap-2 justify-content-end">
                     @can('material.logs')
                         <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.logs', $material)" variant="secondary-outline">
                             <i class="fas fa-history"></i> Logs

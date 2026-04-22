@@ -12,7 +12,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <header>
             <h2 class="text-title">Detalhes da Inspeção</h2>
             <p class="text-muted mb-0">
@@ -20,7 +20,7 @@
             </p>
         </header>
 
-        <div class="text-end">
+        <div class="text-end ms-md-auto">
             <span class="d-block text-muted small text-uppercase fw-bold mb-1">Data da Inspeção</span>
             <span class="badge bg-purple fs-6 px-3">{{ $inspection->inspection_date->format('d/m/Y') }}</span>
         </div>
@@ -73,12 +73,8 @@
                 @endforelse
             </div>
 
-            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
-                <div class="text-muted small">
-                    <i class="fas fa-fingerprint me-1" aria-hidden="true"></i> ID da Inspeção: #{{ $inspection->id }}
-                </div>
-
-                <div class="d-flex gap-2">
+            <footer class="col-12 border-top p-4 d-flex justify-content-end align-items-center bg-light-subtle">
+                <div class="d-flex flex-wrap gap-2 justify-content-end">
                     <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.show', $material)" variant="secondary">
                         <i class="fas fa-arrow-left me-1"></i> Voltar
                     </x-buttons.link-button>

@@ -11,7 +11,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Detalhes da Barreira</h2>
             <p class="text-muted">
@@ -19,7 +19,7 @@
                 <strong>{{ $barrier->name }}</strong>
             </p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             @can('barrier.edit')
                 <x-buttons.link-button :href="route('inclusive-radar.barriers.edit', $barrier)" variant="warning">
                     <i class="fas fa-edit"></i> Editar
@@ -203,15 +203,14 @@
                 </div>
             </div>
 
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-white no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-id-card me-1"></i> ID: #{{ $barrier->id }}
+            <div class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-white no-print">
+                <div>
                     @can('barrier.pdf')
-                        <x-buttons.pdf-button :href="route('inclusive-radar.barriers.pdf', $barrier)" class="ms-1" />
+                        <x-buttons.pdf-button :href="route('inclusive-radar.barriers.pdf', $barrier)" />
                     @endcan
                 </div>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex flex-wrap gap-2 justify-content-end">
                     @can('barrier.destroy')
                         <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}" method="POST"
                               onsubmit="return confirm('Deseja realmente excluir este registro?')">

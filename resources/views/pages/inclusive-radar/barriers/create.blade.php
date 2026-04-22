@@ -11,13 +11,13 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Relatar Barreira de Acessibilidade</h2>
             <p class="text-muted">Registre um ponto de obstrução ou dificuldade encontrada no campus.</p>
         </div>
 
-        <div>
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             <x-buttons.link-button href="{{ route('inclusive-radar.barriers.index') }}" variant="secondary">
                 <i class="fas fa-times"></i> Cancelar
             </x-buttons.link-button>
