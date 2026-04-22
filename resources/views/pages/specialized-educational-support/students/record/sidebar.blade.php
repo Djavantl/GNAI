@@ -53,7 +53,7 @@
                         <i class="fas fa-graduation-cap me-2"></i> Vida Escolar
                     </a>
                     <a href="#deficiencias" class="list-group-item list-group-item-action">
-                        <i class="fas fa-wheelchair me-2"></i> Deficiências
+                        <i class="fas fa-wheelchair me-2"></i> Perfis de Atendimento
                     </a>
                     <a href="#responsaveis" class="list-group-item list-group-item-action">
                         <i class="fas fa-users me-2"></i> Responsáveis

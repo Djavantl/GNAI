@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Detalhes da Deficiência')
+@section('title', 'Perfis de Atendimento')
 
 @section('content')
     <div class="mb-5">
@@ -8,7 +8,7 @@
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
             $student->person->name => route('specialized-educational-support.students.show', $student),
-            'Deficiências' => route('specialized-educational-support.student-deficiencies.index', $student),
+            'Perfis de Atendimento' => route('specialized-educational-support.student-deficiencies.index', $student),
             $deficiency->deficiency->name => null
         ]" />
     </div>
@@ -16,7 +16,7 @@
     {{-- Cabeçalho --}}
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>
-            <h2 class="text-title">Detalhes da Deficiência</h2>
+            <h2 class="text-title">Detalhes do Perfil de Atendimento do Aluno</h2>
             <p class="text-muted">
                 Aluno: {{ $student->person->name }}
             </p>
@@ -58,7 +58,7 @@
                 ];
             @endphp
 
-            <x-show.info-item label="Deficiência / Condição" column="col-md-6" isBox="true">
+            <x-show.info-item label="Nome do Perfil" column="col-md-6" isBox="true">
                 {{ $deficiency->deficiency->name }}
             </x-show.info-item>
 

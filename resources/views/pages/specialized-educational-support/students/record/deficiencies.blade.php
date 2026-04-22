@@ -1,6 +1,6 @@
-{{-- DEFICIÊNCIAS --}}
+{{-- PERFIS DE ATENDIMENTO --}}
 <section id="deficiencias" class="mb-5  rounded shadow-sm">
-    <x-forms.section title="Deficiências" />
+    <x-forms.section title="Perfis de Atendimento do Aluno" />
 
     <div class="pb-3 ps-3 pe-3">
         <div class="row g-3 mt-2">
@@ -18,7 +18,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong class="d-block">
-                                    {{ $def->name ?? 'Deficiência não encontrada' }}
+                                    {{ $def->name ?? 'Perfil não encontrado' }}
                                 </strong>
 
                                 <span class="small text-muted">
@@ -32,7 +32,7 @@
             @empty
                 <div class="text-center text-muted fw-bold py-5">
                     <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
-                    Nenhuma deficiência do aluno encontrada.
+                    Nenhum perfil de atendimento do aluno encontrado.
                 </div>
             @endforelse
         </div>
@@ -44,7 +44,7 @@
                 variant="warning"
                 class="btn-sm"
             >
-                <i class="fas fa-folder-open"></i> Gerenciar Deficiências
+                <i class="fas fa-folder-open"></i> Gerenciar Perfis
             </x-buttons.link-button>
             @endcan
         </div>

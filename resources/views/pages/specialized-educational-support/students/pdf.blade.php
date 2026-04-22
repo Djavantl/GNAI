@@ -164,18 +164,18 @@ $relationshipMap = [
                 <strong>Data de Ingresso:</strong> {{ $formatDate($student->entry_date ?? null) }}
             </td>
             <td class="pdf-cell" colspan="2">
-                <strong>Quantidade de Deficiências:</strong> {{ $student->deficiencies?->count() ?? 0 }}
+                <strong>Quantidade de Perfis de Atendimento:</strong> {{ $student->deficiencies?->count() ?? 0 }}
             </td>
         </tr>
     </table>
 
-    {{-- ================= DEFICIÊNCIAS ================= --}}
-    <div class="section-title">Deficiências</div>
+    {{-- ================= PERFIS DE ATENDIMENTO ================= --}}
+    <div class="section-title">Perfis de Atendimento</div>
 
     @if($student->deficiencies && $student->deficiencies->count())
         <table class="pdf-table">
             <tr>
-                <th class="pdf-cell" style="width: 24%;">Deficiência</th>
+                <th class="pdf-cell" style="width: 24%;">Perfil de Atendimento</th>
                 <th class="pdf-cell" style="width: 16%;">Severidade</th>
                 <th class="pdf-cell" style="width: 18%;">Recursos de Apoio</th>
                 <th class="pdf-cell">Observações</th>
@@ -203,7 +203,7 @@ $relationshipMap = [
     @else
         <table class="pdf-table">
             <tr>
-                <td class="pdf-cell">Nenhuma deficiência vinculada a este aluno.</td>
+                <td class="pdf-cell">Nenhum perfil de atendimento vinculado a este aluno.</td>
             </tr>
         </table>
     @endif

@@ -62,7 +62,7 @@
         
         @include('pages.specialized-educational-support.students.record.academic-info')
 
-        {{-- Seção de Deficiências --}}
+        {{-- Seção de Perfis de Atendimento --}}
         @can('student-deficiency.view')
             @include('pages.specialized-educational-support.students.record.deficiencies')
         @endcan

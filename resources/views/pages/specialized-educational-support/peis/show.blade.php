@@ -104,7 +104,7 @@
             </div>
 
 
-            {{-- ===== DEFICIÊNCIAS ===== --}}
+            {{-- ===== PERFIS DE ATENDIMENTO ===== --}}
             <div class="col-md-12">
                 <div class="row g-2">
 
@@ -122,7 +122,7 @@
                             column="col-md-6"
                             class="text-muted"
                         >
-                            Nenhuma deficiência registrada.
+                            Nenhum perfil de atendimento registrado.
                         </x-ui.info-card>
                     @endforelse
 

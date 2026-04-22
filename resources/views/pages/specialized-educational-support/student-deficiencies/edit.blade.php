@@ -6,7 +6,7 @@
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
             $student->person->name => route('specialized-educational-support.students.show', $student),
-            'Deficiências' => route('specialized-educational-support.student-deficiencies.index', $student),
+            'Perfis de Atendimento' => route('specialized-educational-support.student-deficiencies.index', $student),
             $student_deficiency->deficiency->name => route('specialized-educational-support.student-deficiencies.show', [$student, $student_deficiency]),
             'Editar' => null
         ]" />
@@ -14,7 +14,7 @@
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Editar Deficiência</h2>
+            <h2 class="text-title">Editar Perfil de Atendimento do Aluno</h2>
             <p class="text-muted">
                Aluno: {{ $student->person->name }}
             </p>
@@ -30,12 +30,13 @@
 
             <x-forms.section title="Atualizar Informações" />
 
-            {{-- Deficiência exibida, não editável --}}
+            {{-- Perfil exibido, não editável --}}
             <div class="col-md-6">
                 <x-forms.input
                     name="deficiency_display"
-                    label="Deficiência"
+                    label="Perfil"
                     :value="(string) optional($student_deficiency->deficiency)->name"
+                    required
                     disabled
                 />
             </div>
@@ -46,6 +47,7 @@
                 <x-forms.select
                     name="severity"
                     label="Severidade"
+                    required
                     :options="[
                         'mild' => 'Leve',
                         'moderate' => 'Moderada',
@@ -69,7 +71,7 @@
                 <x-forms.select
                     name="uses_support_resources"
                     label="Utiliza recursos de apoio"
-                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para esta deficiência"
+                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para este perfil de atendimento"
                     :options="[1 => 'Sim', 0 => 'Não']"
                     :selected="old('uses_support_resources', $student_deficiency->uses_support_resources)" 
                 />

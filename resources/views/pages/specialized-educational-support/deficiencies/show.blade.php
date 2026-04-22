@@ -4,7 +4,7 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Deficiências' => route('specialized-educational-support.deficiencies.index'),
+            'Perfis de Atendimento' => route('specialized-educational-support.deficiencies.index'),
             $deficiency->name => null
         ]" />
     </div>
@@ -13,9 +13,9 @@
     {{-- Cabeçalho da Página --}}
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>
-            <h2 class="text-title">Detalhes da Deficiência</h2>
+            <h2 class="text-title">Detalhes do Perfil</h2>
             <p class="text-muted">
-                Informações técnicas e descritivas para fins de laudo e apoio pedagógico.
+                Informações sobre o perfil para acompanhamento e encaminhamentos pedagógicos.
             </p>
         </div>
         <div class="d-flex gap-2">
@@ -37,7 +37,7 @@
             {{-- SEÇÃO: IDENTIFICAÇÃO --}}
             <x-forms.section title="Identificação Clínica" />
             
-            <x-show.info-item label="Nome da Deficiência / Condição" column="col-md-8" isBox="true">
+            <x-show.info-item label="Nome do Perfil" column="col-md-8" isBox="true">
                 <strong class="text-purple-dark">{{ $deficiency->name }}</strong>
             </x-show.info-item>
 
@@ -61,7 +61,7 @@
             <x-forms.section title="Descrição e Observações Técnicas" />
 
             <x-show.info-textarea label="Descrição Detalhada" column="col-md-12" isBox="true">
-                {{ $deficiency->description ?? 'Nenhuma descrição técnica foi cadastrada para esta deficiência.' }}
+                {{ $deficiency->description ?? 'Nenhuma descrição técnica foi cadastrada para este perfil.' }}
             </x-show.info-textarea>
 
             {{-- RODAPÉ --}}

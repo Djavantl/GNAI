@@ -170,7 +170,7 @@
                 <a href="{{ route('specialized-educational-support.deficiencies.index') }}"
                     class="{{ request()->routeIs('specialized-educational-support.deficiencies.*') ? 'active' : '' }}">
                     <span class="icon"><i class="bi bi-heart-pulse"></i></span>
-                    <span class="text">Deficiências</span>
+                    <span class="text">Perfis de Atendimento</span>
                 </a>
             </li>
         @endcan

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Deficiências do Aluno')
+@section('title', 'Perfis de Atendimento')
 
 @section('content')
     <div class="mb-5">
@@ -8,7 +8,7 @@
             'Home' => route('dashboard'),
             'Alunos' => route('dashboard'),
             $student->person->name => route('specialized-educational-support.students.show', $student),
-            'Deficiências' => null
+            'Perfis de Atendimento' => null
         ]" />
     </div>
 
@@ -16,7 +16,7 @@
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
         {{-- HEADER --}}
         <x-table.page-header
-            title="Deficiências do Aluno"
+            title="Perfis de Atendimento do Aluno"
             subtitle="Aluno: {{ $student->person->name }}"
         >
             <div class="d-flex gap-2">
@@ -31,7 +31,7 @@
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.student-deficiencies.create', $student)"
                     variant="new"
-                    title="Adicionar deficiência"
+                    title="Adicionar Perfil"
                 >
                     <i class="fas fa-plus"></i>
                 </x-buttons.link-button>
@@ -48,7 +48,7 @@
                     [
                         'name' => 'deficiency_id',
                         'type' => 'select',
-                        'options' => ['' => 'Deficiência (Todas)'] + $filterDeficiencies
+                        'options' => ['' => 'Perfis (todos)'] + $filterDeficiencies
                     ],
                     [
                         'name' => 'severity',

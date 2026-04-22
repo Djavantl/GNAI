@@ -4,7 +4,7 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Deficiências' => route('specialized-educational-support.deficiencies.index'),
+            'Perfis de Atendimento' => route('specialized-educational-support.deficiencies.index'),
             $deficiency->name => route('specialized-educational-support.deficiencies.show', $deficiency),
             'Editar' => null
         ]" />
@@ -12,7 +12,7 @@
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Editar Deficiência</h2>
+            <h2 class="text-title">Editar Perfil de Atendimento</h2>
             <p class="text-muted">Atualizando informações de: <strong>{{ $deficiency->name }}</strong></p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.deficiencies.show', $deficiency) }}" variant="secondary">
@@ -29,7 +29,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome da Deficiência " 
+                    label="Nome do Perfil " 
                     required 
                     :value="old('name', $deficiency->name)" 
                 />

@@ -4,14 +4,14 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Deficiências' => route('specialized-educational-support.deficiencies.index'),
+            'Perfis de Atendimento' => route('specialized-educational-support.deficiencies.index'),
             'Cadastrar' => null
         ]" />
     </div>
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Cadastrar Nova Deficiência</h2>
-            <p class="text-muted">Cadastre as categorias de deficiência para o suporte especializado.</p>
+            <h2 class="text-title">Cadastrar Novo Perfil de Atendimento</h2>
+            <p class="text-muted">Cadastro das condições, características e necessidades educacionais dos estudantes, com a finalidade de apoiar o acompanhamento, os encaminhamentos e a oferta de atendimentos adequados, como deficiência, TEA, TDAH, altas habilidades/superdotação e dificuldades de aprendizagem.</p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.deficiencies.index') }}" variant="secondary">
             <i class="fas fa-times"></i>Cancelar
@@ -26,8 +26,9 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="name" 
-                    label="Nome da Deficiência " 
+                    label="Nome do Perfil" 
                     required 
+                    placeholder="Ex: Deficiência Visual"
                     :value="old('name')" 
                 />
             </div>

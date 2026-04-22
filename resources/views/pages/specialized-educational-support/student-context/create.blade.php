@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        {{-- DEFICIÊNCIAS --}}
+        {{-- PERFIS DE ATENDIMENTO --}}
         <div class="col-md-12 border-top pt-4 ">
 
             <div class="row g-2">
@@ -79,7 +79,7 @@
                 @empty
                     <div class="col-md-6">
                         <div class="card p-3 border-light bg-soft-info text-muted">
-                            Nenhuma deficiência registrada para
+                            Nenhum perfil de atendimento registrado para
                             {{ $student->person->name ?? 'este aluno' }}.
                         </div>
                     </div>

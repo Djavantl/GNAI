@@ -1,7 +1,7 @@
 {{-- PEIs --}}
 <section id="peis" class="mb-5  rounded shadow-sm">
 
-    <x-forms.section title="PEIs (Plano de Ensino Individualizado)" class="m-0" />
+    <x-forms.section title="PEIs (Plano Educacional Individualizado)" class="m-0" />
 
     <div class="pb-3 ps-3 pe-3">
 

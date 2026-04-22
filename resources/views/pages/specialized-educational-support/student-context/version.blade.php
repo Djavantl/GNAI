@@ -34,7 +34,7 @@
     @csrf
     <input type="hidden" name="student_id" value="{{ $student->id }}">
 
-    {{-- ================= IDENTIFICAÇÃO DO ALUNO E DEFICIÊNCIAS ================= --}}
+    {{-- ================= IDENTIFICAÇÃO DO ALUNO E PERFIS DE ATENDIMENTO ================= --}}
     <x-forms.section title="Identificação do Aluno" />
 
     <div class="row g-2 px-4 pb-3">
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        {{-- DEFICIÊNCIAS --}}
+        {{-- PERFIS DE ATENDIMENTO --}}
         <div class="col-md-12 border-top pt-4">
             <div class="row g-2">
                 @forelse($student->deficiencies as $def)
@@ -75,7 +75,7 @@
                 @empty
                     <div class="col-md-12">
                         <div class="card p-3 border-light bg-soft-info text-muted">
-                            Nenhuma deficiência registrada para este aluno.
+                            Nenhum perfil de atendimento registrado para este aluno.
                         </div>
                     </div>
                 @endforelse

@@ -6,14 +6,14 @@
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
             $student->person->name => route('specialized-educational-support.students.show', $student),
-            'Deficiências' => route('specialized-educational-support.student-deficiencies.index', $student),
+            'Perfis de Atendimento' => route('specialized-educational-support.student-deficiencies.index', $student),
             'Cadastrar' => null
         ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Vincular Deficiência</h2>
+            <h2 class="text-title">Vincular Perfil de Atendimento</h2>
             <p class="text-muted">
                 Aluno: {{ $student->person->name }}
             </p>
@@ -26,12 +26,12 @@
     <div class="mt-3">
         <x-forms.form-card action="{{ route('specialized-educational-support.student-deficiencies.store', $student) }}" method="POST">
             
-            <x-forms.section title="Identificação da Deficiência" />
+            <x-forms.section title="Identificação do Perfil" />
 
             <div class="col-md-6">
                 <x-forms.select
                     name="deficiency_id"
-                    label="Deficiência"
+                    label="Perfil"
                     required
                     :options="$deficienciesList->pluck('name', 'id')"
                     :value="old('deficiency_id')"
@@ -57,7 +57,7 @@
                     name="notes" 
                     label="Observações" 
                     rows="4" 
-                    placeholder="Detalhes adicionais sobre a deficiência do aluno..."
+                    placeholder="Detalhes adicionais sobre o perfil de atendimento do aluno..."
                     :value="old('notes')" 
                 />
             </div>
@@ -66,7 +66,7 @@
                 <x-forms.select
                     name="uses_support_resources"
                     label="Utiliza recursos de apoio"
-                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para esta deficiência"
+                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para este perfil de atendimento"
                     :options="[1 => 'Sim', 0 => 'Não']"
                 />
             </div>

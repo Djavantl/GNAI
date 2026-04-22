@@ -1,6 +1,6 @@
 <x-table.table
     :headers="[
-        ['label' => 'Deficiência / CID', 'responsive' => false],
+        ['label' => 'Nome / CID', 'responsive' => false],
         ['label' => 'Status',            'responsive' => true],
         ['label' => 'Ações',             'responsive' => false],
     ]"
@@ -73,7 +73,7 @@
     @empty
         <tr>
             <td colspan="3" class="text-center text-muted py-4">
-                Nenhuma deficiência encontrada.
+                Nenhum Perfil encontrado.
             </td>
         </tr>
     @endforelse

@@ -1,6 +1,6 @@
 <x-table.table
     :headers="[
-        ['label' => 'Deficiência',        'responsive' => false],
+        ['label' => 'Nome',        'responsive' => false],
         ['label' => 'Severidade',         'responsive' => true],
         ['label' => 'Recursos de Apoio',  'responsive' => true],
         ['label' => 'Ações',              'responsive' => false],
@@ -68,7 +68,7 @@
                                 @method('DELETE')
                                 <x-buttons.submit-button
                                     variant="danger"
-                                    onclick="return confirm('Deseja remover esta deficiência do registro do aluno?')"
+                                    onclick="return confirm('Deseja remover este perfil de atendimento do registro do aluno?')"
                                 >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
@@ -83,7 +83,7 @@
     @empty
         <tr>
             <td colspan="4" class="text-center text-muted py-4">
-                Nenhuma deficiência do aluno encontrada.
+                Nenhum perfil de atendimento do aluno encontrado.
             </td>
         </tr>
     @endforelse

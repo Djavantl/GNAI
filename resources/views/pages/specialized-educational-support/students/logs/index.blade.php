@@ -42,7 +42,7 @@
             $modules = [
                 'student' => 'Dados Acadêmicos',
                 'person' => 'Dados Pessoais',
-                'student_deficiency' => 'Deficiência',
+                'student_deficiency' => 'Perfil de Atendimento',
                 'student_document' => 'Documento',
                 'student_course' => 'Curso/Matrícula',
                 'student_context' => 'Contexto Educacional'
