@@ -59,18 +59,20 @@
 
                         @can('backup.restore')
                             @if($backup->status === 'success')
-                                <form action="{{ route('backup.backups.restore', $backup->id) }}"
-                                      method="POST"
-                                      class="d-inline form-restore">
-                                    @csrf
-                                    <x-buttons.submit-button
-                                        variant="warning"
-                                        class="btn-restore"
-                                        data-filename="{{ $backup->file_name }}"
-                                    >
-                                        <i class="fas fa-history"></i> Restaurar
-                                    </x-buttons.submit-button>
-                                </form>
+                                <x-buttons.submit-button
+                                    type="button"
+                                    variant="warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#backupActionModal"
+                                    data-confirm-title="Restaurar Backup"
+                                    data-confirm-message="O backup {{ $backup->file_name }} sera usado para restaurar o banco e os arquivos de midia do sistema. Esta operacao vai sobrescrever o ambiente atual."
+                                    data-confirm-action="{{ route('backup.backups.restore', $backup->id) }}"
+                                    data-confirm-method="POST"
+                                    data-confirm-submit-text="Confirmar Restauracao"
+                                    data-confirm-variant="warning"
+                                >
+                                    <i class="fas fa-history"></i> Restaurar
+                                </x-buttons.submit-button>
                             @endif
                         @endcan
 
@@ -84,23 +86,26 @@
                         @endcan
 
                         @can('backup.destroy')
-                            <form action="{{ route('backup.backups.destroy', $backup->id) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja remover este backup?')"
-                                >
-                                    <i class="fas fa-trash-alt"></i> Excluir
-                                </x-buttons.submit-button>
-                            </form>
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#backupActionModal"
+                                data-confirm-title="Excluir Backup"
+                                data-confirm-message="O arquivo {{ $backup->file_name }} sera apagado do servidor e o registro sera removido do historico."
+                                data-confirm-action="{{ route('backup.backups.destroy', $backup->id) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>
                     @endcanany
                 </x-table.actions>
+
             </x-table.td>
         </tr>
     @empty

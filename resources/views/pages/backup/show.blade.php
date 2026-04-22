@@ -11,13 +11,13 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <div>
             <h2 class="text-title">Detalhes do Registro de Backup</h2>
             <p class="text-muted">Informações técnicas e metadados da cópia de segurança.</p>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
             <x-buttons.link-button :href="route('backup.backups.index')" variant="secondary">
                 <i class="fas fa-arrow-left"></i> Voltar
             </x-buttons.link-button>

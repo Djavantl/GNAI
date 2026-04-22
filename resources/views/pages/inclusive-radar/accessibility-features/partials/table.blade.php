@@ -30,19 +30,20 @@
                             </x-buttons.link-button>
                         @endcan
                         @can('accessibility-feature.destroy')
-                            <form action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                @csrf
-                                @method('DELETE')
-
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja realmente remover este recurso?')"
-                                >
-                                    <i class="fas fa-trash-alt"></i> Excluir
-                                </x-buttons.submit-button>
-                            </form>
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Recurso de Acessibilidade"
+                                data-confirm-message="O recurso {{ $feature->name }} sera excluido permanentemente."
+                                data-confirm-action="{{ route('inclusive-radar.accessibility-features.destroy', $feature) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

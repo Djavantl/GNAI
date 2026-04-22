@@ -3,6 +3,7 @@
     'size' => 'md',
     'label' => null,
     'disabled' => false,
+    'type' => 'submit',
 ])
 
 @php
@@ -11,7 +12,7 @@
 @endphp
 
 <button
-    type="submit"
+    type="{{ $type }}"
     {{ $attributes->merge([
         'class' => $classes,
         'aria-label' => $label,

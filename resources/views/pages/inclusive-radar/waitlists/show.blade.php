@@ -117,26 +117,37 @@
                 <div class="d-flex flex-wrap gap-3 justify-content-end">
                     @can('waitlist.cancel')
                         @if($canCancel)
-                            <form action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('PATCH')
-                                <x-buttons.submit-button variant="danger" onclick="return confirm('Deseja cancelar?')">
-                                    <i class="fas fa-times"></i> Cancelar
-                                </x-buttons.submit-button>
-                            </form>
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Cancelar Solicitacao"
+                                data-confirm-message="A solicitacao #{{ $waitlist->id }} sera cancelada e deixara de ficar ativa."
+                                data-confirm-action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}"
+                                data-confirm-method="PATCH"
+                                data-confirm-submit-text="Confirmar Cancelamento"
+                                data-confirm-variant="danger"
+                            >
+                                <i class="fas fa-times"></i> Cancelar
+                            </x-buttons.submit-button>
                         @endif
                     @endcan
                     @can('waitlist.destroy')
-                        <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja excluir esta solicitação?')"
-                            >
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Solicitacao"
+                            data-confirm-message="A solicitacao #{{ $waitlist->id }} sera excluida permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
                     @endcan
                     <x-buttons.link-button :href="route('inclusive-radar.waitlists.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar

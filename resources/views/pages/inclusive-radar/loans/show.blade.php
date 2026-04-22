@@ -106,40 +106,47 @@
                 <div class="d-flex flex-wrap gap-2 justify-content-end">
                     @can('loan.return')
                         @if($loan->status->value === 'active')
-                            <x-buttons.submit-button type="button" variant="success" data-bs-toggle="modal" data-bs-target="#returnLoanModal">
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="success"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Confirmar Devolução"
+                                data-confirm-message="Confirme a devolucao deste recurso ao acervo."
+                                data-confirm-action="{{ route('inclusive-radar.loans.return', $loan) }}"
+                                data-confirm-method="PATCH"
+                                data-confirm-submit-text="Confirmar Devolução"
+                                data-confirm-variant="success"
+                                data-confirm-template="#returnLoanFieldsTemplate"
+                            >
                                 <i class="fas fa-undo"></i> Devolver
                             </x-buttons.submit-button>
                         @endif
                     @endcan
                     @can('loan.destroy')
-                        <form action="{{ route('inclusive-radar.loans.destroy', $loan) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir este empréstimo permanentemente?')">
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Emprestimo"
+                            data-confirm-message="O emprestimo #{{ $loan->id }} sera excluido permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.loans.destroy', $loan) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
                     @endcan
                 </div>
             </div>
         </div>
     </div>
 
-    <x-modal id="returnLoanModal" title="Confirmar Devolução">
-        <form action="{{ route('inclusive-radar.loans.return', $loan) }}" method="POST" id="returnLoanForm">
-            @csrf
-            @method('PATCH')
-            <div class="py-2">
-                <p>Deseja confirmar a devolução deste recurso ao acervo?</p>
-                <x-forms.checkbox name="is_damaged" label="Item devolvido com avarias ou danos" />
-            </div>
-        </form>
-
-        @slot('footer')
-            <x-buttons.link-button variant="secondary" data-bs-dismiss="modal">Cancelar</x-buttons.link-button>
-            <x-buttons.submit-button variant="success" onclick="document.getElementById('returnLoanForm').submit()">
-                Confirmar Devolução
-            </x-buttons.submit-button>
-        @endslot
-    </x-modal>
+    <template id="returnLoanFieldsTemplate">
+        <div class="pt-2">
+            <x-forms.checkbox name="is_damaged" label="Item devolvido com avarias ou danos" />
+        </div>
+    </template>
 @endsection

@@ -45,16 +45,20 @@
                             </x-buttons.link-button>
                         @endcan
                         @can('barrier.destroy')
-                            <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja remover este relato?')"
-                                >
-                                    <i class="fas fa-trash-alt"></i> Excluir
-                                </x-buttons.submit-button>
-                            </form>
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Barreira"
+                                data-confirm-message="O registro {{ $barrier->name }} sera excluido permanentemente."
+                                data-confirm-action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

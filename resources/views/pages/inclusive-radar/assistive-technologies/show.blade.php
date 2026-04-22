@@ -101,7 +101,7 @@
                     </span>
                 </x-show.info-item>
 
-                <x-show.info-item label="Público-alvo (Deficiências Atendidas)" column="col-md-12" isBox="true">
+                <x-show.info-item label="Público Alvo" column="col-md-12" isBox="true">
                     <div class="tag-container">
                         @forelse($deficiencies as $def)
                             <x-show.tag color="light">{{ $def->name }}</x-show.tag>
@@ -125,12 +125,20 @@
                         </x-buttons.link-button>
                     @endcan
                     @can('assistive-technology.destroy')
-                        <form action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
-                            @csrf @method('DELETE')
-                            <x-buttons.submit-button variant="danger">
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Tecnologia Assistiva"
+                            data-confirm-message="A tecnologia {{ $assistiveTechnology->name }} sera excluida permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
                     @endcan
 
                     <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.index')" variant="secondary">

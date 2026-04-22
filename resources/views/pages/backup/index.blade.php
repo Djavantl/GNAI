@@ -70,38 +70,27 @@
         </div>
     </div>
 
+    @canany(['backup.restore', 'backup.destroy'])
+        <x-modal.confirm-action
+            id="backupActionModal"
+            title="Confirmar ação"
+            message="Revise os detalhes desta ação antes de continuar."
+            confirmText="Confirmar"
+            confirmVariant="warning"
+            method="POST"
+        />
+    @endcanany
+
     <div class="mt-4 alert alert-info d-flex align-items-center border-0 shadow-sm" role="alert">
         <i class="fas fa-shield-alt me-3 fa-lg text-primary"></i>
         <div>
             <span class="fw-bold d-block">Política de Armazenamento</span>
             <small>
-                Os backups são armazenados em <code class="fw-bold text-dark">storage/app/GNAI</code>.
+                Os backups são armazenados em <code class="fw-bold text-dark">storage/app/private/{{ config('backup.backup.name') }}</code>.
                 Arquivos com status <span class="badge bg-info-subtle text-info-emphasis border px-1">Arquivado</span> não serão removidos por limpezas automáticas.
             </small>
         </div>
     </div>
-
-    <script>
-        document.querySelectorAll('.form-restore').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const fileName = this.querySelector('.btn-restore').dataset.filename;
-                const confirmacao = confirm(
-                    `⚠️ ATENÇÃO: Você está prestes a restaurar o backup: ${fileName}\n\n` +
-                    `Isso substituirá TODOS os dados atuais do banco de dados e arquivos de mídia pelas informações desta data.\n\n` +
-                    `Deseja continuar?`
-                );
-
-                if (confirmacao) {
-                    const btn = this.querySelector('.btn-restore');
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Restaurando...';
-                    this.submit();
-                }
-            });
-        });
-    </script>
 
     @push('scripts')
         @vite('resources/js/components/dynamicFilters.js')

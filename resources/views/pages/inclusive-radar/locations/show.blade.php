@@ -99,16 +99,20 @@
             <div class="col-12 border-top d-flex justify-content-end align-items-center bg-light no-print mt-4 p-4">
                 <div class="d-flex flex-wrap gap-3 justify-content-end">
                     @can('location.destroy')
-                        <form action="{{ route('inclusive-radar.locations.destroy', $location) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button
-                                variant="danger"
-                                onclick="return confirm('Deseja remover este ponto de referência?')"
-                            >
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Ponto de Referencia"
+                            data-confirm-message="O ponto {{ $location->name }} sera excluido permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.locations.destroy', $location) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
                     @endcan
 
                     <x-buttons.link-button

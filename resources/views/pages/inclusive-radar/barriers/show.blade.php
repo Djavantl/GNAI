@@ -125,7 +125,7 @@
                                 @endif
                             </x-show.info-item>
 
-                            <x-show.info-item label="Deficiências Relacionadas" column="col-12" isBox="true">
+                            <x-show.info-item label="Público Alvo" column="col-12" isBox="true">
                                 {{ $barrier->deficiencies->pluck('name')->join(', ') ?: '---' }}
                             </x-show.info-item>
                         </div>
@@ -212,13 +212,20 @@
 
                 <div class="d-flex flex-wrap gap-2 justify-content-end">
                     @can('barrier.destroy')
-                        <form action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}" method="POST"
-                              onsubmit="return confirm('Deseja realmente excluir este registro?')">
-                            @csrf @method('DELETE')
-                            <x-buttons.submit-button variant="danger">
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Barreira"
+                            data-confirm-message="O registro {{ $barrier->name }} sera excluido permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.barriers.destroy', $barrier) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
                     @endcan
 
                     <x-buttons.link-button :href="route('inclusive-radar.barriers.index')" variant="secondary">

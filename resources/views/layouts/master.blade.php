@@ -46,6 +46,15 @@
     </div>
 </main>
 
+<x-modal.confirm-action
+    id="globalConfirmActionModal"
+    title="Confirmar ação"
+    message="Revise os detalhes antes de continuar."
+    confirmText="Confirmar"
+    confirmVariant="danger"
+    method="POST"
+/>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>

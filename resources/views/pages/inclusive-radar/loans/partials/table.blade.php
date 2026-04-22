@@ -60,16 +60,20 @@
                             </x-buttons.link-button>
                         @endcan
                         @can('loan.destroy')
-                            <form action="{{ route('inclusive-radar.loans.destroy', $loan) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja excluir este empréstimo?')"
-                                >
-                                    <i class="fas fa-trash-alt"></i> Excluir
-                                </x-buttons.submit-button>
-                            </form>
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Emprestimo"
+                                data-confirm-message="O emprestimo #{{ $loan->id }} sera excluido permanentemente."
+                                data-confirm-action="{{ route('inclusive-radar.loans.destroy', $loan) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

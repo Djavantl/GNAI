@@ -170,7 +170,7 @@
 
             <div class="col-md-12 mb-4 mt-4">
                 <span class="d-block form-label fw-bold text-purple-dark mb-3">
-                    Público-alvo (Deficiências Atendidas)
+                    Público Alvo
                 </span>
                 <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
                     @foreach($deficiencies as $def)

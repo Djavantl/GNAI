@@ -111,7 +111,7 @@
                     </span>
                 </x-show.info-item>
 
-                <x-show.info-item label="Público-alvo (Deficiências Atendidas)" column="col-md-12" isBox="true">
+                <x-show.info-item label="Público Alvo" column="col-md-12" isBox="true">
                     <div class="tag-container">
                         @forelse($deficiencies as $def)
                             <x-show.tag color="light">{{ $def->name }}</x-show.tag>
@@ -135,12 +135,20 @@
                         </x-buttons.link-button>
                     @endcan
                     @can('material.destroy')
-                        <form action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
-                            @csrf @method('DELETE')
-                            <x-buttons.submit-button variant="danger">
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Material Pedagogico"
+                            data-confirm-message="O material {{ $material->name }} sera excluido permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.accessible-educational-materials.destroy', $material) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
                     @endcan
                     <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.index')" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar

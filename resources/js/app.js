@@ -3,6 +3,7 @@ import './pages/messages.js';
 import './pages/inclusive-radar/type-attributes.js';
 import './pages/specialized-educational-support/session.js';
 import './components/search-filter.js';
+import './components/confirm-action-modal.js';
 import './utils/cpf.js';
 import './utils/phone.js';
 import './components/collapsible-section';

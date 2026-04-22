@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Throwable;
 
 class BackupController extends Controller
 {
@@ -40,7 +41,13 @@ class BackupController extends Controller
 
     public function store(): RedirectResponse
     {
-        $this->service->generate();
+        try {
+            $this->service->generate();
+        } catch (Throwable $e) {
+            return redirect()
+                ->route('backup.backups.index')
+                ->with('error', 'Falha ao gerar backup: ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('backup.backups.index')
@@ -77,9 +84,13 @@ class BackupController extends Controller
             return redirect()->back()->with('error', 'Erro no upload do PHP: ' . $file->getErrorMessage());
         }
 
-        $request->validate(['backup_file' => 'required|file|max:102400']);
+        $request->validate(['backup_file' => 'required|file|max:102400|mimes:zip']);
 
-        $this->service->storeUploadedFile($file);
+        try {
+            $this->service->storeUploadedFile($file);
+        } catch (Throwable $e) {
+            return redirect()->back()->with('error', 'Falha ao importar backup: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Backup importado com sucesso!');
     }
@@ -95,7 +106,13 @@ class BackupController extends Controller
 
     public function restore($id): RedirectResponse
     {
-        $this->service->restore($id);
+        try {
+            $this->service->restore($id);
+        } catch (Throwable $e) {
+            return redirect()
+                ->route('backup.backups.index')
+                ->with('error', 'Falha ao restaurar backup: ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('backup.backups.index')

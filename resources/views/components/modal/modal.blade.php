@@ -1,10 +1,18 @@
 @props([
     'id',
+    'title' => null,
     'size' => 'md',
     'centered' => true
 ])
 
-<div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true">
+<div
+    {{ $attributes->merge([
+        'class' => 'modal fade modal-system',
+        'id' => $id,
+        'tabindex' => '-1',
+        'aria-hidden' => 'true',
+    ]) }}
+>
     <div class="modal-dialog modal-{{ $size }} {{ $centered ? 'modal-dialog-centered' : '' }}">
         <div class="modal-content">
 
@@ -13,6 +21,13 @@
                 <div class="modal-header">
                     <div class="modal-title">
                         {{ $header }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+            @elseif($title)
+                <div class="modal-header">
+                    <div class="modal-title">
+                        {{ $title }}
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>

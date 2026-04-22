@@ -66,16 +66,20 @@
                         @endcan
 
                         @can('waitlist.destroy')
-                            <form action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja excluir esta solicitação?')"
-                                >
-                                    <i class="fas fa-trash-alt"></i> Excluir
-                                </x-buttons.submit-button>
-                            </form>
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Solicitacao"
+                                data-confirm-message="A solicitacao #{{ $waitlist->id }} sera excluida permanentemente."
+                                data-confirm-action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </x-buttons.submit-button>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

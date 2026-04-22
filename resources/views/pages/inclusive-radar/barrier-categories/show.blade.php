@@ -65,16 +65,20 @@
             <div class="col-12 border-top p-4 d-flex justify-content-end align-items-center bg-light no-print">
                 <div class="d-flex flex-wrap gap-3 justify-content-end">
                     @can('barrier-category.destroy')
-                        <form action="{{ route('inclusive-radar.barrier-categories.destroy', $barrierCategory) }}"
-                              method="POST"
-                              onsubmit="return confirm('ATENÇÃO: Esta ação excluirá esta categoria de barreira. Confirmar?')">
-                            @csrf
-                            @method('DELETE')
-
-                            <x-buttons.submit-button variant="danger">
-                                <i class="fas fa-trash-alt"></i> Excluir
-                            </x-buttons.submit-button>
-                        </form>
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Categoria de Barreira"
+                            data-confirm-message="A categoria {{ $barrierCategory->name }} sera excluida permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.barrier-categories.destroy', $barrierCategory) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
                     @endcan
 
                     <x-buttons.link-button
