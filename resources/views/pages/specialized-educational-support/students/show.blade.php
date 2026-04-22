@@ -88,9 +88,9 @@
         @endcan
             
         {{-- Seção de Sessões --}}
-        @can('session-record.view')
+        @canany(['session-record.view-all', 'session-record.view-own'])
             @include('pages.specialized-educational-support.students.record.session-records')
-        @endcan
+        @endcanany
         
 
         {{-- RODAPÉ DE AÇÕES --}}

@@ -136,7 +136,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('students/{student}/deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])->name('student-deficiencies.destroy')->middleware('can:student-deficiency.delete');
 
     /* 7. SESSIONS */
-    Route::get('sessions', [SessionController::class, 'index'])->name('sessions.index')->middleware('can:session.view');
+    Route::get('sessions', [SessionController::class, 'index'])->name('sessions.index')->middleware('can:session.view-all');
     Route::get('sessions/create', [SessionController::class, 'create'])->name('sessions.create')->middleware('can:session.create');
     Route::post('sessions/store', [SessionController::class, 'store'])->name('sessions.store')->middleware('can:session.create');
     Route::get('sessions/{session}/show', [SessionController::class, 'show'])->name('sessions.show')->middleware('can:session.view');
@@ -149,10 +149,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('sessions/{session}/cancel', [SessionController::class, 'cancel'])->name('sessions.cancel')->middleware('can:session.update');
     Route::get('students/{student}/sessions', [SessionController::class, 'indexByStudent'])->name('students.sessions.index')->middleware('can:session.view');
     Route::get('students/{student}/sessions/create', [SessionController::class, 'createForStudent'])->name('students.sessions.create')->middleware('can:session.create');
-    Route::get('my-sessions', [SessionController::class, 'mySessions'])->name('sessions.my-sessions')->middleware('can:session.view');
+    Route::get('my-sessions', [SessionController::class, 'mySessions'])->name('sessions.my-sessions')->middleware('can:session.view-own');
 
     /* 8. SESSION RECORDS */
-    Route::get('session-records', [SessionRecordController::class, 'index'])->name('session-records.index')->middleware('can:session-record.view');
+    Route::get('session-records', [SessionRecordController::class, 'index'])->name('session-records.index')->middleware('can:session-record.view-all');
+    Route::get('my-session-records', [SessionRecordController::class, 'myRecords'])->name('session-records.my-records')->middleware('can:session-record.view-own');
     Route::get('session-records/{session}/create', [SessionRecordController::class, 'create'])->name('session-records.create')->middleware('can:session-record.create');
     Route::post('session-records/store', [SessionRecordController::class, 'store'])->name('session-records.store')->middleware('can:session-record.create');
     Route::get('session-records/{sessionRecord}/show', [SessionRecordController::class, 'show'])->name('session-records.show')->middleware('can:session-record.view');
@@ -163,8 +164,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('session-records/{sessionRecord}/force-delete', [SessionRecordController::class, 'forceDelete'])->name('session-records.force-delete')->middleware('can:session-record.delete');
     Route::get('session-records/{sessionRecord}/pdf', [SessionRecordController::class, 'generatePdf'])->name('session-records.pdf')->middleware('can:session-record.view');
     Route::get('students/{student}/session-records', [SessionRecordController::class, 'studentIndex'])
-    ->name('students.session-records.index')
-    ->middleware('can:session-record.view');
+        ->name('students.session-records.index')
+        ->middleware('can:session-record.view');
     Route::get('students/{student}/session-records/{evaluation}/show', [SessionRecordController::class, 'studentShow'])
         ->name('students.session-records.show')
         ->middleware('can:session-record.view');
@@ -181,8 +182,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('students.session-records.destroy')
         ->middleware('can:session-record.delete');
     Route::get('students/{student}/session-records/{sessionRecord}/pdf', [SessionRecordController::class, 'generateStudentPdf'])
-    ->name('students.session-records.pdf')
-    ->middleware('can:session-record.view');
+        ->name('students.session-records.pdf')
+        ->middleware('can:session-record.view');
 
 
     /* 9. STUDENT COURSES */

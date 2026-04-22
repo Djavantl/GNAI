@@ -4,6 +4,7 @@ namespace App\Services\SpecializedEducationalSupport;
 
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
@@ -187,11 +188,29 @@ class StudentService
 
     public function studentSessionEvaluations(Student $student, int $perPage = 5)
     {
-        return StudentSessionEvaluation::query()
+        $user = Auth::user();
+        $canViewAll = $user?->can('session-record.view-all') ?? false;
+        $canViewOwn = $user?->can('session-record.view-own') ?? false;
+
+        $query = StudentSessionEvaluation::query()
             ->with([
                 'sessionRecord.attendanceSession.professional.person',
             ])
-            ->where('student_id', $student->id)
+            ->where('student_id', $student->id);
+
+        if (!$canViewAll && $canViewOwn) {
+            $professionalId = $user?->professional?->id;
+
+            if ($professionalId) {
+                $query->whereHas('sessionRecord.attendanceSession', function ($q) use ($professionalId) {
+                    $q->where('professional_id', $professionalId);
+                });
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        return $query
             ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();

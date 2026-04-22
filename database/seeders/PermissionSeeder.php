@@ -92,16 +92,20 @@ class PermissionSeeder extends Seeder
             ['name' => 'Excluir Deficiência do Aluno',    'slug' => 'student-deficiency.delete'],
 
             // Sessões/Atendimentos
-            ['name' => 'Visualizar Sessões', 'slug' => 'session.view'],
-            ['name' => 'Criar Sessão',      'slug' => 'session.create'],
-            ['name' => 'Editar Sessão',     'slug' => 'session.update'],
-            ['name' => 'Excluir Sessão',    'slug' => 'session.delete'],
+            ['name' => 'Visualizar Sessões',          'slug' => 'session.view'],
+            ['name' => 'Visualizar Todas as Sessões', 'slug' => 'session.view-all'],
+            ['name' => 'Visualizar Próprias Sessões', 'slug' => 'session.view-own'],
+            ['name' => 'Criar Sessão',                'slug' => 'session.create'],
+            ['name' => 'Editar Sessão',               'slug' => 'session.update'],
+            ['name' => 'Excluir Sessão',              'slug' => 'session.delete'],
 
             // Registros de Sessão (Evolução)
-            ['name' => 'Visualizar Registros de Sessão', 'slug' => 'session-record.view'],
-            ['name' => 'Criar Registro de Sessão',      'slug' => 'session-record.create'],
-            ['name' => 'Editar Registro de Sessão',     'slug' => 'session-record.update'],
-            ['name' => 'Excluir Registro de Sessão',    'slug' => 'session-record.delete'],
+            ['name' => 'Visualizar Registros de Sessão',          'slug' => 'session-record.view'],
+            ['name' => 'Visualizar Todos os Registros de Sessão', 'slug' => 'session-record.view-all'],
+            ['name' => 'Visualizar Próprios Registros de Sessão', 'slug' => 'session-record.view-own'],
+            ['name' => 'Criar Registro de Sessão',                'slug' => 'session-record.create'],
+            ['name' => 'Editar Registro de Sessão',               'slug' => 'session-record.update'],
+            ['name' => 'Excluir Registro de Sessão',              'slug' => 'session-record.delete'],
 
             // Histórico/Cursos do Aluno
             ['name' => 'Visualizar Cursos do Aluno', 'slug' => 'student-course.view'],

@@ -78,12 +78,24 @@
         </li>
         @endcan
 
-        @can('session.view')
+        @canany(['session.view-all', 'session.view-own'])
         <li>
-            <a href="{{ route('specialized-educational-support.sessions.index') }}"
+            <a href="{{ auth()->user()->is_admin
+                    ? route('specialized-educational-support.sessions.index')
+                    : route('specialized-educational-support.sessions.my-sessions') }}"
             class="{{ request()->routeIs('specialized-educational-support.sessions.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-calendar-check"></i></span>
                 <span class="text">Sessões</span>
+            </a>
+        </li>   
+        @endcanany
+
+        @can('session-record.view-own')
+        <li>
+            <a href="{{ route('specialized-educational-support.session-records.my-records') }}"
+            class="{{ request()->routeIs('specialized-educational-support.session-records.my-records') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-journal-check"></i></span>
+                <span class="text">Meus Atendimentos</span>
             </a>
         </li>
         @endcan

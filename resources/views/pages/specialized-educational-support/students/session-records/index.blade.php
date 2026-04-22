@@ -31,15 +31,15 @@
             <x-table.filters.form
                 data-dynamic-filter
                 data-target="#session-records-index-table"
-                :fields="[
-                    [
+                :fields="array_values(array_filter([
+                    auth()->user()->can('session-record.view-all') ? [
                         'name' => 'professional_id',
                         'type' => 'select',
                         'options' => ['' => 'Profissional (Todos)'] +
                             collect($professionals)->mapWithKeys(fn($p) => [
                                 $p->id => $p->person->name ?? ('ID ' . $p->id)
                             ])->toArray()
-                    ],
+                    ] : null,
                     [
                         'name' => 'is_present',
                         'type' => 'select',
@@ -49,7 +49,7 @@
                             '0' => 'Ausente',
                         ]
                     ],
-                ]"
+                ]))"
             />
         </div>
 

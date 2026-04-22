@@ -17,6 +17,50 @@ class SessionRecordService
         return mb_strtolower(trim((string) $status));
     }
 
+    private function userCanViewAll(): bool
+    {
+        return Auth::user()?->can('session-record.view-all') ?? false;
+    }
+
+    private function userCanViewOnlyOwn(): bool
+    {
+        $user = Auth::user();
+        return !($user?->can('session-record.view-all') ?? false)
+            && ($user?->can('session-record.view-own') ?? false);
+    }
+
+    private function applyOwnVisibilityFilter(\Illuminate\Database\Eloquent\Builder $query): void
+    {
+        if (!$this->userCanViewOnlyOwn()) {
+            return;
+        }
+
+        $professionalId = Auth::user()?->professional?->id;
+
+        if ($professionalId) {
+            $query->whereHas('sessionRecord.attendanceSession', function ($q) use ($professionalId) {
+                $q->where('professional_id', $professionalId);
+            });
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+    private function ensureOwnVisibilityAccess(?Session $session): void
+    {
+        if (!$this->userCanViewOnlyOwn() || !$session) {
+            return;
+        }
+
+        $professionalId = Auth::user()?->professional?->id;
+
+        abort_unless(
+            $professionalId && (int) $session->professional_id === (int) $professionalId,
+            403,
+            'Você só pode visualizar registros de suas próprias sessões.'
+        );
+    }
+
     private function ensureAssignedProfessional(Session $session, string $action): void
     {
         $professionalId = Auth::user()?->professional?->id;
@@ -84,6 +128,34 @@ class SessionRecordService
         }
 
         $this->ensureAssignedProfessional($session, $action);
+    }
+
+    public function getMyRecords(array $filters = [])
+    {
+        $professional = Auth::user()?->professional;
+
+        if (!$professional) {
+            abort(403, 'Acesso permitido apenas para profissionais.');
+        }
+
+        $query = SessionRecord::with([
+            'attendanceSession.professional.person',
+            'studentEvaluations.student.person',
+        ])
+        ->whereHas('attendanceSession', function ($q) use ($professional) {
+            $q->where('professional_id', $professional->id);
+        });
+
+        if (!empty($filters['student'])) {
+            $query->whereHas('studentEvaluations', function ($q) use ($filters) {
+                $q->where('student_id', $filters['student']);
+            });
+        }
+
+        return $query
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString();
     }
 
     /**
@@ -201,6 +273,8 @@ class SessionRecordService
             ])
             ->where('student_id', $student->id);
 
+        $this->applyOwnVisibilityFilter($query);
+
         if (!empty($filters['professional_id'])) {
             $query->whereHas(
                 'sessionRecord.attendanceSession.professional',
@@ -226,6 +300,9 @@ class SessionRecordService
     public function studentShow(Student $student, StudentSessionEvaluation $evaluation): StudentSessionEvaluation
     {
         abort_unless($evaluation->student_id === $student->id, 404);
+
+        $evaluation->loadMissing('sessionRecord.attendanceSession');
+        $this->ensureOwnVisibilityAccess($evaluation->sessionRecord?->attendanceSession);
 
         return $evaluation->load([
             'student.person',

@@ -79,14 +79,14 @@
         </div>
 
         <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
-            @can('session-record.view')
+            @canany(['session-record.view-all', 'session-record.view-own'])
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.students.session-records.index', $student)"
                     variant="warning"
                     class="btn-sm">
                     <i class="fas fa-folder-open"></i> Gerenciar Registros
                 </x-buttons.link-button>
-            @endcan
+            @endcanany
         </div>
 
         <div class="mt-3">

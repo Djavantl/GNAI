@@ -10,6 +10,7 @@ use App\Http\Requests\SpecializedEducationalSupport\SessionRecordRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Throwable;
+use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
 use Illuminate\Validation\ValidationException;
@@ -34,6 +35,29 @@ class SessionRecordController extends Controller
             );
         } catch (Throwable $e) {
             return back()->with('error', 'Erro ao listar os registros da sessão.');
+        }
+    }
+
+    public function myRecords(Request $request)
+    {
+        try {
+            $sessionRecords = $this->service->getMyRecords($request->all());
+
+            $students = Student::with('person')->orderBy('id')->get(['id', 'person_id']);
+
+            if ($request->ajax()) {
+                return view(
+                    'pages.specialized-educational-support.session-records.partials.my-table',
+                    compact('sessionRecords')
+                )->render();
+            }
+
+            return view(
+                'pages.specialized-educational-support.session-records.my-records',
+                compact('sessionRecords', 'students')
+            );
+        } catch (Throwable $e) {
+            return back()->with('error', 'Erro ao listar seus registros de atendimento.');
         }
     }
 
