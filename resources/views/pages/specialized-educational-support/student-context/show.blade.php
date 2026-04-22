@@ -208,26 +208,26 @@
     <x-forms.section title="Autonomia e Apoios" />
 
     <div class="row g-3 px-4 pb-3">
-        <x-show.info-item label="Nível de Autonomia" column="col-md-4" isBox="true">
+        <x-show.info-item label="Nível de Autonomia" column="col-md-12" isBox="true">
             @php $autMap = ['dependent'=>'Dependente', 'partial'=>'Parcial', 'independent'=>'Independente']; @endphp
             {{ $autMap[$studentContext->autonomy_level] ?? $studentContext->autonomy_level }}
         </x-show.info-item>
 
-        <x-show.info-item label="Apoio de Mobilidade" column="col-md-4" isBox="true">
-            {{ $studentContext->needs_mobility_support ? 'Sim' : 'Não' }}
-        </x-show.info-item>
+        <x-show.info-textarea label="Apoio de Mobilidade" column="col-md-6" isBox="true">
+            {!! filled($studentContext->needs_mobility_support) ? $studentContext->needs_mobility_support : '<span class="text-muted">Não informado</span>' !!}
+        </x-show.info-textarea>
 
-        <x-show.info-item label="Apoio de Comunicação" column="col-md-4" isBox="true">
-            {{ $studentContext->needs_communication_support ? 'Sim' : 'Não' }}
-        </x-show.info-item>
+        <x-show.info-textarea label="Apoio de Comunicação" column="col-md-6" isBox="true">
+            {!! filled($studentContext->needs_communication_support) ? $studentContext->needs_communication_support : '<span class="text-muted">Não informado</span>' !!}
+        </x-show.info-textarea>
 
-        <x-show.info-item label="Adaptação Pedagógica" column="col-md-6" isBox="true">
-            {{ $studentContext->needs_pedagogical_adaptation ? 'Sim' : 'Não' }}
-        </x-show.info-item>
+        <x-show.info-textarea label="Adaptação Pedagógica" column="col-md-6" isBox="true">
+            {!! filled($studentContext->needs_pedagogical_adaptation) ? $studentContext->needs_pedagogical_adaptation : '<span class="text-muted">Não informado</span>' !!}
+        </x-show.info-textarea>
 
-        <x-show.info-item label="Tecnologia Assistiva" column="col-md-6" isBox="true">
-            {{ $studentContext->uses_assistive_technology ? 'Sim' : 'Não' }}
-        </x-show.info-item>
+        <x-show.info-textarea label="Tecnologia Assistiva" column="col-md-6" isBox="true">
+            {!! filled($studentContext->uses_assistive_technology) ? $studentContext->uses_assistive_technology : '<span class="text-muted">Não informado</span>' !!}
+        </x-show.info-textarea>
     </div>
 
     {{-- ================= SAÚDE ================= --}}

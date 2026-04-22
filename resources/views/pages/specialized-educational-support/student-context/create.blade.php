@@ -255,7 +255,7 @@
 
     <div class="row g-2 px-4 pb-3">
 
-        <div class="col-md-4">
+        <div class="col-md-12">
             <x-forms.select name="autonomy_level" label="Nível de Autonomia"
             :options="[
             'dependent'=>'Dependente',
@@ -264,28 +264,44 @@
             ]" :value="old('autonomy_level')" />
         </div>
 
-        <div class="col-md-4">
-            <x-forms.select name="needs_mobility_support" label="Apoio de Mobilidade"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('needs_mobility_support')" />
-        </div>
-
-        <div class="col-md-4">
-            <x-forms.select name="needs_communication_support" label="Apoio de Comunicação"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('needs_communication_support')" />
+        <div class="col-md-6">
+            <x-forms.textarea
+                name="needs_mobility_support"
+                label="Apoio de Mobilidade"
+                rows="3"
+                placeholder="Descreva os apoios de mobilidade necessários"
+                :value="old('needs_mobility_support')"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="needs_pedagogical_adaptation" label="Adaptação Pedagógica"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('needs_pedagogical_adaptation')" />
+            <x-forms.textarea
+                name="needs_communication_support"
+                label="Apoio de Comunicação"
+                rows="3"
+                placeholder="Descreva os apoios de comunicação necessários"
+                :value="old('needs_communication_support')"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="uses_assistive_technology" label="Tecnologia Assistiva"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('uses_assistive_technology')" />
+            <x-forms.textarea
+                name="needs_pedagogical_adaptation"
+                label="Adaptação Pedagógica"
+                rows="3"
+                placeholder="Descreva as adaptações pedagógicas necessárias"
+                :value="old('needs_pedagogical_adaptation')"
+            />
+        </div>
+
+        <div class="col-md-6">
+            <x-forms.textarea
+                name="uses_assistive_technology"
+                label="Tecnologia Assistiva"
+                rows="3"
+                placeholder="Descreva as tecnologias assistivas utilizadas"
+                :value="old('uses_assistive_technology')"
+            />
         </div>
 
     </div>

@@ -173,20 +173,20 @@
 
             @php $autMap = ['dependent'=>'Dependente', 'partial'=>'Parcial', 'independent'=>'Independente']; @endphp
 
-            <x-ui.info-card label="Nível de Autonomia" column="col-md-4"
+            <x-ui.info-card label="Nível de Autonomia" column="col-md-12"
                 :value="$autMap[$context->autonomy_level] ?? ($context->autonomy_level ?? '—')" />
 
-            <x-ui.info-card label="Apoio de Mobilidade" column="col-md-4"
-                :value="(!empty($context->needs_mobility_support) ? 'Sim' : 'Não')" />
+            <x-ui.info-card-textarea label="Apoio de Mobilidade" column="col-md-6" :rows="4"
+                :value="filled($context->needs_mobility_support) ? $context->needs_mobility_support : '—'" />
 
-            <x-ui.info-card label="Apoio de Comunicação" column="col-md-4"
-                :value="(!empty($context->needs_communication_support) ? 'Sim' : 'Não')" />
+            <x-ui.info-card-textarea label="Apoio de Comunicação" column="col-md-6" :rows="4"
+                :value="filled($context->needs_communication_support) ? $context->needs_communication_support : '—'" />
 
-            <x-ui.info-card label="Adaptação Pedagógica" column="col-md-6"
-                :value="(!empty($context->needs_pedagogical_adaptation) ? 'Sim' : 'Não')" />
+            <x-ui.info-card-textarea label="Adaptação Pedagógica" column="col-md-6" :rows="4"
+                :value="filled($context->needs_pedagogical_adaptation) ? $context->needs_pedagogical_adaptation : '—'" />
 
-            <x-ui.info-card label="Tecnologia Assistiva" column="col-md-6"
-                :value="(!empty($context->uses_assistive_technology) ? 'Sim' : 'Não')" />
+            <x-ui.info-card-textarea label="Tecnologia Assistiva" column="col-md-6" :rows="4"
+                :value="filled($context->uses_assistive_technology) ? $context->uses_assistive_technology : '—'" />
         </div>
     </div>
 

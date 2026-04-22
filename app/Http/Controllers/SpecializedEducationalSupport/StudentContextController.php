@@ -190,7 +190,7 @@ class StudentContextController extends Controller
                 ->with('success', 'Nova versão criada e definida como atual.');
 
         } catch (Throwable $e) {
-            return $this->handleException($e, 'Erro ao salvar nova versão.');
+            throw $e;
         }
     }
 

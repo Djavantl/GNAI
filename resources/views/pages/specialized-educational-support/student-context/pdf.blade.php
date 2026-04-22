@@ -168,15 +168,33 @@
     <div class="section-title">Autonomia e Apoios</div>
     <table class="pdf-table">
         <tr>
-            <td class="pdf-cell"><strong>Nível de Autonomia:</strong> {{ $map['auto'][$context->autonomy_level] ?? '---' }}</td>
-            <td class="pdf-cell"><strong>Apoio de Mobilidade:</strong> {!! $boolStrong($context->needs_mobility_support) !!}</td>
+            <td class="pdf-cell" colspan="4">
+                <strong>Nível de Autonomia:</strong> {{ $map['auto'][$context->autonomy_level] ?? '---' }}
+            </td>
         </tr>
         <tr>
-            <td class="pdf-cell"><strong>Apoio de Comunicação:</strong> {!! $boolStrong($context->needs_communication_support) !!}</td>
-            <td class="pdf-cell"><strong>Adaptação Pedagógica:</strong> {!! $boolStrong($context->needs_pedagogical_adaptation) !!}</td>
+            <td class="pdf-cell" colspan="4">
+                <strong>Apoio de Mobilidade</strong>
+                <div class="long-text">{!! $renderHtml($context->needs_mobility_support) !!}</div>
+            </td>
         </tr>
         <tr>
-            <td class="pdf-cell" colspan="4"><strong>Tecnologia Assistiva:</strong> {!! $boolStrong($context->uses_assistive_technology) !!}</td>
+            <td class="pdf-cell" colspan="4">
+                <strong>Apoio de Comunicação</strong>
+                <div class="long-text">{!! $renderHtml($context->needs_communication_support) !!}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="pdf-cell" colspan="4">
+                <strong>Adaptação Pedagógica</strong>
+                <div class="long-text">{!! $renderHtml($context->needs_pedagogical_adaptation) !!}</div>
+            </td>
+        </tr>
+        <tr>
+            <td class="pdf-cell" colspan="4">
+                <strong>Tecnologia Assistiva</strong>
+                <div class="long-text">{!! $renderHtml($context->uses_assistive_technology) !!}</div>
+            </td>
         </tr>
     </table>
 

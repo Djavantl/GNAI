@@ -213,39 +213,51 @@
     <x-forms.section title="Autonomia e Apoios" />
 
     <div class="row g-2 px-4 pb-3">
-        <div class="col-md-4">
+        <div class="col-md-12">
             <x-forms.select name="autonomy_level" label="Nível de Autonomia"
                 :options="['dependent'=>'Dependente', 'partial'=>'Parcial', 'independent'=>'Independente']"
                 :selected="old('autonomy_level', $studentContext->autonomy_level)"
                 aria-label="Selecionar nível de autonomia" />
         </div>
 
-        <div class="col-md-4">
-            <x-forms.select name="needs_mobility_support" label="Apoio de Mobilidade"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('needs_mobility_support', $studentContext->needs_mobility_support)"
-                aria-label="Necessita apoio de mobilidade" />
-        </div>
-
-        <div class="col-md-4">
-            <x-forms.select name="needs_communication_support" label="Apoio de Comunicação"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('needs_communication_support', $studentContext->needs_communication_support)"
-                aria-label="Necessita apoio de comunicação" />
+        <div class="col-md-6">
+            <x-forms.textarea
+                name="needs_mobility_support"
+                label="Apoio de Mobilidade"
+                rows="3"
+                placeholder="Descreva os apoios de mobilidade necessários"
+                :value="old('needs_mobility_support', $studentContext->needs_mobility_support)"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="needs_pedagogical_adaptation" label="Adaptação Pedagógica"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('needs_pedagogical_adaptation', $studentContext->needs_pedagogical_adaptation)"
-                aria-label="Necessita adaptação pedagógica" />
+            <x-forms.textarea
+                name="needs_communication_support"
+                label="Apoio de Comunicação"
+                rows="3"
+                placeholder="Descreva os apoios de comunicação necessários"
+                :value="old('needs_communication_support', $studentContext->needs_communication_support)"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="uses_assistive_technology" label="Tecnologia Assistiva"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('uses_assistive_technology', $studentContext->uses_assistive_technology)"
-                aria-label="Utiliza tecnologia assistiva" />
+            <x-forms.textarea
+                name="needs_pedagogical_adaptation"
+                label="Adaptação Pedagógica"
+                rows="3"
+                placeholder="Descreva as adaptações pedagógicas necessárias"
+                :value="old('needs_pedagogical_adaptation', $studentContext->needs_pedagogical_adaptation)"
+            />
+        </div>
+
+        <div class="col-md-6">
+            <x-forms.textarea
+                name="uses_assistive_technology"
+                label="Tecnologia Assistiva"
+                rows="3"
+                placeholder="Descreva as tecnologias assistivas utilizadas"
+                :value="old('uses_assistive_technology', $studentContext->uses_assistive_technology)"
+            />
         </div>
     </div>
 

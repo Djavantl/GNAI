@@ -60,10 +60,10 @@ class StudentContextSeeder extends Seeder
 
                 // Autonomia
                 'autonomy_level' => 'partial',
-                'needs_mobility_support' => false,
-                'needs_communication_support' => false,
-                'needs_pedagogical_adaptation' => true,
-                'uses_assistive_technology' => false,
+                'needs_mobility_support' => null,
+                'needs_communication_support' => null,
+                'needs_pedagogical_adaptation' => '<p>Necessita de adaptações metodológicas nas atividades avaliativas e materiais pedagógicos em formato acessível.</p>',
+                'uses_assistive_technology' => null,
 
                 // Saúde
                 'has_medical_report' => true,
@@ -106,10 +106,10 @@ class StudentContextSeeder extends Seeder
 
                 // Autonomia
                 'autonomy_level' => 'independent',
-                'needs_mobility_support' => false,
-                'needs_communication_support' => false,
-                'needs_pedagogical_adaptation' => false,
-                'uses_assistive_technology' => false,
+                'needs_mobility_support' => null,
+                'needs_communication_support' => null,
+                'needs_pedagogical_adaptation' => null,
+                'uses_assistive_technology' => null,
 
                 // Saúde
                 'has_medical_report' => true,

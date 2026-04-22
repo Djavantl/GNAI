@@ -46,10 +46,10 @@ class StudentContextRequest extends FormRequest
 
             // Autonomia e apoio
             'autonomy_level' => ['nullable', 'in:dependent,partial,independent'],
-            'needs_mobility_support' => ['nullable', 'boolean'],
-            'needs_communication_support' => ['nullable','boolean'],
-            'needs_pedagogical_adaptation' => ['nullable', 'boolean'],
-            'uses_assistive_technology' => ['nullable', 'boolean'],
+            'needs_mobility_support' => ['nullable', 'string'],
+            'needs_communication_support' => ['nullable', 'string'],
+            'needs_pedagogical_adaptation' => ['nullable', 'string'],
+            'uses_assistive_technology' => ['nullable', 'string'],
 
             // Saúde
             'has_medical_report' => ['nullable', 'boolean'],
@@ -66,29 +66,10 @@ class StudentContextRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'shows_aggressive_behavior' =>
-                $this->boolean('shows_aggressive_behavior'),
-
-            'shows_withdrawn_behavior' =>
-                $this->boolean('shows_withdrawn_behavior'),
-
-            'needs_mobility_support' =>
-                $this->boolean('needs_mobility_support'),
-
-            'needs_communication_support' =>
-                $this->boolean('needs_communication_support'),
-
-            'needs_pedagogical_adaptation' =>
-                $this->boolean('needs_pedagogical_adaptation'),
-
-            'uses_assistive_technology' =>
-                $this->boolean('uses_assistive_technology'),
-
-            'has_medical_report' =>
-                $this->boolean('has_medical_report'),
-
-            'uses_medication' =>
-                $this->boolean('uses_medication'),
+            'shows_aggressive_behavior' => $this->boolean('shows_aggressive_behavior'),
+            'shows_withdrawn_behavior'  => $this->boolean('shows_withdrawn_behavior'),
+            'has_medical_report'        => $this->boolean('has_medical_report'),
+            'uses_medication'           => $this->boolean('uses_medication'),
         ]);
     }
 }

@@ -207,6 +207,16 @@
             </li>
         @endcan
 
+        @can('discipline.view')
+            <li>
+                <a href="{{ route('specialized-educational-support.disciplines.index') }}"
+                    class="{{ request()->routeIs('specialized-educational-support.disciplines.*') ? 'active' : '' }}">
+                    <span class="icon"><i class="bi bi-book-half"></i></span>
+                    <span class="text">Disciplinas</span>
+                </a>
+            </li>
+        @endcan
+
         @can('course.view')
             <li>
                 <a href="{{ route('specialized-educational-support.courses.index') }}"
@@ -217,15 +227,7 @@
             </li>
         @endcan
 
-        @can('discipline.view')
-            <li>
-                <a href="{{ route('specialized-educational-support.disciplines.index') }}"
-                    class="{{ request()->routeIs('specialized-educational-support.disciplines.*') ? 'active' : '' }}">
-                    <span class="icon"><i class="bi bi-book-half"></i></span>
-                    <span class="text">Disciplinas</span>
-                </a>
-            </li>
-        @endcan
+        
 
         {{-- ===== RADAR INCLUSIVO – ADMIN ===== --}}
 

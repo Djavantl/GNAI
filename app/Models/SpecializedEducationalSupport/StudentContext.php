@@ -112,8 +112,6 @@ class StudentContext extends Model
         // Campos Booleanos (Sim/Não)
         $booleanFields = [
             'is_current', 'shows_aggressive_behavior', 'shows_withdrawn_behavior',
-            'needs_mobility_support', 'needs_communication_support', 
-            'needs_pedagogical_adaptation', 'uses_assistive_technology', 
             'has_medical_report', 'uses_medication'
         ];
 
