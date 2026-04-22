@@ -13,9 +13,15 @@
             <h2 class="text-title">Detalhes da Sessão</h2>
             <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
         </div>
+        @php
+            $canManageSessionRecord = auth()->user()?->professional?->id === $session->professional_id;
+            $sessionStatus = mb_strtolower(trim((string) $session->status));
+            $isScheduledSession = in_array($sessionStatus, ['agendada', 'agendado', 'scheduled'], true);
+            $canManageSessionLifecycle = auth()->id() === $session->creator_id;
+        @endphp
         <div class="d-flex gap-2">
             @can('session.update')
-            @if($session->status !== 'cancelled' && $session->status !== 'Cancelado')
+            @if($isScheduledSession && $canManageSessionLifecycle)
                 <x-buttons.link-button :href="route('specialized-educational-support.sessions.edit', $session->id)" variant="warning">
                    <i class="fas fa-edit" aria-hidden="true"></i>  Editar 
                 </x-buttons.link-button>
@@ -117,11 +123,13 @@
 
             {{-- Rodapé do Card --}}
             <div class="col-12 border-top p-4  d-flex justify-content-end gap-3">
-                @if($session->status !== 'Cancelada' && $session->status !== 'Realizada')
+                @if($isScheduledSession)
                     @can('session.update')
+                    @if($canManageSessionLifecycle)
                         <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelSessao" type="button">
                             <i class="fas fa-times" aria-hidden="true"></i> Cancelar Sessão
                         </x-buttons.submit-button>
+                    @endif
                     @endcan
                 @endif
                  {{-- Lógica do Registro --}}
@@ -137,15 +145,18 @@
                     @endcan
                 @else
                     @can('session-record.create')
+                    @if($canManageSessionRecord && $isScheduledSession)
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.session-records.create', $session->id)"
                         variant="new"
                     >
                         <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro
                     </x-buttons.link-button>
+                    @endif
                     @endcan
                 @endif
                 @can('session.delete')
+                @if($canManageSessionLifecycle)
                 <form action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}" method="POST">
                     @csrf
                     @method('DELETE')
@@ -153,6 +164,7 @@
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
                 </form>
+                @endif
                 @endcan
             </div>
         </div>

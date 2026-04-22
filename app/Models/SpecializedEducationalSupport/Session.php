@@ -5,7 +5,9 @@ namespace App\Models\SpecializedEducationalSupport;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Traits\Reportable;
+use App\Models\User;
 
 class Session extends Model
 {
@@ -16,6 +18,7 @@ class Session extends Model
     protected $fillable = [
         'student_id',
         'professional_id',
+        'creator_id',
         'session_date',
         'start_time',
         'end_time',
@@ -43,6 +46,11 @@ class Session extends Model
     public function professional()
     {
         return $this->belongsTo(Professional::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function sessionRecord()

@@ -101,14 +101,21 @@ class SessionController extends Controller
 
     public function edit(Session $session)
     {
-        $timeOptions = $this->service->getAvailableTimeOptions();
-        $session->load(['students.person', 'professional.person']);
+        try {
+            $this->service->ensureCanEdit($session);
+            $timeOptions = $this->service->getAvailableTimeOptions();
+            $session->load(['students.person', 'professional.person']);
 
-        return view('pages.specialized-educational-support.sessions.edit', [
-            'startTimes' => $timeOptions['start'],
-            'endTimes' => $timeOptions['end'],
-            'session' => $session,
-        ]);
+            return view('pages.specialized-educational-support.sessions.edit', [
+                'startTimes' => $timeOptions['start'],
+                'endTimes' => $timeOptions['end'],
+                'session' => $session,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()
+                ->route('specialized-educational-support.sessions.show', $session)
+                ->with('error', $e->validator->errors()->first('session'));
+        }
     }
 
     public function update(SessionRequest $request, Session $session)

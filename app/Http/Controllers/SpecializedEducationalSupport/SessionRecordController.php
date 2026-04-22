@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Throwable;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
+use Illuminate\Validation\ValidationException;
 
 class SessionRecordController extends Controller
 {
@@ -42,13 +43,19 @@ class SessionRecordController extends Controller
      */
     public function create(Session $session)
     {
-        // Carrega os alunos da sessão para que o formulário possa gerar os campos de avaliação
-        $session->load('students.person');
+        try {
+            $this->service->ensureCanCreateForSession($session);
+            $session->load('students.person');
 
-        return view(
-            'pages.specialized-educational-support.session-records.create',
-            compact('session')
-        );
+            return view(
+                'pages.specialized-educational-support.session-records.create',
+                compact('session')
+            );
+        } catch (Throwable $e) {
+            return redirect()
+                ->route('specialized-educational-support.sessions.show', $session)
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function store(SessionRecordRequest $request)
@@ -81,14 +88,20 @@ class SessionRecordController extends Controller
 
     public function edit(SessionRecord $sessionRecord)
     {
-        // Carrega o registro com as avaliações e os alunos da sessão original
-        $sessionRecord->load(['studentEvaluations.student.person', 'attendanceSession.students.person']);
-        $session = $sessionRecord->attendanceSession;
+        try {
+            $this->service->ensureCanManageRecord($sessionRecord, 'editar este registro de atendimento');
+            $sessionRecord->load(['studentEvaluations.student.person', 'attendanceSession.students.person']);
+            $session = $sessionRecord->attendanceSession;
 
-        return view(
-            'pages.specialized-educational-support.session-records.edit',
-            compact('sessionRecord', 'session')
-        );
+            return view(
+                'pages.specialized-educational-support.session-records.edit',
+                compact('sessionRecord', 'session')
+            );
+        } catch (Throwable $e) {
+            return redirect()
+                ->route('specialized-educational-support.session-records.show', $sessionRecord)
+                ->with('error', $e->getMessage());
+        }
     }
 
     public function update(SessionRecordRequest $request, SessionRecord $sessionRecord)
@@ -230,6 +243,67 @@ class SessionRecordController extends Controller
             );
         } catch (Throwable $e) {
             return back()->with('error', 'Erro ao exibir o registro do aluno.');
+        }
+    }
+
+    public function studentEdit(Student $student, StudentSessionEvaluation $evaluation)
+    {
+        try {
+            $evaluation = $this->service->studentShow($student, $evaluation);
+            $this->service->ensureCanManageEvaluation($evaluation, 'editar esta avaliação do aluno');
+
+            return view(
+                'pages.specialized-educational-support.students.session-records.edit',
+                compact('student', 'evaluation')
+            );
+        } catch (Throwable $e) {
+            return redirect()
+                ->route('specialized-educational-support.students.session-records.show', [$student, $evaluation])
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    public function studentUpdate(Student $student, StudentSessionEvaluation $evaluation, Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'student_id' => ['required', 'exists:students,id'],
+                'is_present' => ['required', 'boolean'],
+                'absence_reason' => ['required_if:is_present,0', 'nullable', 'string'],
+                'student_participation' => ['required_if:is_present,1', 'nullable', 'string'],
+                'adaptations_made' => ['nullable', 'string'],
+                'development_evaluation' => ['required_if:is_present,1', 'nullable', 'string'],
+                'progress_indicators' => ['nullable', 'string'],
+                'recommendations' => ['nullable', 'string'],
+                'next_session_adjustments' => ['nullable', 'string'],
+            ], [
+                'absence_reason.required_if' => 'A justificativa é obrigatória para aluno ausente.',
+                'student_participation.required_if' => 'A participação é obrigatória para aluno presente.',
+                'development_evaluation.required_if' => 'A avaliação de desenvolvimento é obrigatória para aluno presente.',
+            ]);
+
+            $this->service->studentUpdate($student, $evaluation, $validated);
+
+            return redirect()
+                ->route('specialized-educational-support.students.session-records.show', [$student, $evaluation])
+                ->with('success', 'Avaliação do aluno atualizada com sucesso.');
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function studentDestroy(Student $student, StudentSessionEvaluation $evaluation)
+    {
+        try {
+            $this->service->studentDelete($student, $evaluation);
+
+            return redirect()
+                ->route('specialized-educational-support.students.session-records.index', $student)
+                ->with('success', 'Avaliação do aluno removida com sucesso.');
+        } catch (Throwable $e) {
+            return back()->with('error', $e->getMessage());
         }
     }
 

@@ -14,6 +14,36 @@ use Illuminate\Validation\ValidationException;
 
 class SessionService
 {
+    private function normalizeStatus(?string $status): string
+    {
+        return mb_strtolower(trim((string) $status));
+    }
+
+    private function isScheduledStatus(?string $status): bool
+    {
+        return in_array($this->normalizeStatus($status), ['agendada', 'agendado', 'scheduled'], true);
+    }
+
+    public function ensureCreatedByCurrentUser(Session $session, string $action): void
+    {
+        if ((int) $session->creator_id !== (int) Auth::id()) {
+            throw ValidationException::withMessages([
+                'session' => "Apenas quem criou a sessão pode {$action}."
+            ]);
+        }
+    }
+
+    public function ensureCanEdit(Session $session): void
+    {
+        $this->ensureCreatedByCurrentUser($session, 'editá-la');
+
+        if (!$this->isScheduledStatus($session->status)) {
+            throw ValidationException::withMessages([
+                'session' => 'Apenas sessões com status Agendada podem ser editadas.'
+            ]);
+        }
+    }
+
     public function index(array $filters = [])
     {
         return Session::query()
@@ -233,6 +263,7 @@ class SessionService
 
             $session = Session::create([
                 'professional_id'   => $data['professional_id'],
+                'creator_id'        => Auth::id(),
                 'session_date'      => $data['session_date'],
                 'start_time'        => $data['start_time'],
                 'end_time'          => $data['end_time'],
@@ -256,6 +287,8 @@ class SessionService
 
     public function cancel(Session $session, string $reason): Session
     {
+        $this->ensureCreatedByCurrentUser($session, 'cancelá-la');
+
         $session->update([
             'status' => 'Cancelada',
             'cancellation_reason' => $reason
@@ -277,6 +310,8 @@ class SessionService
 
     public function update(Session $session, array $data): Session
     {
+        $this->ensureCanEdit($session);
+
         return DB::transaction(function () use ($session, $data) {
             $professionalId = $data['professional_id'] ?? $session->professional_id;
             $this->ensureProfessionalIsActive($professionalId);
@@ -336,6 +371,8 @@ class SessionService
 
     public function delete(Session $session): void
     {
+        $this->ensureCreatedByCurrentUser($session, 'excluí-la');
+
         DB::transaction(function () use ($session) {
 
             if ($session->status === 'Agendada') {

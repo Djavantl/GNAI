@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Professional;
+use App\Models\User;
 use Carbon\Carbon;
 
 class AttendanceSessionSeeder extends Seeder
@@ -30,6 +31,7 @@ class AttendanceSessionSeeder extends Seeder
     {
         $students      = Student::all()->values();
         $professionals = Professional::all()->values();
+        $fallbackCreator = User::where('is_admin', true)->first() ?? User::first();
 
         if ($professionals->isEmpty()) {
             $this->command->error('Nenhum profissional encontrado.');
@@ -111,8 +113,16 @@ class AttendanceSessionSeeder extends Seeder
                     }
 
                     // --- Insere a sessão ---
+                    $creatorId = $professional->user?->id ?? $fallbackCreator?->id;
+
+                    if (!$creatorId) {
+                        $this->command->error('Nenhum usuário encontrado para definir creator_id das sessões.');
+                        return;
+                    }
+
                     $sessionId = DB::table('attendance_sessions')->insertGetId([
                         'professional_id'   => $professional->id,
+                        'creator_id'        => $creatorId,
                         'session_date'      => $date,
                         'start_time'        => $startTime,
                         'end_time'          => $endTime,

@@ -19,13 +19,18 @@
                 Realizada em: {{ $sessionRecord->attendanceSession->session_date->format('d/m/Y') }}
             </p>
         </div>
+        @php
+            $canManageSessionRecord = auth()->user()?->professional?->id === $sessionRecord->attendanceSession->professional_id;
+        @endphp
         <div class="d-flex gap-2">
             <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.session-records.pdf', $sessionRecord)" />
 
             @can('session-record.update')
+            @if($canManageSessionRecord)
             <x-buttons.link-button :href="route('specialized-educational-support.session-records.edit', $sessionRecord)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+            @endif
             @endcan
 
             <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id)" variant="secondary">
@@ -147,12 +152,14 @@
                 </div>
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
                     @can('session-record.delete')
+                    @if($canManageSessionRecord)
                     <form action="{{ route('specialized-educational-support.session-records.destroy', $sessionRecord) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
                         @csrf @method('DELETE')
                         <x-buttons.submit-button variant="danger">
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
                     </form>
+                    @endif
                     @endcan
                     <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id)" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar

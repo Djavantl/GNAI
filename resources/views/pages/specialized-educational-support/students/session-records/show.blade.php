@@ -49,6 +49,7 @@
                 $sessionRecord = $evaluation->sessionRecord;
                 $attendanceSession = $sessionRecord->attendanceSession;
                 $professional = $attendanceSession->professional;
+                $canManageEvaluation = auth()->user()?->professional?->id === $attendanceSession->professional_id;
             @endphp
 
             {{-- INFORMAÇÕES GERAIS --}}
@@ -153,6 +154,31 @@
                 </div>
 
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
+                    @can('session-record.update')
+                    @if($canManageEvaluation)
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.students.session-records.edit', [$student, $evaluation])"
+                        variant="warning">
+                        <i class="fas fa-edit"></i> Editar
+                    </x-buttons.link-button>
+                    @endif
+                    @endcan
+
+                    @can('session-record.delete')
+                    @if($canManageEvaluation)
+                    <form
+                        action="{{ route('specialized-educational-support.students.session-records.destroy', [$student, $evaluation]) }}"
+                        method="POST"
+                        onsubmit="return confirm('Excluir apenas o registro deste aluno nesta sessão?')"
+                    >
+                        @csrf
+                        @method('DELETE')
+                        <x-buttons.submit-button variant="danger">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    </form>
+                    @endif
+                    @endcan
 
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.students.session-records.index', $student)"

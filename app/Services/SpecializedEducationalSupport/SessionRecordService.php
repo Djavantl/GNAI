@@ -5,11 +5,87 @@ namespace App\Services\SpecializedEducationalSupport;
 use App\Models\SpecializedEducationalSupport\SessionRecord;
 use App\Models\SpecializedEducationalSupport\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
+use Exception;
 
 class SessionRecordService
 {
+    private function normalizeStatus(?string $status): string
+    {
+        return mb_strtolower(trim((string) $status));
+    }
+
+    private function ensureAssignedProfessional(Session $session, string $action): void
+    {
+        $professionalId = Auth::user()?->professional?->id;
+
+        if (!$professionalId || (int) $professionalId !== (int) $session->professional_id) {
+            throw new Exception("Apenas o profissional vinculado a esta sessão pode {$action}.");
+        }
+    }
+
+    private function ensureScheduledSession(Session $session, string $action): void
+    {
+        if (!in_array($this->normalizeStatus($session->status), ['agendada', 'agendado', 'scheduled'], true)) {
+            throw new Exception("A sessão precisa estar com status Agendada para {$action}.");
+        }
+    }
+
+    private function normalizeEvaluationPayload(array $evalData): array
+    {
+        $isPresent = isset($evalData['is_present'])
+            ? filter_var($evalData['is_present'], FILTER_VALIDATE_BOOLEAN)
+            : false;
+
+        return [
+            'student_id' => $evalData['student_id'],
+            'is_present' => $isPresent,
+            'absence_reason' => $isPresent ? null : ($evalData['absence_reason'] ?? null),
+            'student_participation' => $isPresent ? ($evalData['student_participation'] ?? null) : null,
+            'adaptations_made' => $isPresent ? ($evalData['adaptations_made'] ?? null) : null,
+            'development_evaluation' => $isPresent ? ($evalData['development_evaluation'] ?? null) : null,
+            'progress_indicators' => $isPresent ? ($evalData['progress_indicators'] ?? null) : null,
+            'recommendations' => $isPresent ? ($evalData['recommendations'] ?? null) : null,
+            'next_session_adjustments' => $isPresent ? ($evalData['next_session_adjustments'] ?? null) : null,
+        ];
+    }
+
+    public function ensureCanCreateForSession(Session $session): void
+    {
+        $this->ensureAssignedProfessional($session, 'criar o registro desta sessão');
+        $this->ensureScheduledSession($session, 'criar o registro desta sessão');
+
+        if ($session->sessionRecord()->exists()) {
+            throw new Exception('Esta sessão já possui registro cadastrado.');
+        }
+    }
+
+    public function ensureCanManageRecord(SessionRecord $sessionRecord, string $action): void
+    {
+        $session = $sessionRecord->attendanceSession()->withTrashed()->first();
+
+        if (!$session) {
+            throw new Exception('Sessão vinculada ao registro não encontrada.');
+        }
+
+        $this->ensureAssignedProfessional($session, $action);
+    }
+
+    public function ensureCanManageEvaluation(StudentSessionEvaluation $evaluation, string $action): void
+    {
+        $evaluation->loadMissing('sessionRecord.attendanceSession');
+
+        $session = $evaluation->sessionRecord?->attendanceSession;
+
+        if (!$session) {
+            throw new Exception('Sessão vinculada à avaliação não encontrada.');
+        }
+
+        $this->ensureAssignedProfessional($session, $action);
+    }
+
     /**
      * Lista todos os registros com as avaliações e alunos carregados
      */
@@ -29,10 +105,10 @@ class SessionRecordService
      */
     public function create(array $data): SessionRecord
     {
-        $session = Session::where('id', $data['attendance_session_id']);
+        $session = Session::with('sessionRecord')->findOrFail($data['attendance_session_id']);
+        $this->ensureCanCreateForSession($session);
 
         return DB::transaction(function () use ($session, $data) {
-
             $session->update(['status' => 'Realizada']);
 
             // 1. Cria o registro principal (o que o profissional fez)
@@ -67,6 +143,8 @@ class SessionRecordService
      */
     public function update(SessionRecord $session_rec, array $data): SessionRecord
     {
+        $this->ensureCanManageRecord($session_rec, 'editar este registro de atendimento');
+
         return DB::transaction(function () use ($session_rec, $data) {
             // Atualiza o registro geral da sessão
             $session_rec->update([
@@ -79,23 +157,7 @@ class SessionRecordService
             ]);
 
             foreach ($data['evaluations'] as $evalData) {
-                $isPresent = isset($evalData['is_present'])
-                    ? filter_var($evalData['is_present'], FILTER_VALIDATE_BOOLEAN)
-                    : false;
-
-                $normalizedData = [
-                    'student_id' => $evalData['student_id'],
-                    'is_present' => $isPresent,
-                    'absence_reason' => $isPresent ? null : ($evalData['absence_reason'] ?? null),
-
-                    // Se estiver presente, salva; se não, limpa tudo
-                    'student_participation' => $isPresent ? ($evalData['student_participation'] ?? null) : null,
-                    'adaptations_made' => $isPresent ? ($evalData['adaptations_made'] ?? null) : null,
-                    'development_evaluation' => $isPresent ? ($evalData['development_evaluation'] ?? null) : null,
-                    'progress_indicators' => $isPresent ? ($evalData['progress_indicators'] ?? null) : null,
-                    'recommendations' => $isPresent ? ($evalData['recommendations'] ?? null) : null,
-                    'next_session_adjustments' => $isPresent ? ($evalData['next_session_adjustments'] ?? null) : null,
-                ];
+                $normalizedData = $this->normalizeEvaluationPayload($evalData);
 
                 $session_rec->studentEvaluations()->updateOrCreate(
                     ['student_id' => $evalData['student_id']],
@@ -109,6 +171,8 @@ class SessionRecordService
 
     public function delete(SessionRecord $session_rec): void
     {
+        $this->ensureCanManageRecord($session_rec, 'excluir este registro de atendimento');
+
         // O cascadeOnDelete na migration cuidará das avaliações automaticamente
         $session_rec->delete();
     }
@@ -167,6 +231,29 @@ class SessionRecordService
             'student.person',
             'sessionRecord.attendanceSession.professional.person',
         ]);
+    }
+
+    public function studentUpdate(Student $student, StudentSessionEvaluation $evaluation, array $data): StudentSessionEvaluation
+    {
+        abort_unless($evaluation->student_id === $student->id, 404);
+        $this->ensureCanManageEvaluation($evaluation, 'editar esta avaliação do aluno');
+
+        return DB::transaction(function () use ($evaluation, $data) {
+            $evaluation->update($this->normalizeEvaluationPayload($data));
+
+            return $evaluation->fresh([
+                'student.person',
+                'sessionRecord.attendanceSession.professional.person',
+            ]);
+        });
+    }
+
+    public function studentDelete(Student $student, StudentSessionEvaluation $evaluation): void
+    {
+        abort_unless($evaluation->student_id === $student->id, 404);
+        $this->ensureCanManageEvaluation($evaluation, 'excluir esta avaliação do aluno');
+
+        $evaluation->delete();
     }
 
 
