@@ -11,9 +11,20 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * RF: histórico de vistorias dos itens e barreiras do radar inclusivo.
+ * Uso: timelines de show, filtros por status/estado e report builder.
+ */
 class Inspection extends Model
 {
     use HasFactory, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade e Estado
+    |--------------------------------------------------------------------------
+    | Mantém os campos de vistoria usados por recursos e barreiras.
+    */
 
     protected $fillable = [
         'inspectable_id',
@@ -32,6 +43,13 @@ class Inspection extends Model
         'status' => BarrierStatus::class,
         'type' => InspectionType::class,
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers e Relatórios
+    |--------------------------------------------------------------------------
+    | Dá suporte à exibição legível do item inspecionado na UI e no builder.
+    */
 
     public function getInspectableNameAttribute(): ?string
     {
@@ -81,6 +99,13 @@ class Inspection extends Model
             ],
         ];
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | O vínculo polimórfico conecta a vistoria ao item real do domínio.
+    */
 
     public function inspectable(): MorphTo
     {

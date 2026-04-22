@@ -12,9 +12,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * RF: controle de empréstimos dos recursos do radar inclusivo.
+ * Uso: operação de empréstimo/devolução, alertas de atraso e relatórios.
+ */
 class Loan extends Model
 {
     use HasFactory, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade e Estado
+    |--------------------------------------------------------------------------
+    | Guarda os dados transacionais do empréstimo e seus casts funcionais.
+    */
 
     protected $table = 'loans';
 
@@ -37,6 +48,13 @@ class Loan extends Model
         'return_date' => 'datetime',
         'status'      => LoanStatus::class,
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Define campos e alvos polimórficos usados pelo report builder.
+    */
 
     public static function getReportLabel(): string
     {
@@ -79,6 +97,13 @@ class Loan extends Model
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | Conecta o empréstimo ao item, beneficiário e usuário responsável.
+    */
+
     public function loanable(): MorphTo
     {
         return $this->morphTo()->withTrashed();
@@ -98,6 +123,13 @@ class Loan extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Operação e Relatório
+    |--------------------------------------------------------------------------
+    | Reúne filtros usados no index, nos serviços de negócio e no builder.
+    */
 
     public function scopeByStatus($query, ?LoanStatus $status)
     {

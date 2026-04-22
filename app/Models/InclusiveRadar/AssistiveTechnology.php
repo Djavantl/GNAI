@@ -18,9 +18,20 @@ use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+/**
+ * RF: gestão do inventário de tecnologias assistivas.
+ * Uso: CRUD do radar, empréstimos, filas, inspeções, logs e relatórios.
+ */
 class AssistiveTechnology extends Model implements AuditableContract
 {
     use HasFactory, SoftDeletes, Auditable, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade, Persistência e Estado
+    |--------------------------------------------------------------------------
+    | Mantém os dados base do item e os casts usados nas regras de domínio.
+    */
 
     protected $table = 'assistive_technologies';
 
@@ -47,6 +58,13 @@ class AssistiveTechnology extends Model implements AuditableContract
 
     protected array $auditExclude = ['quantity_available'];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Auditoria
+    |--------------------------------------------------------------------------
+    | Mantém rótulos e formatter usados no histórico administrativo do módulo.
+    */
+
     public static function auditLabels(): array
     {
         return [
@@ -66,6 +84,13 @@ class AssistiveTechnology extends Model implements AuditableContract
     {
         return AssistiveTechnologyFormatter::class;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Controla como a entidade aparece no builder de relatórios do radar.
+    */
 
     public static function getReportLabel(): string
     {
@@ -108,6 +133,13 @@ class AssistiveTechnology extends Model implements AuditableContract
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | Suporta público-alvo, vistorias, empréstimos e rastreabilidade do item.
+    */
+
     public function deficiencies(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -146,6 +178,13 @@ class AssistiveTechnology extends Model implements AuditableContract
     {
         return $this->morphMany(AuditLog::class, 'auditable');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Listagem
+    |--------------------------------------------------------------------------
+    | Reutilizados em indexes, seletores e serviços do módulo.
+    */
 
     public function scopeFilterName(Builder $query, ?string $name): Builder
     {

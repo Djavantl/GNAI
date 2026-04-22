@@ -18,9 +18,20 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
+/**
+ * RF: registro e monitoramento das barreiras de acessibilidade.
+ * Uso: mapa, inspeções periódicas, resolução operacional e relatórios analíticos.
+ */
 class Barrier extends Model
 {
     use HasFactory, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade, Persistência e Estado
+    |--------------------------------------------------------------------------
+    | Agrupa o núcleo do relato e os casts usados nas regras da barreira.
+    */
 
     protected $fillable = [
         'name',
@@ -54,6 +65,13 @@ class Barrier extends Model
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Expõe o conjunto de colunas disponível no builder do radar inclusivo.
+    */
 
     public static function getReportLabel(): string
     {
@@ -98,6 +116,13 @@ class Barrier extends Model
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers de Domínio
+    |--------------------------------------------------------------------------
+    | Simplifica a exibição do relator e do status atual nas telas operacionais.
+    */
+
     public function getReporterDisplayNameAttribute(): string
     {
         if ($this->is_anonymous) {
@@ -106,6 +131,13 @@ class Barrier extends Model
 
         return $this->registeredBy?->name ?? 'Usuário não identificado';
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | Sustentam o mapa, o histórico de vistorias e o contexto da ocorrência.
+    */
 
     public function registeredBy(): BelongsTo
     {
@@ -181,6 +213,13 @@ class Barrier extends Model
             'id'
         )->where('inspectable_type', static::class);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Listagem
+    |--------------------------------------------------------------------------
+    | Reúne filtros usados em index, mapa e relatórios administrativos.
+    */
 
     public function scopeName(Builder $query, ?string $value): Builder
     {

@@ -10,9 +10,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * RF: cadastro dos pontos de referência/localizações vinculados à instituição.
+ * Uso: mapa do radar, barreiras georreferenciadas e relatórios de locais.
+ */
 class Location extends Model
 {
     use HasFactory, SoftDeletes, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade e Persistência
+    |--------------------------------------------------------------------------
+    | Guarda os dados de localização usados pelo mapa e pelo CRUD do módulo.
+    */
 
     protected $table = 'locations';
 
@@ -32,6 +43,13 @@ class Location extends Model
         'longitude' => 'float',
         'is_active' => 'boolean',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Expõe os campos e coleções compatíveis com o report builder.
+    */
 
     public static function getReportLabel(): string
     {
@@ -67,6 +85,13 @@ class Location extends Model
         return ['barriers'];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | A localização depende da instituição e agrega as barreiras registradas nela.
+    */
+
     public function institution(): BelongsTo
     {
         return $this->belongsTo(Institution::class);
@@ -76,6 +101,13 @@ class Location extends Model
     {
         return $this->hasMany(Barrier::class);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Listagem
+    |--------------------------------------------------------------------------
+    | Reúne filtros usados nas telas administrativas e consultas auxiliares.
+    */
 
     public function scopeFilterName(Builder $query, ?string $name): Builder
     {

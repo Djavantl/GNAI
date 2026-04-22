@@ -9,9 +9,20 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * RF: cadastro das instituições/unidades usadas como base territorial do radar.
+ * Uso: mapas, locais, barreiras e relatórios institucionais.
+ */
 class Institution extends Model
 {
     use HasFactory, SoftDeletes, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade e Persistência
+    |--------------------------------------------------------------------------
+    | Reúne os dados cadastrais da instituição e preserva histórico com soft delete.
+    */
 
     protected $table = 'institutions';
 
@@ -34,6 +45,13 @@ class Institution extends Model
         'default_zoom' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Define campos e coleções liberadas para o report builder do radar.
+    */
 
     public static function getReportLabel(): string
     {
@@ -75,6 +93,13 @@ class Institution extends Model
         return ['locations', 'barriers'];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | Esses vínculos alimentam mapas, dashboards e páginas de detalhe.
+    */
+
     public function latestInspection(): MorphOne
     {
         return $this->morphOne(Inspection::class, 'inspectable')
@@ -90,6 +115,13 @@ class Institution extends Model
     {
         return $this->hasMany(Barrier::class);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Listagem
+    |--------------------------------------------------------------------------
+    | Mantém os filtros reutilizados no index e em consultas administrativas.
+    */
 
     public function scopeFilterName($query, ?string $name)
     {

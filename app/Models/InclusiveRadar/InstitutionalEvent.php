@@ -7,9 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * RF: agenda institucional do radar inclusivo.
+ * Uso: calendário/listagens, lembretes automáticos e relatórios de eventos.
+ */
 class InstitutionalEvent extends Model
 {
     use HasFactory, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade e Persistência
+    |--------------------------------------------------------------------------
+    | Mantém os dados temporais e descritivos usados pelo fluxo da agenda.
+    */
 
     protected $table = 'institutional_events';
 
@@ -33,6 +44,13 @@ class InstitutionalEvent extends Model
         'end_time' => 'datetime:H:i',
         'is_active' => 'boolean',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Define a exposição da agenda institucional no report builder.
+    */
 
     public static function getReportLabel(): string
     {
@@ -71,9 +89,13 @@ class InstitutionalEvent extends Model
         ];
     }
 
-    /**
-     * Scope para buscar por título
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Listagem
+    |--------------------------------------------------------------------------
+    | Reaproveitados por index, filtros rápidos e automações de agenda.
+    */
+
     public function scopeSearchTitle(Builder $query, ?string $title): Builder
     {
         if ($title) {
@@ -82,9 +104,6 @@ class InstitutionalEvent extends Model
         return $query;
     }
 
-    /**
-     * Scope para eventos ativos
-     */
     public function scopeActive(Builder $query, bool $active = true): Builder
     {
         return $query->where('is_active', $active);

@@ -7,9 +7,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * RF: cadastro dos recursos de acessibilidade vinculáveis aos materiais.
+ * Uso: formulários de MPA, telas de show e report builder do módulo.
+ */
 class AccessibilityFeature extends Model
 {
     use HasFactory, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade e Persistência
+    |--------------------------------------------------------------------------
+    | Centraliza os campos básicos do cadastro para uso em CRUD e filtros.
+    */
 
     protected $table = 'accessibility_features';
 
@@ -22,6 +33,13 @@ class AccessibilityFeature extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Define como a entidade aparece no builder de relatórios do sistema.
+    */
 
     public static function getReportLabel(): string
     {
@@ -48,6 +66,13 @@ class AccessibilityFeature extends Model
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | Mantém o vínculo N:N com materiais para consultas e telas de detalhe.
+    */
+
     public function materials(): BelongsToMany
     {
         return $this->BelongsToMany(
@@ -55,6 +80,13 @@ class AccessibilityFeature extends Model
             'accessible_educational_material_accessibility'
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Listagem
+    |--------------------------------------------------------------------------
+    | Sustenta as filtragens do index e reaproveitamento em relatórios/serviços.
+    */
 
     public function scopeFilterName($query, ?string $name)
     {

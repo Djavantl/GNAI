@@ -9,9 +9,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * RF: classificação funcional das barreiras registradas no mapa inclusivo.
+ * Uso: cadastro de barreiras, validação de mapa e relatórios de categorias.
+ */
 class BarrierCategory extends Model
 {
     use HasFactory, SoftDeletes, Reportable;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identidade e Persistência
+    |--------------------------------------------------------------------------
+    | Mantém o núcleo do cadastro e o soft delete para histórico administrativo.
+    */
 
     protected $table = 'barrier_categories';
 
@@ -26,6 +37,13 @@ class BarrierCategory extends Model
         'is_active' => 'boolean',
         'blocks_map' => 'boolean'
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relatórios
+    |--------------------------------------------------------------------------
+    | Expõe colunas e coleções liberadas para o report builder do módulo.
+    */
 
     public static function getReportLabel(): string
     {
@@ -61,10 +79,24 @@ class BarrierCategory extends Model
         return ['barriers'];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | A categoria agrega barreiras e influencia o comportamento do mapa.
+    */
+
     public function barriers(): HasMany
     {
         return $this->hasMany(Barrier::class);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Listagem
+    |--------------------------------------------------------------------------
+    | Reúne a filtragem usada nas listagens administrativas e consultas auxiliares.
+    */
 
     public function scopeFilterName($query, ?string $name): Builder
     {

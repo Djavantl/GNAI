@@ -7,9 +7,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * RF: evidências visuais anexadas às vistorias.
+ * Uso: timelines, detalhes da inspeção e limpeza automática do storage.
+ */
 class InspectionImage extends Model
 {
     use HasFactory;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Persistência
+    |--------------------------------------------------------------------------
+    | Mantém os metadados do arquivo persistidos junto à vistoria.
+    */
 
     protected $fillable = [
         'inspection_id',
@@ -19,6 +30,13 @@ class InspectionImage extends Model
         'size'
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Eventos de Modelo
+    |--------------------------------------------------------------------------
+    | Garante remoção física do arquivo ao excluir o registro da imagem.
+    */
+
     protected static function booted()
     {
         static::deleted(function ($image) {
@@ -27,6 +45,13 @@ class InspectionImage extends Model
             }
         });
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relacionamentos
+    |--------------------------------------------------------------------------
+    | A imagem sempre pertence a uma única inspeção.
+    */
 
     public function inspection(): BelongsTo
     {
