@@ -50,14 +50,17 @@ class PendencyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'assigned_to.required' => 'A responsible professional must be selected.',
-            'assigned_to.exists'   => 'The selected professional is invalid.',
-
-            'title.required' => 'The title field is required.',
-            'title.max'      => 'The title may not be greater than 255 characters.',
-
-            'due_date.after_or_equal' =>
-                'The due date must be today or a future date.',
+            'assigned_to.required' => 'O profissional responsável é obrigatório.',
+            'assigned_to.integer' => 'O profissional responsável informado é inválido.',
+            'assigned_to.exists'   => 'O profissional responsável selecionado é inválido.',
+            'title.required' => 'O título da pendência é obrigatório.',
+            'title.string' => 'O título da pendência deve ser um texto válido.',
+            'title.max'      => 'O título da pendência não pode ultrapassar 255 caracteres.',
+            'description.string' => 'A descrição da pendência deve ser um texto válido.',
+            'priority.enum' => 'A prioridade selecionada é inválida.',
+            'due_date.date' => 'A data limite deve ser uma data válida.',
+            'due_date.after_or_equal' => 'A data limite deve ser hoje ou uma data futura.',
+            'is_completed.boolean' => 'O campo de conclusão da pendência é inválido.',
         ];
     }
 

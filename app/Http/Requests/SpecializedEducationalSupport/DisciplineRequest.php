@@ -27,4 +27,15 @@ class DisciplineRequest extends FormRequest
             'is_active' => 'boolean',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'O nome da disciplina é obrigatório.',
+            'name.string' => 'O nome da disciplina deve ser um texto válido.',
+            'name.max' => 'O nome da disciplina não pode ultrapassar 255 caracteres.',
+            'description.string' => 'A descrição da disciplina deve ser um texto válido.',
+            'is_active.boolean' => 'O campo de situação da disciplina é inválido.',
+        ];
+    }
 }

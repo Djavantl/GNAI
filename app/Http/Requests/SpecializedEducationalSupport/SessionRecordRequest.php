@@ -73,13 +73,34 @@ class SessionRecordRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'attendance_session_id.required'   => 'A sessão de atendimento é obrigatória.',
+            'attendance_session_id.exists'     => 'A sessão de atendimento informada é inválida.',
             'duration.required'             => 'A duração da sessão é obrigatória.',
+            'duration.string'               => 'A duração da sessão deve ser um texto válido.',
+            'duration.max'                  => 'A duração da sessão não pode ultrapassar 50 caracteres.',
             'activities_performed.required' => 'O relato das atividades realizadas é obrigatório.',
+            'activities_performed.string'   => 'O relato das atividades realizadas deve ser um texto válido.',
+            'strategies_used.string'        => 'As estratégias utilizadas devem ser informadas em um texto válido.',
+            'resources_used.string'         => 'Os recursos utilizados devem ser informados em um texto válido.',
+            'general_observations.string'   => 'As observações gerais devem ser informadas em um texto válido.',
+            'evaluations.required'          => 'É necessário informar ao menos uma avaliação de aluno.',
+            'evaluations.array'             => 'As avaliações dos alunos devem ser informadas em uma lista válida.',
+            'evaluations.min'               => 'É necessário informar ao menos uma avaliação de aluno.',
+            'evaluations.*.student_id.required' => 'O aluno da avaliação é obrigatório.',
+            'evaluations.*.student_id.exists' => 'Um dos alunos informados na avaliação é inválido.',
+            'evaluations.*.is_present.boolean' => 'O campo de presença do aluno é inválido.',
             
             // Mensagens específicas com o wildcard
             'evaluations.*.absence_reason.required_if'        => 'A justificativa é obrigatória para alunos ausentes.',
+            'evaluations.*.absence_reason.string'             => 'A justificativa de ausência deve ser um texto válido.',
             'evaluations.*.student_participation.required_if'  => 'A participação é obrigatória para alunos presentes.',
+            'evaluations.*.student_participation.string'       => 'A participação deve ser informada em um texto válido.',
             'evaluations.*.development_evaluation.required_if' => 'A avaliação de desenvolvimento é obrigatória para alunos presentes.',
+            'evaluations.*.development_evaluation.string'      => 'A avaliação de desenvolvimento deve ser informada em um texto válido.',
+            'evaluations.*.adaptations_made.string'            => 'As adaptações realizadas devem ser informadas em um texto válido.',
+            'evaluations.*.progress_indicators.string'         => 'Os indicadores de progresso devem ser informados em um texto válido.',
+            'evaluations.*.recommendations.string'             => 'As recomendações devem ser informadas em um texto válido.',
+            'evaluations.*.next_session_adjustments.string'    => 'Os ajustes para a próxima sessão devem ser informados em um texto válido.',
         ];
     }
 

@@ -33,8 +33,17 @@ class SpecificObjectiveRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'pei_id.required' => 'O PEI é obrigatório.',
+            'pei_id.exists' => 'O PEI informado é inválido.',
+            'title.required' => 'O título do objetivo específico é obrigatório.',
+            'title.string' => 'O título do objetivo específico deve ser um texto válido.',
+            'title.max' => 'O título do objetivo específico não pode ultrapassar 255 caracteres.',
             'status.Illuminate\Validation\Rules\Enum' => 'O status selecionado é inválido.',
             'description.required' => 'A descrição do objetivo é obrigatória.',
+            'description.string' => 'A descrição do objetivo deve ser um texto válido.',
+            'description.max' => 'A descrição do objetivo não pode ultrapassar 1000 caracteres.',
+            'observations_progress.string' => 'As observações de progresso devem ser um texto válido.',
+            'observations_progress.max' => 'As observações de progresso não podem ultrapassar 1000 caracteres.',
         ];
     }
 }

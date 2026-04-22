@@ -30,4 +30,16 @@ class StudentDeficienciesRequest extends FormRequest
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'deficiency_id.required' => 'O perfil de atendimento é obrigatório.',
+            'deficiency_id.unique' => 'Este aluno já possui o perfil de atendimento selecionado.',
+            'severity.in' => 'A severidade selecionada é inválida.',
+            'uses_support_resources.boolean' => 'O campo de recursos de apoio é inválido.',
+            'notes.string' => 'As observações devem ser informadas em um texto válido.',
+            'notes.max' => 'As observações não podem ultrapassar 1000 caracteres.',
+        ];
+    }
 }

@@ -25,4 +25,16 @@ class ContentProgrammaticRequest extends FormRequest
             'description' => ['nullable', 'string'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'pei_id.required' => 'O PEI é obrigatório.',
+            'pei_id.exists' => 'O PEI informado é inválido.',
+            'title.required' => 'O título do conteúdo programático é obrigatório.',
+            'title.string' => 'O título do conteúdo programático deve ser um texto válido.',
+            'title.max' => 'O título do conteúdo programático não pode ultrapassar 255 caracteres.',
+            'description.string' => 'A descrição do conteúdo programático deve ser um texto válido.',
+        ];
+    }
 }

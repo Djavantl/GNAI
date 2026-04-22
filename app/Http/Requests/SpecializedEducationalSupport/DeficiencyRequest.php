@@ -49,10 +49,13 @@ class DeficiencyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'O nome da deficiência é obrigatório.',
+            'name.required' => 'O nome do perfil de atendimento é obrigatório.',
+            'name.string' => 'O nome do perfil de atendimento deve ser um texto válido.',
             'name.max' => 'O nome não pode ultrapassar 255 caracteres.',
+            'cid_code.string' => 'O código CID deve ser um texto válido.',
+            'cid_code.unique' => 'O código CID informado já está cadastrado.',
             'cid_code.max' => 'O código CID deve ter no máximo 20 caracteres.',
-            'is_active.boolean' => 'O campo ativo deve ser verdadeiro ou falso.',
+            'description.string' => 'A descrição deve ser um texto válido.',
         ];
     }
 }

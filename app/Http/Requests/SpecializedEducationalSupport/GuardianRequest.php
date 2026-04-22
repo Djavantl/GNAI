@@ -80,9 +80,27 @@ class GuardianRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'name.required' => 'O nome do responsável é obrigatório.',
+            'name.string' => 'O nome do responsável deve ser um texto válido.',
+            'name.min' => 'O nome do responsável deve ter ao menos 3 caracteres.',
+            'name.max' => 'O nome do responsável não pode ultrapassar 255 caracteres.',
+            'document.required' => 'O documento do responsável é obrigatório.',
+            'document.string' => 'O documento do responsável deve ser um texto válido.',
             'document.unique' => 'Este CPF/Documento já está cadastrado para outra pessoa.',
-            'relationship.in' => 'O parentesco selecionado é inválido.',
+            'birth_date.required' => 'A data de nascimento do responsável é obrigatória.',
+            'birth_date.date' => 'A data de nascimento do responsável deve ser válida.',
             'birth_date.before' => 'A data de nascimento deve ser uma data passada.',
+            'gender.required' => 'O gênero do responsável é obrigatório.',
+            'gender.in' => 'O gênero selecionado é inválido.',
+            'email.email' => 'O e-mail do responsável deve ser válido.',
+            'email.max' => 'O e-mail do responsável não pode ultrapassar 255 caracteres.',
+            'phone.required' => 'O telefone do responsável é obrigatório.',
+            'phone.string' => 'O telefone do responsável deve ser um texto válido.',
+            'address.string' => 'O endereço do responsável deve ser um texto válido.',
+            'address.max' => 'O endereço do responsável não pode ultrapassar 500 caracteres.',
+            'relationship.required' => 'O parentesco é obrigatório.',
+            'relationship.string' => 'O parentesco deve ser um texto válido.',
+            'relationship.in' => 'O parentesco selecionado é inválido.',
         ];
     }
 }

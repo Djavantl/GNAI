@@ -26,4 +26,9 @@ class PeiRequest extends FormRequest
         return [
         ];
     }
+
+    public function messages(): array
+    {
+        return [];
+    }
 }

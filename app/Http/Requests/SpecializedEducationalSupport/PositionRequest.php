@@ -45,9 +45,11 @@ class PositionRequest extends FormRequest
     {
         return [
             'name.required' => 'O nome do cargo é obrigatório.',
+            'name.string' => 'O nome do cargo deve ser um texto válido.',
             'name.max' => 'O nome não pode ultrapassar 255 caracteres.',
-            'cid_code.max' => 'O código CID deve ter no máximo 20 caracteres.',
-            'is_active.boolean' => 'O campo ativo deve ser verdadeiro ou falso.',
+            'description.string' => 'A descrição do cargo deve ser um texto válido.',
+            'permissions.array' => 'As permissões devem ser informadas em uma lista válida.',
+            'permissions.*.exists' => 'Uma das permissões selecionadas é inválida.',
         ];
     }
 }

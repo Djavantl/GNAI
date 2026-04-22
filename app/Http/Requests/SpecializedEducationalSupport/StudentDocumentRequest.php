@@ -23,4 +23,18 @@ class StudentDocumentRequest extends FormRequest
             'file' => ['sometimes', 'file', 'max:10240'], 
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'O título do documento é obrigatório.',
+            'title.string' => 'O título do documento deve ser um texto válido.',
+            'title.max' => 'O título do documento não pode ultrapassar 255 caracteres.',
+            'type.required' => 'O tipo do documento é obrigatório.',
+            'type.enum' => 'O tipo de documento selecionado é inválido.',
+            'version.integer' => 'A versão do documento deve ser um número inteiro.',
+            'file.file' => 'O arquivo enviado é inválido.',
+            'file.max' => 'O arquivo não pode ultrapassar 10 MB.',
+        ];
+    }
 }

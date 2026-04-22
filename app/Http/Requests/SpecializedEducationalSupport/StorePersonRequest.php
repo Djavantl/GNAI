@@ -31,4 +31,21 @@ class StorePersonRequest extends FormRequest
             'address'    => 'nullable|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'O nome é obrigatório.',
+            'name.min' => 'O nome deve ter ao menos 3 caracteres.',
+            'document.required' => 'O documento é obrigatório.',
+            'document.unique' => 'Este documento já está cadastrado.',
+            'birth_date.required' => 'A data de nascimento é obrigatória.',
+            'birth_date.date' => 'A data de nascimento deve ser válida.',
+            'gender.required' => 'O gênero é obrigatório.',
+            'gender.in' => 'O gênero selecionado é inválido.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'O e-mail deve ser válido.',
+            'address.string' => 'O endereço deve ser um texto válido.',
+        ];
+    }
 }

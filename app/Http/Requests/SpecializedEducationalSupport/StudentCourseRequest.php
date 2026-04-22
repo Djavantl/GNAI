@@ -37,4 +37,15 @@ class StudentCourseRequest extends FormRequest
             'is_current'   => 'boolean',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'course_id.required' => 'O curso é obrigatório.',
+            'course_id.unique' => 'Este aluno já possui vínculo com o curso selecionado.',
+            'academic_year.required' => 'O ano letivo é obrigatório.',
+            'academic_year.digits' => 'O ano letivo deve conter 4 dígitos.',
+            'is_current.boolean' => 'O campo de matrícula atual é inválido.',
+        ];
+    }
 }
