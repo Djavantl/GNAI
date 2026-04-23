@@ -1,7 +1,12 @@
-<x-table.table :headers="['Data', 'Alunos', 'Duração', 'Ações']" :records="$sessionRecords">
+<x-table.table :headers="[
+    ['label' => 'Data', 'responsive' => false],
+    'Alunos',
+    'Duração',
+    ['label' => 'Ações', 'responsive' => false],
+]" :records="$sessionRecords">
     @forelse($sessionRecords as $record)
         <tr>
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <span class="fw-bold text-purple-dark">
                     {{ $record->attendanceSession->session_date->format('d/m/Y') }}
                 </span>
@@ -26,7 +31,7 @@
                 {{ $record->duration ?? '—' }}
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     <x-buttons.link-button
                         :href="route('specialized-educational-support.session-records.show', $record)"

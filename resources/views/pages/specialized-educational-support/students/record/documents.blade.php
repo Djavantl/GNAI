@@ -5,13 +5,18 @@
     <div class="pb-3 ps-3 pe-3">
 
         <div class="table-responsive">
-            <x-table.table :headers="['Título', 'Tipo', 'Upload', '']">
+            <x-table.table :headers="[
+                ['label' => 'Título', 'responsive' => false],
+                'Tipo',
+                'Upload',
+                ['label' => '', 'responsive' => false],
+            ]">
                 
                 @forelse($student->documents as $document)
                     <tr>
 
                         {{-- TÍTULO --}}
-                        <x-table.td>
+                        <x-table.td :responsive="false">
                             <span class="fw-bold text-purple-dark">{{ $document->title }}</span>
                             <br>
                             <small class="text-muted">{{ $document->original_name }}</small>
@@ -28,7 +33,7 @@
                         </x-table.td>
 
                         {{-- AÇÕES --}}
-                        <x-table.td>
+                        <x-table.td :responsive="false">
                             <x-table.actions>
                                 @can('student-document.view')
                                 <x-buttons.link-button
@@ -47,7 +52,7 @@
 
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted fw-bold py-5">
+                        <td colspan="4" class="text-center text-muted fw-bold py-5">
                             <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
                             Nenhum documento encontrado.
                         </td>

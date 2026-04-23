@@ -1,7 +1,13 @@
- <x-table.table :headers="['Data', 'Profissional', 'Tipo', 'Status', 'Ações']">
+ <x-table.table :headers="[
+    ['label' => 'Data', 'responsive' => false],
+    'Profissional',
+    'Tipo',
+    'Status',
+    ['label' => 'Ações', 'responsive' => false],
+]">
     @forelse($sessions as $session)
         <tr>
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <div class="fw-bold">{{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</div>
                 <small class="text-muted">{{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}</small>
             </x-table.td>
@@ -28,7 +34,7 @@
                 </span>
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     {{-- Ver --}}
                     <x-buttons.link-button

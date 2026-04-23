@@ -1,8 +1,15 @@
-<x-table.table :headers="['Semestre', 'Curso', 'Status', 'Atual', 'Versão', 'Ações']"
+<x-table.table :headers="[
+    ['label' => 'Semestre', 'responsive' => false],
+    'Curso',
+    'Status',
+    'Atual',
+    'Versão',
+    ['label' => 'Ações', 'responsive' => false],
+]"
 :records="$peis">
         @forelse($peis as $pei)
             <tr>
-                <x-table.td>
+                <x-table.td :responsive="false">
                     <strong>{{ $pei->semester->label ?? 'N/A' }}</strong><br>
                     <small class="text-muted">Criado em: {{ $pei->created_at->format('d/m/Y') }}</small>
                 </x-table.td>
@@ -39,7 +46,7 @@
                     <strong>V{{ $pei->version ?? 'N/A' }}</strong>
                 </x-table.td>
 
-                <x-table.td>
+                <x-table.td :responsive="false">
                     <x-table.actions>
                         @can('pei.view')
                         <x-buttons.link-button

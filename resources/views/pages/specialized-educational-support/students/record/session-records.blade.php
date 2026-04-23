@@ -6,7 +6,13 @@
     <div class="pb-3 ps-3 pe-3">
 
         <div class="table-responsive">
-            <x-table.table :headers="['Data', 'Profissional', 'Duração', 'Presença', '']">
+            <x-table.table :headers="[
+                ['label' => 'Data', 'responsive' => false],
+                'Profissional',
+                'Duração',
+                'Presença',
+                ['label' => '', 'responsive' => false],
+            ]">
 
                 @forelse($sessionEvaluations as $evaluation)
                     @php
@@ -18,7 +24,7 @@
                     <tr>
 
                         {{-- DATA --}}
-                        <x-table.td>
+                        <x-table.td :responsive="false">
                             <span class="fw-bold text-purple-dark">
                                 {{ $attendanceSession?->session_date?->format('d/m/Y') ?? '—' }}
                             </span>
@@ -50,7 +56,7 @@
                         
 
                         {{-- AÇÕES --}}
-                        <x-table.td>
+                        <x-table.td :responsive="false">
                             <x-table.actions>
                                 @can('session-record.view')
                                     <x-buttons.link-button
@@ -68,7 +74,7 @@
 
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted fw-bold py-5">
+                        <td colspan="5" class="text-center text-muted fw-bold py-5">
                             <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
                             Nenhum registro de sessão encontrado.
                         </td>

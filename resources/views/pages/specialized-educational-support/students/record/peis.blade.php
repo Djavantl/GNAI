@@ -6,13 +6,19 @@
     <div class="pb-3 ps-3 pe-3">
 
         <div class="table-responsive">
-            <x-table.table :headers="['Curso', 'Disciplina', 'Professor', 'Status', '']">
+            <x-table.table :headers="[
+                ['label' => 'Curso', 'responsive' => false],
+                'Disciplina',
+                'Professor',
+                'Status',
+                ['label' => '', 'responsive' => false],
+            ]">
 
                 @forelse($student->peis as $pei)
                     <tr>
 
                         {{-- CURSO --}}
-                        <x-table.td>
+                        <x-table.td :responsive="false">
                             <span class="fw-bold text-purple-dark">
                                 {{ $pei->course->name ?? 'Geral' }}
                             </span>
@@ -44,7 +50,7 @@
                         </x-table.td>
 
                         {{-- AÇÕES --}}
-                        <x-table.td>
+                        <x-table.td :responsive="false">
                             <x-table.actions>
                                 @can('pei.view')
                                 <x-buttons.link-button

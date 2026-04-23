@@ -46,11 +46,17 @@
         </div>
     @endif
 
-    <x-table.table :headers="['Tipo', 'Semestre', 'Profissional', 'Data', 'Ações']">
+    <x-table.table :headers="[
+        ['label' => 'Tipo', 'responsive' => false],
+        'Semestre',
+        'Profissional',
+        'Data',
+        ['label' => 'Ações', 'responsive' => false],
+    ]">
         @forelse($pei_evaluations as $evaluation)
             <tr>
 
-                <x-table.td>
+                <x-table.td :responsive="false">
                     <strong>{{ $evaluation->evaluation_type->label() }}</strong>
                 </x-table.td>
 
@@ -66,7 +72,7 @@
                     {{ $evaluation->evaluation_date?->format('d/m/Y') ?? '---' }}
                 </x-table.td>
 
-                <x-table.td>
+                <x-table.td :responsive="false">
                     <x-table.actions>
 
                         <x-buttons.link-button

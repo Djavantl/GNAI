@@ -1,5 +1,11 @@
 <div class="table-responsive">
-    <x-table.table :headers="['Data', 'Profissional', 'Duração', 'Presença', 'Ações']">
+    <x-table.table :headers="[
+        ['label' => 'Data', 'responsive' => false],
+        'Profissional',
+        'Duração',
+        'Presença',
+        ['label' => 'Ações', 'responsive' => false],
+    ]">
         @forelse($sessionEvaluations as $evaluation)
             @php
                 $sessionRecord = $evaluation->sessionRecord;
@@ -9,7 +15,7 @@
             @endphp
 
             <tr>
-                <x-table.td>
+                <x-table.td :responsive="false">
                     <span class="fw-bold text-purple-dark">
                         {{ $attendanceSession?->session_date?->format('d/m/Y') ?? '—' }}
                     </span>
@@ -35,7 +41,7 @@
                     @endif
                 </x-table.td>
 
-                <x-table.td>
+                <x-table.td :responsive="false">
                     <x-table.actions>
                         @can('session-record.view')
                             <x-buttons.link-button

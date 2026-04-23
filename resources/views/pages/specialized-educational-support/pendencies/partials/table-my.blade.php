@@ -1,8 +1,14 @@
-<x-table.table :headers="['Título','Prioridade','Vencimento','Status','Ações']"
+<x-table.table :headers="[
+    ['label' => 'Título', 'responsive' => false],
+    'Prioridade',
+    'Vencimento',
+    'Status',
+    ['label' => 'Ações', 'responsive' => false],
+]"
 :records="$pendencies">
     @forelse($pendencies as $pendency)
         <tr>
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <strong>{{ $pendency->title }}</strong>
             </x-table.td>
 
@@ -31,7 +37,7 @@
                 @endif
             </x-table.td>
 
-            <x-table.td>
+            <x-table.td :responsive="false">
                 <x-table.actions>
                     @can('pendency.view')
                     <x-buttons.link-button
@@ -46,7 +52,7 @@
         </tr>
     @empty
         <tr>
-            <td colspan="6" class="text-center text-muted py-5">
+            <td colspan="5" class="text-center text-muted py-5">
                 <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
                 Nenhuma pendência encontrada para você.
             </td>

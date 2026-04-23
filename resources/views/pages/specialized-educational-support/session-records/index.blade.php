@@ -41,10 +41,15 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <x-table.table :headers="['Data', 'Alunos na Sessão', 'Duração',  'Ações']">
+    <x-table.table :headers="[
+        ['label' => 'Data', 'responsive' => false],
+        'Alunos na Sessão',
+        'Duração',
+        ['label' => 'Ações', 'responsive' => false],
+    ]">
         @forelse($sessionRecords as $record)
             <tr>
-                <x-table.td>
+                <x-table.td :responsive="false">
                     {{ $record->attendanceSession->session_date->format('d/m/Y') }}
                 </x-table.td>
 
@@ -69,7 +74,7 @@
                         {{ $record->duration }}    
                 </x-table.td>
 
-                <x-table.td>
+                <x-table.td :responsive="false">
                     <x-table.actions>
                         <x-buttons.link-button
                             :href="route('specialized-educational-support.session-records.show', $record)"
@@ -82,7 +87,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-5">
+                <td colspan="4" class="text-center text-muted py-5">
                     <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
                     Nenhum registro de sessão encontrado.
                 </td>

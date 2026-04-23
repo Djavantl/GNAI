@@ -1,8 +1,14 @@
-<x-table.table :headers="['Data', 'Aluno', 'Tipo', 'Status', 'Ações']"
+<x-table.table :headers="[
+    ['label' => 'Data', 'responsive' => false],
+    'Aluno',
+    'Tipo',
+    'Status',
+    ['label' => 'Ações', 'responsive' => false],
+]"
 :records="$sessions">
 @forelse($sessions as $session)
     <tr>
-        <x-table.td>{{ $session->session_date->format('d/m/Y') }}</x-table.td>
+        <x-table.td :responsive="false">{{ $session->session_date->format('d/m/Y') }}</x-table.td>
 
         <x-table.td>
             @forelse($session->students ?? [] as $student)
@@ -28,7 +34,7 @@
             </span>
         </x-table.td>
 
-        <x-table.td>
+        <x-table.td :responsive="false">
             <x-table.actions>
                 @can('session.view')
                 <x-buttons.link-button
