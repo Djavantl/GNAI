@@ -177,7 +177,6 @@ $relationshipMap = [
             <tr>
                 <th class="pdf-cell" style="width: 24%;">Perfil de Atendimento</th>
                 <th class="pdf-cell" style="width: 16%;">Severidade</th>
-                <th class="pdf-cell" style="width: 18%;">Recursos de Apoio</th>
                 <th class="pdf-cell">Observações</th>
             </tr>
             @foreach($student->deficiencies as $deficiency)
@@ -187,12 +186,6 @@ $relationshipMap = [
                     </td>
                     <td class="pdf-cell">
                         {{ $severityMap[$deficiency->pivot->severity ?? null] ?? '---' }}
-                    </td>
-                    <td class="pdf-cell">
-                        {{ isset($deficiency->pivot->uses_support_resources)
-                            ? $boolLabel($deficiency->pivot->uses_support_resources)
-                            : '---'
-                        }}
                     </td>
                     <td class="pdf-cell">
                         {{ $deficiency->pivot->notes ?? '---' }}

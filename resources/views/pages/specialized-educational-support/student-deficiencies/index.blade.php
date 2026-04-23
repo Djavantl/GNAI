@@ -60,15 +60,6 @@
                             'severe' => 'Severa',
                         ]
                     ],
-                    [
-                        'name' => 'uses_support_resources',
-                        'type' => 'select',
-                        'options' => [
-                            '' => 'Recurso de Apoio (Todos)',
-                            '1' => 'Usa Recurso',
-                            '0' => 'Não usa',
-                        ]
-                    ],
                 ]"
             />
         </div>

@@ -32,7 +32,6 @@ class StudentDeficiencySeeder extends Seeder
                     'student_id' => $student->id,
                     'deficiency_id' => $deficiency->id,
                     'severity' => collect(['mild', 'moderate', 'severe'])->random(),
-                    'uses_support_resources' => (bool) random_int(0, 1),
                     'notes' => 'Deficiência identificada e acompanhada pelo AEE.',
                     'created_at' => now(),
                     'updated_at' => now(),

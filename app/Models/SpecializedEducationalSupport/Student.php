@@ -178,7 +178,6 @@ class Student extends Model
             ->using(StudentDeficiencies::class)
             ->withPivot([
                 'severity',
-                'uses_support_resources',
                 'notes'
             ])
             ->withTimestamps();

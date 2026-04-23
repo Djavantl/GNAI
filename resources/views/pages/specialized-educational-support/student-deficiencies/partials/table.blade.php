@@ -2,7 +2,6 @@
     :headers="[
         ['label' => 'Nome',        'responsive' => false],
         ['label' => 'Severidade',         'responsive' => true],
-        ['label' => 'Recursos de Apoio',  'responsive' => true],
         ['label' => 'Ações',              'responsive' => false],
     ]"
     :records="$deficiencies"
@@ -34,18 +33,6 @@
                 @else
                     <span class="text-muted small">Não informada</span>
                 @endif
-            </x-table.td>
-
-            <x-table.td>
-                @php
-                    $supportColor = $deficiency->uses_support_resources ? 'success' : 'secondary';
-                    $supportLabel = $deficiency->uses_support_resources ? 'Sim' : 'Não';
-                @endphp
-
-                <span class="text-{{ $supportColor }} fw-bold text-uppercase"
-                      style="font-size: 0.85rem;">
-                    {{ $supportLabel }}
-                </span>
             </x-table.td>
 
             <x-table.td :responsive="false">

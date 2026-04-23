@@ -68,10 +68,6 @@
                 </span>
             </x-show.info-item>
 
-            <x-show.info-item label="Utiliza Recursos de Apoio" column="col-md-6" isBox="true">
-                {{ $deficiency->uses_support_resources ? 'SIM' : 'NÃO' }}
-            </x-show.info-item>
-
             <x-show.info-item label="Data do Registro" column="col-md-6" isBox="true">
                 {{ $deficiency->created_at?->format('d/m/Y H:i') }}
             </x-show.info-item>

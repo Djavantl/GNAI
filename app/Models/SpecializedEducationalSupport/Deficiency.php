@@ -36,7 +36,6 @@ class Deficiency extends Model
             ->withPivot([
                 'id',
                 'severity',
-                'uses_support_resources',
                 'notes'
             ])
             ->withTimestamps();

@@ -83,7 +83,7 @@
             <a href="{{ auth()->user()->is_admin
                     ? route('specialized-educational-support.sessions.index')
                     : route('specialized-educational-support.sessions.my-sessions') }}"
-            class="{{ request()->routeIs('specialized-educational-support.sessions.*') ? 'active' : '' }}">
+            class="{{ (request()->routeIs(['specialized-educational-support.sessions.*', 'specialized-educational-support.session-records.*']) && !request()->routeIs('specialized-educational-support.session-records.my-records')) ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-calendar-check"></i></span>
                 <span class="text">Sessões</span>
             </a>

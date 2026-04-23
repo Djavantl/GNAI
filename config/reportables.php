@@ -16,7 +16,7 @@ return [
         ],
         'students_deficiencies' => [
             'label' => 'Aluno x Deficiência (pivot)',
-            'columns' => ['id', 'student_id', 'deficiency_id', 'severity', 'uses_support_resources', 'notes', 'created_at'],
+            'columns' => ['id', 'student_id', 'deficiency_id', 'severity', 'notes', 'created_at'],
             'pivot' => true,
         ],
         'deficiencies' => [

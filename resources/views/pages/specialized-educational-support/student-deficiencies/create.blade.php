@@ -62,15 +62,6 @@
                 />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="uses_support_resources"
-                    label="Utiliza recursos de apoio"
-                    description="Marque se o aluno necessita de tecnologias assistivas ou recursos específicos para este perfil de atendimento"
-                    :options="[1 => 'Sim', 0 => 'Não']"
-                />
-            </div>
-
             <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.student-deficiencies.index', $student) }}" variant="secondary">
                     <i class="fas fa-times" aria-hidden="true"></i> Cancelar

@@ -19,7 +19,6 @@ class StudentDeficiencies extends Pivot
         'student_id',
         'deficiency_id',
         'severity',
-        'uses_support_resources',
         'notes',
     ];
  
@@ -34,29 +33,12 @@ class StudentDeficiencies extends Pivot
     }
 
     /**
-     * Labels amigáveis para o Log
-     */
-    // public static function getAuditLabels(): array
-    // {
-    //     return [
-    //         // 'deficiency_id'          => 'Deficiência',
-    //         'severity'               => 'Severidade/Grau',
-    //         'uses_support_resources' => 'Usa Recursos de Apoio',
-    //         'notes'                  => 'Observações do Perfil',
-    //     ];
-    // }
-
-    /**
      * Formatação dos valores para o Log e PDF
      */
     public static function formatAuditValue(string $field, $value): ?string
     {
         if ($field === 'deficiency_id') {
             return \App\Models\SpecializedEducationalSupport\Deficiency::find($value)?->name ?? "ID: $value";
-        }
-
-        if ($field === 'uses_support_resources') {
-            return $value ? 'Sim' : 'Não';
         }
 
         if ($field === 'severity') {
@@ -96,9 +78,4 @@ class StudentDeficiencies extends Pivot
         return $query->where('severity', $severity);
     }
 
-    public function scopeUsesSupportResources($query, $uses)
-    {
-        if ($uses === null || $uses === '') return $query;
-        return $query->where('uses_support_resources', (bool) $uses);
-    }
 }

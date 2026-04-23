@@ -19,7 +19,6 @@ class StudentDeficienciesService
             ->where('student_id', $student->id)
             ->deficiencyId($filters['deficiency_id'] ?? null)
             ->severity($filters['severity'] ?? null)
-            ->usesSupportResources($filters['uses_support_resources'] ?? null)
             ->paginate(10)
             ->withQueryString();
     }
@@ -38,7 +37,6 @@ class StudentDeficienciesService
 
             $student->deficiencies()->attach($data['deficiency_id'], [
                 'severity' => $data['severity'] ?? null,
-                'uses_support_resources' => $data['uses_support_resources'] ?? false,
                 'notes' => $data['notes'] ?? null,
             ]);
         });
@@ -55,7 +53,6 @@ class StudentDeficienciesService
 
             return $pivot->update([
                 'severity' => $data['severity'],
-                'uses_support_resources' => $data['uses_support_resources'],
                 'notes' => $data['notes'],
             ]);
         });
