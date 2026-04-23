@@ -9,12 +9,12 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
             <h2 class="text-title">Detalhes da Disciplina</h2>
             <p class="text-muted">Informações cadastrais e descrição da matéria.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('discipline.update')
             <x-buttons.link-button :href="route('specialized-educational-support.disciplines.edit', $discipline)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
@@ -65,12 +65,8 @@
             </x-show.info-item>
 
             {{-- Rodapé de Ações --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-fingerprint me-1"></i> ID da Disciplina: #{{ $discipline->id }}
-                </div>
-                
-                <div class="d-flex gap-3">
+            <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light no-print">
+                <div class="d-flex flex-wrap gap-2">
                     @can('discipline.delete')
                     <x-buttons.submit-button
                         type="button"

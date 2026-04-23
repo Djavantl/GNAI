@@ -12,7 +12,7 @@
     ]" />
 </div>
 
-<div class="d-flex justify-content-between mb-3 align-items-center">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
     <div>
         <h2 class="text-title">Nova Versão do Contexto</h2>
         <p class="text-muted">
@@ -20,11 +20,13 @@
         </p>
     </div>
 
-    <x-buttons.link-button
-        href="{{ route('specialized-educational-support.student-context.index', $student) }}"
-        variant="secondary">
-        <i class="fas fa-times"></i> Cancelar
-    </x-buttons.link-button>
+    <div class="ms-md-auto">
+        <x-buttons.link-button
+            href="{{ route('specialized-educational-support.student-context.index', $student) }}"
+            variant="secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </x-buttons.link-button>
+    </div>
 </div>
 
 <x-forms.form-card
@@ -288,7 +290,7 @@
     
 
     {{-- ================= AÇÕES ================= --}}
-    <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
+    <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-top pt-4 px-4 pb-4">
         <x-buttons.link-button
             href="{{ route('specialized-educational-support.student-context.index', $student) }}"
             variant="secondary">

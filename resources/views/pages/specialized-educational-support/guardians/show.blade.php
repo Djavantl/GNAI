@@ -11,14 +11,14 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
             <h2 class="text-title">Dados do Responsável</h2>
             <p class="text-muted">
                 Responsável por: <strong>{{ $guardian->student->person->name }}</strong>
             </p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('guardian.update')
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.guardians.edit', [$guardian->student_id, $guardian->id])"
@@ -107,13 +107,8 @@
             </x-show.info-item>
 
             {{-- RODAPÉ --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light rounded-bottom no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-clock me-1"></i>
-                    Última atualização: {{ $guardian->updated_at->format('d/m/Y H:i') }}
-                </div>
-
-                <div class="d-flex gap-3">
+            <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light rounded-bottom no-print">
+                <div class="d-flex flex-wrap gap-2">
                     @can('guardian.delete')
                         <x-buttons.submit-button
                             type="button"

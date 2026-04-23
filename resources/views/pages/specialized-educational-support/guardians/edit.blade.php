@@ -122,7 +122,7 @@
                 />
             </div>
 
-            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
+            <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-top pt-4 px-4 pb-4">
                 <x-buttons.link-button
                     href="{{ route('specialized-educational-support.guardians.show', $guardian) }}"
                     variant="secondary">

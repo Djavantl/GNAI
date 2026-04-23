@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <div class="col-12 d-flex justify-content-end gap-3 pt-4 px-4 pb-4">
+        <div class="col-12 d-flex flex-wrap justify-content-end gap-2 pt-4 px-4 pb-4">
             <x-buttons.link-button href="{{ route('specialized-educational-support.courses.index') }}" variant="secondary">
                 <i class="fas fa-times"></i>Cancelar
             </x-buttons.link-button>

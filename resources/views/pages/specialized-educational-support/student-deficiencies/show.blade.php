@@ -14,7 +14,7 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
             <h2 class="text-title">Detalhes do Perfil de Atendimento do Aluno</h2>
             <p class="text-muted">
@@ -22,9 +22,9 @@
             </p>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('student-deficiency.update')
-            <x-buttons.link-button 
+            <x-buttons.link-button
                 :href="route('specialized-educational-support.student-deficiencies.edit', ['student' => $student,'student_deficiency' => $deficiency])" 
                 variant="warning">
                 <i class="fas fa-edit"></i> Editar
@@ -77,13 +77,8 @@
             </x-show.info-textarea>
 
             {{-- FOOTER PADRÃO --}}
-            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
-                <div class="text-muted small d-flex align-items-center">
-                    <i class="fas fa-id-card me-1"></i>
-                    ID do Registro: #{{ $deficiency->id }}
-                </div>
-
-                <div class="d-flex gap-2">
+            <footer class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light-subtle">
+                <div class="d-flex flex-wrap gap-2">
                     @can('student-deficiency.delete')
                     <x-buttons.submit-button
                         type="button"

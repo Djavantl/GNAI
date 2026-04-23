@@ -10,14 +10,14 @@
     </div>
 
     {{-- Cabeçalho da Página --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
             <h2 class="text-title">Detalhes do Semestre</h2>
             <p class="text-muted">
                 Configuração do período letivo e vigência dos atendimentos.
             </p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('semester.update')
             <x-buttons.link-button :href="route('specialized-educational-support.semesters.edit', $semester->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar 
@@ -80,12 +80,8 @@
             </x-show.info-item>
 
             {{-- RODAPÉ --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-clock me-1"></i> Criado em: {{ $semester->created_at->format('d/m/Y H:i') }}
-                </div>
-                
-                <div class="d-flex gap-3">
+            <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light no-print">
+                <div class="d-flex flex-wrap gap-2">
                     @can('semester.delete')
                     @if(!$semester->is_current)
                     <x-buttons.submit-button

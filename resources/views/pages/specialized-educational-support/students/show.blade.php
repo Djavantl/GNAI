@@ -10,12 +10,12 @@
 </div>
 
 {{-- Cabeçalho da Página --}}
-<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
     <div>
         <h2 class="text-title">Prontuário do Aluno</h2>
         <p class="text-muted">Visualize o ecossistema completo e histórico detalhado do aluno.</p>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
         {{-- Permissão para EDITAR o cadastro do aluno --}}
         @can('student.view')
             <x-buttons.pdf-button 
@@ -94,12 +94,8 @@
         
 
         {{-- RODAPÉ DE AÇÕES --}}
-        <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-            <div class="text-muted small">
-                <i class="fas fa-id-badge me-1"></i> Aluno ID: #{{ $student->id }} | Sistema GNAI 2026
-            </div>
-            
-            <div class="d-flex gap-3">
+        <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light no-print">
+            <div class="d-flex flex-wrap gap-2">
                 {{-- Logs (Conforme solicitado, sem middleware específico, mas pode-se usar student.view) --}}
                 {{-- Permissão para EXCLUIR o aluno --}}
                 @can('student.delete')

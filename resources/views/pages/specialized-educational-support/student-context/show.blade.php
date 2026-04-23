@@ -15,7 +15,7 @@
     ]" />
 </div>
 
-<div class="d-flex justify-content-between mb-3 align-items-center no-print">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3 no-print">
     <div>
         <h2 class="text-title">Visualizar Contexto Educacional</h2>
         <p class="text-muted">
@@ -23,7 +23,7 @@
         </p>
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
         <x-buttons.pdf-button 
                 :href="route('specialized-educational-support.student-context.pdf', $studentContext)" 
                 target="_blank" 
@@ -284,12 +284,8 @@
     </div>
 
     {{-- ================= RODAPÉ DE AÇÕES ================= --}}
-    <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light rounded-bottom no-print">
-        <div class="text-muted small">
-            <i class="fas fa-fingerprint me-1"></i> ID do Registro: #{{ $studentContext->id }}
-        </div>
-
-        <div class="d-flex gap-3">
+    <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light rounded-bottom no-print">
+        <div class="d-flex flex-wrap gap-2">
             @if(!$studentContext->is_current)
             @can('student-context.update')
                 <form action="{{ route('specialized-educational-support.student-context.restore', $studentContext) }}"

@@ -11,14 +11,14 @@
     </div>
 
     {{-- Cabeçalho da Página --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
             <h2 class="text-title">Perfil do Profissional</h2>
             <p class="text-muted">
                 Informações de cadastro e vínculo institucional.
             </p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('professional.update')
             <x-buttons.link-button :href="route('specialized-educational-support.professionals.edit', $professional->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
@@ -114,12 +114,8 @@
             @endif
 
             {{-- RODAPÉ --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-id-badge me-1"></i> Profissional ID: #{{ $professional->id }}
-                </div>
-                
-                <div class="d-flex gap-3">
+            <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light no-print">
+                <div class="d-flex flex-wrap gap-2">
                     @can('professional.delete')
                         <x-buttons.submit-button
                             type="button"

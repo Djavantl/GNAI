@@ -87,7 +87,7 @@
                 <x-forms.input name="registration" label="Número de Matrícula" required :value="old('registration')" />
             </div>
 
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+            <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.teachers.index') }}" variant="secondary">
                     <i class="fas fa-times"></i>Cancelar
                 </x-buttons.link-button>

@@ -38,7 +38,7 @@
                 <x-forms.select name="is_active" label="Status" :options="[1 => 'Ativo', 0 => 'Inativo']" :selected="old('is_active', $discipline->is_active)" />
             </div>
 
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4">
+            <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.disciplines.show', $discipline) }}" variant="secondary">
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>

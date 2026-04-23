@@ -13,13 +13,13 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
             <h2 class="text-title">Avaliação do Plano Educacional Individualizado</h2>
             <p class="text-muted">Registro pedagógico institucional.</p>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             <x-buttons.link-button
                 :href="route('specialized-educational-support.pei-evaluation.edit', $pei_evaluation->id)"
                 variant="warning">
@@ -106,15 +106,11 @@
                 column="col-md-12"
                 isBox="true" />
 
-            <footer class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light-subtle">
-                <div class="text-muted small d-flex align-items-center">
-                    <i class="fas fa-id-card me-1" aria-hidden="true"></i> ID no Sistema: #{{ $pei->id }}
-                    {{-- Botão de PDF --}}
+            <footer class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light-subtle">
+                <div class="d-flex flex-wrap gap-2" role="group" aria-label="Ações de gestão">
                     @if($pei->is_finished)
-                        <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.pei-evaluation.pdf', $pei_evaluation)" />
+                        <x-buttons.pdf-button :href="route('specialized-educational-support.pei-evaluation.pdf', $pei_evaluation)" />
                     @endif
-                </div>
-                <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
                     <x-buttons.submit-button
                         type="button"
                         variant="danger"

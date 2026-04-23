@@ -8,7 +8,7 @@
             'Sessão #' . $session->id => null
         ]" />
     </div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
             <h2 class="text-title">Detalhes da Sessão</h2>
             <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
@@ -19,7 +19,7 @@
             $isScheduledSession = in_array($sessionStatus, ['agendada', 'agendado', 'scheduled'], true);
             $canManageSessionLifecycle = auth()->id() === $session->creator_id;
         @endphp
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('session.update')
             @if($isScheduledSession && $canManageSessionLifecycle)
                 <x-buttons.link-button :href="route('specialized-educational-support.sessions.edit', $session->id)" variant="warning">
@@ -122,7 +122,7 @@
             </div>
 
             {{-- Rodapé do Card --}}
-            <div class="col-12 border-top p-4  d-flex justify-content-end gap-3">
+            <div class="col-12 border-top p-4  d-flex flex-wrap justify-content-end gap-2">
                 @if($isScheduledSession)
                     @can('session.update')
                     @if($canManageSessionLifecycle)

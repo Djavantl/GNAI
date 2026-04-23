@@ -61,7 +61,7 @@
                 <strong>{{ $semester->label }}</strong>
             </x-show.info-item>
 
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
+            <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button 
                     href="{{ route('specialized-educational-support.pei.index', $student) }}" 
                     variant="secondary">

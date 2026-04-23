@@ -11,7 +11,7 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
             <h2 class="text-title">
                 Matrícula — {{ $studentCourse->student->person->name }}
@@ -19,7 +19,7 @@
             <p class="text-muted">Detalhes completos da matrícula do aluno.</p>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('student-course.update')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-courses.edit', $studentCourse)"
@@ -92,12 +92,8 @@
                 {{ $studentCourse->updated_at->format('d/m/Y H:i') }}
             </x-show.info-item>
 
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-id-badge me-1"></i> ID: #{{ $studentCourse->id }}
-                </div>
-
-                <div class="d-flex gap-3">
+            <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light no-print">
+                <div class="d-flex flex-wrap gap-2">
                 @can('student-course.delete')
                     <x-buttons.submit-button
                         type="button"

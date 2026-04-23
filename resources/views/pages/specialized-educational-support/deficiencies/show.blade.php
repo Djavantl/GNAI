@@ -11,14 +11,14 @@
 
 
     {{-- Cabeçalho da Página --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
             <h2 class="text-title">Detalhes do Perfil</h2>
             <p class="text-muted">
                 Informações sobre o perfil para acompanhamento e encaminhamentos pedagógicos.
             </p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('deficiency.update')
             <x-buttons.link-button :href="route('specialized-educational-support.deficiencies.edit', $deficiency->id)" variant="warning">
                 <i class="fas fa-edit"></i> Editar
@@ -65,13 +65,8 @@
             </x-show.info-textarea>
 
             {{-- RODAPÉ --}}
-            <div class="col-12 border-top p-4 d-flex justify-content-between align-items-center bg-light no-print">
-                <div class="text-muted small">
-                    <i class="fas fa-fingerprint me-1"></i> Registro ID: #{{ $deficiency->id }} | 
-                    Cadastrado em: {{ \Carbon\Carbon::parse($deficiency->created_at)->format('d/m/Y') }}
-                </div>
-                
-                <div class="d-flex gap-3">
+            <div class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light no-print">
+                <div class="d-flex flex-wrap gap-2">
                     @can('deficiency.delete')
                     <x-buttons.submit-button
                         type="button"

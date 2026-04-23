@@ -14,7 +14,7 @@
 
 
 {{-- ================= HEADER DA PÁGINA ================= --}}
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
         <h2 class="text-title mb-1">Plano Educacional Individualizado</h2>
         <div class="small text-muted">
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
         
 
         @if(!$pei->is_finished)

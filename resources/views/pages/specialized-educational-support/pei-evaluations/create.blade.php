@@ -98,7 +98,7 @@
                 isBox="true"
             />
 
-            <div class="col-12 d-flex justify-content-end gap-3 border-t pt-4 px-4 pb-4 mt-4">
+            <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4 mt-4">
                 <x-buttons.link-button
                     href="{{ route('specialized-educational-support.pei-evaluation.index', $pei) }}"
                     variant="secondary"

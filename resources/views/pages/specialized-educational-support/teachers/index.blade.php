@@ -24,7 +24,7 @@
                         :href="route('specialized-educational-support.teachers.permissions')"
                         variant="secondary"
                     >
-                        <i class="fas fa-shield-alt"></i> Permissões Para Professores
+                        <i class="fas fa-shield-alt"></i> Permissões 
                     </x-buttons.link-button>
                 @endcan
 
