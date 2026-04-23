@@ -152,10 +152,17 @@ class ProfessionalService
 
             $user = $professional->user;
 
-            if ($user && auth()->check() && auth()->user()->isAdmin()) {
-                $user->update([
-                    'is_admin' => (bool) ($data['is_admin'] ?? false),
-                ]);
+            if ($user) {
+                $userUpdate = [
+                    'name'  => $person->name,
+                    'email' => $person->email,
+                ];
+
+                if (auth()->check() && auth()->user()->isAdmin()) {
+                    $userUpdate['is_admin'] = (bool) ($data['is_admin'] ?? false);
+                }
+
+                $user->update($userUpdate);
             }
 
             return $professional;

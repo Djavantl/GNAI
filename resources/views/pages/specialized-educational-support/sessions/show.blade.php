@@ -27,7 +27,9 @@
                 </x-buttons.link-button>
             @endif
             @endcan
-            <x-buttons.link-button :href="route('specialized-educational-support.sessions.index')" variant="secondary">
+            <x-buttons.link-button :href="auth()->user()->is_admin
+                    ? route('specialized-educational-support.sessions.index')
+                    : route('specialized-educational-support.sessions.my-sessions')" variant="secondary">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
             </x-buttons.link-button>
         </div>
