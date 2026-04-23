@@ -49,6 +49,10 @@
             <td width="60%"><span class="field-label">Componente Curricular:</span> {{ mb_strtoupper($item->discipline->name, 'UTF-8') }}</td>
             <td width="40%"><span class="field-label">Docente:</span> {{ $item->teacher->person->name }}</td>
         </tr>
+        <tr>
+            <td width="60%"><span class="field-label">Versão do PEI:</span> {{ $pei->version ?? 'Não informada' }}</td>
+            <td width="40%"><span class="field-label">PEI Atual:</span> {{ $pei->is_current ? 'Sim' : 'Não' }}</td>
+        </tr>
     </table>
 
     <div class="section-title">Informações de Apoio Pedagógico (NAPNE)</div>

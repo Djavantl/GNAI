@@ -246,8 +246,8 @@
         </tr>
         <tr>
             <td width="60%">
-                <span class="field-label">Contexto Atual:</span>
-                {{ $pei->studentContext ? 'Disponível' : 'Não informado' }}
+                <span class="field-label">PEI Atual:</span>
+                {{ $pei->is_current ? 'Sim' : 'Não' }}
             </td>
             <td width="40%">
                 <span class="field-label">Versão:</span>

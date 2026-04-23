@@ -2,21 +2,24 @@
 
 .login-wrapper {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #272264;
-    padding: 20px;
+    padding: clamp(16px, 4vw, 32px);
+    overflow-x: hidden;
 }
 
 .login-split-card {
     display: flex;
     width: 100%;
     max-width: 90rem;
-    min-height: 50rem;
+    min-height: min(50rem, calc(100dvh - 64px));
     background: #fff;
     overflow: hidden;
     box-shadow: 0 0 30px 5px rgba(18, 18, 19, 0.3);
+    border-radius: 24px;
 }
 
 /* --- LADO ESQUERDO (ROXO) --- */
@@ -25,8 +28,9 @@
     background: var(--primary-color);
     color: white;
     display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 7rem;
+    padding: clamp(3rem, 7vw, 7rem);
     position: relative;
     overflow: hidden;
 }
@@ -54,9 +58,14 @@
     color: #FFD700; /* Destaque em dourado para combinar com o active da sidebar */
 }
 
+.brand-icon img {
+    max-width: clamp(48px, 7vw, 72px);
+    height: auto;
+}
+
 .welcome-title {
     font-family: var(--font-family-heading);
-    font-size: 2.8rem;
+    font-size: clamp(2rem, 4vw, 2.8rem);
     font-weight: 700;
     line-height: 1.1;
     margin-bottom: 20px;
@@ -88,13 +97,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px;
+    padding: clamp(2rem, 5vw, 60px);
     background: white;
 }
 
 .form-content {
     width: 100%;
-    max-width: 340px;
+    max-width: 360px;
 }
 
 .form-title {
@@ -156,9 +165,101 @@
 /* Responsividade */
 @media (max-width: 992px) {
     .login-brand-side {
-        display: none; /* Em tablets/celulares foca apenas no formulário */
+        flex: none;
+        min-height: 220px;
+        padding: 2rem;
     }
+
     .login-split-card {
-        max-width: 450px;
+        flex-direction: column;
+        max-width: 480px;
+        min-height: auto;
+    }
+
+    .brand-content {
+        text-align: center;
+    }
+
+    .brand-decoration {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-wrapper {
+        align-items: stretch;
+        padding: 0;
+        background: #fff;
+    }
+
+    .login-split-card {
+        min-height: 100dvh;
+        max-width: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .login-brand-side {
+        min-height: auto;
+        padding: 1.5rem 1.25rem;
+    }
+
+    .login-brand-side::before {
+        width: 180px;
+        height: 180px;
+        top: -70px;
+        left: -70px;
+    }
+
+    .brand-icon {
+        margin-bottom: 0.75rem !important;
+    }
+
+    .welcome-title {
+        font-size: 1.55rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .brand-tagline {
+        font-size: 0.9rem;
+        line-height: 1.45;
+        margin-bottom: 0;
+    }
+
+    .brand-decoration {
+        display: none;
+    }
+
+    .login-form-side {
+        flex: 1;
+        align-items: flex-start;
+        padding: 1.75rem 1.25rem 1.25rem;
+    }
+
+    .form-content {
+        max-width: none;
+    }
+
+    .form-title {
+        font-size: 1.45rem;
+    }
+
+    .custom-input,
+    .btn-login-primary {
+        border-radius: 10px;
+    }
+
+    .footer-copy {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-form-side {
+        padding-inline: 1rem;
+    }
+
+    .brand-tagline {
+        display: none;
     }
 }

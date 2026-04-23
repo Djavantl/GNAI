@@ -461,7 +461,7 @@ $relationshipMap = [
 
     <div class="divider"></div>
 
-    @foreach ($student->peis as $pei)
+    @forelse ($student->peis as $pei)
 
         {{-- Separação entre PEIs --}}
         @if (!$loop->first)
@@ -634,7 +634,13 @@ $relationshipMap = [
 
         @endforeach
 
-    @endforeach
+    @empty
+        <table class="pdf-table">
+            <tr>
+                <td class="pdf-cell">Nenhum PEI atual encontrado para este aluno.</td>
+            </tr>
+        </table>
+    @endforelse
 
     <x-pdf.pages />
 </body>
