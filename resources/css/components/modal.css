@@ -77,16 +77,43 @@
 }
 
 .modal-system .modal-header .btn-close {
-    filter: brightness(0) invert(1);
-    opacity: 0.82;
+    --bs-btn-close-bg: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent !important;
+    opacity: 1;
     transition: opacity 0.2s ease, transform 0.2s ease;
-    background-size: 0.8em;
+    width: 1.8rem;
+    height: 1.8rem;
+    min-width: 1.8rem;
+    min-height: 1.8rem;
     margin: 0;
+    box-shadow: none;
+    border-radius: 999px;
+    outline: none;
+}
+
+.modal-system .modal-header .btn-close::before {
+    content: "\00d7";
+    color: #fff;
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .modal-system .modal-header .btn-close:hover {
     opacity: 1;
     transform: rotate(90deg);
+    background: color-mix(in srgb, white 18%, transparent) !important;
+}
+
+.modal-system .modal-header .btn-close:focus,
+.modal-system .modal-header .btn-close:focus-visible {
+    opacity: 1;
+    background: color-mix(in srgb, white 18%, transparent) !important;
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, white 34%, transparent);
 }
 
 .modal-system .modal-body {
