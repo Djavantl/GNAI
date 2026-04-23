@@ -145,4 +145,15 @@ class StudentContext extends Model
     {
         return $this->belongsTo(Professional::class, 'evaluated_by_professional_id');
     }
+
+    public function canBeManagedByCurrentUser(): bool
+    {
+        $professionalId = auth()->user()?->professional?->id ?? auth()->user()?->professional_id;
+
+        if (!$professionalId || !$this->evaluated_by_professional_id) {
+            return false;
+        }
+
+        return (int) $this->evaluated_by_professional_id === (int) $professionalId;
+    }
 }

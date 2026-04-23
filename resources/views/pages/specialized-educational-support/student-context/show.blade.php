@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $canManageStudentContext = $studentContext->canBeManagedByCurrentUser();
+@endphp
 
 <div class="mb-5">
     <x-breadcrumb :items="[
@@ -28,11 +31,13 @@
 
         @if($studentContext->is_current)
         @can('student-context.update')
+        @if($canManageStudentContext)
             <x-buttons.link-button 
                 href="{{ route('specialized-educational-support.student-context.edit', $studentContext) }}" 
                 variant="warning">
                 <i class="fas fa-edit"></i> Editar
             </x-buttons.link-button>
+        @endif
         @endcan
         @endif
 
@@ -299,6 +304,7 @@
             @endcan
             @endif
             @can('student-context.delete')
+            @if($canManageStudentContext)
             <x-buttons.submit-button
                 type="button"
                 variant="danger"
@@ -313,6 +319,7 @@
             >
                     <i class="fas fa-trash-alt"></i> Excluir
                 </x-buttons.submit-button>
+            @endif
             @endcan
         </div>
     </div>

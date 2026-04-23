@@ -9,6 +9,9 @@
     :records="$contexts"
 >
     @forelse($contexts as $context)
+        @php
+            $canManageStudentContext = $context->canBeManagedByCurrentUser();
+        @endphp
         <tr>
             <x-table.td :responsive="false">
                 <strong>{{ $context->created_at->format('d/m/Y') }}</strong>
@@ -57,6 +60,7 @@
                         @endcan
 
                         @can('student-context.delete')
+                        @if($canManageStudentContext)
                             <x-buttons.submit-button
                                 type="button"
                                 variant="danger"
@@ -71,6 +75,7 @@
                             >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
+                        @endif
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

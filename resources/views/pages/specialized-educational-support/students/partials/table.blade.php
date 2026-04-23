@@ -48,7 +48,7 @@
                             </x-buttons.link-button>
                         @endcan
 
-                        @can('student.delete')
+                        <!-- @can('student.delete')
                             <form action="{{ route('specialized-educational-support.students.destroy', $student) }}"
                                   method="POST"
                                   class="d-inline">
@@ -66,7 +66,7 @@
                                 >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                        @endcan
+                        @endcan -->
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>
                     @endcanany

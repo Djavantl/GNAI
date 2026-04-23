@@ -123,10 +123,16 @@ class StudentContextController extends Controller
 
     public function edit(StudentContext $studentContext)
     {
-        if (!$studentContext->is_current) {
-            return redirect()
-                ->route('specialized-educational-support.student-context.show', $studentContext)
-                ->with('error', 'Não é possível editar um contexto que não é atual.');
+        try {
+            $this->service->ensureCurrentUserIsEvaluator($studentContext, 'editar');
+
+            if (!$studentContext->is_current) {
+                return redirect()
+                    ->route('specialized-educational-support.student-context.show', $studentContext)
+                    ->with('error', 'Não é possível editar um contexto que não é atual.');
+            }
+        } catch (Throwable $e) {
+            return $this->handleException($e, 'Erro ao carregar edição.');
         }
 
         $student = $studentContext->student;
@@ -229,7 +235,9 @@ class StudentContextController extends Controller
         try {
             $context = StudentContext::with([
                 'student.person',
-                'student.deficiencies'
+                'student.deficiencies',
+                'evaluator.person',
+                'semester',
             ])->findOrFail($studentContext);
 
             $student = $context->student;

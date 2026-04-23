@@ -80,6 +80,16 @@
                 {{ $map['eval'][$context->evaluation_type] ?? e($context->evaluation_type ?? '---') }}
             </td>
             <td class="pdf-cell" colspan="2">
+                <strong>Criador / Avaliador:</strong>
+                {{ $context->evaluator->person->name ?? '---' }}
+            </td>
+        </tr>
+        <tr>
+            <td class="pdf-cell" colspan="2">
+                <strong>Semestre:</strong>
+                {{ $context->semester->label ?? '---' }}
+            </td>
+            <td class="pdf-cell" colspan="2">
                 <strong>Última Atualização:</strong>
                 {{ optional($context->updated_at)->format('d/m/Y H:i') ?? '---' }}
             </td>
@@ -123,12 +133,12 @@
     <div class="section-title">Aprendizagem e Cognição</div>
     <table class="pdf-table">
         <tr>
-            <td class="pdf-cell"><strong>Nível de Aprendizagem:</strong> {{ $map['levels'][$context->learning_level] ?? '---' }}</td>
-            <td class="pdf-cell"><strong>Nível de Atenção:</strong> {{ $map['levels'][$context->attention_level] ?? '---' }}</td>
+            <td class="pdf-cell" colspan="2"><strong>Nível de Aprendizagem:</strong> {{ $map['levels'][$context->learning_level] ?? '---' }}</td>
+            <td class="pdf-cell" colspan="2"><strong>Nível de Atenção:</strong> {{ $map['levels'][$context->attention_level] ?? '---' }}</td>
         </tr>
         <tr>
-            <td class="pdf-cell"><strong>Nível de Memória:</strong> {{ $map['levels'][$context->memory_level] ?? '---' }}</td>
-            <td class="pdf-cell"><strong>Nível de Raciocínio:</strong> {{ $map['reason'][$context->reasoning_level] ?? '---' }}</td>
+            <td class="pdf-cell" colspan="2"><strong>Nível de Memória:</strong> {{ $map['levels'][$context->memory_level] ?? '---' }}</td>
+            <td class="pdf-cell" colspan="2"><strong>Nível de Raciocínio:</strong> {{ $map['reason'][$context->reasoning_level] ?? '---' }}</td>
         </tr>
         <tr>
             <td class="pdf-cell" colspan="4">
@@ -142,16 +152,16 @@
     <div class="section-title">Comunicação e Comportamento</div>
     <table class="pdf-table">
         <tr>
-            <td class="pdf-cell"><strong>Tipo de Comunicação:</strong> {{ $map['comm'][$context->communication_type] ?? '---' }}</td>
-            <td class="pdf-cell"><strong>Nível de Interação:</strong> {{ $map['levels'][$context->interaction_level] ?? '---' }}</td>
+            <td class="pdf-cell" colspan="2"><strong>Tipo de Comunicação:</strong> {{ $map['comm'][$context->communication_type] ?? '---' }}</td>
+            <td class="pdf-cell" colspan="2"><strong>Nível de Interação:</strong> {{ $map['levels'][$context->interaction_level] ?? '---' }}</td>
         </tr>
         <tr>
-            <td class="pdf-cell"><strong>Nível de Socialização:</strong> {{ $map['social'][$context->socialization_level] ?? '---' }}</td>
-            <td class="pdf-cell"><strong>Comportamento Agressivo:</strong> {!! $boolStrong($context->shows_aggressive_behavior) !!}</td>
+            <td class="pdf-cell" colspan="2"><strong>Nível de Socialização:</strong> {{ $map['social'][$context->socialization_level] ?? '---' }}</td>
+            <td class="pdf-cell" colspan="2"><strong>Comportamento Agressivo:</strong> {!! $boolStrong($context->shows_aggressive_behavior) !!}</td>
         </tr>
         <tr>
-            <td class="pdf-cell"><strong>Comportamento Retraído:</strong> {!! $boolStrong($context->shows_withdrawn_behavior) !!}</td>
-            <td class="pdf-cell">
+            <td class="pdf-cell" colspan="2"><strong>Comportamento Retraído:</strong> {!! $boolStrong($context->shows_withdrawn_behavior) !!}</td>
+            <td class="pdf-cell" colspan="2">
                 <strong>Intercorrências:</strong>
                 {{ (!$context->shows_aggressive_behavior && !$context->shows_withdrawn_behavior) ? 'Nenhuma' : 'Ver notas' }}
             </td>
@@ -202,8 +212,8 @@
     <div class="section-title">Saúde</div>
     <table class="pdf-table">
         <tr>
-            <td class="pdf-cell"><strong>Possui Laudo Médico:</strong> {!! $boolStrong($context->has_medical_report) !!}</td>
-            <td class="pdf-cell"><strong>Usa Medicação:</strong> {!! $boolStrong($context->uses_medication) !!}</td>
+            <td class="pdf-cell" colspan="2"><strong>Possui Laudo Médico:</strong> {!! $boolStrong($context->has_medical_report) !!}</td>
+            <td class="pdf-cell" colspan="2"><strong>Usa Medicação:</strong> {!! $boolStrong($context->uses_medication) !!}</td>
         </tr>
         <tr>
             <td class="pdf-cell" colspan="4">

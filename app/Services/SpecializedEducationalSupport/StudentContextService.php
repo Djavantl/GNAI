@@ -19,7 +19,7 @@ class StudentContextService
     public function getByStudent(Student $student, array $filters = [])
     {
         return StudentContext::query()
-            ->with(['semester'])
+            ->with(['semester', 'evaluator.person'])
             ->where('student_id', $student->id)
 
             ->when($filters['semester_id'] ?? null, fn($q, $v) =>
@@ -43,7 +43,7 @@ class StudentContextService
 
     public function show(StudentContext $student_context)
     {
-        return $student_context->load('student');
+        return $student_context->load(['student', 'semester', 'evaluator.person']);
     }
 
     // Cria contexto
@@ -137,6 +137,7 @@ class StudentContextService
         $student->ensureIsActive();
 
         return DB::transaction(function () use ($studentContext, $data) {
+            $this->ensureCurrentUserIsEvaluator($studentContext, 'editar');
 
             if(!$studentContext->is_current){
                 throw new \Exception('Não é possível editar um contexto que não é atual.');
@@ -153,6 +154,7 @@ class StudentContextService
     public function delete(StudentContext $studentContext): void
     {
         DB::transaction(function () use ($studentContext) {
+            $this->ensureCurrentUserIsEvaluator($studentContext, 'excluir');
 
             $this->cancelVersion($studentContext);
 
@@ -222,8 +224,15 @@ class StudentContextService
     {
         return StudentContext::where('student_id', $student->id)
             ->where('is_current', true)
-            ->with(['semester', 'evaluator'])
+            ->with(['semester', 'evaluator.person'])
             ->first();
+    }
+
+    public function ensureCurrentUserIsEvaluator(StudentContext $studentContext, string $action = 'alterar'): void
+    {
+        if (!$studentContext->canBeManagedByCurrentUser()) {
+            throw new \Exception("Apenas o profissional avaliador deste contexto pode {$action} este registro.");
+        }
     }
 
     protected function getAuthenticatedProfessionalId(): int
