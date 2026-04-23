@@ -237,10 +237,26 @@ class SessionService
         ];
     }
 
+    private function ensureProfessionalCanCreateSessionRecords(int $professionalId): void
+    {
+        $professional = Professional::with('position.permissions', 'person', 'user')->findOrFail($professionalId);
+
+        $canCreateRecords = $professional->user?->hasPermission('session-record.create')
+            ?? $professional->position?->permissions?->contains('slug', 'session-record.create')
+            ?? false;
+
+        if (! $canCreateRecords) {
+            throw ValidationException::withMessages([
+                'professional_id' => 'Não é possível criar sessão para um profissional que não possui permissão para criar registros de sessão.',
+            ]);
+        }
+    }
+
     public function create(array $data): Session
     {
         return DB::transaction(function () use ($data) {
             $this->ensureProfessionalIsActive($data['professional_id']);
+            $this->ensureProfessionalCanCreateSessionRecords($data['professional_id']);
             $this->ensureStudentsAreActive($data['student_ids']);
 
             $this->normalizeTime($data);
@@ -315,6 +331,7 @@ class SessionService
         return DB::transaction(function () use ($session, $data) {
             $professionalId = $data['professional_id'] ?? $session->professional_id;
             $this->ensureProfessionalIsActive($professionalId);
+            $this->ensureProfessionalCanCreateSessionRecords($professionalId);
 
             $studentIds = $data['student_ids'] ?? $session->students()->pluck('students.id')->toArray();
             $this->ensureStudentsAreActive($studentIds);

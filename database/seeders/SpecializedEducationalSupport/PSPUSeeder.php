@@ -18,6 +18,11 @@ class PSPUSeeder extends Seeder
      */
     public function run(): void
     {
+        $positions = Position::query()
+            ->whereIn('name', ['Professor AEE', 'Coordenador do NAPNE', 'Secretário'])
+            ->get()
+            ->keyBy('name');
+
         // People
 
         $people = [
@@ -121,21 +126,21 @@ class PSPUSeeder extends Seeder
 
         $prof1 = Professional::create([
             'person_id' => $people[5]->id,
-            'position_id' => 1,
+            'position_id' => $positions->get('Professor AEE')?->id ?? 1,
             'registration' => 'PROF001',
             'entry_date' => now(),
         ]);
 
         $prof2 = Professional::create([
             'person_id' => $people[6]->id,
-            'position_id' => 2,
+            'position_id' => $positions->get('Coordenador do NAPNE')?->id ?? 1,
             'registration' => 'PROF002',
             'entry_date' => now(),
         ]);
 
         $prof3 = Professional::create([
             'person_id' => $people[7]->id,
-            'position_id' => 8,
+            'position_id' => $positions->get('Secretário')?->id ?? 1,
             'registration' => 'PROF003',
             'entry_date' => now(),
         ]);

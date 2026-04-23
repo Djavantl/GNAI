@@ -61,6 +61,22 @@ class SessionRecordService
         );
     }
 
+    private function ensureCanViewRecord(SessionRecord $sessionRecord): void
+    {
+        $sessionRecord->loadMissing('attendanceSession');
+        $session = $sessionRecord->attendanceSession;
+
+        if (!$this->userCanViewOnlyOwn() || !$session) {
+            return;
+        }
+
+        $professionalId = Auth::user()?->professional?->id;
+
+        if (!$professionalId || (int) $session->professional_id !== (int) $professionalId) {
+            throw new Exception('Você não tem permissão para ver registros de outros profissionais.');
+        }
+    }
+
     private function ensureAssignedProfessional(Session $session, string $action): void
     {
         $professionalId = Auth::user()?->professional?->id;
@@ -207,6 +223,8 @@ class SessionRecordService
      */
     public function show(SessionRecord $session_rec): SessionRecord
     {
+        $this->ensureCanViewRecord($session_rec);
+
         return $session_rec->load(['attendanceSession', 'studentEvaluations.student']);
     }
 
@@ -302,7 +320,7 @@ class SessionRecordService
         abort_unless($evaluation->student_id === $student->id, 404);
 
         $evaluation->loadMissing('sessionRecord.attendanceSession');
-        $this->ensureOwnVisibilityAccess($evaluation->sessionRecord?->attendanceSession);
+        $this->ensureCanViewRecord($evaluation->sessionRecord);
 
         return $evaluation->load([
             'student.person',
@@ -336,6 +354,8 @@ class SessionRecordService
 
     public function studentPdfData(SessionRecord $sessionRecord, Student $student): SessionRecord
     {
+        $this->ensureCanViewRecord($sessionRecord);
+
         $sessionRecord->load([
             'attendanceSession.professional.person',
         ]);

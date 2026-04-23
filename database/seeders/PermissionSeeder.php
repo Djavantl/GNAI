@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Permission;
-use App\Models\SpecializedEducationalSupport\Position;
 
 class PermissionSeeder extends Seeder
 {
@@ -260,26 +258,6 @@ class PermissionSeeder extends Seeder
 
         foreach ($permissions as $p) {
             Permission::firstOrCreate(['slug' => $p['slug']], ['name' => $p['name']]);
-        }
-
-        // Atribuir todas as permissões ao Professor AEE
-        $professorAee = Position::where('name', 'Professor AEE')->first();
-
-        if ($professorAee) {
-            $allPermissionIds = Permission::pluck('id')->toArray();
-
-            if (method_exists($professorAee, 'permissions')) {
-                $professorAee->permissions()->sync($allPermissionIds);
-            } else {
-                $pivotData = array_map(function ($id) use ($professorAee) {
-                    return [
-                        'position_id'   => $professorAee->id,
-                        'permission_id' => $id,
-                    ];
-                }, $allPermissionIds);
-
-                \Illuminate\Support\Facades\DB::table('position_permission')->insertOrIgnore($pivotData);
-            }
         }
     }
 }
