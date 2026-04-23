@@ -18,8 +18,7 @@ class App {
     init() {
         this.initSidebar();
         this.initActiveMenu();
-        this.initNavbarScrollHide(); // Novo: esconde navbar no scroll mobile
-        // Não chame initDropdowns manualmente – o Bootstrap já faz isso
+        this.initNavbarScrollHide();
     }
 
     // ==================== SIDEBAR ====================
@@ -30,7 +29,42 @@ class App {
 
         if (!this.sidebar) return;
 
-        // Botão hambúrguer
+        const shouldRestore = sessionStorage.getItem('sidebar-should-restore') === 'true';
+        const savedScroll = sessionStorage.getItem('sidebar-scroll');
+
+        if (shouldRestore && savedScroll !== null) {
+            requestAnimationFrame(() => {
+                this.sidebar.scrollTo({
+                    top: parseInt(savedScroll, 10),
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        sessionStorage.removeItem('sidebar-should-restore');
+
+        this.sidebar.addEventListener('scroll', () => {
+            sessionStorage.setItem('sidebar-scroll', this.sidebar.scrollTop);
+        });
+
+        const menuLinks = this.sidebar.querySelectorAll('a[href]');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const href = link.getAttribute('href') || '';
+
+                const isAboutPage = href.includes('about-us');
+                const isHash = href === '#';
+
+                if (isAboutPage || isHash) {
+                    sessionStorage.removeItem('sidebar-should-restore');
+                    return;
+                }
+
+                sessionStorage.setItem('sidebar-scroll', this.sidebar.scrollTop);
+                sessionStorage.setItem('sidebar-should-restore', 'true');
+            });
+        });
+
         if (this.toggleBtn) {
             this.toggleBtn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -40,12 +74,10 @@ class App {
 
         this.createOverlayElement();
 
-        // Fecha ao clicar no overlay
         if (this.overlay) {
             this.overlay.addEventListener('click', () => this.closeSidebar());
         }
 
-        // Fecha ao clicar fora (mobile)
         document.addEventListener('click', (e) => {
             const isMobile = window.innerWidth <= 865;
             if (!isMobile) return;
@@ -82,13 +114,11 @@ class App {
     toggleSidebar() {
         const isMobile = window.innerWidth <= 865;
 
-        // 🔥 DESKTOP
         if (!isMobile) {
             document.body.classList.toggle('sidebar-collapsed');
             return;
         }
 
-        // 🔥 MOBILE
         const isOpen = this.sidebar.classList.contains('show');
 
         if (!isOpen) {
@@ -147,16 +177,38 @@ class App {
     initActiveMenu() {
         const currentPath = window.location.pathname;
         const menuItems = document.querySelectorAll('.sidebar-menu a');
+        let activeItem = null;
 
         menuItems.forEach(item => {
             const href = item.getAttribute('href');
+
             if (href && href !== '#' && currentPath.includes(href.replace(/^\//, ''))) {
                 item.classList.add('active');
-                // Expande grupo se existir
+                activeItem = item;
+
                 const parentGroup = item.closest('.menu-group');
                 if (parentGroup) parentGroup.classList.add('expanded');
             }
         });
+
+        if (activeItem && this.sidebar) {
+            requestAnimationFrame(() => {
+                const sidebarTop = this.sidebar.scrollTop;
+                const itemTop = activeItem.offsetTop;
+                const itemHeight = activeItem.offsetHeight;
+                const sidebarHeight = this.sidebar.clientHeight;
+
+                const isAbove = itemTop < sidebarTop;
+                const isBelow = (itemTop + itemHeight) > (sidebarTop + sidebarHeight);
+
+                if (isAbove || isBelow) {
+                    this.sidebar.scrollTo({
+                        top: itemTop - (sidebarHeight / 2) + (itemHeight / 2),
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        }
     }
 
     // ==================== NAVBAR SCROLL HIDE (mobile) ====================
@@ -201,13 +253,12 @@ class App {
             }
         });
 
-        // Ao abrir/fechar dropdowns do Bootstrap, reavalia o estado da navbar
         document.querySelectorAll('.dropdown-toggle').forEach(btn => {
             btn.addEventListener('shown.bs.dropdown', () => {
                 navbar.classList.remove('navbar-hidden');
             });
             btn.addEventListener('hidden.bs.dropdown', () => {
-                handleScroll(); // reaparece se estiver no topo
+                handleScroll();
             });
         });
     }
@@ -225,7 +276,6 @@ document.addEventListener('click', function(e) {
     if (id) {
         axios.post(`/notifications/${id}/read`)
             .then(() => {
-                // Atualiza contador
                 const badge = document.getElementById('notif-count');
                 if (badge) {
                     let count = parseInt(badge.textContent);
@@ -249,11 +299,9 @@ document.addEventListener('click', function(e) {
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
 
-    // Ano atual no footer
     const yearElement = document.querySelector('[data-year]');
     if (yearElement) yearElement.textContent = new Date().getFullYear();
 
-    // Bootstrap tooltips & popovers
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
 
@@ -261,7 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
     popoverTriggerList.map(el => new bootstrap.Popover(el));
 });
 
-// Função global para compatibilidade com onclick (caso exista)
 window.toggleSidebar = () => {
     if (window.app) window.app.toggleSidebar();
 };
