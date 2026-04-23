@@ -101,15 +101,20 @@
                 
                 <div class="d-flex gap-3">
                     @can('guardian.delete')
-                    <form action="{{ route('specialized-educational-support.guardians.destroy', [$guardian->student_id, $guardian->id]) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('Remover este responsável? Os dados pessoais da pessoa não serão excluídos, apenas o vínculo com o aluno.')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Responsavel"
+                        data-confirm-message="Remover este responsavel? Os dados pessoais da pessoa nao serao excluidos, apenas o vinculo com o aluno."
+                        data-confirm-action="{{ route('specialized-educational-support.guardians.destroy', [$guardian->student_id, $guardian->id]) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                     @endcan
                 </div>
             </div>

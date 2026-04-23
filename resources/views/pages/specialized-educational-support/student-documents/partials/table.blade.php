@@ -65,16 +65,21 @@
                             <form action="{{ route('specialized-educational-support.student-documents.destroy', $document) }}"
                                   method="POST"
                                   class="d-inline">
-                                @csrf
-                                @method('DELETE')
                                 <x-buttons.submit-button
+                                    type="button"
                                     variant="danger"
-                                    onclick="return confirm('Deseja excluir este documento permanentemente?')"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#globalConfirmActionModal"
+                                    data-confirm-title="Excluir Documento"
+                                    data-confirm-message="Deseja excluir este documento permanentemente?"
+                                    data-confirm-action="{{ route('specialized-educational-support.student-documents.destroy', $document) }}"
+                                    data-confirm-method="DELETE"
+                                    data-confirm-submit-text="Confirmar Exclusao"
+                                    data-confirm-variant="danger"
                                     title="Excluir arquivo"
                                 >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

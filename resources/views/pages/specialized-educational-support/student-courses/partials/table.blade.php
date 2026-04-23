@@ -44,22 +44,21 @@
                         @endcan
 
                         @can('student-course.delete')
-                            <form
-                                action="{{ route('specialized-educational-support.student-courses.destroy', $enrollment) }}"
-                                method="POST"
-                                class="d-inline"
-                                onsubmit="return confirm('Excluir esta matrícula do histórico?')"
-                            >
-                                @csrf
-                                @method('DELETE')
-
                                 <x-buttons.submit-button
+                                    type="button"
                                     variant="danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#globalConfirmActionModal"
+                                    data-confirm-title="Excluir Matricula"
+                                    data-confirm-message="Excluir esta matricula do historico?"
+                                    data-confirm-action="{{ route('specialized-educational-support.student-courses.destroy', $enrollment) }}"
+                                    data-confirm-method="DELETE"
+                                    data-confirm-submit-text="Confirmar Exclusao"
+                                    data-confirm-variant="danger"
                                     aria-label="Excluir matrícula do aluno {{ $enrollment->student->person->name }}"
                                 >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

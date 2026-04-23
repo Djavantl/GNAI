@@ -50,18 +50,20 @@
                         @endcan
 
                         @can('position.delete')
-                            <form action="{{ route('specialized-educational-support.positions.destroy', $item) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja excluir este cargo?')"
-                                >
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Cargo"
+                                data-confirm-message="Deseja excluir este cargo?"
+                                data-confirm-action="{{ route('specialized-educational-support.positions.destroy', $item) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
 
                     @else

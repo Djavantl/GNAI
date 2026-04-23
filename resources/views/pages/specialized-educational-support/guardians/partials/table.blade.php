@@ -31,18 +31,20 @@
                         @endcan
 
                         @can('guardian.delete')
-                            <form action="{{ route('specialized-educational-support.guardians.destroy', [$student, $guardian]) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja remover este vínculo de responsabilidade?')"
-                                >
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Responsavel"
+                                data-confirm-message="Deseja remover este vinculo de responsabilidade?"
+                                data-confirm-action="{{ route('specialized-educational-support.guardians.destroy', [$student, $guardian]) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

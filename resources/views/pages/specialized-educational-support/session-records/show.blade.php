@@ -153,12 +153,20 @@
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
                     @can('session-record.delete')
                     @if($canManageSessionRecord)
-                    <form action="{{ route('specialized-educational-support.session-records.destroy', $sessionRecord) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
-                        @csrf @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Registro de Atendimento"
+                        data-confirm-message="Deseja excluir permanentemente este registro de atendimento?"
+                        data-confirm-action="{{ route('specialized-educational-support.session-records.destroy', $sessionRecord) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                     @endif
                     @endcan
                     <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id)" variant="secondary">

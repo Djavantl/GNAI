@@ -54,16 +54,20 @@
                 @endcan
                 @can('session.delete')
                 {{-- Excluir --}}
-                <form action="{{ route('specialized-educational-support.sessions.destroy', $session) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <x-buttons.submit-button
-                        variant="danger"
-                        onclick="return confirm('Mover para lixeira?')"
-                    >
+                <x-buttons.submit-button
+                    type="button"
+                    variant="danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#globalConfirmActionModal"
+                    data-confirm-title="Excluir Sessao"
+                    data-confirm-message="Mover esta sessao para a lixeira?"
+                    data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session) }}"
+                    data-confirm-method="DELETE"
+                    data-confirm-submit-text="Confirmar Exclusao"
+                    data-confirm-variant="danger"
+                >
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
-                </form>
                 @endcan
             </x-table.actions>
         </x-table.td>

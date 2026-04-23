@@ -49,16 +49,20 @@
                         @endcan
 
                         @can('pendency.delete')
-                            <form action="{{ route('specialized-educational-support.pendencies.destroy', $pendency) }}"
-                                  method="POST"
-                                  class="d-inline"
-                                  onsubmit="return confirm('Deseja excluir esta pendência?')">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button variant="danger">
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Pendencia"
+                                data-confirm-message="Deseja excluir esta pendencia?"
+                                data-confirm-action="{{ route('specialized-educational-support.pendencies.destroy', $pendency) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

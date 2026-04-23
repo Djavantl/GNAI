@@ -73,15 +73,20 @@
                 
                 <div class="d-flex gap-3">
                     @can('deficiency.delete')
-                    <form action="{{ route('specialized-educational-support.deficiencies.destroy', $deficiency->id) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('Excluir esta deficiência? Alunos vinculados a este registro podem ser afetados.')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Perfil de Atendimento"
+                        data-confirm-message="Excluir este perfil de atendimento pode afetar alunos vinculados a este registro."
+                        data-confirm-action="{{ route('specialized-educational-support.deficiencies.destroy', $deficiency->id) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                     @endcan
                 </div>
             </div>

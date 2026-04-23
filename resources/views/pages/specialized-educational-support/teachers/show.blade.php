@@ -174,15 +174,20 @@
                 
                 <div class="d-flex gap-3">
                     @can('teacher.delete')
-                    <form action="{{ route('specialized-educational-support.teachers.destroy', $teacher->id) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('Excluir permanentemente este professor e seu acesso ao sistema?')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Professor"
+                        data-confirm-message="Excluir permanentemente este professor e seu acesso ao sistema?"
+                        data-confirm-action="{{ route('specialized-educational-support.teachers.destroy', $teacher->id) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash-alt"></i> Excluir Registro
                         </x-buttons.submit-button>
-                    </form>
                     @endcan
 
                     <x-buttons.link-button :href="route('specialized-educational-support.teachers.index')" variant="secondary">

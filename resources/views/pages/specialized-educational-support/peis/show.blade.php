@@ -48,14 +48,20 @@
             target="_blank" 
         />
         @can('pei.delete')
-        <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}" method="POST"
-            onsubmit="return confirm('Excluir permanentemente este PEI?')">
-            @csrf 
-            @method('DELETE')
-            <x-buttons.submit-button variant="danger">
+        <x-buttons.submit-button
+            type="button"
+            variant="danger"
+            data-bs-toggle="modal"
+            data-bs-target="#globalConfirmActionModal"
+            data-confirm-title="Excluir PEI"
+            data-confirm-message="Excluir permanentemente este PEI?"
+            data-confirm-action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
+            data-confirm-method="DELETE"
+            data-confirm-submit-text="Confirmar Exclusao"
+            data-confirm-variant="danger"
+        >
                 <i class="fas fa-trash-alt"></i> Excluir
             </x-buttons.submit-button>
-        </form>
         @endcan
         <x-buttons.link-button 
             :href="route('specialized-educational-support.pei.index', $pei->student)" 

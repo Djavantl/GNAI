@@ -115,12 +115,20 @@
                     @endif
                 </div>
                 <div class="d-flex gap-2" role="group" aria-label="Ações de gestão">
-                    <form action="{{ route('specialized-educational-support.pei-evaluation.destroy', $pei_evaluation) }}" method="POST" onsubmit="return confirm('Deseja excluir permanentemente?')">
-                        @csrf @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Avaliacao do PEI"
+                        data-confirm-message="Deseja excluir permanentemente esta avaliacao do PEI?"
+                        data-confirm-action="{{ route('specialized-educational-support.pei-evaluation.destroy', $pei_evaluation) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                     <x-buttons.link-button :href="route('specialized-educational-support.pei-evaluation.index', $pei)" variant="secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </x-buttons.link-button>

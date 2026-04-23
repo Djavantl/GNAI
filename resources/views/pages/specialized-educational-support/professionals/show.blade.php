@@ -121,15 +121,20 @@
                 
                 <div class="d-flex gap-3">
                     @can('professional.delete')
-                        <form action="{{ route('specialized-educational-support.professionals.destroy', $professional->id) }}" 
-                            method="POST" 
-                            onsubmit="return confirm('Excluir este profissional do sistema?')">
-                            @csrf
-                            @method('DELETE')
-                            <x-buttons.submit-button variant="danger">
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Profissional"
+                            data-confirm-message="Excluir este profissional do sistema?"
+                            data-confirm-action="{{ route('specialized-educational-support.professionals.destroy', $professional->id) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
                                 <i class="fas fa-trash-alt"></i> Excluir
                             </x-buttons.submit-button>
-                        </form>
                     @endcan
                     <x-buttons.link-button :href="route('specialized-educational-support.professionals.index')" variant="secondary">
                         <i class="fas fa-arrow-left "></i>  Voltar

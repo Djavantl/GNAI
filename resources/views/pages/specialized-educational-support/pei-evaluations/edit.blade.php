@@ -122,18 +122,20 @@
 
         {{-- Exclusão --}}
         <div class="mt-3 px-4 pb-4">
-            <form
-                action="{{ route('specialized-educational-support.pei-evaluation.destroy', $pei_evaluation->id) }}"
-                method="POST"
-                onsubmit="return confirm('Deseja realmente excluir esta avaliação do PEI?')"
+            <x-buttons.submit-button
+                type="button"
+                variant="danger"
+                data-bs-toggle="modal"
+                data-bs-target="#globalConfirmActionModal"
+                data-confirm-title="Excluir Avaliacao do PEI"
+                data-confirm-message="Deseja realmente excluir esta avaliacao do PEI?"
+                data-confirm-action="{{ route('specialized-educational-support.pei-evaluation.destroy', $pei_evaluation->id) }}"
+                data-confirm-method="DELETE"
+                data-confirm-submit-text="Confirmar Exclusao"
+                data-confirm-variant="danger"
             >
-                @csrf
-                @method('DELETE')
-
-                <x-buttons.submit-button variant="danger">
                     Excluir Avaliação
                 </x-buttons.submit-button>
-            </form>
         </div>
     </div>
 @endsection
