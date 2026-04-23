@@ -3,11 +3,9 @@
                 <div class="text-center mb-4">
                     <div class="position-relative d-inline-block">
                         <img src="{{ $student->person->photo_url }}" class="rounded-circle mb-3 shadow-sm" style="width:140px;height:140px;object-fit:cover;border:4px solid #fff">
-                        @if($student->status === 'active')
-                            <span class="badge bg-success position-absolute bottom-0 end-0 mb-3 me-2 border border-2 border-white p-2">ATIVO</span>
-                        @else
-                            <span class="badge bg-danger position-absolute bottom-0 end-0 mb-3 me-2 border border-2 border-white p-2">{{ strtoupper($student->status) }}</span>
-                        @endif
+                        <span class="badge bg-{{ $student->status?->color() ?? 'secondary' }} position-absolute bottom-0 end-0 mb-3 me-2 border border-2 border-white p-2">
+                            {{ strtoupper($student->status?->label() ?? '—') }}
+                        </span>
                     </div>
 
                     <h4 class="mb-0 fw-bold text-dark">{{ $student->person->name }}</h4>

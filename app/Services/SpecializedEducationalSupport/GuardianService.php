@@ -6,13 +6,14 @@ use App\Models\SpecializedEducationalSupport\Guardian;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Person;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class GuardianService
 {
     public function getByStudent(Student $student, array $filters = [])
     {
         return Guardian::query()
-            ->with('person') // Eager loading essencial
+            ->with('person')
             ->where('student_id', $student->id)
             ->name($filters['name'] ?? null)
             ->email($filters['email'] ?? null)
@@ -22,7 +23,8 @@ class GuardianService
             ->withQueryString();
     }
 
-    public function show(Guardian $guardian){
+    public function show(Guardian $guardian): Guardian
+    {
         return $guardian->load('person', 'student.person');
     }
 
@@ -30,23 +32,28 @@ class GuardianService
     {
         return DB::transaction(function () use ($student, $data) {
 
+            if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
+                $data['photo'] = $data['photo']->store('photos', 'public');
+            } else {
+                $data['photo'] = null;
+            }
+
             $person = Person::create([
-                'name'        => $data['name'],
-                'document'    => $data['document'],
-                'birth_date'  => $data['birth_date'],
-                'gender'      => $data['gender'] ?? 'not_specified',
-                'email'       => $data['email'],
-                'phone'       => $data['phone'] ?? null,
-                'address'     => $data['address'] ?? null,
+                'name'       => $data['name'],
+                'document'   => $data['document'],
+                'birth_date' => $data['birth_date'],
+                'gender'     => $data['gender'] ?? 'not_specified',
+                'email'      => $data['email'],
+                'phone'      => $data['phone'] ?? null,
+                'address'    => $data['address'] ?? null,
+                'photo'      => $data['photo'],
             ]);
 
-            $guardian = Guardian::create([
+            return Guardian::create([
                 'person_id'    => $person->id,
                 'student_id'   => $student->id,
-                'relationship'=> $data['relationship'],
+                'relationship' => $data['relationship'],
             ]);
-
-            return $guardian;
         });
     }
 
@@ -54,18 +61,35 @@ class GuardianService
     {
         return DB::transaction(function () use ($guardian, $data) {
 
-            $guardian->person->update([
-                'name'        => $data['name'],
-                'document'    => $data['document'],
-                'birth_date'  => $data['birth_date'],
-                'gender'      => $data['gender'] ?? $guardian->person->gender,
-                'email'       => $data['email'],
-                'phone'       => $data['phone'] ?? null,
-                'address'     => $data['address'] ?? null,
+            $person = $guardian->person;
+
+            if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
+                if ($person->photo) {
+                    Storage::disk('public')->delete($person->photo);
+                }
+                $data['photo'] = $data['photo']->store('photos', 'public');
+            } elseif (!empty($data['remove_photo'])) {
+                if ($person->photo) {
+                    Storage::disk('public')->delete($person->photo);
+                }
+                $data['photo'] = null;
+            } else {
+                $data['photo'] = $person->photo;
+            }
+
+            $person->update([
+                'name'       => $data['name'],
+                'document'   => $data['document'],
+                'birth_date' => $data['birth_date'],
+                'gender'     => $data['gender'] ?? $person->gender,
+                'email'      => $data['email'],
+                'phone'      => $data['phone'] ?? null,
+                'address'    => $data['address'] ?? null,
+                'photo'      => $data['photo'],
             ]);
 
             $guardian->update([
-                'relationship'=> $data['relationship'],
+                'relationship' => $data['relationship'],
             ]);
 
             return $guardian;
@@ -78,6 +102,10 @@ class GuardianService
             $person = $guardian->person;
 
             $guardian->delete();
+
+            if ($person?->photo) {
+                Storage::disk('public')->delete($person->photo);
+            }
 
             $person?->delete();
         });

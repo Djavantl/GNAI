@@ -22,8 +22,8 @@
 
                                 {{-- RELAÇÃO --}}
                                 <div class="col-md-2 text-muted small">
-                                    <i class="fas fa-users me-1"></i>
-                                    {{ $g->relationship ?? '---' }}
+                                    
+                                    {{ $g->relationshipLabel() }}
                                 </div>
 
                                 {{-- TELEFONE --}}

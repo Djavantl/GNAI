@@ -68,9 +68,12 @@ class GuardianRequest extends FormRequest
             'relationship' => [
                 'required',
                 'string',
-                // Adicionei o 'r' que faltava em grandmother no seu código original
-                'in:mother,father,grandfather,grandmother,guardian,other'
+                Rule::in(array_keys(Guardian::relationshipOptions())),
             ],
+
+            // --- Foto ---
+            'photo'        => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'remove_photo' => ['nullable'],
         ];
     }
 

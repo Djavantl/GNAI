@@ -76,7 +76,10 @@
                     <i class="fas fa-link fa-2x me-3 text-muted"></i>
                     <div>
                         <strong>Contexto Utilizado:</strong><br>
-                        Avaliação tipo <em>"{{ $pei->studentContext->evaluation_type }}"</em> realizada em {{ $pei->studentContext->created_at->format('d/m/Y') }}.
+                        @php
+                            $evalTypes = ['initial' => 'Inicial', 'periodic_review' => 'Revisão Periódica', 'pei_review' => 'Revisão do PEI', 'specific_demand' => 'Demanda Específica'];
+                        @endphp
+                        Avaliação tipo <em>"{{ $evalTypes[$pei->studentContext->evaluation_type] ?? ucfirst(str_replace('_', ' ', $pei->studentContext->evaluation_type)) }}"</em> realizada em {{ $pei->studentContext->created_at->format('d/m/Y') }}.
                     </div>
                     {{-- O contexto geralmente não muda em um PEI já iniciado para manter o histórico --}}
                     <input type="hidden" name="student_context_id" value="{{ $pei->student_context_id }}">

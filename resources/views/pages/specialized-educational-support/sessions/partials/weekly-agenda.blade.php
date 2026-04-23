@@ -41,7 +41,7 @@
                             @forelse($day['sessions'] as $session)
                                 @php
                                     $statusKey = strtolower($session->status ?? '');
-                                    $statusData = $statusStyles[$statusKey] ?? ['secondary', ucfirst($session->status ?? 'Sem status')];
+                                    $statusData = $statusStyles[$statusKey] ?? ['secondary', $session->statusLabel()];
 
                                     $studentsText = $session->students
                                         ->map(fn ($student) => $student->person->name ?? 'Aluno')

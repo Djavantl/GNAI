@@ -60,7 +60,7 @@
                     };
                 @endphp
                 <span class="text-{{ $statusColor }} fw-bold">
-                    {{ ucfirst($session->status) }}
+                    {{ $session->statusLabel() }}
                 </span>
             </x-show.info-item>
 
@@ -76,7 +76,7 @@
 
             <x-show.info-item label="Local" :value="$session->location" isBox="true"/>
             
-            <x-show.info-item label="Tipo de Atendimento" :value="$session->type" isBox="true"/>
+            <x-show.info-item label="Tipo de Atendimento" :value="$session->typeLabel()" isBox="true"/>
 
             <x-forms.section title="Conteúdo da Sessão" />
 

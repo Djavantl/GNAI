@@ -19,6 +19,23 @@ class Guardian extends Model
         'relationship',
     ];
 
+    public static function relationshipOptions(): array
+    {
+        return [
+            'father'      => 'Pai',
+            'mother'      => 'Mãe',
+            'grandfather' => 'Avô',
+            'grandmother' => 'Avó',
+            'guardian'    => 'Responsável Legal',
+            'other'       => 'Outro',
+        ];
+    }
+
+    public function relationshipLabel(): string
+    {
+        return self::relationshipOptions()[$this->relationship] ?? ucfirst($this->relationship);
+    }
+
     public static function genderOptions(): array
     {
         return [

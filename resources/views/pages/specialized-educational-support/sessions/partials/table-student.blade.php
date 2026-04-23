@@ -16,16 +16,15 @@
 
             <x-table.td>
                 @php
-                    $statusValue = strtolower($session->status);
-                    $statusColor = match($statusValue) {
-                        'scheduled', 'agendado' => 'warning',
-                        'realized', 'realizado' => 'success',
-                        'canceled', 'cancelled', 'cancelado' => 'danger',
+                    $statusColor = match(strtolower($session->status ?? '')) {
+                        'agendada', 'agendado', 'scheduled', 'pending'    => 'warning',
+                        'realizada', 'realizado', 'completed', 'confirmed' => 'success',
+                        'cancelada', 'cancelado', 'cancelled', 'canceled'  => 'danger',
                         default => 'warning'
                     };
                 @endphp
                 <span class="text-{{ $statusColor }} fw-bold">
-                    {{ ucfirst($session->status) }}
+                    {{ $session->statusLabel() }}
                 </span>
             </x-table.td>
 

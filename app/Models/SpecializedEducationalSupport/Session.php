@@ -105,4 +105,40 @@ class Session extends Model
 
         return $query;
     }
+
+    public function typeLabel(): string
+    {
+        return match(strtolower($this->type ?? '')) {
+            'individual' => 'Individual',
+            'group'      => 'Grupo',
+            default      => ucfirst($this->type ?? ''),
+        };
+    }
+
+    public function statusLabel(): string
+    {
+        return match(strtolower($this->status ?? '')) {
+            'agendada', 'agendado', 'scheduled', 'pending'    => 'Agendada',
+            'realizada', 'realizado', 'completed', 'confirmed' => 'Realizada',
+            'cancelada', 'cancelado', 'cancelled', 'canceled'  => 'Cancelada',
+            default => $this->status ?? '',
+        };
+    }
+
+    public static function typeOptions(): array
+    {
+        return [
+            'individual' => 'Individual',
+            'group'      => 'Grupo',
+        ];
+    }
+
+    public static function statusOptions(): array
+    {
+        return [
+            'Agendada'  => 'Agendada',
+            'Realizada' => 'Realizada',
+            'Cancelada' => 'Cancelada',
+        ];
+    }
 }

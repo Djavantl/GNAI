@@ -12,32 +12,19 @@
         </x-table.td>
         <x-table.td>{{ $session->professional->person->name }}</x-table.td>
         
-        <x-table.td>
-            @php
-                $typeValue = strtolower($session->type);
-
-                $typeLabel = match ($typeValue) {
-                    'individual' => 'Individual',
-                    'group' => 'Grupo',
-                    default => ucfirst($session->type)
-                };
-            @endphp
-
-            {{ $typeLabel }}
-        </x-table.td>
+        <x-table.td>{{ $session->typeLabel() }}</x-table.td>
 
         <x-table.td>
             @php
-                $statusValue = strtolower($session->status);
-                $statusColor = match($statusValue) {
-                    'agendada', 'agendado' => 'warning',
-                    'realizada', 'realizado' => 'success',
-                    'cancelada', 'cancelled', 'cancelado' => 'danger',
+                $statusColor = match(strtolower($session->status ?? '')) {
+                    'agendada', 'agendado', 'scheduled', 'pending'    => 'warning',
+                    'realizada', 'realizado', 'completed', 'confirmed' => 'success',
+                    'cancelada', 'cancelado', 'cancelled', 'canceled'  => 'danger',
                     default => 'warning'
                 };
             @endphp
             <span class="text-{{ $statusColor }} fw-bold">
-                {{ ucfirst($session->status) }}
+                {{ $session->statusLabel() }}
             </span>
         </x-table.td>
 

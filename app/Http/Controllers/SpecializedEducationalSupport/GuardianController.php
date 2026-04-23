@@ -31,11 +31,12 @@ class GuardianController extends Controller
                 )->render();
             }
 
-            // Pega os parentescos já cadastrados para este aluno para popular o select
-            $relationships = Guardian::where('student_id', $student->id)
+            // Filtra apenas os parentescos cadastrados para este aluno, com labels em PT-BR
+            $usedKeys = Guardian::where('student_id', $student->id)
                 ->distinct()
-                ->pluck('relationship', 'relationship')
+                ->pluck('relationship')
                 ->toArray();
+            $relationships = array_intersect_key(Guardian::relationshipOptions(), array_flip($usedKeys));
 
             return view('pages.specialized-educational-support.guardians.index', [
                 'student' => $student,
