@@ -1,0 +1,544 @@
+/* =============================================================
+   high-contrast.css — Modo de Alto Contraste (WCAG 2.1)
+   Estratégia: texto/ícone = amarelo #ffff00, fundo = preto/cinza escuro.
+   Elementos que usam --primary-color como FUNDO recebem override
+   específico para manter legibilidade.
+   ============================================================= */
+
+/* ── 1. VARIÁVEIS GLOBAIS ─────────────────────────────────── */
+body.high-contrast {
+    --primary-color:         #ffff00;
+    --primary-color-medium:  #ffff00;
+    --primary-color-light:   #ffe000;
+    --primary-color-dark:    #ffe000;
+    --color-primary:         #ffff00;
+    --color-primary-hover:   #ffe000;
+    --color-primary-rgb:     255, 255, 0;
+
+    --color-success:         #00dd00;
+    --color-success-light:   #003300;
+    --color-success-text:    #00dd00;
+
+    --color-danger:          #ff6666;
+    --color-danger-light:    #440000;
+    --color-danger-text:     #ff6666;
+
+    --color-warning:         #ffff00;
+    --color-warning-light:   #444400;
+    --color-warning-text:    #ffff00;
+
+    --color-info:            #00dddd;
+    --color-info-light:      #003333;
+    --color-info-text:       #00dddd;
+
+    --body-bg:               #000000;
+    --main-bg:               #000000;
+    --bg-surface:            #111111;
+    --bg-surface-secondary:  #1a1a1a;
+    --bg-overlay:            rgba(255,255,255,0.15);
+
+    --text-primary:          #ffffff;
+    --text-secondary:        #dddddd;
+    --text-muted:            #bbbbbb;
+    --text-inverse:          #000000;
+    --text-link:             #ffff00;
+    --text-link-hover:       #ffe000;
+
+    --border-color:          #555555;
+    --border-color-strong:   #888888;
+    --border-color-light:    rgba(255,255,255,0.25);
+
+    --shadow-sm: 0 2px 6px rgba(255,255,255,0.05);
+    --shadow:    0 4px 12px rgba(255,255,255,0.08);
+    --shadow-md: 0 6px 20px rgba(255,255,255,0.1);
+
+    --bs-body-bg:    #000000;
+    --bs-body-color: #ffffff;
+    --bs-success:    #00dd00;
+    --bs-danger:     #ff6666;
+    --bs-warning:    #ffff00;
+    --bs-info:       #00dddd;
+
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* ── 2. NAVBAR ───────────────────────────────────────────── */
+body.high-contrast .navbar-custom {
+    background-color: #111111 !important;
+    border-bottom: 2px solid #555555 !important;
+}
+body.high-contrast .navbar-custom .text-white,
+body.high-contrast .navbar-custom .navbar-brand {
+    color: #ffffff !important;
+}
+
+/* ── 3. SIDEBAR ──────────────────────────────────────────── */
+body.high-contrast .sidebar {
+    background-color: #0d0d0d !important;
+    border-right: 1px solid #333333 !important;
+}
+body.high-contrast .sidebar-header {
+    background-color: #0d0d0d !important;
+    border-bottom-color: #333333 !important;
+}
+body.high-contrast .sidebar-footer {
+    background-color: #0d0d0d !important;
+    border-top-color: #333333 !important;
+}
+body.high-contrast .sidebar-menu a {
+    color: #cccccc !important;
+}
+body.high-contrast .sidebar-menu a:not(.active):hover {
+    background-color: #1e1e1e !important;
+    color: #ffff00 !important;
+}
+/* Override hardcoded #322b75 do item ativo */
+body.high-contrast .sidebar-menu a.active {
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    border-left-color: #ffff00 !important;
+}
+body.high-contrast .sidebar-menu a.active .icon,
+body.high-contrast .sidebar-menu a.active .text {
+    color: #000000 !important;
+}
+body.high-contrast .menu-divider {
+    color: #777777 !important;
+}
+
+/* ── 4. FUNDO GERAL / SUPERFÍCIES ────────────────────────── */
+body.high-contrast body,
+body.high-contrast .main-content {
+    background-color: #000000 !important;
+}
+body.high-contrast .card,
+body.high-contrast .custom-table-card {
+    background-color: #111111 !important;
+    border: 1px solid #333333 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+body.high-contrast .bg-white  { background-color: #111111 !important; color: #ffffff !important; }
+body.high-contrast .bg-light  { background-color: #1a1a1a !important; color: #ffffff !important; }
+body.high-contrast .bg-soft-info { background-color: #0d1a1a !important; }
+
+/* ── 5. TABELAS ──────────────────────────────────────────── */
+body.high-contrast .table {
+    color: #ffffff !important;
+    border-color: #333333 !important;
+}
+body.high-contrast .table th {
+    background-color: #1a1a1a !important;
+    color: #ffff00 !important;
+    border-color: #444444 !important;
+}
+body.high-contrast .table td {
+    color: #e0e0e0 !important;
+    border-color: #333333 !important;
+}
+body.high-contrast .table-hover tbody tr:hover > td {
+    background-color: #1e1e1e !important;
+    color: #ffffff !important;
+}
+body.high-contrast .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #161616 !important;
+    color: #e0e0e0 !important;
+}
+
+/* ── 6. SESSÕES — CORES HARDCODED (session-records.css) ──── */
+body.high-contrast #students-list .list-group-item {
+    color: #cccccc !important;
+    background-color: #111111 !important;
+    border-color: #333333 !important;
+}
+body.high-contrast #students-list .list-group-item:hover {
+    background-color: #1e1e1e !important;
+    color: #ffff00 !important;
+}
+body.high-contrast #students-list .list-group-item.active {
+    background-color: #1e1e1e !important;
+    color: #ffff00 !important;
+    border-left-color: #ffff00 !important;
+}
+/* Títulos roxos hardcoded (#303972) */
+body.high-contrast .tab-pane h5,
+body.high-contrast .tab-pane h4,
+body.high-contrast .tab-pane h3 {
+    color: #ffffff !important;
+}
+/* Labels roxas hardcoded (#4D44B5) */
+body.high-contrast .tab-pane .form-label {
+    color: #e0e0e0 !important;
+}
+/* Fundo branco do tab-content */
+body.high-contrast .tab-content {
+    background-color: #111111 !important;
+    color: #e0e0e0 !important;
+}
+body.high-contrast .nav-tabs .nav-link {
+    color: #bbbbbb !important;
+    border-color: #333333 !important;
+}
+body.high-contrast .nav-tabs .nav-link.active {
+    background-color: #1e1e1e !important;
+    color: #ffff00 !important;
+    border-color: #555555 !important;
+    border-bottom-color: #1e1e1e !important;
+}
+
+/* ── 7. AGENDA SEMANAL (weekly-agenda.css) ───────────────── */
+/* Card do dia: header usa var(--primary-color) como bg → fica amarelo → override */
+body.high-contrast .weekly-agenda .weekly-day-card {
+    background: #111111 !important;
+    border-color: #333333 !important;
+    box-shadow: none !important;
+}
+body.high-contrast .weekly-agenda .weekly-day-card .card-header {
+    background: #1a1a1a !important;
+    border-bottom: 1px solid #444444 !important;
+}
+body.high-contrast .weekly-agenda .weekly-day-card .weekly-day-title {
+    color: #ffffff !important;
+}
+body.high-contrast .weekly-agenda .weekly-day-card .weekly-day-date {
+    color: #bbbbbb !important;
+}
+body.high-contrast .weekly-agenda .weekly-day-card .badge.bg-secondary {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    border-color: #555555 !important;
+}
+/* Cards de sessão dentro da agenda */
+body.high-contrast .weekly-agenda .weekly-session-card {
+    background: #161616 !important;
+    border: 1px solid #333333 !important;
+    border-left: 4px solid #ffff00 !important;
+    box-shadow: none !important;
+}
+body.high-contrast .weekly-agenda .weekly-session-card:hover {
+    background: #1e1e1e !important;
+    border-color: #555555 !important;
+    border-left-color: #ffff00 !important;
+}
+body.high-contrast .weekly-agenda .weekly-session-time {
+    color: #ffff00 !important;
+}
+/* Hardcoded #495057 */
+body.high-contrast .weekly-agenda .weekly-session-professional,
+body.high-contrast .weekly-agenda .weekly-session-students {
+    color: #cccccc !important;
+}
+body.high-contrast .weekly-agenda .weekly-session-record--missing {
+    color: #ffdd00 !important;
+}
+body.high-contrast .weekly-agenda .weekly-session-record--done {
+    color: #00dd00 !important;
+}
+body.high-contrast .weekly-agenda .weekly-empty-state {
+    color: #888888 !important;
+}
+body.high-contrast .weekly-agenda .weekly-empty-state i {
+    color: #666666 !important;
+}
+
+/* ── 8. STAT CARD (gradient usa var(--primary-color) como fundo) */
+body.high-contrast .stat-card {
+    background: #1a1a1a !important;
+    border: 1px solid #444444 !important;
+    color: #ffffff !important;
+}
+body.high-contrast .stat-card .text-white {
+    color: #e0e0e0 !important;
+}
+
+/* ── 9. BOTÕES ───────────────────────────────────────────── */
+body.high-contrast .btn-primary,
+body.high-contrast .btn-primary-custom {
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    border-color: #ffff00 !important;
+}
+body.high-contrast .btn-primary:hover,
+body.high-contrast .btn-primary-custom:hover {
+    background-color: #ffe000 !important;
+    border-color: #ffe000 !important;
+    color: #000000 !important;
+}
+body.high-contrast .btn-secondary {
+    background-color: #222222 !important;
+    color: #dddddd !important;
+    border-color: #555555 !important;
+}
+body.high-contrast .btn-secondary:hover {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+}
+body.high-contrast .btn-success {
+    background-color: #004400 !important;
+    color: #00dd00 !important;
+    border-color: #00dd00 !important;
+}
+body.high-contrast .btn-danger {
+    background-color: #440000 !important;
+    color: #ff8888 !important;
+    border-color: #ff6666 !important;
+}
+body.high-contrast .btn-warning {
+    background-color: #444400 !important;
+    color: #ffff00 !important;
+    border-color: #ffff00 !important;
+}
+body.high-contrast .btn-info {
+    background-color: #003333 !important;
+    color: #00dddd !important;
+    border-color: #00dddd !important;
+}
+body.high-contrast .btn-outline-primary {
+    color: #ffff00 !important;
+    border-color: #ffff00 !important;
+    background-color: transparent !important;
+}
+body.high-contrast .btn-outline-primary:hover {
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+}
+body.high-contrast .btn-outline-secondary {
+    color: #cccccc !important;
+    border-color: #555555 !important;
+}
+body.high-contrast .btn-outline-secondary:hover {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+}
+/* Checkbox checked: garante que o ícone seja visível */
+body.high-contrast .form-check-input:checked {
+    background-color: #ffff00 !important;
+    border-color: #ffff00 !important;
+    /* ícone de check via filtro para ficar preto */
+    filter: invert(0) !important;
+}
+
+/* ── 10. FORMULÁRIOS ─────────────────────────────────────── */
+body.high-contrast input,
+body.high-contrast select,
+body.high-contrast textarea,
+body.high-contrast .form-control,
+body.high-contrast .form-select {
+    background-color: #111111 !important;
+    color: #ffffff !important;
+    border-color: #555555 !important;
+}
+body.high-contrast input::placeholder,
+body.high-contrast textarea::placeholder {
+    color: #777777 !important;
+}
+body.high-contrast input:focus,
+body.high-contrast select:focus,
+body.high-contrast textarea:focus,
+body.high-contrast .form-control:focus,
+body.high-contrast .form-select:focus {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #ffff00 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,0,0.25) !important;
+}
+body.high-contrast label,
+body.high-contrast .form-label {
+    color: #dddddd !important;
+}
+body.high-contrast .input-group-text {
+    background-color: #1a1a1a !important;
+    color: #cccccc !important;
+    border-color: #555555 !important;
+}
+
+/* ── 11. LINKS ───────────────────────────────────────────── */
+body.high-contrast a {
+    color: #ffff00 !important;
+}
+body.high-contrast a:hover {
+    color: #ffe000 !important;
+}
+/* Links dentro de tabelas/cards que podem ter cores específicas */
+body.high-contrast .table a,
+body.high-contrast .card a {
+    color: #ffff00 !important;
+}
+
+/* ── 12. TEXTO AUXILIAR ──────────────────────────────────── */
+body.high-contrast .text-muted    { color: #aaaaaa !important; }
+body.high-contrast .text-secondary { color: #bbbbbb !important; }
+body.high-contrast .text-success  { color: #00dd00 !important; }
+body.high-contrast .text-danger   { color: #ff6666 !important; }
+body.high-contrast .text-warning  { color: #ffff00 !important; }
+body.high-contrast .text-info     { color: #00dddd !important; }
+body.high-contrast .text-primary  { color: #ffff00 !important; }
+body.high-contrast .text-dark     { color: #e0e0e0 !important; }
+/* Qualquer cor violeta/roxo hardcoded via inline ou class */
+body.high-contrast [style*="color: #4D44B5"],
+body.high-contrast [style*="color: #303972"],
+body.high-contrast [style*="color: #322b75"] {
+    color: #ffffff !important;
+}
+
+/* ── 13. BADGES ──────────────────────────────────────────── */
+body.high-contrast .badge.bg-primary   { background-color: #333300 !important; color: #ffff00 !important; }
+body.high-contrast .badge.bg-secondary { background-color: #222222 !important; color: #cccccc !important; border: 1px solid #555555; }
+body.high-contrast .badge.bg-success   { background-color: #003300 !important; color: #00dd00 !important; }
+body.high-contrast .badge.bg-danger    { background-color: #440000 !important; color: #ff6666 !important; }
+body.high-contrast .badge.bg-warning   { background-color: #444400 !important; color: #ffff00 !important; }
+body.high-contrast .badge.bg-info      { background-color: #003333 !important; color: #00dddd !important; }
+
+/* ── 14. MODAIS ──────────────────────────────────────────── */
+body.high-contrast .modal-content {
+    background-color: #111111 !important;
+    border: 1px solid #555555 !important;
+    color: #ffffff !important;
+}
+body.high-contrast .modal-header {
+    border-bottom-color: #333333 !important;
+}
+body.high-contrast .modal-footer {
+    border-top-color: #333333 !important;
+}
+body.high-contrast .modal-backdrop {
+    background-color: rgba(0,0,0,0.85) !important;
+}
+
+/* ── 15. DROPDOWNS ───────────────────────────────────────── */
+body.high-contrast .dropdown-menu {
+    background-color: #111111 !important;
+    border-color: #444444 !important;
+}
+body.high-contrast .dropdown-item {
+    color: #dddddd !important;
+}
+body.high-contrast .dropdown-item:hover,
+body.high-contrast .dropdown-item:focus {
+    background-color: #1e1e1e !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .dropdown-divider {
+    border-color: #333333 !important;
+}
+
+/* ── 16. ALERTAS ─────────────────────────────────────────── */
+body.high-contrast .alert-success {
+    background-color: #002200 !important;
+    border-color: #00aa00 !important;
+    color: #00dd00 !important;
+}
+body.high-contrast .alert-danger {
+    background-color: #330000 !important;
+    border-color: #cc3333 !important;
+    color: #ff8888 !important;
+}
+body.high-contrast .alert-warning {
+    background-color: #333300 !important;
+    border-color: #aaaa00 !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .alert-info {
+    background-color: #002222 !important;
+    border-color: #00aaaa !important;
+    color: #00dddd !important;
+}
+/* Override do alert-danger hardcoded em session-records.css */
+body.high-contrast .alert-danger {
+    background-color: #330000 !important;
+    border: 1px solid #cc3333 !important;
+    border-radius: 12px;
+    color: #ff8888 !important;
+}
+
+/* ── 17. BREADCRUMB ──────────────────────────────────────── */
+body.high-contrast .breadcrumb-item a     { color: #ffff00 !important; }
+body.high-contrast .breadcrumb-item.active { color: #aaaaaa !important; }
+body.high-contrast .breadcrumb-item + .breadcrumb-item::before { color: #666666 !important; }
+
+/* ── 18. PAGINAÇÃO ───────────────────────────────────────── */
+body.high-contrast .page-link {
+    background-color: #111111 !important;
+    border-color: #444444 !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .page-link:hover {
+    background-color: #1e1e1e !important;
+    color: #ffe000 !important;
+}
+body.high-contrast .page-item.active .page-link {
+    background-color: #333300 !important;
+    border-color: #ffff00 !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .page-item.disabled .page-link {
+    background-color: #0d0d0d !important;
+    color: #555555 !important;
+}
+
+/* ── 19. SEÇÕES DE FORMULÁRIO (section title) ────────────── */
+body.high-contrast .form-section-title,
+body.high-contrast .section-header,
+body.high-contrast x-forms-section,
+body.high-contrast [class*="section-title"] {
+    color: #ffff00 !important;
+    border-color: #333333 !important;
+}
+body.high-contrast hr,
+body.high-contrast .border-top,
+body.high-contrast .border-bottom {
+    border-color: #333333 !important;
+}
+
+/* ── 20. TABELAS — CORES HARDCODED (tables.css) ─────────────
+   .table td:first-child usa color: #303972 !important
+   .table tbody tr td:first-child usa border-left: 4px solid #4D44B5 !important
+   .custom-table-card thead th usa background-color: #f6f1ff !important         */
+body.high-contrast .table td:first-child {
+    color: #e0e0e0 !important;
+}
+body.high-contrast .table tbody tr td:first-child {
+    border-left: 4px solid #ffff00 !important;
+}
+body.high-contrast .custom-table-card thead th {
+    background-color: #1a1a1a !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .text-purple-dark { color: #cccccc !important; }
+body.high-contrast .text-purple-light { color: #bbbbbb !important; }
+
+/* ── 21. PAGINAÇÃO CUSTOMIZADA (tables.css — cores hardcoded) */
+body.high-contrast .custom-pagination-container .page-link {
+    background: transparent !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .custom-pagination-container .page-item:not(:first-child):not(:last-child) .page-link {
+    border-color: #444444 !important;
+    color: #dddddd !important;
+}
+body.high-contrast .custom-pagination-container .page-item.active .page-link {
+    background-color: #333300 !important;
+    border-color: #ffff00 !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .custom-pagination-container .page-item:not(.active):not(:first-child):not(:last-child) .page-link:hover {
+    background-color: #1e1e1e !important;
+    border-color: #ffff00 !important;
+    color: #ffff00 !important;
+}
+body.high-contrast .custom-pagination-container .page-item.disabled .page-link {
+    color: #444444 !important;
+}
+body.high-contrast .custom-pagination-container .page-item:not(.disabled):first-child .page-link:hover,
+body.high-contrast .custom-pagination-container .page-item:not(.disabled):last-child .page-link:hover {
+    color: #ffe000 !important;
+}
+
+/* ── 22. BOTÃO DE TOGGLE (estado ativo indicado visualmente) */
+body.high-contrast #highContrastToggle {
+    color: #ffff00 !important;
+    outline: 2px solid #ffff00;
+    outline-offset: 2px;
+    border-radius: 4px;
+}

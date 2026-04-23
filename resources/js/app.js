@@ -7,6 +7,7 @@ import './components/confirm-action-modal.js';
 import './utils/cpf.js';
 import './utils/phone.js';
 import './components/collapsible-section';
+import './components/highContrast';
 
 // App principal - Sidebar, Navbar e Dropdowns
 class App {

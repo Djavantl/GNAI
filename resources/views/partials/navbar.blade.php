@@ -30,7 +30,16 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <div role="region" aria-label="Notificações">
+            <button id="highContrastToggle"
+                    class="btn btn-fw text-white p-0"
+                    type="button"
+                    aria-label="Ativar alto contraste"
+                    aria-pressed="false"
+                    title="Ativar alto contraste">
+                <i class="bi bi-circle-half fs-5" aria-hidden="true"></i>
+            </button>
+
+            <div class="ms-4" role="region" aria-label="Notificações">
                 @include('partials._notifications')
             </div>
 
