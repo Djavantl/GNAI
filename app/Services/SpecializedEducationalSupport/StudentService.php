@@ -168,7 +168,8 @@ class StudentService
             'currentContext.evaluator.person',
 
             'peis' => function ($query) {
-                $query->with([
+                $query->where('is_current', true)
+                ->with([
                     'semester',
                     'course',
                     'studentContext',
