@@ -5,6 +5,7 @@ namespace Tests\Feature\InclusiveRadar;
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ResourceStatus;
+use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\AccessibilityFeature;
 use App\Models\InclusiveRadar\Inspection;
@@ -60,6 +61,41 @@ class AccessibleEducationalMaterialTest extends TestCase
         $response->assertOk();
         $response->assertViewIs('pages.inclusive-radar.accessible-educational-materials.index');
         $response->assertViewHas('materials');
+    }
+
+    public function test_materials_index_returns_partial_when_ajax()
+    {
+        // Arrange
+        AccessibleEducationalMaterial::factory()->count(2)->create();
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.accessible-educational-materials.index'), [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]);
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.accessible-educational-materials.partials.table');
+        $response->assertViewHas('materials');
+    }
+
+    public function test_admin_can_access_material_create_page()
+    {
+        // Arrange
+        Deficiency::factory()->count(2)->create();
+        AccessibilityFeature::factory()->count(2)->create(['is_active' => true]);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.accessible-educational-materials.create'));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.accessible-educational-materials.create');
+        $response->assertViewHas('deficiencies');
+        $response->assertViewHas('accessibilityFeatures');
+        $response->assertViewHas('defaultInspection', InspectionType::INITIAL->value);
     }
 
     public function test_admin_can_store_a_material_with_valid_data()
@@ -155,6 +191,73 @@ class AccessibleEducationalMaterialTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_view_a_material()
+    {
+        // Arrange
+        $material = AccessibleEducationalMaterial::factory()->create();
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.accessible-educational-materials.show', $material));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.accessible-educational-materials.show');
+        $response->assertViewHas('material');
+        $response->assertViewHas('deficiencies');
+        $response->assertViewHas('features');
+        $response->assertViewHas('inspections');
+    }
+
+    public function test_admin_can_access_material_edit_page()
+    {
+        // Arrange
+        Deficiency::factory()->count(2)->create();
+        AccessibilityFeature::factory()->count(2)->create(['is_active' => true]);
+        $material = AccessibleEducationalMaterial::factory()->create();
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.accessible-educational-materials.edit', $material));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.accessible-educational-materials.edit');
+        $response->assertViewHas('material');
+        $response->assertViewHas('activeLoans');
+        $response->assertViewHas('defaultInspection', InspectionType::PERIODIC->value);
+    }
+
+    public function test_admin_can_delete_a_material()
+    {
+        // Arrange
+        $material = AccessibleEducationalMaterial::factory()->create();
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->delete(route('inclusive-radar.accessible-educational-materials.destroy', $material));
+
+        // Assert
+        $response->assertRedirect(route('inclusive-radar.accessible-educational-materials.index'));
+        $this->assertSoftDeleted('accessible_educational_materials', [
+            'id' => $material->id,
+        ]);
+    }
+
+    public function test_admin_can_generate_material_pdf()
+    {
+        // Arrange
+        $material = AccessibleEducationalMaterial::factory()->create(['name' => 'Material PDF']);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.accessible-educational-materials.pdf', $material));
+
+        // Assert
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+    }
+
     public function test_admin_can_view_a_material_inspection()
     {
         // Arrange
@@ -188,5 +291,48 @@ class AccessibleEducationalMaterialTest extends TestCase
 
         // Assert
         $response->assertForbidden();
+    }
+
+    public function test_guest_cannot_access_material_logs()
+    {
+        $material = AccessibleEducationalMaterial::factory()->create();
+
+        $response = $this->get(route('inclusive-radar.accessible-educational-materials.logs', $material));
+
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_non_admin_cannot_access_material_logs()
+    {
+        $material = AccessibleEducationalMaterial::factory()->create();
+
+        $response = $this->actingAs($this->regularUser)
+            ->get(route('inclusive-radar.accessible-educational-materials.logs', $material));
+
+        $response->assertForbidden();
+    }
+
+    public function test_admin_can_view_material_logs()
+    {
+        $material = AccessibleEducationalMaterial::factory()->create();
+
+        AuditLog::create([
+            'user_id' => $this->admin->id,
+            'action' => 'updated',
+            'auditable_type' => $material->getMorphClass(),
+            'auditable_id' => $material->id,
+            'old_values' => ['name' => 'Anterior'],
+            'new_values' => ['name' => 'Atual'],
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit',
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.accessible-educational-materials.logs', $material));
+
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.accessible-educational-materials.logs.logs');
+        $response->assertViewHas('material', $material);
+        $response->assertViewHas('logs');
     }
 }

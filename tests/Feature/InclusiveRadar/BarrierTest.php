@@ -69,6 +69,60 @@ class BarrierTest extends TestCase
         $response->assertViewHas('barriers');
     }
 
+    public function test_barriers_index_returns_partial_when_ajax()
+    {
+        // Arrange
+        Barrier::factory()->count(2)->create();
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.barriers.index'), [
+                'X-Requested-With' => 'XMLHttpRequest',
+            ]);
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.barriers.partials.table');
+        $response->assertViewHas('barriers');
+    }
+
+    public function test_admin_can_access_barrier_create_page()
+    {
+        // Arrange
+        Location::factory()->create(['institution_id' => $this->institution->id, 'is_active' => true]);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.barriers.create'));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.barriers.create');
+        $response->assertViewHas('institutions');
+        $response->assertViewHas('categories');
+        $response->assertViewHas('deficiencies');
+        $response->assertViewHas('defaultStatus', BarrierStatus::IDENTIFIED->value);
+    }
+
+    public function test_barrier_create_uses_old_selected_institution_when_available()
+    {
+        // Arrange
+        $otherInstitution = Institution::factory()->create(['is_active' => true]);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->withSession([
+                '_old_input' => ['institution_id' => $otherInstitution->id],
+            ])
+            ->get(route('inclusive-radar.barriers.create'));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewHas('selectedInstitution', function ($selectedInstitution) use ($otherInstitution) {
+            return $selectedInstitution?->id === $otherInstitution->id;
+        });
+    }
+
     public function test_admin_can_store_an_anonymous_barrier()
     {
         // Arrange
@@ -157,6 +211,94 @@ class BarrierTest extends TestCase
         // Assert
         $response->assertRedirect(route('inclusive-radar.barriers.index'));
         $this->assertNotNull($barrier->fresh()->resolved_at);
+    }
+
+    public function test_admin_can_view_a_barrier()
+    {
+        // Arrange
+        $barrier = Barrier::factory()->create();
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.barriers.show', $barrier));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.barriers.show');
+        $response->assertViewHas('barrier');
+    }
+
+    public function test_admin_can_access_barrier_edit_page()
+    {
+        // Arrange
+        $barrier = Barrier::factory()->create([
+            'institution_id' => $this->institution->id,
+            'barrier_category_id' => $this->category->id,
+        ]);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.barriers.edit', $barrier));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewIs('pages.inclusive-radar.barriers.edit');
+        $response->assertViewHas('barrier');
+        $response->assertViewHas('institutions');
+        $response->assertViewHas('categories');
+    }
+
+    public function test_barrier_edit_uses_old_selected_institution_when_available()
+    {
+        // Arrange
+        $otherInstitution = Institution::factory()->create(['is_active' => true]);
+        $barrier = Barrier::factory()->create([
+            'institution_id' => $this->institution->id,
+            'barrier_category_id' => $this->category->id,
+        ]);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->withSession([
+                '_old_input' => ['institution_id' => $otherInstitution->id],
+            ])
+            ->get(route('inclusive-radar.barriers.edit', $barrier));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewHas('selectedInstitution', function ($selectedInstitution) use ($otherInstitution) {
+            return $selectedInstitution?->id === $otherInstitution->id;
+        });
+    }
+
+    public function test_admin_can_delete_a_barrier()
+    {
+        // Arrange
+        $barrier = Barrier::factory()->create();
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->delete(route('inclusive-radar.barriers.destroy', $barrier));
+
+        // Assert
+        $response->assertRedirect(route('inclusive-radar.barriers.index'));
+        $this->assertDatabaseMissing('barriers', [
+            'id' => $barrier->id,
+        ]);
+    }
+
+    public function test_admin_can_generate_barrier_pdf()
+    {
+        // Arrange
+        $barrier = Barrier::factory()->create(['name' => 'Barreira PDF']);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.barriers.pdf', $barrier));
+
+        // Assert
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
     }
 
     public function test_admin_can_view_a_barrier_inspection()
