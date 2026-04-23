@@ -35,8 +35,8 @@
             >
                 <i class="fas fa-calendar"></i> Todas Sessões
             </x-buttons.link-button>
-        </x-table.page-header>
         @endcan
+        </x-table.page-header>
 
         <div class="px-3 pt-3">
             <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 border rounded-3 p-3 bg-light">
