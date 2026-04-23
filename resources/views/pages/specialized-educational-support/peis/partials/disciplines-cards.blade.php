@@ -11,13 +11,13 @@
                 <div class="col-md-12">
                     <div class="card p-3 h-100 shadow-sm">
                         {{-- topo do card --}}
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
+                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                            <div class="flex-grow-1" style="min-width: 0;">
                                 <strong class="d-block">{{ $item->discipline->name ?? '—' }}</strong>
                                 <small class="text-muted">{{ $item->teacher->person->name ?? '—' }}</small>
                             </div>
 
-                            <div class="text-muted small">
+                            <div class="text-muted small flex-shrink-0">
                                 {{ optional($item->created_at)->format('d/m/Y') }}
                             </div>
                         </div>

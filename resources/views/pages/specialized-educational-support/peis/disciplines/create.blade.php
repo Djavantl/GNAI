@@ -11,14 +11,16 @@
         ]" />
     </div>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
         <div>
             <h2 class="text-title">Cadastrar Adaptação Curricular</h2>
             <p class="text-muted">Defina os objetivos, conteúdos e metodologias adaptadas para este PEI.</p>
         </div>
-        <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei) }}" variant="secondary">
-            <i class="fas fa-times"></i>Cancelar
-        </x-buttons.link-button>
+        <div class="ms-md-auto flex-shrink-0">
+            <x-buttons.link-button href="{{ route('specialized-educational-support.pei.show', $pei) }}" variant="secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
+        </div>
     </div>
 
     <div class="mt-3">

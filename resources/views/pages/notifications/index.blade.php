@@ -11,7 +11,7 @@
     </div>
 
     {{-- Cabeçalho --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
             <h2 class="text-title">Notificações</h2>
             <p class="text-muted">
@@ -19,7 +19,7 @@
             </p>
         </div>
 
-        <form action="{{ route('notifications.readAll') }}" method="POST">
+        <form action="{{ route('notifications.readAll') }}" method="POST" class="ms-md-auto">
             @csrf
             <x-buttons.submit-button variant="primary">
                 <i class="fas fa-check"></i>
@@ -38,9 +38,9 @@
         @endphp
 
         <div class="card card-custom {{ $isUnread ? 'border-start border-4 border-primary-custom' : '' }}">
-            <div class="card-body d-flex justify-content-between align-items-start">
+            <div class="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3">
 
-                <div>
+                <div class="flex-grow-1">
                     <div class="fw-bold text-primary-custom">
                         {{ $data['title'] ?? 'Notificação' }}
                     </div>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex flex-column gap-2 align-items-end">
+                <div class="d-flex flex-wrap flex-sm-column gap-2 align-items-start align-items-sm-end flex-shrink-0">
 
                     @if(isset($data['url']))
                         <x-buttons.link-button href="{!! $data['url'] !!}" variant="success">
@@ -66,7 +66,7 @@
                     @if($isUnread)
                         <form action="{{ route('notifications.read', $notification->id) }}" method="POST">
                             @csrf
-                            <x-buttons.submit-button type="submit" class="btn-action new submit px-5">
+                            <x-buttons.submit-button type="submit" class="btn-action new submit">
                                 <i class="fas fa-check"></i>
                                 Marcar como lida
                             </x-buttons.submit-button>

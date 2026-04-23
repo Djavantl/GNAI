@@ -13,12 +13,28 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ctx-section-header > .d-flex {
+    flex: 1;
+    min-width: 0;
+}
+
+.ctx-section-actions {
+    flex-shrink: 0;
+}
+
+.ctx-section-title {
+    min-width: 0;
 }
 
 .ctx-section-title h5 {
     margin-left: 1rem;
     color: var(--primary-color-dark);
     font-weight: 600;
+    word-break: break-word;
 }
 
 /* ===== TOGGLE BUTTON ===== */
