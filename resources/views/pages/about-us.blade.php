@@ -34,7 +34,7 @@
             </h1>
 
             <p class="hero-sub">
-                Gestão Estratégica de Núcleo de Atendimento Inclusivo.
+                Gestão Estratégica do Núcleo de Acessibilidade e Inclusão.
                 Plataforma completa para apoio à gestão educacional inclusiva,
                 acompanhamento de estudantes, PEIs, tecnologias assistivas e processos institucionais.
             </p>
