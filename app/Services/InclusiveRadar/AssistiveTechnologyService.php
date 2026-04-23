@@ -16,6 +16,10 @@ class AssistiveTechnologyService
         protected AuditLogger $auditLogger,
     ) {}
 
+    /**
+     * RF: cadastra uma tecnologia assistiva com vínculos e inspeção inicial.
+     * Uso: criação de itens do inventário assistivo do radar.
+     */
     public function store(array $data): AssistiveTechnology
     {
         return DB::transaction(function () use ($data) {
@@ -38,6 +42,10 @@ class AssistiveTechnologyService
         });
     }
 
+    /**
+     * RF: atualiza a tecnologia assistiva e registra mudanças relevantes.
+     * Uso: manutenção do inventário com sincronização de público-alvo e vistorias.
+     */
     public function update(AssistiveTechnology $at, array $data): AssistiveTechnology
     {
         return DB::transaction(function () use ($at, $data) {
@@ -71,11 +79,13 @@ class AssistiveTechnologyService
         });
     }
 
+    /**
+     * RF: exclui a tecnologia apenas quando não há circulação ativa vinculada.
+     * Uso: remoção administrativa segura sem criar órfãos no histórico.
+     */
     public function delete(AssistiveTechnology $assistiveTechnology): void
     {
         DB::transaction(function () use ($assistiveTechnology) {
-            /* Impedimos a exclusão para manter a integridade histórica dos
-               empréstimos ativos e evitar órfãos no sistema de rastreio. */
             if ($assistiveTechnology->loans()->whereNull('return_date')->exists()) {
                 throw new BusinessRuleException("Não é possível excluir um item com empréstimos ativos.");
             }
@@ -84,6 +94,10 @@ class AssistiveTechnologyService
         });
     }
 
+    /**
+     * RF: valida estoque, empréstimo e público-alvo da tecnologia assistiva.
+     * Uso: guarda central de integridade para criação e edição do item.
+     */
     private function validateBusinessRules(AssistiveTechnology $at, array $data): void
     {
         $isDigital = $data['is_digital'] ?? $at->is_digital  ?? false;
@@ -108,12 +122,14 @@ class AssistiveTechnologyService
         }
     }
 
+    /**
+     * RF: impede troca de status enquanto houver empréstimos em aberto.
+     * Uso: preservação da coerência entre inventário e fluxo de devolução.
+     */
     private function validateStatusChangeWithActiveLoans(AssistiveTechnology $at, array $data): void
     {
         if (!isset($data['status'])) return;
 
-        /* Bloqueamos a mudança de status (ex: para Manutenção) se houver
-           empréstimos em aberto para evitar inconsistência no inventário. */
         if ($at->loans()->whereNull('return_date')->exists() && $at->status->value !== $data['status']) {
             throw new BusinessRuleException("Não é possível alterar o status do item enquanto houver empréstimos ativos.");
         }

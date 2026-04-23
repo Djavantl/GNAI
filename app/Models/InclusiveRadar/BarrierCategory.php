@@ -17,12 +17,10 @@ class BarrierCategory extends Model
 {
     use HasFactory, SoftDeletes, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade e Persistência
-    |--------------------------------------------------------------------------
-    | Mantém o núcleo do cadastro e o soft delete para histórico administrativo.
-    */
+    /**
+     * Identidade e Persistência:
+     * Mantém o núcleo do cadastro e o soft delete para histórico administrativo.
+     */
 
     protected $table = 'barrier_categories';
 
@@ -38,12 +36,10 @@ class BarrierCategory extends Model
         'blocks_map' => 'boolean'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Expõe colunas e coleções liberadas para o report builder do módulo.
-    */
+    /**
+     * Relatórios:
+     * Expõe colunas e coleções liberadas para o report builder do módulo.
+     */
 
     public static function getReportLabel(): string
     {
@@ -79,24 +75,20 @@ class BarrierCategory extends Model
         return ['barriers'];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | A categoria agrega barreiras e influencia o comportamento do mapa.
-    */
+    /**
+     * Relacionamentos:
+     * A categoria agrega barreiras e influencia o comportamento do mapa.
+     */
 
     public function barriers(): HasMany
     {
         return $this->hasMany(Barrier::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Listagem
-    |--------------------------------------------------------------------------
-    | Reúne a filtragem usada nas listagens administrativas e consultas auxiliares.
-    */
+    /**
+     * Scopes de Listagem:
+     * Reúne a filtragem usada nas listagens administrativas e consultas auxiliares.
+     */
 
     public function scopeFilterName($query, ?string $name): Builder
     {

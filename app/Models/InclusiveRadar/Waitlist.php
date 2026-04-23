@@ -19,12 +19,10 @@ class Waitlist extends Model
 {
     use HasFactory, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade e Estado
-    |--------------------------------------------------------------------------
-    | Mantém os dados da solicitação e os casts usados no fluxo de espera.
-    */
+    /**
+     * Identidade e Estado:
+     * Mantém os dados da solicitação e os casts usados no fluxo de espera.
+     */
 
     protected $fillable = [
         'waitlistable_id',
@@ -43,12 +41,10 @@ class Waitlist extends Model
         'updated_at'   => 'datetime',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Expõe campos e itens polimórficos no builder de relatórios.
-    */
+    /**
+     * Relatórios:
+     * Expõe campos e itens polimórficos no builder de relatórios.
+     */
 
     public static function getReportLabel(): string
     {
@@ -87,12 +83,10 @@ class Waitlist extends Model
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | Conecta a solicitação ao item pedido e aos beneficiários envolvidos.
-    */
+    /**
+     * Relacionamentos:
+     * Conecta a solicitação ao item pedido e aos beneficiários envolvidos.
+     */
 
     public function waitlistable(): MorphTo
     {
@@ -114,12 +108,10 @@ class Waitlist extends Model
         return $this->belongsTo(User::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Operação e Relatório
-    |--------------------------------------------------------------------------
-    | Reúne filtros usados no index operacional e no report builder.
-    */
+    /**
+     * Scopes de Operação e Relatório:
+     * Reúne filtros usados no index operacional e no report builder.
+     */
 
     public function scopeItem($query, $name = null)
     {

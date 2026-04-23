@@ -20,12 +20,10 @@ class Loan extends Model
 {
     use HasFactory, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade e Estado
-    |--------------------------------------------------------------------------
-    | Guarda os dados transacionais do empréstimo e seus casts funcionais.
-    */
+    /**
+     * Identidade e Estado:
+     * Guarda os dados transacionais do empréstimo e seus casts funcionais.
+     */
 
     protected $table = 'loans';
 
@@ -49,12 +47,10 @@ class Loan extends Model
         'status'      => LoanStatus::class,
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Define campos e alvos polimórficos usados pelo report builder.
-    */
+    /**
+     * Relatórios:
+     * Define campos e alvos polimórficos usados pelo report builder.
+     */
 
     public static function getReportLabel(): string
     {
@@ -97,12 +93,10 @@ class Loan extends Model
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | Conecta o empréstimo ao item, beneficiário e usuário responsável.
-    */
+    /**
+     * Relacionamentos:
+     * Conecta o empréstimo ao item, beneficiário e usuário responsável.
+     */
 
     public function loanable(): MorphTo
     {
@@ -124,12 +118,10 @@ class Loan extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Operação e Relatório
-    |--------------------------------------------------------------------------
-    | Reúne filtros usados no index, nos serviços de negócio e no builder.
-    */
+    /**
+     * Scopes de Operação e Relatório:
+     * Reúne filtros usados no index, nos serviços de negócio e no builder.
+     */
 
     public function scopeByStatus($query, ?LoanStatus $status)
     {

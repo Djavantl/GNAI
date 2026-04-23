@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\DB;
 
 class BarrierCategoryService
 {
+    /**
+     * RF: cria uma categoria de barreira em transação única.
+     * Uso: cadastro administrativo das classificações usadas no mapa.
+     */
     public function store(array $data): BarrierCategory
     {
         return DB::transaction(
@@ -15,6 +19,10 @@ class BarrierCategoryService
         );
     }
 
+    /**
+     * RF: atualiza a categoria de barreira mantendo consistência transacional.
+     * Uso: edição das classificações exibidas em formulários e relatórios.
+     */
     public function update(BarrierCategory $category, array $data): BarrierCategory
     {
         return DB::transaction(function () use ($category, $data) {
@@ -23,6 +31,10 @@ class BarrierCategoryService
         });
     }
 
+    /**
+     * RF: remove a categoria apenas quando nenhuma barreira ativa depende dela.
+     * Uso: exclusão administrativa sem quebrar histórico e auditoria do mapa.
+     */
     public function delete(BarrierCategory $category): void
     {
         DB::transaction(function () use ($category) {
@@ -33,9 +45,6 @@ class BarrierCategoryService
                 ->contains(function ($barrier) {
                     $status = $barrier->latestStatus();
 
-                    /* Assumimos que a ausência de status ou um status impeditivo impossibilita
-                       a exclusão da categoria, evitando que dados históricos fiquem sem
-                       classificação e dificultem auditorias futuras. */
                     if (!$status) {
                         return true;
                     }

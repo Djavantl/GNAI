@@ -15,12 +15,10 @@ class InspectionImage extends Model
 {
     use HasFactory;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Persistência
-    |--------------------------------------------------------------------------
-    | Mantém os metadados do arquivo persistidos junto à vistoria.
-    */
+    /**
+     * Persistência:
+     * Mantém os metadados do arquivo persistidos junto à vistoria.
+     */
 
     protected $fillable = [
         'inspection_id',
@@ -30,12 +28,10 @@ class InspectionImage extends Model
         'size'
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Eventos de Modelo
-    |--------------------------------------------------------------------------
-    | Garante remoção física do arquivo ao excluir o registro da imagem.
-    */
+    /**
+     * Eventos de Modelo:
+     * Garante remoção física do arquivo ao excluir o registro da imagem.
+     */
 
     protected static function booted()
     {
@@ -46,12 +42,10 @@ class InspectionImage extends Model
         });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | A imagem sempre pertence a uma única inspeção.
-    */
+    /**
+     * Relacionamentos:
+     * A imagem sempre pertence a uma única inspeção.
+     */
 
     public function inspection(): BelongsTo
     {

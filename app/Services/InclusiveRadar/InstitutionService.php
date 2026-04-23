@@ -9,10 +9,12 @@ use Illuminate\Validation\ValidationException;
 
 class InstitutionService
 {
+    /**
+     * RF: cria a instituição única da instância do sistema.
+     * Uso: bootstrap do radar e manutenção do cadastro institucional principal.
+     */
     public function store(array $data): ?Institution
     {
-        /* O sistema é projetado para gerenciar uma única instituição por instância.
-           Se já existir um registro, bloqueamos a criação de duplicatas. */
         if (Institution::exists()) {
             return null;
         }
@@ -20,6 +22,10 @@ class InstitutionService
         return DB::transaction(fn () => Institution::create($data));
     }
 
+    /**
+     * RF: atualiza a instituição e impede desativação com pendências abertas.
+     * Uso: manutenção do cadastro base que sustenta locais e barreiras.
+     */
     public function update(Institution $institution, array $data): Institution
     {
         return DB::transaction(function () use ($institution, $data) {
@@ -28,8 +34,6 @@ class InstitutionService
             $willDeactivate = $wasActive && isset($data['is_active']) && !$data['is_active'];
 
             if ($willDeactivate) {
-                /* Impedimos a desativação se houver pendências em aberto, garantindo que
-                   a instituição mantenha responsabilidade sobre barreiras não resolvidas. */
                 $hasUnresolvedBarriers = $institution
                     ->barriers()
                     ->whereNull('resolved_at')
@@ -45,8 +49,6 @@ class InstitutionService
             $institution->update($data);
 
             if ($willDeactivate) {
-                /* Ao desativar a instituição, aplicamos o efeito cascata nos locais
-                   para manter a consistência da disponibilidade no radar. */
                 $institution->locations()->update([
                     'is_active' => false
                 ]);
@@ -56,6 +58,10 @@ class InstitutionService
         });
     }
 
+    /**
+     * RF: exclui a instituição apenas quando o histórico vinculado está regularizado.
+     * Uso: remoção administrativa segura do cadastro institucional.
+     */
     public function delete(Institution $institution): void
     {
         DB::transaction(function () use ($institution) {
@@ -66,8 +72,6 @@ class InstitutionService
                 ->contains(function ($barrier) {
                     $status = $barrier->latestStatus();
 
-                    /* Se não houver status ou se o status atual for impeditivo (ex: em análise),
-                       a exclusão da instituição é abortada para evitar perda de rastro. */
                     if (!$status) {
                         return true;
                     }
@@ -79,7 +83,6 @@ class InstitutionService
                 throw new BusinessRuleException("Não é possível excluir esta instituição pois ela possui barreiras ativas.");
             }
 
-            // Remove todos os pontos de referencias desta instituicao
             $institution->locations()->delete();
 
             $institution->delete();

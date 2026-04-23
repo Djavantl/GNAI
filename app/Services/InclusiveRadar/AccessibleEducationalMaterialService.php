@@ -16,6 +16,10 @@ class AccessibleEducationalMaterialService
         protected AuditLogger $auditLogger,
     ) {}
 
+    /**
+     * RF: cadastra um material acessível com validações, vínculos e vistoria inicial.
+     * Uso: criação de itens no inventário do radar inclusivo.
+     */
     public function store(array $data): AccessibleEducationalMaterial
     {
         return DB::transaction(function () use ($data) {
@@ -42,6 +46,10 @@ class AccessibleEducationalMaterialService
         });
     }
 
+    /**
+     * RF: atualiza o material e sincroniza público-alvo, acessibilidades e inspeção.
+     * Uso: edição operacional do acervo com rastreabilidade de mudanças.
+     */
     public function update(AccessibleEducationalMaterial $material, array $data): AccessibleEducationalMaterial
     {
         return DB::transaction(function () use ($material, $data) {
@@ -87,11 +95,13 @@ class AccessibleEducationalMaterialService
         });
     }
 
+    /**
+     * RF: exclui o material apenas quando não há empréstimos ativos associados.
+     * Uso: limpeza administrativa sem perder integridade do histórico de circulação.
+     */
     public function delete(AccessibleEducationalMaterial $material): void
     {
         DB::transaction(function () use ($material) {
-            /* Impedimos a remoção para evitar a perda do histórico de movimentação
-               de itens que ainda estão sob posse de terceiros. */
             if ($material->loans()->whereNull('return_date')->exists()) {
                 throw new BusinessRuleException("Não é possível excluir um item com empréstimos ativos.");
             }
@@ -100,6 +110,10 @@ class AccessibleEducationalMaterialService
         });
     }
 
+    /**
+     * RF: valida regras de estoque, empréstimo e público-alvo do material.
+     * Uso: proteção central do fluxo de criação e atualização do recurso.
+     */
     private function validateBusinessRules(AccessibleEducationalMaterial $material, array $data): void
     {
         $isDigital = $data['is_digital']  ?? $material->is_digital  ?? false;
@@ -124,12 +138,14 @@ class AccessibleEducationalMaterialService
         }
     }
 
+    /**
+     * RF: bloqueia mudança de status quando existem empréstimos em aberto.
+     * Uso: preservação de consistência no ciclo de vida dos materiais emprestáveis.
+     */
     private function validateStatusChangeWithActiveLoans(AccessibleEducationalMaterial $material, array $data): void
     {
         if (!isset($data['status'])) return;
 
-        /* Mudanças de status (ex: Inativo ou Manutenção) são bloqueadas se houver
-           empréstimos ativos para não gerar inconsistência no fluxo de devolução. */
         if ($material->loans()->whereNull('return_date')->exists() && $material->status->value !== $data['status']) {
             throw new BusinessRuleException("Não é possível alterar o status do item enquanto houver empréstimos ativos.");
         }

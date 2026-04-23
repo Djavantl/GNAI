@@ -15,12 +15,10 @@ class AccessibilityFeature extends Model
 {
     use HasFactory, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade e Persistência
-    |--------------------------------------------------------------------------
-    | Centraliza os campos básicos do cadastro para uso em CRUD e filtros.
-    */
+    /**
+     * Identidade e Persistência:
+     * Centraliza os campos básicos do cadastro para uso em CRUD e filtros.
+     */
 
     protected $table = 'accessibility_features';
 
@@ -34,12 +32,10 @@ class AccessibilityFeature extends Model
         'is_active' => 'boolean',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Define como a entidade aparece no builder de relatórios do sistema.
-    */
+    /**
+     * Relatórios:
+     * Define como a entidade aparece no builder de relatórios do sistema.
+     */
 
     public static function getReportLabel(): string
     {
@@ -66,12 +62,10 @@ class AccessibilityFeature extends Model
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | Mantém o vínculo N:N com materiais para consultas e telas de detalhe.
-    */
+    /**
+     * Relacionamentos:
+     * Mantém o vínculo N:N com materiais para consultas e telas de detalhe.
+     */
 
     public function materials(): BelongsToMany
     {
@@ -81,12 +75,10 @@ class AccessibilityFeature extends Model
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Listagem
-    |--------------------------------------------------------------------------
-    | Sustenta as filtragens do index e reaproveitamento em relatórios/serviços.
-    */
+    /**
+     * Scopes de Listagem:
+     * Sustenta as filtragens do index e reaproveitamento em relatórios/serviços.
+     */
 
     public function scopeFilterName($query, ?string $name)
     {

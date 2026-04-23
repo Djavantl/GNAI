@@ -26,12 +26,10 @@ class AccessibleEducationalMaterial extends Model implements AuditableContract
 {
     use HasFactory, SoftDeletes, Auditable, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade, Persistência e Estado
-    |--------------------------------------------------------------------------
-    | Reúne o cadastro base do recurso e os casts usados nas regras de domínio.
-    */
+    /**
+     * Identidade, Persistência e Estado:
+     * Reúne o cadastro base do recurso e os casts usados nas regras de domínio.
+     */
 
     protected $table = 'accessible_educational_materials';
 
@@ -58,12 +56,10 @@ class AccessibleEducationalMaterial extends Model implements AuditableContract
 
     protected array $auditExclude = ['quantity_available'];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Auditoria
-    |--------------------------------------------------------------------------
-    | Sustenta o histórico exibido em logs e a rastreabilidade administrativa.
-    */
+    /**
+     * Auditoria:
+     * Sustenta o histórico exibido em logs e a rastreabilidade administrativa.
+     */
 
     public static function auditLabels(): array
     {
@@ -86,12 +82,10 @@ class AccessibleEducationalMaterial extends Model implements AuditableContract
         return AccessibleEducationalMaterialFormatter::class;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Define a identidade da entidade no builder e os campos disponíveis.
-    */
+    /**
+     * Relatórios:
+     * Define a identidade da entidade no builder e os campos disponíveis.
+     */
 
     public static function getReportLabel(): string
     {
@@ -134,12 +128,10 @@ class AccessibleEducationalMaterial extends Model implements AuditableContract
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | Concentra vínculos usados em show, inspeção, empréstimo e fila.
-    */
+    /**
+     * Relacionamentos:
+     * Concentra vínculos usados em show, inspeção, empréstimo e fila.
+     */
 
     public function deficiencies(): BelongsToMany
     {
@@ -190,12 +182,10 @@ class AccessibleEducationalMaterial extends Model implements AuditableContract
         return $this->morphMany(AuditLog::class, 'auditable');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Listagem
-    |--------------------------------------------------------------------------
-    | Reutilizados em indexes, seletores operacionais e consultas de serviço.
-    */
+    /**
+     * Scopes de Listagem:
+     * Reutilizados em indexes, seletores operacionais e consultas de serviço.
+     */
 
     public function scopeFilterName(Builder $query, ?string $name): Builder
     {

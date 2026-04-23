@@ -26,12 +26,10 @@ class Barrier extends Model
 {
     use HasFactory, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade, Persistência e Estado
-    |--------------------------------------------------------------------------
-    | Agrupa o núcleo do relato e os casts usados nas regras da barreira.
-    */
+    /**
+     * Identidade, Persistência e Estado:
+     * Agrupa o núcleo do relato e os casts usados nas regras da barreira.
+     */
 
     protected $fillable = [
         'name',
@@ -66,12 +64,10 @@ class Barrier extends Model
         'longitude' => 'decimal:8',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Expõe o conjunto de colunas disponível no builder do radar inclusivo.
-    */
+    /**
+     * Relatórios:
+     * Expõe o conjunto de colunas disponível no builder do radar inclusivo.
+     */
 
     public static function getReportLabel(): string
     {
@@ -116,12 +112,10 @@ class Barrier extends Model
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers de Domínio
-    |--------------------------------------------------------------------------
-    | Simplifica a exibição do relator e do status atual nas telas operacionais.
-    */
+    /**
+     * Helpers de Domínio:
+     * Simplifica a exibição do relator e do status atual nas telas operacionais.
+     */
 
     public function getReporterDisplayNameAttribute(): string
     {
@@ -132,12 +126,10 @@ class Barrier extends Model
         return $this->registeredBy?->name ?? 'Usuário não identificado';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | Sustentam o mapa, o histórico de vistorias e o contexto da ocorrência.
-    */
+    /**
+     * Relacionamentos:
+     * Sustentam o mapa, o histórico de vistorias e o contexto da ocorrência.
+     */
 
     public function registeredBy(): BelongsTo
     {
@@ -214,12 +206,10 @@ class Barrier extends Model
         )->where('inspectable_type', static::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Listagem
-    |--------------------------------------------------------------------------
-    | Reúne filtros usados em index, mapa e relatórios administrativos.
-    */
+    /**
+     * Scopes de Listagem:
+     * Reutilizados em index, mapa e relatórios administrativos.
+     */
 
     public function scopeName(Builder $query, ?string $value): Builder
     {

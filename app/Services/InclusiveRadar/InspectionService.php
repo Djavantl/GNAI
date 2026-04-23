@@ -15,6 +15,10 @@ use Intervention\Image\ImageManager;
 
 class InspectionService
 {
+    /**
+     * RF: cria uma inspeção completa, incluindo armazenamento otimizado de imagens.
+     * Uso: vistorias de barreiras, materiais e tecnologias assistivas.
+     */
     public function createForModel(Model $model, array $data): Inspection
     {
         return DB::transaction(function () use ($model, $data) {
@@ -55,14 +59,16 @@ class InspectionService
         });
     }
 
+    /**
+     * RF: cria inspeção somente quando a alteração realmente produz histórico útil.
+     * Uso: cadastros e edições de itens que disparam vistoria automática.
+     */
     public function createInspectionForModel(Model $model, array $data): ?Inspection
     {
         $isUpdate = $model->wasRecentlyCreated === false;
         $description = $data['description'] ?? $data['inspection_description'] ?? null;
         $type = $data['type'] ?? $data['inspection_type'] ?? null;
 
-        /* Evitamos a criação de vistorias "vazias" (sem alteração de estado, fotos ou notas)
-           para manter o histórico de auditoria relevante e economizar espaço em banco. */
         if ($isUpdate
             && !$model->wasChanged('conservation_state')
             && empty($description)
@@ -83,6 +89,10 @@ class InspectionService
         );
     }
 
+    /**
+     * RF: remove a inspeção e todos os arquivos vinculados a ela.
+     * Uso: exclusão administrativa de vistorias registradas incorretamente.
+     */
     public function delete(Inspection $inspection): void
     {
         DB::transaction(function () use ($inspection) {
@@ -95,8 +105,6 @@ class InspectionService
 
                 $directory = "inspections/{$inspection->id}";
 
-                /* Além de apagar os arquivos, removemos o diretório específico para evitar
-                   que o storage fique poluído com pastas vazias ao longo do tempo. */
                 if (Storage::disk('public')->exists($directory)) {
                     Storage::disk('public')->deleteDirectory($directory);
                 }

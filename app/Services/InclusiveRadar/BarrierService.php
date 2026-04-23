@@ -12,6 +12,10 @@ class BarrierService
         protected InspectionService $inspectionService
     ) {}
 
+    /**
+     * RF: cadastra uma barreira com saneamento de contexto e inspeção inicial.
+     * Uso: criação de ocorrências no mapa inclusivo.
+     */
     public function store(array $data): Barrier
     {
         return DB::transaction(
@@ -19,6 +23,10 @@ class BarrierService
         );
     }
 
+    /**
+     * RF: atualiza a barreira preservando contexto do relator e histórico de inspeção.
+     * Uso: manutenção operacional de ocorrências registradas no radar.
+     */
     public function update(Barrier $barrier, array $data): Barrier
     {
         return DB::transaction(
@@ -26,11 +34,19 @@ class BarrierService
         );
     }
 
+    /**
+     * RF: remove a barreira em transação única.
+     * Uso: exclusão administrativa de registros que podem ser descartados.
+     */
     public function delete(Barrier $barrier): void
     {
         DB::transaction(fn() => $barrier->delete());
     }
 
+    /**
+     * RF: centraliza a persistência da barreira e seus vínculos auxiliares.
+     * Uso: fluxo comum compartilhado entre criação e atualização.
+     */
     protected function persist(Barrier $barrier, array $data): Barrier
     {
         $data = $this->sanitizeReporterData($data);
@@ -48,6 +64,10 @@ class BarrierService
         ]);
     }
 
+    /**
+     * RF: completa campos derivados antes da persistência da barreira.
+     * Uso: preparação de dados operacionais do cadastro.
+     */
     protected function prepareData(Barrier $barrier, array $data): array
     {
         if (!$barrier->exists && Auth::check()) {
@@ -61,9 +81,12 @@ class BarrierService
         return $data;
     }
 
+    /**
+     * RF: normaliza os dados do relator conforme o tipo de identificação informado.
+     * Uso: evitar combinações inválidas entre anonimato, texto livre e vínculos internos.
+     */
     protected function sanitizeReporterData(array $data): array
     {
-        // Estado padrão (limpo)
         $cleanFields = [
             'affected_student_id' => null,
             'affected_professional_id' => null,
@@ -73,12 +96,10 @@ class BarrierService
             'not_applicable' => false,
         ];
 
-        // REGRA 1: Prioridade Anônima (Limpa absolutamente tudo)
         if (!empty($data['is_anonymous'])) {
             return array_merge($data, $cleanFields, ['is_anonymous' => true]);
         }
 
-        // REGRA 2: Relato Geral (Limpa os IDs do sistema, mantém o texto livre)
         if (!empty($data['not_applicable'])) {
             return array_merge($data, $cleanFields, [
                 'not_applicable' => true,
@@ -87,7 +108,6 @@ class BarrierService
             ]);
         }
 
-        // REGRA 3: Identificado (Limpa os textos livres, mantém os IDs)
         return array_merge($data, [
             'is_anonymous' => false,
             'not_applicable' => false,
@@ -98,6 +118,10 @@ class BarrierService
         ]);
     }
 
+    /**
+     * RF: sincroniza os relacionamentos editáveis da barreira.
+     * Uso: atualização do público-alvo associado à ocorrência.
+     */
     protected function syncRelations(Barrier $barrier, array $data): void
     {
         if (isset($data['deficiencies'])) {
@@ -105,6 +129,10 @@ class BarrierService
         }
     }
 
+    /**
+     * RF: registra ou evita inspeções conforme a relevância da alteração feita.
+     * Uso: manutenção do histórico operacional sem gerar logs vazios.
+     */
     protected function handleInspectionLog(Barrier $barrier, array $data): void
     {
         $isUpdate = $barrier->wasRecentlyCreated === false;
@@ -114,16 +142,12 @@ class BarrierService
         $statusChanged = $isUpdate && $newStatus !== $oldStatus;
         $hasInteraction = filled($data['inspection_description'] ?? null) || !empty($data['images']);
 
-        /* Gerenciamos o timestamp de resolução para facilitar relatórios de
-           tempo médio de resposta (SLA) sem depender de logs de auditoria. */
         if (in_array($newStatus, [BarrierStatus::RESOLVED->value, BarrierStatus::NOT_APPLICABLE->value])) {
             $barrier->update(['resolved_at' => $barrier->resolved_at ?? now()]);
         } else {
             $barrier->update(['resolved_at' => null]);
         }
 
-        /* Evitamos a criação de logs de inspeção vazios durante updates
-           que alteram apenas dados cadastrais da barreira. */
         if ($isUpdate && !$statusChanged && !$hasInteraction) {
             return;
         }

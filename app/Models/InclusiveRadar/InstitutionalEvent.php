@@ -15,12 +15,10 @@ class InstitutionalEvent extends Model
 {
     use HasFactory, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade e Persistência
-    |--------------------------------------------------------------------------
-    | Mantém os dados temporais e descritivos usados pelo fluxo da agenda.
-    */
+    /**
+     * Identidade e Persistência:
+     * Mantém os dados temporais e descritivos usados pelo fluxo da agenda.
+     */
 
     protected $table = 'institutional_events';
 
@@ -45,12 +43,10 @@ class InstitutionalEvent extends Model
         'is_active' => 'boolean',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Define a exposição da agenda institucional no report builder.
-    */
+    /**
+     * Relatórios:
+     * Define a exposição da agenda institucional no report builder.
+     */
 
     public static function getReportLabel(): string
     {
@@ -89,12 +85,10 @@ class InstitutionalEvent extends Model
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Listagem
-    |--------------------------------------------------------------------------
-    | Reaproveitados por index, filtros rápidos e automações de agenda.
-    */
+    /**
+     * Scopes de Listagem:
+     * Reaproveitados por index, filtros rápidos e automações de agenda.
+     */
 
     public function scopeSearchTitle(Builder $query, ?string $title): Builder
     {

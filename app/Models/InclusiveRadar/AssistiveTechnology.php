@@ -26,12 +26,10 @@ class AssistiveTechnology extends Model implements AuditableContract
 {
     use HasFactory, SoftDeletes, Auditable, Reportable;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Identidade, Persistência e Estado
-    |--------------------------------------------------------------------------
-    | Mantém os dados base do item e os casts usados nas regras de domínio.
-    */
+    /**
+     * Identidade, Persistência e Estado:
+     * Mantém os dados base do item e os casts usados nas regras de domínio.
+     */
 
     protected $table = 'assistive_technologies';
 
@@ -58,12 +56,10 @@ class AssistiveTechnology extends Model implements AuditableContract
 
     protected array $auditExclude = ['quantity_available'];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Auditoria
-    |--------------------------------------------------------------------------
-    | Mantém rótulos e formatter usados no histórico administrativo do módulo.
-    */
+    /**
+     * Auditoria:
+     * Mantém rótulos e formatter usados no histórico administrativo do módulo.
+     */
 
     public static function auditLabels(): array
     {
@@ -85,12 +81,10 @@ class AssistiveTechnology extends Model implements AuditableContract
         return AssistiveTechnologyFormatter::class;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relatórios
-    |--------------------------------------------------------------------------
-    | Controla como a entidade aparece no builder de relatórios do radar.
-    */
+    /**
+     * Relatórios:
+     * Controla como a entidade aparece no builder de relatórios do radar.
+     */
 
     public static function getReportLabel(): string
     {
@@ -133,12 +127,10 @@ class AssistiveTechnology extends Model implements AuditableContract
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    | Suporta público-alvo, vistorias, empréstimos e rastreabilidade do item.
-    */
+    /**
+     * Relacionamentos:
+     * Suporta público-alvo, vistorias, empréstimos e rastreabilidade do item.
+     */
 
     public function deficiencies(): BelongsToMany
     {
@@ -179,12 +171,10 @@ class AssistiveTechnology extends Model implements AuditableContract
         return $this->morphMany(AuditLog::class, 'auditable');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes de Listagem
-    |--------------------------------------------------------------------------
-    | Reutilizados em indexes, seletores e serviços do módulo.
-    */
+    /**
+     * Scopes de Listagem:
+     * Reutilizados em indexes, seletores e serviços do módulo.
+     */
 
     public function scopeFilterName(Builder $query, ?string $name): Builder
     {
