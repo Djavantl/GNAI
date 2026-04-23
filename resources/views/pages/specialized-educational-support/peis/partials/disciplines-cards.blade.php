@@ -101,15 +101,20 @@
                                         </x-buttons.link-button>
                                         @endcan
                                         @can('pei-discipline.delete')
-                                        <form action="{{ route('specialized-educational-support.pei-discipline.destroy', [$pei, $item]) }}"
-                                            method="POST" class="d-inline"
-                                            onsubmit="return confirm('Deseja realmente excluir esta Adaptação?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <x-buttons.submit-button variant="danger">
+                                        <x-buttons.submit-button
+                                            type="button"
+                                            variant="danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#globalConfirmActionModal"
+                                            data-confirm-title="Excluir Adaptacao"
+                                            data-confirm-message="Deseja realmente excluir esta adaptacao?"
+                                            data-confirm-action="{{ route('specialized-educational-support.pei-discipline.destroy', [$pei, $item]) }}"
+                                            data-confirm-method="DELETE"
+                                            data-confirm-submit-text="Confirmar Exclusao"
+                                            data-confirm-variant="danger"
+                                        >
                                                 <i class="fas fa-trash-alt"></i> Excluir
                                             </x-buttons.submit-button>
-                                        </form>
                                         @endcan
                                     @endif
                                 </div>

@@ -103,12 +103,20 @@
                 {{-- Logs (Conforme solicitado, sem middleware específico, mas pode-se usar student.view) --}}
                 {{-- Permissão para EXCLUIR o aluno --}}
                 @can('student.delete')
-                    <form action="{{ route('specialized-educational-support.students.destroy', $student) }}" method="POST" onsubmit="return confirm('Excluir este aluno?')">
-                        @csrf @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Aluno"
+                        data-confirm-message="Excluir este aluno?"
+                        data-confirm-action="{{ route('specialized-educational-support.students.destroy', $student) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash-alt"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                 @endcan
             </div>
         </div>

@@ -58,20 +58,21 @@
                         @endcan
 
                         @can('professional.delete')
-                            <form action="{{ route('specialized-educational-support.professionals.destroy', $professional) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                @csrf
-                                @method('DELETE')
-
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja remover este profissional?')"
-                                    aria-label="Excluir profissional {{ $professional->person->name }} do sistema"
-                                >
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Profissional"
+                                data-confirm-message="Deseja remover este profissional?"
+                                data-confirm-action="{{ route('specialized-educational-support.professionals.destroy', $professional) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                                aria-label="Excluir profissional {{ $professional->person->name }} do sistema"
+                            >
                                     <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
 
                     @else

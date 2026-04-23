@@ -61,18 +61,20 @@
                         @endcan
 
                         @can('student-deficiency.delete')
-                            <form action="{{ route('specialized-educational-support.student-deficiencies.destroy', [$student, $deficiency]) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Deseja remover este perfil de atendimento do registro do aluno?')"
-                                >
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Perfil de Atendimento"
+                                data-confirm-message="Deseja remover este perfil de atendimento do registro do aluno?"
+                                data-confirm-action="{{ route('specialized-educational-support.student-deficiencies.destroy', [$student, $deficiency]) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

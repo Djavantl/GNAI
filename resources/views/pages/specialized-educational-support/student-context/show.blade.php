@@ -299,15 +299,20 @@
             @endcan
             @endif
             @can('student-context.delete')
-            <form action="{{ route('specialized-educational-support.student-context.destroy', $studentContext) }}" 
-                method="POST" class="d-inline"
-                onsubmit="return confirm('ATENÇÃO: Deseja realmente excluir este registro de contexto?')">
-                @csrf
-                @method('DELETE')
-                <x-buttons.submit-button variant="danger">
+            <x-buttons.submit-button
+                type="button"
+                variant="danger"
+                data-bs-toggle="modal"
+                data-bs-target="#globalConfirmActionModal"
+                data-confirm-title="Excluir Contexto do Aluno"
+                data-confirm-message="ATENCAO: Deseja realmente excluir este registro de contexto?"
+                data-confirm-action="{{ route('specialized-educational-support.student-context.destroy', $studentContext) }}"
+                data-confirm-method="DELETE"
+                data-confirm-submit-text="Confirmar Exclusao"
+                data-confirm-variant="danger"
+            >
                     <i class="fas fa-trash-alt"></i> Excluir
                 </x-buttons.submit-button>
-            </form>
             @endcan
         </div>
     </div>

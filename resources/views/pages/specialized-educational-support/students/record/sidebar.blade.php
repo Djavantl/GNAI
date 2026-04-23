@@ -26,19 +26,21 @@
                     >
                         <i class="fas fa-history me-1"></i> Histórico de Alterações
                     </x-buttons.link-button>
-                    <form 
-                        action="{{ route('specialized-educational-support.students.destroy', $student) }}" 
-                        method="POST"
-                        class="d-grid"
-                        onsubmit="return confirm('Excluir este aluno do sistema?')"
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        class="btn-sm w-100"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Aluno"
+                        data-confirm-message="Excluir este aluno do sistema?"
+                        data-confirm-action="{{ route('specialized-educational-support.students.destroy', $student) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
                     >
-                        @csrf
-                        @method('DELETE')
-
-                        <x-buttons.submit-button variant="danger" class="btn-sm w-100">
                             <i class="fas fa-trash-alt me-1"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
 
                 </div>
 

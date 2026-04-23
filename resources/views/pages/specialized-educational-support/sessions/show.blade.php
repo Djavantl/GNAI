@@ -157,13 +157,20 @@
                 @endif
                 @can('session.delete')
                 @if($canManageSessionLifecycle)
-                <form action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <x-buttons.submit-button variant="danger" onclick="return confirm('Excluir esta sessão permanentemente?')">
+                <x-buttons.submit-button
+                    type="button"
+                    variant="danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#globalConfirmActionModal"
+                    data-confirm-title="Excluir Sessao"
+                    data-confirm-message="Excluir esta sessao permanentemente?"
+                    data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}"
+                    data-confirm-method="DELETE"
+                    data-confirm-submit-text="Confirmar Exclusao"
+                    data-confirm-variant="danger"
+                >
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
-                </form>
                 @endif
                 @endcan
             </div>

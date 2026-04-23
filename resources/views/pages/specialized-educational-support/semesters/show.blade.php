@@ -87,15 +87,20 @@
                 
                 <div class="d-flex gap-3">
                     @can('semester.delete')
-                    <form action="{{ route('specialized-educational-support.semesters.destroy', $semester->id) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('Excluir este semestre? Isso pode afetar os registros de frequência e sessões vinculados a este período.')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Semestre"
+                        data-confirm-message="Excluir este semestre pode afetar os registros de frequencia e sessoes vinculados a este periodo."
+                        data-confirm-action="{{ route('specialized-educational-support.semesters.destroy', $semester->id) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash-alt me-1"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                     @endcan
                 </div>
             </div>

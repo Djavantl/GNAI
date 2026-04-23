@@ -59,19 +59,22 @@
 
                         @can('session-record.delete')
                         @if($canManageEvaluation)
-                            <form
-                                action="{{ route('specialized-educational-support.students.session-records.destroy', [$student, $evaluation]) }}"
-                                method="POST"
-                                onsubmit="return confirm('Excluir apenas o registro deste aluno nesta sessão?')"
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                class="btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Registro do Aluno"
+                                data-confirm-message="Excluir apenas o registro deste aluno nesta sessao?"
+                                data-confirm-action="{{ route('specialized-educational-support.students.session-records.destroy', [$student, $evaluation]) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
                                 style="display:inline-block;"
                             >
-                                @csrf
-                                @method('DELETE')
-
-                                <x-buttons.submit-button variant="danger" class="btn-sm">
                                     <i class="fas fa-trash-alt"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endif
                         @endcan
                     </x-table.actions>

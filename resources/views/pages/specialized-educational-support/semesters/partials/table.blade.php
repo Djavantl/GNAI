@@ -60,18 +60,20 @@
                         @endif
 
                         @can('semester.delete')
-                            <form action="{{ route('specialized-educational-support.semesters.destroy', $semester) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <x-buttons.submit-button
-                                    variant="danger"
-                                    onclick="return confirm('Tem certeza que deseja excluir este semestre?')"
-                                >
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Semestre"
+                                data-confirm-message="Tem certeza que deseja excluir este semestre?"
+                                data-confirm-action="{{ route('specialized-educational-support.semesters.destroy', $semester) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
+                            >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
-                            </form>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>

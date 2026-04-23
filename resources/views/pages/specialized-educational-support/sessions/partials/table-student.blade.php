@@ -40,16 +40,20 @@
                     </x-buttons.link-button>
 
                     {{-- Excluir --}}
-                    <form action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button
-                            variant="danger"
-                            onclick="return confirm('Mover esta sessão para a lixeira?')"
-                        >
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Sessao"
+                        data-confirm-message="Mover esta sessao para a lixeira?"
+                        data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                            <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                 </x-table.actions>
             </x-table.td>
         </tr>

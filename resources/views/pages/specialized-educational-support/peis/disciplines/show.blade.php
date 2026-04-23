@@ -84,15 +84,20 @@
         <div class="d-flex gap-2">
             @if(!$pei->is_finished)
             @can('pei-discipline.delete')
-                <form action="{{ route('specialized-educational-support.pei-discipline.destroy', [$pei, $peiDiscipline]) }}" 
-                    method="POST" class="d-inline"
-                    onsubmit="return confirm('Deseja realmente excluir esta adaptação?')">
-                    @csrf
-                    @method('DELETE')
-                    <x-buttons.submit-button variant="danger">
+                <x-buttons.submit-button
+                    type="button"
+                    variant="danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#globalConfirmActionModal"
+                    data-confirm-title="Excluir Adaptacao"
+                    data-confirm-message="Deseja realmente excluir esta adaptacao?"
+                    data-confirm-action="{{ route('specialized-educational-support.pei-discipline.destroy', [$pei, $peiDiscipline]) }}"
+                    data-confirm-method="DELETE"
+                    data-confirm-submit-text="Confirmar Exclusao"
+                    data-confirm-variant="danger"
+                >
                         <i class="fas fa-trash-alt"></i> Excluir Adaptação
                     </x-buttons.submit-button>
-                </form>
             @endcan
             @endif
         </div>

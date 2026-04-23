@@ -72,15 +72,20 @@
                 
                 <div class="d-flex gap-3">
                     @can('discipline.delete')
-                    <form action="{{ route('specialized-educational-support.disciplines.destroy', $discipline) }}" 
-                          method="POST" 
-                          onsubmit="return confirm('Deseja realmente excluir esta disciplina?')">
-                        @csrf
-                        @method('DELETE')
-                        <x-buttons.submit-button variant="danger">
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Excluir Disciplina"
+                        data-confirm-message="Deseja realmente excluir esta disciplina?"
+                        data-confirm-action="{{ route('specialized-educational-support.disciplines.destroy', $discipline) }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-submit-text="Confirmar Exclusao"
+                        data-confirm-variant="danger"
+                    >
                             <i class="fas fa-trash-alt me-1"></i> Excluir
                         </x-buttons.submit-button>
-                    </form>
                     @endcan
                 </div>
             </div>

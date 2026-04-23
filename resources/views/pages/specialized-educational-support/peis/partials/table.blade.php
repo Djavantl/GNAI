@@ -53,12 +53,17 @@
                         <form action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
                             method="POST"
                             class="d-inline">
-                            @csrf
-                            @method('DELETE')
-
                             <x-buttons.submit-button
+                                type="button"
                                 variant="danger"
-                                onclick="return confirm('Deseja remover este pei?')"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir PEI"
+                                data-confirm-message="Deseja remover este PEI?"
+                                data-confirm-action="{{ route('specialized-educational-support.pei.destroy', $pei) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusao"
+                                data-confirm-variant="danger"
                                 aria-label="Excluir pei do sistema"
                             >
                             <i class="fas fa-trash" aria-hidden="true"></i> Excluir
