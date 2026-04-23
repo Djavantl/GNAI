@@ -14,7 +14,8 @@ class BarrierCategoryFactory extends Factory
         return [
             'name' => $this->faker->unique()->words(2, true),
             'description' => $this->faker->sentence(),
-            'is_active' => $this->faker->boolean(80),
+            'blocks_map' => true,
+            'is_active' => true,
         ];
     }
 
@@ -35,6 +36,20 @@ class BarrierCategoryFactory extends Factory
     {
         return $this->state(fn () => [
             'is_active' => true,
+        ]);
+    }
+
+    public function blocksMap(): self
+    {
+        return $this->state(fn () => [
+            'blocks_map' => true,
+        ]);
+    }
+
+    public function doesNotBlockMap(): self
+    {
+        return $this->state(fn () => [
+            'blocks_map' => false,
         ]);
     }
 }

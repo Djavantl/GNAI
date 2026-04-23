@@ -16,14 +16,22 @@ class InspectionFactory extends Factory
 {
     protected $model = Inspection::class;
 
+    public function configure(): static
+    {
+        return $this->forAssistiveTechnology();
+    }
+
     public function definition(): array
     {
         return [
-            'state'           => ConservationState::NOT_APPLICABLE->value,
-            'status'          => BarrierStatus::IDENTIFIED->value,
+            'state'           => ConservationState::GOOD->value,
+            'status'          => null,
             'inspection_date' => now(),
             'description'     => $this->faker->optional()->sentence(),
-            'type'            => $this->faker->randomElement(InspectionType::cases())->value,
+            'type'            => $this->faker->randomElement([
+                InspectionType::INITIAL->value,
+                InspectionType::PERIODIC->value,
+            ]),
             'user_id'         => User::factory(),
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
 use App\Models\Traits\Auditable; 
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
-    use Reportable;
+    use HasFactory, Reportable;
 
     protected $fillable = [
         'person_id',

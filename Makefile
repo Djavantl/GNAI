@@ -110,7 +110,7 @@ build-assets:
 # PHPUnit / Testes
 # -----------------------------
 coverage:
-	docker exec -it $(APP_CONTAINER) ./vendor/bin/phpunit --coverage-html /var/www/coverage
+	docker exec -i $(APP_CONTAINER) sh -lc 'mkdir -p /var/www/coverage && XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html /var/www/coverage'
 
 # -----------------------------
 # Banco de dados

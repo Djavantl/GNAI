@@ -11,15 +11,17 @@ class DeficiencyFactory extends Factory
 
     public function definition(): array
     {
+        $baseName = $this->faker->randomElement([
+            'Deficiência Visual',
+            'Deficiência Auditiva',
+            'Deficiência Física',
+            'Deficiência Intelectual',
+            'Transtorno do Espectro Autista',
+            'Altas Habilidades/Superdotação',
+        ]);
+
         return [
-            'name' => $this->faker->unique()->randomElement([
-                'Deficiência Visual',
-                'Deficiência Auditiva',
-                'Deficiência Física',
-                'Deficiência Intelectual',
-                'Transtorno do Espectro Autista',
-                'Altas Habilidades/Superdotação',
-            ]),
+            'name' => sprintf('%s %s', $baseName, $this->faker->unique()->numerify('###')),
 
             'cid_code' => strtoupper(
                     $this->faker->randomLetter()

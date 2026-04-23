@@ -11,20 +11,21 @@ class AccessibilityFeatureFactory extends Factory
 
     public function definition(): array
     {
-        return [
-            'name' => $this->faker->unique()->randomElement([
-                'Audiodescrição',
-                'Legenda Oculta',
-                'Libras',
-                'Alto Contraste',
-                'Fonte Ampliada',
-                'Leitor de Tela Compatível',
-                'Navegação por Teclado',
-                'Material Tátil',
-            ]),
+        $baseName = $this->faker->randomElement([
+            'Audiodescrição',
+            'Legenda Oculta',
+            'Libras',
+            'Alto Contraste',
+            'Fonte Ampliada',
+            'Leitor de Tela Compatível',
+            'Navegação por Teclado',
+            'Material Tátil',
+        ]);
 
+        return [
+            'name' => sprintf('%s %s', $baseName, $this->faker->unique()->numerify('###')),
             'description' => $this->faker->optional()->sentence(),
-            'is_active' => $this->faker->boolean(85),
+            'is_active' => true,
         ];
     }
 

@@ -346,8 +346,8 @@ class LocationTest extends TestCase
         // Assert
         $response->assertStatus(200);
         $institutions = $response->viewData('institutions');
-        $this->assertTrue($institutions->contains('name', 'Campus Ativo'));
-        $this->assertFalse($institutions->contains('name', 'Campus Desativado'));
+        $this->assertTrue($institutions->contains('Campus Ativo'));
+        $this->assertFalse($institutions->contains('Campus Desativado'));
     }
 
     /**
