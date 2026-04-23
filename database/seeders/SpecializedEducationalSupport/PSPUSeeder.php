@@ -19,7 +19,13 @@ class PSPUSeeder extends Seeder
     public function run(): void
     {
         $positions = Position::query()
-            ->whereIn('name', ['Professor AEE', 'Coordenador do NAPNE', 'Secretário'])
+            ->whereIn('name', [
+                'Professor(a) AEE',
+                'Coordenador(a) do NAPNE',
+                'Secretário(a)',
+                'Assessoria Pedagógica',
+                'Tutor(a) de Pares',
+            ])
             ->get()
             ->keyBy('name');
 
@@ -88,9 +94,23 @@ class PSPUSeeder extends Seeder
                 'gender' => 'female',
                 'email' => 'secretaria@napne.com',
             ]),
+            Person::create([
+                'name' => 'Acessor(a) Pedagógico(a)',
+                'document' => '35885807000',
+                'birth_date' => '2000-02-23',
+                'gender' => 'not_specified',
+                'email' => 'acessoria@napne.com',
+            ]),
+            Person::create([
+                'name' => 'Tutor de Pares',
+                'document' => '95218291099',
+                'birth_date' => '2005-08-17',
+                'gender' => 'not_specified',
+                'email' => 'tutor@napne.com',
+            ]),
         ];
 
-        // Students (primeiras 3 pessoas)
+        // Students (primeiras 5 pessoas)
 
         Student::create([
             'person_id' => $people[0]->id,
@@ -122,26 +142,40 @@ class PSPUSeeder extends Seeder
             'entry_date' => now(),
         ]);
 
-        // Professionals (últimas 3 pessoas)
+        // Professionals
 
         $prof1 = Professional::create([
             'person_id' => $people[5]->id,
-            'position_id' => $positions->get('Professor AEE')?->id ?? 1,
+            'position_id' => $positions->get('Professor(a) AEE')?->id ?? 1,
             'registration' => 'PROF001',
             'entry_date' => now(),
         ]);
 
         $prof2 = Professional::create([
             'person_id' => $people[6]->id,
-            'position_id' => $positions->get('Coordenador do NAPNE')?->id ?? 1,
+            'position_id' => $positions->get('Coordenador(a) do NAPNE')?->id ?? 1,
             'registration' => 'PROF002',
             'entry_date' => now(),
         ]);
 
         $prof3 = Professional::create([
             'person_id' => $people[7]->id,
-            'position_id' => $positions->get('Secretário')?->id ?? 1,
+            'position_id' => $positions->get('Secretário(a)')?->id ?? 1,
             'registration' => 'PROF003',
+            'entry_date' => now(),
+        ]);
+
+        $prof4 = Professional::create([
+            'person_id' => $people[8]->id,
+            'position_id' => $positions->get('Assessoria Pedagógica')?->id ?? 1,
+            'registration' => 'PROFI002',
+            'entry_date' => now(),
+        ]);
+
+        $prof5 = Professional::create([
+            'person_id' => $people[9]->id,
+            'position_id' => $positions->get('Tutor(a) de Pares')?->id ?? 1,
+            'registration' => 'TUTOR001',
             'entry_date' => now(),
         ]);
 
@@ -169,6 +203,22 @@ class PSPUSeeder extends Seeder
             'password' => Hash::make('napne2026'),
             'role' => 'professional',
             'professional_id' => $prof3->id,
+        ]);
+
+        User::create([
+            'name' => $people[8]->name,
+            'email' => $people[8]->email,
+            'password' => Hash::make('napne2026'),
+            'role' => 'professional',
+            'professional_id' => $prof4->id,
+        ]);
+
+        User::create([
+            'name' => $people[9]->name,
+            'email' => $people[9]->email,
+            'password' => Hash::make('napne2026'),
+            'role' => 'professional',
+            'professional_id' => $prof5->id,
         ]);
     }
 }
