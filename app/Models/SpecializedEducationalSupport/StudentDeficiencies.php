@@ -36,15 +36,15 @@ class StudentDeficiencies extends Pivot
     /**
      * Labels amigáveis para o Log
      */
-    public static function getAuditLabels(): array
-    {
-        return [
-            'deficiency_id'          => 'Deficiência',
-            'severity'               => 'Severidade/Grau',
-            'uses_support_resources' => 'Usa Recursos de Apoio',
-            'notes'                  => 'Observações da Deficiência',
-        ];
-    }
+    // public static function getAuditLabels(): array
+    // {
+    //     return [
+    //         // 'deficiency_id'          => 'Deficiência',
+    //         'severity'               => 'Severidade/Grau',
+    //         'uses_support_resources' => 'Usa Recursos de Apoio',
+    //         'notes'                  => 'Observações do Perfil',
+    //     ];
+    // }
 
     /**
      * Formatação dos valores para o Log e PDF

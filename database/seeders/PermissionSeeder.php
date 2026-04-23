@@ -24,10 +24,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'Excluir Pessoa',    'slug' => 'people.delete'],
 
             // Deficiências
-            ['name' => 'Visualizar Deficiências', 'slug' => 'deficiency.view'],
-            ['name' => 'Criar Deficiência',      'slug' => 'deficiency.create'],
-            ['name' => 'Editar Deficiência',     'slug' => 'deficiency.update'],
-            ['name' => 'Excluir Deficiência',    'slug' => 'deficiency.delete'],
+            ['name' => 'Visualizar Perfis de Atendimento', 'slug' => 'deficiency.view'],
+            ['name' => 'Criar Perfil de Atendimento',      'slug' => 'deficiency.create'],
+            ['name' => 'Editar Perfil de Atendimento',     'slug' => 'deficiency.update'],
+            ['name' => 'Excluir Perfil de Atendimento',    'slug' => 'deficiency.delete'],
 
             // Cargos (Positions)
             ['name' => 'Visualizar Cargos', 'slug' => 'position.view'],
@@ -86,10 +86,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'Excluir Contexto do Aluno',    'slug' => 'student-context.delete'],
 
             // Deficiências do Aluno (Vínculo)
-            ['name' => 'Visualizar Deficiências do Aluno', 'slug' => 'student-deficiency.view'],
-            ['name' => 'Criar Deficiência do Aluno',      'slug' => 'student-deficiency.create'],
-            ['name' => 'Editar Deficiência do Aluno',     'slug' => 'student-deficiency.update'],
-            ['name' => 'Excluir Deficiência do Aluno',    'slug' => 'student-deficiency.delete'],
+            ['name' => 'Visualizar Perfis de Atendimento do Aluno', 'slug' => 'student-deficiency.view'],
+            ['name' => 'Criar Perfil de Atendimento do Aluno',      'slug' => 'student-deficiency.create'],
+            ['name' => 'Editar Perfil de Atendimento do Aluno',     'slug' => 'student-deficiency.update'],
+            ['name' => 'Excluir Perfil de Atendimento do Aluno',    'slug' => 'student-deficiency.delete'],
 
             // Sessões/Atendimentos
             ['name' => 'Visualizar Sessões',          'slug' => 'session.view'],

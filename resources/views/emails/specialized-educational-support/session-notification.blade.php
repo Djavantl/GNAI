@@ -15,7 +15,18 @@
         </ul>
     </div>
 
-    <p style="margin-top: 20px;"><strong>Objetivo:</strong><br> {{ $session->session_objective }}</p>
+    @php
+        $sessionObjective = html_entity_decode(
+            trim(strip_tags($session->session_objective ?? '')),
+            ENT_QUOTES | ENT_HTML5,
+            'UTF-8'
+        );
+    @endphp
+
+    <p style="margin-top: 20px;">
+        <strong>Objetivo:</strong><br>
+        {!! nl2br(e($sessionObjective ?: 'Não informado')) !!}
+    </p>
 
     <hr style="border: 0; border-top: 1px solid #edf2f7; margin: 20px 0;">
     <p style="font-size: 12px; color: #718096;">Este é um e-mail automático enviado pelo Sistema NAPNE.</p>

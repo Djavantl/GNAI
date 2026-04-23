@@ -110,7 +110,7 @@ class Deficiency extends Model
     public static function getReportColumnLabels(): array
     {
         return [
-            'name' => 'Nome da Deficiência',
+            'name' => 'Nome do Perfil',
             'cid_code' => 'Código CID',
             'description'=> 'Descrição',
             'is_active'=> 'Ativa',
@@ -119,7 +119,7 @@ class Deficiency extends Model
 
     public static function getReportLabel()
     {
-        return 'Deficiência';
+        return 'Perfil de atendimento';
     }
 
     public function ensureCanBeDeactivated(): void
@@ -127,7 +127,7 @@ class Deficiency extends Model
         if ($this->students()->exists()) {
 
             throw new DomainException(
-                "Esta deficiência está vinculada a um ou mais alunos e não pode ser desativada."
+                "Este perfil está vinculado a um ou mais alunos e não pode ser desativado."
             );
 
         }
@@ -138,7 +138,7 @@ class Deficiency extends Model
         if (! $this->is_active) {
 
             throw new DomainException(
-                "Esta deficiência está desativada e não pode ser vinculada a um aluno."
+                "Esta perfil está desativado e não pode ser vinculado a um aluno."
             );
 
         }

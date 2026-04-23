@@ -3,7 +3,7 @@
 return [
     'entities' => [
         'people' => 'Pessoas',
-        'deficiency' => 'Deficiências',
+        'deficiency' => 'Perfis de Atendimento',
         'position' => 'Cargos',
         'semester' => 'Semestres',
         'course' => 'Cursos',
@@ -14,7 +14,7 @@ return [
         'professional' => 'Profissionais',
         'teacher' => 'Professores',
         'student-context' => 'Contexto do Aluno',
-        'student-deficiency' => 'Deficiências do Aluno',
+        'student-deficiency' => 'Perfis de Atendimento do Aluno',
         'session' => 'Sessões',
         'session-record' => 'Registros de Sessão',
         'student-course' => 'Cursos do Aluno',
