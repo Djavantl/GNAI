@@ -106,7 +106,7 @@ class SessionRecordController extends Controller
                 compact('sessionRecord', 'session')
             );
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao exibir o registro da sessão.');
+            return back()->with('error', $e->getMessage() ?: 'Erro ao exibir o registro da sessão.');
         }
     }
 
@@ -185,25 +185,26 @@ class SessionRecordController extends Controller
      */
     public function generatePdf(SessionRecord $sessionRecord)
     {
-        $sessionRecord->load([
-            'attendanceSession.professional.person',
-            'studentEvaluations.student.person'
-        ]);
+        try {
+            $sessionRecord = $this->service->show($sessionRecord);
+            $sessionRecord->load('attendanceSession.professional.person', 'studentEvaluations.student.person');
 
-        $session = $sessionRecord->attendanceSession;
-        $professional = $session->professional;
-        $evaluations = $sessionRecord->studentEvaluations;
+            $session = $sessionRecord->attendanceSession;
+            $professional = $session->professional;
+            $evaluations = $sessionRecord->studentEvaluations;
 
-        $pdf = Pdf::loadView(
-            'pages.specialized-educational-support.session-records.pdf',
-            compact('sessionRecord', 'session', 'professional', 'evaluations')
-        )
-        ->setPaper('a4', 'portrait')
-        ->setOption(['enable_php' => true]);
+            $pdf = Pdf::loadView(
+                'pages.specialized-educational-support.session-records.pdf',
+                compact('sessionRecord', 'session', 'professional', 'evaluations')
+            )
+            ->setPaper('a4', 'portrait')
+            ->setOption(['enable_php' => true]);
 
-        // Nome do arquivo usa a data e ID do registro já que pode ter vários alunos
-        $date = $session->session_date->format('d-m-Y');
-        return $pdf->stream("Registro_Sessao_Geral_{$date}_ID{$sessionRecord->id}.pdf");
+            $date = $session->session_date->format('d-m-Y');
+            return $pdf->stream("Registro_Sessao_Geral_{$date}_ID{$sessionRecord->id}.pdf");
+        } catch (Throwable $e) {
+            return back()->with('error', $e->getMessage() ?: 'Erro ao gerar o PDF do registro da sessão.');
+        }
     }
 
     public function generateStudentPdf(Student $student, SessionRecord $sessionRecord)

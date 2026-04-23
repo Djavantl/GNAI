@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SemesterSeeder::class,
             DeficiencySeeder::class,
+            PermissionSeeder::class,
             PositionSeeder::class,
             BarrierCategorySeeder::class,
             AccessibilityFeatureSeeder::class,
@@ -54,7 +55,6 @@ class DatabaseSeeder extends Seeder
             // ProfessionalSeeder::class,
             PendencySeeder::class,
             AdminSeeder::class,
-            PermissionSeeder::class,
             GuardianSeeder::class,
             DisciplineSeeder::class,
             AttendanceSessionSeeder::class,
