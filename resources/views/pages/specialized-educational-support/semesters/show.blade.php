@@ -87,6 +87,7 @@
                 
                 <div class="d-flex gap-3">
                     @can('semester.delete')
+                    @if(!$semester->is_current)
                     <x-buttons.submit-button
                         type="button"
                         variant="danger"
@@ -101,6 +102,7 @@
                     >
                             <i class="fas fa-trash-alt me-1"></i> Excluir
                         </x-buttons.submit-button>
+                    @endif
                     @endcan
                 </div>
             </div>

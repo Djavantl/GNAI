@@ -2,7 +2,11 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
+use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\Semester;
+use App\Models\SpecializedEducationalSupport\StudentContext;
+use App\Models\SpecializedEducationalSupport\StudentDocument;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 
 class SemesterService
@@ -95,6 +99,28 @@ class SemesterService
      */
     public function delete(Semester $semester): void
     {
+        if ($semester->is_current) {
+            throw new DomainException('Não é possível excluir o semestre atual do sistema.');
+        }
+
+        $linkedRecords = $this->getLinkedRecordsCount($semester);
+
+        if (array_sum($linkedRecords) > 0) {
+            throw new DomainException(
+                'Este semestre possui registros vinculados e não pode ser excluído. ' .
+                'Remova ou migre os vínculos antes de tentar novamente.'
+            );
+        }
+
         $semester->delete();
+    }
+
+    private function getLinkedRecordsCount(Semester $semester): array
+    {
+        return [
+            'contextos de aluno' => StudentContext::where('semester_id', $semester->id)->count(),
+            'documentos de aluno' => StudentDocument::where('semester_id', $semester->id)->count(),
+            'PEIs' => Pei::where('semester_id', $semester->id)->count(),
+        ];
     }
 }

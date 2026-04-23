@@ -60,6 +60,7 @@
                         @endif
 
                         @can('semester.delete')
+                        @if(!$semester->is_current)
                             <x-buttons.submit-button
                                 type="button"
                                 variant="danger"
@@ -74,6 +75,7 @@
                             >
                                     <i class="fas fa-trash"></i> Excluir
                                 </x-buttons.submit-button>
+                        @endif
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>
