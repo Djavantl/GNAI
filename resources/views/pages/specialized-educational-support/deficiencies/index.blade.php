@@ -15,7 +15,7 @@
         {{-- HEADER --}}
         <x-table.page-header
             title="Lista de Perfis de Atendimento"
-            subtitle="Gestão de condições, deficiências e altas habilidades para suporte e acompanhamento pedagógico especializado."
+            subtitle="Cadastro das condições, características e necessidades educacionais dos estudantes, com a finalidade de apoiar o acompanhamento, os encaminhamentos e a oferta de atendimentos adequados, como deficiência, TEA, TDAH, altas habilidades/superdotação e dificuldades de aprendizagem."
         >   
         @can('deficiency.create')
             <x-buttons.link-button

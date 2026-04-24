@@ -15,7 +15,7 @@
         {{-- HEADER --}}
         <x-table.page-header
             title="Profissionais"
-            subtitle="Gerencie os profissionais e seus documentos de apoio especializado."
+            subtitle="Cadastre profissionais ou tutores de pares no sistema. Embora esta seção seja denominada “Profissionais”, também é possível cadastrar e gerenciar tutores de pares, utilizando a mesma estrutura de dados e funcionalidades disponíveis."
         >
         @can('professional.create')
             <x-buttons.link-button

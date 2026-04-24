@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Editar Profissional</h2>
-            <p class="text-muted">Atualize as informações do profissional e seu vínculo com a instituição.</p>
+            <p class="text-muted">Edite os dados pessoais e funcionais do profissional ou tutor de pares. Mesmo com o título “Profissionais”, esta seção permite a atualização de informações de tutores de pares.</p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.show', $professional) }}" variant="secondary">
             <i class="fas fa-times"></i>Cancelar
