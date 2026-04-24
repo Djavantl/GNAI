@@ -3,7 +3,7 @@
 namespace Tests\Unit\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\BarrierStatus;
-use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Inspection;
 use App\Models\InclusiveRadar\Institution;
@@ -131,7 +131,7 @@ class InstitutionServiceTest extends TestCase
         Barrier::factory()->create(['institution_id' => $institution->id]);
 
         // Assert
-        $this->expectException(CannotDeleteLinkedBarrierException::class);
+        $this->expectException(BusinessRuleException::class);
 
         // Act
         $this->service->delete($institution);

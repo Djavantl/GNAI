@@ -3,8 +3,14 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 
 abstract class TestCase extends BaseTestCase
 {
-    // Aqui o Laravel carrega as rotas, o banco e as configurações
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+    }
 }

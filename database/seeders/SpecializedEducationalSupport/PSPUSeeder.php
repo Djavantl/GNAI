@@ -95,11 +95,11 @@ class PSPUSeeder extends Seeder
                 'email' => 'secretaria@napne.com',
             ]),
             Person::create([
-                'name' => 'Acessor(a) Pedagógico(a)',
+                'name' => 'Assessor(a) Pedagógico(a)',
                 'document' => '35885807000',
                 'birth_date' => '2000-02-23',
                 'gender' => 'not_specified',
-                'email' => 'acessoria@napne.com',
+                'email' => 'assessoria@napne.com',
             ]),
             Person::create([
                 'name' => 'Tutor de Pares',

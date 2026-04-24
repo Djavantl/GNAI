@@ -6,7 +6,6 @@ use App\Enums\Priority;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\BarrierCategory;
 use App\Models\InclusiveRadar\Institution;
-use App\Models\InclusiveRadar\Location;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,7 +21,7 @@ class BarrierFactory extends Factory
             'registered_by_user_id' => User::factory(),
             'institution_id' => Institution::factory(),
             'barrier_category_id' => BarrierCategory::factory(),
-            'location_id' => Location::factory(),
+            'location_id' => null,
 
             // Campos opcionais (nulos por padrão ou com lógica Faker)
             'affected_student_id' => null,
@@ -49,7 +48,12 @@ class BarrierFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_anonymous' => true,
+            'not_applicable' => false,
             'registered_by_user_id' => null,
+            'affected_student_id' => null,
+            'affected_professional_id' => null,
+            'affected_person_name' => null,
+            'affected_person_role' => null,
         ]);
     }
 
@@ -71,6 +75,9 @@ class BarrierFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'not_applicable' => true,
+            'is_anonymous' => false,
+            'affected_student_id' => null,
+            'affected_professional_id' => null,
             'affected_person_name' => $this->faker->name,
             'affected_person_role' => 'Visitante',
         ]);

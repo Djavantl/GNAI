@@ -89,12 +89,18 @@ COPY --from=php_builder /usr/local/lib/php/extensions /usr/local/lib/php/extensi
 COPY --from=php_builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
 COPY --from=php_builder /usr/bin/composer /usr/bin/composer
 
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS linux-headers \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del .build-deps
+
 RUN usermod -u "${USER_ID}" www-data \
     && groupmod -g "${GROUP_ID}" www-data \
     && git config --global --add safe.directory /var/www
 
 COPY --from=php_builder /var/www/vendor ./vendor
 COPY . .
+RUN rm -f bootstrap/cache/config.php bootstrap/cache/routes-v7.php
 COPY --from=node_builder /var/www/public/build ./public/build
 
 RUN chmod +x /var/www/docker/php/entrypoint.sh \

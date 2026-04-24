@@ -3,12 +3,12 @@
 namespace Tests\Unit\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Inspection;
 use Tests\TestCase;
 use App\Models\InclusiveRadar\BarrierCategory;
 use App\Models\InclusiveRadar\Barrier;
 use App\Services\InclusiveRadar\BarrierCategoryService;
-use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BarrierCategoryServiceTest extends TestCase
@@ -98,7 +98,7 @@ class BarrierCategoryServiceTest extends TestCase
         ]);
 
         // Assert
-        $this->expectException(CannotDeleteLinkedBarrierException::class);
+        $this->expectException(BusinessRuleException::class);
 
         // Act
         $this->service->delete($category);
@@ -124,7 +124,7 @@ class BarrierCategoryServiceTest extends TestCase
             ]);
 
         // Assert
-        $this->expectException(CannotDeleteLinkedBarrierException::class);
+        $this->expectException(BusinessRuleException::class);
 
         // Act
         $this->service->delete($category);

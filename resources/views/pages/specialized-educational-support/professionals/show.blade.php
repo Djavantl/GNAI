@@ -15,7 +15,7 @@
         <div>
             <h2 class="text-title">Perfil do Profissional</h2>
             <p class="text-muted">
-                Informações de cadastro e vínculo institucional.
+                Visualize os dados pessoais e funcionais do profissional ou tutor de pares. Embora esta seção esteja sob o título “Profissionais”, os tutores de pares também são exibidos e gerenciados aqui.
             </p>
         </div>
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">

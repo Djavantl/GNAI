@@ -2,6 +2,7 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,7 +12,7 @@ use DomainException;
 
 class Professional extends Model
 {   
-    use Reportable;
+    use HasFactory, Reportable;
     
     protected $fillable = [
         'person_id',

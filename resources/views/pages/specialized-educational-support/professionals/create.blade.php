@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-between mb-3 align-items-center">
         <div>
             <h2 class="text-title">Novo Profissional</h2>
-            <p class="text-muted">Cadastre os dados pessoais e funcionais do novo profissional no sistema.</p>
+            <p class="text-muted">Cadastre os dados pessoais e funcionais de um profissional ou tutor de pares. Mesmo com o título “Profissionais”, esta seção também permite o cadastro de tutores de pares, utilizando a mesma estrutura.</p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.professionals.index') }}" variant="secondary">
             <i class="fas fa-times"></i>Cancelar

@@ -2,6 +2,7 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 use App\Models\Permission;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
@@ -9,6 +10,7 @@ use DomainException;
 
 class Position extends Model
 {
+    use HasFactory;
     
     protected $fillable = [
         'name',

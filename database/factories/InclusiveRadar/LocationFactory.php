@@ -24,6 +24,13 @@ class LocationFactory extends Factory
         ];
     }
 
+    public function active(): self
+    {
+        return $this->state(fn () => [
+            'is_active' => true,
+        ]);
+    }
+
     /**
      * Estado para criar localizações inativas.
      */

@@ -2,13 +2,12 @@
 
 namespace Tests\Unit\InclusiveRadar;
 
-use App\Exceptions\InclusiveRadar\CannotDeleteLinkedBarrierException;
+use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Institution;
 use App\Models\InclusiveRadar\Location;
 use App\Services\InclusiveRadar\LocationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class LocationServiceTest extends TestCase
@@ -82,7 +81,7 @@ class LocationServiceTest extends TestCase
         ]);
 
         // Assert
-        $this->expectException(ValidationException::class);
+        $this->expectException(BusinessRuleException::class);
 
         // Act
         $this->service->update($location, [
@@ -123,7 +122,7 @@ class LocationServiceTest extends TestCase
         ]);
 
         // Assert
-        $this->expectException(CannotDeleteLinkedBarrierException::class);
+        $this->expectException(BusinessRuleException::class);
 
         // Act
         $this->service->delete($location);
