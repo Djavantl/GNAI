@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
+use App\Enums\SpecializedEducationalSupport\StudentStatus;
 
 class StudentService
 {
@@ -84,6 +85,7 @@ class StudentService
                 'person_id'    => $person->id,
                 'registration' => $data['registration'],
                 'entry_date'   => $data['entry_date'],
+                'status'       => StudentStatus::ACTIVE,
             ]);
         });
     }
