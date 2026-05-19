@@ -4,6 +4,7 @@ namespace App\Services\SpecializedEducationalSupport;
 
 use App\Models\SpecializedEducationalSupport\StudentCourse;
 use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\SpecializedEducationalSupport\Course;
 use Illuminate\Support\Facades\DB;
 
 class StudentCourseService
