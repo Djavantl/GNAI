@@ -34,6 +34,7 @@ class StudentService
         return $query
             ->name($filters['name'] ?? null)
             ->email($filters['email'] ?? null)
+            ->phone($filters['phone'] ?? null)
             ->registration($filters['registration'] ?? null)
             ->status($filters['status'] ?? null)
             ->orderBy('people.name', 'asc')

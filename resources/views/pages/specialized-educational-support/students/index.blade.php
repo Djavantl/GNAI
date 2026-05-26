@@ -39,12 +39,12 @@
                         'placeholder' => 'Nome do aluno...'
                     ],
                     [
-                        'name' => 'email',
-                        'placeholder' => 'Email...'
+                        'name' => 'phone',
+                        'placeholder' => 'Telefone...'
                     ],
                     [
-                        'name' => 'registration',
-                        'placeholder' => 'Matrícula...'
+                        'name' => 'email',
+                        'placeholder' => 'Email...'
                     ],
                     [
                         'name' => 'status',
@@ -56,16 +56,6 @@
                             'completed' => 'Concluído',
                             'dropped' => 'Evadido',
                         ]
-                    ],
-                    [
-                        'name' => 'semester',
-                        'type' => 'select',
-                        'options' => ['' => 'Semestre (Todos)'] +
-                            collect($semesters)
-                                ->mapWithKeys(fn($semester) => [
-                                    $semester->id => $semester->label
-                                ])
-                                ->toArray()
                     ],
                 ]"
             />
