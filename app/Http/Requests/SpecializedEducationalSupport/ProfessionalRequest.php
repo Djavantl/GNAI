@@ -29,7 +29,7 @@ class ProfessionalRequest extends FormRequest
             ],
 
             'document' => [
-                'required',
+                'nullable',
                 'string',
                 new Cpf, // Adiciona a validação real
                 Rule::unique('people', 'document')->ignore($personId),
@@ -109,7 +109,6 @@ class ProfessionalRequest extends FormRequest
             'name.required' => 'O nome do profissional é obrigatório.',
             'name.string' => 'O nome do profissional deve ser um texto válido.',
             'name.max' => 'O nome do profissional não pode ultrapassar 255 caracteres.',
-            'document.required' => 'O CPF do profissional é obrigatório.',
             'document.string' => 'O CPF do profissional deve ser um texto válido.',
             'document.unique' => 'Este CPF já está cadastrado para outra pessoa.',
             'birth_date.required' => 'A data de nascimento do profissional é obrigatória.',

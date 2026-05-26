@@ -51,8 +51,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="document"
-                    label="CPF / Documento"
-                    required
+                    label="CPF"
                     :value="old('document', $guardian->person->document)"
                     class="cpf-mask"
                     maxlength="14"
@@ -74,6 +73,7 @@
                 <x-forms.select
                     name="gender"
                     label="Gênero"
+                    required
                     :options="\App\Models\SpecializedEducationalSupport\Guardian::genderOptions()"
                     :value="old('gender', $guardian->person->gender)"
                     :selected="old('gender', $guardian->person->gender)"

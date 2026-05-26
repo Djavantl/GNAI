@@ -28,7 +28,7 @@ class TeacherRequest extends FormRequest
             ],
 
             'document' => [
-                'required',
+                'nullable',
                 'string',
                 new Cpf, // Adiciona a validação real
                 Rule::unique('people', 'document')->ignore($personId),
@@ -92,7 +92,6 @@ class TeacherRequest extends FormRequest
             'name.required' => 'O nome do professor é obrigatório.',
             'name.string' => 'O nome do professor deve ser um texto válido.',
             'name.max' => 'O nome do professor não pode ultrapassar 255 caracteres.',
-            'document.required' => 'O CPF do professor é obrigatório.',
             'document.string' => 'O CPF do professor deve ser um texto válido.',
             'document.unique' => 'Este CPF já está cadastrado para outra pessoa.',
             'birth_date.required' => 'A data de nascimento do professor é obrigatória.',

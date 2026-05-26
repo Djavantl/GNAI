@@ -40,10 +40,10 @@ class GuardianService
 
             $person = Person::create([
                 'name'       => $data['name'],
-                'document'   => $data['document'],
+                'document'   => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
                 'gender'     => $data['gender'] ?? 'not_specified',
-                'email'      => $data['email'],
+                'email'      => $data['email'] ?? null,
                 'phone'      => $data['phone'] ?? null,
                 'address'    => $data['address'] ?? null,
                 'photo'      => $data['photo'],
@@ -79,10 +79,10 @@ class GuardianService
 
             $person->update([
                 'name'       => $data['name'],
-                'document'   => $data['document'],
+                'document'   => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
                 'gender'     => $data['gender'] ?? $person->gender,
-                'email'      => $data['email'],
+                'email'      => $data['email'] ?? null,
                 'phone'      => $data['phone'] ?? null,
                 'address'    => $data['address'] ?? null,
                 'photo'      => $data['photo'],

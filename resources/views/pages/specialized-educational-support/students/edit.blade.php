@@ -45,11 +45,10 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="Documento " 
+                    label="CPF" 
                     class="cpf-mask"
                     maxlength="14"  
                     placeholder="000.000.000-00"
-                    required 
                     :value="old('document', $student->person->document)" 
                 />
             </div>

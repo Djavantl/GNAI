@@ -33,7 +33,7 @@ class ProfileRequest extends FormRequest
             // Dados Pessoais (Tabela People)
             'name' => ['required', 'string', 'max:255'],
             'document' => [
-                'required',
+                'nullable',
                 'string',
                 new Cpf, 
                 Rule::unique('people', 'document')->ignore($personId),

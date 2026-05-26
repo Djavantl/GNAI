@@ -29,7 +29,7 @@ class GuardianRequest extends FormRequest
             ],
 
             'document' => [
-                'required',
+                'nullable',
                 'string',
                 // Garante que o CPF/RG seja único, mas ignora o ID da pessoa atual se for um Update
                 Rule::unique('people', 'document')->ignore($personId),
@@ -87,7 +87,6 @@ class GuardianRequest extends FormRequest
             'name.string' => 'O nome do responsável deve ser um texto válido.',
             'name.min' => 'O nome do responsável deve ter ao menos 3 caracteres.',
             'name.max' => 'O nome do responsável não pode ultrapassar 255 caracteres.',
-            'document.required' => 'O documento do responsável é obrigatório.',
             'document.string' => 'O documento do responsável deve ser um texto válido.',
             'document.unique' => 'Este CPF/Documento já está cadastrado para outra pessoa.',
             'birth_date.required' => 'A data de nascimento do responsável é obrigatória.',

@@ -71,7 +71,7 @@ class StudentService
             // 2. Cria a Pessoa (incluindo o caminho da foto)
             $person = Person::create([
                 'name'       => $data['name'],
-                'document'   => $data['document'],
+                'document'   => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
                 'gender'     => $data['gender'] ?? 'not_specified',
                 'email'      => $data['email'],
@@ -121,7 +121,7 @@ class StudentService
             // Atualiza a Pessoa
             $person->update([
                 'name'       => $data['name'],
-                'document'   => $data['document'],
+                'document'   => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
                 'gender'     => $data['gender'] ?? $person->gender,
                 'email'      => $data['email'],

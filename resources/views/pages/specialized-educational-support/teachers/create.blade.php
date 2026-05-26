@@ -37,8 +37,8 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="document" 
-                    label="CPF/Documento" 
-                    required :value="old('document')" 
+                    label="CPF" 
+                    :value="old('document')" 
                     class="cpf-mask"
                     maxlength="14"  
                     placeholder="000.000.000-00"/>

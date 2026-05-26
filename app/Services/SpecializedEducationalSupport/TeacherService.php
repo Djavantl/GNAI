@@ -50,7 +50,7 @@ class TeacherService
             // 2. Cria a Pessoa
             $person = Person::create([
                 'name'       => $data['name'],
-                'document'   => $data['document'],
+                'document'   => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
                 'gender'     => $data['gender'] ?? 'not_specified',
                 'email'      => $data['email'],
@@ -104,7 +104,7 @@ class TeacherService
             // Atualiza Pessoa
             $person->update([
                 'name'       => $data['name'],
-                'document'   => $data['document'],
+                'document'   => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
                 'gender'     => $data['gender'] ?? $person->gender,
                 'email'      => $data['email'],

@@ -1,6 +1,6 @@
 {{-- INFORMAÇÕES ESCOLARES & CURSOS --}}
 <section id="informacoes-escolares" class="mb-5  rounded shadow-sm">
-    <x-forms.section title="Informações Escolares e Cursos" />
+    <x-forms.section title="Informações Acadêmicas" />
     <div class="pb-3 ps-3 pe-3">
         <div class="row g-3 mt-1">
             <x-show.info-item label="Status Atual" column="col-md-6" isBox="true">

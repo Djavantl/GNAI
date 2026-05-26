@@ -1,7 +1,7 @@
 <x-table.table
     :headers="[
         ['label' => 'Responsável',              'responsive' => false],
-        ['label' => 'Documento',                'responsive' => true],
+        ['label' => 'CPF',                'responsive' => true],
         ['label' => 'Vínculo',                  'responsive' => true],
         ['label' => 'Contato',                  'responsive' => true],
         ['label' => 'Ações',                    'responsive' => false],

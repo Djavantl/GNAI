@@ -92,7 +92,11 @@ class Person extends Model
             get: fn ($value) => $this->formatCpf($value),
 
             // Quando entra da tela para o banco: Limpa tudo que não é número
-            set: fn ($value) => preg_replace('/[^0-9]/', '', $value),
+            set: function ($value) {
+                $document = preg_replace('/[^0-9]/', '', (string) $value);
+
+                return $document !== '' ? $document : null;
+            },
         );
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\SpecializedEducationalSupport;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePersonRequest extends FormRequest
 {
@@ -23,7 +24,10 @@ class StorePersonRequest extends FormRequest
     {
         return [
             'name'       => 'required|min:3',
-            'document'   => 'required|unique:people,document,' . ($this->person->id ?? ''),
+            'document'   => [
+                'nullable',
+                Rule::unique('people', 'document')->ignore($this->person?->id),
+            ],
             'birth_date' => 'required|date',
             'gender'     => 'required|in:male,female,other,not_specified',
             'email'      => 'required|email',
@@ -37,7 +41,6 @@ class StorePersonRequest extends FormRequest
         return [
             'name.required' => 'O nome é obrigatório.',
             'name.min' => 'O nome deve ter ao menos 3 caracteres.',
-            'document.required' => 'O documento é obrigatório.',
             'document.unique' => 'Este documento já está cadastrado.',
             'birth_date.required' => 'A data de nascimento é obrigatória.',
             'birth_date.date' => 'A data de nascimento deve ser válida.',

@@ -30,7 +30,7 @@ class StudentRequest extends FormRequest
             ],
 
             'document' => [
-                'required',
+                'nullable',
                 'string',
                 new Cpf, 
                 Rule::unique('people', 'document')->ignore($personId),
@@ -94,7 +94,6 @@ class StudentRequest extends FormRequest
             'name.required' => 'O nome do aluno é obrigatório.',
             'name.string' => 'O nome do aluno deve ser um texto válido.',
             'name.max' => 'O nome do aluno não pode ultrapassar 255 caracteres.',
-            'document.required' => 'O CPF do aluno é obrigatório.',
             'document.string' => 'O CPF do aluno deve ser um texto válido.',
             'document.unique' => 'Este CPF já está cadastrado para outra pessoa.',
             'birth_date.required' => 'A data de nascimento do aluno é obrigatória.',

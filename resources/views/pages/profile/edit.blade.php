@@ -64,8 +64,7 @@
                         <div class="col-md-6">
                             <x-forms.input 
                                 name="document" 
-                                label="CPF/Documento" 
-                                required 
+                                label="CPF" 
                                 :value="old('document', $person->document)" 
                                 class="cpf-mask"
                                 maxlength="14"  
