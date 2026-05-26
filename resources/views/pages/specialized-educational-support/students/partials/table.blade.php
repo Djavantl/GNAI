@@ -1,8 +1,8 @@
 <x-table.table
     :headers="[
         ['label' => 'Nome',       'responsive' => false],
-        ['label' => 'Contato',    'responsive' => true],
-        ['label' => 'Matrícula',  'responsive' => true],
+        ['label' => 'Telefone',    'responsive' => true],
+        ['label' => 'Email',  'responsive' => true],
         ['label' => 'Status',     'responsive' => true],
         ['label' => 'Ingresso',   'responsive' => true],
         ['label' => 'Ações',      'responsive' => false],
@@ -22,9 +22,22 @@
                 </div>
             </x-table.td>
 
-            <x-table.td>{{ $student->person->email }}</x-table.td>
+            <x-table.td>
+                @if(filled($student->person->phone))
+                     <div>{{ $student->person->phone }}</div>
+                @else
+                    Não informado
+                @endif
+            </x-table.td>
 
-            <x-table.td>{{ $student->registration }}</x-table.td>
+            <x-table.td>
+                @if(filled($student->person->email))
+                     <div>{{ $student->person->email }}</div>
+                @else
+                    Não informado
+                @endif
+
+            </x-table.td>
 
             <x-table.td>
                 <span class="text-{{ $student->status->color() }} fw-bold text-uppercase"

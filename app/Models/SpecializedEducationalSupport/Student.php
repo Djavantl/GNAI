@@ -309,6 +309,18 @@ class Student extends Model
     }
 
     /**
+     * Buscar por telefone
+     */
+    public function scopePhone(Builder $query, ?string $term): Builder
+    {
+        if (!$term) return $query;
+
+        return $query->whereHas('person', fn($q) =>
+            $q->where('phone', 'like', "%{$term}%")
+        );
+    }
+
+    /**
      * Filtrar por status
      */
     public function scopeStatus(Builder $query, ?string $status): Builder
