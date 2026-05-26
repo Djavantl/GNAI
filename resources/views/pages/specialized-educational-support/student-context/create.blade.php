@@ -127,7 +127,7 @@
             <x-forms.textarea name="knowledge" label="Conhecimentos e Interesses"
             rows="4"
             placeholder="O que sabe? Do que gosta/afinidades?"
-            :value="old('strengths')" 
+            :value="old('knowledge')"
             required/>
         </div>
 
