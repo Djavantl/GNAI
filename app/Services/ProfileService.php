@@ -41,6 +41,16 @@ class ProfileService
         
         $person->save();
 
+        if ($user->professional) {
+            $user->professional->update([
+                'registration' => $data['registration'],
+            ]);
+        } elseif ($user->teacher) {
+            $user->teacher->update([
+                'registration' => $data['registration'],
+            ]);
+        }
+
         // 3. Atualizar dados do User (Sincronização)
         $user->name = $data['name'];
         $user->email = $data['email'];

@@ -7,14 +7,26 @@
     </span>
 
     @php
-        $displayValue = $slot->isNotEmpty() ? $slot : ($value ?? '---');
-        $plainTextValue = strip_tags($displayValue);
+        $hasSlot = $slot->isNotEmpty();
+        $displayValue = $hasSlot ? $slot->toHtml() : ($value ?? '---');
+        $displayValue = (string) $displayValue;
+
+        $decodedValue = html_entity_decode($displayValue, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $plainTextValue = trim(preg_replace('/\s+/', ' ', strip_tags($decodedValue)));
+        $plainTextValue = $plainTextValue !== '' ? $plainTextValue : '---';
+
+        $hasEncodedHtmlTags = preg_match('/&lt;\/?[a-z]/i', $displayValue) === 1;
+        $shouldRenderPlainText = !$hasSlot || $hasEncodedHtmlTags;
     @endphp
 
     <div class="{{ $isBox ? 'custom-display-box' : 'text-base' }}"
          style="{{ !$isBox ? 'color: var(--text-purple-dark); font-size: 1.05rem;' : '' }}"
          role="text"
          aria-label="{{ $label }}: {{ $plainTextValue }}">
-        {{ $displayValue }}
+        @if($shouldRenderPlainText)
+            {{ $plainTextValue }}
+        @else
+            {!! $displayValue !!}
+        @endif
     </div>
 </div>
