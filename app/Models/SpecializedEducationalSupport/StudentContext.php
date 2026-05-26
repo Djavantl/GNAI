@@ -42,6 +42,7 @@ class StudentContext extends Model
         'has_medical_report',
         'uses_medication',
         'medical_notes',
+        'knowledge',
         'strengths',
         'difficulties',
         'recommendations',
