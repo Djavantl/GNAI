@@ -66,8 +66,6 @@ class StudentService
                 $data['photo'] = $data['photo']->store('photos', 'public');
             }
 
-            $data['entry_date'] = now()->format('Y-m-d'); 
-
             // 2. Cria a Pessoa (incluindo o caminho da foto)
             $person = Person::create([
                 'name'       => $data['name'],
@@ -84,7 +82,7 @@ class StudentService
             return $student = Student::create([
                 'person_id'    => $person->id,
                 'registration' => $data['registration'],
-                'entry_date'   => $data['entry_date'],
+                'entry_date'   => $data['entry_date'] ?? null,
                 'status'       => StudentStatus::ACTIVE,
             ]);
         });
@@ -133,6 +131,7 @@ class StudentService
             // Atualiza o Aluno
             $student->update([
                 'registration' => $data['registration'],
+                'entry_date'   => $data['entry_date'] ?? null,
                 'status'       => $data['status'] ?? $student->status,
             ]);
 

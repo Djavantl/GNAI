@@ -69,6 +69,11 @@ class StudentRequest extends FormRequest
                 Rule::unique('students', 'registration')->ignore($studentId),
             ],
 
+            'entry_date' => [
+                'nullable',
+                'date',
+            ],
+
             'status' => [
                 'nullable',
                 Rule::enum(StudentStatus::class),
@@ -106,6 +111,7 @@ class StudentRequest extends FormRequest
             'registration.required' => 'A matrícula do aluno é obrigatória.',
             'registration.string' => 'A matrícula do aluno deve ser um texto válido.',
             'registration.unique' => 'Esta matrícula já está cadastrada para outro aluno.',
+            'entry_date.date' => 'A data de ingresso do aluno deve ser válida.',
             'status.enum' => 'O status selecionado é inválido.',
             'photo.image' => 'O arquivo da foto deve ser uma imagem válida.',
             'photo.mimes' => 'A foto deve estar nos formatos jpeg, jpg ou png.',

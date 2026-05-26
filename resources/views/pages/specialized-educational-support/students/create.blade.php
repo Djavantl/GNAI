@@ -116,6 +116,15 @@
                 />
             </div>
 
+            <div class="col-md-6">
+                <x-forms.input
+                    name="entry_date"
+                    label="Data de Ingresso"
+                    type="date"
+                    :value="old('entry_date')"
+                />
+            </div>
+
             <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button href="{{ route('specialized-educational-support.students.index') }}" variant="secondary">
                     <i class="fas fa-times"></i>Cancelar

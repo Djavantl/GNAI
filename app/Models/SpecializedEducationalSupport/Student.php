@@ -27,6 +27,7 @@ class Student extends Model
 
     protected $casts = [
         'status' => StudentStatus::class,
+        'entry_date' => 'date',
     ];
 
     /*

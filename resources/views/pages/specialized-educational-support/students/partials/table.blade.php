@@ -33,7 +33,9 @@
                 </span>
             </x-table.td>
 
-            <x-table.td>{{ \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') }}</x-table.td>
+            <x-table.td>
+                {{ $student->entry_date ? \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') : '---' }}
+            </x-table.td>
 
             <x-table.td :responsive="false">
                 <x-table.actions>

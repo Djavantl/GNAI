@@ -124,8 +124,7 @@
                     name="entry_date" 
                     label="Data de Ingresso " 
                     type="date" 
-                    required 
-                    :value="old('entry_date', $student->entry_date)" 
+                    :value="old('entry_date', optional($student->entry_date)->format('Y-m-d'))" 
                 />
             </div>
 
