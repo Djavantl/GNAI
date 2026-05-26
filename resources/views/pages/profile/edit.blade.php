@@ -40,10 +40,6 @@
                         </span>
 
                         <div class="text-start mt-4 bg-white p-3 rounded shadow-sm">
-                            <div class="mb-3">
-                                <label class="text-muted small d-block text-uppercase fw-bold">Matrícula</label>
-                                <span class="fw-bold text-dark">{{ $professional->registration ?? $teacher->registration }}</span>
-                            </div>
                             <div>
                                 <label class="text-muted small d-block text-uppercase fw-bold">Vínculo</label>
                                 <span class="text-dark">{{ isset($professional) ? 'Profissional Apoio' : 'Corpo Docente' }}</span>
@@ -57,6 +53,8 @@
                     <x-forms.section title="Dados Pessoais" />
                     
                     <div class="row">
+                        
+
                         <div class="col-md-12">
                             <x-forms.input name="name" label="Nome Completo" required :value="old('name', $person->name)" />
                         </div>
@@ -103,6 +101,15 @@
 
                         <div class="col-md-12">
                             <x-forms.input name="email" label="E-mail" type="email" required :value="old('email', $person->email)" />
+                        </div>
+
+                        <div class="col-md-12">
+                            <x-forms.input
+                                name="registration"
+                                label="Matrícula"
+                                required
+                                :value="old('registration', $professional->registration ?? $teacher->registration)"
+                            />
                         </div>
 
                         <div class="col-md-12">

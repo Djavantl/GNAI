@@ -20,6 +20,9 @@
             </x-show.info-item>
             <x-show.info-item label="E-mail" column="col-md-6" isBox="true">{{ $student->person->email ?? '---' }}</x-show.info-item>
             <x-show.info-item label="Telefone" column="col-md-6" isBox="true">{{ $student->person->phone ?? '---' }}</x-show.info-item>
+            <x-show.info-item label="Endereço" column="col-md-12" isBox="true">
+                {{ $student->person->address ?? '---' }}
+            </x-show.info-item>
         </div>
     </div>
 </section>

@@ -99,11 +99,12 @@
                 />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.input 
-                    name="address" 
-                    label="Endereço" 
-                    :value="old('address', $professional->person->address)" 
+            <div class="col-md-12">
+                <x-forms.textarea
+                    rows="2"
+                    name="address"
+                    label="Endereço"
+                    :value="old('address', $professional->person->address)"
                 />
             </div>
 

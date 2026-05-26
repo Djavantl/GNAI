@@ -28,10 +28,18 @@ class ProfileRequest extends FormRequest
         
         // Descobre o ID da 'Person' vinculada ao usuário logado
         $personId = $user->professional?->person_id ?? $user->teacher?->person_id;
+        $registrationTable = $user->professional ? 'professionals' : 'teachers';
+        $registrationId = $user->professional?->id ?? $user->teacher?->id;
 
         return [
             // Dados Pessoais (Tabela People)
             'name' => ['required', 'string', 'max:255'],
+            'registration' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique($registrationTable, 'registration')->ignore($registrationId),
+            ],
             'document' => [
                 'nullable',
                 'string',
@@ -69,6 +77,10 @@ class ProfileRequest extends FormRequest
     {
         return [
             'document.unique' => 'Este CPF/Documento já está em uso.',
+            'registration.required' => 'A matrícula é obrigatória.',
+            'registration.string' => 'A matrícula deve ser um texto válido.',
+            'registration.max' => 'A matrícula não pode ultrapassar 50 caracteres.',
+            'registration.unique' => 'Esta matrícula já está em uso.',
             'email.unique' => 'Este e-mail já está cadastrado em outra conta.',
             'password.confirmed' => 'As senhas digitadas não conferem.',
             'password.min' => 'A nova senha deve ter pelo menos 8 caracteres.',

@@ -70,6 +70,10 @@
                 {{ $professional->person->phone ?? '---' }}
             </x-show.info-item>
 
+            <x-show.info-item label="Endereço" column="col-md-12" isBox="true">
+                {{ $professional->person->address ?? '---' }}
+            </x-show.info-item>
+
             {{-- SEÇÃO: DADOS PROFISSIONAIS --}}
             <x-forms.section title="Vínculo Profissional" />
 
