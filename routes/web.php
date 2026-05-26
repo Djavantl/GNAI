@@ -5,6 +5,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 
 Route::middleware('web')->group(function () {
+    Route::redirect('/', '/about-us');
 
     Route::prefix('inclusive-radar')
         ->name('inclusive-radar.')

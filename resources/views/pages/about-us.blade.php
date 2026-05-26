@@ -12,7 +12,7 @@
     @vite('resources/css/pages/about-us.css')
 </head>
 <body>
-    <a href="{{ route('dashboard') }}" class="access-btn" aria-label="Acessar o sistema">
+    <a href="{{ route('login') }}" class="access-btn" aria-label="Acessar o sistema">
         <i class="bi bi-box-arrow-in-right"></i>
         <span>Acessar o Sistema</span>
     </a>
