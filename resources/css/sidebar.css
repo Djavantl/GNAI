@@ -102,6 +102,7 @@
     align-items: center;
     transition: 0.2s;
     border-left: 3px solid transparent;
+    font-weight: 400;
 }
 
 .sidebar-menu a.active {
@@ -130,6 +131,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--sidebar-text, #ffffff);
+    font-weight: 400;
 }
 
 .sidebar-menu .badge {
@@ -142,11 +145,12 @@
 }
 
 .menu-divider {
-    padding: 0.5rem 1rem;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.75rem;
+    padding: 0.75rem 1rem 0.45rem;
+    color: #a78bfa;
+    font-size: 0.76rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.65px;
 }
 
 .sidebar-footer {
