@@ -48,7 +48,7 @@ return [
         ],
 
         'temporary_directory' => storage_path('app/backup-temp'),
-        'password' => env('BACKUP_ARCHIVE_PASSWORD'),
+        'password' => env('BACKUP_ARCHIVE_PASSWORD') ?: null,
         'encryption' => 'default',
         'tries' => 1,
         'retry_delay' => 0,
