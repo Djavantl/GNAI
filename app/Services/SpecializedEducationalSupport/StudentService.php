@@ -83,6 +83,7 @@ class StudentService
                 'person_id'    => $person->id,
                 'registration' => $data['registration'],
                 'entry_date'   => $data['entry_date'] ?? null,
+                'is_repeater'  => !empty($data['is_repeater']) ? true : null,
                 'status'       => StudentStatus::ACTIVE,
             ]);
         });
@@ -132,6 +133,7 @@ class StudentService
             $student->update([
                 'registration' => $data['registration'],
                 'entry_date'   => $data['entry_date'] ?? null,
+                'is_repeater'  => !empty($data['is_repeater']) ? true : null,
                 'status'       => $data['status'] ?? $student->status,
             ]);
 

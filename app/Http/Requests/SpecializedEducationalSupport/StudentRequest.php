@@ -74,6 +74,11 @@ class StudentRequest extends FormRequest
                 'date',
             ],
 
+            'is_repeater' => [
+                'nullable',
+                'boolean',
+            ],
+
             'status' => [
                 'nullable',
                 Rule::enum(StudentStatus::class),
@@ -112,6 +117,7 @@ class StudentRequest extends FormRequest
             'registration.string' => 'A matrícula do aluno deve ser um texto válido.',
             'registration.unique' => 'Esta matrícula já está cadastrada para outro aluno.',
             'entry_date.date' => 'A data de ingresso do aluno deve ser válida.',
+            'is_repeater.boolean' => 'O campo repetente deve ser verdadeiro ou falso.',
             'status.enum' => 'O status selecionado é inválido.',
             'photo.image' => 'O arquivo da foto deve ser uma imagem válida.',
             'photo.mimes' => 'A foto deve estar nos formatos jpeg, jpg ou png.',

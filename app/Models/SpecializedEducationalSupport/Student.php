@@ -22,12 +22,14 @@ class Student extends Model
         'person_id',
         'registration',
         'entry_date',
+        'is_repeater',
         'status',
     ];
 
     protected $casts = [
         'status' => StudentStatus::class,
         'entry_date' => 'date',
+        'is_repeater' => 'boolean',
     ];
 
     /*
@@ -53,6 +55,7 @@ class Student extends Model
             'person_id'       => 'Pessoa/Usuário',
             'registration'    => 'Matrícula',
             'entry_date'      => 'Data de Ingresso',
+            'is_repeater'     => 'Repetente',
             'status'          => 'Status Acadêmico',
         ];
     }
@@ -74,6 +77,10 @@ class Student extends Model
             return \Carbon\Carbon::parse($value)->format('d/m/Y');
         }
 
+        if ($field === 'is_repeater') {
+            return $value ? 'Sim' : 'Não';
+        }
+
         return null;
     }
 
@@ -91,7 +98,7 @@ class Student extends Model
 
     public static function getReportColumns(): ?array
     {
-        return ['person.name', 'registration', 'status', 'entry_date', 'person.email', 'person.document', 'person.birth_date', 'person.gender', 'person.phone', 'person.address'];
+        return ['person.name', 'registration', 'status', 'entry_date', 'is_repeater', 'person.email', 'person.document', 'person.birth_date', 'person.gender', 'person.phone', 'person.address'];
     }
 
     public static function getReportColumnLabels(): array
@@ -100,6 +107,7 @@ class Student extends Model
             'registration' => 'Matrícula',
             'person.name'  => 'Nome do Aluno',
             'entry_date'   => 'Data de Ingresso',
+            'is_repeater'  => 'Repetente',
             'person.email' => 'E-mail',
             'person.document'=> 'CPF',
             'person.birth_date'=> 'Data de Nascimento',

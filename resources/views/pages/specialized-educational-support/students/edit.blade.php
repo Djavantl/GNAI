@@ -129,6 +129,16 @@
             </div>
 
             <div class="col-md-6">
+                <input type="hidden" name="is_repeater" value="">
+                <x-forms.checkbox
+                    name="is_repeater"
+                    label="Aluno repetente?"
+                    :checked="old('is_repeater', $student->is_repeater)"
+                    description="Marque caso o aluno apresente histórico ou tendência de repetência."
+                />
+            </div>
+
+            <div class="col-md-6">
                 <x-forms.select
                     name="status"
                     label="Status do Aluno"
