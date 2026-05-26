@@ -58,11 +58,15 @@ class SessionController extends Controller
     public function create()
     {
         $students = Student::with('person')
-            ->orderBy('id')
+            ->join('people', 'people.id', '=', 'students.person_id')
+            ->select('students.*')
+            ->orderBy('people.name')
             ->get();
 
         $professionals = Professional::with('person')
-            ->orderBy('id')
+            ->join('people', 'people.id', '=', 'professionals.person_id')
+            ->select('professionals.*')
+            ->orderBy('people.name')
             ->get();
 
         $timeOptions = $this->service->getAvailableTimeOptions();

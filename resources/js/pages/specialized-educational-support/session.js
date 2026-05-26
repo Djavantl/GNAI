@@ -1,4 +1,21 @@
 // 1. Helpers de Dados
+function initSelectSearch(select) {
+    if (!select || typeof window.$ === 'undefined' || !window.$.fn?.select2) return;
+
+    const $select = window.$(select);
+    if ($select.hasClass('select2-hidden-accessible')) {
+        $select.select2('destroy');
+    }
+
+    $select.select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Selecione uma opção...',
+        allowClear: true,
+        language: { noResults: () => 'Nenhum resultado encontrado' }
+    });
+}
+
 function getStudentsList() {
     const container = document.getElementById('students-container');
     // Se o container não existir (caso da Edição), retorna vazio, pois os campos já estão no DOM
@@ -213,4 +230,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
 });
-
