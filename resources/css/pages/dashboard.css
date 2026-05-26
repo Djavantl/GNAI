@@ -151,6 +151,10 @@
     height: 350px;
 }
 
+.dashboard-chart-shell--medium {
+    height: 260px;
+}
+
 .dashboard-chart-shell--small {
     height: 250px;
 }
@@ -204,6 +208,10 @@
 
     .dashboard-chart-shell--large {
         height: 280px;
+    }
+
+    .dashboard-chart-shell--medium {
+        height: 240px;
     }
 
     .dashboard-chart-shell--small {

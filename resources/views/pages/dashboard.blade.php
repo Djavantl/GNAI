@@ -22,7 +22,7 @@
         </div>
 
         <div class="row g-4 mb-4">
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4 col-xl-2">
                 <a href="{{ route('specialized-educational-support.students.index') }}" class="text-decoration-none h-100">
                     <div class="card card-custom border-0 shadow-sm h-100">
                         <div class="card-body p-3">
@@ -38,7 +38,7 @@
                 </a>
             </div>
 
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4 col-xl-2">
                 <a href="{{ route('specialized-educational-support.professionals.index') }}" class="text-decoration-none h-100">
                     <div class="card card-custom border-0 shadow-sm h-100">
                         <div class="card-body p-3">
@@ -54,7 +54,7 @@
                 </a>
             </div>
 
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4 col-xl-2">
                 <a href="{{ route('specialized-educational-support.pei.all', ['is_finished' => true]) }}" class="text-decoration-none h-100">
                     <div class="card card-custom border-0 shadow-sm h-100">
                         <div class="card-body p-3">
@@ -70,7 +70,7 @@
                 </a>
             </div>
 
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-4 col-xl-2">
                 <a href="{{ route('specialized-educational-support.sessions.index') }}" class="text-decoration-none h-100">
                     <div class="card card-custom border-0 shadow-sm h-100">
                         <div class="card-body p-3">
@@ -85,14 +85,46 @@
                     </div>
                 </a>
             </div>
+
+            <div class="col-6 col-md-4 col-xl-2">
+                <a href="{{ route('specialized-educational-support.pendencies.index', ['is_completed' => 0]) }}" class="text-decoration-none h-100">
+                    <div class="card card-custom border-0 shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="dashboard-kpi-header">
+                                <div class="dashboard-kpi-icon bg-danger text-white">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                </div>
+                                <h6 class="dashboard-kpi-title text-muted fw-bold">Pendências</h6>
+                            </div>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalPendingPendencies ?? 0 }}</h3>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-md-4 col-xl-2">
+                <a href="{{ route('specialized-educational-support.pendencies.index', ['is_completed' => 0]) }}" class="text-decoration-none h-100">
+                    <div class="card card-custom border-0 shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="dashboard-kpi-header">
+                                <div class="dashboard-kpi-icon bg-dark text-white">
+                                    <i class="bi bi-clock-history"></i>
+                                </div>
+                                <h6 class="dashboard-kpi-title text-muted fw-bold">Atrasadas</h6>
+                            </div>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalOverduePendencies ?? 0 }}</h3>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <div class="row g-4">
             <div class="col-lg-8">
                 <div class="card card-custom border-0 shadow-sm p-4 h-100">
-                    <h5 class="text-title mb-4">Distribuição: Pessoas no Sistema</h5>
+                    <h5 class="text-title mb-4">Pendências por Prioridade</h5>
                     <div class="dashboard-chart-shell dashboard-chart-shell--large">
-                        <canvas id="barChartPeople"></canvas>
+                        <canvas id="barChartPendencies"></canvas>
                     </div>
                 </div>
             </div>
@@ -122,6 +154,20 @@
             </div>
         </div>
 
+        <div class="row g-4 mt-1">
+            <div class="col-12">
+                <div class="card card-custom border-0 shadow-sm p-4">
+                    <h5 class="text-title mb-4">Sessões por Status</h5>
+                    <div class="dashboard-chart-shell dashboard-chart-shell--medium">
+                        <canvas id="barChartSessions"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- SEÇÃO RADAR INCLUSIVO: GRÁFICO E MAPA --}}
+
+        {{-- SEÇÃO RADAR INCLUSIVO: CARDS DE RESUMO --}}
         <div class="row g-4 mt-2 mb-4">
             <div class="col-12 col-md-4">
                 <a href="{{ route('inclusive-radar.assistive-technologies.index') }}" class="text-decoration-none h-100">
@@ -257,6 +303,8 @@
             peiTotal: {{ $totalPeis ?? 0 }},
             peiFinished: {{ $totalPeisFinished ?? 0 }},
             peiNotFinished: {{ $totalPeisNotFinished ?? 0 }},
+            pendenciesByPriority: @json($pendenciesByPriority ?? []),
+            sessionsByStatus: @json($sessionsByStatus ?? []),
             barrierStatuses: @json($barrierStatusCounts ?? []),
             mapBarriers: @json($mapBarriers ?? []),
 
@@ -267,6 +315,7 @@
                 warning: '#ff9f43',
                 info: '#00cfe8',
                 danger: '#ea5455',
+                dark: '#343a40',
                 muted: '#6c757d'
             }
         };

@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\Priority;
 use App\Enums\InclusiveRadar\BarrierStatus;
-use App\Enums\InclusiveRadar\LoanStatus;
 use App\Enums\InclusiveRadar\WaitlistStatus;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Loan;
 use App\Models\InclusiveRadar\Waitlist;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\SpecializedEducationalSupport\Pendency;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Session;
 use App\Models\SpecializedEducationalSupport\Pei;
@@ -73,33 +74,51 @@ class LoginController extends Controller
         $totalCourses = Course::count();
         $totalPeisFinished = Pei::where('is_finished', true)->count();
         $totalPeisNotFinished = Pei::where('is_finished', false)->count();
+        $totalPendingPendencies = Pendency::pending()->count();
+        $totalOverduePendencies = Pendency::pending()
+            ->whereNotNull('due_date')
+            ->whereDate('due_date', '<', today())
+            ->count();
+        $pendenciesByPriority = collect(Priority::cases())->map(function (Priority $priority) {
+            return [
+                'label' => $priority->label(),
+                'color' => $priority->color(),
+                'count' => Pendency::pending()->where('priority', $priority->value)->count(),
+            ];
+        })->values();
+        $sessionsByStatus = collect(Session::statusOptions())->map(function (string $label, string $status) {
+            return [
+                'label' => $label,
+                'count' => Session::where('status', $status)->count(),
+            ];
+        })->values();
 
         // --- Radar Inclusivo ---
         $totalAt = AssistiveTechnology::active('1')->count();
         $totalAem = AccessibleEducationalMaterial::active('1')->count();
         $totalLoans = Loan::count();
-
         $totalWaitingAndNotified = Waitlist::whereIn('status', [
             WaitlistStatus::WAITING->value,
-            WaitlistStatus::NOTIFIED->value
+            WaitlistStatus::NOTIFIED->value,
         ])->count();
-
         $totalBarriers = Barrier::count();
 
-        $barrierStatusCounts = collect(BarrierStatus::cases())->map(function ($status) {
+        $barrierStatusCounts = collect(BarrierStatus::cases())->map(function (BarrierStatus $status) {
             return [
                 'label' => $status->label(),
                 'color' => $status->color(),
                 'count' => Barrier::status($status->value)->count(),
             ];
-        })->filter(fn($item) => $item['count'] > 0)->values();
+        })->filter(fn ($item) => $item['count'] > 0)->values();
 
         $mapBarriers = Barrier::with(['category', 'location', 'institution', 'inspections'])
             ->get()
-            ->map(function ($barrier) {
+            ->map(function (Barrier $barrier) {
                 $currentStatus = $barrier->latestStatus();
 
-                if (!$currentStatus) return null;
+                if (!$currentStatus) {
+                    return null;
+                }
 
                 return [
                     'id' => $barrier->id,
@@ -111,7 +130,7 @@ class LoginController extends Controller
                     'blocks_map' => (bool) ($barrier->category?->blocks_map ?? false),
                     'category_name' => $barrier->category?->name ?? 'Sem Categoria',
                     'color' => $currentStatus->color(),
-                    'url' => route('inclusive-radar.barriers.show', $barrier)
+                    'url' => route('inclusive-radar.barriers.show', $barrier),
                 ];
             })
             ->filter()
@@ -126,15 +145,19 @@ class LoginController extends Controller
             'totalPeisFinished' => $totalPeisFinished,
             'totalPeisNotFinished' => $totalPeisNotFinished,
             'totalCourses' => $totalCourses,
+            'totalPendingPendencies' => $totalPendingPendencies,
+            'totalOverduePendencies' => $totalOverduePendencies,
+            'pendenciesByPriority' => $pendenciesByPriority,
+            'sessionsByStatus' => $sessionsByStatus,
 
             // Radar Inclusivo
             'totalAt' => $totalAt,
             'totalAem' => $totalAem,
             'totalLoans' => $totalLoans,
+            'totalWaiting' => $totalWaitingAndNotified,
             'totalBarriers' => $totalBarriers,
             'barrierStatusCounts' => $barrierStatusCounts,
             'mapBarriers' => $mapBarriers,
-            'totalWaiting' => $totalWaitingAndNotified,
         ]);
     }
 
@@ -150,4 +173,3 @@ class LoginController extends Controller
         return redirect()->route('login');
     }
 }
-

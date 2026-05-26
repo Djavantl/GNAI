@@ -4,28 +4,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     Chart.defaults.font.family = "'Inter', sans-serif";
 
-    // --- 1. GRÁFICO DE BARRAS (Pessoas) ---
-    const ctxBar = document.getElementById('barChartPeople');
-    if (ctxBar) {
-        new Chart(ctxBar.getContext('2d'), {
+    // --- 1. GRÁFICO DE BARRAS (Pendências por prioridade) ---
+    const ctxPendencies = document.getElementById('barChartPendencies');
+    if (ctxPendencies) {
+        new Chart(ctxPendencies.getContext('2d'), {
             type: 'bar',
             data: {
-                labels: ['Alunos', 'Equipe'],
+                labels: data.pendenciesByPriority.map(priority => priority.label),
                 datasets: [{
-                    label: 'Quantidade',
-                    data: [data.students, data.professionals],
-                    backgroundColor: [colors.primary, colors.secondary],
+                    label: 'Pendências abertas',
+                    data: data.pendenciesByPriority.map(priority => priority.count),
+                    backgroundColor: data.pendenciesByPriority.map(priority => colors[priority.color] || colors.primary),
                     borderRadius: 10,
-                    barThickness: 50
+                    barThickness: 38
                 }]
             },
             options: {
+                indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
-                    x: { grid: { display: false } }
+                    x: { beginAtZero: true, ticks: { precision: 0 }, grid: { borderDash: [5, 5] } },
+                    y: { grid: { display: false } }
                 }
             }
         });
@@ -56,7 +57,34 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- 3. GRÁFICO CIRCULAR (Barreiras) ---
+    // --- 3. GRÁFICO DE BARRAS (Sessões por status) ---
+    const ctxSessions = document.getElementById('barChartSessions');
+    if (ctxSessions) {
+        new Chart(ctxSessions.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: data.sessionsByStatus.map(status => status.label),
+                datasets: [{
+                    label: 'Sessões',
+                    data: data.sessionsByStatus.map(status => status.count),
+                    backgroundColor: [colors.warning, colors.success, colors.danger],
+                    borderRadius: 10,
+                    barThickness: 48
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 }, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // --- 4. GRÁFICO CIRCULAR (Barreiras) ---
     const ctxBarriers = document.getElementById('doughnutChartBarriers');
     if (ctxBarriers && data.barrierStatuses) {
         new Chart(ctxBarriers.getContext('2d'), {
@@ -80,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- 4. LÓGICA DO MAPA E FILTROS ---
+    // --- 5. MAPA DO RADAR INCLUSIVO ---
     const mapContainer = document.getElementById('mapDashboard');
     if (mapContainer && data.mapBarriers) {
 
