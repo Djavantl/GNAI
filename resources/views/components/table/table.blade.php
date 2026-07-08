@@ -36,7 +36,7 @@
 
             <nav>
                 {{-- Forçamos o template bootstrap-4 para evitar o lixo de código do tailwind/bs5 padrão --}}
-                {{ $records->links('pagination::bootstrap-4') }}
+                {{ $records->withPath(url()->current())->links('pagination::bootstrap-4') }}
             </nav>
         </div>
     @endif
