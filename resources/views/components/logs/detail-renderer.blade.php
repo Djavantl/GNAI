@@ -26,7 +26,7 @@
         if (is_bool($value)) return $value ? 'Sim' : 'Não';
         if (is_array($value)) return implode(', ', $value);
 
-        return (string) $value;
+        return \App\Support\RichTextSanitizer::sanitize((string) $value);
     };
 @endphp
 

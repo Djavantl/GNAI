@@ -102,7 +102,7 @@
                                             <i class="fas fa-user-times me-3 fa-2x"></i>
                                             <div>
                                                 <h5 class="mb-1">Aluno Ausente</h5>
-                                                <p class="mb-0"><strong>Motivo:</strong> {!! $evaluation->absence_reason ?? 'Não justificado.' !!}</p>
+                                                <p class="mb-0"><strong>Motivo:</strong> {!! \App\Support\RichTextSanitizer::sanitize((string) ($evaluation->absence_reason ?? 'Não justificado.')) !!}</p>
                                             </div>
                                         </div>
                                     @else

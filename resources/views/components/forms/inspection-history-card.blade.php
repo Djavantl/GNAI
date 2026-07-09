@@ -46,7 +46,7 @@
                         </span>
 
                         <div class="history-description-text">
-                            {!! $inspection->description !!}
+                            {!! \App\Support\RichTextSanitizer::sanitize((string) $inspection->description) !!}
                         </div>
                     </div>
                 @endif

@@ -72,22 +72,22 @@
     <div class="section-title">Adaptações Razoáveis e/ou Acessibilidades Curriculares</div>
 
     <span class="field-label">Objetivos Específicos:</span>
-    <div class="content-box">{!! $item->specific_objectives !!}</div>
+    <div class="content-box">{!! \App\Support\RichTextSanitizer::sanitize((string) $item->specific_objectives) !!}</div>
 
     <span class="field-label">Conteúdos Programáticos:</span>
-    <div class="content-box">{!! $item->content_programmatic !!}</div>
+    <div class="content-box">{!! \App\Support\RichTextSanitizer::sanitize((string) $item->content_programmatic) !!}</div>
 
     <span class="field-label">Metodologia:</span>
-    <div class="content-box">{!! $item->methodologies !!}</div>
+    <div class="content-box">{!! \App\Support\RichTextSanitizer::sanitize((string) $item->methodologies) !!}</div>
 
     <span class="field-label">Avaliação:</span>
-    <div class="content-box">{!! $item->evaluations !!}</div>
+    <div class="content-box">{!! \App\Support\RichTextSanitizer::sanitize((string) $item->evaluations) !!}</div>
 
     <span class="field-label">Registros Complementares:</span>
-    <div class="content-box">{!! $item->complementary_records ?? '' !!}</div>
+    <div class="content-box">{!! \App\Support\RichTextSanitizer::sanitize((string) ($item->complementary_records ?? '')) !!}</div>
 
     <span class="field-label">Parecer:</span>
-    <div class="content-box">{!! $item->opinion !!}</div>
+    <div class="content-box">{!! \App\Support\RichTextSanitizer::sanitize((string) $item->opinion) !!}</div>
 
    
 

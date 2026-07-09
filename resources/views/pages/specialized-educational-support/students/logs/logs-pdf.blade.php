@@ -93,7 +93,7 @@
                 }
 
                 if (is_bool($value)) return $value ? 'Sim' : 'Não';
-                return (string)$value;
+                return \App\Support\RichTextSanitizer::sanitize((string) $value);
             };
         @endphp
             <tr>

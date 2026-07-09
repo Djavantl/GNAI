@@ -18,5 +18,5 @@
 @props(['label', 'value'])
 <div class="label">{{ $label }}:</div>
 <div class="text-box break-word">
-    {!! $value ?? 'Nada declarado.' !!}
+    {!! \App\Support\RichTextSanitizer::sanitize((string) ($value ?? 'Nada declarado.')) !!}
 </div>
