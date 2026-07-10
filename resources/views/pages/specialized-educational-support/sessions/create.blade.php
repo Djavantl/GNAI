@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title', 'Agendar Nova Sessão')
+@section('title', 'Novo Agendamento')
 
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
             'Cadastrar' => null
         ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Agendar Nova Sessão</h2>
+            <h2 class="text-title">Novo Agendamento</h2>
             <p class="text-muted">Preencha os dados para agendar o atendimento especializado.</p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.index') }}" variant="secondary">
@@ -64,7 +64,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="session_date"
-                    label="Data da Sessão "
+                    label="Data do Agendamento "
                     type="date"
                     required
                 />
@@ -111,7 +111,7 @@
             <div class="col-md-12">
                 <x-forms.textarea
                     name="session_objective"
-                    label="Objetivo da Sessão"
+                    label="Objetivo do Agendamento"
                     required
                     rows="3"
                     :value="old('session_objective')"

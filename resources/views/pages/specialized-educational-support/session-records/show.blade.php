@@ -4,8 +4,8 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
-            'Sessão #' . $sessionRecord->attendance_session_id => route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id),
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
+            'Agendamento #' . $sessionRecord->attendance_session_id => route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id),
             'Registro' => null
         ]" />
     </div>
@@ -13,9 +13,9 @@
     {{-- Cabeçalho --}}
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
-            <h2 class="text-title">Registro de Atendimento</h2>
+            <h2 class="text-title">Registro de Atendimento AEE</h2>
             <p class="text-muted">
-                Sessão #{{ $sessionRecord->attendance_session_id }} • 
+                Agendamento #{{ $sessionRecord->attendance_session_id }} • 
                 Realizada em: {{ $sessionRecord->attendanceSession->session_date->format('d/m/Y') }}
             </p>
         </div>
@@ -43,7 +43,7 @@
         <div class="row g-0">
             
             {{-- INFORMAÇÕES GERAIS --}}
-            <x-forms.section title="Execução da Sessão" />
+            <x-forms.section title="Execução do Atendimento AEE" />
             
             <x-show.info-item label="Duração" column="col-md-4" isBox="true">
                 {{ $sessionRecord->duration }}
@@ -131,7 +131,7 @@
                                                 {{ $evaluation->recommendations ?? 'Nenhuma recomendação.' }}
                                             </x-show.info-textarea>
 
-                                            <x-show.info-textarea label="Ajustes para Próxima Sessão" column="col-md-6" isBox="true">
+                                            <x-show.info-textarea label="Ajustes para Próximo Agendamento" column="col-md-6" isBox="true">
                                                 {{ $evaluation->next_session_adjustments ?? 'N/A' }}
                                             </x-show.info-textarea>
                                         </div>

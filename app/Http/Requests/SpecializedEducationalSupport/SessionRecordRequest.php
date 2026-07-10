@@ -73,11 +73,11 @@ class SessionRecordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'attendance_session_id.required'   => 'A sessão de atendimento é obrigatória.',
-            'attendance_session_id.exists'     => 'A sessão de atendimento informada é inválida.',
-            'duration.required'             => 'A duração da sessão é obrigatória.',
-            'duration.string'               => 'A duração da sessão deve ser um texto válido.',
-            'duration.max'                  => 'A duração da sessão não pode ultrapassar 50 caracteres.',
+            'attendance_session_id.required'   => 'O agendamento do atendimento é obrigatório.',
+            'attendance_session_id.exists'     => 'O agendamento do atendimento informado é inválido.',
+            'duration.required'             => 'A duração do agendamento é obrigatória.',
+            'duration.string'               => 'A duração do agendamento deve ser um texto válido.',
+            'duration.max'                  => 'A duração do agendamento não pode ultrapassar 50 caracteres.',
             'activities_performed.required' => 'O relato das atividades realizadas é obrigatório.',
             'activities_performed.string'   => 'O relato das atividades realizadas deve ser um texto válido.',
             'strategies_used.string'        => 'As estratégias utilizadas devem ser informadas em um texto válido.',
@@ -100,7 +100,7 @@ class SessionRecordRequest extends FormRequest
             'evaluations.*.adaptations_made.string'            => 'As adaptações realizadas devem ser informadas em um texto válido.',
             'evaluations.*.progress_indicators.string'         => 'Os indicadores de progresso devem ser informados em um texto válido.',
             'evaluations.*.recommendations.string'             => 'As recomendações devem ser informadas em um texto válido.',
-            'evaluations.*.next_session_adjustments.string'    => 'Os ajustes para a próxima sessão devem ser informados em um texto válido.',
+            'evaluations.*.next_session_adjustments.string'    => 'Os ajustes para o próximo atendimento devem ser informados em um texto válido.',
         ];
     }
 

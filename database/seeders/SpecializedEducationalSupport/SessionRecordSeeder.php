@@ -11,7 +11,7 @@ class SessionRecordSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Pegar todas as sessões que já aconteceram (até hoje)
+        // 1. Pegar todos os agendamentos que já aconteceram (até hoje)
         // Usamos o status 'Agendada' para não duplicar se rodar a seeder 2x
         $sessions = DB::table('attendance_sessions')
             ->where('session_date', '<=', Carbon::today()->format('Y-m-d'))
@@ -19,24 +19,24 @@ class SessionRecordSeeder extends Seeder
             ->get();
 
         if ($sessions->isEmpty()) {
-            $this->command->warn('Nenhuma sessão passada encontrada para registrar.');
+            $this->command->warn('Nenhum agendamento passado encontrado para registrar.');
             return;
         }
 
         foreach ($sessions as $session) {
-            // 2. Criar o Registro Geral da Sessão (SessionRecord)
+            // 2. Criar o registro geral do agendamento (SessionRecord)
             $recordId = DB::table('session_records')->insertGetId([
                 'attendance_session_id' => $session->id,
                 'duration'              => '1 hora', // Padrão baseado nos seus slots
                 'activities_performed'  => 'Desenvolvimento de atividades lúdicas e suporte pedagógico adaptado.',
                 'strategies_used'       => 'Mediação direta, reforço positivo e uso de materiais concretos.',
                 'resources_used'        => 'Jogos educativos, prancha de comunicação alternativa e notebook.',
-                'general_observations'  => 'O objetivo da sessão foi atingido conforme o planejado para o período.',
+                'general_observations'  => 'O objetivo do agendamento foi atingido conforme o planejado para o período.',
                 'created_at'            => now(),
                 'updated_at'            => now(),
             ]);
 
-            // 3. Buscar os alunos vinculados a esta sessão
+            // 3. Buscar os alunos vinculados a este agendamento
             $studentIds = DB::table('attendance_session_student')
                 ->where('attendance_session_id', $session->id)
                 ->pluck('student_id');
@@ -76,12 +76,12 @@ class SessionRecordSeeder extends Seeder
                 ]);
             }
 
-            // 5. Atualizar o status da sessão original para 'Realizada'
+            // 5. Atualizar o status do agendamento original para 'Realizada'
             DB::table('attendance_sessions')
                 ->where('id', $session->id)
                 ->update(['status' => 'Realizada']);
         }
 
-        $this->command->info("Registros e avaliações criados para {$sessions->count()} sessões.");
+        $this->command->info("Registros e avaliações criados para {$sessions->count()} agendamentos.");
     }
 }

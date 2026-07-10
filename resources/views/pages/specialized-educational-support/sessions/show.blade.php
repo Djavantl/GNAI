@@ -4,13 +4,13 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
-            'Sessão #' . $session->id => null
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
+            'Agendamento #' . $session->id => null
         ]" />
     </div>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h2 class="text-title">Detalhes da Sessão</h2>
+            <h2 class="text-title">Detalhes do Agendamento</h2>
             <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
         </div>
         @php
@@ -80,9 +80,9 @@
             
             <x-show.info-item label="Tipo de Atendimento" :value="$session->typeLabel()" isBox="true"/>
 
-            <x-forms.section title="Conteúdo da Sessão" />
+            <x-forms.section title="Conteúdo do Agendamento" />
 
-            <x-show.info-textarea label="Objetivo da Sessão" column="col-md-12" isBox="true">{{ $session->session_objective }}</x-show.info-textarea>
+            <x-show.info-textarea label="Objetivo do Agendamento" column="col-md-12" isBox="true">{{ $session->session_objective }}</x-show.info-textarea>
 
             @if($session->cancellation_reason)
                 <x-show.info-textarea label="Motivo do Cancelamento" column="col-md-12" isBox="true">
@@ -91,7 +91,7 @@
             @endif
 
             {{-- MODAL DE CANCELAMENTO --}}
-            <div class="modal fade" id="modalCancelSessao" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="modalCancelAgendamento" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <form action="{{ route('specialized-educational-support.sessions.cancel', $session->id) }}" method="POST">
@@ -101,7 +101,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Tem certeza que deseja cancelar esta sessão? Esta ação enviará um e-mail de notificação para os participantes.</p>
+                                <p>Tem certeza que deseja cancelar este agendamento? Esta ação enviará um e-mail de notificação para os participantes.</p>
                                 
                                 <div class="form-group">
                                     <label for="cancellation_reason" class="form-label">Motivo do Cancelamento <span class="text-danger">*</span></label>
@@ -128,8 +128,8 @@
                 @if($isScheduledSession)
                     @can('session.update')
                     @if($canManageSessionLifecycle)
-                        <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelSessao" type="button">
-                            <i class="fas fa-times" aria-hidden="true"></i> Cancelar Sessão
+                        <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelAgendamento" type="button">
+                            <i class="fas fa-times" aria-hidden="true"></i> Cancelar Agendamento
                         </x-buttons.submit-button>
                     @endif
                     @endcan
@@ -164,8 +164,8 @@
                     variant="danger"
                     data-bs-toggle="modal"
                     data-bs-target="#globalConfirmActionModal"
-                    data-confirm-title="Excluir Sessao"
-                    data-confirm-message="Excluir esta sessao permanentemente?"
+                    data-confirm-title="Excluir Agendamento"
+                    data-confirm-message="Excluir este agendamento permanentemente?"
                     data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}"
                     data-confirm-method="DELETE"
                     data-confirm-submit-text="Confirmar Exclusao"

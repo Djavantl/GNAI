@@ -6,7 +6,7 @@
     <p>{{ $messageContent }}</p>
 
     <div style="background: #f7fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-        <p><strong>Detalhes da Sessão:</strong></p>
+        <p><strong>Detalhes do Agendamento:</strong></p>
         <ul style="list-style: none; padding: 0;">
             <li>📅 <strong>Data:</strong> {{ \Carbon\Carbon::parse($session->session_date)->format('d/m/Y') }}</li>
             <li>⏰ <strong>Horário:</strong> {{ $session->start_time }} até {{ $session->end_time ?? 'Não definido' }}</li>

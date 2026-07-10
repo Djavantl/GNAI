@@ -1,7 +1,7 @@
 {{-- REGISTROS DE SESSÕES --}}
 <section id="session-records" class="mb-5 rounded shadow-sm">
 
-    <x-forms.section title="Registros de Sessões de Atendimento" class="m-0" />
+    <x-forms.section title="Registros de Atendimentos AEE" class="m-0" />
 
     <div class="pb-3 ps-3 pe-3">
 
@@ -76,7 +76,7 @@
                     <tr>
                         <td colspan="5" class="text-center text-muted fw-bold py-5">
                             <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
-                            Nenhum registro de sessão encontrado.
+                            Nenhum registro de atendimento AEE encontrado.
                         </td>
                     </tr>
                 @endforelse

@@ -85,7 +85,7 @@
                     : route('specialized-educational-support.sessions.my-sessions') }}"
             class="{{ (request()->routeIs(['specialized-educational-support.sessions.*', 'specialized-educational-support.session-records.*']) && !request()->routeIs('specialized-educational-support.session-records.my-records')) ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-calendar-check"></i></span>
-                <span class="text">Sessões</span>
+                <span class="text">Agendamentos</span>
             </a>
         </li>   
         @endcanany
@@ -95,7 +95,7 @@
             <a href="{{ route('specialized-educational-support.session-records.my-records') }}"
             class="{{ request()->routeIs('specialized-educational-support.session-records.my-records') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-journal-check"></i></span>
-                <span class="text">Meus Atendimentos</span>
+                <span class="text">Atendimentos AEE</span>
             </a>
         </li>
         @endcan

@@ -6,7 +6,7 @@
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
             'Aluno' => route('specialized-educational-support.students.show', $student),
-            'Registros de Sessões' => route('specialized-educational-support.students.session-records.index', $student),
+            'Registros de Atendimentos AEE' => route('specialized-educational-support.students.session-records.index', $student),
             'Visualizar' => null
         ]" />
     </div>
@@ -14,10 +14,10 @@
     {{-- Cabeçalho --}}
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
         <div>
-            <h2 class="text-title">Registro de Sessão do Aluno</h2>
+            <h2 class="text-title">Registro de atendimento AEE do Aluno</h2>
             <p class="text-muted">
                 {{ $student->person->name }} •
-                Sessão #{{ $evaluation->sessionRecord->attendance_session_id }} •
+                Agendamento #{{ $evaluation->sessionRecord->attendance_session_id }} •
                 Realizada em: {{ $evaluation->sessionRecord->attendanceSession->session_date->format('d/m/Y') }}
             </p>
         </div>
@@ -53,7 +53,7 @@
             @endphp
 
             {{-- INFORMAÇÕES GERAIS --}}
-            <x-forms.section title="Execução da Sessão" />
+            <x-forms.section title="Execução do Atendimento AEE" />
 
             <x-show.info-item label="Duração" column="col-md-4" isBox="true">
                 {{ $sessionRecord->duration }}
@@ -136,7 +136,7 @@
                                             {!! $evaluation->recommendations ?? 'Nenhuma recomendação.' !!}
                                         </x-show.info-textarea>
 
-                                        <x-show.info-textarea label="Ajustes para Próxima Sessão" column="col-md-6" isBox="true">
+                                        <x-show.info-textarea label="Ajustes para Próximo atendimento AEE" column="col-md-6" isBox="true">
                                             {!! $evaluation->next_session_adjustments ?? 'N/A' !!}
                                         </x-show.info-textarea>
                                     </div>
@@ -167,7 +167,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#globalConfirmActionModal"
                         data-confirm-title="Excluir Registro do Aluno"
-                        data-confirm-message="Excluir apenas o registro deste aluno nesta sessao?"
+                        data-confirm-message="Excluir apenas o registro deste aluno neste atendimento AEE?"
                         data-confirm-action="{{ route('specialized-educational-support.students.session-records.destroy', [$student, $evaluation]) }}"
                         data-confirm-method="DELETE"
                         data-confirm-submit-text="Confirmar Exclusao"

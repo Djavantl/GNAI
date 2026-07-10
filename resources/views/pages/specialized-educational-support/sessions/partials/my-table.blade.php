@@ -50,8 +50,8 @@
                     variant="danger"
                     data-bs-toggle="modal"
                     data-bs-target="#globalConfirmActionModal"
-                    data-confirm-title="Excluir Sessao"
-                    data-confirm-message="Mover esta sessao para a lixeira?"
+                    data-confirm-title="Excluir Agendamento"
+                    data-confirm-message="Mover este agendamento para a lixeira?"
                     data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session) }}"
                     data-confirm-method="DELETE"
                     data-confirm-submit-text="Confirmar Exclusao"
@@ -67,7 +67,7 @@
     <tr>
         <td colspan="5" class="text-center text-muted fw-bold py-5">
             <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
-            Nenhuma sessão encontrada.
+            Nenhum agendamento encontrado.
         </td>
     </tr>
 @endforelse

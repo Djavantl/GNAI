@@ -1,12 +1,12 @@
 @extends('layouts.master')
 
-@section('title', 'Sessões')
+@section('title', 'Agendamentos')
 
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => null
+            'Agendamentos' => null
         ]" />
     </div>
 
@@ -21,7 +21,7 @@
             <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
-                title="Nova sessão"
+                title="Novo agendamento"
             >
                 <i class="fas fa-plus"></i> 
             </x-buttons.link-button>
@@ -32,9 +32,9 @@
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.sessions.my-sessions')"
                     variant="secondary"
-                    title="Minhas sessões"
+                    title="Meus agendamentos"
                 >
-                    <i class="fas fa-user-clock"></i> Minhas sessões
+                    <i class="fas fa-user-clock"></i> Meus agendamentos
                 </x-buttons.link-button>
                 @endcan
             @endif
@@ -117,11 +117,11 @@
         </div>
     </div>
 
-    {{-- TABELA DE SESSÕES ABAIXO --}}
+    {{-- TABELA DE AGENDAMENTOS ABAIXO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
         <x-table.page-header
-            title="Sessões"
-            subtitle="Veja as sessões cadastradas em tabela e acompanhe a agenda semanal acima."
+            title="Agendamentos"
+            subtitle="Veja os agendamentos cadastrados em tabela e acompanhe a agenda semanal acima."
         />
 
         <div class="px-3 pt-3">

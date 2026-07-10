@@ -50,8 +50,8 @@
                         variant="danger"
                         data-bs-toggle="modal"
                         data-bs-target="#globalConfirmActionModal"
-                        data-confirm-title="Excluir Sessao"
-                        data-confirm-message="Mover esta sessao para a lixeira?"
+                        data-confirm-title="Excluir Agendamento"
+                        data-confirm-message="Mover este agendamento para a lixeira?"
                         data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}"
                         data-confirm-method="DELETE"
                         data-confirm-submit-text="Confirmar Exclusao"
@@ -65,7 +65,7 @@
     @empty
             <tr>
                 <td colspan="5" class="text-center text-muted py-5">
-                    Nenhuma sessão encontrada para este aluno.
+                    Nenhum agendamento encontrado para este aluno.
                 </td>
             </tr>
     @endforelse

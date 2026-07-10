@@ -22,7 +22,7 @@ class SessionController extends Controller
 
     public function index(Request $request)
     {
-        // 1. Sessões para a Tabela (mantém filtros originais)
+        // 1. Agendamentos para a tabela (mantém filtros originais)
         $sessions = $this->service->index($request->all());
 
         // 2. Dados para os Selects (usados na tabela e na agenda)
@@ -86,7 +86,7 @@ class SessionController extends Controller
 
             return redirect()
                 ->route('specialized-educational-support.sessions.index')
-                ->with('success', 'Sessão agendada com sucesso.');
+                ->with('success', 'Agendamento criado com sucesso.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -129,7 +129,7 @@ class SessionController extends Controller
 
             return redirect()
                 ->route('specialized-educational-support.sessions.show', $session)
-                ->with('success', 'Sessão atualizada com sucesso.');
+                ->with('success', 'Agendamento atualizado com sucesso.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
@@ -225,7 +225,7 @@ class SessionController extends Controller
 
         try {
             $this->service->cancel($session, $request->cancellation_reason);
-            return redirect()->back()->with('success', 'Sessão cancelada e participantes notificados.');
+            return redirect()->back()->with('success', 'Agendamento cancelado e participantes notificados.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erro ao cancelar: ' . $e->getMessage());
         }
@@ -237,7 +237,7 @@ class SessionController extends Controller
 
         return redirect()
             ->route('specialized-educational-support.sessions.index')
-            ->with('success', 'Sessão removida com sucesso.');
+            ->with('success', 'Agendamento removido com sucesso.');
     }
 
     public function restore(Session $session)
@@ -246,7 +246,7 @@ class SessionController extends Controller
 
         return redirect()
             ->route('specialized-educational-support.sessions.index')
-            ->with('success', 'Sessão restaurada com sucesso.');
+            ->with('success', 'Agendamento restaurado com sucesso.');
     }
 
     public function forceDelete(Session $session)

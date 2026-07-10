@@ -18,7 +18,7 @@
         <strong>Período:</strong> {{ $agenda['weekStart']->format('d/m/Y') }}
         até {{ $agenda['weekEnd']->format('d/m/Y') }}
         <br>
-        <strong>Total de sessões na semana:</strong> {{ $totalSessions }}
+        <strong>Total de agendamentos na semana:</strong> {{ $totalSessions }}
     </div>
 
     <div class="row g-3">
@@ -100,7 +100,7 @@
                             @empty
                                 <div class="text-center weekly-empty-state py-4">
                                     <i class="fas fa-calendar-day d-block mb-2" style="font-size: 2rem;"></i>
-                                    Nenhuma sessão neste dia.
+                                    Nenhum agendamento neste dia.
                                 </div>
                             @endforelse
                         </div>

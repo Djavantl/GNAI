@@ -72,7 +72,7 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#globalConfirmActionModal"
                                 data-confirm-title="Excluir Registro do Aluno"
-                                data-confirm-message="Excluir apenas o registro deste aluno nesta sessao?"
+                                data-confirm-message="Excluir apenas o registro deste aluno neste atendimento AEE?"
                                 data-confirm-action="{{ route('specialized-educational-support.students.session-records.destroy', [$student, $evaluation]) }}"
                                 data-confirm-method="DELETE"
                                 data-confirm-submit-text="Confirmar Exclusao"

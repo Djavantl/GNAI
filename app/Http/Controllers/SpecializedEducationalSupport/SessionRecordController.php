@@ -34,7 +34,7 @@ class SessionRecordController extends Controller
                 compact('sessionRecords')
             );
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao listar os registros da sessão.');
+            return back()->with('error', 'Erro ao listar os registros do atendimento AEE.');
         }
     }
 
@@ -89,9 +89,9 @@ class SessionRecordController extends Controller
 
             return redirect()
                 ->route('specialized-educational-support.session-records.show', $sessionRecord)
-                ->with('success', 'Registro da sessão criado com sucesso.');
+                ->with('success', 'Registro do atendimento AEE criado com sucesso.');
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao criar o registro da sessão.');
+            return back()->with('error', 'Erro ao criar o registro do atendimento AEE.');
         }
     }
 
@@ -106,7 +106,7 @@ class SessionRecordController extends Controller
                 compact('sessionRecord', 'session')
             );
         } catch (Throwable $e) {
-            return back()->with('error', $e->getMessage() ?: 'Erro ao exibir o registro da sessão.');
+            return back()->with('error', $e->getMessage() ?: 'Erro ao exibir o registro do atendimento AEE.');
         }
     }
 
@@ -135,9 +135,9 @@ class SessionRecordController extends Controller
 
             return redirect()
                 ->route('specialized-educational-support.session-records.show', $sessionRecord)
-                ->with('success', 'Registro da sessão atualizado com sucesso.');
+                ->with('success', 'Registro do atendimento AEE atualizado com sucesso.');
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao atualizar o registro da sessão.');
+            return back()->with('error', 'Erro ao atualizar o registro do atendimento AEE.');
         }
     }
 
@@ -149,9 +149,9 @@ class SessionRecordController extends Controller
 
             return redirect()
                 ->route('specialized-educational-support.sessions.show', $sessionId)
-                ->with('success', 'Registro da sessão removido com sucesso.');
+                ->with('success', 'Registro do atendimento AEE removido com sucesso.');
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao remover o registro da sessão.');
+            return back()->with('error', 'Erro ao remover o registro do atendimento AEE.');
         }
     }
 
@@ -164,7 +164,7 @@ class SessionRecordController extends Controller
                 ->route('specialized-educational-support.session-records.index')
                 ->with('success', 'Registro restaurado com sucesso.');
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao restaurar o registro da sessão.');
+            return back()->with('error', 'Erro ao restaurar o registro do atendimento AEE.');
         }
     }
 
@@ -175,7 +175,7 @@ class SessionRecordController extends Controller
 
             return redirect()->back()->with('success', 'Removido permanentemente.');
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao remover permanentemente o registro da sessão.');
+            return back()->with('error', 'Erro ao remover permanentemente o registro do atendimento AEE.');
         }
     }
 
@@ -201,9 +201,9 @@ class SessionRecordController extends Controller
             ->setOption(['enable_php' => true]);
 
             $date = $session->session_date->format('d-m-Y');
-            return $pdf->stream("Registro_Sessao_Geral_{$date}_ID{$sessionRecord->id}.pdf");
+            return $pdf->stream("Registro_atendimento_AEE_{$date}_ID{$sessionRecord->id}.pdf");
         } catch (Throwable $e) {
-            return back()->with('error', $e->getMessage() ?: 'Erro ao gerar o PDF do registro da sessão.');
+            return back()->with('error', $e->getMessage() ?: 'Erro ao gerar o PDF do Atendimento AEE.');
         }
     }
 
@@ -225,7 +225,7 @@ class SessionRecordController extends Controller
             $date = $session->session_date->format('d-m-Y');
             $studentName = str($student->person->name)->slug('-');
 
-            return $pdf->stream("Registro_Sessao_{$studentName}_{$date}_ID{$sessionRecord->id}.pdf");
+            return $pdf->stream("Registro_atendimento_AEE_{$studentName}_{$date}_ID{$sessionRecord->id}.pdf");
         } catch (Throwable $e) {
             return back()->with('error', 'Erro ao gerar o PDF do aluno.');
         }

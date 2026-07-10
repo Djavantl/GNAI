@@ -28,7 +28,7 @@ class SessionService
     {
         if ((int) $session->creator_id !== (int) Auth::id()) {
             throw ValidationException::withMessages([
-                'session' => "Apenas quem criou a sessão pode {$action}."
+                'session' => "Apenas quem criou o agendamento pode {$action}."
             ]);
         }
     }
@@ -39,7 +39,7 @@ class SessionService
 
         if (!$this->isScheduledStatus($session->status)) {
             throw ValidationException::withMessages([
-                'session' => 'Apenas sessões com status Agendada podem ser editadas.'
+                'session' => 'Apenas agendamentos com status Agendada podem ser editados.'
             ]);
         }
     }
@@ -102,7 +102,7 @@ class SessionService
         $weekStart = $referenceDate->copy()->startOfWeek(Carbon::MONDAY)->startOfDay();
         $weekEnd = $referenceDate->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay();
 
-        // 1. Buscar sessões aplicando filtros de período E filtros de usuário
+        // 1. Buscar agendamentos aplicando filtros de período E filtros de usuário
         $sessions = Session::query()
             ->with(['students.person', 'professional.person', 'sessionRecord'])
             ->whereBetween('session_date', [$weekStart, $weekEnd])
@@ -204,7 +204,7 @@ class SessionService
         $end = Carbon::parse($data['end_time'])->format('H:i:00');
 
         $baseQuery = Session::whereDate('session_date', $date)
-            // ADICIONE ESTA LINHA: Ignora sessões canceladas na checagem de conflito
+            // Ignora agendamentos cancelados na checagem de conflito
             ->where('status', '!=', 'Cancelada') 
             ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
             ->where(function ($query) use ($start, $end) {
@@ -247,7 +247,7 @@ class SessionService
 
         if (! $canCreateRecords) {
             throw ValidationException::withMessages([
-                'professional_id' => 'Não é possível criar sessão para um profissional que não possui permissão para criar registros de sessão.',
+                'professional_id' => 'Não é possível criar agendamento para um profissional que não possui permissão para criar registros de agendamento.',
             ]);
         }
     }
@@ -271,7 +271,7 @@ class SessionService
                 }
 
                 if ($conflict['professional']) {
-                    $errors['professional_id'] = "O profissional já possui uma sessão neste horário.";
+                    $errors['professional_id'] = "O profissional já possui um agendamento neste horário.";
                 }
 
                 throw ValidationException::withMessages($errors);
@@ -293,8 +293,8 @@ class SessionService
 
             $this->sendSessionEmails(
                 $session,
-                "Nova Sessão Agendada",
-                "Uma nova sessão foi registrada."
+                "Novo Agendamento Criado",
+                "Um novo agendamento foi registrado."
             );
 
             return $session->fresh(['students.person', 'professional.person', 'sessionRecord']);
@@ -312,8 +312,8 @@ class SessionService
 
         $this->sendSessionEmails(
             $session,
-            "Sessão Cancelada",
-            "Informamos que a sua sessão foi cancelada. Motivo: {$reason}"
+            "Agendamento Cancelado",
+            "Informamos que o seu agendamento foi cancelado. Motivo: {$reason}"
         );
 
         return $session;
@@ -357,7 +357,7 @@ class SessionService
                 }
 
                 if ($conflict['professional']) {
-                    $errors['professional_id'] = "O profissional já possui uma sessão neste horário.";
+                    $errors['professional_id'] = "O profissional já possui um agendamento neste horário.";
                 }
 
                 throw ValidationException::withMessages($errors);
@@ -378,8 +378,8 @@ class SessionService
 
             $this->sendSessionEmails(
                 $session,
-                "Sessão de Atendimento Atualizada",
-                "Houve uma alteração nos detalhes da sua sessão."
+                "Agendamento de Atendimento Atualizado",
+                "Houve uma alteração nos detalhes do seu agendamento."
             );
 
             return $session->fresh(['students.person', 'professional.person', 'sessionRecord']);
@@ -396,7 +396,7 @@ class SessionService
 
                 $this->cancel(
                     $session,
-                    'Sessão cancelada automaticamente devido à exclusão do registro.'
+                    'Agendamento cancelado automaticamente devido à exclusão do registro.'
                 );
             }
 
@@ -429,7 +429,7 @@ class SessionService
             $names = implode(', ', $inactiveStudents);
 
             throw ValidationException::withMessages([
-                'student_ids' => "Não é possível agendar ou editar sessão para aluno inativo: {$names}."
+                'student_ids' => "Não é possível agendar ou editar agendamento para aluno inativo: {$names}."
             ]);
         }
     }
@@ -448,7 +448,7 @@ class SessionService
             $name = $professional->person->name ?? 'Profissional';
 
             throw ValidationException::withMessages([
-                'professional_id' => "Não é possível agendar ou editar sessão para profissional inativo: {$name}."
+                'professional_id' => "Não é possível agendar ou editar agendamento para profissional inativo: {$name}."
             ]);
         }
     }

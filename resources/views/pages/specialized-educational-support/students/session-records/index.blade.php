@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Registros de Sessões do Aluno')
+@section('title', 'Atendimentos AEE do Aluno')
 
 @section('content')
     <div class="mb-5">
@@ -8,13 +8,13 @@
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
             $student->person->name => route('specialized-educational-support.students.show', $student),
-            'Registros de Sessões' => null
+            'Registros de atendimentos AEE' => null
         ]" />
     </div>
 
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
         <x-table.page-header
-            title="Histórico de Registros de Sessões"
+            title="Histórico de Registros de Atendimento AEE"
             subtitle="Aluno: {{ $student->person->name }}"
         >
             <div class="d-flex gap-2">

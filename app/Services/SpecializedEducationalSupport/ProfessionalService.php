@@ -205,7 +205,7 @@ class ProfessionalService
 
         if ($hasActiveSessions) {
             throw new DomainException(
-                "O profissional {$professional->person->name} possui sessões registradas e não pode ser inativado."
+                "O profissional {$professional->person->name} possui agendamentos registrados e não pode ser inativado."
             );
         }
     }

@@ -6,7 +6,7 @@
             'Home' => route('dashboard'),
             'Alunos' => route('specialized-educational-support.students.index'),
             'Aluno' => route('specialized-educational-support.students.show', $student),
-            'Registros de Sessões' => route('specialized-educational-support.students.session-records.index', $student),
+            'Registros de atendimento AEE' => route('specialized-educational-support.students.session-records.index', $student),
             'Visualizar' => route('specialized-educational-support.students.session-records.show', [$student, $evaluation]),
             'Editar' => null
         ]" />
@@ -18,7 +18,7 @@
             <p class="text-muted">
                 {{ $student->person->name }} •
                 Registro #{{ $evaluation->sessionRecord->id }} •
-                Sessão #{{ $evaluation->sessionRecord->attendance_session_id }}
+                Agendamento #{{ $evaluation->sessionRecord->attendance_session_id }}
             </p>
         </div>
 
@@ -38,7 +38,7 @@
         @endphp
 
         {{-- SEÇÃO 1: DADOS DA SESSÃO --}}
-        <x-forms.section title="Informações da Sessão" />
+        <x-forms.section title="Informações do atendimento AEE" />
 
         <div class="col-md-4">
             <x-show.info-item label="Data" column="col-md-12" isBox="true">
@@ -59,7 +59,7 @@
         </div>
 
         <div class="col-md-12">
-            <x-show.info-textarea label="Objetivo da Sessão" column="col-md-12" isBox="true">
+            <x-show.info-textarea label="Objetivo do Atendimento" column="col-md-12" isBox="true">
                 {!! $attendanceSession->session_objective ?? 'N/A' !!}
             </x-show.info-textarea>
         </div>
@@ -170,7 +170,7 @@
                 <div class="col-md-6">
                     <x-forms.textarea
                         name="next_session_adjustments"
-                        label="Ajustes para Próxima Sessão"
+                        label="Ajustes para próximo atendimento AEE"
                         rows="3"
                         :value="old('next_session_adjustments', $evaluation->next_session_adjustments)"
                     />
@@ -189,7 +189,7 @@
                 <x-buttons.link-button
                     href="{{ route('specialized-educational-support.session-records.show', $sessionRecord) }}"
                     variant="info">
-                    <i class="fas fa-layer-group"></i> Ver Sessão Completa
+                    <i class="fas fa-layer-group"></i> Ver registro completo
                 </x-buttons.link-button>
 
                 <x-buttons.submit-button type="submit" class="btn-action new submit">

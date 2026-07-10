@@ -89,21 +89,21 @@ class PermissionSeeder extends Seeder
             ['name' => 'Editar Perfil de Atendimento do Aluno',     'slug' => 'student-deficiency.update'],
             ['name' => 'Excluir Perfil de Atendimento do Aluno',    'slug' => 'student-deficiency.delete'],
 
-            // Sessões/Atendimentos
-            ['name' => 'Visualizar Sessões',          'slug' => 'session.view'],
-            ['name' => 'Visualizar Todas as Sessões', 'slug' => 'session.view-all'],
-            ['name' => 'Visualizar Próprias Sessões', 'slug' => 'session.view-own'],
-            ['name' => 'Criar Sessão',                'slug' => 'session.create'],
-            ['name' => 'Editar Sessão',               'slug' => 'session.update'],
-            ['name' => 'Excluir Sessão',              'slug' => 'session.delete'],
+            // Agendamentos/Atendimentos
+            ['name' => 'Visualizar Agendamentos',          'slug' => 'session.view'],
+            ['name' => 'Visualizar Todos os Agendamentos', 'slug' => 'session.view-all'],
+            ['name' => 'Visualizar Próprios Agendamentos', 'slug' => 'session.view-own'],
+            ['name' => 'Criar Agendamento',                'slug' => 'session.create'],
+            ['name' => 'Editar Agendamento',               'slug' => 'session.update'],
+            ['name' => 'Excluir Agendamento',              'slug' => 'session.delete'],
 
-            // Registros de Sessão (Evolução)
-            ['name' => 'Visualizar Registros de Sessão',          'slug' => 'session-record.view'],
-            ['name' => 'Visualizar Todos os Registros de Sessão', 'slug' => 'session-record.view-all'],
-            ['name' => 'Visualizar Próprios Registros de Sessão', 'slug' => 'session-record.view-own'],
-            ['name' => 'Criar Registro de Sessão',                'slug' => 'session-record.create'],
-            ['name' => 'Editar Registro de Sessão',               'slug' => 'session-record.update'],
-            ['name' => 'Excluir Registro de Sessão',              'slug' => 'session-record.delete'],
+            // Registros de Atendimento AEE (Evolução)
+            ['name' => 'Visualizar Registros de atendimentos AEE',          'slug' => 'session-record.view'],
+            ['name' => 'Visualizar Todos os Registros de atendimentos AEE', 'slug' => 'session-record.view-all'],
+            ['name' => 'Visualizar Próprios Registros de atendimento AEE', 'slug' => 'session-record.view-own'],
+            ['name' => 'Criar Registro de atendimento AEE',                'slug' => 'session-record.create'],
+            ['name' => 'Editar Registro de atendimento AEE',               'slug' => 'session-record.update'],
+            ['name' => 'Excluir Registro de atendimento AEE',              'slug' => 'session-record.delete'],
 
             // Histórico/Cursos do Aluno
             ['name' => 'Visualizar Cursos do Aluno', 'slug' => 'student-course.view'],

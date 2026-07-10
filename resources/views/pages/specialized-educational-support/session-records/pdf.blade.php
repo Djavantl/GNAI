@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
-    <title>Registro de Sessão - ID #{{ $sessionRecord->id }}</title>
+    <title>Registro de Atendimento AEE - ID #{{ $sessionRecord->id }}</title>
 
     <style>
         {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
@@ -31,11 +31,11 @@
         <p>
             <strong>Profissional:</strong> {{ $professional->person->name ?? 'Não informado' }}
             |
-            <strong>Sessão:</strong> #{{ $session->id }}
+            <strong>Agendamento:</strong> #{{ $session->id }}
         </p>
 
         <p>
-            <strong>Data da Sessão:</strong> {{ $session->session_date->format('d/m/Y') }}
+            <strong>Data do Atendimento:</strong> {{ $session->session_date->format('d/m/Y') }}
             |
             <strong>Duração:</strong> {{ $sessionRecord->duration }}
         </p>
@@ -121,7 +121,7 @@
             <x-pdf.table>
                 <x-pdf.row>
                     <x-pdf.info-item label="Recomendações" :value="$evaluation->recommendations ?? 'N/A'" />
-                    <x-pdf.info-item label="Ajustes Próxima Sessão" :value="$evaluation->next_session_adjustments ?? 'N/A'" />
+                    <x-pdf.info-item label="Ajustes Próximo Atendimento" :value="$evaluation->next_session_adjustments ?? 'N/A'" />
                 </x-pdf.row>
             </x-pdf.table>
         @endif

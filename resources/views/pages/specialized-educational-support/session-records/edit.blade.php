@@ -4,8 +4,8 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
-            'Sessão' => route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id),
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
+            'Agendamento' => route('specialized-educational-support.sessions.show', $sessionRecord->attendance_session_id),
             'Registro' => route('specialized-educational-support.session-records.show', $sessionRecord),
             'Editar' => null
         ]" />
@@ -13,9 +13,9 @@
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Editar Registro de Sessão</h2>
+            <h2 class="text-title">Editar Registro de atendimento AEE</h2>
             <p class="text-muted">
-                Registro #{{ $sessionRecord->id }} • Sessão #{{ $sessionRecord->attendance_session_id }}
+                Registro #{{ $sessionRecord->id }} • Agendamento #{{ $sessionRecord->attendance_session_id }}
             </p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.session-records.show', $sessionRecord) }}" variant="secondary">
@@ -124,7 +124,7 @@
                                                 <x-forms.textarea name="evaluations[{{ $index }}][recommendations]" label="Recomendações" rows="3" :value="old('evaluations.'.$index.'.recommendations', $evaluation->recommendations)" />
                                             </div>
                                             <div class="col-md-6">
-                                                <x-forms.textarea name="evaluations[{{ $index }}][next_session_adjustments]" label="Ajustes para Próxima Sessão" rows="3" :value="old('evaluations.'.$index.'.next_session_adjustments', $evaluation->next_session_adjustments)" />
+                                                <x-forms.textarea name="evaluations[{{ $index }}][next_session_adjustments]" label="Ajustes para Próximo atendimento AEE" rows="3" :value="old('evaluations.'.$index.'.next_session_adjustments', $evaluation->next_session_adjustments)" />
                                             </div>
                                         </div>
                                     </div>

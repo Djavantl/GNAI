@@ -66,7 +66,7 @@ class AttendanceSessionSeeder extends Seeder
                     break;
                 }
 
-                // Quantas sessões ainda faltam e quantos dias restam (incluindo o atual)
+                // Quantos agendamentos ainda faltam e quantos dias restam (incluindo o atual)
                 $remaining    = 15 - $sessionsThisWeek;
                 $daysLeft     = $totalDays - $dayPosition;
                 // Distribuição: ceil para cobrir as 8 sem sobrecarregar um único dia (máx 2)
@@ -92,7 +92,7 @@ class AttendanceSessionSeeder extends Seeder
                         continue; // todos ocupados nesse slot, tenta o próximo
                     }
 
-                    // Define tipo: a cada 3 sessões uma é em grupo
+                    // Define tipo: a cada 3 agendamentos um é em grupo
                     $type = ($sessionIndex % 3 === 0) ? 'group' : 'individual';
 
                     if ($type === 'group' && $students->count() < 2) {
@@ -112,11 +112,11 @@ class AttendanceSessionSeeder extends Seeder
                         continue; // alunos insuficientes disponíveis, tenta o próximo slot
                     }
 
-                    // --- Insere a sessão ---
+                    // --- Insere o agendamento ---
                     $creatorId = $professional->user?->id ?? $fallbackCreator?->id;
 
                     if (!$creatorId) {
-                        $this->command->error('Nenhum usuário encontrado para definir creator_id das sessões.');
+                        $this->command->error('Nenhum usuário encontrado para definir creator_id dos agendamentos.');
                         return;
                     }
 
@@ -153,7 +153,7 @@ class AttendanceSessionSeeder extends Seeder
                 }
             }
 
-            $this->command->info("Semana iniciada em {$weekDays[0]}: {$sessionsThisWeek} sessões criadas.");
+            $this->command->info("Semana iniciada em {$weekDays[0]}: {$sessionsThisWeek} agendamentos criados.");
         }
     }
 
@@ -205,7 +205,7 @@ class AttendanceSessionSeeder extends Seeder
     }
 
     /**
-     * Seleciona alunos disponíveis no slot, respeitando o tipo de sessão.
+     * Seleciona alunos disponíveis no slot, respeitando o tipo de agendamento.
      */
     private function pickAvailableStudents(
         $students,
@@ -235,7 +235,7 @@ class AttendanceSessionSeeder extends Seeder
     }
 
     /**
-     * Define o status da sessão com base na data:
+     * Define o status do agendamento com base na data:
      * - Passado → 'Realizada'
      * - Hoje/Futuro → 'Agendada'
      */

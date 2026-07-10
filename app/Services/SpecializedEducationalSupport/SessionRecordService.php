@@ -57,7 +57,7 @@ class SessionRecordService
         abort_unless(
             $professionalId && (int) $session->professional_id === (int) $professionalId,
             403,
-            'Você só pode visualizar registros de suas próprias sessões.'
+            'Você só pode visualizar registros de seus próprios agendamentos.'
         );
     }
 
@@ -82,14 +82,14 @@ class SessionRecordService
         $professionalId = Auth::user()?->professional?->id;
 
         if (!$professionalId || (int) $professionalId !== (int) $session->professional_id) {
-            throw new Exception("Apenas o profissional vinculado a esta sessão pode {$action}.");
+            throw new Exception("Apenas o profissional vinculado a este agendamento pode {$action}.");
         }
     }
 
     private function ensureScheduledSession(Session $session, string $action): void
     {
         if (!in_array($this->normalizeStatus($session->status), ['agendada', 'agendado', 'scheduled'], true)) {
-            throw new Exception("A sessão precisa estar com status Agendada para {$action}.");
+            throw new Exception("O agendamento precisa estar com status Agendada para {$action}.");
         }
     }
 
@@ -114,11 +114,11 @@ class SessionRecordService
 
     public function ensureCanCreateForSession(Session $session): void
     {
-        $this->ensureAssignedProfessional($session, 'criar o registro desta sessão');
-        $this->ensureScheduledSession($session, 'criar o registro desta sessão');
+        $this->ensureAssignedProfessional($session, 'criar o registro deste agendamento');
+        $this->ensureScheduledSession($session, 'criar o registro deste agendamento');
 
         if ($session->sessionRecord()->exists()) {
-            throw new Exception('Esta sessão já possui registro cadastrado.');
+            throw new Exception('Este agendamento já possui registro cadastrado.');
         }
     }
 
@@ -127,7 +127,7 @@ class SessionRecordService
         $session = $sessionRecord->attendanceSession()->withTrashed()->first();
 
         if (!$session) {
-            throw new Exception('Sessão vinculada ao registro não encontrada.');
+            throw new Exception('Agendamento vinculado ao registro não encontrado.');
         }
 
         $this->ensureAssignedProfessional($session, $action);
@@ -140,7 +140,7 @@ class SessionRecordService
         $session = $evaluation->sessionRecord?->attendanceSession;
 
         if (!$session) {
-            throw new Exception('Sessão vinculada à avaliação não encontrada.');
+            throw new Exception('Agendamento vinculado à avaliação não encontrado.');
         }
 
         $this->ensureAssignedProfessional($session, $action);
@@ -236,7 +236,7 @@ class SessionRecordService
         $this->ensureCanManageRecord($session_rec, 'editar este registro de atendimento');
 
         return DB::transaction(function () use ($session_rec, $data) {
-            // Atualiza o registro geral da sessão
+            // Atualiza o registro geral do agendamento
             $session_rec->update([
                 'attendance_session_id' => $data['attendance_session_id'] ?? $session_rec->attendance_session_id,
                 'duration' => $data['duration'],

@@ -39,15 +39,15 @@ class SessionRequest extends FormRequest
     {
         return [
             'student_ids.required' => 'Selecione ao menos um aluno.',
-            'student_ids.array' => 'Os alunos da sessão devem ser informados em uma lista válida.',
+            'student_ids.array' => 'Os alunos do agendamento devem ser informados em uma lista válida.',
             'student_ids.min' => 'Selecione ao menos um aluno.',
             'student_ids.*.exists' => 'Um dos alunos informados não existe.',
 
             'professional_id.required' => 'O profissional é obrigatório.',
             'professional_id.exists' => 'O profissional informado não existe.',
 
-            'session_date.required' => 'A data da sessão é obrigatória.',
-            'session_date.date' => 'A data da sessão deve ser válida.',
+            'session_date.required' => 'A data do agendamento é obrigatória.',
+            'session_date.date' => 'A data do agendamento deve ser válida.',
 
             'start_time.required' => 'O horário de início é obrigatório.',
             'start_time.date_format' => 'O horário de início deve estar no formato HH:MM.',
@@ -58,12 +58,12 @@ class SessionRequest extends FormRequest
             'type.required' => 'O tipo de atendimento é obrigatório.',
             'type.string' => 'O tipo de atendimento deve ser um texto válido.',
             'type.max' => 'O tipo de atendimento não pode ultrapassar 100 caracteres.',
-            'location.required' => 'O local da sessão é obrigatório.',
-            'location.string' => 'O local da sessão deve ser um texto válido.',
-            'location.max' => 'O local da sessão não pode ultrapassar 255 caracteres.',
+            'location.required' => 'O local do agendamento é obrigatório.',
+            'location.string' => 'O local do agendamento deve ser um texto válido.',
+            'location.max' => 'O local do agendamento não pode ultrapassar 255 caracteres.',
 
-            'session_objective.required' => 'O objetivo da sessão é obrigatório.',
-            'session_objective.string' => 'O objetivo da sessão deve ser um texto válido.',
+            'session_objective.required' => 'O objetivo do agendamento é obrigatório.',
+            'session_objective.string' => 'O objetivo do agendamento deve ser um texto válido.',
             'cancellation_reason.required_if' => 'Informe o motivo do cancelamento.',
         ];
     }

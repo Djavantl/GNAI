@@ -4,16 +4,16 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
-            'Sessão #' . $session->id => route('specialized-educational-support.sessions.show', $session),
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
+            'Agendamento #' . $session->id => route('specialized-educational-support.sessions.show', $session),
             'Editar' => null
         ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Editar Sessão #{{ $session->id }}</h2>
-            <p class="text-muted">Ajuste os dados de agendamento, local ou objetivo desta sessão.</p>
+            <h2 class="text-title">Editar Agendamento #{{ $session->id }}</h2>
+            <p class="text-muted">Ajuste os dados de agendamento, local ou objetivo deste agendamento.</p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.show', $session) }}" variant="secondary">
             <i class="fas fa-times"></i> Cancelar
@@ -58,7 +58,7 @@
             <div class="col-md-6">
                 <x-forms.input 
                     name="session_date" 
-                    label="Data da Sessão " 
+                    label="Data do Agendamento " 
                     type="date" 
                     required 
                     :value="old('session_date', optional($session->session_date)->format('Y-m-d'))"
@@ -110,7 +110,7 @@
             <div class="col-md-12">
                 <x-forms.textarea
                     name="session_objective"
-                    label="Objetivo da Sessão"
+                    label="Objetivo do Agendamento"
                     rows="3"
                     :value="old('session_objective', $session->session_objective)"
                     required
@@ -141,7 +141,7 @@
             document.getElementById('session_date').addEventListener('change', loadSchedule);
             document.querySelector('select[name="start_time"]').addEventListener('change', updateEndTimeOptions);
             
-            // Dispara a carga inicial para mostrar os horários do dia atual da sessão
+            // Dispara a carga inicial para mostrar os horários do dia atual do agendamento
             loadSchedule();
         });
     </script>

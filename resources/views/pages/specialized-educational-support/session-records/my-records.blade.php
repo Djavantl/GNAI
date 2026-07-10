@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title', 'Meus Atendimentos')
+@section('title', 'Atendimentos AEE')
 
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Meus Atendimentos' => null
+            'Atendimentos AEE' => null
         ]" />
     </div>
 
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
         <x-table.page-header
-            title="Meus Registros de Atendimento"
-            subtitle="Histórico de registros das suas sessões de atendimento."
+            title="Atendimentos AEE"
+            subtitle="Histórico de registros dos seus atendimentos AEE."
         >
         </x-table.page-header>
 

@@ -1,28 +1,28 @@
 @extends('layouts.master')
 
-@section('title', 'Registros de Sessão')
+@section('title', 'Atendimentos AEE')
 
 @section('content')
      <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Registros de Sessões' => null
+            'Atendimentos AEE' => null
         ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Registros de Sessão</h2>
+            <h2 class="text-title">Registros de atendimentos AEE</h2>
             <p class="text-muted">Acompanhamento dos atendimentos educacionais especializados.</p>
         </div>
         <div class="d-flex gap-2 align-items-start">
-            {{-- Se houver um ID de sessão no filtro, permite criar novo registro para AQUELA sessão --}}
+            {{-- Se houver um ID de agendamento no filtro, permite criar novo registro para AQUELE agendamento --}}
             @if(request()->has('session_id'))
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.sessions.index')"
                     variant="secondary"
                 >
-                    Voltar para Sessões
+                    Voltar para Agendamentos
                 </x-buttons.link-button>
 
                 {{-- Corrigido: Rota agora espera o parâmetro {session} conforme definido nas rotas --}}
@@ -30,7 +30,7 @@
                     :href="route('specialized-educational-support.session-records.create', request('session_id'))"
                     variant="new"
                 >
-                    Novo Registro
+                    Novo Atendimento AEE
                 </x-buttons.link-button>
             @endif
         </div>
@@ -43,7 +43,7 @@
 
     <x-table.table :headers="[
         ['label' => 'Data', 'responsive' => false],
-        'Alunos na Sessão',
+        'Alunos no atendimento AEE',
         'Duração',
         ['label' => 'Ações', 'responsive' => false],
     ]">
@@ -89,7 +89,7 @@
             <tr>
                 <td colspan="4" class="text-center text-muted py-5">
                     <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
-                    Nenhum registro de sessão encontrado.
+                    Nenhum registro de atendimento AEE encontrado.
                 </td>
             </tr>
         @endforelse

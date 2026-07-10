@@ -78,7 +78,7 @@
                                 <div class="dashboard-kpi-icon bg-warning text-white">
                                     <i class="bi bi-calendar-check-fill"></i>
                                 </div>
-                                <h6 class="dashboard-kpi-title text-muted fw-bold">Sessões</h6>
+                                <h6 class="dashboard-kpi-title text-muted fw-bold">Agendamentos</h6>
                             </div>
                             <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalSessions ?? 0 }}</h3>
                         </div>
@@ -157,7 +157,7 @@
         <div class="row g-4 mt-1">
             <div class="col-12">
                 <div class="card card-custom border-0 shadow-sm p-4">
-                    <h5 class="text-title mb-4">Sessões por Status</h5>
+                    <h5 class="text-title mb-4">Agendamentos por Status</h5>
                     <div class="dashboard-chart-shell dashboard-chart-shell--medium">
                         <canvas id="barChartSessions"></canvas>
                     </div>

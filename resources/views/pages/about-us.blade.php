@@ -146,7 +146,7 @@
                 </div>
                 <div class="feature-card" data-cat="aee">
                     <div class="feature-icon purple"><i class="bi bi-calendar-check"></i></div>
-                    <div><div class="feature-name">Sessões</div><div class="feature-desc">Registro completo dos atendimentos realizados pela equipe.</div></div>
+                    <div><div class="feature-name">Agendamentos</div><div class="feature-desc">Registro completo dos atendimentos realizados pela equipe.</div></div>
                 </div>
                 <div class="feature-card" data-cat="aee">
                     <div class="feature-icon pink"><i class="bi bi-exclamation-triangle"></i></div>
@@ -206,7 +206,7 @@
                         <li><i class="bi bi-check2"></i> Equipe de profissionais</li>
                         <li><i class="bi bi-check2"></i> Professores vinculados</li>
                         <li><i class="bi bi-check2"></i> Planos Educacionais (PEIs)</li>
-                        <li><i class="bi bi-check2"></i> Registro de sessões</li>
+                        <li><i class="bi bi-check2"></i> Registro de atendimentos AEE</li>
                         <li><i class="bi bi-check2"></i> Controle de pendências</li>
                     </ul>
                 </div>
