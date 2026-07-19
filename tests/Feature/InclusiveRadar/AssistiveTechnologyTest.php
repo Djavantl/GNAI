@@ -106,10 +106,13 @@ class AssistiveTechnologyTest extends TestCase
             'is_loanable' => false,
             'asset_code' => 'TA-7001',
             'status' => ResourceStatus::AVAILABLE->value,
+            'is_active' => true,
             'deficiencies' => [$deficiency->id],
             'conservation_state' => ConservationState::NOT_APPLICABLE->value,
-            'inspection_type' => InspectionType::INITIAL->value,
-            'inspection_date' => now()->toDateString(),
+            'inspection' => [
+                'type' => InspectionType::INITIAL->value,
+                'date' => now()->toDateString(),
+            ],
         ];
 
         // Act
@@ -134,10 +137,13 @@ class AssistiveTechnologyTest extends TestCase
             'is_digital' => false,
             'quantity' => 1,
             'status' => ResourceStatus::AVAILABLE->value,
+            'is_active' => true,
             'deficiencies' => [$deficiency->id],
             'conservation_state' => ConservationState::GOOD->value,
-            'inspection_type' => InspectionType::INITIAL->value,
-            'inspection_date' => now()->toDateString(),
+            'inspection' => [
+                'type' => InspectionType::INITIAL->value,
+                'date' => now()->toDateString(),
+            ],
         ];
 
         // Act
@@ -165,11 +171,14 @@ class AssistiveTechnologyTest extends TestCase
             'is_loanable' => true,
             'asset_code' => $technology->asset_code,
             'quantity' => 5,
-            'quantity_available' => 5,
             'status' => ResourceStatus::AVAILABLE->value,
+            'is_active' => true,
             'deficiencies' => [$deficiency->id],
             'conservation_state' => ConservationState::GOOD->value,
-            'inspection_date' => now()->toDateString(),
+            'inspection' => [
+                'type' => InspectionType::PERIODIC->value,
+                'date' => now()->toDateString(),
+            ],
         ];
 
         // Act
@@ -265,7 +274,10 @@ class AssistiveTechnologyTest extends TestCase
         // Assert
         $response->assertOk();
         $response->assertViewIs('pages.inclusive-radar.assistive-technologies.inspections.show');
-        $response->assertViewHas('inspection', $inspection);
+        $response->assertViewHas(
+            'inspection',
+            static fn ($loadedInspection): bool => $loadedInspection->is($inspection),
+        );
     }
 
     public function test_it_blocks_access_to_an_inspection_of_another_assistive_technology()

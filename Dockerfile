@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM php:8.2-fpm-alpine AS php_builder
+FROM php:8.3-fpm-alpine AS php_builder
 
 RUN apk add --no-cache \
     $PHPIZE_DEPS \
@@ -14,6 +14,7 @@ RUN apk add --no-cache \
     libzip-dev \
     freetype-dev \
     oniguruma-dev \
+    sqlite-dev \
     zlib-dev
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -26,10 +27,18 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
         opcache \
         pcntl \
         pdo_mysql \
+        pdo_sqlite \
         xml \
-        zip \
-    && pecl install redis \
-    && docker-php-ext-enable redis
+        zip
+
+RUN git clone --depth 1 --branch 6.3.0 https://github.com/phpredis/phpredis.git /tmp/phpredis \
+    && cd /tmp/phpredis \
+    && phpize \
+    && ./configure \
+    && make -j"$(nproc)" \
+    && make install \
+    && docker-php-ext-enable redis \
+    && rm -rf /tmp/phpredis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -57,7 +66,7 @@ COPY vite.config.js ./
 
 RUN npm run build
 
-FROM php:8.2-fpm-alpine
+FROM php:8.3-fpm-alpine
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -78,6 +87,7 @@ RUN apk add --no-cache \
     mysql-client \
     oniguruma \
     shadow \
+    sqlite-libs \
     tzdata \
     unzip \
     zlib \
