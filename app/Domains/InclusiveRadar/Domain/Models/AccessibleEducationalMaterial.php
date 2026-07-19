@@ -12,7 +12,6 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibleEducationalMat
 use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
 use App\Models\InclusiveRadar\AccessibilityFeature;
-use App\Models\InclusiveRadar\Loan;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -92,6 +91,16 @@ final class AccessibleEducationalMaterial extends Model
             'notes' => $data->notes,
             'is_active' => $data->active,
         ]);
+    }
+
+    public function stock(): Stock
+    {
+        return $this->is_digital
+            ? Stock::notApplicable()
+            : Stock::restore(
+                total: $this->quantity,
+                available: $this->quantity_available,
+            );
     }
 
     public function ensureCanBeRemoved(bool $hasOpenLoans): void

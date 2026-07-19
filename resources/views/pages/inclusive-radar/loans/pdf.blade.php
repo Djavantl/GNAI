@@ -10,18 +10,6 @@
 </head>
 <body>
 
-@php
-    $currentStatus = $loan->status instanceof \App\Enums\InclusiveRadar\LoanStatus
-        ? $loan->status
-        : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
-
-    if ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast()) {
-        $statusLabel = 'Em Atraso';
-    } else {
-        $statusLabel = $currentStatus?->label() ?? '---';
-    }
-@endphp
-
 <div class="header">
     <h2>Ficha de Empréstimo de Recurso</h2>
 
@@ -80,9 +68,7 @@
     <x-pdf.row>
         <x-pdf.info-item
             label="Tipo"
-            :value="$loan->loanable_type === 'App\Models\InclusiveRadar\AssistiveTechnology'
-                ? 'Tecnologia Assistiva'
-                : 'Material Educacional'"
+            :value="$loanPresenter::loanableTypeLabel($loan)"
             colspan="2"
         />
 
