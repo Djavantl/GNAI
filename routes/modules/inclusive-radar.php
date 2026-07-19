@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
-    AccessibleEducationalMaterialController,
+use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
+use App\Http\Controllers\InclusiveRadar\{AccessibleEducationalMaterialController,
     AccessibilityFeatureController,
     BarrierCategoryController,
     BarrierController,
@@ -94,31 +94,31 @@ Route::middleware(['auth'])->group(function () {
         ->name('accessibility-features.destroy')->middleware('can:accessibility-feature.destroy');
 
     // ------------------- TECNOLOGIAS ASSISTIVAS -------------------
-    Route::get('/assistive-technologies', [AssistiveTechnologyController::class, 'index'])
+    Route::get('/assistive-technologies', [DomainAssistiveTechnologyController::class, 'index'])
         ->name('assistive-technologies.index')->middleware('can:assistive-technology.index');
 
-    Route::get('/assistive-technologies/create', [AssistiveTechnologyController::class, 'create'])
+    Route::get('/assistive-technologies/create', [DomainAssistiveTechnologyController::class, 'create'])
         ->name('assistive-technologies.create')->middleware('can:assistive-technology.create');
 
-    Route::post('/assistive-technologies/store', [AssistiveTechnologyController::class, 'store'])
+    Route::post('/assistive-technologies/store', [DomainAssistiveTechnologyController::class, 'store'])
         ->name('assistive-technologies.store')->middleware('can:assistive-technology.store');
 
-    Route::get('assistive-technologies/{assistiveTechnology}/inspection/{inspection}', [AssistiveTechnologyController::class, 'showInspection'])
+    Route::get('assistive-technologies/{assistiveTechnology}/inspection/{inspection}', [DomainAssistiveTechnologyController::class, 'showInspection'])
         ->name('assistive-technologies.inspection.show')->middleware('can:assistive-technology.inspection.show');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'show'])
+    Route::get('/assistive-technologies/{assistiveTechnology}', [DomainAssistiveTechnologyController::class, 'show'])
         ->name('assistive-technologies.show')->middleware('can:assistive-technology.show');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/edit', [AssistiveTechnologyController::class, 'edit'])
+    Route::get('/assistive-technologies/{assistiveTechnology}/edit', [DomainAssistiveTechnologyController::class, 'edit'])
         ->name('assistive-technologies.edit')->middleware('can:assistive-technology.edit');
 
-    Route::put('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'update'])
+    Route::put('/assistive-technologies/{assistiveTechnology}', [DomainAssistiveTechnologyController::class, 'update'])
         ->name('assistive-technologies.update')->middleware('can:assistive-technology.update');
 
-    Route::delete('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'destroy'])
+    Route::delete('/assistive-technologies/{assistiveTechnology}', [DomainAssistiveTechnologyController::class, 'destroy'])
         ->name('assistive-technologies.destroy')->middleware('can:assistive-technology.destroy');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [AssistiveTechnologyController::class, 'generatePdf'])
+    Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [DomainAssistiveTechnologyController::class, 'generatePdf'])
         ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
 
     Route::get('/assistive-technologies/{assistiveTechnology}/logs', [AssistiveTechnologyLogController::class, 'index'])
