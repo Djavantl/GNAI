@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\InclusiveRadar\Application\Queries\Inspections;
+namespace App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies;
 
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;

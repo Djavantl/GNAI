@@ -8,17 +8,10 @@ use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData
 use App\Domains\InclusiveRadar\Domain\DTOs\Inspections\CreateInspectionDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInspection;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Domains\InclusiveRadar\Infrastructure\Storage\InspectionImageStorage;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 final readonly class CreateInspectionAction
 {
-    public function __construct(
-        private InspectionImageStorage $imageStorage,
-    ) {}
-
     public function execute(
         Model $inspectable,
         CreateInspectionData $data,
@@ -33,43 +26,20 @@ final readonly class CreateInspectionAction
             );
         }
 
-        $storedPaths = [];
+        $inspectionDTO = new CreateInspectionDTO(
+            date: $data->date,
+            type: $data->type,
+            registeredBy: $registeredBy,
+            description: $data->description ?? $defaultDescription,
+            state: $state,
+            status: $status,
+        );
 
-        try {
-            return DB::transaction(function () use (
-                $inspectable,
-                $data,
-                $registeredBy,
-                $state,
-                $status,
-                $defaultDescription,
-                &$storedPaths,
-            ) {
-                $inspectionDTO = new CreateInspectionDTO(
-                    date: $data->date,
-                    type: $data->type,
-                    registeredBy: $registeredBy,
-                    description: $data->description ?? $defaultDescription,
-                    state: $state,
-                    status: $status,
-                );
+        $inspection = Inspection::register($inspectionDTO);
 
-                $inspection = Inspection::register($inspectionDTO);
+        $inspection->inspectable()->associate($inspectable);
+        $inspection->save();
 
-                $inspection->inspectable()->associate($inspectable);
-                $inspection->save();
-
-                $storedPaths = $this->imageStorage->store(
-                    $inspection,
-                    $data->images,
-                );
-
-                return $inspection;
-            });
-        } catch (Throwable $exception) {
-            $this->imageStorage->delete($storedPaths);
-
-            throw $exception;
-        }
+        return $inspection;
     }
 }

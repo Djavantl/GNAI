@@ -2,37 +2,37 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\InclusiveRadar\Application\Actions\AssistiveTechnologies;
+namespace App\Domains\InclusiveRadar\Application\Actions\AccessibleEducationalMaterials;
 
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
-use App\Domains\InclusiveRadar\Application\Data\AssistiveTechnologies\CreateAssistiveTechnologyData;
-use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\AssetCodeExistsQuery;
-use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\CreateAssistiveTechnologyDTO;
+use App\Domains\InclusiveRadar\Application\Data\AccessibleEducationalMaterials\CreateAccessibleEducationalMaterialData;
+use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterials\AccessibleEducationalMaterialAssetCodeExistsQuery;
+use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\CreateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-final readonly class CreateAssistiveTechnologyAction
+final readonly class CreateAccessibleEducationalMaterialAction
 {
     public function __construct(
         private CreateInspectionAction $createInspection,
         private AttachInspectionImagesAction $attachInspectionImages,
-        private AssetCodeExistsQuery $assetCodeExists,
+        private AccessibleEducationalMaterialAssetCodeExistsQuery $assetCodeExists,
     ) {}
 
     /**
      * @throws Throwable
      */
-    public function execute(CreateAssistiveTechnologyData $data, int $registeredBy): AssistiveTechnology
+    public function execute(CreateAccessibleEducationalMaterialData $data, int $registeredBy): AccessibleEducationalMaterial
     {
         $inspection = null;
 
-        $technology = DB::transaction(function () use ($data, $registeredBy, &$inspection) {
+        $material = DB::transaction(function () use ($data, $registeredBy, &$inspection) {
             $assetCode = AssetCode::optional($data->assetCode);
 
             if (
@@ -42,7 +42,7 @@ final readonly class CreateAssistiveTechnologyAction
                 throw new AssetCodeAlreadyInUse;
             }
 
-            $technologyDTO = new CreateAssistiveTechnologyDTO(
+            $materialDTO = new CreateAccessibleEducationalMaterialDTO(
                 name: $data->name,
                 digital: $data->isDigital,
                 loanable: $data->isLoanable,
@@ -54,25 +54,26 @@ final readonly class CreateAssistiveTechnologyAction
                 active: $data->isActive,
             );
 
-            $technology = AssistiveTechnology::register($technologyDTO);
+            $material = AccessibleEducationalMaterial::register($materialDTO);
 
             try {
-                $technology->save();
+                $material->save();
             } catch (UniqueConstraintViolationException $exception) {
                 throw new AssetCodeAlreadyInUse($exception);
             }
 
-            $technology->assignTargetAudience($data->deficiencies);
+            $material->assignTargetAudience($data->deficiencies);
+            $material->assignAccessibilityFeatures($data->accessibilityFeatures);
 
             $inspection = $this->createInspection->execute(
-                inspectable: $technology,
+                inspectable: $material,
                 data: $data->inspection,
                 registeredBy: $registeredBy,
                 state: $data->conservationState->value,
                 defaultDescription: 'Vistoria inicial de entrada.',
             );
 
-            return $technology;
+            return $material;
         });
 
         if ($inspection instanceof Inspection) {
@@ -82,8 +83,9 @@ final readonly class CreateAssistiveTechnologyAction
             );
         }
 
-        return $technology->fresh([
+        return $material->fresh([
             'deficiencies',
+            'accessibilityFeatures',
             'inspections.images',
         ]);
     }

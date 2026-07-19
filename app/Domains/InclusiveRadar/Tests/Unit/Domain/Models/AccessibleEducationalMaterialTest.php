@@ -4,45 +4,45 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Unit\Domain\Models;
 
-use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\CreateAssistiveTechnologyDTO;
-use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\UpdateAssistiveTechnologyDTO;
+use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\CreateAccessibleEducationalMaterialDTO;
+use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\UpdateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
-use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAssistiveTechnology;
-use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
+use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
 use PHPUnit\Framework\TestCase;
 
-final class AssistiveTechnologyTest extends TestCase
+final class AccessibleEducationalMaterialTest extends TestCase
 {
-    public function test_it_registers_a_physical_technology_with_initial_stock(): void
+    public function test_it_registers_a_physical_material_with_initial_stock(): void
     {
-        $technology = $this->register(
-            name: 'Linha Braille',
+        $material = $this->register(
+            name: 'Livro em Braille',
             digital: false,
             loanable: true,
             quantity: 3,
-            assetCode: AssetCode::from('TA-1001'),
+            assetCode: AssetCode::from('MPA-1001'),
             conservationState: ConservationState::GOOD,
         );
 
-        self::assertFalse($technology->exists);
-        self::assertSame('Linha Braille', $technology->name);
-        self::assertFalse($technology->is_digital);
-        self::assertTrue($technology->is_loanable);
-        self::assertSame(3, $technology->quantity);
-        self::assertSame(3, $technology->quantity_available);
-        self::assertSame('TA-1001', $technology->asset_code);
-        self::assertSame(ConservationState::GOOD, $technology->conservation_state);
-        self::assertSame(ResourceStatus::AVAILABLE, $technology->status);
+        self::assertFalse($material->exists);
+        self::assertSame('Livro em Braille', $material->name);
+        self::assertFalse($material->is_digital);
+        self::assertTrue($material->is_loanable);
+        self::assertSame(3, $material->quantity);
+        self::assertSame(3, $material->quantity_available);
+        self::assertSame('MPA-1001', $material->asset_code);
+        self::assertSame(ConservationState::GOOD, $material->conservation_state);
+        self::assertSame(ResourceStatus::AVAILABLE, $material->status);
     }
 
-    public function test_it_registers_a_digital_loanable_technology_without_stock(): void
+    public function test_it_registers_a_digital_material_without_stock(): void
     {
-        $technology = $this->register(
-            name: 'Leitor de tela',
+        $material = $this->register(
+            name: 'Apostila digital acessível',
             digital: true,
             loanable: true,
             quantity: null,
@@ -50,15 +50,14 @@ final class AssistiveTechnologyTest extends TestCase
             conservationState: ConservationState::NOT_APPLICABLE,
         );
 
-        self::assertTrue($technology->is_loanable);
-        self::assertNull($technology->quantity);
-        self::assertNull($technology->quantity_available);
-        self::assertTrue($technology->stock()->isNotApplicable());
+        self::assertTrue($material->is_loanable);
+        self::assertNull($material->quantity);
+        self::assertNull($material->quantity_available);
     }
 
     public function test_it_rejects_empty_name(): void
     {
-        $this->expectException(InvalidAssistiveTechnology::class);
+        $this->expectException(InvalidAccessibleEducationalMaterial::class);
 
         $this->register(
             name: '   ',
@@ -72,10 +71,10 @@ final class AssistiveTechnologyTest extends TestCase
 
     public function test_it_rejects_assigning_an_empty_target_audience(): void
     {
-        $this->expectException(InvalidAssistiveTechnology::class);
+        $this->expectException(InvalidAccessibleEducationalMaterial::class);
 
-        $technology = $this->register(
-            name: 'Leitor de tela',
+        $material = $this->register(
+            name: 'Apostila digital acessível',
             digital: true,
             loanable: false,
             quantity: null,
@@ -83,15 +82,15 @@ final class AssistiveTechnologyTest extends TestCase
             conservationState: ConservationState::NOT_APPLICABLE,
         );
 
-        $technology->assignTargetAudience([]);
+        $material->assignTargetAudience([]);
     }
 
-    public function test_it_rejects_physical_technology_without_quantity(): void
+    public function test_it_rejects_physical_material_without_quantity(): void
     {
         $this->expectException(InvalidStock::class);
 
         $this->register(
-            name: 'Mouse adaptado',
+            name: 'Mapa tátil',
             digital: false,
             loanable: true,
             quantity: null,
@@ -102,65 +101,38 @@ final class AssistiveTechnologyTest extends TestCase
 
     public function test_it_revises_physical_stock_preserving_open_loans(): void
     {
-        $technology = $this->register(
-            name: 'Linha Braille',
+        $material = $this->register(
+            name: 'Livro em Braille',
             digital: false,
             loanable: true,
             quantity: 3,
-            assetCode: AssetCode::from('TA-1001'),
+            assetCode: AssetCode::from('MPA-1001'),
             conservationState: ConservationState::GOOD,
         );
 
-        $this->revise($technology,
-            name: 'Linha Braille atualizada',
+        $this->revise($material,
+            name: 'Livro em Braille atualizado',
             digital: false,
             loanable: true,
             quantity: 5,
-            assetCode: AssetCode::from('TA-1001'),
+            assetCode: AssetCode::from('MPA-1001'),
             conservationState: ConservationState::REGULAR,
             status: ResourceStatus::AVAILABLE,
             openLoans: 2,
         );
 
-        self::assertSame('Linha Braille atualizada', $technology->name);
-        self::assertSame(5, $technology->quantity);
-        self::assertSame(3, $technology->quantity_available);
-        self::assertSame(ConservationState::REGULAR, $technology->conservation_state);
-    }
-
-    public function test_it_revises_a_digital_technology_without_manipulating_stock(): void
-    {
-        $technology = $this->register(
-            name: 'Leitor de tela',
-            digital: false,
-            loanable: true,
-            quantity: 2,
-            assetCode: null,
-            conservationState: ConservationState::GOOD,
-        );
-
-        $this->revise($technology,
-            name: 'Leitor de tela',
-            digital: true,
-            loanable: true,
-            quantity: null,
-            assetCode: null,
-            conservationState: ConservationState::NOT_APPLICABLE,
-            status: ResourceStatus::AVAILABLE,
-            openLoans: 1,
-        );
-
-        self::assertTrue($technology->is_loanable);
-        self::assertNull($technology->quantity);
-        self::assertNull($technology->quantity_available);
+        self::assertSame('Livro em Braille atualizado', $material->name);
+        self::assertSame(5, $material->quantity);
+        self::assertSame(3, $material->quantity_available);
+        self::assertSame(ConservationState::REGULAR, $material->conservation_state);
     }
 
     public function test_it_rejects_reducing_stock_below_open_loans(): void
     {
         $this->expectException(InvalidStock::class);
 
-        $technology = $this->register(
-            name: 'Mouse adaptado',
+        $material = $this->register(
+            name: 'Mapa tátil',
             digital: false,
             loanable: true,
             quantity: 3,
@@ -168,8 +140,8 @@ final class AssistiveTechnologyTest extends TestCase
             conservationState: ConservationState::GOOD,
         );
 
-        $this->revise($technology,
-            name: 'Mouse adaptado',
+        $this->revise($material,
+            name: 'Mapa tátil',
             digital: false,
             loanable: true,
             quantity: 1,
@@ -182,10 +154,10 @@ final class AssistiveTechnologyTest extends TestCase
 
     public function test_it_rejects_status_change_while_there_are_open_loans(): void
     {
-        $this->expectException(InvalidAssistiveTechnology::class);
+        $this->expectException(InvalidAccessibleEducationalMaterial::class);
 
-        $technology = $this->register(
-            name: 'Mouse adaptado',
+        $material = $this->register(
+            name: 'Mapa tátil',
             digital: false,
             loanable: true,
             quantity: 2,
@@ -193,8 +165,8 @@ final class AssistiveTechnologyTest extends TestCase
             conservationState: ConservationState::GOOD,
         );
 
-        $this->revise($technology,
-            name: 'Mouse adaptado',
+        $this->revise($material,
+            name: 'Mapa tátil',
             digital: false,
             loanable: true,
             quantity: 2,
@@ -205,28 +177,12 @@ final class AssistiveTechnologyTest extends TestCase
         );
     }
 
-    public function test_it_allows_removal_without_open_loans(): void
-    {
-        $technology = $this->register(
-            name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
-            quantity: 1,
-            assetCode: null,
-            conservationState: ConservationState::GOOD,
-        );
-
-        $technology->ensureCanBeRemoved(hasOpenLoans: false);
-
-        $this->addToAssertionCount(1);
-    }
-
     public function test_it_rejects_removal_with_open_loans(): void
     {
         $this->expectException(ResourceHasOpenLoans::class);
 
-        $technology = $this->register(
-            name: 'Mouse adaptado',
+        $material = $this->register(
+            name: 'Mapa tátil',
             digital: false,
             loanable: true,
             quantity: 1,
@@ -234,7 +190,7 @@ final class AssistiveTechnologyTest extends TestCase
             conservationState: ConservationState::GOOD,
         );
 
-        $technology->ensureCanBeRemoved(hasOpenLoans: true);
+        $material->ensureCanBeRemoved(hasOpenLoans: true);
     }
 
     private function register(
@@ -247,8 +203,8 @@ final class AssistiveTechnologyTest extends TestCase
         ResourceStatus $status = ResourceStatus::AVAILABLE,
         ?string $notes = null,
         bool $active = true,
-    ): AssistiveTechnology {
-        return AssistiveTechnology::register(new CreateAssistiveTechnologyDTO(
+    ): AccessibleEducationalMaterial {
+        return AccessibleEducationalMaterial::register(new CreateAccessibleEducationalMaterialDTO(
             name: $name,
             digital: $digital,
             loanable: $loanable,
@@ -262,7 +218,7 @@ final class AssistiveTechnologyTest extends TestCase
     }
 
     private function revise(
-        AssistiveTechnology $technology,
+        AccessibleEducationalMaterial $material,
         string $name,
         bool $digital,
         bool $loanable,
@@ -274,7 +230,7 @@ final class AssistiveTechnologyTest extends TestCase
         ?string $notes = null,
         bool $active = true,
     ): void {
-        $technology->revise(new UpdateAssistiveTechnologyDTO(
+        $material->revise(new UpdateAccessibleEducationalMaterialDTO(
             name: $name,
             digital: $digital,
             loanable: $loanable,

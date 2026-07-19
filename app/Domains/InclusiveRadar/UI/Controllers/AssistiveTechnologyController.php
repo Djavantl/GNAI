@@ -14,7 +14,7 @@ use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\Assisti
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\AssistiveTechnologyPdfQuery;
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ListAssistiveTechnologiesQuery;
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ShowAssistiveTechnologyQuery;
-use App\Domains\InclusiveRadar\Application\Queries\Inspections\ShowAssistiveTechnologyInspectionQuery;
+use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ShowAssistiveTechnologyInspectionQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
@@ -27,11 +27,8 @@ use Illuminate\View\View;
 
 final class AssistiveTechnologyController extends Controller
 {
-    public function index(
-        ListAssistiveTechnologiesData $filters,
-        ListAssistiveTechnologiesQuery $query,
-        Request $request,
-    ): View {
+    public function index(ListAssistiveTechnologiesData $filters, ListAssistiveTechnologiesQuery $query, Request $request): View
+    {
         $assistiveTechnologies = $query->execute($filters);
 
         if ($request->ajax()) {
@@ -73,10 +70,8 @@ final class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia assistiva criada com sucesso!');
     }
 
-    public function show(
-        AssistiveTechnology $assistiveTechnology,
-        ShowAssistiveTechnologyQuery $query,
-    ): View {
+    public function show(AssistiveTechnology $assistiveTechnology, ShowAssistiveTechnologyQuery $query): View
+    {
         $technology = $query->execute($assistiveTechnology);
 
         return view(
@@ -89,11 +84,8 @@ final class AssistiveTechnologyController extends Controller
         );
     }
 
-    public function update(
-        UpdateAssistiveTechnologyData $data,
-        AssistiveTechnology $assistiveTechnology,
-        UpdateAssistiveTechnologyAction $action,
-    ): RedirectResponse {
+    public function update(UpdateAssistiveTechnologyData $data, AssistiveTechnology $assistiveTechnology, UpdateAssistiveTechnologyAction $action): RedirectResponse
+    {
         try {
             $action->execute(
                 technology: $assistiveTechnology,
@@ -111,20 +103,16 @@ final class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
     }
 
-    public function edit(
-        AssistiveTechnology $assistiveTechnology,
-        AssistiveTechnologyFormQuery $form,
-    ): View {
+    public function edit(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): View
+    {
         return view(
             'pages.inclusive-radar.assistive-technologies.edit',
             $form->forUpdate($assistiveTechnology),
         );
     }
 
-    public function destroy(
-        AssistiveTechnology $assistiveTechnology,
-        DeleteAssistiveTechnologyAction $action,
-    ): RedirectResponse {
+    public function destroy(AssistiveTechnology $assistiveTechnology, DeleteAssistiveTechnologyAction $action): RedirectResponse
+    {
         $action->execute($assistiveTechnology);
 
         return redirect()
@@ -132,10 +120,8 @@ final class AssistiveTechnologyController extends Controller
             ->with('success', 'Tecnologia removida com sucesso!');
     }
 
-    public function generatePdf(
-        AssistiveTechnology $assistiveTechnology,
-        AssistiveTechnologyPdfQuery $query,
-    ): Response {
+    public function generatePdf(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyPdfQuery $query): Response
+    {
         $technology = $query->execute($assistiveTechnology);
         $pdf = Pdf::loadView(
             'pages.inclusive-radar.assistive-technologies.pdf',
@@ -147,11 +133,8 @@ final class AssistiveTechnologyController extends Controller
         return $pdf->stream("TA_{$technology->name}.pdf");
     }
 
-    public function showInspection(
-        AssistiveTechnology $assistiveTechnology,
-        Inspection $inspection,
-        ShowAssistiveTechnologyInspectionQuery $query,
-    ): View {
+    public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection, ShowAssistiveTechnologyInspectionQuery $query): View
+    {
         $scopedInspection = $query->execute(
             technology: $assistiveTechnology,
             inspection: $inspection,

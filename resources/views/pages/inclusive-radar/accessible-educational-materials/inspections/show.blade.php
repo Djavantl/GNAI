@@ -37,14 +37,14 @@
                     column="col-md-6"
                     isBox="true"
                 >
-                    {{ $inspection->state?->label() ?? $inspection->conservation_state?->label() ?? '---' }}
+                    {{ $inspection->state?->label() ?? '---' }}
                 </x-show.info-item>
 
                 <x-show.info-item label="Tipo de Inspeção" column="col-md-6" isBox="true">
-                    {{ $inspection->type?->label() ?? $inspection->inspection_type?->label() ?? '---' }}
+                    {{ $inspection->type?->label() ?? '---' }}
                 </x-show.info-item>
 
-                <x-show.info-textarea label="Parecer Técnico / Descrição" column="col-12" :value="($inspection->inspection_description ?? $inspection->description) ?: 'Nenhum parecer técnico registrado.'" :rich="true"/>
+                <x-show.info-textarea label="Parecer Técnico / Descrição" column="col-12" :value="$inspection->description ?: 'Nenhum parecer técnico registrado.'" :rich="true"/>
             </div>
 
             <x-forms.section title="Evidências Visuais" />
