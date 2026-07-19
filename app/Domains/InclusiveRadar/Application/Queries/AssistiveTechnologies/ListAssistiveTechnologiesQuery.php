@@ -22,7 +22,7 @@ final class ListAssistiveTechnologiesQuery
             $query->where(
                 'name',
                 'like',
-                '%'.trim((string) $filters->name).'%',
+                '%'.trim($filters->name).'%',
             );
         }
 

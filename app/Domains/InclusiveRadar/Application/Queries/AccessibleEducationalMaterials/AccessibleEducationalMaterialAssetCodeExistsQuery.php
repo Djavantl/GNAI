@@ -6,6 +6,7 @@ namespace App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMa
 
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
+use Illuminate\Database\Eloquent\Builder;
 
 final class AccessibleEducationalMaterialAssetCodeExistsQuery
 {
@@ -15,7 +16,7 @@ final class AccessibleEducationalMaterialAssetCodeExistsQuery
             ->where('asset_code', $assetCode->value())
             ->when(
                 $ignoreId !== null,
-                static fn ($query) => $query->whereKeyNot($ignoreId),
+                static fn (Builder $query): Builder => $query->whereKeyNot($ignoreId),
             )
             ->exists();
     }

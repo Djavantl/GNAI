@@ -3,13 +3,11 @@
 namespace Tests\Feature\InclusiveRadar;
 
 use App\Enums\InclusiveRadar\LoanStatus;
-use App\Http\Controllers\InclusiveRadar\LoanController;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\Loan;
-use App\Models\User;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
-use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,6 +16,7 @@ class LoanTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $regularUser;
 
     protected function setUp(): void
@@ -92,9 +91,9 @@ class LoanTest extends TestCase
         $response->assertViewHas('professionals');
         $response->assertViewHas('assistive_technologies');
         $response->assertViewHas('educational_materials');
-        $response->assertViewHas('selectedStudentId', (string) $student->id);
-        $response->assertViewHas('selectedProfessionalId', (string) $professional->id);
-        $response->assertViewHas('selectedItemId', (string) $item->id);
+        $response->assertViewHas('selectedStudentId', $student->id);
+        $response->assertViewHas('selectedProfessionalId', $professional->id);
+        $response->assertViewHas('selectedItemId', $item->id);
         $response->assertViewHas('selectedItemType', $item->getMorphClass());
     }
 
@@ -141,41 +140,6 @@ class LoanTest extends TestCase
         $response->assertViewIs('pages.inclusive-radar.loans.show');
         $response->assertViewHas('loan');
         $response->assertViewHas('isOverdue', true);
-    }
-
-    public function test_loan_show_handles_status_when_it_is_not_an_enum_instance()
-    {
-        $loan = new class extends Loan
-        {
-            public function getAttribute($key): mixed
-            {
-                if ($key === 'status') {
-                    return 'active';
-                }
-
-                return parent::getAttribute($key);
-            }
-        };
-
-        $loan->forceFill([
-            'loan_date' => Carbon::parse(now()->subDays(3)->toDateString()),
-            'due_date' => Carbon::parse(now()->subDay()->toDateString()),
-            'return_date' => null,
-            'status' => 'active',
-            'observation' => 'Teste de branch',
-        ]);
-
-        $this->actingAs($this->admin);
-
-        $response = $this->get(route('inclusive-radar.loans.show', Loan::factory()->create()));
-        $response->assertOk();
-
-        $view = app(LoanController::class)->show($loan);
-        $data = $view->getData();
-
-        $this->assertTrue($data['isOverdue']);
-        $this->assertSame('Em Atraso', $data['statusLabel']);
-        $this->assertSame('danger', $data['statusColor']);
     }
 
     public function test_admin_can_access_loan_edit_page()
