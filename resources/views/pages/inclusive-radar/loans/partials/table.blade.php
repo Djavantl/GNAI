@@ -25,24 +25,14 @@
             </x-table.td>
 
             <x-table.td>
-                <span class="{{ $loan->status === 'active' && $loan->due_date->isPast() ? 'text-danger fw-bold' : '' }}">
+                <span class="{{ $loanPresenter::isOverdue($loan) ? 'text-danger fw-bold' : '' }}">
                     {{ $loan->due_date->format('d/m/Y') }}
                 </span>
             </x-table.td>
 
             <x-table.td>
-                @php
-                    $currentStatus = $loan->status instanceof \App\Enums\InclusiveRadar\LoanStatus
-                        ? $loan->status
-                        : \App\Enums\InclusiveRadar\LoanStatus::tryFrom($loan->status);
-
-                    $isOverdue = ($currentStatus === \App\Enums\InclusiveRadar\LoanStatus::ACTIVE && $loan->due_date->isPast());
-
-                    $statusLabel = $isOverdue ? 'Em Atraso' : ($currentStatus?->label() ?? $loan->status);
-                    $statusColor = $isOverdue ? 'danger' : ($currentStatus?->color() ?? 'secondary');
-                @endphp
-                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
-                    {{ $statusLabel }}
+                <span class="text-{{ $loanPresenter::statusColor($loan) }} fw-bold text-uppercase" style="font-size: 0.85rem;">
+                    {{ $loanPresenter::statusLabel($loan) }}
                 </span>
             </x-table.td>
 

@@ -7,13 +7,13 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\AccessibleEducationalMaterial
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\CreateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
-use App\Enums\InclusiveRadar\LoanStatus;
 use App\Models\InclusiveRadar\AccessibilityFeature;
-use App\Models\InclusiveRadar\Loan;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -25,7 +25,13 @@ enum ResourceStatus: string
 
     public function allowsLoan(): bool
     {
-        return $this === self::AVAILABLE;
+        return match ($this) {
+            self::AVAILABLE,
+            self::IN_USE => true,
+            self::UNDER_MAINTENANCE,
+            self::DAMAGED,
+            self::UNAVAILABLE => false,
+        };
     }
 
     public function blocksLoan(): bool

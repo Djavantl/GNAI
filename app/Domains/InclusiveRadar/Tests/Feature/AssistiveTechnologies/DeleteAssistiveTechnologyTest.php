@@ -8,11 +8,11 @@ use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\CreateAssistive
 use App\Domains\InclusiveRadar\Domain\DTOs\Inspections\CreateInspectionDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
-use App\Enums\InclusiveRadar\LoanStatus;
-use App\Models\InclusiveRadar\Loan;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -1,27 +1,25 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController as DomainAccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
-use App\Http\Controllers\InclusiveRadar\{AccessibilityFeatureController,
-    BarrierCategoryController,
-    BarrierController,
-    InstitutionalEventController,
-    InstitutionController,
-    LoanController,
-    LocationController,
-    Logs\AccessibleEducationalMaterialLogController,
-    Logs\AssistiveTechnologyLogController,
-    WaitlistController};
+use App\Domains\InclusiveRadar\UI\Controllers\LoanController as DomainLoanController;
+use App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController;
+use App\Http\Controllers\InclusiveRadar\BarrierCategoryController;
+use App\Http\Controllers\InclusiveRadar\BarrierController;
+use App\Http\Controllers\InclusiveRadar\InstitutionalEventController;
+use App\Http\Controllers\InclusiveRadar\InstitutionController;
+use App\Http\Controllers\InclusiveRadar\LocationController;
+use App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController;
+use App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController;
+use App\Http\Controllers\InclusiveRadar\WaitlistController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
 | ADMIN – Gestão de Cadastros (somente administradores)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-
-});
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {});
 
 /*
 |--------------------------------------------------------------------------
@@ -209,31 +207,31 @@ Route::middleware(['auth'])->group(function () {
         ->name('institutional-events.pdf')->middleware('can:institutional-event.pdf');
 
     // ------------------- EMPRÉSTIMOS -------------------
-    Route::get('/loans', [LoanController::class, 'index'])
+    Route::get('/loans', [DomainLoanController::class, 'index'])
         ->name('loans.index')->middleware('can:loan.index');
 
-    Route::get('/loans/create', [LoanController::class, 'create'])
+    Route::get('/loans/create', [DomainLoanController::class, 'create'])
         ->name('loans.create')->middleware('can:loan.create');
 
-    Route::post('/loans/store', [LoanController::class, 'store'])
+    Route::post('/loans/store', [DomainLoanController::class, 'store'])
         ->name('loans.store')->middleware('can:loan.store');
 
-    Route::get('/loans/{loan}', [LoanController::class, 'show'])
+    Route::get('/loans/{loan}', [DomainLoanController::class, 'show'])
         ->name('loans.show')->middleware('can:loan.show');
 
-    Route::get('/loans/{loan}/edit', [LoanController::class, 'edit'])
+    Route::get('/loans/{loan}/edit', [DomainLoanController::class, 'edit'])
         ->name('loans.edit')->middleware('can:loan.edit');
 
-    Route::put('/loans/{loan}', [LoanController::class, 'update'])
+    Route::put('/loans/{loan}', [DomainLoanController::class, 'update'])
         ->name('loans.update')->middleware('can:loan.update');
 
-    Route::patch('/loans/{loan}/return', [LoanController::class, 'returnItem'])
+    Route::patch('/loans/{loan}/return', [DomainLoanController::class, 'returnItem'])
         ->name('loans.return')->middleware('can:loan.return');
 
-    Route::delete('/loans/{loan}', [LoanController::class, 'destroy'])
+    Route::delete('/loans/{loan}', [DomainLoanController::class, 'destroy'])
         ->name('loans.destroy')->middleware('can:loan.destroy');
 
-    Route::get('/loans/{loan}/pdf', [LoanController::class, 'generatePdf'])
+    Route::get('/loans/{loan}/pdf', [DomainLoanController::class, 'generatePdf'])
         ->name('loans.pdf')->middleware('can:loan.pdf');
 
     // ------------------- FILA DE ESPERA -------------------

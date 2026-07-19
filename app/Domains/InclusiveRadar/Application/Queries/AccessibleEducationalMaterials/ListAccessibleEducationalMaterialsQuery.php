@@ -19,7 +19,7 @@ final class ListAccessibleEducationalMaterialsQuery
             ->with(['deficiencies', 'accessibilityFeatures']);
 
         if (filled($filters->name)) {
-            $query->where('name', 'like', '%'.trim((string) $filters->name).'%');
+            $query->where('name', 'like', '%'.trim($filters->name).'%');
         }
 
         if ($filters->status !== null) {
