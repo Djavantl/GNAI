@@ -131,10 +131,10 @@
                             data-bs-toggle="modal"
                             data-bs-target="#globalConfirmActionModal"
                             data-confirm-title="Excluir Tecnologia Assistiva"
-                            data-confirm-message="A tecnologia {{ $assistiveTechnology->name }} sera excluida permanentemente."
+                            data-confirm-message="A tecnologia {{ $assistiveTechnology->name }} será removida do sistema."
                             data-confirm-action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}"
                             data-confirm-method="DELETE"
-                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-submit-text="Confirmar Exclusão"
                             data-confirm-variant="danger"
                         >
                             <i class="fas fa-trash-alt"></i> Excluir
