@@ -20,12 +20,38 @@ final class InspectionImageStorage
      */
     public function store(Inspection $inspection, array $images): array
     {
+        $storedImages = $this->storeFiles($inspection, $images);
+
+        if ($storedImages === []) {
+            return [];
+        }
+
+        $storedPaths = array_column($storedImages, 'path');
+
+        try {
+            $inspection->images()->createMany($storedImages);
+        } catch (Throwable $exception) {
+            $this->delete($storedPaths);
+
+            throw $exception;
+        }
+
+        return $storedPaths;
+    }
+
+    /**
+     * @param  array<int, mixed>  $images
+     * @return list<array{path: string, original_name: string, mime_type: string, size: int}>
+     */
+    public function storeFiles(Inspection $inspection, array $images): array
+    {
         if ($images === []) {
             return [];
         }
 
         $manager = new ImageManager(new Driver);
         $storedPaths = [];
+        $storedImages = [];
 
         try {
             foreach ($images as $image) {
@@ -56,12 +82,12 @@ final class InspectionImageStorage
 
                 $storedPaths[] = $path;
 
-                $inspection->images()->create([
+                $storedImages[] = [
                     'path' => $path,
                     'original_name' => $image->getClientOriginalName(),
                     'mime_type' => 'image/webp',
                     'size' => strlen($contents),
-                ]);
+                ];
             }
         } catch (Throwable $exception) {
             $this->delete($storedPaths);
@@ -69,7 +95,7 @@ final class InspectionImageStorage
             throw $exception;
         }
 
-        return $storedPaths;
+        return $storedImages;
     }
 
     /**

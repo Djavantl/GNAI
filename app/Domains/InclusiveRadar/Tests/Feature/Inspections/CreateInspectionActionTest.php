@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\Inspections;
 
+use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
 use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData;
 use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\CreateAssistiveTechnologyDTO;
@@ -21,7 +22,7 @@ final class CreateInspectionActionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_removes_stored_images_when_inspection_creation_fails(): void
+    public function test_it_removes_stored_images_when_image_attachment_fails(): void
     {
         Storage::fake('public');
 
@@ -45,18 +46,23 @@ final class CreateInspectionActionTest extends TestCase
             ],
         );
 
+        $inspection = app(CreateInspectionAction::class)->execute(
+            inspectable: $technology,
+            data: $data,
+            registeredBy: $user->id,
+            state: ConservationState::GOOD->value,
+        );
+
         try {
-            app(CreateInspectionAction::class)->execute(
-                inspectable: $technology,
-                data: $data,
-                registeredBy: $user->id,
-                state: ConservationState::GOOD->value,
+            app(AttachInspectionImagesAction::class)->execute(
+                inspection: $inspection,
+                images: $data->images,
             );
 
-            self::fail('A criação deveria rejeitar uma imagem inválida.');
+            self::fail('O anexo deveria rejeitar uma imagem inválida.');
         } catch (InvalidInspection) {
             self::assertSame([], Storage::disk('public')->allFiles('inspections'));
-            $this->assertDatabaseCount('inspections', 0);
+            $this->assertDatabaseCount('inspections', 1);
             $this->assertDatabaseCount('inspection_images', 0);
         }
     }
