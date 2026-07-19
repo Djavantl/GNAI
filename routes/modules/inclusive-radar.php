@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController as DomainAccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
-use App\Http\Controllers\InclusiveRadar\{AccessibleEducationalMaterialController,
-    AccessibilityFeatureController,
+use App\Http\Controllers\InclusiveRadar\{AccessibilityFeatureController,
     BarrierCategoryController,
     BarrierController,
     InstitutionalEventController,
@@ -153,31 +153,31 @@ Route::middleware(['auth'])->group(function () {
         ->name('barriers.pdf')->middleware('can:barrier.pdf');
 
     // ------------------- MATERIAIS PEDAGÓGICOS ACESSÍVEIS -------------------
-    Route::get('/accessible-educational-materials', [AccessibleEducationalMaterialController::class, 'index'])
+    Route::get('/accessible-educational-materials', [DomainAccessibleEducationalMaterialController::class, 'index'])
         ->name('accessible-educational-materials.index')->middleware('can:material.index');
 
-    Route::get('/accessible-educational-materials/create', [AccessibleEducationalMaterialController::class, 'create'])
+    Route::get('/accessible-educational-materials/create', [DomainAccessibleEducationalMaterialController::class, 'create'])
         ->name('accessible-educational-materials.create')->middleware('can:material.create');
 
-    Route::post('/accessible-educational-materials/store', [AccessibleEducationalMaterialController::class, 'store'])
+    Route::post('/accessible-educational-materials/store', [DomainAccessibleEducationalMaterialController::class, 'store'])
         ->name('accessible-educational-materials.store')->middleware('can:material.store');
 
-    Route::get('accessible-educational-materials/{material}/inspection/{inspection}', [AccessibleEducationalMaterialController::class, 'showInspection'])
+    Route::get('accessible-educational-materials/{material}/inspection/{inspection}', [DomainAccessibleEducationalMaterialController::class, 'showInspection'])
         ->name('accessible-educational-materials.inspection.show')->middleware('can:material.inspection.show');
 
-    Route::get('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'show'])
+    Route::get('/accessible-educational-materials/{material}', [DomainAccessibleEducationalMaterialController::class, 'show'])
         ->name('accessible-educational-materials.show')->middleware('can:material.show');
 
-    Route::get('/accessible-educational-materials/{material}/edit', [AccessibleEducationalMaterialController::class, 'edit'])
+    Route::get('/accessible-educational-materials/{material}/edit', [DomainAccessibleEducationalMaterialController::class, 'edit'])
         ->name('accessible-educational-materials.edit')->middleware('can:material.edit');
 
-    Route::put('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'update'])
+    Route::put('/accessible-educational-materials/{material}', [DomainAccessibleEducationalMaterialController::class, 'update'])
         ->name('accessible-educational-materials.update')->middleware('can:material.update');
 
-    Route::delete('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'destroy'])
+    Route::delete('/accessible-educational-materials/{material}', [DomainAccessibleEducationalMaterialController::class, 'destroy'])
         ->name('accessible-educational-materials.destroy')->middleware('can:material.destroy');
 
-    Route::get('/accessible-educational-materials/{material}/pdf', [AccessibleEducationalMaterialController::class, 'generatePdf'])
+    Route::get('/accessible-educational-materials/{material}/pdf', [DomainAccessibleEducationalMaterialController::class, 'generatePdf'])
         ->name('accessible-educational-materials.pdf')->middleware('can:material.pdf');
 
     Route::get('/accessible-educational-materials/{material}/logs', [AccessibleEducationalMaterialLogController::class, 'index'])

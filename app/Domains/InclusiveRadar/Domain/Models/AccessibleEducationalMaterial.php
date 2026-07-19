@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
-use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\CreateAssistiveTechnologyDTO;
-use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\UpdateAssistiveTechnologyDTO;
+use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\CreateAccessibleEducationalMaterialDTO;
+use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\UpdateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
-use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
+use App\Models\InclusiveRadar\AccessibilityFeature;
 use App\Models\InclusiveRadar\Loan;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Database\Eloquent\Model;
@@ -18,9 +19,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class AssistiveTechnology extends Model
+final class AccessibleEducationalMaterial extends Model
 {
     use SoftDeletes;
+
+    protected $table = 'accessible_educational_materials';
 
     protected $fillable = [
         'name',
@@ -30,8 +33,8 @@ final class AssistiveTechnology extends Model
         'quantity',
         'quantity_available',
         'conservation_state',
-        'status',
         'is_loanable',
+        'status',
         'is_active',
     ];
 
@@ -45,7 +48,7 @@ final class AssistiveTechnology extends Model
         'status' => ResourceStatus::class,
     ];
 
-    public static function register(CreateAssistiveTechnologyDTO $data): self
+    public static function register(CreateAccessibleEducationalMaterialDTO $data): self
     {
         $stock = $data->digital
             ? Stock::notApplicable()
@@ -65,10 +68,10 @@ final class AssistiveTechnology extends Model
         ]);
     }
 
-    public function revise(UpdateAssistiveTechnologyDTO $data): void
+    public function revise(UpdateAccessibleEducationalMaterialDTO $data): void
     {
         if ($data->openLoans > 0 && $this->status !== $data->status) {
-            throw new InvalidAssistiveTechnology(
+            throw new InvalidAccessibleEducationalMaterial(
                 'Não é possível alterar o status do item enquanto houver empréstimos ativos.'
             );
         }
@@ -91,16 +94,6 @@ final class AssistiveTechnology extends Model
         ]);
     }
 
-    public function stock(): Stock
-    {
-        return $this->is_digital
-            ? Stock::notApplicable()
-            : Stock::restore(
-                total: $this->quantity,
-                available: $this->quantity_available,
-            );
-    }
-
     public function ensureCanBeRemoved(bool $hasOpenLoans): void
     {
         if ($hasOpenLoans) {
@@ -112,9 +105,19 @@ final class AssistiveTechnology extends Model
     {
         return $this->belongsToMany(
             Deficiency::class,
-            'assistive_technology_deficiency',
-            'assistive_technology_id',
+            'accessible_educational_material_deficiency',
+            'accessible_educational_material_id',
             'deficiency_id',
+        )->withTimestamps();
+    }
+
+    public function accessibilityFeatures(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            AccessibilityFeature::class,
+            'accessible_educational_material_accessibility',
+            'accessible_educational_material_id',
+            'accessibility_feature_id',
         )->withTimestamps();
     }
 
@@ -124,18 +127,32 @@ final class AssistiveTechnology extends Model
     public function assignTargetAudience(array $targetAudienceIds): void
     {
         if ($targetAudienceIds === []) {
-            throw new InvalidAssistiveTechnology(
+            throw new InvalidAccessibleEducationalMaterial(
                 'Selecione pelo menos um público-alvo.'
             );
         }
 
         if (! $this->exists) {
-            throw new InvalidAssistiveTechnology(
-                'O público-alvo só pode ser atribuído a uma tecnologia persistida.'
+            throw new InvalidAccessibleEducationalMaterial(
+                'O público-alvo só pode ser atribuído a um material persistido.'
             );
         }
 
         $this->deficiencies()->sync(array_values(array_unique($targetAudienceIds)));
+    }
+
+    /**
+     * @param  list<int>  $featureIds
+     */
+    public function assignAccessibilityFeatures(array $featureIds): void
+    {
+        if (! $this->exists) {
+            throw new InvalidAccessibleEducationalMaterial(
+                'Os recursos de acessibilidade só podem ser atribuídos a um material persistido.'
+            );
+        }
+
+        $this->accessibilityFeatures()->sync(array_values(array_unique($featureIds)));
     }
 
     public function inspections(): MorphMany
@@ -150,7 +167,7 @@ final class AssistiveTechnology extends Model
 
     public function getMorphClass(): string
     {
-        return 'assistive_technology';
+        return 'accessible_educational_material';
     }
 
     private static function normalizeName(string $name): string
@@ -158,14 +175,14 @@ final class AssistiveTechnology extends Model
         $name = trim($name);
 
         if ($name === '') {
-            throw new InvalidAssistiveTechnology(
-                'Informe o tipo da tecnologia assistiva.'
+            throw new InvalidAccessibleEducationalMaterial(
+                'O nome do material pedagógico é obrigatório.'
             );
         }
 
         if (mb_strlen($name) > 255) {
-            throw new InvalidAssistiveTechnology(
-                'O nome da tecnologia assistiva deve possuir no máximo 255 caracteres.'
+            throw new InvalidAccessibleEducationalMaterial(
+                'O nome do material pedagógico deve possuir no máximo 255 caracteres.'
             );
         }
 

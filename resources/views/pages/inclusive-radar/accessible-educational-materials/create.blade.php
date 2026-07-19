@@ -104,21 +104,21 @@
 
             <div class="col-md-6">
                 <x-forms.select
-                    name="inspection_type"
+                    name="inspection[type]"
                     label="Tipo de Inspeção"
                     required
                     :options="$inspectionTypes"
-                    :selected="old('inspection_type', $defaultInspection)"
+                    :selected="old('inspection.type', $defaultInspection)"
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.input
-                    name="inspection_date"
+                    name="inspection[date]"
                     label="Data da Inspeção"
                     type="date"
                     required
-                    :value="old('inspection_date', date('Y-m-d'))"
+                    :value="old('inspection.date', date('Y-m-d'))"
                 />
             </div>
 
@@ -134,18 +134,18 @@
 
             <div class="col-md-6">
                 <x-forms.image-uploader
-                    name="images[]"
+                    name="inspection[images][]"
                     label="Fotos de Evidência"
                 />
             </div>
 
             <div class="col-md-12">
                 <x-forms.textarea
-                    name="inspection_description"
+                    name="inspection[description]"
                     label="Parecer Técnico"
                     rows="3"
                     placeholder="Descreva o estado do item ou detalhes da vistoria inicial..."
-                    :value="old('inspection_description')"
+                    :value="old('inspection.description')"
                 />
             </div>
 
@@ -160,6 +160,7 @@
                     :value="old('quantity', 1)"
                 />
 
+                <input type="hidden" name="is_loanable" value="0">
                 <x-forms.checkbox
                     name="is_loanable"
                     label="Permitir Empréstimos"
@@ -176,6 +177,7 @@
                     :selected="old('status', $defaultStatus)"
                 />
 
+                <input type="hidden" name="is_active" value="0">
                 <x-forms.checkbox
                     name="is_active"
                     label="Ativar no Sistema"

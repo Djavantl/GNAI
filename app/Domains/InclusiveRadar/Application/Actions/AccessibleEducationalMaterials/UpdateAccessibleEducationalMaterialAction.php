@@ -2,68 +2,68 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\InclusiveRadar\Application\Actions\AssistiveTechnologies;
+namespace App\Domains\InclusiveRadar\Application\Actions\AccessibleEducationalMaterials;
 
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
-use App\Domains\InclusiveRadar\Application\Data\AssistiveTechnologies\UpdateAssistiveTechnologyData;
+use App\Domains\InclusiveRadar\Application\Data\AccessibleEducationalMaterials\UpdateAccessibleEducationalMaterialData;
 use App\Domains\InclusiveRadar\Application\Policies\Inspections\InspectionRegistrationPolicy;
-use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\AssetCodeExistsQuery;
-use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\UpdateAssistiveTechnologyDTO;
+use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterials\AccessibleEducationalMaterialAssetCodeExistsQuery;
+use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\UpdateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-final readonly class UpdateAssistiveTechnologyAction
+final readonly class UpdateAccessibleEducationalMaterialAction
 {
     public function __construct(
         private CreateInspectionAction $createInspection,
         private AttachInspectionImagesAction $attachInspectionImages,
         private InspectionRegistrationPolicy $inspectionRegistration,
-        private AssetCodeExistsQuery $assetCodeExists,
+        private AccessibleEducationalMaterialAssetCodeExistsQuery $assetCodeExists,
     ) {}
 
     /**
      * @throws Throwable
      */
     public function execute(
-        AssistiveTechnology $technology,
-        UpdateAssistiveTechnologyData $data,
+        AccessibleEducationalMaterial $material,
+        UpdateAccessibleEducationalMaterialData $data,
         int $registeredBy,
-    ): AssistiveTechnology {
+    ): AccessibleEducationalMaterial {
         $inspection = null;
 
-        $updatedTechnology = DB::transaction(function () use (
-            $technology,
+        $updatedMaterial = DB::transaction(function () use (
+            $material,
             $data,
             $registeredBy,
             &$inspection,
         ) {
-            $lockedTechnology = AssistiveTechnology::query()
+            $lockedMaterial = AccessibleEducationalMaterial::query()
                 ->lockForUpdate()
-                ->findOrFail($technology->getKey());
+                ->findOrFail($material->getKey());
             $assetCode = AssetCode::optional($data->assetCode);
 
             if (
                 $assetCode !== null
-                && $assetCode->value() !== $lockedTechnology->asset_code
+                && $assetCode->value() !== $lockedMaterial->asset_code
                 && $this->assetCodeExists->execute(
                     assetCode: $assetCode,
-                    ignoreId: (int) $lockedTechnology->getKey(),
+                    ignoreId: (int) $lockedMaterial->getKey(),
                 )
             ) {
                 throw new AssetCodeAlreadyInUse;
             }
 
-            $openLoans = $lockedTechnology->loans()
+            $openLoans = $lockedMaterial->loans()
                 ->whereNull('return_date')
                 ->count();
 
-            $technologyDTO = new UpdateAssistiveTechnologyDTO(
+            $materialDTO = new UpdateAccessibleEducationalMaterialDTO(
                 name: $data->name,
                 digital: $data->isDigital,
                 loanable: $data->isLoanable,
@@ -76,22 +76,23 @@ final readonly class UpdateAssistiveTechnologyAction
                 active: $data->isActive,
             );
 
-            $lockedTechnology->revise($technologyDTO);
+            $lockedMaterial->revise($materialDTO);
 
             try {
-                $lockedTechnology->save();
+                $lockedMaterial->save();
             } catch (UniqueConstraintViolationException $exception) {
                 throw new AssetCodeAlreadyInUse($exception);
             }
 
-            $lockedTechnology->assignTargetAudience($data->deficiencies);
+            $lockedMaterial->assignTargetAudience($data->deficiencies);
+            $lockedMaterial->assignAccessibilityFeatures($data->accessibilityFeatures);
 
             if ($this->inspectionRegistration->shouldRegister(
-                stateChanged: $lockedTechnology->wasChanged('conservation_state'),
+                stateChanged: $lockedMaterial->wasChanged('conservation_state'),
                 inspection: $data->inspection,
             )) {
                 $inspection = $this->createInspection->execute(
-                    inspectable: $lockedTechnology,
+                    inspectable: $lockedMaterial,
                     data: $data->inspection,
                     registeredBy: $registeredBy,
                     state: $data->conservationState->value,
@@ -99,7 +100,7 @@ final readonly class UpdateAssistiveTechnologyAction
                 );
             }
 
-            return $lockedTechnology;
+            return $lockedMaterial;
         });
 
         if ($inspection instanceof Inspection) {
@@ -109,8 +110,9 @@ final readonly class UpdateAssistiveTechnologyAction
             );
         }
 
-        return $updatedTechnology->fresh([
+        return $updatedMaterial->fresh([
             'deficiencies',
+            'accessibilityFeatures',
             'inspections.images',
         ]);
     }

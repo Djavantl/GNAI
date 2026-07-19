@@ -17,11 +17,6 @@ final readonly class Stock
         $this->ensureValidState();
     }
 
-    /**
-     * Cria o estoque inicial de um recurso físico.
-     *
-     * No cadastro, todas as unidades começam disponíveis.
-     */
     public static function initial(int $total): self
     {
         if ($total <= 0) {
@@ -36,9 +31,7 @@ final readonly class Stock
         );
     }
 
-    /**
-     * Recursos digitais não possuem estoque físico controlado.
-     */
+
     public static function notApplicable(): self
     {
         return new self(
@@ -47,23 +40,11 @@ final readonly class Stock
         );
     }
 
-    /**
-     * Restaura um estoque previamente persistido.
-     *
-     * Deve ser usado pelo Repository/Mapper ao reconstruir a Entity.
-     */
     public static function restore(?int $total, ?int $available): self
     {
         return new self($total, $available);
     }
 
-    /**
-     * Recalcula o estoque após alterar a quantidade total.
-     *
-     * Preserva o número de unidades atualmente emprestadas:
-     *
-     * disponíveis = total - empréstimos abertos
-     */
     public static function withOpenLoans(int $total, int $openLoans): self
     {
         if ($total <= 0) {
