@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\InclusiveRadar\Domain\DTOs\Waitlists\CreateWaitlistDTO;
+use App\Domains\InclusiveRadar\Domain\DTOs\Waitlists\UpdateWaitlistDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidWaitlist;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
@@ -31,6 +34,62 @@ final class Waitlist extends Model
         'requested_at' => 'datetime',
         'status' => WaitlistStatus::class,
     ];
+
+    public static function register(CreateWaitlistDTO $data): self
+    {
+        return new self([
+            'waitlistable_id' => $data->waitlistableId,
+            'waitlistable_type' => $data->waitlistableType->value,
+            'student_id' => $data->studentId,
+            'professional_id' => $data->professionalId,
+            'user_id' => $data->registeredBy,
+            'requested_at' => now(),
+            'status' => WaitlistStatus::WAITING,
+            'observation' => $data->observation,
+        ]);
+    }
+
+    /**
+     * @throws InvalidWaitlist
+     */
+    public function revise(UpdateWaitlistDTO $data): void
+    {
+        if (
+            $data->status !== null
+            && in_array($this->status, [WaitlistStatus::FULFILLED, WaitlistStatus::CANCELLED], true)
+        ) {
+            throw new InvalidWaitlist(
+                'Solicitação já finalizada não pode ter o status alterado.'
+            );
+        }
+
+        $this->fill([
+            'status' => $data->status ?? $this->status,
+            'observation' => $data->observation,
+        ]);
+    }
+
+    /**
+     * @throws InvalidWaitlist
+     */
+    public function cancel(): void
+    {
+        if ($this->status !== WaitlistStatus::WAITING) {
+            throw new InvalidWaitlist('Apenas solicitações em espera podem ser canceladas.');
+        }
+
+        $this->status = WaitlistStatus::CANCELLED;
+    }
+
+    /**
+     * @throws InvalidWaitlist
+     */
+    public function ensureCanBeDeleted(): void
+    {
+        if ($this->status === WaitlistStatus::FULFILLED) {
+            throw new InvalidWaitlist('Solicitações já atendidas não podem ser removidas.');
+        }
+    }
 
     public function waitlistable(): MorphTo
     {

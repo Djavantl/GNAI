@@ -25,14 +25,14 @@
             </x-table.td>
 
             <x-table.td>
-                <span class="{{ $loanPresenter::isOverdue($loan) ? 'text-danger fw-bold' : '' }}">
+                <span class="{{ $loan->isOverdue() ? 'text-danger fw-bold' : '' }}">
                     {{ $loan->due_date->format('d/m/Y') }}
                 </span>
             </x-table.td>
 
             <x-table.td>
-                <span class="text-{{ $loanPresenter::statusColor($loan) }} fw-bold text-uppercase" style="font-size: 0.85rem;">
-                    {{ $loanPresenter::statusLabel($loan) }}
+                <span class="text-{{ $loan->statusColor() }} fw-bold text-uppercase" style="font-size: 0.85rem;">
+                    {{ $loan->statusLabel() }}
                 </span>
             </x-table.td>
 

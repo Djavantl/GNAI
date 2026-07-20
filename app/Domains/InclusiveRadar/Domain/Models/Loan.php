@@ -7,8 +7,10 @@ namespace App\Domains\InclusiveRadar\Domain\Models;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\CreateLoanDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\ReturnLoanDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\UpdateLoanDTO;
+use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoan;
+use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoanableResource;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
@@ -64,6 +66,9 @@ final class Loan extends Model
         ]);
     }
 
+    /**
+     * @throws InvalidLoan
+     */
     public function registerReturn(ReturnLoanDTO $data): void
     {
         if ($this->return_date !== null) {
@@ -86,6 +91,46 @@ final class Loan extends Model
         return $returnDate > $dueDate
             ? LoanStatus::LATE
             : LoanStatus::RETURNED;
+    }
+
+    public function isOverdue(): bool
+    {
+        return $this->status === LoanStatus::ACTIVE
+            && $this->due_date !== null
+            && $this->due_date->isPast();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === LoanStatus::ACTIVE;
+    }
+
+    public function isReturned(): bool
+    {
+        return $this->return_date !== null
+            || $this->status?->isReturned() === true;
+    }
+
+    public function statusLabel(): string
+    {
+        return $this->isOverdue()
+            ? 'Em Atraso'
+            : ($this->status?->label() ?? 'Status desconhecido');
+    }
+
+    public function statusColor(): string
+    {
+        return $this->isOverdue()
+            ? 'danger'
+            : ($this->status?->color() ?? 'secondary');
+    }
+
+    /**
+     * @throws InvalidLoanableResource
+     */
+    public function loanableType(): LoanableType
+    {
+        return LoanableType::fromStored($this->loanable_type);
     }
 
     public function loanable(): MorphTo

@@ -36,12 +36,12 @@
             <x-forms.section title="Recurso Solicitado" />
 
             <div class="col-md-12 mb-4 px-4">
-                <div class="p-3 border rounded bg-light d-flex align-items-center gap-3 shadow-sm border-purple-light">
-                    <div class="bg-purple-dark text-white p-3 rounded" style="background-color: #4c1d95;">
+                <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
+                    <div class="bg-purple-dark text-white p-3 rounded shadow-sm" style="background-color: #4c1d95;">
                         <i class="fas {{ $waitlist->waitlistable_type === 'assistive_technology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
                     </div>
 
-        <div class="d-flex gap-2 justify-content-end ms-md-auto">
+                    <div>
                         <h5 class="mb-0 fw-bold">
                             @php
                                 $resourceRoute = match($waitlist->waitlistable_type) {
@@ -51,12 +51,15 @@
                                 };
                             @endphp
 
-                            <a href="{{ $resourceRoute }}" class="text-purple-dark text-decoration-none hover-underline" target="_blank">
+                            <a href="{{ $resourceRoute }}"
+                               class="text-purple-dark text-decoration-none hover-underline"
+                               target="_blank"
+                               aria-label="Ver detalhes do recurso: {{ $waitlist->waitlistable->name }} (abre em nova aba)">
                                 {{ $waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Recurso') }}
-                                <i class="fas fa-external-link-alt ms-1" style="font-size: 0.75rem;"></i>
+                                <i class="fas fa-external-link-alt ms-1" aria-hidden="true" style="font-size: 0.70rem;"></i>
                             </a>
                         </h5>
-                        <small class="text-muted text-uppercase fw-bold">Patrimônio: {{ $waitlist->waitlistable->asset_code ?? 'N/A' }}</small>
+                        <small class="text-muted text-uppercase">Patrimônio: {{ $waitlist->waitlistable->asset_code ?? 'N/A' }}</small>
                     </div>
                 </div>
             </div>

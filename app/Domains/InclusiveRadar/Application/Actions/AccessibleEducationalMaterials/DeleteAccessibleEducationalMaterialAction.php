@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class DeleteAccessibleEducationalMaterialAction
 {
+    /**
+     * @throws \Throwable
+     */
     public function execute(AccessibleEducationalMaterial $material): void
     {
         DB::transaction(function () use ($material): void {

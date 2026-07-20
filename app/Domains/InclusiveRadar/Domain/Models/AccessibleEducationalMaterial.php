@@ -174,6 +174,11 @@ final class AccessibleEducationalMaterial extends Model
         return $this->morphMany(Loan::class, 'loanable');
     }
 
+    public function waitlists(): MorphMany
+    {
+        return $this->morphMany(Waitlist::class, 'waitlistable');
+    }
+
     public function getMorphClass(): string
     {
         return 'accessible_educational_material';

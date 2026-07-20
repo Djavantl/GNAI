@@ -17,7 +17,6 @@ use App\Domains\InclusiveRadar\Application\Queries\Loans\LoanFormQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Loans\LoanPdfQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Loans\ShowLoanQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use App\Domains\InclusiveRadar\UI\Presenters\LoanPresenter;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -30,18 +29,17 @@ final class LoanController extends Controller
     public function index(ListLoansData $filters, ListLoansQuery $query, Request $request): View
     {
         $loans = $query->execute($filters);
-        $loanPresenter = LoanPresenter::class;
 
         if ($request->ajax()) {
             return view(
                 'pages.inclusive-radar.loans.partials.table',
-                compact('loans', 'loanPresenter'),
+                compact('loans'),
             );
         }
 
         return view(
             'pages.inclusive-radar.loans.index',
-            compact('loans', 'loanPresenter'),
+            compact('loans'),
         );
     }
 
@@ -78,10 +76,9 @@ final class LoanController extends Controller
             'pages.inclusive-radar.loans.show',
             [
                 'loan' => $loan,
-                'loanPresenter' => LoanPresenter::class,
-                'statusLabel' => LoanPresenter::statusLabel($loan),
-                'statusColor' => LoanPresenter::statusColor($loan),
-                'isOverdue' => LoanPresenter::isOverdue($loan),
+                'statusLabel' => $loan->statusLabel(),
+                'statusColor' => $loan->statusColor(),
+                'isOverdue' => $loan->isOverdue(),
                 'authUser' => auth()->user(),
             ],
         );
@@ -91,9 +88,7 @@ final class LoanController extends Controller
     {
         return view(
             'pages.inclusive-radar.loans.edit',
-            $form->forUpdate($loan) + [
-                'loanPresenter' => LoanPresenter::class,
-            ],
+            $form->forUpdate($loan),
         );
     }
 
@@ -142,8 +137,7 @@ final class LoanController extends Controller
             'pages.inclusive-radar.loans.pdf',
             [
                 'loan' => $loan,
-                'loanPresenter' => LoanPresenter::class,
-                'statusLabel' => LoanPresenter::statusLabel($loan),
+                'statusLabel' => $loan->statusLabel(),
             ],
         )
             ->setPaper('a4', 'portrait')
