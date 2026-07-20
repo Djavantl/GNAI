@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories\InclusiveRadar;
+namespace Database\Factories\Domains\InclusiveRadar;
 
-use App\Models\InclusiveRadar\BarrierCategory;
+use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BarrierCategoryFactory extends Factory
@@ -19,9 +19,6 @@ class BarrierCategoryFactory extends Factory
         ];
     }
 
-    /**
-     * Estado para categoria inativa
-     */
     public function inactive(): self
     {
         return $this->state(fn () => [
@@ -29,9 +26,6 @@ class BarrierCategoryFactory extends Factory
         ]);
     }
 
-    /**
-     * Estado para categoria ativa
-     */
     public function active(): self
     {
         return $this->state(fn () => [
