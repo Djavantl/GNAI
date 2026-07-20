@@ -22,6 +22,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Throwable;
 
 final class WaitlistController extends Controller
 {
@@ -50,6 +51,9 @@ final class WaitlistController extends Controller
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     public function store(CreateWaitlistData $data, CreateWaitlistAction $action): RedirectResponse
     {
         $action->execute(
@@ -86,6 +90,9 @@ final class WaitlistController extends Controller
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     public function update(UpdateWaitlistData $data, Waitlist $waitlist, UpdateWaitlistAction $action): RedirectResponse
     {
         $action->execute(
@@ -98,6 +105,9 @@ final class WaitlistController extends Controller
             ->with('success', 'Fila atualizada com sucesso!');
     }
 
+    /**
+     * @throws Throwable
+     */
     public function destroy(Waitlist $waitlist, DeleteWaitlistAction $action): RedirectResponse
     {
         $action->execute($waitlist);
@@ -107,6 +117,9 @@ final class WaitlistController extends Controller
             ->with('success', 'Solicitação removida com sucesso!');
     }
 
+    /**
+     * @throws Throwable
+     */
     public function cancel(Waitlist $waitlist, CancelWaitlistAction $action): RedirectResponse
     {
         $action->execute($waitlist);

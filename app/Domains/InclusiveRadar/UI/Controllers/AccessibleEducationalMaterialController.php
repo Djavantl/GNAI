@@ -24,6 +24,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Throwable;
 
 final class AccessibleEducationalMaterialController extends Controller
 {
@@ -109,6 +110,9 @@ final class AccessibleEducationalMaterialController extends Controller
             ->with('success', 'Material atualizado com sucesso!');
     }
 
+    /**
+     * @throws Throwable
+     */
     public function destroy(AccessibleEducationalMaterial $material, DeleteAccessibleEducationalMaterialAction $action): RedirectResponse
     {
         $action->execute($material);

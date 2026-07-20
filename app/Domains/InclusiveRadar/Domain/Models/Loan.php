@@ -15,12 +15,18 @@ use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
 use DateTimeInterface;
+use Database\Factories\Domains\InclusiveRadar\LoanFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[UseFactory(LoanFactory::class)]
 final class Loan extends Model
 {
+    use HasFactory;
+
     protected $table = 'loans';
 
     protected $fillable = [

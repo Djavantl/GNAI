@@ -13,13 +13,18 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
 use App\Models\InclusiveRadar\AccessibilityFeature;
 use App\Models\SpecializedEducationalSupport\Deficiency;
+use Database\Factories\Domains\InclusiveRadar\AccessibleEducationalMaterialFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[UseFactory(AccessibleEducationalMaterialFactory::class)]
 final class AccessibleEducationalMaterial extends Model
 {
+    use HasFactory;
     use SoftDeletes;
 
     protected $table = 'accessible_educational_materials';

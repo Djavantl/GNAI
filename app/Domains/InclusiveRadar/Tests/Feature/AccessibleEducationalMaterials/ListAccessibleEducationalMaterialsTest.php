@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\AccessibleEducationalMaterials;
 
-use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
@@ -104,20 +103,18 @@ final class ListAccessibleEducationalMaterialsTest extends TestCase
         ?int $available,
         ResourceStatus $status,
     ): AccessibleEducationalMaterial {
-        $material = new AccessibleEducationalMaterial([
-            'name' => $name,
-            'is_digital' => $digital,
-            'is_loanable' => true,
-            'quantity' => $digital ? null : 1,
-            'quantity_available' => $available,
-            'conservation_state' => $digital
-                ? ConservationState::NOT_APPLICABLE
-                : ConservationState::GOOD,
-            'status' => $status,
-            'is_active' => $active,
-        ]);
-        $material->save();
+        $factory = $digital
+            ? AccessibleEducationalMaterial::factory()->digital()
+            : AccessibleEducationalMaterial::factory()->physical();
 
-        return $material;
+        return $factory->loanable()
+            ->state([
+                'name' => $name,
+                'quantity' => $digital ? null : 1,
+                'quantity_available' => $available,
+                'status' => $status,
+                'is_active' => $active,
+            ])
+            ->create();
     }
 }

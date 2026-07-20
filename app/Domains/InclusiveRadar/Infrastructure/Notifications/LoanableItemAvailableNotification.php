@@ -29,23 +29,30 @@ final class LoanableItemAvailableNotification extends Notification
      */
     public function toDatabase(mixed $notifiable): array
     {
-        $itemName = $this->waitlist->waitlistable->name ?? 'Recurso';
+        $waitlist = $this->waitlist->loadMissing([
+            'waitlistable',
+            'student.person',
+            'professional.person',
+        ]);
 
-        $beneficiaryName = $this->waitlist->student?->person?->name
-            ?? $this->waitlist->professional?->person?->name
+        $itemName = $waitlist->waitlistable?->name ?? 'Recurso';
+
+        $beneficiaryName = $waitlist->student?->person?->name
+            ?? $waitlist->professional?->person?->name
             ?? 'Beneficiário desconhecido';
 
+        $loanCreationParameters = array_filter([
+            'item_id' => $waitlist->waitlistable_id,
+            'item_type' => $waitlist->waitlistable_type,
+            'student_id' => $waitlist->student_id,
+            'professional_id' => $waitlist->professional_id,
+        ], static fn (mixed $value): bool => $value !== null);
+
         return [
-            'waitlist_id' => $this->waitlist->id,
+            'waitlist_id' => $waitlist->id,
             'title' => 'Próximo da fila disponível',
             'message' => "O item '{$itemName}' está disponível para o beneficiário: {$beneficiaryName}. Realize o empréstimo.",
-            'url' => route('inclusive-radar.loans.create', [
-                'item_id' => $this->waitlist->waitlistable_id,
-                'item_type' => $this->waitlist->waitlistable_type,
-                'student_id' => $this->waitlist->student_id,
-                'professional_id' => $this->waitlist->professional_id,
-            ]),
-            'created_at' => now()->toDateTimeString(),
+            'url' => route('inclusive-radar.loans.create', $loanCreationParameters),
         ];
     }
 }
