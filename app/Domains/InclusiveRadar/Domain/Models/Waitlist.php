@@ -11,12 +11,18 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidWaitlist;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
+use Database\Factories\Domains\InclusiveRadar\WaitlistFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[UseFactory(WaitlistFactory::class)]
 final class Waitlist extends Model
 {
+    use HasFactory;
+
     protected $table = 'waitlists';
 
     protected $fillable = [

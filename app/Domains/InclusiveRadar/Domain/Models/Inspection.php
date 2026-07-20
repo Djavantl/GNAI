@@ -7,12 +7,18 @@ namespace App\Domains\InclusiveRadar\Domain\Models;
 use App\Domains\InclusiveRadar\Domain\DTOs\Inspections\CreateInspectionDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use Database\Factories\Domains\InclusiveRadar\InspectionFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[UseFactory(InspectionFactory::class)]
 final class Inspection extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'inspectable_id',
         'inspectable_type',

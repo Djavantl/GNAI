@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories\InclusiveRadar;
+namespace Database\Factories\Domains\InclusiveRadar;
 
-use App\Models\InclusiveRadar\Inspection;
-use App\Models\InclusiveRadar\InspectionImage;
+use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\InspectionImage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InspectionImageFactory extends Factory

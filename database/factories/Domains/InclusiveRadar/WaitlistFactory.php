@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories\InclusiveRadar;
+namespace Database\Factories\Domains\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\WaitlistStatus;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\Waitlist;
+use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
@@ -29,7 +29,7 @@ class WaitlistFactory extends Factory
             'professional_id' => null,
             'user_id' => User::factory(),
             'requested_at' => $this->faker->dateTimeBetween('-15 days', 'now'),
-            'status' => WaitlistStatus::WAITING->value,
+            'status' => WaitlistStatus::WAITING,
             'observation' => $this->faker->optional()->sentence(),
         ];
     }
@@ -73,21 +73,21 @@ class WaitlistFactory extends Factory
     public function notified(): self
     {
         return $this->state(fn () => [
-            'status' => WaitlistStatus::NOTIFIED->value,
+            'status' => WaitlistStatus::NOTIFIED,
         ]);
     }
 
     public function fulfilled(): self
     {
         return $this->state(fn () => [
-            'status' => WaitlistStatus::FULFILLED->value,
+            'status' => WaitlistStatus::FULFILLED,
         ]);
     }
 
     public function cancelled(): self
     {
         return $this->state(fn () => [
-            'status' => WaitlistStatus::CANCELLED->value,
+            'status' => WaitlistStatus::CANCELLED,
         ]);
     }
 }
