@@ -143,7 +143,10 @@ class Barrier extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(BarrierCategory::class, 'barrier_category_id');
+        return $this->belongsTo(
+            \App\Domains\InclusiveRadar\Domain\Models\BarrierCategory::class,
+            'barrier_category_id',
+        );
     }
 
     public function location() {
