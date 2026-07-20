@@ -7,27 +7,19 @@ namespace App\Domains\InclusiveRadar\Application\Actions\Loans;
 use App\Domains\InclusiveRadar\Application\Data\Loans\UpdateLoanData;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\UpdateLoanDTO;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use Illuminate\Support\Facades\DB;
 
 final class UpdateLoanAction
 {
-    /**
-     * @throws \Throwable
-     */
     public function execute(Loan $loan, UpdateLoanData $data): Loan
     {
-        $updatedLoan = DB::transaction(function () use ($loan, $data): Loan {
-            $loanDTO = new UpdateLoanDTO(
-                observation: $data->observation,
-            );
+        $loanDTO = new UpdateLoanDTO(
+            observation: $data->observation,
+        );
 
-            $loan->revise($loanDTO);
-            $loan->save();
+        $loan->revise($loanDTO);
+        $loan->save();
 
-            return $loan;
-        });
-
-        return $updatedLoan->fresh([
+        return $loan->fresh([
             'loanable',
             'student.person',
             'professional.person',

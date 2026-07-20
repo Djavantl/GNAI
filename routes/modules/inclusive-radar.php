@@ -1,11 +1,11 @@
 <?php
 
+use App\Domains\InclusiveRadar\UI\Controllers\BarrierCategoryController as DomainBarrierCategoryController;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController as DomainAccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
 use App\Domains\InclusiveRadar\UI\Controllers\LoanController as DomainLoanController;
 use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController as DomainWaitlistController;
 use App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController;
-use App\Http\Controllers\InclusiveRadar\BarrierCategoryController;
 use App\Http\Controllers\InclusiveRadar\BarrierController;
 use App\Http\Controllers\InclusiveRadar\InstitutionalEventController;
 use App\Http\Controllers\InclusiveRadar\InstitutionController;
@@ -28,19 +28,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {});
 */
 Route::middleware(['auth'])->group(function () {
     // ------------------- CATEGORIAS DAS BARREIRAS -------------------
-    Route::get('/barrier-categories', [BarrierCategoryController::class, 'index'])
+    Route::get('/barrier-categories', [DomainBarrierCategoryController::class, 'index'])
         ->name('barrier-categories.index')->middleware('can:barrier-category.index');
-    Route::get('/barrier-categories/create', [BarrierCategoryController::class, 'create'])
+    Route::get('/barrier-categories/create', [DomainBarrierCategoryController::class, 'create'])
         ->name('barrier-categories.create')->middleware('can:barrier-category.create');
-    Route::post('/barrier-categories/store', [BarrierCategoryController::class, 'store'])
+    Route::post('/barrier-categories/store', [DomainBarrierCategoryController::class, 'store'])
         ->name('barrier-categories.store')->middleware('can:barrier-category.store');
-    Route::get('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'show'])
+    Route::get('/barrier-categories/{barrierCategory}', [DomainBarrierCategoryController::class, 'show'])
         ->name('barrier-categories.show')->middleware('can:barrier-category.show');
-    Route::get('/barrier-categories/{barrierCategory}/edit', [BarrierCategoryController::class, 'edit'])
+    Route::get('/barrier-categories/{barrierCategory}/edit', [DomainBarrierCategoryController::class, 'edit'])
         ->name('barrier-categories.edit')->middleware('can:barrier-category.edit');
-    Route::put('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'update'])
+    Route::put('/barrier-categories/{barrierCategory}', [DomainBarrierCategoryController::class, 'update'])
         ->name('barrier-categories.update')->middleware('can:barrier-category.update');
-    Route::delete('/barrier-categories/{barrierCategory}', [BarrierCategoryController::class, 'destroy'])
+    Route::delete('/barrier-categories/{barrierCategory}', [DomainBarrierCategoryController::class, 'destroy'])
         ->name('barrier-categories.destroy')->middleware('can:barrier-category.destroy');
 
     // ------------------- INSTITUIÇÕES -------------------
