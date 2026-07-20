@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\AssistiveTechnologies;
 
-use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
 use App\Models\User;
@@ -97,20 +96,17 @@ final class ListAssistiveTechnologiesTest extends TestCase
         bool $active,
         ?int $available,
     ): AssistiveTechnology {
-        $technology = new AssistiveTechnology([
-            'name' => $name,
-            'is_digital' => $digital,
-            'is_loanable' => true,
-            'quantity' => $digital ? null : 1,
-            'quantity_available' => $available,
-            'conservation_state' => $digital
-                ? ConservationState::NOT_APPLICABLE
-                : ConservationState::GOOD,
-            'status' => 'available',
-            'is_active' => $active,
-        ]);
-        $technology->save();
+        $factory = $digital
+            ? AssistiveTechnology::factory()->digital()
+            : AssistiveTechnology::factory()->physical();
 
-        return $technology;
+        return $factory->loanable()
+            ->state([
+                'name' => $name,
+                'quantity' => $digital ? null : 1,
+                'quantity_available' => $available,
+                'is_active' => $active,
+            ])
+            ->create();
     }
 }

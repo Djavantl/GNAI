@@ -23,6 +23,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Throwable;
 
 final class LoanController extends Controller
 {
@@ -56,6 +57,9 @@ final class LoanController extends Controller
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     public function store(CreateLoanData $data, CreateLoanAction $action): RedirectResponse
     {
         $action->execute(
@@ -92,6 +96,9 @@ final class LoanController extends Controller
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     public function update(UpdateLoanData $data, Loan $loan, UpdateLoanAction $action): RedirectResponse
     {
         $action->execute(
@@ -104,6 +111,9 @@ final class LoanController extends Controller
             ->with('success', 'Empréstimo atualizado com sucesso!');
     }
 
+    /**
+     * @throws Throwable
+     */
     public function returnItem(ReturnLoanData $data, Loan $loan, ReturnLoanAction $action): RedirectResponse
     {
         $action->execute(

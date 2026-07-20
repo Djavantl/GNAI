@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories\InclusiveRadar;
+namespace Database\Factories\Domains\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\LoanStatus;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\Loan;
+use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
@@ -44,10 +44,9 @@ class LoanFactory extends Factory
         return $this->for(
             $assistiveTechnology ?? AssistiveTechnology::factory()->physical()->available(),
             'loanable'
-        )
-            ->state(fn () => [
-                'loanable_type' => (new AssistiveTechnology())->getMorphClass(),
-            ]);
+        )->state(fn () => [
+            'loanable_type' => (new AssistiveTechnology())->getMorphClass(),
+        ]);
     }
 
     public function forAccessibleEducationalMaterial(?AccessibleEducationalMaterial $material = null): self
@@ -55,10 +54,9 @@ class LoanFactory extends Factory
         return $this->for(
             $material ?? AccessibleEducationalMaterial::factory()->physical()->available(),
             'loanable'
-        )
-            ->state(fn () => [
-                'loanable_type' => (new AccessibleEducationalMaterial())->getMorphClass(),
-            ]);
+        )->state(fn () => [
+            'loanable_type' => (new AccessibleEducationalMaterial())->getMorphClass(),
+        ]);
     }
 
     public function forStudent(?Student $student = null): self

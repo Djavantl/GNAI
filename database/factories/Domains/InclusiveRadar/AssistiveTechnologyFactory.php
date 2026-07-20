@@ -1,28 +1,27 @@
 <?php
 
-namespace Database\Factories\InclusiveRadar;
+namespace Database\Factories\Domains\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\ConservationState;
-use App\Enums\InclusiveRadar\ResourceStatus;
-use App\Models\InclusiveRadar\AccessibilityFeature;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class AccessibleEducationalMaterialFactory extends Factory
+class AssistiveTechnologyFactory extends Factory
 {
-    protected $model = AccessibleEducationalMaterial::class;
+    protected $model = AssistiveTechnology::class;
 
     public function definition(): array
     {
         $quantity = $this->faker->numberBetween(1, 20);
-        $isDigital = $this->faker->boolean(40);
+        $isDigital = $this->faker->boolean(35);
 
         return [
-            'name' => 'MPA - ' . $this->faker->words(3, true),
+            'name' => 'TA - ' . $this->faker->words(3, true),
             'is_digital' => $isDigital,
             'notes' => $this->faker->optional()->paragraph(),
-            'asset_code' => strtoupper($this->faker->unique()->bothify('PAT-####')),
+            'asset_code' => strtoupper($this->faker->unique()->bothify('TA-####')),
             'quantity' => $isDigital ? null : $quantity,
             'quantity_available' => $isDigital ? null : $this->faker->numberBetween(0, $quantity),
             'conservation_state' => $isDigital
@@ -37,7 +36,6 @@ class AccessibleEducationalMaterialFactory extends Factory
             'is_active' => true,
         ];
     }
-
 
     public function digital(): self
     {
@@ -78,8 +76,10 @@ class AccessibleEducationalMaterialFactory extends Factory
                 ];
             }
 
+            $quantity = (int) ($attributes['quantity'] ?? 1);
+
             return [
-                'quantity_available' => max(1, (int) ($attributes['quantity'] ?? 1)),
+                'quantity_available' => max(1, $quantity),
                 'status' => ResourceStatus::AVAILABLE,
             ];
         });
@@ -139,23 +139,12 @@ class AccessibleEducationalMaterialFactory extends Factory
 
     public function withDeficiencies(int $count = 1): self
     {
-        return $this->afterCreating(function (AccessibleEducationalMaterial $material) use ($count) {
+        return $this->afterCreating(function (AssistiveTechnology $assistiveTechnology) use ($count) {
             $deficiencies = Deficiency::factory()
                 ->count(max(1, $count))
                 ->create();
 
-            $material->deficiencies()->sync($deficiencies->modelKeys());
-        });
-    }
-
-    public function withAccessibilityFeatures(int $count = 1): self
-    {
-        return $this->afterCreating(function (AccessibleEducationalMaterial $material) use ($count) {
-            $features = AccessibilityFeature::factory()
-                ->count(max(1, $count))
-                ->create();
-
-            $material->accessibilityFeatures()->sync($features->modelKeys());
+            $assistiveTechnology->deficiencies()->sync($deficiencies->modelKeys());
         });
     }
 }

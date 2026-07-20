@@ -13,13 +13,18 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
 use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
 use App\Models\SpecializedEducationalSupport\Deficiency;
+use Database\Factories\Domains\InclusiveRadar\AssistiveTechnologyFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[UseFactory(AssistiveTechnologyFactory::class)]
 final class AssistiveTechnology extends Model
 {
+    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [

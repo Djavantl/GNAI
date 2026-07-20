@@ -7,7 +7,6 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\Inspections;
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
 use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData;
-use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\CreateAssistiveTechnologyDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInspection;
@@ -27,15 +26,11 @@ final class CreateInspectionActionTest extends TestCase
         Storage::fake('public');
 
         $user = User::factory()->create();
-        $technology = AssistiveTechnology::register(new CreateAssistiveTechnologyDTO(
-            name: 'Linha Braille',
-            digital: false,
-            loanable: true,
-            quantity: 1,
-            assetCode: null,
-            conservationState: ConservationState::GOOD,
-        ));
-        $technology->save();
+        $technology = AssistiveTechnology::factory()
+            ->physical()
+            ->loanable()
+            ->state(['name' => 'Linha Braille'])
+            ->create();
 
         $data = new CreateInspectionData(
             date: now()->toDateString(),

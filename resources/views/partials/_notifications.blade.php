@@ -49,7 +49,7 @@
                                 </small>
                                 <small class="text-primary fw-bold" style="font-size: 0.7rem;">
                                     <i class="bi bi-clock me-1" aria-hidden="true"></i>
-                                    {{ \Carbon\Carbon::parse($data['created_at'] ?? now())->diffForHumans() }}
+                                    {{ ($notification->created_at ?? \Carbon\Carbon::parse($data['created_at'] ?? now()))->diffForHumans() }}
                                 </small>
                             </div>
                         </a>

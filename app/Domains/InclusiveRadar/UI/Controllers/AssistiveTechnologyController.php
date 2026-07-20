@@ -24,6 +24,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Throwable;
 
 final class AssistiveTechnologyController extends Controller
 {
@@ -111,6 +112,9 @@ final class AssistiveTechnologyController extends Controller
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     public function destroy(AssistiveTechnology $assistiveTechnology, DeleteAssistiveTechnologyAction $action): RedirectResponse
     {
         $action->execute($assistiveTechnology);
