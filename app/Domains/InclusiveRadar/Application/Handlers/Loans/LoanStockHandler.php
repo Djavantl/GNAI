@@ -6,11 +6,16 @@ namespace App\Domains\InclusiveRadar\Application\Handlers\Loans;
 
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Exceptions\InsufficientStock;
+use App\Domains\InclusiveRadar\Domain\Exceptions\StockAlreadyFull;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 
 final class LoanStockHandler
 {
+    /**
+     * @throws InsufficientStock
+     */
     public function withdraw(AccessibleEducationalMaterial|AssistiveTechnology $item): void
     {
         if ($item->is_digital) {
@@ -44,6 +49,9 @@ final class LoanStockHandler
         );
     }
 
+    /**
+     * @throws StockAlreadyFull
+     */
     private function returnWithStatus(
         AccessibleEducationalMaterial|AssistiveTechnology $item,
         ResourceStatus $status,

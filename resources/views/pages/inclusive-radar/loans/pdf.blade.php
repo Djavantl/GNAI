@@ -68,7 +68,7 @@
     <x-pdf.row>
         <x-pdf.info-item
             label="Tipo"
-            :value="$loanPresenter::loanableTypeLabel($loan)"
+            :value="$loan->loanableType()->label()"
             colspan="2"
         />
 

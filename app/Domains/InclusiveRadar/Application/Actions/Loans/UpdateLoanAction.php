@@ -11,12 +11,17 @@ use Illuminate\Support\Facades\DB;
 
 final class UpdateLoanAction
 {
+    /**
+     * @throws \Throwable
+     */
     public function execute(Loan $loan, UpdateLoanData $data): Loan
     {
         $updatedLoan = DB::transaction(function () use ($loan, $data): Loan {
-            $loan->revise(new UpdateLoanDTO(
+            $loanDTO = new UpdateLoanDTO(
                 observation: $data->observation,
-            ));
+            );
+
+            $loan->revise($loanDTO);
             $loan->save();
 
             return $loan;

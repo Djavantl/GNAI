@@ -51,10 +51,8 @@
             :value="$waitlist->requested_at->format('d/m/Y')"
         />
         @php
-            $statusEnum = \App\Enums\InclusiveRadar\WaitlistStatus::tryFrom($waitlist->status);
-            // Usando a cor do Enum para dar um destaque visual no valor
-            $statusStyle = "color: " . ($statusEnum?->color() == 'warning' ? '#856404' : '#155724');
-            $statusLabel = "<span style='{$statusStyle}; font-weight: bold;'>" . ($statusEnum?->label() ?? $waitlist->status) . "</span>";
+            $statusStyle = "color: " . ($waitlist->status->color() == 'warning' ? '#856404' : '#155724');
+            $statusLabel = "<span style='{$statusStyle}; font-weight: bold;'>" . $waitlist->status->label() . "</span>";
         @endphp
         <x-pdf.info-item label="Status Atual" :value="$statusLabel" />
     </x-pdf.row>

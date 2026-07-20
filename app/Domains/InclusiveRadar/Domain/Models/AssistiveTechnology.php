@@ -9,6 +9,7 @@ use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\UpdateAssistive
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
 use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
 use App\Models\SpecializedEducationalSupport\Deficiency;
@@ -44,6 +45,10 @@ final class AssistiveTechnology extends Model
         'status' => ResourceStatus::class,
     ];
 
+    /**
+     * @throws InvalidAssistiveTechnology
+     * @throws InvalidStock
+     */
     public static function register(CreateAssistiveTechnologyDTO $data): self
     {
         $stock = $data->digital
@@ -64,6 +69,10 @@ final class AssistiveTechnology extends Model
         ]);
     }
 
+    /**
+     * @throws InvalidAssistiveTechnology
+     * @throws InvalidStock
+     */
     public function revise(UpdateAssistiveTechnologyDTO $data): void
     {
         if ($data->openLoans > 0 && $this->status !== $data->status) {
@@ -100,6 +109,9 @@ final class AssistiveTechnology extends Model
             );
     }
 
+    /**
+     * @throws ResourceHasOpenLoans
+     */
     public function ensureCanBeRemoved(bool $hasOpenLoans): void
     {
         if ($hasOpenLoans) {
@@ -118,7 +130,8 @@ final class AssistiveTechnology extends Model
     }
 
     /**
-     * @param  list<int>  $targetAudienceIds
+     * @param list<int> $targetAudienceIds
+     * @throws InvalidAssistiveTechnology
      */
     public function assignTargetAudience(array $targetAudienceIds): void
     {
@@ -147,11 +160,19 @@ final class AssistiveTechnology extends Model
         return $this->morphMany(Loan::class, 'loanable');
     }
 
+    public function waitlists(): MorphMany
+    {
+        return $this->morphMany(Waitlist::class, 'waitlistable');
+    }
+
     public function getMorphClass(): string
     {
         return 'assistive_technology';
     }
 
+    /**
+     * @throws InvalidAssistiveTechnology
+     */
     private static function normalizeName(string $name): string
     {
         $name = trim($name);

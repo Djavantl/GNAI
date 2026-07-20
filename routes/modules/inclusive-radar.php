@@ -3,6 +3,7 @@
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController as DomainAccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
 use App\Domains\InclusiveRadar\UI\Controllers\LoanController as DomainLoanController;
+use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController as DomainWaitlistController;
 use App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController;
 use App\Http\Controllers\InclusiveRadar\BarrierCategoryController;
 use App\Http\Controllers\InclusiveRadar\BarrierController;
@@ -11,7 +12,6 @@ use App\Http\Controllers\InclusiveRadar\InstitutionController;
 use App\Http\Controllers\InclusiveRadar\LocationController;
 use App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController;
 use App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController;
-use App\Http\Controllers\InclusiveRadar\WaitlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -235,30 +235,30 @@ Route::middleware(['auth'])->group(function () {
         ->name('loans.pdf')->middleware('can:loan.pdf');
 
     // ------------------- FILA DE ESPERA -------------------
-    Route::get('/waitlists', [WaitlistController::class, 'index'])
+    Route::get('/waitlists', [DomainWaitlistController::class, 'index'])
         ->name('waitlists.index')->middleware('can:waitlist.index');
 
-    Route::get('/waitlists/create', [WaitlistController::class, 'create'])
+    Route::get('/waitlists/create', [DomainWaitlistController::class, 'create'])
         ->name('waitlists.create')->middleware('can:waitlist.create');
 
-    Route::post('/waitlists/store', [WaitlistController::class, 'store'])
+    Route::post('/waitlists/store', [DomainWaitlistController::class, 'store'])
         ->name('waitlists.store')->middleware('can:waitlist.store');
 
-    Route::get('/waitlists/{waitlist}', [WaitlistController::class, 'show'])
+    Route::get('/waitlists/{waitlist}', [DomainWaitlistController::class, 'show'])
         ->name('waitlists.show')->middleware('can:waitlist.show');
 
-    Route::get('/waitlists/{waitlist}/edit', [WaitlistController::class, 'edit'])
+    Route::get('/waitlists/{waitlist}/edit', [DomainWaitlistController::class, 'edit'])
         ->name('waitlists.edit')->middleware('can:waitlist.edit');
 
-    Route::put('/waitlists/{waitlist}', [WaitlistController::class, 'update'])
+    Route::put('/waitlists/{waitlist}', [DomainWaitlistController::class, 'update'])
         ->name('waitlists.update')->middleware('can:waitlist.update');
 
-    Route::delete('/waitlists/{waitlist}', [WaitlistController::class, 'destroy'])
+    Route::delete('/waitlists/{waitlist}', [DomainWaitlistController::class, 'destroy'])
         ->name('waitlists.destroy')->middleware('can:waitlist.destroy');
 
-    Route::patch('/waitlists/{waitlist}/cancel', [WaitlistController::class, 'cancel'])
+    Route::patch('/waitlists/{waitlist}/cancel', [DomainWaitlistController::class, 'cancel'])
         ->name('waitlists.cancel')->middleware('can:waitlist.cancel');
 
-    Route::get('/waitlists/{waitlist}/pdf', [WaitlistController::class, 'generatePdf'])
+    Route::get('/waitlists/{waitlist}/pdf', [DomainWaitlistController::class, 'generatePdf'])
         ->name('waitlists.pdf')->middleware('can:waitlist.pdf');
 });
