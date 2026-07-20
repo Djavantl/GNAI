@@ -33,8 +33,4 @@ enum ConservationState: string
         return ! $this->allowsLoan();
     }
 
-    public function requiresMaintenance(): bool
-    {
-        return $this === self::BAD;
-    }
 }

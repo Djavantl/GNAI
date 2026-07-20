@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class DeleteAssistiveTechnologyAction
 {
+    /**
+     * @throws \Throwable
+     */
     public function execute(AssistiveTechnology $technology): void
     {
         DB::transaction(function () use ($technology): void {

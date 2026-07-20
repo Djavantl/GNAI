@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\Priority;
 use App\Enums\InclusiveRadar\BarrierStatus;
-use App\Enums\InclusiveRadar\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,6 @@ use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\AssistiveTechnology;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Loan;
-use App\Models\InclusiveRadar\Waitlist;
 use App\Models\SpecializedEducationalSupport\Pendency;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Session;

@@ -24,6 +24,22 @@ enum LoanableType: string
         };
     }
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::AssistiveTechnology => 'Tecnologia Assistiva',
+            self::AccessibleEducationalMaterial => 'Material Pedagógico Acessível',
+        };
+    }
+
+    public function icon(): string
+    {
+        return match ($this) {
+            self::AssistiveTechnology => 'fa-microchip',
+            self::AccessibleEducationalMaterial => 'fa-book',
+        };
+    }
+
     public static function fromModel(AccessibleEducationalMaterial|AssistiveTechnology $item): self
     {
         return match (true) {
@@ -32,6 +48,9 @@ enum LoanableType: string
         };
     }
 
+    /**
+     * @throws InvalidLoanableResource
+     */
     public static function fromStored(string $value): self
     {
         return self::tryFrom($value)

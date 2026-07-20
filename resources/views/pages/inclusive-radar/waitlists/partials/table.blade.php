@@ -39,13 +39,8 @@
             <x-table.td>{{ $waitlist->requested_at->format('d/m/Y') }}</x-table.td>
 
             <x-table.td>
-                @php
-                    $currentStatus = \App\Enums\InclusiveRadar\WaitlistStatus::tryFrom($waitlist->status);
-                    $statusColor = $currentStatus?->color() ?? 'secondary';
-                @endphp
-
-                <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
-                    {{ $currentStatus?->label() ?? $waitlist->status }}
+                <span class="text-{{ $waitlist->status->color() }} fw-bold text-uppercase" style="font-size: 0.85rem;">
+                    {{ $waitlist->status->label() }}
                 </span>
             </x-table.td>
 
