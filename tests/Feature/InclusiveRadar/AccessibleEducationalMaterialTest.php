@@ -7,7 +7,7 @@ use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Models\AuditLog;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\InclusiveRadar\Inspection;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\User;

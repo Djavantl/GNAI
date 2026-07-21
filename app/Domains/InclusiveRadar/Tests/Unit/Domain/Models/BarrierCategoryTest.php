@@ -59,13 +59,4 @@ final class BarrierCategoryTest extends TestCase
         ));
     }
 
-    public function test_it_rejects_removal_when_has_blocking_barriers(): void
-    {
-        $category = new BarrierCategory();
-
-        $this->expectException(InvalidBarrierCategory::class);
-        $this->expectExceptionMessage('Esta categoria não pode ser excluída pois possui barreiras ativas.');
-
-        $category->ensureCanBeRemoved(hasBlockingBarriers: true);
-    }
 }

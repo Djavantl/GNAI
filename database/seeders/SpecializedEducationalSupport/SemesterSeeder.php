@@ -4,7 +4,6 @@ namespace Database\Seeders\SpecializedEducationalSupport;
 
 use Illuminate\Database\Seeder;
 use App\Models\SpecializedEducationalSupport\Semester;
-use Carbon\Carbon;
 
 class SemesterSeeder extends Seeder
 {
@@ -45,6 +44,10 @@ class SemesterSeeder extends Seeder
             ];
         }
 
-        Semester::insert($semesters);
+        Semester::upsert(
+            $semesters,
+            ['year', 'term'],
+            ['label', 'start_date', 'end_date', 'is_current', 'updated_at'],
+        );
     }
 }

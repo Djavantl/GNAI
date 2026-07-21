@@ -7,7 +7,7 @@ use App\Enums\InclusiveRadar\InspectionType;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\InclusiveRadar\Loan;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Services\InclusiveRadar\AccessibleEducationalMaterialService;

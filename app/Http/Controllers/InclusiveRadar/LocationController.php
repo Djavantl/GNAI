@@ -4,7 +4,7 @@ namespace App\Http\Controllers\InclusiveRadar;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LocationRequest;
-use App\Models\InclusiveRadar\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\InclusiveRadar\Location;
 use App\Services\InclusiveRadar\LocationService;
 use Illuminate\Http\RedirectResponse;

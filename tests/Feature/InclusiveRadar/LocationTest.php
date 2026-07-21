@@ -3,7 +3,7 @@
 namespace Tests\Feature\InclusiveRadar;
 
 use App\Models\User;
-use App\Models\InclusiveRadar\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\InclusiveRadar\Location;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

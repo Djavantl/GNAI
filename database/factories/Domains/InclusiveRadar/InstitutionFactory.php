@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories\InclusiveRadar;
+namespace Database\Factories\Domains\InclusiveRadar;
 
-use App\Models\InclusiveRadar\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InstitutionFactory extends Factory

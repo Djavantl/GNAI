@@ -10,7 +10,6 @@ use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
-use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
 use PHPUnit\Framework\TestCase;
@@ -175,22 +174,6 @@ final class AccessibleEducationalMaterialTest extends TestCase
             status: ResourceStatus::UNDER_MAINTENANCE,
             openLoans: 1,
         );
-    }
-
-    public function test_it_rejects_removal_with_open_loans(): void
-    {
-        $this->expectException(ResourceHasOpenLoans::class);
-
-        $material = $this->register(
-            name: 'Mapa tátil',
-            digital: false,
-            loanable: true,
-            quantity: 1,
-            assetCode: null,
-            conservationState: ConservationState::GOOD,
-        );
-
-        $material->ensureCanBeRemoved(hasOpenLoans: true);
     }
 
     private function register(

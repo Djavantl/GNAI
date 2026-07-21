@@ -9,9 +9,8 @@ use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\Update
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
+use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
-use App\Models\InclusiveRadar\AccessibilityFeature;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Database\Factories\Domains\InclusiveRadar\AccessibleEducationalMaterialFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -52,6 +51,10 @@ final class AccessibleEducationalMaterial extends Model
         'status' => ResourceStatus::class,
     ];
 
+    /**
+     * @throws InvalidAccessibleEducationalMaterial
+     * @throws InvalidStock
+     */
     public static function register(CreateAccessibleEducationalMaterialDTO $data): self
     {
         $stock = $data->digital
@@ -72,6 +75,10 @@ final class AccessibleEducationalMaterial extends Model
         ]);
     }
 
+    /**
+     * @throws InvalidAccessibleEducationalMaterial
+     * @throws InvalidStock
+     */
     public function revise(UpdateAccessibleEducationalMaterialDTO $data): void
     {
         if ($data->openLoans > 0 && $this->status !== $data->status) {
@@ -108,13 +115,6 @@ final class AccessibleEducationalMaterial extends Model
             );
     }
 
-    public function ensureCanBeRemoved(bool $hasOpenLoans): void
-    {
-        if ($hasOpenLoans) {
-            throw new ResourceHasOpenLoans;
-        }
-    }
-
     public function deficiencies(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -136,7 +136,8 @@ final class AccessibleEducationalMaterial extends Model
     }
 
     /**
-     * @param  list<int>  $targetAudienceIds
+     * @param list<int> $targetAudienceIds
+     * @throws InvalidAccessibleEducationalMaterial
      */
     public function assignTargetAudience(array $targetAudienceIds): void
     {
@@ -156,7 +157,8 @@ final class AccessibleEducationalMaterial extends Model
     }
 
     /**
-     * @param  list<int>  $featureIds
+     * @param list<int> $featureIds
+     * @throws InvalidAccessibleEducationalMaterial
      */
     public function assignAccessibilityFeatures(array $featureIds): void
     {
@@ -189,6 +191,9 @@ final class AccessibleEducationalMaterial extends Model
         return 'accessible_educational_material';
     }
 
+    /**
+     * @throws InvalidAccessibleEducationalMaterial
+     */
     private static function normalizeName(string $name): string
     {
         $name = trim($name);
