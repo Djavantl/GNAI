@@ -3,7 +3,7 @@
 namespace App\Services\Report\Modules;
 
 use App\Enums\InclusiveRadar\ConservationState;
-use App\Models\InclusiveRadar\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
 use App\Models\InclusiveRadar\ResourceType;
 use Illuminate\Http\Request;

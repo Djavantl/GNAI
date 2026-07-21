@@ -2,6 +2,7 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Deficiency;

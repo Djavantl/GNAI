@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories\InclusiveRadar;
+namespace Database\Factories\Domains\InclusiveRadar;
 
-use App\Models\InclusiveRadar\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AccessibilityFeatureFactory extends Factory

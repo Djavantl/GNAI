@@ -2,11 +2,11 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\ConservationState;
-use App\Enums\InclusiveRadar\LoanStatus;
-use App\Enums\InclusiveRadar\ResourceStatus;
-use App\Enums\InclusiveRadar\WaitlistStatus;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
+use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;

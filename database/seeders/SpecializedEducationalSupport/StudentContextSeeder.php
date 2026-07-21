@@ -32,8 +32,10 @@ class StudentContextSeeder extends Seeder
         foreach ($students as $student) {
 
             // Contexto antigo (Versão 1)
-            StudentContext::create([
+            StudentContext::query()->updateOrCreate([
                 'student_id' => $student->id,
+                'version' => 1,
+            ], [
                 'semester_id' => $previousSemester->id,
                 'evaluated_by_professional_id' => $professionals->random()->id,
                 'evaluation_type' => 'initial',
@@ -74,12 +76,13 @@ class StudentContextSeeder extends Seeder
                 'knowledge' => 'Boa memória visual e conhecimentos básicos de rotina escolar.', 
                 'difficulties' => 'Dificuldade de concentração prolongada.',
                 
-                'version' => 1,
             ]);
 
             // Contexto atual (Versão 2)
-            StudentContext::create([
+            StudentContext::query()->updateOrCreate([
                 'student_id' => $student->id,
+                'version' => 2,
+            ], [
                 'semester_id' => $currentSemester->id,
                 'evaluated_by_professional_id' => $professionals->random()->id,
                 'evaluation_type' => 'periodic_review',
@@ -120,7 +123,6 @@ class StudentContextSeeder extends Seeder
                 'knowledge' => 'Boa participação, autonomia e domínio dos conteúdos ministrados no semestre anterior.',
                 'difficulties' => 'Ainda apresenta dificuldade em atividades longas.',
                 
-                'version' => 2,
             ]);
         }
     }

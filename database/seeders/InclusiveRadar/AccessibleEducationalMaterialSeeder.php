@@ -4,13 +4,13 @@ namespace Database\Seeders\InclusiveRadar;
 
 use Database\Seeders\AdminSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
+use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
+use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Enums\InclusiveRadar\InspectionType;
-use App\Enums\InclusiveRadar\ConservationState;
-use App\Enums\InclusiveRadar\ResourceStatus;
 
 class AccessibleEducationalMaterialSeeder extends Seeder
 {

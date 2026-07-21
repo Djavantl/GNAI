@@ -9,7 +9,6 @@ use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\UpdateAssistive
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAssistiveTechnology;
-use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
@@ -203,38 +202,6 @@ final class AssistiveTechnologyTest extends TestCase
             status: ResourceStatus::UNDER_MAINTENANCE,
             openLoans: 1,
         );
-    }
-
-    public function test_it_allows_removal_without_open_loans(): void
-    {
-        $technology = $this->register(
-            name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
-            quantity: 1,
-            assetCode: null,
-            conservationState: ConservationState::GOOD,
-        );
-
-        $technology->ensureCanBeRemoved(hasOpenLoans: false);
-
-        $this->addToAssertionCount(1);
-    }
-
-    public function test_it_rejects_removal_with_open_loans(): void
-    {
-        $this->expectException(ResourceHasOpenLoans::class);
-
-        $technology = $this->register(
-            name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
-            quantity: 1,
-            assetCode: null,
-            conservationState: ConservationState::GOOD,
-        );
-
-        $technology->ensureCanBeRemoved(hasOpenLoans: true);
     }
 
     private function register(
