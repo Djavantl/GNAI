@@ -2,16 +2,15 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
+use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use Database\Seeders\AdminSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Enums\InclusiveRadar\InspectionType;
-use App\Enums\InclusiveRadar\ConservationState;
-use App\Enums\InclusiveRadar\ResourceStatus; // <-- Adicionado
 
 class AssistiveTechnologySeeder extends Seeder
 {

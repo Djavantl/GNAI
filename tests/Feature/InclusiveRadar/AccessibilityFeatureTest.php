@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\InclusiveRadar\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 
 class AccessibilityFeatureTest extends TestCase
 {

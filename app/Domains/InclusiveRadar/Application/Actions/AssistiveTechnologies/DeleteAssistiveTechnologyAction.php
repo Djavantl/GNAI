@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Application\Actions\AssistiveTechnologies;
 
+use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +24,9 @@ final readonly class DeleteAssistiveTechnologyAction
                 ->whereNull('return_date')
                 ->exists();
 
-            $lockedTechnology->ensureCanBeRemoved($hasOpenLoans);
+            if ($hasOpenLoans) {
+                throw new ResourceHasOpenLoans;
+            }
 
             $lockedTechnology->delete();
         });

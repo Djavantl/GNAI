@@ -4,7 +4,7 @@ namespace Tests\Unit\InclusiveRadar;
 
 use App\Exceptions\BusinessRuleException;
 use App\Models\InclusiveRadar\Barrier;
-use App\Models\InclusiveRadar\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\InclusiveRadar\Location;
 use App\Services\InclusiveRadar\LocationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;

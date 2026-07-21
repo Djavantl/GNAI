@@ -10,7 +10,6 @@ use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
-use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Database\Factories\Domains\InclusiveRadar\AssistiveTechnologyFactory;
@@ -112,16 +111,6 @@ final class AssistiveTechnology extends Model
                 total: $this->quantity,
                 available: $this->quantity_available,
             );
-    }
-
-    /**
-     * @throws ResourceHasOpenLoans
-     */
-    public function ensureCanBeRemoved(bool $hasOpenLoans): void
-    {
-        if ($hasOpenLoans) {
-            throw new ResourceHasOpenLoans;
-        }
     }
 
     public function deficiencies(): BelongsToMany

@@ -5,10 +5,10 @@ use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialContr
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
 use App\Domains\InclusiveRadar\UI\Controllers\LoanController as DomainLoanController;
 use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController as DomainWaitlistController;
-use App\Http\Controllers\InclusiveRadar\AccessibilityFeatureController;
+use App\Domains\InclusiveRadar\UI\Controllers\AccessibilityFeatureController;
 use App\Http\Controllers\InclusiveRadar\BarrierController;
 use App\Http\Controllers\InclusiveRadar\InstitutionalEventController;
-use App\Http\Controllers\InclusiveRadar\InstitutionController;
+use App\Domains\InclusiveRadar\UI\Controllers\InstitutionController;
 use App\Http\Controllers\InclusiveRadar\LocationController;
 use App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController;
 use App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController;

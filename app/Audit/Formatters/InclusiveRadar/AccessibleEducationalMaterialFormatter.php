@@ -5,7 +5,7 @@ namespace App\Audit\Formatters\InclusiveRadar;
 use App\Audit\Formatters\AuditFormatter;
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\ResourceStatus;
-use App\Models\InclusiveRadar\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 
 class AccessibleEducationalMaterialFormatter extends AuditFormatter

@@ -2,7 +2,7 @@
 
 namespace Database\Factories\InclusiveRadar;
 
-use App\Models\InclusiveRadar\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\InclusiveRadar\Location;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

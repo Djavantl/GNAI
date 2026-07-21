@@ -5,7 +5,7 @@ namespace Database\Factories\Domains\InclusiveRadar;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

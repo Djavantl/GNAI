@@ -4,6 +4,7 @@ namespace App\Models\InclusiveRadar;
 
 use App\Audit\Contracts\Auditable as AuditableContract;
 use App\Audit\Formatters\InclusiveRadar\AccessibleEducationalMaterialFormatter;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Enums\InclusiveRadar\ConservationState;
 use App\Enums\InclusiveRadar\ResourceStatus;
 use App\Models\AuditLog;

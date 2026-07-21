@@ -61,18 +61,6 @@ final class BarrierCategory extends Model
         ]);
     }
 
-    /**
-     * @throws InvalidBarrierCategory
-     */
-    public function ensureCanBeRemoved(bool $hasBlockingBarriers): void
-    {
-        if ($hasBlockingBarriers) {
-            throw new InvalidBarrierCategory(
-                'Esta categoria não pode ser excluída pois possui barreiras ativas.'
-            );
-        }
-    }
-
     public function barriers(): HasMany
     {
         return $this->hasMany(Barrier::class, 'barrier_category_id');

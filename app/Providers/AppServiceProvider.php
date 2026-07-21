@@ -6,7 +6,7 @@ use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Inspection;
-use App\Models\InclusiveRadar\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\Permission;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;

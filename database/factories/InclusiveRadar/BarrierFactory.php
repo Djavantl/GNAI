@@ -5,7 +5,7 @@ namespace Database\Factories\InclusiveRadar;
 use App\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Models\InclusiveRadar\Barrier;
-use App\Models\InclusiveRadar\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
