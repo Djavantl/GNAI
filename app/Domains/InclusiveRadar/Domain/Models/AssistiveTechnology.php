@@ -55,21 +55,21 @@ final class AssistiveTechnology extends Model
      */
     public static function register(CreateAssistiveTechnologyDTO $data): self
     {
-        $stock = $data->digital
+        $stock = $data->isDigital
             ? Stock::notApplicable()
             : Stock::initial($data->quantity ?? 0);
 
         return new self([
             'name' => self::normalizeName($data->name),
-            'is_digital' => $data->digital,
-            'is_loanable' => $data->loanable,
+            'is_digital' => $data->isDigital,
+            'is_loanable' => $data->isLoanable,
             'quantity' => $stock->total(),
             'quantity_available' => $stock->available(),
             'asset_code' => $data->assetCode?->value(),
             'conservation_state' => $data->conservationState,
             'status' => $data->status,
             'notes' => $data->notes,
-            'is_active' => $data->active,
+            'is_active' => $data->isActive,
         ]);
     }
 
@@ -85,21 +85,21 @@ final class AssistiveTechnology extends Model
             );
         }
 
-        $stock = $data->digital
+        $stock = $data->isDigital
             ? Stock::notApplicable()
             : Stock::withOpenLoans($data->quantity ?? 0, $data->openLoans);
 
         $this->fill([
             'name' => self::normalizeName($data->name),
-            'is_digital' => $data->digital,
-            'is_loanable' => $data->loanable,
+            'is_digital' => $data->isDigital,
+            'is_loanable' => $data->isLoanable,
             'quantity' => $stock->total(),
             'quantity_available' => $stock->available(),
             'asset_code' => $data->assetCode?->value(),
             'conservation_state' => $data->conservationState,
             'status' => $data->status,
             'notes' => $data->notes,
-            'is_active' => $data->active,
+            'is_active' => $data->isActive,
         ]);
     }
 

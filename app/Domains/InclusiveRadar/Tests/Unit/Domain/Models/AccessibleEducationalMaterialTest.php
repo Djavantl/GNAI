@@ -20,8 +20,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
     {
         $material = $this->register(
             name: 'Livro em Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 3,
             assetCode: AssetCode::from('MPA-1001'),
             conservationState: ConservationState::GOOD,
@@ -42,8 +42,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
     {
         $material = $this->register(
             name: 'Apostila digital acessível',
-            digital: true,
-            loanable: true,
+            isDigital: true,
+            isLoanable: true,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
@@ -60,8 +60,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $this->register(
             name: '   ',
-            digital: true,
-            loanable: false,
+            isDigital: true,
+            isLoanable: false,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
@@ -74,8 +74,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $material = $this->register(
             name: 'Apostila digital acessível',
-            digital: true,
-            loanable: false,
+            isDigital: true,
+            isLoanable: false,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
@@ -90,8 +90,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $this->register(
             name: 'Mapa tátil',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -102,8 +102,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
     {
         $material = $this->register(
             name: 'Livro em Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 3,
             assetCode: AssetCode::from('MPA-1001'),
             conservationState: ConservationState::GOOD,
@@ -111,8 +111,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $this->revise($material,
             name: 'Livro em Braille atualizado',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 5,
             assetCode: AssetCode::from('MPA-1001'),
             conservationState: ConservationState::REGULAR,
@@ -132,8 +132,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $material = $this->register(
             name: 'Mapa tátil',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 3,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -141,8 +141,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $this->revise($material,
             name: 'Mapa tátil',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 1,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -157,8 +157,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $material = $this->register(
             name: 'Mapa tátil',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 2,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -166,8 +166,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
         $this->revise($material,
             name: 'Mapa tátil',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 2,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -189,14 +189,14 @@ final class AccessibleEducationalMaterialTest extends TestCase
     ): AccessibleEducationalMaterial {
         return AccessibleEducationalMaterial::register(new CreateAccessibleEducationalMaterialDTO(
             name: $name,
-            digital: $digital,
-            loanable: $loanable,
+            isDigital: $digital,
+            isLoanable: $loanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,
             status: $status,
             notes: $notes,
-            active: $active,
+            isActive: $active,
         ));
     }
 
@@ -215,15 +215,15 @@ final class AccessibleEducationalMaterialTest extends TestCase
     ): void {
         $material->revise(new UpdateAccessibleEducationalMaterialDTO(
             name: $name,
-            digital: $digital,
-            loanable: $loanable,
+            isDigital: $digital,
+            isLoanable: $loanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,
             status: $status,
             openLoans: $openLoans,
             notes: $notes,
-            active: $active,
+            isActive: $active,
         ));
     }
 }

@@ -9,7 +9,6 @@ use App\Domains\InclusiveRadar\Domain\DTOs\Institutions\UpdateInstitutionDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitution;
 use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\Inspection;
-use App\Models\InclusiveRadar\Location;
 use Database\Factories\Domains\InclusiveRadar\InstitutionFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +22,8 @@ final class Institution extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    public const int DEFAULT_ZOOM = 16;
 
     protected $table = 'institutions';
 
@@ -93,7 +94,7 @@ final class Institution extends Model
             'latitude' => self::normalizeLatitude($data->latitude),
             'longitude' => self::normalizeLongitude($data->longitude),
             'default_zoom' => self::normalizeDefaultZoom($data->defaultZoom),
-            'is_active' => $data->active,
+            'is_active' => $data->isActive,
         ];
     }
 
@@ -158,7 +159,7 @@ final class Institution extends Model
      */
     private static function normalizeDefaultZoom(?int $defaultZoom): int
     {
-        $defaultZoom ??= 16;
+        $defaultZoom ??= self::DEFAULT_ZOOM;
 
         if ($defaultZoom < 0) {
             throw new InvalidInstitution('O zoom padrão não pode ser negativo.');

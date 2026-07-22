@@ -5,6 +5,7 @@ namespace App\Models\InclusiveRadar;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Enums\InclusiveRadar\BarrierStatus;
 use App\Enums\Priority;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;

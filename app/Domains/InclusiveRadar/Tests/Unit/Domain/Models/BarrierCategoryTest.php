@@ -18,7 +18,7 @@ final class BarrierCategoryTest extends TestCase
             name: ' Arquitetônica ',
             description: ' Barreiras físicas. ',
             blocksMap: false,
-            active: true,
+            isActive: true,
         ));
 
         self::assertSame('Arquitetônica', $category->name);
@@ -40,7 +40,7 @@ final class BarrierCategoryTest extends TestCase
             name: 'Comunicacional',
             description: '',
             blocksMap: false,
-            active: false,
+            isActive: false,
         ));
 
         self::assertSame('Comunicacional', $category->name);

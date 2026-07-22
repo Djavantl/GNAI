@@ -38,7 +38,7 @@ final class AccessibilityFeature extends Model
         return new self([
             'name' => self::normalizeName($data->name),
             'description' => self::normalizeDescription($data->description),
-            'is_active' => $data->active,
+            'is_active' => $data->isActive,
         ]);
     }
 
@@ -50,7 +50,7 @@ final class AccessibilityFeature extends Model
         $this->fill([
             'name' => self::normalizeName($data->name),
             'description' => self::normalizeDescription($data->description),
-            'is_active' => $data->active,
+            'is_active' => $data->isActive,
         ]);
     }
 

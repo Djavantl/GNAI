@@ -19,7 +19,7 @@ final readonly class UpdateAccessibilityFeatureAction
         $featureDTO = new UpdateAccessibilityFeatureDTO(
             name: $data->name,
             description: $data->description,
-            active: $data->isActive,
+            isActive: $data->isActive,
         );
 
         $feature->revise($featureDTO);

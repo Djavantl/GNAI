@@ -35,7 +35,7 @@ final readonly class CreateInstitutionAction
                 district: $data->district,
                 address: $data->address,
                 defaultZoom: $data->defaultZoom,
-                active: $data->isActive,
+                isActive: $data->isActive,
             );
 
             $institution = Institution::register($institutionDTO);

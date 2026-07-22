@@ -47,7 +47,7 @@ final readonly class UpdateInstitutionAction
                 district: $data->district,
                 address: $data->address,
                 defaultZoom: $data->defaultZoom,
-                active: $data->isActive,
+                isActive: $data->isActive,
             );
 
             $lockedInstitution->revise($institutionDTO);

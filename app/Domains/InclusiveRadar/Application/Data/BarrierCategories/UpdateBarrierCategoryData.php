@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Application\Data\BarrierCategories;
 
-use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
-use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\MergeValidationRules;
+use Spatie\LaravelData\Attributes\Validation\Unique;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
+use Spatie\LaravelData\Support\Validation\References\RouteParameterReference;
 
 #[MapInputName(SnakeCaseMapper::class)]
 #[MergeValidationRules]
 final class UpdateBarrierCategoryData extends Data
 {
     public function __construct(
+        #[Unique('barrier_categories', ignore: new RouteParameterReference('barrierCategory', 'id'), withoutTrashed: true)]
         public string $name,
         public ?string $description = null,
         public bool $blocksMap = false,
@@ -24,19 +25,11 @@ final class UpdateBarrierCategoryData extends Data
 
     public static function rules(): array
     {
-        $category = request()->route('barrierCategory');
-        $categoryId = $category instanceof BarrierCategory
-            ? $category->id
-            : null;
-
         return [
             'name' => [
                 'required',
                 'string',
                 'max:150',
-                Rule::unique('barrier_categories', 'name')
-                    ->ignore($categoryId)
-                    ->whereNull('deleted_at'),
             ],
             'description' => ['nullable', 'string'],
             'blocks_map' => ['sometimes', 'boolean'],

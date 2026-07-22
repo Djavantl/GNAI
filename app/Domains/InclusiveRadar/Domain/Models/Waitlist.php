@@ -49,7 +49,7 @@ final class Waitlist extends Model
             'student_id' => $data->studentId,
             'professional_id' => $data->professionalId,
             'user_id' => $data->registeredBy,
-            'requested_at' => now(),
+            'requested_at' => $data->requestedAt,
             'status' => WaitlistStatus::WAITING,
             'observation' => $data->observation,
         ]);

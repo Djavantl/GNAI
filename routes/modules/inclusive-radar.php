@@ -4,12 +4,12 @@ use App\Domains\InclusiveRadar\UI\Controllers\BarrierCategoryController as Domai
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController as DomainAccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
 use App\Domains\InclusiveRadar\UI\Controllers\LoanController as DomainLoanController;
+use App\Domains\InclusiveRadar\UI\Controllers\LocationController as DomainLocationController;
 use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController as DomainWaitlistController;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibilityFeatureController;
 use App\Http\Controllers\InclusiveRadar\BarrierController;
 use App\Http\Controllers\InclusiveRadar\InstitutionalEventController;
 use App\Domains\InclusiveRadar\UI\Controllers\InstitutionController;
-use App\Http\Controllers\InclusiveRadar\LocationController;
 use App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController;
 use App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController;
 use Illuminate\Support\Facades\Route;
@@ -60,19 +60,19 @@ Route::middleware(['auth'])->group(function () {
         ->name('institutions.destroy')->middleware('can:institution.destroy');
 
     // ------------------- LOCALIZAÇÕES -------------------
-    Route::get('/locations', [LocationController::class, 'index'])
+    Route::get('/locations', [DomainLocationController::class, 'index'])
         ->name('locations.index')->middleware('can:location.index');
-    Route::get('/locations/create', [LocationController::class, 'create'])
+    Route::get('/locations/create', [DomainLocationController::class, 'create'])
         ->name('locations.create')->middleware('can:location.create');
-    Route::post('/locations/store', [LocationController::class, 'store'])
+    Route::post('/locations/store', [DomainLocationController::class, 'store'])
         ->name('locations.store')->middleware('can:location.store');
-    Route::get('/locations/{location}', [LocationController::class, 'show'])
+    Route::get('/locations/{location}', [DomainLocationController::class, 'show'])
         ->name('locations.show')->middleware('can:location.show');
-    Route::get('/locations/{location}/edit', [LocationController::class, 'edit'])
+    Route::get('/locations/{location}/edit', [DomainLocationController::class, 'edit'])
         ->name('locations.edit')->middleware('can:location.edit');
-    Route::put('/locations/{location}', [LocationController::class, 'update'])
+    Route::put('/locations/{location}', [DomainLocationController::class, 'update'])
         ->name('locations.update')->middleware('can:location.update');
-    Route::delete('/locations/{location}', [LocationController::class, 'destroy'])
+    Route::delete('/locations/{location}', [DomainLocationController::class, 'destroy'])
         ->name('locations.destroy')->middleware('can:location.destroy');
 
     // ------------------- RECURSOS DE ACESSIBILIDADE -------------------

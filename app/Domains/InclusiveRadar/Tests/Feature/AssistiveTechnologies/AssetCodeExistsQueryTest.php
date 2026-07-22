@@ -32,8 +32,8 @@ final class AssetCodeExistsQueryTest extends TestCase
     {
         $technology = AssistiveTechnology::register(new CreateAssistiveTechnologyDTO(
             name: 'Linha Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 1,
             assetCode: AssetCode::from($assetCode),
             conservationState: ConservationState::GOOD,

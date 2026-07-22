@@ -19,7 +19,7 @@ final readonly class CreateAccessibilityFeatureAction
         $featureDTO = new CreateAccessibilityFeatureDTO(
             name: $data->name,
             description: $data->description,
-            active: $data->isActive,
+            isActive: $data->isActive,
         );
 
         $feature = AccessibilityFeature::register($featureDTO);

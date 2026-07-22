@@ -10,6 +10,6 @@ final readonly class UpdateBarrierCategoryDTO
         public string $name,
         public ?string $description = null,
         public bool $blocksMap = true,
-        public bool $active = true,
+        public bool $isActive = true,
     ) {}
 }
