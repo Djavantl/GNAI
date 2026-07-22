@@ -10,6 +10,7 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
@@ -19,6 +20,7 @@ final class LoanFormQuery
      * @return array<string, mixed>
      */
     public function forCreation(
+        ?User $authUser = null,
         ?int $selectedStudentId = null,
         ?int $selectedProfessionalId = null,
         ?int $selectedItemId = null,
@@ -27,7 +29,7 @@ final class LoanFormQuery
         return $this->baseOptions() + [
             'assistive_technologies' => $this->loanableItems(AssistiveTechnology::class),
             'educational_materials' => $this->loanableItems(AccessibleEducationalMaterial::class),
-            'authUser' => auth()->user(),
+            'authUser' => $authUser,
             'selectedStudentId' => $selectedStudentId,
             'selectedProfessionalId' => $selectedProfessionalId,
             'selectedItemId' => $selectedItemId,
@@ -38,7 +40,7 @@ final class LoanFormQuery
     /**
      * @return array<string, mixed>
      */
-    public function forUpdate(Loan $loan): array
+    public function forUpdate(Loan $loan, ?User $authUser = null): array
     {
         $loan->loadMissing([
             'loanable',
@@ -50,7 +52,7 @@ final class LoanFormQuery
 
         return $this->baseOptions() + [
             'loan' => $loan,
-            'authUser' => auth()->user(),
+            'authUser' => $authUser,
         ];
     }
 

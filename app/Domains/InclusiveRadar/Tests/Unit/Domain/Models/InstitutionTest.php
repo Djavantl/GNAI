@@ -24,7 +24,7 @@ final class InstitutionTest extends TestCase
             district: ' Centro ',
             address: ' Rua A ',
             defaultZoom: 16,
-            active: true,
+            isActive: true,
         ));
 
         self::assertSame('IFBA Campus Guanambi', $institution->name);
@@ -58,7 +58,7 @@ final class InstitutionTest extends TestCase
             district: '',
             address: '',
             defaultZoom: null,
-            active: false,
+            isActive: false,
         ));
 
         self::assertSame('Nova', $institution->name);

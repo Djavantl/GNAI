@@ -120,8 +120,8 @@ final class DeleteAccessibleEducationalMaterialTest extends TestCase
     {
         $material = AccessibleEducationalMaterial::register(new CreateAccessibleEducationalMaterialDTO(
             name: 'Livro em Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 1,
             assetCode: null,
             conservationState: ConservationState::GOOD,

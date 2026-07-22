@@ -8,7 +8,7 @@ use App\Models\InclusiveRadar\Barrier;
 use App\Models\InclusiveRadar\BarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\InclusiveRadar\Inspection;
-use App\Models\InclusiveRadar\Location;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\SpecializedEducationalSupport\Student;

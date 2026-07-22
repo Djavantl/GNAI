@@ -16,6 +16,6 @@ final readonly class CreateInstitutionDTO
         public ?string $district = null,
         public ?string $address = null,
         public ?int $defaultZoom = 16,
-        public bool $active = true,
+        public bool $isActive = true,
     ) {}
 }

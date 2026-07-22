@@ -123,8 +123,8 @@ final class DeleteAssistiveTechnologyTest extends TestCase
     {
         $technology = AssistiveTechnology::register(new CreateAssistiveTechnologyDTO(
             name: 'Linha Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 1,
             assetCode: null,
             conservationState: ConservationState::GOOD,

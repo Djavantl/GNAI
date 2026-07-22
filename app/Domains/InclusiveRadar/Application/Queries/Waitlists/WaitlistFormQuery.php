@@ -9,6 +9,7 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
+use App\Models\User;
 use Illuminate\Support\Collection;
 
 final class WaitlistFormQuery
@@ -16,19 +17,19 @@ final class WaitlistFormQuery
     /**
      * @return array<string, mixed>
      */
-    public function forCreation(): array
+    public function forCreation(?User $authUser = null): array
     {
         return $this->baseOptions() + [
             'assistive_technologies' => $this->waitlistableItems(AssistiveTechnology::class),
             'educational_materials' => $this->waitlistableItems(AccessibleEducationalMaterial::class),
-            'authUser' => auth()->user(),
+            'authUser' => $authUser,
         ];
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function forUpdate(Waitlist $waitlist): array
+    public function forUpdate(Waitlist $waitlist, ?User $authUser = null): array
     {
         $waitlist->loadMissing([
             'waitlistable',
@@ -40,7 +41,7 @@ final class WaitlistFormQuery
         return $this->baseOptions() + [
             'waitlist' => $waitlist,
             'statusLabel' => $waitlist->status->label(),
-            'authUser' => auth()->user(),
+            'authUser' => $authUser,
         ];
     }
 

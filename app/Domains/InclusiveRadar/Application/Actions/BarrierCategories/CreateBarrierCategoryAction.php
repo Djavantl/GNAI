@@ -20,7 +20,7 @@ final readonly class CreateBarrierCategoryAction
             name: $data->name,
             description: $data->description,
             blocksMap: $data->blocksMap,
-            active: $data->isActive,
+            isActive: $data->isActive,
         );
 
         $category = BarrierCategory::register($categoryDTO);

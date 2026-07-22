@@ -44,7 +44,7 @@ final class BarrierCategory extends Model
             'name' => self::normalizeName($data->name),
             'description' => self::normalizeDescription($data->description),
             'blocks_map' => $data->blocksMap,
-            'is_active' => $data->active,
+            'is_active' => $data->isActive,
         ]);
     }
 
@@ -57,7 +57,7 @@ final class BarrierCategory extends Model
             'name' => self::normalizeName($data->name),
             'description' => self::normalizeDescription($data->description),
             'blocks_map' => $data->blocksMap,
-            'is_active' => $data->active,
+            'is_active' => $data->isActive,
         ]);
     }
 

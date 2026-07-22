@@ -4,7 +4,7 @@ namespace Tests\Feature\InclusiveRadar;
 
 use App\Models\User;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Models\InclusiveRadar\Location;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

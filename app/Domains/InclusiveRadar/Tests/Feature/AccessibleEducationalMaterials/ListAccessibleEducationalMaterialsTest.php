@@ -33,22 +33,22 @@ final class ListAccessibleEducationalMaterialsTest extends TestCase
         $user = User::factory()->create();
         $matching = $this->material(
             name: 'Livro Braille inativo',
-            digital: false,
-            active: false,
+            isDigital: false,
+            isActive: false,
             available: 0,
             status: ResourceStatus::UNAVAILABLE,
         );
         $this->material(
             name: 'Livro Braille ativo',
-            digital: false,
-            active: true,
+            isDigital: false,
+            isActive: true,
             available: 1,
             status: ResourceStatus::AVAILABLE,
         );
         $this->material(
             name: 'Apostila digital inativa',
-            digital: true,
-            active: false,
+            isDigital: true,
+            isActive: false,
             available: null,
             status: ResourceStatus::AVAILABLE,
         );
@@ -78,8 +78,8 @@ final class ListAccessibleEducationalMaterialsTest extends TestCase
     {
         $this->material(
             name: 'Livro Braille',
-            digital: false,
-            active: true,
+            isDigital: false,
+            isActive: true,
             available: 1,
             status: ResourceStatus::AVAILABLE,
         );

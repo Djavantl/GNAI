@@ -5,8 +5,9 @@ namespace App\Http\Controllers\InclusiveRadar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InclusiveRadar\LocationRequest;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Models\InclusiveRadar\Location;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use App\Services\InclusiveRadar\LocationService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -19,10 +20,23 @@ class LocationController extends Controller
 
     public function index(Request $request)
     {
-        $locations = Location::with('institution')
-            ->filterName($request->name)
-            ->filterInstitution($request->institution_name)
-            ->filterActive($request->is_active)
+        $query = Location::query()->with('institution');
+
+        if (filled($request->name)) {
+            $query->where('name', 'like', '%'.trim($request->name).'%');
+        }
+
+        if (filled($request->institution_name)) {
+            $query->whereHas('institution', function (Builder $query) use ($request): void {
+                $query->where('name', 'like', '%'.trim($request->institution_name).'%');
+            });
+        }
+
+        if ($request->is_active !== null && $request->is_active !== '') {
+            $query->where('is_active', $request->boolean('is_active'));
+        }
+
+        $locations = $query
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
@@ -98,7 +112,7 @@ class LocationController extends Controller
                 $inst->id => [
                     'latitude' => $inst->latitude,
                     'longitude' => $inst->longitude,
-                    'default_zoom' => $inst->default_zoom ?? 16,
+                    'default_zoom' => $inst->default_zoom ?? Institution::DEFAULT_ZOOM,
                 ],
             ]),
         ];

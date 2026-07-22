@@ -182,8 +182,8 @@ final class UpdateAccessibleEducationalMaterialTest extends TestCase
     {
         $material = AccessibleEducationalMaterial::register(new CreateAccessibleEducationalMaterialDTO(
             name: 'Livro em Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 2,
             assetCode: AssetCode::from('MPA-1001'),
             conservationState: ConservationState::GOOD,
