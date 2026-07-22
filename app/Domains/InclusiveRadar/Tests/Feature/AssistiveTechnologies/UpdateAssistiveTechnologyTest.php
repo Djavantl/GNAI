@@ -172,8 +172,8 @@ final class UpdateAssistiveTechnologyTest extends TestCase
     {
         $technology = AssistiveTechnology::register(new CreateAssistiveTechnologyDTO(
             name: 'Linha Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 2,
             assetCode: AssetCode::from('TA-1001'),
             conservationState: ConservationState::GOOD,

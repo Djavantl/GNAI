@@ -32,20 +32,20 @@ final class ListAssistiveTechnologiesTest extends TestCase
         $user = User::factory()->create();
         $matching = $this->technology(
             name: 'Linha Braille inativa',
-            digital: false,
-            active: false,
+            isDigital: false,
+            isActive: false,
             available: 0,
         );
         $this->technology(
             name: 'Linha Braille ativa',
-            digital: false,
-            active: true,
+            isDigital: false,
+            isActive: true,
             available: 1,
         );
         $this->technology(
             name: 'Leitor digital inativo',
-            digital: true,
-            active: false,
+            isDigital: true,
+            isActive: false,
             available: null,
         );
 
@@ -73,8 +73,8 @@ final class ListAssistiveTechnologiesTest extends TestCase
     {
         $this->technology(
             name: 'Linha Braille',
-            digital: false,
-            active: true,
+            isDigital: false,
+            isActive: true,
             available: 1,
         );
 

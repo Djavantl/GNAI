@@ -12,14 +12,14 @@ final readonly class UpdateAccessibleEducationalMaterialDTO
 {
     public function __construct(
         public string $name,
-        public bool $digital,
-        public bool $loanable,
+        public bool $isDigital,
+        public bool $isLoanable,
         public ?int $quantity,
         public ?AssetCode $assetCode,
         public ConservationState $conservationState,
         public ResourceStatus $status,
         public int $openLoans,
         public ?string $notes = null,
-        public bool $active = true,
+        public bool $isActive = true,
     ) {}
 }

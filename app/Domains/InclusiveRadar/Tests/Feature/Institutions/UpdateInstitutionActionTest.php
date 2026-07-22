@@ -7,7 +7,7 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\Institutions;
 use App\Domains\InclusiveRadar\Application\Actions\Institutions\UpdateInstitutionAction;
 use App\Domains\InclusiveRadar\Application\Data\Institutions\UpdateInstitutionData;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Models\InclusiveRadar\Location;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

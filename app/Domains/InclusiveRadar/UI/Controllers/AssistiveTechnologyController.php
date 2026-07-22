@@ -53,12 +53,12 @@ final class AssistiveTechnologyController extends Controller
         );
     }
 
-    public function store(CreateAssistiveTechnologyData $data, CreateAssistiveTechnologyAction $action): RedirectResponse
+    public function store(CreateAssistiveTechnologyData $data, CreateAssistiveTechnologyAction $action, Request $request): RedirectResponse
     {
         try {
             $action->execute(
                 data: $data,
-                registeredBy: (int) auth()->id(),
+                registeredBy: (int) $request->user()?->getAuthIdentifier(),
             );
         } catch (AssetCodeAlreadyInUse $exception) {
             return back()
@@ -85,13 +85,13 @@ final class AssistiveTechnologyController extends Controller
         );
     }
 
-    public function update(UpdateAssistiveTechnologyData $data, AssistiveTechnology $assistiveTechnology, UpdateAssistiveTechnologyAction $action): RedirectResponse
+    public function update(UpdateAssistiveTechnologyData $data, AssistiveTechnology $assistiveTechnology, UpdateAssistiveTechnologyAction $action, Request $request): RedirectResponse
     {
         try {
             $action->execute(
                 technology: $assistiveTechnology,
                 data: $data,
-                registeredBy: (int) auth()->id(),
+                registeredBy: (int) $request->user()?->getAuthIdentifier(),
             );
         } catch (AssetCodeAlreadyInUse $exception) {
             return back()

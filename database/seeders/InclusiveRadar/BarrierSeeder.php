@@ -8,7 +8,7 @@ use App\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Models\InclusiveRadar\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Models\InclusiveRadar\Location;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use App\Models\InclusiveRadar\Inspection;
 use App\Models\InclusiveRadar\InspectionImage;
 use App\Models\SpecializedEducationalSupport\Person;

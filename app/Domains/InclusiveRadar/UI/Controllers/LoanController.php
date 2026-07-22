@@ -49,6 +49,7 @@ final class LoanController extends Controller
         return view(
             'pages.inclusive-radar.loans.create',
             $form->forCreation(
+                authUser: $request->user(),
                 selectedStudentId: $request->integer('student_id') ?: null,
                 selectedProfessionalId: $request->integer('professional_id') ?: null,
                 selectedItemId: $request->integer('item_id') ?: null,
@@ -60,11 +61,11 @@ final class LoanController extends Controller
     /**
      * @throws Throwable
      */
-    public function store(CreateLoanData $data, CreateLoanAction $action): RedirectResponse
+    public function store(CreateLoanData $data, CreateLoanAction $action, Request $request): RedirectResponse
     {
         $action->execute(
             data: $data,
-            registeredBy: (int) auth()->id(),
+            registeredBy: (int) $request->user()?->getAuthIdentifier(),
         );
 
         return redirect()
@@ -72,7 +73,7 @@ final class LoanController extends Controller
             ->with('success', 'Empréstimo realizado com sucesso!');
     }
 
-    public function show(Loan $loan, ShowLoanQuery $query): View
+    public function show(Loan $loan, ShowLoanQuery $query, Request $request): View
     {
         $loan = $query->execute($loan);
 
@@ -83,16 +84,19 @@ final class LoanController extends Controller
                 'statusLabel' => $loan->statusLabel(),
                 'statusColor' => $loan->statusColor(),
                 'isOverdue' => $loan->isOverdue(),
-                'authUser' => auth()->user(),
+                'authUser' => $request->user(),
             ],
         );
     }
 
-    public function edit(Loan $loan, LoanFormQuery $form): View
+    public function edit(Loan $loan, LoanFormQuery $form, Request $request): View
     {
         return view(
             'pages.inclusive-radar.loans.edit',
-            $form->forUpdate($loan),
+            $form->forUpdate(
+                loan: $loan,
+                authUser: $request->user(),
+            ),
         );
     }
 
@@ -114,12 +118,12 @@ final class LoanController extends Controller
     /**
      * @throws Throwable
      */
-    public function returnItem(ReturnLoanData $data, Loan $loan, ReturnLoanAction $action): RedirectResponse
+    public function returnItem(ReturnLoanData $data, Loan $loan, ReturnLoanAction $action, Request $request): RedirectResponse
     {
         $action->execute(
             loan: $loan,
             data: $data,
-            returnedBy: auth()->user(),
+            returnedBy: $request->user(),
         );
 
         return redirect()
@@ -127,11 +131,11 @@ final class LoanController extends Controller
             ->with('success', 'Devolução registrada com sucesso!');
     }
 
-    public function destroy(Loan $loan, DeleteLoanAction $action): RedirectResponse
+    public function destroy(Loan $loan, DeleteLoanAction $action, Request $request): RedirectResponse
     {
         $action->execute(
             loan: $loan,
-            deletedBy: auth()->user(),
+            deletedBy: $request->user(),
         );
 
         return redirect()

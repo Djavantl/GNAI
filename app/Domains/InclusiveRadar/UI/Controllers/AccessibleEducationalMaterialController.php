@@ -53,12 +53,12 @@ final class AccessibleEducationalMaterialController extends Controller
         );
     }
 
-    public function store(CreateAccessibleEducationalMaterialData $data, CreateAccessibleEducationalMaterialAction $action): RedirectResponse
+    public function store(CreateAccessibleEducationalMaterialData $data, CreateAccessibleEducationalMaterialAction $action, Request $request): RedirectResponse
     {
         try {
             $action->execute(
                 data: $data,
-                registeredBy: (int) auth()->id(),
+                registeredBy: (int) $request->user()?->getAuthIdentifier(),
             );
         } catch (AssetCodeAlreadyInUse $exception) {
             return back()
@@ -91,13 +91,13 @@ final class AccessibleEducationalMaterialController extends Controller
         );
     }
 
-    public function update(UpdateAccessibleEducationalMaterialData $data, AccessibleEducationalMaterial $material, UpdateAccessibleEducationalMaterialAction $action): RedirectResponse
+    public function update(UpdateAccessibleEducationalMaterialData $data, AccessibleEducationalMaterial $material, UpdateAccessibleEducationalMaterialAction $action, Request $request): RedirectResponse
     {
         try {
             $action->execute(
                 material: $material,
                 data: $data,
-                registeredBy: (int) auth()->id(),
+                registeredBy: (int) $request->user()?->getAuthIdentifier(),
             );
         } catch (AssetCodeAlreadyInUse $exception) {
             return back()

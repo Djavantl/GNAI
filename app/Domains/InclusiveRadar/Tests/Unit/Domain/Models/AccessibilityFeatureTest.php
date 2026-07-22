@@ -18,7 +18,7 @@ final class AccessibilityFeatureTest extends TestCase
         $feature = AccessibilityFeature::register(new CreateAccessibilityFeatureDTO(
             name: ' Audiodescrição ',
             description: ' Recurso de apoio. ',
-            active: true,
+            isActive: true,
         ));
 
         self::assertSame('Audiodescrição', $feature->name);
@@ -37,7 +37,7 @@ final class AccessibilityFeatureTest extends TestCase
         $feature->revise(new UpdateAccessibilityFeatureDTO(
             name: 'Libras',
             description: '',
-            active: false,
+            isActive: false,
         ));
 
         self::assertSame('Libras', $feature->name);

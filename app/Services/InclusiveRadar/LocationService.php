@@ -3,7 +3,7 @@
 namespace App\Services\InclusiveRadar;
 
 use App\Exceptions\BusinessRuleException;
-use App\Models\InclusiveRadar\Location;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use Illuminate\Support\Facades\DB;
 
 class LocationService

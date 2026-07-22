@@ -20,7 +20,7 @@ final readonly class UpdateBarrierCategoryAction
             name: $data->name,
             description: $data->description,
             blocksMap: $data->blocksMap,
-            active: $data->isActive,
+            isActive: $data->isActive,
         );
 
         $category->revise($categoryDTO);

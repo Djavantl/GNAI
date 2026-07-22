@@ -44,14 +44,14 @@ final readonly class CreateAssistiveTechnologyAction
 
             $technologyDTO = new CreateAssistiveTechnologyDTO(
                 name: $data->name,
-                digital: $data->isDigital,
-                loanable: $data->isLoanable,
+                isDigital: $data->isDigital,
+                isLoanable: $data->isLoanable,
                 quantity: $data->quantity,
                 assetCode: $assetCode,
                 conservationState: $data->conservationState,
                 status: $data->status,
                 notes: $data->notes,
-                active: $data->isActive,
+                isActive: $data->isActive,
             );
 
             $technology = AssistiveTechnology::register($technologyDTO);

@@ -38,6 +38,7 @@ final readonly class CreateWaitlistAction
                 studentId: $data->studentId,
                 professionalId: $data->professionalId,
                 registeredBy: $registeredBy,
+                requestedAt: now(),
                 observation: $data->observation,
             );
 

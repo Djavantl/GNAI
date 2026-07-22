@@ -20,8 +20,8 @@ final class AssistiveTechnologyTest extends TestCase
     {
         $technology = $this->register(
             name: 'Linha Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 3,
             assetCode: AssetCode::from('TA-1001'),
             conservationState: ConservationState::GOOD,
@@ -42,8 +42,8 @@ final class AssistiveTechnologyTest extends TestCase
     {
         $technology = $this->register(
             name: 'Leitor de tela',
-            digital: true,
-            loanable: true,
+            isDigital: true,
+            isLoanable: true,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
@@ -61,8 +61,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $this->register(
             name: '   ',
-            digital: true,
-            loanable: false,
+            isDigital: true,
+            isLoanable: false,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
@@ -75,8 +75,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $technology = $this->register(
             name: 'Leitor de tela',
-            digital: true,
-            loanable: false,
+            isDigital: true,
+            isLoanable: false,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
@@ -91,8 +91,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $this->register(
             name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -103,8 +103,8 @@ final class AssistiveTechnologyTest extends TestCase
     {
         $technology = $this->register(
             name: 'Linha Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 3,
             assetCode: AssetCode::from('TA-1001'),
             conservationState: ConservationState::GOOD,
@@ -112,8 +112,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $this->revise($technology,
             name: 'Linha Braille atualizada',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 5,
             assetCode: AssetCode::from('TA-1001'),
             conservationState: ConservationState::REGULAR,
@@ -131,8 +131,8 @@ final class AssistiveTechnologyTest extends TestCase
     {
         $technology = $this->register(
             name: 'Leitor de tela',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 2,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -140,8 +140,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $this->revise($technology,
             name: 'Leitor de tela',
-            digital: true,
-            loanable: true,
+            isDigital: true,
+            isLoanable: true,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
@@ -160,8 +160,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $technology = $this->register(
             name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 3,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -169,8 +169,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $this->revise($technology,
             name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 1,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -185,8 +185,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $technology = $this->register(
             name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 2,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -194,8 +194,8 @@ final class AssistiveTechnologyTest extends TestCase
 
         $this->revise($technology,
             name: 'Mouse adaptado',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 2,
             assetCode: null,
             conservationState: ConservationState::GOOD,
@@ -217,14 +217,14 @@ final class AssistiveTechnologyTest extends TestCase
     ): AssistiveTechnology {
         return AssistiveTechnology::register(new CreateAssistiveTechnologyDTO(
             name: $name,
-            digital: $digital,
-            loanable: $loanable,
+            isDigital: $digital,
+            isLoanable: $loanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,
             status: $status,
             notes: $notes,
-            active: $active,
+            isActive: $active,
         ));
     }
 
@@ -243,15 +243,15 @@ final class AssistiveTechnologyTest extends TestCase
     ): void {
         $technology->revise(new UpdateAssistiveTechnologyDTO(
             name: $name,
-            digital: $digital,
-            loanable: $loanable,
+            isDigital: $digital,
+            isLoanable: $loanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,
             status: $status,
             openLoans: $openLoans,
             notes: $notes,
-            active: $active,
+            isActive: $active,
         ));
     }
 }

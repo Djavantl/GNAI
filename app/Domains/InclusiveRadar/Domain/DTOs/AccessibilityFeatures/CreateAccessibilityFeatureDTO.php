@@ -9,6 +9,6 @@ final readonly class CreateAccessibilityFeatureDTO
     public function __construct(
         public string $name,
         public ?string $description = null,
-        public bool $active = true,
+        public bool $isActive = true,
     ) {}
 }

@@ -32,8 +32,8 @@ final class AccessibleEducationalMaterialAssetCodeExistsQueryTest extends TestCa
     {
         $material = AccessibleEducationalMaterial::register(new CreateAccessibleEducationalMaterialDTO(
             name: 'Livro em Braille',
-            digital: false,
-            loanable: true,
+            isDigital: false,
+            isLoanable: true,
             quantity: 1,
             assetCode: AssetCode::from($assetCode),
             conservationState: ConservationState::GOOD,

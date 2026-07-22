@@ -10,6 +10,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidWaitlist;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 final class WaitlistTest extends TestCase
@@ -31,6 +32,7 @@ final class WaitlistTest extends TestCase
             studentId: 20,
             professionalId: null,
             registeredBy: 30,
+            requestedAt: Carbon::parse('2026-01-01 10:00:00'),
             observation: 'Precisa do recurso.',
         ));
 
@@ -41,7 +43,7 @@ final class WaitlistTest extends TestCase
         self::assertSame(30, $waitlist->user_id);
         self::assertSame(WaitlistStatus::WAITING, $waitlist->status);
         self::assertSame('Precisa do recurso.', $waitlist->observation);
-        self::assertNotNull($waitlist->requested_at);
+        self::assertTrue($waitlist->requested_at->equalTo(Carbon::parse('2026-01-01 10:00:00')));
     }
 
     public function test_it_revises_status_and_observation(): void

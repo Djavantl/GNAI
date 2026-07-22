@@ -43,22 +43,24 @@ final class WaitlistController extends Controller
         );
     }
 
-    public function create(WaitlistFormQuery $form): View
+    public function create(WaitlistFormQuery $form, Request $request): View
     {
         return view(
             'pages.inclusive-radar.waitlists.create',
-            $form->forCreation(),
+            $form->forCreation(
+                authUser: $request->user(),
+            ),
         );
     }
 
     /**
      * @throws Throwable
      */
-    public function store(CreateWaitlistData $data, CreateWaitlistAction $action): RedirectResponse
+    public function store(CreateWaitlistData $data, CreateWaitlistAction $action, Request $request): RedirectResponse
     {
         $action->execute(
             data: $data,
-            registeredBy: (int) auth()->id(),
+            registeredBy: (int) $request->user()?->getAuthIdentifier(),
         );
 
         return redirect()
@@ -66,7 +68,7 @@ final class WaitlistController extends Controller
             ->with('success', 'Solicitação de fila criada com sucesso!');
     }
 
-    public function show(Waitlist $waitlist, ShowWaitlistQuery $query): View
+    public function show(Waitlist $waitlist, ShowWaitlistQuery $query, Request $request): View
     {
         $waitlist = $query->execute($waitlist);
 
@@ -74,7 +76,7 @@ final class WaitlistController extends Controller
             'pages.inclusive-radar.waitlists.show',
             [
                 'waitlist' => $waitlist,
-                'authUser' => auth()->user(),
+                'authUser' => $request->user(),
                 'statusLabel' => $waitlist->status->label(),
                 'statusColor' => $waitlist->status->color(),
                 'canCancel' => $waitlist->status->canCancel(),
@@ -82,11 +84,14 @@ final class WaitlistController extends Controller
         );
     }
 
-    public function edit(Waitlist $waitlist, WaitlistFormQuery $form): View
+    public function edit(Waitlist $waitlist, WaitlistFormQuery $form, Request $request): View
     {
         return view(
             'pages.inclusive-radar.waitlists.edit',
-            $form->forUpdate($waitlist),
+            $form->forUpdate(
+                waitlist: $waitlist,
+                authUser: $request->user(),
+            ),
         );
     }
 
