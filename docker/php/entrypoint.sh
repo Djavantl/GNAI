@@ -63,14 +63,29 @@ wait_for_database() {
 
 ensure_php_dependencies() {
     stored_state=""
+    composer_install_flags="--prefer-dist --no-interaction --no-progress --no-scripts"
 
     if [ -f "${COMPOSER_STATE_FILE}" ]; then
         stored_state="$(cat "${COMPOSER_STATE_FILE}")"
     fi
 
+    if [ "${APP_ENV:-local}" = "production" ]; then
+        if [ ! -f vendor/autoload.php ]; then
+            echo "Dependencias PHP ausentes na imagem de producao: vendor/autoload.php nao encontrado." >&2
+            exit 1
+        fi
+
+        if [ "${stored_state}" != "${current_state}" ]; then
+            printf '%s' "${current_state}" > "${COMPOSER_STATE_FILE}"
+            rm -f "${ARTISAN_STATE_FILE}"
+        fi
+
+        return 0
+    fi
+
     if [ ! -f vendor/autoload.php ] || [ "${stored_state}" != "${current_state}" ]; then
         echo "Sincronizando dependencias PHP para ${current_state}..."
-        composer install --prefer-dist --no-interaction --no-progress --no-scripts
+        composer install ${composer_install_flags}
         composer dump-autoload --optimize --no-scripts
         printf '%s' "${current_state}" > "${COMPOSER_STATE_FILE}"
         rm -f "${ARTISAN_STATE_FILE}"
