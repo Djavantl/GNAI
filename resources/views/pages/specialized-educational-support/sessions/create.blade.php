@@ -27,14 +27,25 @@
             
             <x-forms.section title="Participantes e Horário" />
 
-             {{-- Tipo de Atendimento --}}
+            <div class="col-md-6">
+                <x-forms.select
+                    name="attendance_type"
+                    label="Tipo de Atendimento"
+                    required
+                    :options="\App\Models\SpecializedEducationalSupport\Session::attendanceTypeOptions()"
+                    :selected="old('attendance_type', \App\Enums\SpecializedEducationalSupport\AttendanceType::AEE->value)"
+                    id="attendance_type"
+                />
+            </div>
+
+             {{-- Formato --}}
             <div class="col-md-6">
                 <x-forms.select
                     name="type"
-                    label="Tipo de Atendimento "
+                    label="Formato"
                     required
                     :options="['individual' => 'Individual', 'group' => 'Em Grupo']"
-                    :value="old('type', 'individual')"
+                    :selected="old('type', 'individual')"
                     id="session_type"
                 />
             </div>
@@ -132,45 +143,11 @@
     </div>
     
     @push('scripts')
-    <script>
+        @vite('resources/js/pages/specialized-educational-support/session.js')
+        <script>
         window.routes = {
             sessionAvailability: "{{ route('specialized-educational-support.sessions.availability') }}"
         };
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const type = document.getElementById('session_type');
-            const single = document.getElementById('single-student-wrapper');
-            const group = document.getElementById('group-students-wrapper');
-
-            const status = document.querySelector('[name="status"]');
-            const cancelBox = document.getElementById('cancel-reason-wrapper');
-
-            function toggleStudents() {
-                if (type.value === 'group') {
-                    single.classList.add('d-none');
-                    group.classList.remove('d-none');
-                } else {
-                    single.classList.remove('d-none');
-                    group.classList.add('d-none');
-                }
-            }
-
-            function toggleCancelReason() {
-                if (status.value === 'Cancelado') {
-                    cancelBox.classList.remove('d-none');
-                } else {
-                    cancelBox.classList.add('d-none');
-                }
-            }
-
-            type.addEventListener('change', toggleStudents);
-            status.addEventListener('change', toggleCancelReason);
-
-            toggleStudents();
-            toggleCancelReason();
-        });
         </script>
-
     @endpush
 @endsection

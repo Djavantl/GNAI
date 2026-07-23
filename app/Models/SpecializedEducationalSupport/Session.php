@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Traits\Reportable;
 use App\Models\User;
+use App\Enums\SpecializedEducationalSupport\AttendanceType;
 
 class Session extends Model
 {
@@ -23,6 +24,7 @@ class Session extends Model
         'start_time',
         'end_time',
         'type',
+        'attendance_type',
         'location',
         'session_objective', 
         'status',
@@ -56,6 +58,11 @@ class Session extends Model
     public function sessionRecord()
     {
         return $this->hasOne(SessionRecord::class, 'attendance_session_id');
+    }
+
+    public function pedagogicalRecord()
+    {
+        return $this->hasOne(PedagogicalRecord::class, 'attendance_session_id');
     }
 
     public function scopeOfStudent($query, $studentId)
@@ -115,6 +122,22 @@ class Session extends Model
         };
     }
 
+    public function attendanceTypeLabel(): string
+    {
+        return AttendanceType::tryFrom($this->attendance_type ?? AttendanceType::AEE->value)?->label()
+            ?? AttendanceType::AEE->label();
+    }
+
+    public function isAeeAttendance(): bool
+    {
+        return ($this->attendance_type ?? AttendanceType::AEE->value) === AttendanceType::AEE->value;
+    }
+
+    public function isPedagogicalAttendance(): bool
+    {
+        return ($this->attendance_type ?? AttendanceType::AEE->value) === AttendanceType::PEDAGOGICAL->value;
+    }
+
     public function statusLabel(): string
     {
         return match(strtolower($this->status ?? '')) {
@@ -131,6 +154,11 @@ class Session extends Model
             'individual' => 'Individual',
             'group'      => 'Grupo',
         ];
+    }
+
+    public static function attendanceTypeOptions(): array
+    {
+        return AttendanceType::options();
     }
 
     public static function statusOptions(): array

@@ -1,0 +1,127 @@
+@extends('layouts.master')
+
+@section('content')
+    @php($session = $pedagogicalRecord->attendanceSession)
+
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
+            'Agendamento #' . $session->id => route('specialized-educational-support.sessions.show', $session),
+            'Atendimento Pedagógico' => null
+        ]" />
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
+        <div>
+            <h2 class="text-title">Atendimento Pedagógico</h2>
+            <p class="text-muted">
+                Agendamento #{{ $session->id }} •
+                Realizado em: {{ $session->session_date->format('d/m/Y') }}
+            </p>
+        </div>
+
+        @php($canManageRecord = auth()->user()?->professional?->id === $session->professional_id)
+
+        <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
+            <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.pedagogical-records.pdf', $pedagogicalRecord)" />
+
+            @can('session-record.update')
+                @if($canManageRecord)
+                    <x-buttons.link-button :href="route('specialized-educational-support.pedagogical-records.edit', $pedagogicalRecord)" variant="warning">
+                        <i class="fas fa-edit"></i> Editar
+                    </x-buttons.link-button>
+                @endif
+            @endcan
+
+            <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $session)" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
+        </div>
+    </div>
+
+    <div class="custom-table-card bg-white shadow-sm overflow-hidden">
+        <div class="row g-0">
+            <x-forms.section title="Identificação" />
+
+            <x-show.info-item label="Aluno" column="col-md-6" isBox="true">
+                {{ $session->students->first()?->person?->name ?? 'Aluno não informado' }}
+            </x-show.info-item>
+
+            <x-show.info-item label="Profissional" column="col-md-6" isBox="true">
+                {{ $session->professional?->person?->name ?? 'Profissional não informado' }}
+            </x-show.info-item>
+
+            <x-show.info-item label="Duração" column="col-md-4" isBox="true">
+                {{ $pedagogicalRecord->duration }}
+            </x-show.info-item>
+
+            <x-show.info-item label="Horário" column="col-md-8" isBox="true">
+                {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}
+                às
+                {{ $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--' }}
+            </x-show.info-item>
+
+            <x-show.info-item label="Presença" column="col-md-12" isBox="true">
+                @if($pedagogicalRecord->is_present)
+                    <span class="badge bg-success">
+                        <i class="fas fa-check-circle me-1"></i> Presente
+                    </span>
+                @else
+                    <span class="badge bg-danger">
+                        <i class="fas fa-times-circle me-1"></i> Ausente
+                    </span>
+                @endif
+            </x-show.info-item>
+
+            <x-forms.section title="Execução do Atendimento Pedagógico" />
+
+            @if(!$pedagogicalRecord->is_present)
+                <x-show.info-textarea label="Motivo da Ausência" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->absence_reason ?? 'Não informado.' !!}
+                </x-show.info-textarea>
+            @else
+                <x-show.info-textarea label="Atividades Planejadas/Realizadas" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->planned_performed_activities !!}
+                </x-show.info-textarea>
+
+                <x-show.info-textarea label="Registro Pedagógico" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->pedagogical_record !!}
+                </x-show.info-textarea>
+
+                <x-show.info-textarea label="Recursos Utilizados" column="col-md-6" isBox="true">
+                    {!! $pedagogicalRecord->resources_used ?? 'N/A' !!}
+                </x-show.info-textarea>
+
+                <x-show.info-textarea label="Observações Gerais" column="col-md-6" isBox="true">
+                    {!! $pedagogicalRecord->general_observations ?? 'N/A' !!}
+                </x-show.info-textarea>
+            @endif
+
+            <footer class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light-subtle">
+                @can('session-record.delete')
+                    @if($canManageRecord)
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Atendimento Pedagógico"
+                            data-confirm-message="Deseja excluir este atendimento pedagógico?"
+                            data-confirm-action="{{ route('specialized-educational-support.pedagogical-records.destroy', $pedagogicalRecord) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    @endif
+                @endcan
+
+                <x-buttons.link-button :href="route('specialized-educational-support.sessions.show', $session)" variant="secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </x-buttons.link-button>
+            </footer>
+        </div>
+    </div>
+@endsection

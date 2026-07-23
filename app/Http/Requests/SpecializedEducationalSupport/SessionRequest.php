@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\SpecializedEducationalSupport;
 
+use App\Enums\SpecializedEducationalSupport\AttendanceType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SessionRequest extends FormRequest
 {
@@ -28,11 +30,30 @@ class SessionRequest extends FormRequest
             'session_date' => ['required', 'date'],
             'start_time'   => ['required', 'date_format:H:i'],
             'end_time'     => ['nullable', 'date_format:H:i', 'after:start_time'],
+            'attendance_type' => ['required', Rule::in(array_keys(AttendanceType::options()))],
             'type' => ['required', 'string', 'max:100'],
             'location' => ['required', 'string', 'max:255'],
             'session_objective' => ['required', 'string'],
             'status' => ['sometimes'],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('attendance_type') !== AttendanceType::PEDAGOGICAL->value) {
+                return;
+            }
+
+            $studentIds = array_filter((array) $this->input('student_ids', []));
+
+            if (count($studentIds) !== 1) {
+                $validator->errors()->add(
+                    'student_ids',
+                    'Atendimentos pedagógicos devem possuir exatamente um aluno.'
+                );
+            }
+        });
     }
 
     public function messages(): array
@@ -55,9 +76,11 @@ class SessionRequest extends FormRequest
             'end_time.date_format' => 'O horário de término deve estar no formato HH:MM.',
             'end_time.after' => 'O horário de término deve ser após o início.',
 
+            'attendance_type.required' => 'O tipo de atendimento é obrigatório.',
+            'attendance_type.in' => 'O tipo de atendimento informado é inválido.',
             'type.required' => 'O tipo de atendimento é obrigatório.',
-            'type.string' => 'O tipo de atendimento deve ser um texto válido.',
-            'type.max' => 'O tipo de atendimento não pode ultrapassar 100 caracteres.',
+            'type.string' => 'O formato do atendimento deve ser um texto válido.',
+            'type.max' => 'O formato do atendimento não pode ultrapassar 100 caracteres.',
             'location.required' => 'O local do agendamento é obrigatório.',
             'location.string' => 'O local do agendamento deve ser um texto válido.',
             'location.max' => 'O local do agendamento não pode ultrapassar 255 caracteres.',

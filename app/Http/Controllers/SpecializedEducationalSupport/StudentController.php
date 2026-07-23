@@ -49,10 +49,11 @@ class StudentController extends Controller
         try {
             $student = $this->service->show($student);
             $sessionEvaluations = $this->service->studentSessionEvaluations($student, 5);
+            $pedagogicalRecords = $this->service->studentPedagogicalRecords($student, 5);
 
             return view(
                 'pages.specialized-educational-support.students.show',
-                compact('student', 'sessionEvaluations')
+                compact('student', 'sessionEvaluations', 'pedagogicalRecords')
             );
 
         } catch (Throwable $e) {

@@ -49,8 +49,12 @@
 
                                     $professionalName = $session->professional->person->name ?? 'Profissional';
 
-                                    $hasRecord = (bool) $session->sessionRecord;
-                                    $recordLabel = $hasRecord ? 'Registro Realizado' : 'Sem registro';
+                                    $hasRecord = $session->isPedagogicalAttendance()
+                                        ? (bool) $session->pedagogicalRecord
+                                        : (bool) $session->sessionRecord;
+                                    $recordLabel = $hasRecord
+                                        ? ($session->isPedagogicalAttendance() ? 'Atendimento Pedagógico registrado' : 'Atendimento AEE registrado')
+                                        : 'Sem registro';
                                     $recordClass = $hasRecord
                                         ? 'weekly-session-record weekly-session-record--done'
                                         : 'weekly-session-record weekly-session-record--missing';
