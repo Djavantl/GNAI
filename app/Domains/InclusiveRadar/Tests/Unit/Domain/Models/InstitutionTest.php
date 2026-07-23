@@ -68,18 +68,17 @@ final class InstitutionTest extends TestCase
         self::assertFalse($institution->is_active);
     }
 
-    public function test_it_rejects_empty_name(): void
+    public function test_it_trims_name(): void
     {
-        $this->expectException(InvalidInstitution::class);
-        $this->expectExceptionMessage('O nome da instituição é obrigatório.');
-
-        Institution::register(new CreateInstitutionDTO(
-            name: ' ',
+        $institution = Institution::register(new CreateInstitutionDTO(
+            name: ' IFBA ',
             city: 'Guanambi',
             state: 'Bahia',
             latitude: -14.22,
             longitude: -42.77,
         ));
+
+        self::assertSame('IFBA', $institution->name);
     }
 
     public function test_it_rejects_invalid_latitude(): void

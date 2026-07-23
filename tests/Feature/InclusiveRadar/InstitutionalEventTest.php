@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\InclusiveRadar;
 
-use App\Models\InclusiveRadar\InstitutionalEvent;
+use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

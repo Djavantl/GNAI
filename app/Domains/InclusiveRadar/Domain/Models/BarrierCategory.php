@@ -6,7 +6,6 @@ namespace App\Domains\InclusiveRadar\Domain\Models;
 
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\CreateBarrierCategoryDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\UpdateBarrierCategoryDTO;
-use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidBarrierCategory;
 use App\Models\InclusiveRadar\Barrier;
 use Database\Factories\Domains\InclusiveRadar\BarrierCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -35,9 +34,6 @@ final class BarrierCategory extends Model
         'blocks_map' => 'boolean',
     ];
 
-    /**
-     * @throws InvalidBarrierCategory
-     */
     public static function register(CreateBarrierCategoryDTO $data): self
     {
         return new self([
@@ -48,9 +44,6 @@ final class BarrierCategory extends Model
         ]);
     }
 
-    /**
-     * @throws InvalidBarrierCategory
-     */
     public function revise(UpdateBarrierCategoryDTO $data): void
     {
         $this->fill([
@@ -66,22 +59,9 @@ final class BarrierCategory extends Model
         return $this->hasMany(Barrier::class, 'barrier_category_id');
     }
 
-    /**
-     * @throws InvalidBarrierCategory
-     */
     private static function normalizeName(string $name): string
     {
-        $name = trim($name);
-
-        if ($name === '') {
-            throw new InvalidBarrierCategory('O nome da categoria é obrigatório.');
-        }
-
-        if (mb_strlen($name) > 150) {
-            throw new InvalidBarrierCategory('O nome da categoria deve possuir no máximo 150 caracteres.');
-        }
-
-        return $name;
+        return trim($name);
     }
 
     private static function normalizeDescription(?string $description): ?string
