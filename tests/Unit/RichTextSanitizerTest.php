@@ -29,6 +29,25 @@ class RichTextSanitizerTest extends TestCase
         );
     }
 
+    public function test_it_preserves_safe_table_markup(): void
+    {
+        $html = '<table><thead><tr><th scope="col">Recurso</th><th scope="col">Qtd</th></tr></thead>'
+            . '<tbody><tr><td rowspan="2">Linha 1</td><td colspan="2">Valor</td></tr></tbody></table>';
+
+        $this->assertSame($html, RichTextSanitizer::sanitize($html));
+    }
+
+    public function test_it_sanitizes_unsafe_table_attributes(): void
+    {
+        $html = '<table style="width:100%" onclick="alert(1)"><tr><th scope="bad" colspan="0">A</th>'
+            . '<td rowspan="999" class="x">B</td></tr></table>';
+
+        $this->assertSame(
+            '<table><tr><th>A</th><td>B</td></tr></table>',
+            RichTextSanitizer::sanitize($html)
+        );
+    }
+
     public function test_it_only_sanitizes_strings_that_contain_html_tags(): void
     {
         $data = [
