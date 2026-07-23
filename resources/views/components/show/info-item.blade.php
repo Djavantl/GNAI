@@ -17,7 +17,6 @@
 
         $hasEncodedHtmlTags = preg_match('/&lt;\/?[a-z]/i', $displayValue) === 1;
         $shouldRenderPlainText = !$hasSlot || $hasEncodedHtmlTags;
-        $displayValue = \App\Support\RichTextSanitizer::sanitize($displayValue);
     @endphp
 
     <div class="{{ $isBox ? 'custom-display-box' : 'text-base' }}"
@@ -27,7 +26,7 @@
         @if($shouldRenderPlainText)
             {{ $plainTextValue }}
         @else
-            {!! $displayValue !!}
+            {{ $slot }}
         @endif
     </div>
 </div>
