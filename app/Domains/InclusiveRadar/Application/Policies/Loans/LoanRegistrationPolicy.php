@@ -31,6 +31,9 @@ final readonly class LoanRegistrationPolicy
         $this->ensureBeneficiaryHasNoOpenLoan($data);
     }
 
+    /**
+     * @throws InvalidLoan
+     */
     private function ensureValidBeneficiary(?int $studentId, ?int $professionalId): void
     {
         if ($studentId === null && $professionalId === null) {
@@ -42,6 +45,9 @@ final readonly class LoanRegistrationPolicy
         }
     }
 
+    /**
+     * @throws InvalidLoan
+     */
     private function ensureResourceCanBeLoaned(AccessibleEducationalMaterial|AssistiveTechnology $item): void
     {
         if (! $item->is_active || ! $item->is_loanable) {
@@ -65,6 +71,9 @@ final readonly class LoanRegistrationPolicy
         }
     }
 
+    /**
+     * @throws InvalidLoan
+     */
     private function ensureBeneficiaryHasNoOpenLoan(CreateLoanData $data): void
     {
         if (! $this->openLoanExists->execute(

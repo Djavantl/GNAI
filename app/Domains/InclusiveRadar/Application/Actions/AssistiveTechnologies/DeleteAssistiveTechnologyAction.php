@@ -7,11 +7,12 @@ namespace App\Domains\InclusiveRadar\Application\Actions\AssistiveTechnologies;
 use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final readonly class DeleteAssistiveTechnologyAction
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function execute(AssistiveTechnology $technology): void
     {

@@ -7,11 +7,12 @@ namespace App\Domains\InclusiveRadar\Application\Actions\AccessibleEducationalMa
 use App\Domains\InclusiveRadar\Domain\Exceptions\ResourceHasOpenLoans;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final readonly class DeleteAccessibleEducationalMaterialAction
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function execute(AccessibleEducationalMaterial $material): void
     {

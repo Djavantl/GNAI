@@ -14,6 +14,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final readonly class ReturnLoanAction
 {
@@ -24,7 +25,7 @@ final readonly class ReturnLoanAction
     ) {}
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function execute(Loan $loan, ReturnLoanData $data, User $returnedBy): Loan
     {

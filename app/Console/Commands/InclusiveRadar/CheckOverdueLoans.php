@@ -4,8 +4,8 @@ namespace App\Console\Commands\InclusiveRadar;
 
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
+use App\Domains\InclusiveRadar\Infrastructure\Notifications\LoanOverdueNotification;
 use Illuminate\Console\Command;
-use App\Notifications\InclusiveRadar\LoanOverdueNotification;
 use App\Models\User;
 
 class CheckOverdueLoans extends Command

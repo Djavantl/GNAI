@@ -15,10 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-/**
- * RF: cadastro dos pontos de referência/localizações vinculados à instituição.
- * Uso: mapa do radar, barreiras georreferenciadas e relatórios de locais.
- */
 #[UseFactory(LocationFactory::class)]
 class Location extends Model
 {
