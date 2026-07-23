@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\Backup\Infrastructure\Storage;
+namespace App\Domains\Backup\Application\Contracts;
 
 use App\Domains\Backup\Domain\Models\Backup;
+use App\Domains\Backup\Infrastructure\Storage\BackupArchiveMetadata;
 use Illuminate\Http\UploadedFile;
 
 interface BackupArchiveStorageContract
