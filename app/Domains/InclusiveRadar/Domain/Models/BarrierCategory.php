@@ -6,7 +6,6 @@ namespace App\Domains\InclusiveRadar\Domain\Models;
 
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\CreateBarrierCategoryDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\UpdateBarrierCategoryDTO;
-use App\Models\InclusiveRadar\Barrier;
 use Database\Factories\Domains\InclusiveRadar\BarrierCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

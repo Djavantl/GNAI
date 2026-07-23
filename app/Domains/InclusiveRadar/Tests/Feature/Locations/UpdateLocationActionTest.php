@@ -7,9 +7,9 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\Locations;
 use App\Domains\InclusiveRadar\Application\Actions\Locations\UpdateLocationAction;
 use App\Domains\InclusiveRadar\Application\Data\Locations\UpdateLocationData;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLocation;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Domains\InclusiveRadar\Domain\Models\Location;
-use App\Models\InclusiveRadar\Barrier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

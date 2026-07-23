@@ -7,7 +7,6 @@ namespace App\Domains\InclusiveRadar\Domain\Models;
 use App\Domains\InclusiveRadar\Domain\DTOs\Locations\CreateLocationDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Locations\UpdateLocationDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLocation;
-use App\Models\InclusiveRadar\Barrier;
 use Database\Factories\Domains\InclusiveRadar\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

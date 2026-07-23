@@ -37,7 +37,7 @@
                         ->mapWithKeys(fn ($case) => [$case->value => $case->label()])
                         ->prepend('Prioridade (Todas)', '')
                         ->toArray()],
-                    ['name' => 'status', 'type' => 'select', 'options' => collect(\App\Enums\InclusiveRadar\BarrierStatus::cases())
+                    ['name' => 'status', 'type' => 'select', 'options' => collect(\App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus::cases())
                         ->mapWithKeys(fn ($case) => [$case->value => $case->label()])
                         ->prepend('Status (Todos)', '')
                         ->toArray()],

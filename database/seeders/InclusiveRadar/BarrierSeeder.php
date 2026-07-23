@@ -2,36 +2,24 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\BarrierStatus;
-use App\Enums\InclusiveRadar\InspectionType;
-use App\Enums\Priority;
+use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
-use App\Models\InclusiveRadar\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Location;
-use App\Models\InclusiveRadar\Inspection;
-use App\Models\InclusiveRadar\InspectionImage;
+use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\User;
-use App\Services\InclusiveRadar\BarrierService;
-use App\Services\InclusiveRadar\InspectionService;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class BarrierSeeder extends Seeder
 {
-    protected BarrierService $barrierService;
-    protected InspectionService $inspectionService;
-
-    public function __construct(BarrierService $barrierService, InspectionService $inspectionService)
-    {
-        $this->barrierService = $barrierService;
-        $this->inspectionService = $inspectionService;
-    }
-
     public function run(): void
     {
         DB::transaction(function () {
@@ -357,14 +345,17 @@ class BarrierSeeder extends Seeder
                         ->exists();
 
                     if (!$exists) {
-                        // Usa InspectionService para manter lógica de imagens/estado
-                        $this->inspectionService->createForModel($barrier, [
+                        $inspection = new Inspection([
+                            'state' => null,
                             'status' => $insData['status']->value,
                             'inspection_date' => $insData['date']->format('Y-m-d'),
                             'type' => $insData['type']->value,
                             'description' => $this->inspectionDescription($insData['status']),
-                            'images' => [],
+                            'user_id' => $bData['registered_by']->id ?? null,
                         ]);
+
+                        $inspection->inspectable()->associate($barrier);
+                        $inspection->save();
                     }
                 }
 

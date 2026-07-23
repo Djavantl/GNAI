@@ -2,7 +2,7 @@
 
 namespace App\Notifications\InclusiveRadar;
 
-use App\Models\InclusiveRadar\Loan;
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Carbon\Carbon;

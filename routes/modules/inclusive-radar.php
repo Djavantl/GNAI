@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\InclusiveRadar\UI\Controllers\BarrierCategoryController as DomainBarrierCategoryController;
+use App\Domains\InclusiveRadar\UI\Controllers\BarrierController as DomainBarrierController;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController as DomainAccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
 use App\Domains\InclusiveRadar\UI\Controllers\InstitutionalEventController as DomainInstitutionalEventController;
@@ -8,10 +9,7 @@ use App\Domains\InclusiveRadar\UI\Controllers\LoanController as DomainLoanContro
 use App\Domains\InclusiveRadar\UI\Controllers\LocationController as DomainLocationController;
 use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController as DomainWaitlistController;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibilityFeatureController;
-use App\Http\Controllers\InclusiveRadar\BarrierController;
 use App\Domains\InclusiveRadar\UI\Controllers\InstitutionController;
-use App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController;
-use App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -119,35 +117,32 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [DomainAssistiveTechnologyController::class, 'generatePdf'])
         ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/logs', [AssistiveTechnologyLogController::class, 'index'])
-        ->name('assistive-technologies.logs')->middleware('can:assistive-technology.logs');
-
     // ------------------- BARREIRAS -------------------
-    Route::get('/barriers', [BarrierController::class, 'index'])
+    Route::get('/barriers', [DomainBarrierController::class, 'index'])
         ->name('barriers.index')->middleware('can:barrier.index');
 
-    Route::get('/barriers/create', [BarrierController::class, 'create'])
+    Route::get('/barriers/create', [DomainBarrierController::class, 'create'])
         ->name('barriers.create')->middleware('can:barrier.create');
 
-    Route::post('/barriers/store', [BarrierController::class, 'store'])
+    Route::post('/barriers/store', [DomainBarrierController::class, 'store'])
         ->name('barriers.store')->middleware('can:barrier.store');
 
-    Route::get('barriers/{barrier}/inspection/{inspection}', [BarrierController::class, 'showInspection'])
+    Route::get('barriers/{barrier}/inspection/{inspection}', [DomainBarrierController::class, 'showInspection'])
         ->name('barriers.inspection.show')->middleware('can:barrier.inspection.show');
 
-    Route::get('/barriers/{barrier}', [BarrierController::class, 'show'])
+    Route::get('/barriers/{barrier}', [DomainBarrierController::class, 'show'])
         ->name('barriers.show')->middleware('can:barrier.show');
 
-    Route::get('/barriers/{barrier}/edit', [BarrierController::class, 'edit'])
+    Route::get('/barriers/{barrier}/edit', [DomainBarrierController::class, 'edit'])
         ->name('barriers.edit')->middleware('can:barrier.edit');
 
-    Route::put('/barriers/{barrier}', [BarrierController::class, 'update'])
+    Route::put('/barriers/{barrier}', [DomainBarrierController::class, 'update'])
         ->name('barriers.update')->middleware('can:barrier.update');
 
-    Route::delete('/barriers/{barrier}', [BarrierController::class, 'destroy'])
+    Route::delete('/barriers/{barrier}', [DomainBarrierController::class, 'destroy'])
         ->name('barriers.destroy')->middleware('can:barrier.destroy');
 
-    Route::get('/barriers/{barrier}/pdf', [BarrierController::class, 'generatePdf'])
+    Route::get('/barriers/{barrier}/pdf', [DomainBarrierController::class, 'generatePdf'])
         ->name('barriers.pdf')->middleware('can:barrier.pdf');
 
     // ------------------- MATERIAIS PEDAGÓGICOS ACESSÍVEIS -------------------
@@ -177,9 +172,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/accessible-educational-materials/{material}/pdf', [DomainAccessibleEducationalMaterialController::class, 'generatePdf'])
         ->name('accessible-educational-materials.pdf')->middleware('can:material.pdf');
-
-    Route::get('/accessible-educational-materials/{material}/logs', [AccessibleEducationalMaterialLogController::class, 'index'])
-        ->name('accessible-educational-materials.logs')->middleware('can:material.logs');
 
     // ------------------- AGENDA INSTITUCIONAL -------------------
     Route::get('/institutional-events', [DomainInstitutionalEventController::class, 'index'])

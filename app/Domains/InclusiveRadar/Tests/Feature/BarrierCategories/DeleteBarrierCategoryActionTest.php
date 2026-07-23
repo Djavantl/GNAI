@@ -6,8 +6,8 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\BarrierCategories;
 
 use App\Domains\InclusiveRadar\Application\Actions\BarrierCategories\DeleteBarrierCategoryAction;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidBarrierCategory;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
-use App\Models\InclusiveRadar\Barrier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -4,9 +4,9 @@ namespace App\Providers;
 
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
-use App\Models\InclusiveRadar\Barrier;
-use App\Models\InclusiveRadar\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Models\Permission;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
