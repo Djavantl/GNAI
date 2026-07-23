@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\Backup\Application\Actions;
+namespace App\Domains\Backup\Application\Contracts;
 
 interface PruneBackupsActionContract
 {

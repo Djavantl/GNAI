@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domains\Backup\Tests\Feature;
 
 use App\Domains\Backup\Application\Actions\RestoreBackupAction;
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Models\Backup;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -27,7 +27,7 @@ final class RestoreBackupActionTest extends TestCase
         ));
         $backup->save();
 
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
         $storage->backupArchiveExists = true;
 
         $this->app->instance(BackupArchiveStorageContract::class, $storage);

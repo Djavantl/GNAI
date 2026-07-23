@@ -2,15 +2,15 @@
 
 namespace App\Providers;
 
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorage;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Actions\PruneBackupsAction;
-use App\Domains\Backup\Application\Actions\PruneBackupsActionContract;
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
+use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
+use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorage;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
-use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Models\Permission;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;

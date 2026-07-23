@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Application\Queries;
 
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Domain\Models\Backup;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
