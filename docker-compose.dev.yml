@@ -23,8 +23,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "php -r '$$fp = @fsockopen(\"127.0.0.1\", 9000); if ($$fp) { fclose($$fp); exit(0); } exit(1);'"]
       interval: 5s
@@ -33,7 +31,6 @@ services:
       start_period: 10s
     environment:
       - TZ=America/Sao_Paulo
-      - REDIS_HOST=redis
     deploy:
       resources:
         limits:
@@ -51,11 +48,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
       - TZ=America/Sao_Paulo
-      - REDIS_HOST=redis
     command: sh /var/www/docker/php/entrypoint.sh scheduler
     deploy:
       resources:
@@ -74,11 +68,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
       - TZ=America/Sao_Paulo
-      - REDIS_HOST=redis
     command: sh /var/www/docker/php/entrypoint.sh queue
     deploy:
       resources:
@@ -92,10 +83,10 @@ services:
     env_file:
       - .env.dev
     environment:
-      - MYSQL_DATABASE=${DB_DATABASE:-gnai_db}
-      - MYSQL_USER=${DB_USERNAME:-gnai_user}
-      - MYSQL_PASSWORD=${DB_PASSWORD:-gnai2026ads}
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root_dev}
+      MYSQL_DATABASE: ${DB_DATABASE:?DB_DATABASE must be set. Run docker compose --env-file .env.dev -f docker-compose.dev.yml up -d}
+      MYSQL_USER: ${DB_USERNAME:?DB_USERNAME must be set. Run docker compose --env-file .env.dev -f docker-compose.dev.yml up -d}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set. Run docker compose --env-file .env.dev -f docker-compose.dev.yml up -d}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set. Run docker compose --env-file .env.dev -f docker-compose.dev.yml up -d}
     volumes:
       - dbdata:/var/lib/mysql
       - ./docker/mysql/my.dev.cnf:/etc/mysql/conf.d/my.cnf
@@ -110,26 +101,6 @@ services:
       resources:
         limits:
           memory: 384M
-
-  redis:
-    image: redis:7.4.8-alpine
-    container_name: gnai_redis
-    restart: unless-stopped
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    volumes:
-      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
-    expose:
-      - "6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5
     container_name: pma_laravel
@@ -142,7 +113,7 @@ services:
       - TZ=America/Sao_Paulo
       - PMA_HOST=db
       - PMA_PORT=3306
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root_dev}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD must be set. Run docker compose --env-file .env.dev -f docker-compose.dev.yml up -d}
     ports:
       - "8081:80"
 
