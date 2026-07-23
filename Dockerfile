@@ -4,7 +4,6 @@ FROM php:8.3-fpm-alpine@sha256:9fcec48321d890240d700ccdc2b475420c87d398826e68c3d
 
 RUN apk add --no-cache \
     $PHPIZE_DEPS \
-    git \
     unzip \
     icu-dev \
     libjpeg-turbo-dev \
@@ -30,15 +29,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
         pdo_sqlite \
         xml \
         zip
-
-RUN git clone --depth 1 --branch 6.3.0 https://github.com/phpredis/phpredis.git /tmp/phpredis \
-    && cd /tmp/phpredis \
-    && phpize \
-    && ./configure \
-    && make -j"$(nproc)" \
-    && make install \
-    && docker-php-ext-enable redis \
-    && rm -rf /tmp/phpredis
 
 COPY --from=composer:2@sha256:5946476338742b200bb9ff88f8be56275ddae4b3949c72305cb0dbf10cfcb760 /usr/bin/composer /usr/bin/composer
 

@@ -26,7 +26,6 @@ O arquivo [docker-compose.dev.yml](/home/marley/Projetos/GNAI/docker-compose.dev
 - `app`: container principal do Laravel/PHP-FPM
 - `scheduler`: roda o agendador do Laravel
 - `db`: MySQL
-- `redis`: Redis
 - `nginx`: proxy reverso da aplicacao
 - `node`: Vite em modo desenvolvimento
 - `phpmyadmin`: opcional, via profile `tools`
@@ -47,7 +46,6 @@ O arquivo [docker-compose.prod.yml](/home/marley/Projetos/GNAI/docker-compose.pr
 - `scheduler`
 - `queue`
 - `db`
-- `redis`
 - `nginx`
 
 Diferencas principais da producao:
@@ -157,8 +155,6 @@ Estas merecem atencao antes de subir o projeto:
   - usuario da aplicacao
 - `DB_PASSWORD`
   - senha do usuario da aplicacao
-- `REDIS_HOST`
-  - no Docker deve ser `redis`
 
 ### Variaveis de localizacao e mapa
 
@@ -175,8 +171,6 @@ Recomendacao:
 
 - `BACKUP_DISK_NAME`
   - nome do disco configurado para os backups
-- `BACKUP_PATH`
-  - caminho local onde os arquivos zip e dumps serao salvos
 - `BACKUP_MYSQL_BINARY_PATH`
   - caminho do cliente MySQL dentro do container
 - `BACKUP_MYSQL_EXTRA_OPTIONS`
@@ -199,19 +193,6 @@ Recomendacao:
 - `BROADCAST_CONNECTION`
   - pode permanecer `log` se nao houver broadcast em tempo real
 
-### Variaveis de Redis
-
-- `REDIS_CLIENT`
-  - use `phpredis`
-- `REDIS_HOST`
-  - `redis` no Docker
-- `REDIS_PORT`
-  - `6379`
-- `REDIS_DB`
-  - base principal
-- `REDIS_CACHE_DB`
-  - base usada para cache
-
 ### Variaveis de e-mail
 
 Desenvolvimento:
@@ -221,7 +202,8 @@ Desenvolvimento:
 Producao:
 
 - configure `MAIL_MAILER=smtp`
-- preencha `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_ENCRYPTION`
+- preencha `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`
+- ajuste `MAIL_SCHEME` conforme o provedor (`smtp` para STARTTLS/587, `smtps` para SSL/465)
 - ajuste `MAIL_FROM_ADDRESS` e `MAIL_FROM_NAME`
 
 ## Como preparar os arquivos `.env`
@@ -250,9 +232,6 @@ DB_DATABASE=gnai_db
 DB_USERNAME=gnai_user
 DB_PASSWORD=sua_senha
 
-REDIS_HOST=redis
-REDIS_PORT=6379
-
 OSM_USER_AGENT="SeuNome - seuemail@dominio.com"
 ```
 
@@ -277,14 +256,22 @@ cp .env.prod.example .env.prod
 - `APP_URL=https://seu-dominio`
 - credenciais reais de banco
 - credenciais reais de SMTP
+- `MYSQL_ROOT_PASSWORD`
 - `APP_KEY`
 
 3. Em producao, mantenha:
 
 - `DB_HOST=db`
-- `REDIS_HOST=redis`
 
 porque os servicos se comunicam pela rede interna do Compose.
+
+4. Suba o ambiente informando explicitamente o arquivo de variaveis de producao:
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+```
+
+O `--env-file .env.prod` e necessario porque o `docker-compose.prod.yml` usa `DB_DATABASE`, `DB_USERNAME` e `DB_PASSWORD` para montar as variaveis `MYSQL_*` esperadas pelo container MySQL.
 
 ## Como rodar o sistema
 
@@ -447,7 +434,6 @@ php artisan queue:work --sleep=3 --tries=3 --max-time=3600
 - [docker/mysql/my.dev.cnf](/home/marley/Projetos/GNAI/docker/mysql/my.dev.cnf:1)
 - [docker/mysql/my.prod.cnf](/home/marley/Projetos/GNAI/docker/mysql/my.prod.cnf:1)
 - [docker/mysql/init/01-auth-plugin.sh](/home/marley/Projetos/GNAI/docker/mysql/init/01-auth-plugin.sh:1)
-- [docker/redis/redis.conf](/home/marley/Projetos/GNAI/docker/redis/redis.conf:1)
 - [nginx/nginx.conf](/home/marley/Projetos/GNAI/nginx/nginx.conf:1)
 
 ## Observacoes importantes

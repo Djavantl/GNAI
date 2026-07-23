@@ -5,14 +5,14 @@
 ENV ?= dev
 
 ifeq ($(ENV),prod)
-  COMPOSE  = docker compose -f docker-compose.prod.yml
+  COMPOSE  = docker compose --env-file .env.prod -f docker-compose.prod.yml
   ENV_FILE = .env.prod
 else
-  COMPOSE  = docker compose -f docker-compose.dev.yml
+  COMPOSE  = docker compose --env-file .env.dev -f docker-compose.dev.yml
   ENV_FILE = .env.dev
 endif
 
-PROD_COMPOSE = docker compose -f docker-compose.prod.yml
+PROD_COMPOSE = docker compose --env-file .env.prod -f docker-compose.prod.yml
 PROD_IMAGE   = gnai-php:prod
 
 # -----------------------------
@@ -128,7 +128,7 @@ ifneq (,$(wildcard $(ENV_FILE)))
     export
 endif
 
-BKP_DIR = $(BACKUP_PATH)
+BKP_DIR = $(or $(BACKUP_PATH),storage/app/private/$(or $(BACKUP_DISK_NAME),GNAIbackups))
 
 db:
 	$(COMPOSE) exec db mysql -u$(DB_USERNAME) -p$(DB_PASSWORD) $(DB_DATABASE)
