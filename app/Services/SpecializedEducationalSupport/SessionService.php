@@ -3,6 +3,7 @@
 namespace App\Services\SpecializedEducationalSupport;
 
 use App\Mail\SessionNotification;
+use App\Enums\SpecializedEducationalSupport\AttendanceType;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Session;
 use App\Models\SpecializedEducationalSupport\Student;
@@ -47,7 +48,7 @@ class SessionService
     public function index(array $filters = [])
     {
         return Session::query()
-            ->with(['students.person', 'professional.person', 'sessionRecord'])
+            ->with(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord'])
             ->student($filters['student'] ?? null)
             ->professional($filters['professional'] ?? null)
             ->type($filters['type'] ?? null)
@@ -69,7 +70,8 @@ class SessionService
             ->with([
                 'students.person',
                 'professional.person',
-                'sessionRecord'
+                'sessionRecord',
+                'pedagogicalRecord',
             ])
             ->where('professional_id', $professional->id)
             ->student($filters['student'] ?? null)
@@ -104,7 +106,7 @@ class SessionService
 
         // 1. Buscar agendamentos aplicando filtros de período E filtros de usuário
         $sessions = Session::query()
-            ->with(['students.person', 'professional.person', 'sessionRecord'])
+            ->with(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord'])
             ->whereBetween('session_date', [$weekStart, $weekEnd])
             // Aplica filtro de profissional se vier do "MySessions" ou do filtro da tela
             ->where(function($q) use ($filters, $fixedProfessionalId) {
@@ -252,9 +254,48 @@ class SessionService
         }
     }
 
+    private function normalizeAttendanceType(array &$data): void
+    {
+        $data['attendance_type'] = $data['attendance_type'] ?? AttendanceType::AEE->value;
+
+        if ($data['attendance_type'] === AttendanceType::PEDAGOGICAL->value) {
+            $data['type'] = 'individual';
+        }
+    }
+
+    private function ensureAttendanceTypeRules(array $data): void
+    {
+        if (($data['attendance_type'] ?? AttendanceType::AEE->value) !== AttendanceType::PEDAGOGICAL->value) {
+            return;
+        }
+
+        if (count($data['student_ids'] ?? []) !== 1) {
+            throw ValidationException::withMessages([
+                'student_ids' => 'Atendimentos pedagógicos devem possuir exatamente um aluno.',
+            ]);
+        }
+    }
+
+    private function ensureCanChangeAttendanceType(Session $session, string $attendanceType): void
+    {
+        $currentType = $session->attendance_type ?? AttendanceType::AEE->value;
+
+        if ($currentType === $attendanceType) {
+            return;
+        }
+
+        if ($session->sessionRecord()->exists() || $session->pedagogicalRecord()->exists()) {
+            throw ValidationException::withMessages([
+                'attendance_type' => 'Não é possível alterar o tipo de atendimento de um agendamento que já possui registro vinculado.',
+            ]);
+        }
+    }
+
     public function create(array $data): Session
     {
         return DB::transaction(function () use ($data) {
+            $this->normalizeAttendanceType($data);
+            $this->ensureAttendanceTypeRules($data);
             $this->ensureProfessionalIsActive($data['professional_id']);
             $this->ensureProfessionalCanCreateSessionRecords($data['professional_id']);
             $this->ensureStudentsAreActive($data['student_ids']);
@@ -284,6 +325,7 @@ class SessionService
                 'start_time'        => $data['start_time'],
                 'end_time'          => $data['end_time'],
                 'type'              => $data['type'],
+                'attendance_type'   => $data['attendance_type'],
                 'location'          => $data['location'] ?? null,
                 'session_objective' => $data['session_objective'],
                 'status'            => 'Agendada',
@@ -297,7 +339,7 @@ class SessionService
                 "Um novo agendamento foi registrado."
             );
 
-            return $session->fresh(['students.person', 'professional.person', 'sessionRecord']);
+            return $session->fresh(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']);
         });
     }
 
@@ -321,7 +363,7 @@ class SessionService
 
     public function show(Session $session): Session
     {
-        return $session->load(['students.person', 'professional.person', 'sessionRecord']);
+        return $session->load(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']);
     }
 
     public function update(Session $session, array $data): Session
@@ -329,6 +371,10 @@ class SessionService
         $this->ensureCanEdit($session);
 
         return DB::transaction(function () use ($session, $data) {
+            $data['attendance_type'] = $data['attendance_type'] ?? ($session->attendance_type ?? AttendanceType::AEE->value);
+            $this->normalizeAttendanceType($data);
+            $this->ensureCanChangeAttendanceType($session, $data['attendance_type']);
+
             $professionalId = $data['professional_id'] ?? $session->professional_id;
             $this->ensureProfessionalIsActive($professionalId);
             $this->ensureProfessionalCanCreateSessionRecords($professionalId);
@@ -343,6 +389,8 @@ class SessionService
                 'start_time' => $data['start_time'] ?? Carbon::parse($session->start_time)->format('H:i'),
                 'end_time' => $data['end_time'] ?? Carbon::parse($session->end_time)->format('H:i'),
             ]);
+
+            $this->ensureAttendanceTypeRules($data);
 
             $this->normalizeTime($data);
 
@@ -369,6 +417,7 @@ class SessionService
                 'start_time' => $data['start_time'],
                 'end_time' => $data['end_time'],
                 'type' => $data['type'] ?? $session->type,
+                'attendance_type' => $data['attendance_type'],
                 'location' => $data['location'] ?? $session->location,
                 'session_objective' => $data['session_objective'] ?? $session->session_objective,
                 'status' => $data['status'] ?? $session->status,
@@ -382,7 +431,7 @@ class SessionService
                 "Houve uma alteração nos detalhes do seu agendamento."
             );
 
-            return $session->fresh(['students.person', 'professional.person', 'sessionRecord']);
+            return $session->fresh(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']);
         });
     }
 

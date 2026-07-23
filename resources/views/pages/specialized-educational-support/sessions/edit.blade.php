@@ -26,8 +26,11 @@
 
             {{-- Inputs Hidden Críticos para o Funcionamento --}}
             <input type="hidden" name="professional_id" value="{{ $session->professional_id }}">
-            <input type="hidden" name="type" value="{{ $session->type }}">
+            @php($hasLinkedRecord = $session->sessionRecord || $session->pedagogicalRecord)
             <input type="hidden" name="status" value="{{ $session->status }}">
+            @if($hasLinkedRecord)
+                <input type="hidden" name="attendance_type" value="{{ $session->attendance_type ?? \App\Enums\SpecializedEducationalSupport\AttendanceType::AEE->value }}">
+            @endif
             @foreach($session->students as $student)
                 <input type="hidden" name="student_ids[]" class="student-select-item" value="{{ $student->id }}">
             @endforeach
@@ -54,6 +57,32 @@
             </div>
 
             <x-forms.section title="Agendamento" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="attendance_type"
+                    label="Tipo de Atendimento"
+                    required
+                    :options="\App\Models\SpecializedEducationalSupport\Session::attendanceTypeOptions()"
+                    :selected="old('attendance_type', $session->attendance_type ?? \App\Enums\SpecializedEducationalSupport\AttendanceType::AEE->value)"
+                    id="attendance_type"
+                    :disabled="$hasLinkedRecord"
+                />
+                @if($hasLinkedRecord)
+                    <small class="text-muted">O tipo de atendimento não pode ser alterado porque já existe registro vinculado.</small>
+                @endif
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="type"
+                    label="Formato"
+                    required
+                    :options="['individual' => 'Individual', 'group' => 'Em Grupo']"
+                    :selected="old('type', $session->type)"
+                    id="session_type"
+                />
+            </div>
 
             <div class="col-md-6">
                 <x-forms.input 
@@ -131,19 +160,11 @@
     </div>
     
     @push('scripts')
-    <script>
+        @vite('resources/js/pages/specialized-educational-support/session.js')
+        <script>
         window.routes = {
             sessionAvailability: "{{ route('specialized-educational-support.sessions.availability') }}"
         };
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Reutiliza a função loadSchedule que você já tem
-            document.getElementById('session_date').addEventListener('change', loadSchedule);
-            document.querySelector('select[name="start_time"]').addEventListener('change', updateEndTimeOptions);
-            
-            // Dispara a carga inicial para mostrar os horários do dia atual do agendamento
-            loadSchedule();
-        });
-    </script>
+        </script>
     @endpush
 @endsection

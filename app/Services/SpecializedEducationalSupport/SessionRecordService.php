@@ -2,6 +2,7 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
+use App\Enums\SpecializedEducationalSupport\AttendanceType;
 use App\Models\SpecializedEducationalSupport\SessionRecord;
 use App\Models\SpecializedEducationalSupport\Session;
 use Illuminate\Support\Facades\DB;
@@ -116,6 +117,14 @@ class SessionRecordService
     {
         $this->ensureAssignedProfessional($session, 'criar o registro deste agendamento');
         $this->ensureScheduledSession($session, 'criar o registro deste agendamento');
+
+        if (($session->attendance_type ?? AttendanceType::AEE->value) !== AttendanceType::AEE->value) {
+            throw new Exception('Este agendamento está classificado como Atendimento Pedagógico e não pode receber Atendimento AEE.');
+        }
+
+        if ($session->pedagogicalRecord()->exists()) {
+            throw new Exception('Este agendamento já possui atendimento pedagógico cadastrado.');
+        }
 
         if ($session->sessionRecord()->exists()) {
             throw new Exception('Este agendamento já possui registro cadastrado.');

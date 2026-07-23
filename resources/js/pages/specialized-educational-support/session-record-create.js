@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const absenceFields = document.getElementById(`absence_fields_${index}`);
             const tabButton = document.getElementById(`tab-${index}`);
 
+            if (!evalFields || !absenceFields) {
+                return;
+            }
+
             // Seleciona todos os inputs/textareas dentro dos blocos
             const evalInputs = evalFields.querySelectorAll('input, textarea, select');
             const absenceInputs = absenceFields.querySelectorAll('input, textarea, select');

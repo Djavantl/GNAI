@@ -56,15 +56,20 @@ function createStudentRow(selectedId = '') {
 
     div.querySelector('.remove-student-btn').onclick = function() {
         if (document.querySelectorAll('.student-row').length > 1) {
-            $(select).select2('destroy'); // Opcional: destrói a instância antes de remover
+            if (typeof window.$ !== 'undefined' && window.$(select).hasClass('select2-hidden-accessible')) {
+                window.$(select).select2('destroy');
+            }
             div.remove();
             updateRemoveButtonsVisibility();
             loadSchedule();
         }
     };
 
-    // No Select2, o evento de mudança deve ser monitorado via jQuery ou disparado manualmente
-    $(select).on('change', loadSchedule);
+    if (typeof window.$ !== 'undefined') {
+        window.$(select).on('change', loadSchedule);
+    } else {
+        select.addEventListener('change', loadSchedule);
+    }
 
     setTimeout(updateRemoveButtonsVisibility, 0);
     return div;
@@ -196,6 +201,7 @@ function updateEndTimeOptions() {
 
 // 5. Inicialização INTELIGENTE (Create vs Edit)
 document.addEventListener('DOMContentLoaded', function () {
+    const attendanceTypeSelect = document.getElementById('attendance_type');
     const typeSelect = document.getElementById('session_type');
     const addBtn = document.getElementById('add-student-btn');
     const container = document.getElementById('students-container');
@@ -205,14 +211,61 @@ document.addEventListener('DOMContentLoaded', function () {
     // Se o container de alunos existir (TELA DE CADASTRO)
     if (container) {
         function syncUI() {
-            container.innerHTML = '';
-            container.appendChild(createStudentRow());
-            if (typeSelect.value === 'group') addBtn.classList.remove('d-none');
+            const isPedagogical = attendanceTypeSelect?.value === 'pedagogical';
+
+            if (isPedagogical && typeSelect) {
+                typeSelect.value = 'individual';
+            } else if (typeSelect) {
+                typeSelect.disabled = false;
+            }
+
+            if (!container.querySelector('.student-row')) {
+                container.appendChild(createStudentRow());
+            }
+
+            if (isPedagogical) {
+                Array.from(container.querySelectorAll('.student-row'))
+                    .slice(1)
+                    .forEach(row => {
+                        const select = row.querySelector('select');
+                        if (select && typeof window.$ !== 'undefined' && window.$(select).hasClass('select2-hidden-accessible')) {
+                            window.$(select).select2('destroy');
+                        }
+                        row.remove();
+                    });
+            }
+
+            if (!addBtn) return;
+
+            if (!isPedagogical && typeSelect?.value === 'group') addBtn.classList.remove('d-none');
             else addBtn.classList.add('d-none');
+
+            updateRemoveButtonsVisibility();
+            loadSchedule();
         }
-        typeSelect.addEventListener('change', syncUI);
-        addBtn.onclick = () => container.appendChild(createStudentRow());
+
+        attendanceTypeSelect?.addEventListener('change', syncUI);
+        typeSelect?.addEventListener('change', syncUI);
+        if (addBtn) {
+            addBtn.onclick = () => {
+                container.appendChild(createStudentRow());
+                updateRemoveButtonsVisibility();
+            };
+        }
         syncUI();
+    } else {
+        const syncEditType = () => {
+            if (!attendanceTypeSelect || !typeSelect) return;
+
+            if (attendanceTypeSelect.value === 'pedagogical') {
+                typeSelect.value = 'individual';
+            } else {
+                typeSelect.disabled = false;
+            }
+        };
+
+        attendanceTypeSelect?.addEventListener('change', syncEditType);
+        syncEditType();
     }
 
     // Eventos comuns a ambas as telas

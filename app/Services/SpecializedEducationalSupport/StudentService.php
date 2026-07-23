@@ -7,6 +7,7 @@ use App\Models\SpecializedEducationalSupport\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\SpecializedEducationalSupport\PedagogicalRecord;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
 use App\Enums\SpecializedEducationalSupport\StudentStatus;
 
@@ -218,6 +219,36 @@ class StudentService
         return $query
             ->orderByDesc('id')
             ->paginate($perPage)
+            ->withQueryString();
+    }
+
+    public function studentPedagogicalRecords(Student $student, int $perPage = 5)
+    {
+        $user = Auth::user();
+        $canViewAll = $user?->can('session-record.view-all') ?? false;
+        $canViewOwn = $user?->can('session-record.view-own') ?? false;
+
+        $query = PedagogicalRecord::query()
+            ->with(['attendanceSession.professional.person', 'attendanceSession.students.person'])
+            ->whereHas('attendanceSession.students', function ($q) use ($student) {
+                $q->where('students.id', $student->id);
+            });
+
+        if (!$canViewAll && $canViewOwn) {
+            $professionalId = $user?->professional?->id;
+
+            if ($professionalId) {
+                $query->whereHas('attendanceSession', function ($q) use ($professionalId) {
+                    $q->where('professional_id', $professionalId);
+                });
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        return $query
+            ->orderByDesc('id')
+            ->paginate($perPage, ['*'], 'pedagogical_page')
             ->withQueryString();
     }
 }

@@ -90,6 +90,7 @@
         {{-- Seção de atendimentos AEE --}}
         @canany(['session-record.view-all', 'session-record.view-own'])
             @include('pages.specialized-educational-support.students.record.session-records')
+            @include('pages.specialized-educational-support.students.record.pedagogical-records')
         @endcanany
         
 

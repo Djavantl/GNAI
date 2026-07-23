@@ -100,6 +100,16 @@
         </li>
         @endcan
 
+        @can('session-record.view-own')
+        <li>
+            <a href="{{ route('specialized-educational-support.pedagogical-records.my-records') }}"
+            class="{{ request()->routeIs('specialized-educational-support.pedagogical-records.*') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-journal-text"></i></span>
+                <span class="text">Atendimentos Pedagógicos</span>
+            </a>
+        </li>
+        @endcan
+
         @can('pendency.view')
         <li>
             <a href="{{ route('specialized-educational-support.pendencies.index') }}"

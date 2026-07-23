@@ -5,7 +5,7 @@ use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController
 use App\Http\Controllers\SpecializedEducationalSupport\{
     StudentDeficienciesController, PersonController, StudentController, StudentContextController,
     DeficiencyController, PositionController, SemesterController, GuardianController,
-    ProfessionalController, SessionController, SessionRecordController, DisciplineController,
+    ProfessionalController, SessionController, SessionRecordController, PedagogicalRecordController, DisciplineController,
     StudentCourseController, CourseController, PendencyController, PeiController,
     PeiEvaluationController, StudentDocumentController, TeacherController
 };
@@ -183,6 +183,32 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('can:session-record.delete');
     Route::get('students/{student}/session-records/{sessionRecord}/pdf', [SessionRecordController::class, 'generateStudentPdf'])
         ->name('students.session-records.pdf')
+        ->middleware('can:session-record.view');
+
+    /* 8.1 PEDAGOGICAL RECORDS */
+    Route::get('my-pedagogical-records', [PedagogicalRecordController::class, 'myRecords'])
+        ->name('pedagogical-records.my-records')
+        ->middleware('can:session-record.view-own');
+    Route::get('pedagogical-records/{session}/create', [PedagogicalRecordController::class, 'create'])
+        ->name('pedagogical-records.create')
+        ->middleware('can:session-record.create');
+    Route::post('pedagogical-records/store', [PedagogicalRecordController::class, 'store'])
+        ->name('pedagogical-records.store')
+        ->middleware('can:session-record.create');
+    Route::get('pedagogical-records/{pedagogicalRecord}/show', [PedagogicalRecordController::class, 'show'])
+        ->name('pedagogical-records.show')
+        ->middleware('can:session-record.view');
+    Route::get('pedagogical-records/{pedagogicalRecord}/edit', [PedagogicalRecordController::class, 'edit'])
+        ->name('pedagogical-records.edit')
+        ->middleware('can:session-record.update');
+    Route::put('pedagogical-records/{pedagogicalRecord}', [PedagogicalRecordController::class, 'update'])
+        ->name('pedagogical-records.update')
+        ->middleware('can:session-record.update');
+    Route::delete('pedagogical-records/{pedagogicalRecord}', [PedagogicalRecordController::class, 'destroy'])
+        ->name('pedagogical-records.destroy')
+        ->middleware('can:session-record.delete');
+    Route::get('pedagogical-records/{pedagogicalRecord}/pdf', [PedagogicalRecordController::class, 'pdf'])
+        ->name('pedagogical-records.pdf')
         ->middleware('can:session-record.view');
 
 

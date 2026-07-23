@@ -78,7 +78,9 @@
 
             <x-show.info-item label="Local" :value="$session->location" isBox="true"/>
             
-            <x-show.info-item label="Tipo de Atendimento" :value="$session->typeLabel()" isBox="true"/>
+            <x-show.info-item label="Tipo de Atendimento" :value="$session->attendanceTypeLabel()" isBox="true"/>
+
+            <x-show.info-item label="Formato" :value="$session->typeLabel()" isBox="true"/>
 
             <x-forms.section title="Conteúdo do Agendamento" />
 
@@ -134,28 +136,58 @@
                     @endif
                     @endcan
                 @endif
-                 {{-- Lógica do Registro --}}
-                @if($session->sessionRecord)
-                    @can('session-record.view')
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
-                        variant="info"
-                        
-                    >
-                        <i class="fas fa-eye" aria-hidden="true"></i>  Ver Registro
-                    </x-buttons.link-button>
-                    @endcan
-                @else
-                    @can('session-record.create')
-                    @if($canManageSessionRecord && $isScheduledSession)
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.session-records.create', $session->id)"
-                        variant="new"
-                    >
-                        <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro
-                    </x-buttons.link-button>
+                 {{-- Lógica dos registros por tipo de atendimento --}}
+                @if($session->isAeeAttendance())
+                    @if($session->sessionRecord)
+                        @can('session-record.view')
+                            <x-buttons.link-button
+                                :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i> Ver Atendimento AEE
+                            </x-buttons.link-button>
+                        @endcan
+                    @else
+                        @can('session-record.create')
+                            @if($canManageSessionRecord && $isScheduledSession)
+                                <x-buttons.link-button
+                                    :href="route('specialized-educational-support.session-records.create', $session->id)"
+                                    variant="new"
+                                >
+                                    <i class="fas fa-plus" aria-hidden="true"></i> Criar Atendimento AEE
+                                </x-buttons.link-button>
+                            @endif
+                        @endcan
                     @endif
-                    @endcan
+                @elseif($session->isPedagogicalAttendance())
+                    @if($session->pedagogicalRecord)
+                        @can('session-record.view')
+                            <x-buttons.link-button
+                                :href="route('specialized-educational-support.pedagogical-records.show', $session->pedagogicalRecord)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i> Ver Atendimento Pedagógico
+                            </x-buttons.link-button>
+                            <x-buttons.link-button
+                                :href="route('specialized-educational-support.pedagogical-records.pdf', $session->pedagogicalRecord)"
+                                variant="secondary"
+                                target="_blank"
+                            >
+                                <i class="fas fa-file-pdf" aria-hidden="true"></i> PDF Pedagógico
+                            </x-buttons.link-button>
+                        @endcan
+                    @else
+                        @can('session-record.create')
+                            @if($canManageSessionRecord && $isScheduledSession)
+                                <x-buttons.link-button
+                                    :href="route('specialized-educational-support.pedagogical-records.create', $session)"
+                                    variant="new"
+                                >
+                                    <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro Pedagógico
+                                </x-buttons.link-button>
+                            @endif
+                        @endcan
+                    @endif
                 @endif
                 @can('session.delete')
                 @if($canManageSessionLifecycle)

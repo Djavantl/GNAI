@@ -108,7 +108,7 @@ class SessionController extends Controller
         try {
             $this->service->ensureCanEdit($session);
             $timeOptions = $this->service->getAvailableTimeOptions();
-            $session->load(['students.person', 'professional.person']);
+            $session->load(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']);
 
             return view('pages.specialized-educational-support.sessions.edit', [
                 'startTimes' => $timeOptions['start'],
@@ -143,7 +143,7 @@ class SessionController extends Controller
     public function indexByStudent(Student $student, Request $request)
     {
         $sessions = Session::query()
-            ->with(['professional.person', 'students.person', 'sessionRecord'])
+            ->with(['professional.person', 'students.person', 'sessionRecord', 'pedagogicalRecord'])
             ->student($student->id)
             ->professional($request->professional ?? null)
             ->type($request->type ?? null)
