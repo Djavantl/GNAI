@@ -85,12 +85,12 @@ final class Institution extends Model
     private static function attributesFrom(CreateInstitutionDTO|UpdateInstitutionDTO $data): array
     {
         return [
-            'name' => self::normalizeRequiredText($data->name, 'O nome da instituição é obrigatório.', 255),
-            'short_name' => self::normalizeNullableText($data->shortName, 100),
-            'city' => self::normalizeRequiredText($data->city, 'A cidade é obrigatória.', 255),
-            'state' => self::normalizeRequiredText($data->state, 'O estado é obrigatório.', 255),
-            'district' => self::normalizeNullableText($data->district, 255),
-            'address' => self::normalizeNullableText($data->address, 255),
+            'name' => self::normalizeText($data->name),
+            'short_name' => self::normalizeNullableText($data->shortName),
+            'city' => self::normalizeText($data->city),
+            'state' => self::normalizeText($data->state),
+            'district' => self::normalizeNullableText($data->district),
+            'address' => self::normalizeNullableText($data->address),
             'latitude' => self::normalizeLatitude($data->latitude),
             'longitude' => self::normalizeLongitude($data->longitude),
             'default_zoom' => self::normalizeDefaultZoom($data->defaultZoom),
@@ -98,34 +98,14 @@ final class Institution extends Model
         ];
     }
 
-    /**
-     * @throws InvalidInstitution
-     */
-    private static function normalizeRequiredText(string $value, string $message, int $maxLength): string
+    private static function normalizeText(string $value): string
     {
-        $value = trim($value);
-
-        if ($value === '') {
-            throw new InvalidInstitution($message);
-        }
-
-        if (mb_strlen($value) > $maxLength) {
-            throw new InvalidInstitution("O campo deve possuir no máximo {$maxLength} caracteres.");
-        }
-
-        return $value;
+        return trim($value);
     }
 
-    /**
-     * @throws InvalidInstitution
-     */
-    private static function normalizeNullableText(?string $value, int $maxLength): ?string
+    private static function normalizeNullableText(?string $value): ?string
     {
         $value = trim((string) $value);
-
-        if (mb_strlen($value) > $maxLength) {
-            throw new InvalidInstitution("O campo deve possuir no máximo {$maxLength} caracteres.");
-        }
 
         return $value === '' ? null : $value;
     }

@@ -29,6 +29,7 @@ Schedule::command('loans:check-overdue')
 Schedule::command('inclusive-radar:send-event-reminders')
     ->everyMinute()
     ->timezone('America/Bahia')
+    ->withoutOverlapping(10)
     ->onFailure(function () {
         Log::error('Falha ao enviar lembretes de eventos institucionais.');
     });

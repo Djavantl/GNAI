@@ -2,46 +2,23 @@
 
 namespace App\Models\InclusiveRadar;
 
+use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent as DomainInstitutionalEvent;
 use App\Models\Traits\Reportable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\InclusiveRadar\InstitutionalEventFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
  * RF: agenda institucional do radar inclusivo.
  * Uso: calendário/listagens, lembretes automáticos e relatórios de eventos.
  */
-class InstitutionalEvent extends Model
+/**
+ * @deprecated Use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent.
+ */
+#[UseFactory(InstitutionalEventFactory::class)]
+class InstitutionalEvent extends DomainInstitutionalEvent
 {
-    use HasFactory, Reportable;
-
-    /**
-     * Identidade e Persistência:
-     * Mantém os dados temporais e descritivos usados pelo fluxo da agenda.
-     */
-
-    protected $table = 'institutional_events';
-
-    protected $fillable = [
-        'title',
-        'description',
-        'start_date',
-        'end_date',
-        'start_time',
-        'end_time',
-        'location',
-        'organizer',
-        'audience',
-        'is_active',
-    ];
-
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
-        'is_active' => 'boolean',
-    ];
+    use Reportable;
 
     /**
      * Relatórios:
@@ -84,11 +61,6 @@ class InstitutionalEvent extends Model
             'created_at'  => 'Data de Cadastro',
         ];
     }
-
-    /**
-     * Scopes de Listagem:
-     * Reaproveitados por index, filtros rápidos e automações de agenda.
-     */
 
     public function scopeSearchTitle(Builder $query, ?string $title): Builder
     {

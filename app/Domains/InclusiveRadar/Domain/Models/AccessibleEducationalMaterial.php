@@ -196,20 +196,6 @@ final class AccessibleEducationalMaterial extends Model
      */
     private static function normalizeName(string $name): string
     {
-        $name = trim($name);
-
-        if ($name === '') {
-            throw new InvalidAccessibleEducationalMaterial(
-                'O nome do material pedagógico é obrigatório.'
-            );
-        }
-
-        if (mb_strlen($name) > 255) {
-            throw new InvalidAccessibleEducationalMaterial(
-                'O nome do material pedagógico deve possuir no máximo 255 caracteres.'
-            );
-        }
-
-        return $name;
+        return trim($name);
     }
 }
