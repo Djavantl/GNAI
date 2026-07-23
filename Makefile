@@ -12,7 +12,8 @@ else
   ENV_FILE = .env.dev
 endif
 
-APP_CONTAINER = gnai_app
+PROD_COMPOSE = docker compose -f docker-compose.prod.yml
+PROD_IMAGE   = gnai-php:prod
 
 # -----------------------------
 # Declarando regras PHONY
@@ -20,13 +21,13 @@ APP_CONTAINER = gnai_app
 .PHONY: up down down-v build logs art migrate seed perm make tinker scheduler \
         coverage db backup backup-db list-bkp restore-db restore-full \
         build-assets dev-assets deploy composer storage-link \
-        cache-dev cache-prod npm-build logs-app
+        cache-dev cache-prod npm-build npm-dev logs-app sync-public-build host-storage-link
 
 # -----------------------------
 # Contêineres
 # -----------------------------
 up:
-	$(COMPOSE) up
+	$(COMPOSE) up -d
 
 down:
 	$(COMPOSE) down
@@ -92,7 +93,12 @@ reset-db:
 	$(COMPOSE) exec app php artisan migrate:fresh --seed
 
 npm-build:
+ifeq ($(ENV),prod)
+	$(PROD_COMPOSE) build app
+	$(MAKE) sync-public-build
+else
 	$(COMPOSE) exec node npm run build
+endif
 
 npm-dev:
 	$(COMPOSE) exec node npm run dev
@@ -110,7 +116,7 @@ build-assets:
 # PHPUnit / Testes
 # -----------------------------
 coverage:
-	docker exec -i $(APP_CONTAINER) sh -lc 'mkdir -p /var/www/coverage && XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html /var/www/coverage'
+	$(COMPOSE) exec app sh -lc 'mkdir -p /var/www/coverage && XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html /var/www/coverage'
 
 # -----------------------------
 # Banco de dados
@@ -190,11 +196,30 @@ restore-full:
 # -----------------------------
 # Deploy prod
 # -----------------------------
+sync-public-build:
+	@tmp_container=$$(docker create $(PROD_IMAGE)); \
+	rm -rf public/build; \
+	docker cp "$$tmp_container:/var/www/public/build" public/build; \
+	docker rm "$$tmp_container" >/dev/null; \
+	chmod -R u+rwX,go+rX public/build; \
+	echo "✅ public/build sincronizado a partir da imagem $(PROD_IMAGE)"
+
+host-storage-link:
+	@if [ -L public/storage ] || [ ! -e public/storage ]; then \
+		rm -f public/storage; \
+		ln -s ../storage/app/public public/storage; \
+		echo "✅ public/storage aponta para ../storage/app/public"; \
+	else \
+		echo "❌ public/storage existe e não é symlink. Remova/backup manualmente antes de continuar."; \
+		exit 1; \
+	fi
+
 deploy:
 	@echo "🚀 Iniciando deploy em produção..."
-	$(MAKE) npm-build ENV=prod
-	$(COMPOSE) build --no-cache
-	$(COMPOSE) up -d
+	$(PROD_COMPOSE) build --no-cache
+	$(MAKE) sync-public-build
+	$(MAKE) host-storage-link
+	$(PROD_COMPOSE) up -d
 	$(MAKE) migrate ENV=prod
 	@echo "✅ Deploy finalizado!"
 
