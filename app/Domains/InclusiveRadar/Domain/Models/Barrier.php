@@ -21,10 +21,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-/**
- * RF: registro e monitoramento das barreiras de acessibilidade.
- * Uso: mapa, inspeções periódicas, resolução operacional e relatórios analíticos.
- */
 #[UseFactory(BarrierFactory::class)]
 final class Barrier extends Model
 {

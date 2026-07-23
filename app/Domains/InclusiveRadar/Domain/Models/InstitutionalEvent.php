@@ -13,10 +13,6 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * RF: agenda institucional do radar inclusivo.
- * Uso: calendário, lembretes automáticos e comunicação de eventos.
- */
 #[UseFactory(InstitutionalEventFactory::class)]
 class InstitutionalEvent extends Model
 {

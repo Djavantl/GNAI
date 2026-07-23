@@ -15,6 +15,9 @@ final readonly class AssetCode implements Stringable
         private string $value,
     ) {}
 
+    /**
+     * @throws InvalidAssetCode
+     */
     public static function from(string $value): self
     {
         $value = trim($value);
@@ -34,6 +37,9 @@ final readonly class AssetCode implements Stringable
         return new self($value);
     }
 
+    /**
+     * @throws InvalidAssetCode
+     */
     public static function optional(?string $value): ?self
     {
         if ($value === null || trim($value) === '') {

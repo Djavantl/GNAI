@@ -10,6 +10,9 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\StockAlreadyFull;
 
 final readonly class Stock
 {
+    /**
+     * @throws InvalidStock
+     */
     private function __construct(
         private ?int $total,
         private ?int $available,
@@ -17,6 +20,9 @@ final readonly class Stock
         $this->ensureValidState();
     }
 
+    /**
+     * @throws InvalidStock
+     */
     public static function initial(int $total): self
     {
         if ($total <= 0) {
@@ -40,11 +46,17 @@ final readonly class Stock
         );
     }
 
+    /**
+     * @throws InvalidStock
+     */
     public static function restore(?int $total, ?int $available): self
     {
         return new self($total, $available);
     }
 
+    /**
+     * @throws InvalidStock
+     */
     public static function withOpenLoans(int $total, int $openLoans): self
     {
         if ($total <= 0) {
@@ -71,6 +83,10 @@ final readonly class Stock
         );
     }
 
+    /**
+     * @throws InsufficientStock
+     * @throws InvalidStock
+     */
     public function withdrawOne(): self
     {
         if ($this->isNotApplicable()) {
@@ -87,6 +103,10 @@ final readonly class Stock
         );
     }
 
+    /**
+     * @throws StockAlreadyFull
+     * @throws InvalidStock
+     */
     public function returnOne(): self
     {
         if ($this->isNotApplicable()) {
@@ -138,6 +158,9 @@ final readonly class Stock
         return $this->total === null;
     }
 
+    /**
+     * @throws InvalidStock
+     */
     private function ensureValidState(): void
     {
         if ($this->total === null && $this->available === null) {

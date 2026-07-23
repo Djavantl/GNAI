@@ -6,11 +6,12 @@ namespace App\Domains\InclusiveRadar\Application\Actions\AccessibilityFeatures;
 
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final readonly class DeleteAccessibilityFeatureAction
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function execute(AccessibilityFeature $feature): void
     {
