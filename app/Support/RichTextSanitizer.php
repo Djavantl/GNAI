@@ -22,11 +22,20 @@ class RichTextSanitizer
         'ol',
         'p',
         'strong',
+        'table',
+        'tbody',
+        'td',
+        'tfoot',
+        'th',
+        'thead',
+        'tr',
         'ul',
     ];
 
     private const ALLOWED_ATTRIBUTES = [
         'a' => ['href', 'rel', 'target', 'title'],
+        'td' => ['colspan', 'rowspan'],
+        'th' => ['colspan', 'rowspan', 'scope'],
     ];
 
     private const DROP_WITH_CONTENT = [
@@ -145,10 +154,27 @@ class RichTextSanitizer
             if ($tag === 'a' && $name === 'href' && !self::isSafeUrl($attribute->value)) {
                 $node->removeAttribute($attribute->name);
             }
+
+            if (in_array($tag, ['td', 'th'], true) && in_array($name, ['colspan', 'rowspan'], true)) {
+                self::sanitizePositiveIntegerAttribute($node, $attribute->name);
+            }
+
+            if ($tag === 'th' && $name === 'scope' && !in_array($attribute->value, ['col', 'row', 'colgroup', 'rowgroup'], true)) {
+                $node->removeAttribute($attribute->name);
+            }
         }
 
         if ($tag === 'a' && $node->getAttribute('target') === '_blank') {
             $node->setAttribute('rel', 'noopener noreferrer');
+        }
+    }
+
+    private static function sanitizePositiveIntegerAttribute(DOMElement $node, string $attribute): void
+    {
+        $value = $node->getAttribute($attribute);
+
+        if (!ctype_digit($value) || (int) $value < 1 || (int) $value > 100) {
+            $node->removeAttribute($attribute);
         }
     }
 

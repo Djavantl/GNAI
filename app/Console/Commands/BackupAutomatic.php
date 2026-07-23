@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
+use App\Domains\Backup\Application\Actions\GenerateBackupAction;
 use Illuminate\Console\Command;
-use App\Services\Backup\BackupService;
 
 class BackupAutomatic extends Command
 {
     protected $signature = 'backup:automatic';
     protected $description = 'Executa backup automático do sistema';
 
-    public function handle(BackupService $backupService)
+    public function handle(GenerateBackupAction $generateBackup): int
     {
         $this->info('Iniciando backup automático...');
 
-        $backupService->generate();
+        $generateBackup->execute();
 
         $this->info('Backup concluído com sucesso.');
 

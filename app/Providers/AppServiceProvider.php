@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorage;
+use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
+use App\Domains\Backup\Application\Actions\PruneBackupsAction;
+use App\Domains\Backup\Application\Actions\PruneBackupsActionContract;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
@@ -27,7 +31,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(BackupArchiveStorageContract::class, BackupArchiveStorage::class);
+        $this->app->bind(PruneBackupsActionContract::class, PruneBackupsAction::class);
     }
 
     public function boot(): void

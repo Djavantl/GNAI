@@ -87,7 +87,7 @@
             <span class="fw-bold d-block">Política de Armazenamento</span>
             <small>
                 Os backups são armazenados em <code class="fw-bold text-dark">storage/app/private/{{ config('backup.backup.name') }}</code>.
-                Arquivos com status <span class="badge bg-info-subtle text-info-emphasis border px-1">Arquivado</span> não serão removidos por limpezas automáticas.
+                O sistema mantém sempre os 30 registros mais recentes; backups excedentes são removidos automaticamente com seus arquivos físicos.
             </small>
         </div>
     </div>

@@ -21,21 +21,12 @@
 
             <x-table.td>
                 @php
-                    $statusMap = [
-                        'success'  => ['label' => 'Sucesso',  'color' => 'success'],
-                        'failed'   => ['label' => 'Falha',    'color' => 'danger'],
-                        'archived' => ['label' => 'Arquivado','color' => 'info'],
-                    ];
-
-                    $status = $statusMap[$backup->status] ?? [
-                        'label' => $backup->status,
-                        'color' => 'secondary'
-                    ];
+                    $status = $backup->status;
                 @endphp
 
-                <span class="text-{{ $status['color'] }} fw-bold text-uppercase"
+                <span class="text-{{ $status?->color() ?? 'secondary' }} fw-bold text-uppercase"
                       style="font-size: 0.85rem;">
-                    {{ $status['label'] }}
+                    {{ $status?->label() ?? 'Status desconhecido' }}
                 </span>
             </x-table.td>
 
@@ -58,7 +49,7 @@
                         @endcan
 
                         @can('backup.restore')
-                            @if($backup->status === 'success')
+                            @if($backup->status?->allowsRestore())
                                 <x-buttons.submit-button
                                     type="button"
                                     variant="warning"

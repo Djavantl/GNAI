@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Services\Backup;
+declare(strict_types=1);
 
-use App\Models\Backup\Backup;
+namespace App\Domains\Backup\Infrastructure\Storage;
+
+use App\Domains\Backup\Domain\Models\Backup;
 use Exception;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -15,134 +18,131 @@ use Symfony\Component\Process\Process;
 use Throwable;
 use ZipArchive;
 
-class BackupService
+final class BackupArchiveStorage implements BackupArchiveStorageContract
 {
-    protected $disk;
+    private const int RESTORE_TIMEOUT_SECONDS = 300;
+
+    private readonly Filesystem $disk;
 
     public function __construct()
     {
         $this->disk = Storage::disk('local');
     }
 
-    public function generate(): Backup
+    /**
+     * @throws Exception
+     */
+    public function generateArchive(): BackupArchiveMetadata
     {
-        try {
-            $existingFiles = $this->snapshotBackupFiles();
-            $startedAt     = time();
-            $exitCode      = Artisan::call('backup:run', ['--disable-notifications' => true]);
-            $output        = trim(Artisan::output());
+        $existingFiles = $this->snapshotBackupFiles();
+        $startedAt = time();
+        $exitCode = Artisan::call('backup:run', ['--disable-notifications' => true]);
+        $output = trim(Artisan::output());
 
-            if ($exitCode !== 0) {
-                throw new Exception($output !== '' ? $output : 'Falha ao executar o comando de backup.');
-            }
+        if ($exitCode !== 0) {
+            throw new Exception($output !== '' ? $output : 'Falha ao executar o comando de backup.');
+        }
 
-            $latestFile = $this->findFreshBackupZip($existingFiles, $startedAt);
+        $latestFile = $this->findFreshBackupZip($existingFiles, $startedAt);
 
-            if ($latestFile) {
-                $absolutePath = $this->disk->path($latestFile);
-                $this->assertBackupArchiveIsValid($absolutePath);
-
-                return Backup::create([
-                    'file_name' => basename($latestFile),
-                    'file_path' => $latestFile,
-                    'size'      => $this->formatBytes($this->disk->size($latestFile)),
-                    'status'    => 'success',
-                    'user_id'   => Auth::id(),
-                ]);
-            }
-
+        if ($latestFile === null) {
             throw new Exception('Backup executado, mas nenhum novo arquivo ZIP válido foi encontrado após a execução.');
-
-        } catch (Exception $e) {
-            Log::error("BackupService@generate: " . $e->getMessage());
-            throw $e;
         }
+
+        $this->assertBackupArchiveIsValid($this->disk->path($latestFile));
+
+        return new BackupArchiveMetadata(
+            fileName: basename($latestFile),
+            filePath: $latestFile,
+            size: $this->formatBytes($this->disk->size($latestFile)),
+        );
     }
 
-    public function storeUploadedFile($file): Backup
+    /**
+     * @throws Exception
+     */
+    public function storeUploadedArchive(UploadedFile $file): BackupArchiveMetadata
+    {
+        $fileName = $file->getClientOriginalName();
+
+        $this->assertBackupArchiveIsValid((string) $file->getRealPath());
+
+        $path = $this->disk->putFileAs($this->backupFolderName(), $file, $fileName);
+
+        if ($path === false) {
+            throw new Exception('Falha ao armazenar o arquivo de backup enviado.');
+        }
+
+        return new BackupArchiveMetadata(
+            fileName: $fileName,
+            filePath: $path,
+            size: $this->formatBytes($file->getSize()),
+        );
+    }
+
+    public function deleteArchive(string $filePath): bool
+    {
+        if (! $this->disk->exists($filePath)) {
+            return false;
+        }
+
+        return $this->disk->delete($filePath);
+    }
+
+    public function archiveExists(string $filePath): bool
+    {
+        return $this->disk->exists($filePath);
+    }
+
+    public function backupArchiveExists(Backup $backup): bool
     {
         try {
-            $fileName = $file->getClientOriginalName();
-            $this->assertBackupArchiveIsValid($file->getRealPath());
-            $path     = $this->disk->putFileAs((string) config('backup.backup.name', 'GNAIbackups'), $file, $fileName);
-
-            return Backup::create([
-                'file_name' => $fileName,
-                'file_path' => $path,
-                'size'      => $this->formatBytes($file->getSize()),
-                'status'    => 'success',
-                'user_id'   => Auth::id() ?? 1,
-            ]);
-        } catch (Exception $e) {
-            Log::error("BackupService@storeUploadedFile: " . $e->getMessage());
-            throw $e;
-        }
-    }
-
-    public function delete($id): ?bool
-    {
-        $backup = Backup::findOrFail($id);
-
-        if ($this->disk->exists($backup->file_path)) {
-            $this->disk->delete($backup->file_path);
-        }
-
-        return $backup->delete();
-    }
-
-    public function sync(): bool
-    {
-        try {
-            $backupFolder = config('backup.backup.name');
-            $zipFiles     = array_filter(
-                $this->disk->allFiles($backupFolder),
-                fn($f) => str_ends_with($f, '.zip')
-            );
-
-            foreach ($zipFiles as $file) {
-                $fileName = basename($file);
-                if (!Backup::where('file_name', $fileName)->exists()) {
-                    Backup::create([
-                        'file_name' => $fileName,
-                        'file_path' => $file,
-                        'size'      => $this->formatBytes($this->disk->size($file)),
-                        'status'    => 'success',
-                        'user_id'   => Auth::id() ?? 1,
-                    ]);
-                }
-            }
-
-            foreach (Backup::all() as $dbBackup) {
-                if (!$this->disk->exists($dbBackup->file_path)) {
-                    $dbBackup->delete();
-                }
-            }
+            $this->resolveBackupZipPath($backup);
 
             return true;
-        } catch (Exception $e) {
-            Log::error("BackupService@sync: " . $e->getMessage());
+        } catch (Exception) {
             return false;
         }
     }
 
-    public function restore($id): bool
+    /**
+     * @return list<BackupArchiveMetadata>
+     */
+    public function listStoredArchives(): array
     {
-        $backup = Backup::findOrFail($id);
+        return collect($this->disk->allFiles($this->backupFolderName()))
+            ->filter(fn (string $file): bool => str_ends_with($file, '.zip'))
+            ->map(fn (string $file): BackupArchiveMetadata => new BackupArchiveMetadata(
+                fileName: basename($file),
+                filePath: $file,
+                size: $this->formatBytes($this->disk->size($file)),
+            ))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @throws Exception|Throwable
+     */
+    public function restoreArchive(Backup $backup): void
+    {
         $zipPath = $this->resolveBackupZipPath($backup);
 
         $this->assertBackupArchiveIsValid($zipPath);
-        set_time_limit(300);
+        set_time_limit(self::RESTORE_TIMEOUT_SECONDS);
 
-        $workPath     = storage_path('framework' . DIRECTORY_SEPARATOR . 'backup-restore-' . time() . '-' . bin2hex(random_bytes(4)));
-        $extractPath  = $workPath . DIRECTORY_SEPARATOR . 'extracted';
+        $workPath = storage_path('framework' . DIRECTORY_SEPARATOR . 'backup-restore-' . time() . '-' . bin2hex(random_bytes(4)));
+        $extractPath = $workPath . DIRECTORY_SEPARATOR . 'extracted';
         $rollbackPath = $workPath . DIRECTORY_SEPARATOR . 'rollback-app';
+        $shouldCleanupWorkPath = true;
 
         try {
             File::ensureDirectoryExists($extractPath);
             $this->extractBackupArchive($zipPath, $extractPath);
 
             $sqlFile = $this->findSqlFile($extractPath);
-            if (!$sqlFile) {
+
+            if ($sqlFile === null) {
                 throw new Exception('O backup selecionado não contém arquivo SQL para restauração.');
             }
 
@@ -150,46 +150,51 @@ class BackupService
             $this->restoreDatabaseFromSql($sqlFile, $connection['config']);
 
             $sourceStorage = $this->findStorageDir($extractPath);
-            $this->restoreStorageApp($sourceStorage, $rollbackPath);
+            $this->restoreStorageApp($sourceStorage, $rollbackPath, $shouldCleanupWorkPath);
+        } catch (Throwable $exception) {
+            Log::error('BackupArchiveStorage@restoreArchive — falha crítica: ' . $exception->getMessage());
 
-            return true;
-
-        } catch (Throwable $e) {
-            Log::error("BackupService@restore — falha crítica: " . $e->getMessage());
-            throw $e instanceof Exception ? $e : new Exception($e->getMessage(), 0, $e);
+            throw $exception instanceof Exception
+                ? $exception
+                : new Exception($exception->getMessage(), 0, $exception);
         } finally {
-            $this->removeDirectory($workPath);
+            if ($shouldCleanupWorkPath) {
+                $this->removeDirectory($workPath);
+            }
         }
     }
 
+    /**
+     * @return array<string, int>
+     */
     private function snapshotBackupFiles(): array
     {
-        $backupFolder = config('backup.backup.name');
-        $files        = $this->disk->allFiles($backupFolder);
-
-        return collect($files)
-            ->filter(fn($file) => str_ends_with($file, '.zip'))
-            ->mapWithKeys(fn($file) => [$file => $this->disk->lastModified($file)])
+        return collect($this->disk->allFiles($this->backupFolderName()))
+            ->filter(fn (string $file): bool => str_ends_with($file, '.zip'))
+            ->mapWithKeys(fn (string $file): array => [$file => $this->disk->lastModified($file)])
             ->all();
     }
 
+    /**
+     * @param array<string, int> $existingFiles
+     */
     private function findFreshBackupZip(array $existingFiles, int $startedAt): ?string
     {
-        $backupFolder = config('backup.backup.name');
-        $files        = $this->disk->allFiles($backupFolder);
-
-        return collect($files)
-            ->filter(fn($file) => str_ends_with($file, '.zip'))
-            ->filter(function ($file) use ($existingFiles, $startedAt) {
+        return collect($this->disk->allFiles($this->backupFolderName()))
+            ->filter(fn (string $file): bool => str_ends_with($file, '.zip'))
+            ->filter(function (string $file) use ($existingFiles, $startedAt): bool {
                 $lastModified = $this->disk->lastModified($file);
-                $previous     = $existingFiles[$file] ?? null;
+                $previous = $existingFiles[$file] ?? null;
 
                 return $previous === null || $lastModified > $previous || $lastModified >= $startedAt;
             })
-            ->sortByDesc(fn($file) => $this->disk->lastModified($file))
+            ->sortByDesc(fn (string $file): int => $this->disk->lastModified($file))
             ->first();
     }
 
+    /**
+     * @throws Exception
+     */
     private function assertBackupArchiveIsValid(string $zipPath): void
     {
         $zip = new ZipArchive();
@@ -202,6 +207,7 @@ class BackupService
 
         for ($index = 0; $index < $zip->numFiles; $index++) {
             $entryName = $zip->getNameIndex($index);
+
             if (is_string($entryName) && str_ends_with(strtolower($entryName), '.sql')) {
                 $hasSql = true;
                 break;
@@ -210,14 +216,17 @@ class BackupService
 
         $zip->close();
 
-        if (!$hasSql) {
+        if (! $hasSql) {
             throw new Exception('O arquivo ZIP não contém dump SQL válido para restauração.');
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function resolveBackupZipPath(Backup $backup): string
     {
-        $fileName     = $backup->file_name;
+        $fileName = $backup->file_name;
         $relativePath = str_replace('\\', '/', $backup->file_path);
 
         foreach (['storage/app/private/', 'storage/app/', 'private/'] as $prefix) {
@@ -229,7 +238,7 @@ class BackupService
 
         $relativeCandidates = array_values(array_unique(array_filter([
             ltrim($relativePath, '/'),
-            config('backup.backup.name') . '/' . $fileName,
+            $this->backupFolderName() . '/' . $fileName,
         ])));
 
         foreach ($relativeCandidates as $candidate) {
@@ -239,8 +248,8 @@ class BackupService
         }
 
         $absoluteCandidates = [
-            storage_path('app/private/' . config('backup.backup.name') . '/' . $fileName),
-            storage_path('app/' . config('backup.backup.name') . '/' . $fileName),
+            storage_path('app/private/' . $this->backupFolderName() . '/' . $fileName),
+            storage_path('app/' . $this->backupFolderName() . '/' . $fileName),
         ];
 
         foreach ($absoluteCandidates as $candidate) {
@@ -249,10 +258,14 @@ class BackupService
             }
         }
 
-        Log::error("BackupService@restore — arquivo não encontrado: {$fileName}");
+        Log::error("BackupArchiveStorage@restoreArchive — arquivo não encontrado: {$fileName}");
+
         throw new Exception("Arquivo físico não encontrado: {$fileName}");
     }
 
+    /**
+     * @throws Exception
+     */
     private function extractBackupArchive(string $zipPath, string $extractPath): void
     {
         $zip = new ZipArchive();
@@ -261,7 +274,7 @@ class BackupService
             throw new Exception("Falha ao abrir o ZIP: {$zipPath}");
         }
 
-        if (!$zip->extractTo($extractPath)) {
+        if (! $zip->extractTo($extractPath)) {
             $zip->close();
             throw new Exception('Falha ao extrair o conteúdo do backup.');
         }
@@ -269,19 +282,24 @@ class BackupService
         $zip->close();
     }
 
+    /**
+     * @return array{name: string, config: array<string, mixed>}
+     *
+     * @throws Exception
+     */
     private function resolveRestoreConnection(): array
     {
         $connectionName = collect(config('backup.backup.source.databases', []))
-            ->filter(fn($name) => is_string($name) && $name !== '')
+            ->filter(fn (mixed $name): bool => is_string($name) && $name !== '')
             ->first() ?: config('database.default');
 
         $dbConfig = config("database.connections.{$connectionName}");
 
-        if (!$dbConfig) {
+        if (! $dbConfig) {
             throw new Exception("Configuração de conexão não encontrada para restauração: {$connectionName}");
         }
 
-        if (!in_array($dbConfig['driver'] ?? null, ['mysql', 'mariadb'], true)) {
+        if (! in_array($dbConfig['driver'] ?? null, ['mysql', 'mariadb'], true)) {
             throw new Exception("Driver de banco não suportado para restauração automatizada: {$dbConfig['driver']}");
         }
 
@@ -291,16 +309,21 @@ class BackupService
         ];
     }
 
+    /**
+     * @param array<string, mixed> $dbConfig
+     *
+     * @throws Exception
+     */
     private function restoreDatabaseFromSql(string $sqlFile, array $dbConfig): void
     {
         $mysqlBin = $this->resolveMysqlBinary();
-        $optFile  = null;
+        $optFile = null;
 
         try {
             $arguments = [$mysqlBin];
 
             if ($this->isWindows()) {
-                $optFile     = $this->writeMysqlOptionsFile($dbConfig);
+                $optFile = $this->writeMysqlOptionsFile($dbConfig);
                 $arguments[] = '--defaults-extra-file=' . $optFile;
             }
 
@@ -309,58 +332,70 @@ class BackupService
             $arguments[] = $dbConfig['database'];
 
             $environment = null;
-            if (!$this->isWindows() && isset($dbConfig['password'])) {
+
+            if (! $this->isWindows() && isset($dbConfig['password'])) {
                 $environment = ['MYSQL_PWD' => (string) $dbConfig['password']];
             }
 
             $process = new Process($arguments, base_path(), $environment);
-            $process->setTimeout(300);
+            $process->setTimeout(self::RESTORE_TIMEOUT_SECONDS);
             $process->setInput(fopen($sqlFile, 'r'));
             $process->run();
 
-            if (!$process->isSuccessful()) {
+            if (! $process->isSuccessful()) {
                 $errorOutput = trim($process->getErrorOutput() ?: $process->getOutput());
+
                 throw new Exception('Erro ao importar SQL: ' . ($errorOutput !== '' ? $errorOutput : 'processo retornou falha sem mensagem.'));
             }
         } finally {
-            if ($optFile && file_exists($optFile)) {
+            if ($optFile !== null && file_exists($optFile)) {
                 @unlink($optFile);
             }
         }
     }
 
+    /**
+     * @param array<string, mixed> $dbConfig
+     *
+     * @return list<string>
+     */
     private function buildMysqlConnectionArguments(array $dbConfig): array
     {
         $arguments = [];
 
-        if (!empty($dbConfig['unix_socket'])) {
+        if (! empty($dbConfig['unix_socket'])) {
             $arguments[] = '--socket=' . $dbConfig['unix_socket'];
         } else {
             $arguments[] = '--host=' . ($dbConfig['host'] ?? '127.0.0.1');
             $arguments[] = '--port=' . ($dbConfig['port'] ?? '3306');
         }
 
-        if (!$this->isWindows()) {
+        if (! $this->isWindows()) {
             $arguments[] = '--user=' . ($dbConfig['username'] ?? '');
         }
 
-        if (!empty($dbConfig['charset'])) {
+        if (! empty($dbConfig['charset'])) {
             $arguments[] = '--default-character-set=' . $dbConfig['charset'];
         }
 
         return $arguments;
     }
 
+    /**
+     * @param array<string, mixed> $dbConfig
+     *
+     * @return list<string>
+     */
     private function buildMysqlRestoreExtraArguments(array $dbConfig): array
     {
         $rawOptions = $dbConfig['dump']['add_extra_option'] ?? [];
-        $options    = is_array($rawOptions)
+        $options = is_array($rawOptions)
             ? $rawOptions
             : (preg_split('/\s+/', trim((string) $rawOptions)) ?: []);
 
         return collect($options)
-            ->filter(fn($option) => is_string($option) && $option !== '')
-            ->filter(function (string $option) {
+            ->filter(fn (mixed $option): bool => is_string($option) && $option !== '')
+            ->filter(function (string $option): bool {
                 return str_starts_with($option, '--protocol=')
                     || str_starts_with($option, '--ssl-mode=')
                     || $option === '--skip-ssl';
@@ -369,16 +404,19 @@ class BackupService
             ->all();
     }
 
-    private function restoreStorageApp(?string $sourceStorage, string $rollbackPath): void
+    /**
+     * @throws Exception|Throwable
+     */
+    private function restoreStorageApp(?string $sourceStorage, string $rollbackPath, bool &$shouldCleanupWorkPath): void
     {
-        $destination      = storage_path('app');
-        $stagingPath      = dirname($rollbackPath) . DIRECTORY_SEPARATOR . 'staging-app';
-        $backupFolderName = (string) config('backup.backup.name', 'GNAIbackups');
+        $destination = storage_path('app');
+        $stagingPath = dirname($rollbackPath) . DIRECTORY_SEPARATOR . 'staging-app';
+        $backupFolderName = $this->backupFolderName();
         $preservedBackups = $destination . DIRECTORY_SEPARATOR . 'private' . DIRECTORY_SEPARATOR . $backupFolderName;
 
         File::ensureDirectoryExists($stagingPath);
 
-        if ($sourceStorage && is_dir($sourceStorage)) {
+        if ($sourceStorage !== null && is_dir($sourceStorage)) {
             File::copyDirectory($sourceStorage, $stagingPath);
         }
 
@@ -386,99 +424,119 @@ class BackupService
             File::ensureDirectoryExists($stagingPath . DIRECTORY_SEPARATOR . 'private');
             File::copyDirectory(
                 $preservedBackups,
-                $stagingPath . DIRECTORY_SEPARATOR . 'private' . DIRECTORY_SEPARATOR . $backupFolderName
+                $stagingPath . DIRECTORY_SEPARATOR . 'private' . DIRECTORY_SEPARATOR . $backupFolderName,
             );
         }
 
-        if (is_dir($destination)) {
-            if (!File::moveDirectory($destination, $rollbackPath)) {
-                throw new Exception('Falha ao preparar a troca do storage atual durante a restauração.');
-            }
+        if (is_dir($destination) && ! File::moveDirectory($destination, $rollbackPath)) {
+            throw new Exception('Falha ao preparar a troca do storage atual durante a restauração.');
         }
 
         try {
-            if (!File::moveDirectory($stagingPath, $destination)) {
+            if (! File::moveDirectory($stagingPath, $destination)) {
                 throw new Exception('Falha ao aplicar os arquivos restaurados no storage.');
             }
 
             $this->removeDirectory($rollbackPath);
-        } catch (Throwable $e) {
-            if (is_dir($rollbackPath) && !is_dir($destination)) {
-                File::moveDirectory($rollbackPath, $destination);
+        } catch (Throwable $exception) {
+            if (is_dir($rollbackPath)) {
+                if (is_dir($destination)) {
+                    $shouldCleanupWorkPath = false;
+
+                    Log::critical('Restauração falhou e o rollback não pôde ser aplicado porque o destino já existe.', [
+                        'rollback_path' => $rollbackPath,
+                        'destination' => $destination,
+                    ]);
+
+                    throw new Exception(
+                        "Falha crítica: rollback não pôde ser aplicado porque o destino já existe. Dados originais preservados em {$rollbackPath}",
+                        0,
+                        $exception,
+                    );
+                }
+
+                if (! File::moveDirectory($rollbackPath, $destination)) {
+                    $shouldCleanupWorkPath = false;
+
+                    Log::critical('Restauração falhou e o rollback do storage original também falhou.', [
+                        'rollback_path' => $rollbackPath,
+                        'destination' => $destination,
+                    ]);
+
+                    throw new Exception(
+                        "Falha crítica: rollback não pôde ser aplicado. Dados originais preservados em {$rollbackPath}",
+                        0,
+                        $exception,
+                    );
+                }
             }
 
-            throw $e instanceof Exception ? $e : new Exception($e->getMessage(), 0, $e);
+            throw $exception instanceof Exception
+                ? $exception
+                : new Exception($exception->getMessage(), 0, $exception);
         }
     }
 
-    /**
-     * Resolve o caminho absoluto do binário mysql.
-     * Lê de database.connections.mysql.dump.dump_binary_path,
-     * que por sua vez lê de BACKUP_MYSQL_BINARY_PATH no .env.
-     * Fallback para 'mysql' no PATH do sistema.
-     */
     private function resolveMysqlBinary(): string
     {
-        $dir        = config('database.connections.mysql.dump.dump_binary_path', '');
+        $dir = config('database.connections.mysql.dump.dump_binary_path', '');
         $binaryName = $this->isWindows() ? 'mysql.exe' : 'mysql';
 
         if ($dir) {
             $full = rtrim($dir, '/\\') . DIRECTORY_SEPARATOR . $binaryName;
+
             if (file_exists($full)) {
                 return $full;
             }
         }
 
-        // Fallback: depende do PATH global do sistema operacional
         return $binaryName;
     }
 
     /**
-     * Cria arquivo temporário de opções MySQL (.cnf) para evitar
-     * expor a senha como argumento de linha de comando no Windows.
+     * @param array<string, mixed> $dbConfig
      */
     private function writeMysqlOptionsFile(array $dbConfig): string
     {
-        $path    = storage_path('app' . DIRECTORY_SEPARATOR . 'mysql-opts-' . time() . '.cnf');
+        $path = storage_path('app' . DIRECTORY_SEPARATOR . 'mysql-opts-' . time() . '.cnf');
         $content = "[client]\n";
         $content .= "user=\"{$dbConfig['username']}\"\n";
         $content .= "password=\"{$dbConfig['password']}\"\n";
-        if (!empty($dbConfig['unix_socket'])) {
+
+        if (! empty($dbConfig['unix_socket'])) {
             $content .= "socket=\"{$dbConfig['unix_socket']}\"\n";
         } else {
             $content .= "host=\"{$dbConfig['host']}\"\n";
             $content .= "port=\"{$dbConfig['port']}\"\n";
         }
+
         file_put_contents($path, $content);
+
         return $path;
     }
 
-    /**
-     * Localiza recursivamente o primeiro arquivo .sql na pasta extraída.
-     */
     private function findSqlFile(string $directory): ?string
     {
         $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($directory)
+            new RecursiveDirectoryIterator($directory),
         );
+
         foreach ($iterator as $file) {
             if ($file->getExtension() === 'sql') {
                 return $file->getRealPath();
             }
         }
+
         return null;
     }
 
-    /**
-     * Localiza a pasta "app" dentro de "storage" no conteúdo extraído do ZIP,
-     * independente do path absoluto que tinha na máquina de origem.
-     */
     private function findStorageDir(string $tempPath): ?string
     {
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($tempPath, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
+            RecursiveIteratorIterator::SELF_FIRST,
         );
+
         foreach ($iterator as $item) {
             if (
                 $item->isDir()
@@ -488,21 +546,23 @@ class BackupService
                 return $item->getRealPath();
             }
         }
+
         return null;
     }
 
-    /**
-     * Remove um diretório recursivamente, compatível com Windows e Linux.
-     */
     private function removeDirectory(string $path): void
     {
-        if (!is_dir($path)) return;
+        if (! is_dir($path)) {
+            return;
+        }
 
         if ($this->isWindows()) {
             exec('rd /s /q ' . escapeshellarg($path));
-        } else {
-            exec('rm -rf ' . escapeshellarg($path));
+
+            return;
         }
+
+        exec('rm -rf ' . escapeshellarg($path));
     }
 
     private function isWindows(): bool
@@ -510,14 +570,21 @@ class BackupService
         return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
     }
 
+    private function backupFolderName(): string
+    {
+        return (string) config('backup.backup.name', 'GNAIbackups');
+    }
+
     private function formatBytes(int|float $bytes, int $precision = 2): string
     {
-        $units  = ['B', 'KB', 'MB', 'GB', 'TB'];
-        $bytes  = (float) max($bytes, 0);
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = (float) max($bytes, 0);
 
-        if ($bytes === 0.0) return '0 B';
+        if ($bytes === 0.0) {
+            return '0 B';
+        }
 
-        $power   = min((int) floor(log($bytes, 1024)), count($units) - 1);
+        $power = min((int) floor(log($bytes, 1024)), count($units) - 1);
         $rounded = round($bytes / (1024 ** $power), $precision);
 
         return $rounded . ' ' . $units[$power];
