@@ -2,7 +2,7 @@
 
 namespace App\Notifications\InclusiveRadar;
 
-use App\Models\InclusiveRadar\InstitutionalEvent;
+use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -23,7 +23,7 @@ class InstitutionalEventStartingNotification extends Notification
             'event_id'   => $this->event->id,
             'title'      => 'Evento Iniciando Agora',
             'message'    => "O evento \"{$this->event->title}\" está começando agora! Local: {$this->event->location}.",
-            'url'        => route('inclusive-radar.institutional-events.show', $this->event->id),
+            'url'        => route('inclusive-radar.institutional-events.show', $this->event->id, absolute: false),
             'created_at' => now()->toDateTimeString(),
         ];
     }

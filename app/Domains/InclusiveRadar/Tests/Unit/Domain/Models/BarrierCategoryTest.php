@@ -6,7 +6,6 @@ namespace App\Domains\InclusiveRadar\Tests\Unit\Domain\Models;
 
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\CreateBarrierCategoryDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\UpdateBarrierCategoryDTO;
-use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidBarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use Tests\TestCase;
 
@@ -49,14 +48,13 @@ final class BarrierCategoryTest extends TestCase
         self::assertFalse($category->is_active);
     }
 
-    public function test_it_rejects_empty_name(): void
+    public function test_it_trims_name(): void
     {
-        $this->expectException(InvalidBarrierCategory::class);
-        $this->expectExceptionMessage('O nome da categoria é obrigatório.');
-
-        BarrierCategory::register(new CreateBarrierCategoryDTO(
-            name: ' ',
+        $category = BarrierCategory::register(new CreateBarrierCategoryDTO(
+            name: ' Comunicacional ',
         ));
+
+        self::assertSame('Comunicacional', $category->name);
     }
 
 }

@@ -6,7 +6,6 @@ namespace App\Domains\InclusiveRadar\Domain\Models;
 
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibilityFeatures\CreateAccessibilityFeatureDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibilityFeatures\UpdateAccessibilityFeatureDTO;
-use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibilityFeature;
 use Database\Factories\Domains\InclusiveRadar\AccessibilityFeatureFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,9 +29,6 @@ final class AccessibilityFeature extends Model
         'is_active' => 'boolean',
     ];
 
-    /**
-     * @throws InvalidAccessibilityFeature
-     */
     public static function register(CreateAccessibilityFeatureDTO $data): self
     {
         return new self([
@@ -42,9 +38,6 @@ final class AccessibilityFeature extends Model
         ]);
     }
 
-    /**
-     * @throws InvalidAccessibilityFeature
-     */
     public function revise(UpdateAccessibilityFeatureDTO $data): void
     {
         $this->fill([
@@ -64,34 +57,14 @@ final class AccessibilityFeature extends Model
         )->withTimestamps();
     }
 
-    /**
-     * @throws InvalidAccessibilityFeature
-     */
     private static function normalizeName(string $name): string
     {
-        $name = trim($name);
-
-        if ($name === '') {
-            throw new InvalidAccessibilityFeature('O nome do recurso é obrigatório.');
-        }
-
-        if (mb_strlen($name) > 255) {
-            throw new InvalidAccessibilityFeature('O nome do recurso deve possuir no máximo 255 caracteres.');
-        }
-
-        return $name;
+        return trim($name);
     }
 
-    /**
-     * @throws InvalidAccessibilityFeature
-     */
     private static function normalizeDescription(?string $description): ?string
     {
         $description = trim((string) $description);
-
-        if (mb_strlen($description) > 1000) {
-            throw new InvalidAccessibilityFeature('A descrição do recurso deve possuir no máximo 1000 caracteres.');
-        }
 
         return $description === '' ? null : $description;
     }

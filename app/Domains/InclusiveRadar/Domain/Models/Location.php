@@ -78,44 +78,24 @@ class Location extends Model
     {
         return [
             'institution_id' => $data->institutionId,
-            'name' => self::normalizeRequiredText($data->name, 'O nome do local é obrigatório.', 255),
-            'type' => self::normalizeNullableText($data->type, 100),
-            'description' => self::normalizeNullableText($data->description, 1000),
+            'name' => self::normalizeText($data->name),
+            'type' => self::normalizeNullableText($data->type),
+            'description' => self::normalizeNullableText($data->description),
             'latitude' => self::normalizeLatitude($data->latitude),
             'longitude' => self::normalizeLongitude($data->longitude),
-            'google_place_id' => self::normalizeNullableText($data->googlePlaceId, 255),
+            'google_place_id' => self::normalizeNullableText($data->googlePlaceId),
             'is_active' => $data->isActive,
         ];
     }
 
-    /**
-     * @throws InvalidLocation
-     */
-    private static function normalizeRequiredText(string $value, string $message, int $maxLength): string
+    private static function normalizeText(string $value): string
     {
-        $value = trim($value);
-
-        if ($value === '') {
-            throw new InvalidLocation($message);
-        }
-
-        if (mb_strlen($value) > $maxLength) {
-            throw new InvalidLocation("O campo deve possuir no máximo {$maxLength} caracteres.");
-        }
-
-        return $value;
+        return trim($value);
     }
 
-    /**
-     * @throws InvalidLocation
-     */
-    private static function normalizeNullableText(?string $value, int $maxLength): ?string
+    private static function normalizeNullableText(?string $value): ?string
     {
         $value = trim((string) $value);
-
-        if (mb_strlen($value) > $maxLength) {
-            throw new InvalidLocation("O campo deve possuir no máximo {$maxLength} caracteres.");
-        }
 
         return $value === '' ? null : $value;
     }

@@ -6,7 +6,6 @@ namespace App\Domains\InclusiveRadar\Tests\Unit\Domain\Models;
 
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibilityFeatures\CreateAccessibilityFeatureDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibilityFeatures\UpdateAccessibilityFeatureDTO;
-use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibilityFeature;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Tests\TestCase;
@@ -45,14 +44,13 @@ final class AccessibilityFeatureTest extends TestCase
         self::assertFalse($feature->is_active);
     }
 
-    public function test_it_rejects_empty_name(): void
+    public function test_it_trims_name(): void
     {
-        $this->expectException(InvalidAccessibilityFeature::class);
-        $this->expectExceptionMessage('O nome do recurso é obrigatório.');
-
-        AccessibilityFeature::register(new CreateAccessibilityFeatureDTO(
-            name: ' ',
+        $feature = AccessibilityFeature::register(new CreateAccessibilityFeatureDTO(
+            name: ' Libras ',
         ));
+
+        self::assertSame('Libras', $feature->name);
     }
 
     public function test_it_has_materials_relationship(): void

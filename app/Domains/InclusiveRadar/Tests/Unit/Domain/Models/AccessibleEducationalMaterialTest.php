@@ -54,18 +54,18 @@ final class AccessibleEducationalMaterialTest extends TestCase
         self::assertNull($material->quantity_available);
     }
 
-    public function test_it_rejects_empty_name(): void
+    public function test_it_trims_name(): void
     {
-        $this->expectException(InvalidAccessibleEducationalMaterial::class);
-
-        $this->register(
-            name: '   ',
+        $material = $this->register(
+            name: ' Livro em Braille ',
             isDigital: true,
             isLoanable: false,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
         );
+
+        self::assertSame('Livro em Braille', $material->name);
     }
 
     public function test_it_rejects_assigning_an_empty_target_audience(): void
@@ -178,8 +178,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
 
     private function register(
         string $name,
-        bool $digital,
-        bool $loanable,
+        bool $isDigital,
+        bool $isLoanable,
         ?int $quantity,
         ?AssetCode $assetCode,
         ConservationState $conservationState,
@@ -189,8 +189,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
     ): AccessibleEducationalMaterial {
         return AccessibleEducationalMaterial::register(new CreateAccessibleEducationalMaterialDTO(
             name: $name,
-            isDigital: $digital,
-            isLoanable: $loanable,
+            isDigital: $isDigital,
+            isLoanable: $isLoanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,
@@ -203,8 +203,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
     private function revise(
         AccessibleEducationalMaterial $material,
         string $name,
-        bool $digital,
-        bool $loanable,
+        bool $isDigital,
+        bool $isLoanable,
         ?int $quantity,
         ?AssetCode $assetCode,
         ConservationState $conservationState,
@@ -215,8 +215,8 @@ final class AccessibleEducationalMaterialTest extends TestCase
     ): void {
         $material->revise(new UpdateAccessibleEducationalMaterialDTO(
             name: $name,
-            isDigital: $digital,
-            isLoanable: $loanable,
+            isDigital: $isDigital,
+            isLoanable: $isLoanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,

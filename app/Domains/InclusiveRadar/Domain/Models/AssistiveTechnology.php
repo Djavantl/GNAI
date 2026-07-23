@@ -169,20 +169,6 @@ final class AssistiveTechnology extends Model
      */
     private static function normalizeName(string $name): string
     {
-        $name = trim($name);
-
-        if ($name === '') {
-            throw new InvalidAssistiveTechnology(
-                'Informe o tipo da tecnologia assistiva.'
-            );
-        }
-
-        if (mb_strlen($name) > 255) {
-            throw new InvalidAssistiveTechnology(
-                'O nome da tecnologia assistiva deve possuir no máximo 255 caracteres.'
-            );
-        }
-
-        return $name;
+        return trim($name);
     }
 }

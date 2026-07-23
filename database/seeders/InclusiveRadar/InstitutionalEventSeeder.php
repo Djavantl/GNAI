@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
-use App\Models\InclusiveRadar\InstitutionalEvent;
+use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
 use Illuminate\Database\Seeder;
 
 class InstitutionalEventSeeder extends Seeder

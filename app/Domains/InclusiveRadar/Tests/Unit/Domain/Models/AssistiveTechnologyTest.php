@@ -55,18 +55,18 @@ final class AssistiveTechnologyTest extends TestCase
         self::assertTrue($technology->stock()->isNotApplicable());
     }
 
-    public function test_it_rejects_empty_name(): void
+    public function test_it_trims_name(): void
     {
-        $this->expectException(InvalidAssistiveTechnology::class);
-
-        $this->register(
-            name: '   ',
+        $technology = $this->register(
+            name: ' Linha Braille ',
             isDigital: true,
             isLoanable: false,
             quantity: null,
             assetCode: null,
             conservationState: ConservationState::NOT_APPLICABLE,
         );
+
+        self::assertSame('Linha Braille', $technology->name);
     }
 
     public function test_it_rejects_assigning_an_empty_target_audience(): void
@@ -206,8 +206,8 @@ final class AssistiveTechnologyTest extends TestCase
 
     private function register(
         string $name,
-        bool $digital,
-        bool $loanable,
+        bool $isDigital,
+        bool $isLoanable,
         ?int $quantity,
         ?AssetCode $assetCode,
         ConservationState $conservationState,
@@ -217,8 +217,8 @@ final class AssistiveTechnologyTest extends TestCase
     ): AssistiveTechnology {
         return AssistiveTechnology::register(new CreateAssistiveTechnologyDTO(
             name: $name,
-            isDigital: $digital,
-            isLoanable: $loanable,
+            isDigital: $isDigital,
+            isLoanable: $isLoanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,
@@ -231,8 +231,8 @@ final class AssistiveTechnologyTest extends TestCase
     private function revise(
         AssistiveTechnology $technology,
         string $name,
-        bool $digital,
-        bool $loanable,
+        bool $isDigital,
+        bool $isLoanable,
         ?int $quantity,
         ?AssetCode $assetCode,
         ConservationState $conservationState,
@@ -243,8 +243,8 @@ final class AssistiveTechnologyTest extends TestCase
     ): void {
         $technology->revise(new UpdateAssistiveTechnologyDTO(
             name: $name,
-            isDigital: $digital,
-            isLoanable: $loanable,
+            isDigital: $isDigital,
+            isLoanable: $isLoanable,
             quantity: $quantity,
             assetCode: $assetCode,
             conservationState: $conservationState,

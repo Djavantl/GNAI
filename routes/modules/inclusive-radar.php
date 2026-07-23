@@ -3,12 +3,12 @@
 use App\Domains\InclusiveRadar\UI\Controllers\BarrierCategoryController as DomainBarrierCategoryController;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController as DomainAccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController as DomainAssistiveTechnologyController;
+use App\Domains\InclusiveRadar\UI\Controllers\InstitutionalEventController as DomainInstitutionalEventController;
 use App\Domains\InclusiveRadar\UI\Controllers\LoanController as DomainLoanController;
 use App\Domains\InclusiveRadar\UI\Controllers\LocationController as DomainLocationController;
 use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController as DomainWaitlistController;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibilityFeatureController;
 use App\Http\Controllers\InclusiveRadar\BarrierController;
-use App\Http\Controllers\InclusiveRadar\InstitutionalEventController;
 use App\Domains\InclusiveRadar\UI\Controllers\InstitutionController;
 use App\Http\Controllers\InclusiveRadar\Logs\AccessibleEducationalMaterialLogController;
 use App\Http\Controllers\InclusiveRadar\Logs\AssistiveTechnologyLogController;
@@ -182,28 +182,28 @@ Route::middleware(['auth'])->group(function () {
         ->name('accessible-educational-materials.logs')->middleware('can:material.logs');
 
     // ------------------- AGENDA INSTITUCIONAL -------------------
-    Route::get('/institutional-events', [InstitutionalEventController::class, 'index'])
+    Route::get('/institutional-events', [DomainInstitutionalEventController::class, 'index'])
         ->name('institutional-events.index')->middleware('can:institutional-event.index');
 
-    Route::get('/institutional-events/create', [InstitutionalEventController::class, 'create'])
+    Route::get('/institutional-events/create', [DomainInstitutionalEventController::class, 'create'])
         ->name('institutional-events.create')->middleware('can:institutional-event.create');
 
-    Route::post('/institutional-events/store', [InstitutionalEventController::class, 'store'])
+    Route::post('/institutional-events/store', [DomainInstitutionalEventController::class, 'store'])
         ->name('institutional-events.store')->middleware('can:institutional-event.store');
 
-    Route::get('/institutional-events/{event}', [InstitutionalEventController::class, 'show'])
+    Route::get('/institutional-events/{event}', [DomainInstitutionalEventController::class, 'show'])
         ->name('institutional-events.show')->middleware('can:institutional-event.show');
 
-    Route::get('/institutional-events/{event}/edit', [InstitutionalEventController::class, 'edit'])
+    Route::get('/institutional-events/{event}/edit', [DomainInstitutionalEventController::class, 'edit'])
         ->name('institutional-events.edit')->middleware('can:institutional-event.edit');
 
-    Route::put('/institutional-events/{event}', [InstitutionalEventController::class, 'update'])
+    Route::put('/institutional-events/{event}', [DomainInstitutionalEventController::class, 'update'])
         ->name('institutional-events.update')->middleware('can:institutional-event.update');
 
-    Route::delete('/institutional-events/{event}', [InstitutionalEventController::class, 'destroy'])
+    Route::delete('/institutional-events/{event}', [DomainInstitutionalEventController::class, 'destroy'])
         ->name('institutional-events.destroy')->middleware('can:institutional-event.destroy');
 
-    Route::get('/institutional-events/{event}/pdf', [InstitutionalEventController::class, 'generatePdf'])
+    Route::get('/institutional-events/{event}/pdf', [DomainInstitutionalEventController::class, 'generatePdf'])
         ->name('institutional-events.pdf')->middleware('can:institutional-event.pdf');
 
     // ------------------- EMPRÉSTIMOS -------------------
