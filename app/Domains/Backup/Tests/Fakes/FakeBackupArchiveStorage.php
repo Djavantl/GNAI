@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Tests\Fakes;
 
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Backup\Infrastructure\Storage\BackupArchiveMetadata;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
 use Illuminate\Http\UploadedFile;
 use Throwable;
 
@@ -51,7 +51,7 @@ final class FakeBackupArchiveStorage implements BackupArchiveStorageContract
     {
         return $this->uploadedArchive ?? new BackupArchiveMetadata(
             fileName: $file->getClientOriginalName(),
-            filePath: 'GNAIbackups/' . $file->getClientOriginalName(),
+            filePath: 'GNAIbackups/'.$file->getClientOriginalName(),
             size: '1 MB',
         );
     }

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domains\Backup\Tests\Feature;
 
 use App\Domains\Backup\Application\Actions\StoreUploadedBackupAction;
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Data\UploadBackupData;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +22,7 @@ final class StoreUploadedBackupActionTest extends TestCase
     public function test_it_stores_uploaded_backup_with_responsible_user(): void
     {
         $user = User::factory()->create();
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
 
         $this->app->instance(BackupArchiveStorageContract::class, $storage);
 
@@ -44,7 +44,7 @@ final class StoreUploadedBackupActionTest extends TestCase
 
     public function test_it_requires_a_responsible_user_for_upload(): void
     {
-        $this->app->instance(BackupArchiveStorageContract::class, new FakeBackupArchiveStorage());
+        $this->app->instance(BackupArchiveStorageContract::class, new FakeBackupArchiveStorage);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Não foi possível identificar o usuário responsável pelo upload do backup.');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Infrastructure\Storage;
 
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Domain\Models\Backup;
 use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -131,9 +132,9 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
         $this->assertBackupArchiveIsValid($zipPath);
         set_time_limit(self::RESTORE_TIMEOUT_SECONDS);
 
-        $workPath = storage_path('framework' . DIRECTORY_SEPARATOR . 'backup-restore-' . time() . '-' . bin2hex(random_bytes(4)));
-        $extractPath = $workPath . DIRECTORY_SEPARATOR . 'extracted';
-        $rollbackPath = $workPath . DIRECTORY_SEPARATOR . 'rollback-app';
+        $workPath = storage_path('framework'.DIRECTORY_SEPARATOR.'backup-restore-'.time().'-'.bin2hex(random_bytes(4)));
+        $extractPath = $workPath.DIRECTORY_SEPARATOR.'extracted';
+        $rollbackPath = $workPath.DIRECTORY_SEPARATOR.'rollback-app';
         $shouldCleanupWorkPath = true;
 
         try {
@@ -152,7 +153,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
             $sourceStorage = $this->findStorageDir($extractPath);
             $this->restoreStorageApp($sourceStorage, $rollbackPath, $shouldCleanupWorkPath);
         } catch (Throwable $exception) {
-            Log::error('BackupArchiveStorage@restoreArchive — falha crítica: ' . $exception->getMessage());
+            Log::error('BackupArchiveStorage@restoreArchive — falha crítica: '.$exception->getMessage());
 
             throw $exception instanceof Exception
                 ? $exception
@@ -176,7 +177,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
     }
 
     /**
-     * @param array<string, int> $existingFiles
+     * @param  array<string, int>  $existingFiles
      */
     private function findFreshBackupZip(array $existingFiles, int $startedAt): ?string
     {
@@ -197,7 +198,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
      */
     private function assertBackupArchiveIsValid(string $zipPath): void
     {
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
 
         if ($zip->open($zipPath) !== true) {
             throw new Exception('O arquivo de backup não é um ZIP válido ou está corrompido.');
@@ -238,7 +239,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
 
         $relativeCandidates = array_values(array_unique(array_filter([
             ltrim($relativePath, '/'),
-            $this->backupFolderName() . '/' . $fileName,
+            $this->backupFolderName().'/'.$fileName,
         ])));
 
         foreach ($relativeCandidates as $candidate) {
@@ -248,8 +249,8 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
         }
 
         $absoluteCandidates = [
-            storage_path('app/private/' . $this->backupFolderName() . '/' . $fileName),
-            storage_path('app/' . $this->backupFolderName() . '/' . $fileName),
+            storage_path('app/private/'.$this->backupFolderName().'/'.$fileName),
+            storage_path('app/'.$this->backupFolderName().'/'.$fileName),
         ];
 
         foreach ($absoluteCandidates as $candidate) {
@@ -268,7 +269,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
      */
     private function extractBackupArchive(string $zipPath, string $extractPath): void
     {
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
 
         if ($zip->open($zipPath) !== true) {
             throw new Exception("Falha ao abrir o ZIP: {$zipPath}");
@@ -310,7 +311,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
     }
 
     /**
-     * @param array<string, mixed> $dbConfig
+     * @param  array<string, mixed>  $dbConfig
      *
      * @throws Exception
      */
@@ -324,7 +325,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
 
             if ($this->isWindows()) {
                 $optFile = $this->writeMysqlOptionsFile($dbConfig);
-                $arguments[] = '--defaults-extra-file=' . $optFile;
+                $arguments[] = '--defaults-extra-file='.$optFile;
             }
 
             $arguments = array_merge($arguments, $this->buildMysqlConnectionArguments($dbConfig));
@@ -345,7 +346,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
             if (! $process->isSuccessful()) {
                 $errorOutput = trim($process->getErrorOutput() ?: $process->getOutput());
 
-                throw new Exception('Erro ao importar SQL: ' . ($errorOutput !== '' ? $errorOutput : 'processo retornou falha sem mensagem.'));
+                throw new Exception('Erro ao importar SQL: '.($errorOutput !== '' ? $errorOutput : 'processo retornou falha sem mensagem.'));
             }
         } finally {
             if ($optFile !== null && file_exists($optFile)) {
@@ -355,8 +356,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
     }
 
     /**
-     * @param array<string, mixed> $dbConfig
-     *
+     * @param  array<string, mixed>  $dbConfig
      * @return list<string>
      */
     private function buildMysqlConnectionArguments(array $dbConfig): array
@@ -364,26 +364,25 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
         $arguments = [];
 
         if (! empty($dbConfig['unix_socket'])) {
-            $arguments[] = '--socket=' . $dbConfig['unix_socket'];
+            $arguments[] = '--socket='.$dbConfig['unix_socket'];
         } else {
-            $arguments[] = '--host=' . ($dbConfig['host'] ?? '127.0.0.1');
-            $arguments[] = '--port=' . ($dbConfig['port'] ?? '3306');
+            $arguments[] = '--host='.($dbConfig['host'] ?? '127.0.0.1');
+            $arguments[] = '--port='.($dbConfig['port'] ?? '3306');
         }
 
         if (! $this->isWindows()) {
-            $arguments[] = '--user=' . ($dbConfig['username'] ?? '');
+            $arguments[] = '--user='.($dbConfig['username'] ?? '');
         }
 
         if (! empty($dbConfig['charset'])) {
-            $arguments[] = '--default-character-set=' . $dbConfig['charset'];
+            $arguments[] = '--default-character-set='.$dbConfig['charset'];
         }
 
         return $arguments;
     }
 
     /**
-     * @param array<string, mixed> $dbConfig
-     *
+     * @param  array<string, mixed>  $dbConfig
      * @return list<string>
      */
     private function buildMysqlRestoreExtraArguments(array $dbConfig): array
@@ -410,9 +409,9 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
     private function restoreStorageApp(?string $sourceStorage, string $rollbackPath, bool &$shouldCleanupWorkPath): void
     {
         $destination = storage_path('app');
-        $stagingPath = dirname($rollbackPath) . DIRECTORY_SEPARATOR . 'staging-app';
+        $stagingPath = dirname($rollbackPath).DIRECTORY_SEPARATOR.'staging-app';
         $backupFolderName = $this->backupFolderName();
-        $preservedBackups = $destination . DIRECTORY_SEPARATOR . 'private' . DIRECTORY_SEPARATOR . $backupFolderName;
+        $preservedBackups = $destination.DIRECTORY_SEPARATOR.'private'.DIRECTORY_SEPARATOR.$backupFolderName;
 
         File::ensureDirectoryExists($stagingPath);
 
@@ -421,10 +420,10 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
         }
 
         if (is_dir($preservedBackups)) {
-            File::ensureDirectoryExists($stagingPath . DIRECTORY_SEPARATOR . 'private');
+            File::ensureDirectoryExists($stagingPath.DIRECTORY_SEPARATOR.'private');
             File::copyDirectory(
                 $preservedBackups,
-                $stagingPath . DIRECTORY_SEPARATOR . 'private' . DIRECTORY_SEPARATOR . $backupFolderName,
+                $stagingPath.DIRECTORY_SEPARATOR.'private'.DIRECTORY_SEPARATOR.$backupFolderName,
             );
         }
 
@@ -483,7 +482,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
         $binaryName = $this->isWindows() ? 'mysql.exe' : 'mysql';
 
         if ($dir) {
-            $full = rtrim($dir, '/\\') . DIRECTORY_SEPARATOR . $binaryName;
+            $full = rtrim($dir, '/\\').DIRECTORY_SEPARATOR.$binaryName;
 
             if (file_exists($full)) {
                 return $full;
@@ -494,11 +493,11 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
     }
 
     /**
-     * @param array<string, mixed> $dbConfig
+     * @param  array<string, mixed>  $dbConfig
      */
     private function writeMysqlOptionsFile(array $dbConfig): string
     {
-        $path = storage_path('app' . DIRECTORY_SEPARATOR . 'mysql-opts-' . time() . '.cnf');
+        $path = storage_path('app'.DIRECTORY_SEPARATOR.'mysql-opts-'.time().'.cnf');
         $content = "[client]\n";
         $content .= "user=\"{$dbConfig['username']}\"\n";
         $content .= "password=\"{$dbConfig['password']}\"\n";
@@ -557,12 +556,12 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
         }
 
         if ($this->isWindows()) {
-            exec('rd /s /q ' . escapeshellarg($path));
+            exec('rd /s /q '.escapeshellarg($path));
 
             return;
         }
 
-        exec('rm -rf ' . escapeshellarg($path));
+        exec('rm -rf '.escapeshellarg($path));
     }
 
     private function isWindows(): bool
@@ -587,6 +586,6 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
         $power = min((int) floor(log($bytes, 1024)), count($units) - 1);
         $rounded = round($bytes / (1024 ** $power), $precision);
 
-        return $rounded . ' ' . $units[$power];
+        return $rounded.' '.$units[$power];
     }
 }

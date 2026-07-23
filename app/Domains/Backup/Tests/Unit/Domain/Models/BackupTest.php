@@ -132,7 +132,7 @@ final class BackupTest extends TestCase
 
     public function test_it_has_user_relationship(): void
     {
-        $backup = new Backup();
+        $backup = new Backup;
 
         self::assertInstanceOf(BelongsTo::class, $backup->user());
     }

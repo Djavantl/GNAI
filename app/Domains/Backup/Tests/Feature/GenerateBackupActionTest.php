@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Domains\Backup\Tests\Feature;
 
 use App\Domains\Backup\Application\Actions\GenerateBackupAction;
-use App\Domains\Backup\Application\Actions\PruneBackupsActionContract;
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
+use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
+use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Backup\Infrastructure\Storage\BackupArchiveMetadata;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
 use App\Domains\Backup\Tests\Fakes\FakePruneBackupsAction;
 use App\Models\User;
@@ -25,7 +26,7 @@ final class GenerateBackupActionTest extends TestCase
     public function test_it_generates_and_registers_a_backup(): void
     {
         $user = User::factory()->create();
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
         $storage->generatedArchive = new BackupArchiveMetadata(
             fileName: 'generated.zip',
             filePath: 'GNAIbackups/generated.zip',
@@ -50,7 +51,7 @@ final class GenerateBackupActionTest extends TestCase
 
     public function test_it_registers_automatic_backup_without_user(): void
     {
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
         $storage->generatedArchive = new BackupArchiveMetadata(
             fileName: 'automatic.zip',
             filePath: 'GNAIbackups/automatic.zip',
@@ -71,7 +72,7 @@ final class GenerateBackupActionTest extends TestCase
 
     public function test_it_does_not_register_backup_when_archive_generation_fails(): void
     {
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
         $storage->generateException = new RuntimeException('Falha simulada ao gerar arquivo.');
 
         $this->app->instance(BackupArchiveStorageContract::class, $storage);
@@ -82,13 +83,13 @@ final class GenerateBackupActionTest extends TestCase
         try {
             app(GenerateBackupAction::class)->execute();
         } finally {
-            self::assertSame(0, \App\Domains\Backup\Domain\Models\Backup::query()->count());
+            self::assertSame(0, Backup::query()->count());
         }
     }
 
     public function test_it_cleans_generated_archive_when_database_registration_fails(): void
     {
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
         $storage->generatedArchive = new BackupArchiveMetadata(
             fileName: 'orphan.zip',
             filePath: 'GNAIbackups/orphan.zip',
@@ -111,14 +112,14 @@ final class GenerateBackupActionTest extends TestCase
 
     public function test_it_returns_created_backup_when_prune_fails(): void
     {
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
         $storage->generatedArchive = new BackupArchiveMetadata(
             fileName: 'prune-fail.zip',
             filePath: 'GNAIbackups/prune-fail.zip',
             size: '5 MB',
         );
 
-        $prune = new FakePruneBackupsAction();
+        $prune = new FakePruneBackupsAction;
         $prune->shouldFail = true;
 
         $this->app->instance(BackupArchiveStorageContract::class, $storage);

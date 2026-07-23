@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Domains\Backup\Tests\Feature;
 
 use App\Domains\Backup\Application\Actions\SyncBackupsAction;
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Backup\Infrastructure\Storage\BackupArchiveMetadata;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -28,7 +28,7 @@ final class SyncBackupsActionTest extends TestCase
         ));
         $orphan->save();
 
-        $storage = new FakeBackupArchiveStorage();
+        $storage = new FakeBackupArchiveStorage;
         $storage->storedArchives = [
             new BackupArchiveMetadata(
                 fileName: 'disk.zip',

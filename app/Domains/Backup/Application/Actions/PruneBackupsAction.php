@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Application\Actions;
 
+use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
+use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
 use App\Domains\Backup\Domain\Models\Backup;
-use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorageContract;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 use Throwable;
 
 final readonly class PruneBackupsAction implements PruneBackupsActionContract

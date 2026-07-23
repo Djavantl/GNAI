@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Tests\Fakes;
 
-use App\Domains\Backup\Application\Actions\PruneBackupsActionContract;
+use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
 use RuntimeException;
 
 final class FakePruneBackupsAction implements PruneBackupsActionContract
