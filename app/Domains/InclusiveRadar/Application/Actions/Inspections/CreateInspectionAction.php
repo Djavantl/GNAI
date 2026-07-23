@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Model;
 
 final readonly class CreateInspectionAction
 {
+    /**
+     * @throws InvalidInspection
+     */
     public function execute(
         Model $inspectable,
         CreateInspectionData $data,

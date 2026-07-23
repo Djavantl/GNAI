@@ -32,11 +32,17 @@ final class LoanStockHandler
         ]);
     }
 
+    /**
+     * @throws StockAlreadyFull
+     */
     public function returnAvailable(AccessibleEducationalMaterial|AssistiveTechnology $item): void
     {
         $this->returnWithStatus($item, ResourceStatus::AVAILABLE);
     }
 
+    /**
+     * @throws StockAlreadyFull
+     */
     public function returnFromLoanStatus(
         AccessibleEducationalMaterial|AssistiveTechnology $item,
         LoanStatus $status,

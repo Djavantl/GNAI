@@ -11,6 +11,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final readonly class DeleteLoanAction
 {
@@ -20,6 +21,9 @@ final readonly class DeleteLoanAction
         private LoanWaitlistHandler $waitlists,
     ) {}
 
+    /**
+     * @throws Throwable
+     */
     public function execute(Loan $loan, User $deletedBy): void
     {
         DB::transaction(function () use ($loan, $deletedBy): void {

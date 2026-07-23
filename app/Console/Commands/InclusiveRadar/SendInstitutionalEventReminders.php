@@ -3,9 +3,9 @@
 namespace App\Console\Commands\InclusiveRadar;
 
 use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
+use App\Domains\InclusiveRadar\Infrastructure\Notifications\InstitutionalEventStartingNotification;
+use App\Domains\InclusiveRadar\Infrastructure\Notifications\InstitutionalEventUpcomingNotification;
 use App\Models\User;
-use App\Notifications\InclusiveRadar\InstitutionalEventUpcomingNotification;
-use App\Notifications\InclusiveRadar\InstitutionalEventStartingNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
