@@ -2,7 +2,7 @@
 
 namespace App\Notifications\InclusiveRadar;
 
-use App\Models\InclusiveRadar\Waitlist;
+use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 

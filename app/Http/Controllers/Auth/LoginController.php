@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\Priority;
-use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\Barrier;
-use App\Models\InclusiveRadar\Loan;
 use App\Models\SpecializedEducationalSupport\Pendency;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Session;
@@ -94,8 +94,8 @@ class LoginController extends Controller
         })->values();
 
         // --- Radar Inclusivo ---
-        $totalAt = AssistiveTechnology::active('1')->count();
-        $totalAem = AccessibleEducationalMaterial::active('1')->count();
+        $totalAt = AssistiveTechnology::query()->where('is_active', true)->count();
+        $totalAem = AccessibleEducationalMaterial::query()->where('is_active', true)->count();
         $totalLoans = Loan::count();
         $totalWaitingAndNotified = Waitlist::whereIn('status', [
             WaitlistStatus::WAITING->value,
@@ -107,7 +107,10 @@ class LoginController extends Controller
             return [
                 'label' => $status->label(),
                 'color' => $status->color(),
-                'count' => Barrier::status($status->value)->count(),
+                'count' => Barrier::query()
+                    ->get()
+                    ->filter(fn (Barrier $barrier) => $barrier->latestStatus() === $status)
+                    ->count(),
             ];
         })->filter(fn ($item) => $item['count'] > 0)->values();
 

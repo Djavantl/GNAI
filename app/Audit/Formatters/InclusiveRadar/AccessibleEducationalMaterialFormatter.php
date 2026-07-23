@@ -3,8 +3,8 @@
 namespace App\Audit\Formatters\InclusiveRadar;
 
 use App\Audit\Formatters\AuditFormatter;
-use App\Enums\InclusiveRadar\ConservationState;
-use App\Enums\InclusiveRadar\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 

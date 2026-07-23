@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\BarrierStatus;
-use App\Enums\InclusiveRadar\InspectionType;
-use App\Models\InclusiveRadar\Barrier;
-use App\Models\InclusiveRadar\BarrierCategory;
+use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
+use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Models\InclusiveRadar\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Location;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\User;
@@ -86,6 +86,44 @@ class BarrierTest extends TestCase
         $response->assertViewHas('barriers');
     }
 
+    public function test_barriers_index_filters_by_latest_inspection_status()
+    {
+        // Arrange
+        $resolvedBarrier = Barrier::factory()->create();
+        Inspection::factory()->forBarrier($resolvedBarrier)->create([
+            'status' => BarrierStatus::IDENTIFIED->value,
+            'inspection_date' => now()->subDay()->toDateString(),
+            'created_at' => now()->subDay(),
+        ]);
+        Inspection::factory()->forBarrier($resolvedBarrier)->create([
+            'status' => BarrierStatus::RESOLVED->value,
+            'inspection_date' => now()->toDateString(),
+            'created_at' => now(),
+        ]);
+
+        $identifiedBarrier = Barrier::factory()->create();
+        Inspection::factory()->forBarrier($identifiedBarrier)->create([
+            'status' => BarrierStatus::IDENTIFIED->value,
+            'inspection_date' => now()->toDateString(),
+            'created_at' => now(),
+        ]);
+
+        // Act
+        $response = $this->actingAs($this->admin)
+            ->get(route('inclusive-radar.barriers.index', [
+                'status' => BarrierStatus::IDENTIFIED->value,
+            ]));
+
+        // Assert
+        $response->assertOk();
+        $response->assertViewHas('barriers', function ($barriers) use ($identifiedBarrier, $resolvedBarrier) {
+            $barrierIds = $barriers->pluck('id');
+
+            return $barrierIds->contains($identifiedBarrier->id)
+                && ! $barrierIds->contains($resolvedBarrier->id);
+        });
+    }
+
     public function test_admin_can_access_barrier_create_page()
     {
         // Arrange
@@ -139,8 +177,10 @@ class BarrierTest extends TestCase
             'is_anonymous' => true,
             'deficiencies' => [$this->deficiency->id],
             'status' => BarrierStatus::IDENTIFIED->value,
-            'inspection_type' => InspectionType::INITIAL->value,
-            'inspection_date' => now()->toDateString(),
+            'inspection' => [
+                'type' => InspectionType::INITIAL->value,
+                'date' => now()->toDateString(),
+            ],
         ];
 
         // Act
@@ -166,8 +206,10 @@ class BarrierTest extends TestCase
             'identified_at' => now()->toDateString(),
             'deficiencies' => [$this->deficiency->id],
             'status' => BarrierStatus::IDENTIFIED->value,
-            'inspection_type' => InspectionType::INITIAL->value,
-            'inspection_date' => now()->toDateString(),
+            'inspection' => [
+                'type' => InspectionType::INITIAL->value,
+                'date' => now()->toDateString(),
+            ],
         ];
 
         // Act
@@ -199,9 +241,11 @@ class BarrierTest extends TestCase
             'is_anonymous' => true,
             'deficiencies' => [$this->deficiency->id],
             'status' => BarrierStatus::RESOLVED->value,
-            'inspection_type' => InspectionType::PERIODIC->value,
-            'inspection_date' => now()->toDateString(),
-            'inspection_description' => 'Correção executada',
+            'inspection' => [
+                'type' => InspectionType::PERIODIC->value,
+                'date' => now()->toDateString(),
+                'description' => 'Correção executada',
+            ],
         ];
 
         // Act

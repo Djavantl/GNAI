@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
 use App\Domains\InclusiveRadar\Domain\DTOs\Inspections\CreateInspectionDTO;
+use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use Database\Factories\Domains\InclusiveRadar\InspectionFactory;
@@ -33,6 +34,7 @@ final class Inspection extends Model
     protected $casts = [
         'inspection_date' => 'date',
         'state' => ConservationState::class,
+        'status' => BarrierStatus::class,
         'type' => InspectionType::class,
     ];
 

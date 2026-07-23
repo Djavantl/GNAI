@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Application\Queries\BarrierCategories;
 
-use App\Enums\InclusiveRadar\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
-use App\Models\InclusiveRadar\Barrier;
 
 final class BarrierCategoryHasBlockingBarriersQuery
 {
