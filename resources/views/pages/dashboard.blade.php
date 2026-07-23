@@ -271,7 +271,7 @@
                             <label class="form-check-label small fw-bold" for="switch_all" style="cursor: pointer;">Todas</label>
                         </div>
 
-                        @foreach(App\Enums\InclusiveRadar\BarrierStatus::cases() as $status)
+                        @foreach(App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus::cases() as $status)
                             <div class="form-check form-switch">
                                 <input class="form-check-input filter-switch status-specific" type="checkbox"
                                        id="switch_{{ $status->value }}"

@@ -129,11 +129,6 @@
                     @endcan
                 </div>
                 <div class="d-flex flex-wrap gap-2 justify-content-end">
-                    @can('material.logs')
-                        <x-buttons.link-button :href="route('inclusive-radar.accessible-educational-materials.logs', $material)" variant="secondary-outline">
-                            <i class="fas fa-history"></i> Logs
-                        </x-buttons.link-button>
-                    @endcan
                     @can('material.destroy')
                         <x-buttons.submit-button
                             type="button"

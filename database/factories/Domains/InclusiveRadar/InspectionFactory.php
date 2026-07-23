@@ -2,13 +2,13 @@
 
 namespace Database\Factories\Domains\InclusiveRadar;
 
+use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Enums\InclusiveRadar\BarrierStatus;
-use App\Models\InclusiveRadar\Barrier;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -6,8 +6,8 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\Institutions;
 
 use App\Domains\InclusiveRadar\Application\Actions\Institutions\DeleteInstitutionAction;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitution;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Models\InclusiveRadar\Barrier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -2,9 +2,9 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Models\InclusiveRadar\Barrier;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;

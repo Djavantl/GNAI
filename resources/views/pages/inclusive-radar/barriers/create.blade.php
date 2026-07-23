@@ -208,6 +208,8 @@
 
                         <div class="px-4">
                             <div class="row g-3">
+                                <input type="hidden" name="inspection[type]" value="{{ old('inspection.type', 'initial') }}">
+
                                 <div class="col-md-6">
                                     <x-forms.select
                                         name="status"
@@ -221,30 +223,30 @@
 
                                 <div class="col-md-6">
                                     <x-forms.input
-                                        name="inspection_date"
+                                        name="inspection[date]"
                                         label="Data da Vistoria"
                                         type="date"
                                         required
-                                        :value="old('inspection_date', date('Y-m-d'))"
+                                        :value="old('inspection.date', date('Y-m-d'))"
                                     />
                                 </div>
 
                                 <div class="col-md-6">
                                     <x-forms.image-uploader
-                                        name="images[]"
+                                        name="inspection[images][]"
                                         label="Fotos de Evidência"
-                                        :existingImages="old('images', [])"
+                                        :existingImages="old('inspection.images', [])"
                                     />
                                 </div>
 
                                 <div class="col-md-12">
                                     <x-forms.textarea
-                                        name="inspection_description"
+                                        name="inspection[description]"
                                         id="inspection_description"
                                         label="Parecer Técnico / Notas da Vistoria"
                                         rows="3"
                                         placeholder="Descreva detalhes técnicos sobre a obstrução ou estado do local..."
-                                        :value="old('inspection_description')"
+                                        :value="old('inspection.description')"
                                     />
                                 </div>
                             </div>

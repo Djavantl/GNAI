@@ -17,7 +17,7 @@ final readonly class CreateInspectionAction
         CreateInspectionData $data,
         int $registeredBy,
         ?string $state = null,
-        ?string $status = null,
+        ?string $barrierStatus = null,
         ?string $defaultDescription = null,
     ): Inspection {
         if (! $inspectable->exists) {
@@ -32,7 +32,7 @@ final readonly class CreateInspectionAction
             registeredBy: $registeredBy,
             description: $data->description ?? $defaultDescription,
             state: $state,
-            status: $status,
+            status: $barrierStatus,
         );
 
         $inspection = Inspection::register($inspectionDTO);

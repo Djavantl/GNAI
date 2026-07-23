@@ -7,8 +7,6 @@ namespace App\Domains\InclusiveRadar\Domain\Models;
 use App\Domains\InclusiveRadar\Domain\DTOs\Institutions\CreateInstitutionDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Institutions\UpdateInstitutionDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitution;
-use App\Models\InclusiveRadar\Barrier;
-use App\Models\InclusiveRadar\Inspection;
 use Database\Factories\Domains\InclusiveRadar\InstitutionFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
