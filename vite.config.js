@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
     plugins: [
         laravel({
             input: [
@@ -24,10 +24,11 @@ export default defineConfig({
                 'resources/js/pages/inclusive-radar/file-uploader.js',
                 'resources/js/pages/inclusive-radar/waitlists.js',
             ],
-            refresh: true,
+            refresh: command === 'serve',
         }),
     ],
-    server: {
+    ...(command === 'serve' ? {
+        server: {
         host: '0.0.0.0',
         port: 5173,
         strictPort: true,
@@ -45,5 +46,6 @@ export default defineConfig({
                 '**/.git/**',
             ]
         }
-    }
-});
+        }
+    } : {})
+}));
