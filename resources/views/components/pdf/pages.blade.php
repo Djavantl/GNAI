@@ -1,20 +1,15 @@
 <script type="text/php">
     if (isset($pdf)) {
-        $font = $fontMetrics->get_font("helvetica", "normal");
-        $size = 8;
-        $color = array(0, 0, 0);
-        $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
-        $textWidth = $fontMetrics->getTextWidth($text, $font, $size);
-        $rightMargin = 50;
-        $x = 508;
-        $y = $pdf->get_height() - 35;
-        $pdf->page_text(
-            $x,
-            $y,
-            $text,
-            $font,
-            $size,
-            $color
-        );
+        $pdf->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) {
+            $font = $fontMetrics->get_font("helvetica", "normal");
+            $size = 8;
+            $color = array(50 / 255, 43 / 255, 117 / 255);
+            $text = "Página {$pageNumber} de {$pageCount}";
+            $textWidth = $fontMetrics->getTextWidth($text, $font, $size);
+            $x = $canvas->get_width() - $textWidth - 50;
+            $y = $canvas->get_height() - 35;
+
+            $canvas->text($x, $y, $text, $font, $size, $color);
+        });
     }
 </script>

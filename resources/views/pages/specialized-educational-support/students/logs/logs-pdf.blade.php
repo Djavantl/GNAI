@@ -6,46 +6,25 @@
 <head>
     <meta charset="utf-8">
     <title>Histórico Detalhado - {{ $student->person->name }}</title>
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-        body { font-family: sans-serif; line-height: 1.4; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 9px; }
-        th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
-        th { background-color: #f0f0f0; font-weight: bold; text-transform: uppercase; }
-        
-        .arrow { font-family: DejaVu Sans, sans-serif; color: #777; font-weight: bold; }
-        .old-val { color: #b02a37; text-decoration: line-through; background-color: #fff2f2; padding: 1px 2px; }
-        .new-val { color: #198754; font-weight: bold; background-color: #f2fff2; padding: 1px 2px; }
-        
-        .action-label { font-weight: bold; display: block; margin-bottom: 2px; font-size: 10px; }
-        .action-created { color: #0d6efd; }
-        .action-updated { color: #6610f2; }
-        .action-deleted { color: #dc3545; }
-        
-        .module-badge { 
-            display: inline-block; padding: 2px 5px; background: #333; color: #fff; 
-            border-radius: 3px; font-size: 8px; margin-bottom: 5px; 
-        }
-        
-        .detail-list { margin: 0; padding-left: 10px; list-style: none; }
-        .detail-item { margin-bottom: 6px; border-bottom: 0.5pt solid #eee; padding-bottom: 2px; }
-        .field-name { font-weight: bold; color: #444; }
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
 
-<div style="text-align:center; border-bottom: 2px solid #000; padding-bottom: 10px;">
-    <h2 style="margin: 0;">RELATÓRIO DETALHADO DE AUDITORIA</h2>
-    <p style="margin: 5px 0;"><strong>ALUNO:</strong> {{ $student->person->name }} | <strong>MATRÍCULA:</strong> {{ $student->registration }}</p>
-    <p style="margin: 0; font-size: 9px;">Extraído em: {{ now()->format('d/m/Y H:i:s') }}</p>
-</div>
+<x-pdf.header
+    title="Relatório Detalhado de Auditoria"
+    :meta="[
+        'Aluno' => $student->person->name,
+        'Matrícula' => $student->registration,
+        'Extraído em' => now()->format('d/m/Y H:i:s'),
+    ]"
+/>
 
-<table>
+<table class="audit-table">
     <thead>
         <tr>
-            <th style="width: 18%">Data / Responsável</th>
-            <th style="width: 17%">Operação</th>
-            <th style="width: 65%">Detalhamento das Alterações (De → Para)</th>
+            <th class="pdf-w-18">Data / Responsável</th>
+            <th class="pdf-w-17">Operação</th>
+            <th class="pdf-w-65">Detalhamento das Alterações (De → Para)</th>
         </tr>
     </thead>
     <tbody>

@@ -4,49 +4,31 @@
     <meta charset="utf-8">
     <title>Registro de Atendimento AEE - ID #{{ $sessionRecord->id }}</title>
 
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-        .absence-badge {
-            color: #d9534f;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .student-header {
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-left: 4px solid #333;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .page-break {
-            page-break-after: always;
-        }
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
+    <x-pdf.pages />
 
-    <div class="header">
-        <h2>Registro de Atendimento Educacional Especializado</h2>
+    <x-pdf.header
+        title="Registro de Atendimento Educacional Especializado"
+    />
 
-        <p>
-            <strong>Profissional:</strong> {{ $professional->person->name ?? 'Não informado' }}
-            |
-            <strong>Agendamento:</strong> #{{ $session->id }}
-        </p>
+    <div class="category-header">Informações do Atendimento</div>
 
-        <p>
-            <strong>Data do Atendimento:</strong> {{ $session->session_date->format('d/m/Y') }}
-            |
-            <strong>Duração:</strong> {{ $sessionRecord->duration }}
-        </p>
+    <div class="section-title">Identificação</div>
+    <x-pdf.table>
+        <x-pdf.row>
+            <x-pdf.info-item label="Profissional" :value="$professional->person->name ?? 'Não informado'" colspan="2" />
+            <x-pdf.info-item label="Agendamento" :value="'#' . $session->id" colspan="2" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Data do Atendimento" :value="$session->session_date->format('d/m/Y')" />
+            <x-pdf.info-item label="Duração" :value="$sessionRecord->duration" />
+            <x-pdf.info-item label="Gerado em" :value="date('d/m/Y H:i')" colspan="2" />
+        </x-pdf.row>
+    </x-pdf.table>
 
-        <p>
-            <strong>Gerado em:</strong> {{ date('d/m/Y H:i') }}
-        </p>
-    </div>
-
-    {{-- ============================ --}}
-    <x-pdf.section-title title="1. Planejamento e Execução Geral" />
+    <x-pdf.section-title title="Planejamento e Execução Geral" />
 
     <x-pdf.text-area
         label="Atividades Realizadas"
@@ -74,12 +56,12 @@
     @foreach($sessionRecord->studentEvaluations as $evaluation)
         
         {{-- Força quebra de página se houver muitos alunos para não cortar campos --}}
-        @if(!$loop->first) <div class="page-break"></div> @endif
+        @if(!$loop->first) <div class="pdf-page-break"></div> @endif
 
-        <div class="student-header">
-            <strong>ALUNO(A): {{ $evaluation->student->person->name }}</strong> 
+        <div class="pdf-subject-header">
+            <strong>Aluno(a): {!! \App\Support\RichTextSanitizer::sanitize((string) ($evaluation->student->person->name ?? '---')) !!}</strong>
             @if(!$evaluation->is_present)
-                <span class="absence-badge"> - AUSENTE</span>
+                <span class="pdf-status-danger"> — Ausente</span>
             @endif
         </div>
 
@@ -129,14 +111,11 @@
     @endforeach
 
     {{-- ============================ --}}
-    <div class="signature-wrapper" style="margin-top: 50px;">
+    <div class="signature-wrapper">
         <x-pdf.table-signatures>
             <x-pdf.table-signature-label label="Profissional Responsável" />
             <x-pdf.table-signature-label label="Coordenação / Direção" />
         </x-pdf.table-signatures>
     </div>
-
-    <x-pdf.pages />
-
 </body>
 </html>

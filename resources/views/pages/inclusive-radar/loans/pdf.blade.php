@@ -4,22 +4,21 @@
     <meta charset="utf-8">
     <title>Relatório - Empréstimo {{ $loan->id }}</title>
 
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
 
-<div class="header">
-    <h2>Ficha de Empréstimo de Recurso</h2>
-
-    <p><strong>ID:</strong> {{ $loan->id }}</p>
-    <p><strong>Gerado em:</strong> {{ now()->format('d/m/Y H:i') }}</p>
-    <p><strong>Status:</strong> {{ $statusLabel }}</p>
-</div>
+<x-pdf.header
+    title="Ficha de Empréstimo de Recurso"
+    :status="$statusLabel"
+    :meta="[
+        'ID' => '#' . $loan->id,
+        'Gerado em' => now()->format('d/m/Y H:i'),
+    ]"
+/>
 
 {{-- 1. Identificação --}}
-<x-pdf.section-title title="1. Identificação do Empréstimo" />
+<x-pdf.section-title title="Identificação do Empréstimo" />
 
 <x-pdf.table>
     <x-pdf.row>
@@ -48,7 +47,7 @@
 </x-pdf.table>
 
 {{-- 2. Recurso --}}
-<x-pdf.section-title title="2. Recurso Emprestado" />
+<x-pdf.section-title title="Recurso Emprestado" />
 
 <x-pdf.table>
     <x-pdf.row>
@@ -81,7 +80,7 @@
 </x-pdf.table>
 
 {{-- 3. Envolvidos --}}
-<x-pdf.section-title title="3. Envolvidos" />
+<x-pdf.section-title title="Envolvidos" />
 
 <x-pdf.table>
     {{-- Exibe apenas se for Estudante --}}
@@ -128,7 +127,7 @@
 </x-pdf.table>
 
 {{-- 4. Observações --}}
-<x-pdf.section-title title="4. Observações" />
+<x-pdf.section-title title="Observações" />
 
 <x-pdf.text-area
     label="Histórico"

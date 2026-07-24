@@ -3,9 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Relatório - {{ $student->person->name }}</title>
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
 @php
@@ -59,17 +57,15 @@
         : '<span class="text-muted">---</span>';
 @endphp
 
-    <div class="header">
-        <h2>Ficha de Contexto Educacional</h2>
-        <p>
-            <strong>Aluno(a):</strong> {{ $student->person->name }}
-            | <strong>Matrícula:</strong> {{ $student->registration ?? 'N/A' }}
-        </p>
-        <p>
-            <strong>Gerado em:</strong> {{ date('d/m/Y H:i') }}
-            | <strong>Status:</strong> {{ $context->is_current ? 'REGISTRO ATUAL' : 'HISTÓRICO' }}
-        </p>
-    </div>
+    <x-pdf.header
+        title="Ficha de Contexto Educacional"
+        :status="$context->is_current ? 'Registro Atual' : 'Histórico'"
+        :meta="[
+            'Aluno(a)' => $student->person->name,
+            'Matrícula' => $student->registration ?? 'N/A',
+            'Gerado em' => date('d/m/Y H:i'),
+        ]"
+    />
 
     {{-- ================= IDENTIFICAÇÃO TÉCNICA ================= --}}
     <div class="section-title">Identificação Técnica</div>

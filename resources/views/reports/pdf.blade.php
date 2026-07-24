@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px; }
-        th { background-color: #f2f2f2; }
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
-    <h2>Relatório Dinâmico</h2>
-    <table>
+    <x-pdf.header
+        title="Relatório Dinâmico"
+        :meta="[
+            'Gerado em' => now()->format('d/m/Y H:i'),
+            'Registros' => count($data),
+        ]"
+    />
+
+    <table class="report-table">
         <thead>
             <tr>
                 @foreach($headers as $header)
-                    <th>{{ $header }}</th>
+                    <th>{!! \App\Support\RichTextSanitizer::sanitize((string) $header) !!}</th>
                 @endforeach
             </tr>
         </thead>
@@ -21,7 +24,7 @@
             @foreach($data as $row)
                 <tr>
                     @foreach((array)$row as $value)
-                        <td>{{ $value }}</td>
+                        <td>{!! \App\Support\RichTextSanitizer::sanitize((string) $value) !!}</td>
                     @endforeach
                 </tr>
             @endforeach

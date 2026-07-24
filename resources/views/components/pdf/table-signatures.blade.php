@@ -1,5 +1,5 @@
-<table style="border: none; width: 100%;">
-    <tr style="border: none;">
+<table class="signature-table-wrapper">
+    <tr class="signature-table-row">
         {{ $slot }}
     </tr>
 </table>
