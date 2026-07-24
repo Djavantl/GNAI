@@ -1,2 +1,6 @@
 @props(['title'])
-<div class="section-title">{{ $title }}</div>
+@php
+    $normalizedTitle = preg_replace('/^\s*\d+\.\s*/', '', (string) $title);
+@endphp
+
+<div class="section-title">{{ $normalizedTitle }}</div>

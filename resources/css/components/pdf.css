@@ -6,7 +6,7 @@
 body {
     font-family: 'Helvetica', sans-serif;
     font-size: 10px;
-    color: #000;
+    color: #212529;
     line-height: 1.4;
     margin: 0;
     padding: 0;
@@ -14,57 +14,146 @@ body {
 
 /* Cabeçalho do Relatório */
 .header {
+    border: none;
+    border-bottom: 2pt solid #322b75;
+    border-radius: 0;
+    margin-bottom: 18px;
+    padding: 0 0 10px 0;
+    background: transparent;
+    color: #212529;
+    page-break-inside: avoid;
     text-align: center;
-    border-bottom: 2pt solid #000;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
+    position: relative;
+    min-height: 42px;
+}
+
+.pdf-header-corner-logo {
+    position: absolute;
+    top: -50px;
+    left: 0;
+    width: 40px;
+    height: auto;
+}
+
+.pdf-header-eyebrow {
+    position: absolute;
+    top: -45px;
+    left: 58px;
+    width: 170px;
+    margin: 0;
+    color: #4D44B5;
+    font-size: 8px;
+    font-weight: bold;
+    letter-spacing: .8px;
+    line-height: 1.25;
+    text-transform: uppercase;
+    text-align: left;
 }
 
 .header h2 {
+    margin: 8px 0 0 0;
+    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: bold;
+    color: #322b75;
+    line-height: 1.2;
+}
+
+.header h1 {
     margin: 0;
     text-transform: uppercase;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
+    color: #322b75;
+    line-height: 1.2;
 }
 
 .header p {
-    margin: 3px 0;
-    font-size: 11px;
+    margin: 3px 0 0 0;
+    font-size: 9.5px;
+    color: #667085;
+}
+
+.pdf-header-meta {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1pt solid #d9d6ef;
+    text-align: center;
+}
+
+.pdf-meta-item {
+    display: inline-block;
+    margin-right: 12px;
+    margin-bottom: 2px;
+    color: #212529;
+    font-size: 9px;
+}
+
+.pdf-meta-label {
+    color: #322b75;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.pdf-status-meta {
+    margin-right: 0;
 }
 
 /* Títulos de Seção (Ex: 1. Identificação Técnica) */
-.section-title {
-    background: #eee;
-    padding: 6px 10px;
+.category-header {
+    background-color: #2d3748;
+    color: #ffffff;
+    padding: 8px 12px;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    border-radius: 3px;
+    font-size: 13pt;
     font-weight: bold;
     text-transform: uppercase;
-    border: 1pt solid #000;
-    border-left: 5pt solid #000;
-    margin-top: 15px;
-    margin-bottom: 8px;
+    text-align: center;
+}
+
+.section-title {
+    background: #322b75;
+    color: #ffffff;
+    padding: 7px 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1pt solid #322b75;
+    margin-top: 3px;
+    margin-bottom: 0;
     font-size: 11px;
+    letter-spacing: .2px;
+    page-break-after: avoid;
 }
 
 /* Estrutura de Tabelas */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 10px;
+    margin-bottom: 0;
     table-layout: fixed;
+    page-break-inside: avoid;
 }
 
 td {
-    border: 1pt solid #000;
+    border: 1pt solid #d9d6ef;
     padding: 6px;
     vertical-align: top;
     word-wrap: break-word;
+    page-break-inside: avoid;
+}
+
+tr,
+th {
+    page-break-inside: avoid;
 }
 
 /* Rótulos (Labels) e Valores */
 .label {
     font-weight: bold;
     font-size: 8px;
-    color: #000;
+    color: #322b75;
     text-transform: uppercase;
     display: block;
     margin-bottom: 2px;
@@ -72,16 +161,17 @@ td {
 
 .value {
     font-size: 11px;
-    color: #000;
+    color: #212529;
     font-weight: normal; /* Garante que o valor não herde negrito do label */
 }
 
 /* Áreas de Texto (Observações) */
 .text-box {
-    border: 1pt solid #000;
+    border: 1pt solid #d9d6ef;
     padding: 8px;
     background: #fff;
-    margin-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
     font-size: 10px;
     text-align: justify;
     min-height: 30px;
@@ -99,9 +189,543 @@ td {
     border: none !important;
 }
 
+.signature-table-wrapper {
+    border: none;
+    width: 100%;
+}
+
+.signature-table-row {
+    border: none;
+}
+
 .line {
-    border-top: 1pt solid #000;
+    border-top: 1pt solid #322b75;
     width: 220px;
     margin: 0 auto 5px auto;
 }
 
+th,
+.pdf-cell th {
+    background: #f6f4ff;
+    color: #322b75;
+}
+
+.pdf-cell {
+    border-color: #d9d6ef !important;
+}
+
+.text-muted {
+    color: #667085;
+}
+
+.break-word,
+.old-value,
+.new-value {
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.break-word {
+    white-space: normal !important;
+}
+
+/* Utilitários de layout para PDFs */
+.pdf-mt-15 {
+    margin-top: 15px;
+}
+
+.pdf-mt-20 {
+    margin-top: 20px;
+}
+
+.pdf-mt-30 {
+    margin-top: 30px;
+}
+
+.pdf-mt-40 {
+    margin-top: 40px;
+}
+
+.pdf-mt-50 {
+    margin-top: 50px;
+}
+
+.pdf-mt-60 {
+    margin-top: 60px;
+}
+
+.pdf-mt-80 {
+    margin-top: 80px;
+}
+
+.pdf-mb-10 {
+    margin-bottom: 10px;
+}
+
+.pdf-mb-12 {
+    margin-bottom: 12px;
+}
+
+.pdf-page-break {
+    page-break-after: always;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+.clear {
+    clear: both;
+}
+
+.pdf-w-16 {
+    width: 16%;
+}
+
+.pdf-w-17 {
+    width: 17%;
+}
+
+.pdf-w-18 {
+    width: 18%;
+}
+
+.pdf-w-24 {
+    width: 24%;
+}
+
+.pdf-w-40 {
+    width: 40%;
+}
+
+.pdf-w-50 {
+    width: 50%;
+}
+
+.pdf-w-60 {
+    width: 60%;
+}
+
+.pdf-w-65 {
+    width: 65%;
+}
+
+.pdf-text-right {
+    text-align: right;
+}
+
+.pdf-text-center {
+    text-align: center;
+}
+
+.pdf-text-justify {
+    text-align: justify;
+}
+
+.pdf-line-height-2 {
+    line-height: 2;
+}
+
+.pdf-divider-strong {
+    width: 100%;
+    height: 4px;
+    background-color: #000;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.pdf-signature-line-black {
+    border-top: 1px solid #000;
+    width: 300px;
+    margin: 0 auto;
+}
+
+.pdf-signature-caption {
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.pdf-signature-cell-spaced {
+    padding-top: 40px;
+}
+
+.pdf-table-fixed {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.pdf-subject-header {
+    background: #f6f4ff;
+    color: #322b75;
+    padding: 8px 10px;
+    border: 1pt solid #d9d6ef;
+    margin-top: 8px;
+    margin-bottom: 0;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    page-break-after: avoid;
+}
+
+.pdf-status-danger {
+    color: #d9534f;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.pdf-status-success {
+    color: #155724;
+    font-weight: bold;
+}
+
+.pdf-status-warning {
+    color: #856404;
+    font-weight: bold;
+}
+
+.pdf-priority-high {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.pdf-priority-medium {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.pdf-priority-default {
+    color: #7f8c8d;
+    font-weight: bold;
+}
+
+/* Estrutura legada/PEI migrada para CSS centralizado */
+.field-label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #322b75;
+}
+
+.content-box {
+    border: 1px solid #d9d6ef;
+    padding: 8px 16px 8px 10px;
+    min-height: 40px;
+    margin-top: 5px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-align: justify;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.content-box p {
+    margin: 0 0 8px 0;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.content-box ul,
+.content-box ol {
+    margin: 0 0 8px 18px;
+    padding-left: 18px;
+    max-width: 100%;
+}
+
+.content-box li {
+    margin-bottom: 4px;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.content-box h1,
+.content-box h2,
+.content-box h3,
+.content-box h4,
+.content-box h5,
+.content-box h6 {
+    margin: 0 0 8px 0;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.content-box table {
+    width: 100% !important;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.content-box table td,
+.content-box table th {
+    border: 1px solid #d9d6ef;
+    padding: 4px 10px 4px 6px;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.content-box img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.content-box * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    table-layout: fixed;
+}
+
+.info-table td {
+    border: 1px solid #d9d6ef;
+    padding: 8px 16px 8px 10px;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.signature-table {
+    width: 100%;
+    margin-top: 40px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.signature-table td {
+    width: 50%;
+    padding: 20px 10px 0 10px;
+    text-align: center;
+    vertical-align: top;
+}
+
+.sig-line {
+    border-top: 1px solid #322b75;
+    font-size: 9px;
+    text-transform: uppercase;
+    padding-top: 5px;
+}
+
+.disc-card {
+    border: 1px solid #d9d6ef;
+    padding: 14px 18px 16px 14px;
+    margin-top: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    overflow: hidden;
+}
+
+.disc-card * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.disc-card .info-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.disc-card .info-table td {
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 8px 16px 8px 10px;
+}
+
+.disc-card .content-box {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 8px 16px 8px 10px;
+}
+
+.disc-head {
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 0;
+    font-size: 11px;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.muted {
+    font-size: 10px;
+    font-style: italic;
+}
+
+/* Relatórios genéricos e auditoria */
+.report-table,
+.audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 9px;
+}
+
+.report-table th,
+.report-table td,
+.audit-table th,
+.audit-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.report-table th,
+.audit-table th {
+    background-color: #f6f4ff;
+    color: #322b75;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.arrow {
+    font-family: DejaVu Sans, sans-serif;
+    color: #777;
+    font-weight: bold;
+}
+
+.old-val {
+    color: #b02a37;
+    text-decoration: line-through;
+    background-color: #fff2f2;
+    padding: 1px 2px;
+}
+
+.new-val {
+    color: #198754;
+    font-weight: bold;
+    background-color: #f2fff2;
+    padding: 1px 2px;
+}
+
+.action-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 2px;
+    font-size: 10px;
+}
+
+.action-created {
+    color: #0d6efd;
+}
+
+.action-updated {
+    color: #6610f2;
+}
+
+.action-deleted {
+    color: #dc3545;
+}
+
+.module-badge {
+    display: inline-block;
+    padding: 2px 5px;
+    background: #333;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 8px;
+    margin-bottom: 5px;
+}
+
+.detail-list {
+    margin: 0;
+    padding-left: 10px;
+    list-style: none;
+}
+
+.detail-item {
+    margin-bottom: 6px;
+    border-bottom: 0.5pt solid #eee;
+    padding-bottom: 2px;
+}
+
+.field-name {
+    font-weight: bold;
+    color: #444;
+}
+
+/* Evidências visuais / imagens de vistoria */
+.inspection-images,
+.evidence-container {
+    border: 1px solid #d9d6ef;
+    padding: 6px;
+    background: #fff;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.evidence-card {
+    width: 100%;
+    margin: 0 0 8px 0;
+    page-break-inside: avoid;
+    border: 1px solid #d9d6ef;
+    background: #f9f9ff;
+}
+
+.evidence-card.tall,
+.evidence-card.wide {
+    width: 100%;
+}
+
+.evidence-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 360px;
+    display: block;
+    margin: 0 auto;
+}
+
+.evidence-card.wide .evidence-image {
+    max-height: 280px;
+}
+
+.evidence-card.tall .evidence-image {
+    max-height: 520px;
+}
+
+.evidence-caption {
+    border-top: 1px solid #d9d6ef;
+    padding: 4px 6px;
+    color: #667085;
+    font-size: 8px;
+    text-align: center;
+}
+
+.image-placeholder,
+.evidence-placeholder {
+    font-size: 10px;
+    color: #999;
+    padding: 20px;
+    border: 1px solid #d9d6ef;
+    background: #f9f9ff;
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.anonymous-text {
+    font-style: italic;
+    color: #7f8c8d;
+    font-size: 10px;
+    padding-top: 15px;
+}

@@ -3,27 +3,22 @@
 <head>
     <meta charset="utf-8">
     <title>Relatório de Barreira - #{{ $barrier->id }}</title>
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-        .evidence-container { border: 1px solid #ccc; border-top: none; padding: 10px; background: #fff; }
-        .evidence-grid { width: 100%; }
-        .evidence-item { display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; text-align: center; vertical-align: top; }
-        .img-fluid { width: 100%; height: auto; max-height: 200px; display: block; }
-        .anonymous-text { font-style: italic; color: #7f8c8d; font-size: 10px; padding-top: 15px; }
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
 <x-pdf.pages />
 
-<div class="header">
-    <h2>Ficha de Identificação de Barreira</h2>
-    <p><strong>Barreira:</strong> {{ $barrier->name }}</p>
-    <p><strong>Gerado em:</strong> {{ now()->format('d/m/Y H:i') }}</p>
-    <p><strong>Status:</strong> {{ $barrier->is_active ? 'Ativa' : 'Inativa' }}</p>
-</div>
+<x-pdf.header
+    title="Ficha de Identificação de Barreira"
+    :status="$barrier->is_active ? 'Ativa' : 'Inativa'"
+    :meta="[
+        'Barreira' => $barrier->name,
+        'Gerado em' => now()->format('d/m/Y H:i'),
+    ]"
+/>
 
 {{-- Seção 1: Localização --}}
-<x-pdf.section-title title="1. Localização e Contexto" />
+<x-pdf.section-title title="Localização e Contexto" />
 <x-pdf.table>
     <x-pdf.row>
         <x-pdf.info-item label="Campus / Unidade" :value="$barrier->institution->name ?? '---'" colspan="2" />
@@ -35,16 +30,11 @@
 </x-pdf.table>
 
 {{-- Seção 2: Ocorrência e Identificação --}}
-<x-pdf.section-title title="2. Detalhes da Ocorrência" />
+<x-pdf.section-title title="Detalhes da Ocorrência" />
 <x-pdf.table>
     <x-pdf.row>
         <x-pdf.info-item label="Nome da Barreira" :value="$barrier->name" colspan="2" />
-        @php
-            $prioColor = match($barrier->priority?->value) {
-                'high' => '#e74c3c', 'medium' => '#f39c12', default => '#7f8c8d'
-            };
-        @endphp
-        <x-pdf.info-item label="Prioridade" :value="'<b style=\'color:'.$prioColor.'\'>'.($barrier->priority?->label() ?? '---').'</b>'" />
+        <x-pdf.info-item label="Prioridade" :value="$barrier->priority?->label() ?? '---'" />
         <x-pdf.info-item label="Categoria" :value="$barrier->category->name ?? '---'" />
     </x-pdf.row>
     <x-pdf.row>
@@ -85,7 +75,7 @@
 <x-pdf.text-area label="Descrição do Problema" :value="$barrier->description ?? 'Sem descrição.'" />
 
 {{-- Seção 3: Impacto --}}
-<x-pdf.section-title title="3. Público-Alvo Afetado" />
+<x-pdf.section-title title="Público-Alvo Afetado" />
 <x-pdf.table>
     <x-pdf.row>
         <x-pdf.info-item label="Deficiências Relacionadas" :value="$barrier->deficiencies->pluck('name')->join(', ') ?: 'Geral / Não especificado'" colspan="4" />
@@ -93,7 +83,7 @@
 </x-pdf.table>
 
 {{-- Seção 4: Última Vistoria --}}
-<x-pdf.section-title title="4. Última Vistoria" />
+<x-pdf.section-title title="Última Vistoria" />
 
 @php
     $lastInspection = $barrier->inspections
@@ -102,55 +92,56 @@
 @endphp
 
 @if($lastInspection)
-    {{-- Tabela apenas para os dados textuais --}}
-    <x-pdf.table>
-        <x-pdf.row>
-            <x-pdf.info-item
-                label="Data e Descrição"
-                :value="$lastInspection->inspection_date->format('d/m/Y') . ' - ' . ($lastInspection->description ?: 'Sem descrição')"
-                colspan="1"
-            />
-            <x-pdf.info-item
-                label="Estado da Barreira"
-                :value="$lastInspection->status?->label() ?? '---'"
-                colspan="1"
-            />
-        </x-pdf.row>
-    </x-pdf.table>
+    <table class="pdf-table">
+        <tr>
+            <td class="pdf-cell">
+                <strong>Data:</strong> {{ $lastInspection->inspection_date?->format('d/m/Y') ?? '---' }}
+            </td>
+            <td class="pdf-cell">
+                <strong>Estado da Barreira:</strong> {{ $lastInspection->status?->label() ?? '---' }}
+            </td>
+        </tr>
+        <tr>
+            <td class="pdf-cell" colspan="2">
+                <strong>Parecer Técnico</strong>
+                <div class="long-text">
+                    {!! \App\Support\RichTextSanitizer::sanitize((string) ($lastInspection->description ?: 'Sem descrição registrada.')) !!}
+                </div>
+            </td>
+        </tr>
+    </table>
 
     {{-- Container de Imagens FORA da tabela para permitir quebra de página --}}
-    <div style="width: 100%; border: 1px solid #ccc; border-top: none; padding: 10px; background: #fff;">
-        <span class="label" style="display: block; margin-bottom: 10px; font-weight: bold; font-size: 10px; color: #555;">
-            IMAGENS DA VISTORIA (EVIDÊNCIAS)
-        </span>
+    <x-pdf.section-title title="Evidências Visuais" />
+    <div class="evidence-container">
+        @if($lastInspection->images->count() > 0)
+            @foreach($lastInspection->images as $image)
+                @php
+                    $path = public_path('storage/' . $image->path);
+                @endphp
 
-        <div style="width: 100%;">
-            @if($lastInspection->images->count() > 0)
-                @foreach($lastInspection->images as $image)
-                    @php
-                        $path = public_path('storage/' . $image->path);
-                    @endphp
-                    {{-- O segredo está no 'page-break-inside: avoid' para não cortar uma imagem ao meio --}}
-                    <div style="display: inline-block; width: 45%; margin: 1%; border: 1px solid #eee; vertical-align: top; background: #f9f9f9; page-break-inside: avoid;">
-                        @if(file_exists($path))
-                            <img src="{{ $path }}" style="width: 100%; height: auto; display: block; margin: 0 auto;">
-                        @else
-                            <div style="padding: 20px; text-align: center; font-size: 8px; color: #999;">Imagem não encontrada</div>
-                        @endif
+                @if(file_exists($path))
+                    <div class="evidence-card">
+                        <img class="evidence-image" src="{{ $path }}" alt="Evidência visual da vistoria">
+                        <div class="evidence-caption">
+                            Evidência {{ $loop->iteration }} de {{ $lastInspection->images->count() }}
+                        </div>
                     </div>
-                @endforeach
-            @else
-                <span class="value">Nenhuma imagem registrada.</span>
-            @endif
-        </div>
-        {{-- Limpa o float/inline-block para o conteúdo seguinte --}}
-        <div style="clear: both;"></div>
+                @else
+                    <div class="evidence-placeholder">
+                        Evidência {{ $loop->iteration }}: imagem não encontrada.
+                    </div>
+                @endif
+            @endforeach
+        @else
+            <span class="value">Nenhuma imagem registrada.</span>
+        @endif
     </div>
 @else
     <x-pdf.text-area label="Última Vistoria" :value="'Nenhuma vistoria técnica registrada até o momento.'" />
 @endif
 
-<div style="margin-top: 60px;">
+<div class="pdf-mt-60">
     <x-pdf.table-signatures>
         @if(!$barrier->is_anonymous)
             {{-- 1. Se houver Estudante selecionado --}}

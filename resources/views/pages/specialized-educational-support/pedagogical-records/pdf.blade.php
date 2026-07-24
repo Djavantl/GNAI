@@ -4,40 +4,23 @@
     <meta charset="utf-8">
     <title>Atendimento Pedagógico - ID #{{ $pedagogicalRecord->id }}</title>
 
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
-    <div class="header">
-        <h1>GNAI - Gestão do Núcleo de Acessibilidade e Inclusão</h1>
-        <h2>Registro de Atendimento Pedagógico</h2>
+    <x-pdf.header
+        title="Registro de Atendimento Pedagógico"
+        :status="$pedagogicalRecord->is_present ? 'Presente' : 'Ausente'"
+        :meta="[
+            'Aluno' => $student?->person?->name ?? 'Não informado',
+            'Profissional' => $professional?->person?->name ?? 'Não informado',
+            'Agendamento' => '#' . $session->id,
+            'Data' => $session->session_date->format('d/m/Y'),
+            'Horário' => \Carbon\Carbon::parse($session->start_time)->format('H:i') . ' às ' . ($session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--'),
+            'Duração registrada' => $pedagogicalRecord->duration,
+        ]"
+    />
 
-        <p>
-            <strong>Aluno:</strong> {{ $student?->person?->name ?? 'Não informado' }}
-            |
-            <strong>Profissional:</strong> {{ $professional?->person?->name ?? 'Não informado' }}
-        </p>
-
-        <p>
-            <strong>Agendamento:</strong> #{{ $session->id }}
-            |
-            <strong>Data:</strong> {{ $session->session_date->format('d/m/Y') }}
-            |
-            <strong>Horário:</strong>
-            {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}
-            às
-            {{ $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--' }}
-        </p>
-
-        <p>
-            <strong>Duração registrada:</strong> {{ $pedagogicalRecord->duration }}
-            |
-            <strong>Presença:</strong> {{ $pedagogicalRecord->is_present ? 'Presente' : 'Ausente' }}
-        </p>
-    </div>
-
-    <x-pdf.section-title title="1. Planejamento e Execução" />
+    <x-pdf.section-title title="Planejamento e Execução" />
 
     @if(!$pedagogicalRecord->is_present)
         <x-pdf.text-area
@@ -55,7 +38,7 @@
             :value="\App\Support\RichTextSanitizer::sanitize((string) $pedagogicalRecord->pedagogical_record)"
         />
 
-        <x-pdf.section-title title="2. Complementos" />
+        <x-pdf.section-title title="Complementos" />
 
         <x-pdf.text-area
             label="Recursos Utilizados"
@@ -68,7 +51,7 @@
         />
     @endif
 
-    <div class="signature-wrapper" style="margin-top: 50px;">
+    <div class="signature-wrapper pdf-mt-50">
         <x-pdf.table-signatures>
             <x-pdf.table-signature-label label="Profissional Responsável" />
             <x-pdf.table-signature-label label="Coordenação / Direção" />
