@@ -4,7 +4,7 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use App\Enums\Priority;
 use App\Models\Traits\Reportable;
 

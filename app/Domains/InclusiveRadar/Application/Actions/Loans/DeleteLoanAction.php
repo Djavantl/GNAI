@@ -9,7 +9,7 @@ use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanStockHandler;
 use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanWaitlistHandler;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 

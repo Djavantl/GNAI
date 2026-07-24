@@ -6,7 +6,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Infrastructure\Notifications\LoanOverdueNotification;
 use Illuminate\Console\Command;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 
 class CheckOverdueLoans extends Command
 {

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Traits\Reportable;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use App\Enums\SpecializedEducationalSupport\AttendanceType;
 
 class Session extends Model

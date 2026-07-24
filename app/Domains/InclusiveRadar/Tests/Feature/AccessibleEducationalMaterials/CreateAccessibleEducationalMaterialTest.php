@@ -13,7 +13,7 @@ use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;

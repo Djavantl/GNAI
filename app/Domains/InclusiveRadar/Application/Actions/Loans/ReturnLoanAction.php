@@ -12,7 +12,7 @@ use App\Domains\InclusiveRadar\Domain\DTOs\Loans\ReturnLoanDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 

@@ -41,6 +41,16 @@
                     </div>
                 @endif
 
+                @if($errors->any())
+                    <div class="alert alert-danger border-0 small">
+                        <ul class="mb-0 ps-3">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('password.email') }}">
                     @csrf
 
@@ -49,6 +59,7 @@
                         <input type="email"
                                name="email"
                                class="form-control custom-input"
+                               value="{{ old('email') }}"
                                placeholder="exemplo@ifbaiano.edu.br"
                                required>
                     </div>

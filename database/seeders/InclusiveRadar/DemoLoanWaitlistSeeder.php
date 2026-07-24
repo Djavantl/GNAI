@@ -8,7 +8,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

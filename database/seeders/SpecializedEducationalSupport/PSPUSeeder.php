@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SpecializedEducationalSupport\Position;
 

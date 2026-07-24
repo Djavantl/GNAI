@@ -6,7 +6,7 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\AssistiveTechnologies;
 
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;

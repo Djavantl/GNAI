@@ -10,7 +10,7 @@ use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\InclusiveRadar\Infrastructure\Notifications\LoanableItemAvailableNotification;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 
 final class LoanWaitlistHandler
 {

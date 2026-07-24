@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Throwable;
 use Illuminate\Support\Facades\Log;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller

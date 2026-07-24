@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use App\Models\Traits\Reportable;
 use DomainException;
 

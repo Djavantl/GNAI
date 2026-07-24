@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
-use App\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
@@ -10,60 +9,16 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\SpecializedEducationalSupport\Pendency;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\Session;
-use App\Models\SpecializedEducationalSupport\Pei;
-use App\Models\SpecializedEducationalSupport\Professional;
+use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Course;
+use App\Models\SpecializedEducationalSupport\Pei;
+use App\Models\SpecializedEducationalSupport\Pendency;
+use App\Models\SpecializedEducationalSupport\Professional;
+use App\Models\SpecializedEducationalSupport\Session;
+use App\Models\SpecializedEducationalSupport\Student;
 
-class LoginController extends Controller
+class DashboardController extends Controller
 {
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
-
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            if ($user->professional) {
-
-                if ($user->professional->status === 'inactive') {
-
-                    Auth::logout();
-
-                    return back()->withErrors([
-                        'email' => 'Este profissional está inativo e não pode acessar o sistema.'
-                    ]);
-                }
-
-            }
-
-            if ($user->is_admin || $user->professional_id || $user->teacher_id) {
-                return redirect()->route('dashboard')
-                    ->with('success', 'Login realizado com sucesso.');
-            }
-
-            Auth::logout();
-            return back()->with('error', 'Usuário sem permissão de acesso.');
-        }
-
-        return back()->withErrors([
-            'email' => 'Credenciais inválidas.'
-        ]);
-    }
-
     public function index()
     {
         // --- AEE ---
@@ -119,7 +74,7 @@ class LoginController extends Controller
             ->map(function (Barrier $barrier) {
                 $currentStatus = $barrier->latestStatus();
 
-                if (!$currentStatus) {
+                if (! $currentStatus) {
                     return null;
                 }
 
@@ -162,17 +117,5 @@ class LoginController extends Controller
             'barrierStatusCounts' => $barrierStatusCounts,
             'mapBarriers' => $mapBarriers,
         ]);
-    }
-
-    public function logout(Request $request)
-    {
-        session()->forget('impersonator_id');
-
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login');
     }
 }

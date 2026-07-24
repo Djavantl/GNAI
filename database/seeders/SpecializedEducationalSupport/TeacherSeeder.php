@@ -10,7 +10,7 @@ use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Models\SpecializedEducationalSupport\Course;
 use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 
 class TeacherSeeder extends Seeder
 {
