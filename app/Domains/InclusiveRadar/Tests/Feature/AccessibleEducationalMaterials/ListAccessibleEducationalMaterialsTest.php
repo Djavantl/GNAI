@@ -7,7 +7,7 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\AccessibleEducationalMaterial
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;

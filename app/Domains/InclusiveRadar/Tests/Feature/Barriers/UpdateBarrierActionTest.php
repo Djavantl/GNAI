@@ -13,7 +13,7 @@ use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

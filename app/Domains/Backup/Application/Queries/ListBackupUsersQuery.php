@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Application\Queries;
 
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
 final readonly class ListBackupUsersQuery

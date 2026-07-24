@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileService

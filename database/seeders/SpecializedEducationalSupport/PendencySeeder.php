@@ -4,7 +4,7 @@ namespace Database\Seeders\SpecializedEducationalSupport;
 
 use Illuminate\Database\Seeder;
 use App\Models\SpecializedEducationalSupport\Pendency;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use App\Models\SpecializedEducationalSupport\Professional;
 
 class PendencySeeder extends Seeder

@@ -4,7 +4,7 @@ namespace App\Models\SpecializedEducationalSupport;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SpecializedEducationalSupport\Person;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Traits\Reportable;

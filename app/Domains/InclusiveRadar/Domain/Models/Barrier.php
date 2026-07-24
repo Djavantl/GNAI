@@ -12,7 +12,7 @@ use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Database\Factories\Domains\InclusiveRadar\BarrierFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

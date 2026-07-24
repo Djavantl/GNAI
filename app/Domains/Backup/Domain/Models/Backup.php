@@ -7,7 +7,7 @@ namespace App\Domains\Backup\Domain\Models;
 use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Exceptions\InvalidBackup;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

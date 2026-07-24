@@ -13,7 +13,7 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoan;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoanableResource;
 use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use DateTimeInterface;
 use Database\Factories\Domains\InclusiveRadar\LoanFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;

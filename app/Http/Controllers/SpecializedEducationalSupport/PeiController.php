@@ -17,7 +17,7 @@ use App\Models\SpecializedEducationalSupport\Discipline;
 use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Services\SpecializedEducationalSupport\PeiService;
 use App\Services\SpecializedEducationalSupport\PeiDisciplineService;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Requests\SpecializedEducationalSupport\PeiDisciplineRequest;
 use Illuminate\Support\Facades\Auth;

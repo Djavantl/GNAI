@@ -11,7 +11,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInspection;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

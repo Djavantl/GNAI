@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domains\Auth\Application\Queries\Permissions\UserHasPermissionQuery;
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Backup\Application\Actions\PruneBackupsAction;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
@@ -18,7 +20,6 @@ use App\Models\SpecializedEducationalSupport\StudentContext;
 use App\Models\SpecializedEducationalSupport\StudentCourse;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use App\Models\SpecializedEducationalSupport\StudentDocument;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
@@ -80,7 +81,7 @@ class AppServiceProvider extends ServiceProvider
 
         foreach (Permission::query()->get(['slug']) as $permission) {
             Gate::define($permission->slug, function ($user) use ($permission) {
-                return $user->hasPermission($permission->slug);
+                return app(UserHasPermissionQuery::class)->execute($user, $permission->slug);
             });
         }
     }

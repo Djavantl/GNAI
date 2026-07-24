@@ -46,17 +46,37 @@
                     </div>
                 @endif
 
+                @if($errors->any())
+                    <div class="alert alert-danger border-0 small mb-4">
+                        <ul class="mb-0 ps-3">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">E-mail</label>
-                        <input type="email" name="email" class="form-control custom-input" placeholder="exemplo@ifbaiano.edu.br" required autofocus>
+                        <input type="email"
+                               name="email"
+                               value="{{ old('email') }}"
+                               class="form-control custom-input @error('email') is-invalid @enderror"
+                               placeholder="exemplo@ifbaiano.edu.br"
+                               required
+                               autofocus>
                     </div>
 
                     <div class="mb-2">
                         <label class="form-label fw-bold">Senha</label>
-                        <input type="password" name="password" class="form-control custom-input" placeholder="••••••••" required>
+                        <input type="password"
+                               name="password"
+                               class="form-control custom-input @error('password') is-invalid @enderror"
+                               placeholder="••••••••"
+                               required>
                     </div>
 
                     <div class="text-end mb-4">

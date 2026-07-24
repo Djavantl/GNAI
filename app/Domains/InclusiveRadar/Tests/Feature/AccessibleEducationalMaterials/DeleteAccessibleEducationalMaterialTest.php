@@ -14,7 +14,7 @@ use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
 use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;

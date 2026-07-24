@@ -12,7 +12,7 @@ use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Backup\Infrastructure\Storage\BackupArchiveMetadata;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
 use App\Domains\Backup\Tests\Fakes\FakePruneBackupsAction;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\SpecializedEducationalSupport\SemesterService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth; 
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 
 class PeiService
 {

@@ -9,7 +9,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

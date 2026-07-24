@@ -8,7 +8,7 @@ use App\Models\SpecializedEducationalSupport\PeiDiscipline;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Semester;
 use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
 
 class PeiSeeder extends Seeder
 {
