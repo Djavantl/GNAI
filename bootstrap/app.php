@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use App\Exceptions\AccessDeniedException;
 use App\Exceptions\BusinessRuleException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
@@ -48,6 +49,15 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect()->back()
                 ->withInput()
                 ->with('error', $e->getMessage());
+        });
+
+        // Acesso negado / autorização
+        $exceptions->render(function (AccessDeniedException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $e->getMessage()], 403);
+            }
+
+            return response()->view('errors.403', [], 403);
         });
 
         // Validação

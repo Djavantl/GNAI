@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Domain\Exceptions;
 
-use DomainException;
+use App\Exceptions\BusinessRuleException;
 
-final class InvalidCredentials extends DomainException
+final class InvalidCredentials extends BusinessRuleException
 {
     public static function make(): self
     {
