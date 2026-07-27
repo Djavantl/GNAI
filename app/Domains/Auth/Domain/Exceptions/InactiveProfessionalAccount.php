@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Domain\Exceptions;
 
-use DomainException;
+use App\Exceptions\AccessDeniedException;
 
-final class InactiveProfessionalAccount extends DomainException
+final class InactiveProfessionalAccount extends AccessDeniedException
 {
     public static function make(): self
     {

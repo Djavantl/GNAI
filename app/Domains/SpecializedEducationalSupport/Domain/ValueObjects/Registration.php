@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace app\Domains\SpecializedEducationalSupport\Domain\ValueObjects;
+namespace App\Domains\SpecializedEducationalSupport\Domain\ValueObjects;
 
-use app\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidRegistration;
+use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidRegistration;
 
 final readonly class Registration
 {
