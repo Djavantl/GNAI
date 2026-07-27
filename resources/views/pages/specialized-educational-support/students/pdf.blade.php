@@ -9,8 +9,6 @@
 @php
 
 $map = [
-    'gender' => \App\Models\SpecializedEducationalSupport\Person::genderOptions(),
-
     'eval' => [
         'initial' => 'Inicial',
         'periodic_review' => 'Periódica',
@@ -97,7 +95,7 @@ $relationshipMap = [
 
     <x-pdf.header
         title="Ficha do Aluno"
-        :status="\App\Models\SpecializedEducationalSupport\Student::statusOptions()[$student->status->value ?? $student->status] ?? null"
+        :status="$student->status?->label()"
         :meta="[
             'Aluno(a)' => $student->person->name ?? '---',
             'Matrícula' => $student->registration ?? '---',
@@ -128,11 +126,11 @@ $relationshipMap = [
         </tr>
         <tr>
             <td class="pdf-cell" colspan="2">
-                <strong>Gênero:</strong> {{ ['male' => 'Masculino', 'female' => 'Feminino', 'other' => 'Outro'][$student->person->gender] ?? 'Não informado' }}
+                <strong>Gênero:</strong> {{ $student->person->gender_label }}
             </td>
             <td class="pdf-cell" colspan="2">
                 <strong>Status:</strong>
-                {{ \App\Models\SpecializedEducationalSupport\Student::statusOptions()[$student->status->value ?? $student->status] ?? '---' }}
+                {{ $student->status?->label() ?? '---' }}
             </td>
         </tr>
         <tr>

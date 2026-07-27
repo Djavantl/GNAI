@@ -9,7 +9,7 @@
                 <span class="fw-bold">{{ $student->person->name }}</span>
             </x-show.info-item>
             <x-show.info-item label="Gênero" column="col-md-4" isBox="true">
-                {{ ['male' => 'Masculino', 'female' => 'Feminino', 'other' => 'Outro'][$student->person->gender] ?? 'Não informado' }}
+                {{ $student->person->gender_label }}
             </x-show.info-item>
             <x-show.info-item label="CPF" column="col-md-4" isBox="true">{{ $student->person->document ?? '---' }}</x-show.info-item>
             <x-show.info-item label="Nascimento" column="col-md-4" isBox="true">

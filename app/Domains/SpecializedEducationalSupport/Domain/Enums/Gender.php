@@ -20,4 +20,5 @@ enum Gender: string
             self::NOT_SPECIFIED => 'Não informado',
         };
     }
+
 }
