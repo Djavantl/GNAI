@@ -64,13 +64,8 @@
                 <x-forms.select
                     name="gender"
                     label="Gênero"
-                    :options="[
-                        'male' => 'Masculino',
-                        'female' => 'Feminino',
-                        'other' => 'Outro',
-                        'not_specified' => 'Não informado'
-                    ]"
-                    :value="old('gender', 'not_specified')"
+                    :options="$genders"
+                    :selected="old('gender', $defaultGender)"
                     required
                 />
             </div>
@@ -111,6 +106,7 @@
                 <x-forms.input 
                     name="registration" 
                     label="Matrícula " 
+                    maxlength="50"
                     required 
                     :value="old('registration')" 
                 />

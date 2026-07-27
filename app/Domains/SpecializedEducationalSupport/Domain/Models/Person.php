@@ -13,7 +13,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Phone;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Guardian;
 use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Models\Traits\Auditable;
 use Carbon\CarbonImmutable;
@@ -65,13 +64,6 @@ final class Person extends Model
     public function revise(UpdatePersonDTO $data): void
     {
         $this->fill(self::attributesFrom($data));
-    }
-
-    public static function genderOptions(): array
-    {
-        return collect(Gender::cases())
-            ->mapWithKeys(fn (Gender $gender): array => [$gender->value => $gender->label()])
-            ->all();
     }
 
     public static function getAuditLabels(): array

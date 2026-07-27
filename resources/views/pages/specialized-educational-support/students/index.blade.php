@@ -49,13 +49,11 @@
                     [
                         'name' => 'status',
                         'type' => 'select',
-                        'options' => [
-                            '' => 'Status (Todos)',
-                            'active' => 'Ativo',
-                            'locked' => 'Trancado',
-                            'completed' => 'Concluído',
-                            'dropped' => 'Evadido',
-                        ]
+                        'options' => collect(
+                            \App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus::cases()
+                        )->mapWithKeys(
+                            fn ($status) => [$status->value => $status->label()]
+                        )->prepend('Status (Todos)', '')->all()
                     ],
                 ]"
             />

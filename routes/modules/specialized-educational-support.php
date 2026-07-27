@@ -6,9 +6,10 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\DeficiencyControlle
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DisciplineController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\PositionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use App\Http\Controllers\SpecializedEducationalSupport\{
-    StudentDeficienciesController, StudentController, StudentContextController,
+    StudentDeficienciesController, StudentContextController,
     GuardianController,
     ProfessionalController, SessionController, SessionRecordController, PedagogicalRecordController,
     StudentCourseController, PendencyController, PeiController,
