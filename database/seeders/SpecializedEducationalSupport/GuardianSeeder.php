@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\GuardianRelationship;
 use Illuminate\Database\Seeder;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
@@ -23,7 +24,9 @@ class GuardianSeeder extends Seeder
             // Dados do Responsável
             $gender = (rand(0, 1) == 0) ? 'female' : 'male';
             $firstName = ($gender == 'female') ? 'Maria' : 'José';
-            $relationship = ($gender == 'female') ? 'Mãe' : 'Pai';
+            $relationship = $gender === 'female'
+                ? GuardianRelationship::MOTHER->value
+                : GuardianRelationship::FATHER->value;
 
             // 1. Criar a Pessoa do Responsável
             $person = Person::create([

@@ -6,20 +6,22 @@ namespace App\Domains\SpecializedEducationalSupport\Application\Actions\Teachers
 
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidTeacher;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
+use App\Domains\SpecializedEducationalSupport\Infrastructure\Storage\TeacherPhotoStorage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 final readonly class DeleteTeacherAction
 {
+    public function __construct(
+        private TeacherPhotoStorage $photoStorage,
+    ) {}
+
     /**
      * @throws Throwable
      */
     public function execute(Teacher $teacher): void
     {
-        $photo = null;
-
-        DB::transaction(function () use ($teacher, &$photo): void {
+        $photoPath = DB::transaction(function () use ($teacher): ?string {
             $lockedTeacher = Teacher::query()
                 ->with('person')
                 ->lockForUpdate()
@@ -32,15 +34,15 @@ final readonly class DeleteTeacherAction
             }
 
             $person = $lockedTeacher->person;
-            $photo = $person?->photo;
+            $photoPath = $person?->getRawOriginal('photo');
 
             $lockedTeacher->user()->delete();
             $lockedTeacher->delete();
             $person?->delete();
+
+            return $photoPath;
         });
 
-        if ($photo !== null) {
-            Storage::disk('public')->delete($photo);
-        }
+        $this->photoStorage->delete($photoPath);
     }
 }

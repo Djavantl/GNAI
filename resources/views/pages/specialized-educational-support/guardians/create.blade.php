@@ -68,13 +68,8 @@
                     name="gender"
                     label="Gênero"
                     required
-                    :options="[
-                        'not_specified' => 'Não informado',
-                        'male'          => 'Masculino',
-                        'female'        => 'Feminino',
-                        'other'         => 'Outro',
-                    ]"
-                    :value="old('gender', 'not_specified')"
+                    :options="$genders"
+                    :selected="old('gender', $defaultGender)"
                 />
             </div>
 
@@ -106,8 +101,8 @@
                     name="relationship"
                     label="Parentesco / Vínculo"
                     required
-                    :options="\App\Models\SpecializedEducationalSupport\Guardian::relationshipOptions()"
-                    :value="old('relationship')"
+                    :options="$relationships"
+                    :selected="old('relationship')"
                 />
             </div>
 
@@ -116,6 +111,7 @@
                     name="address"
                     label="Endereço Completo"
                     rows="2"
+                    maxlength="500"
                     :value="old('address')"
                 />
             </div>

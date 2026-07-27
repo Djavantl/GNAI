@@ -218,7 +218,7 @@ $relationshipMap = [
             <table class="pdf-table pdf-mb-12">
                 <tr>
                     <td class="pdf-cell" colspan="4">
-                        <strong>Relação com o aluno:</strong> {!! $renderHtml($guardian->relationship ?? null) !!}
+                        <strong>Relação com o aluno:</strong> {!! $renderHtml($guardian->relationshipLabel()) !!}
                     </td>
                 </tr>
                 <tr>
@@ -234,9 +234,7 @@ $relationshipMap = [
                         <strong>Data de Nascimento:</strong> {{ $formatDate($guardian->person->birth_date ?? null) }}
                     </td>
                     <td class="pdf-cell" colspan="2">
-                        <strong>Gênero:</strong> {{
-                            \App\Models\SpecializedEducationalSupport\Guardian::genderOptions()[$guardian->person->gender ?? null] ?? '---'
-                        }}
+                        <strong>Gênero:</strong> {{ $guardian->person->gender_label }}
                     </td>
                 </tr>
                 <tr>
