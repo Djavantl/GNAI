@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Backup;
 
 use App\Domains\Backup\Application\Actions\GenerateBackupAction;
 use Illuminate\Console\Command;

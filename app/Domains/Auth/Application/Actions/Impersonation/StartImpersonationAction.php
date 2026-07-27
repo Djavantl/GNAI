@@ -24,12 +24,12 @@ final readonly class StartImpersonationAction
             throw InvalidImpersonation::impersonatorMustBeAdmin();
         }
 
-        if ($target->isAdmin()) {
-            throw InvalidImpersonation::cannotImpersonateAdmin();
-        }
-
         if ($target->is($impersonator)) {
             throw InvalidImpersonation::cannotImpersonateSelf();
+        }
+
+        if ($target->isAdmin()) {
+            throw InvalidImpersonation::cannotImpersonateAdmin();
         }
 
         $this->impersonationSession->start((int) $impersonator->getKey());
