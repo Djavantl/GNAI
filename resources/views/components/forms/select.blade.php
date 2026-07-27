@@ -25,7 +25,7 @@
     <select
         name="{{ $name }}"
         id="{{ $elementId }}"
-        @if($required) aria-required="true" @endif
+        @if($required) required aria-required="true" @endif
         {{ $attributes->merge([
             'class' => 'form-select custom-input ' .
                        ($search ? 'select-search ' : '') .
