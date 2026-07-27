@@ -8,11 +8,11 @@ use App\Domains\Backup\Application\Actions\StoreUploadedBackupAction;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Data\UploadBackupData;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
+use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
 use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use RuntimeException;
 use Tests\TestCase;
 
 final class StoreUploadedBackupActionTest extends TestCase
@@ -35,8 +35,8 @@ final class StoreUploadedBackupActionTest extends TestCase
 
         $this->assertDatabaseHas('backups', [
             'id' => $backup->id,
-            'file_name' => 'manual.zip',
-            'file_path' => 'GNAIbackups/manual.zip',
+            'file_name' => 'uploaded-backup-test.zip',
+            'file_path' => 'GNAIbackups/uploaded-backup-test.zip',
             'status' => BackupStatus::SUCCESS->value,
             'user_id' => $user->id,
         ]);
@@ -46,7 +46,7 @@ final class StoreUploadedBackupActionTest extends TestCase
     {
         $this->app->instance(BackupArchiveStorageContract::class, new FakeBackupArchiveStorage);
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(BackupOperationFailed::class);
         $this->expectExceptionMessage('Não foi possível identificar o usuário responsável pelo upload do backup.');
 
         app(StoreUploadedBackupAction::class)->execute(

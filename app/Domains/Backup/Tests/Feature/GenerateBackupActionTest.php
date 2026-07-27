@@ -8,12 +8,12 @@ use App\Domains\Backup\Application\Actions\GenerateBackupAction;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
+use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Backup\Infrastructure\Storage\BackupArchiveMetadata;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
 use App\Domains\Backup\Tests\Fakes\FakePruneBackupsAction;
 use App\Domains\Auth\Domain\Models\User;
-use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use RuntimeException;
@@ -77,8 +77,8 @@ final class GenerateBackupActionTest extends TestCase
 
         $this->app->instance(BackupArchiveStorageContract::class, $storage);
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Falha simulada ao gerar arquivo.');
+        $this->expectException(BackupOperationFailed::class);
+        $this->expectExceptionMessage('Falha ao gerar arquivo de backup.');
 
         try {
             app(GenerateBackupAction::class)->execute();
@@ -101,7 +101,8 @@ final class GenerateBackupActionTest extends TestCase
 
         Schema::drop('backups');
 
-        $this->expectException(QueryException::class);
+        $this->expectException(BackupOperationFailed::class);
+        $this->expectExceptionMessage('Falha ao registrar backup gerado.');
 
         try {
             app(GenerateBackupAction::class)->execute();

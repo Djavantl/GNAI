@@ -9,10 +9,10 @@ use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
 use App\Domains\Backup\Application\Data\UploadBackupData;
 use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
+use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Domain\Models\Backup;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use RuntimeException;
 use Throwable;
 
 final readonly class StoreUploadedBackupAction
@@ -23,14 +23,14 @@ final readonly class StoreUploadedBackupAction
     ) {}
 
     /**
-     * @throws Throwable
+     * @throws BackupOperationFailed
      */
     public function execute(UploadBackupData $data, ?int $userId = null): Backup
     {
         $resolvedUserId = $userId ?? Auth::id();
 
         if ($resolvedUserId === null) {
-            throw new RuntimeException('Não foi possível identificar o usuário responsável pelo upload do backup.');
+            throw new BackupOperationFailed('Não foi possível identificar o usuário responsável pelo upload do backup.');
         }
 
         try {
@@ -42,7 +42,7 @@ final readonly class StoreUploadedBackupAction
                 'exception' => $exception,
             ]);
 
-            throw $exception;
+            throw new BackupOperationFailed('Falha ao armazenar arquivo de backup enviado.', previous: $exception);
         }
 
         try {
@@ -77,7 +77,7 @@ final readonly class StoreUploadedBackupAction
                 'exception' => $exception,
             ]);
 
-            throw $exception;
+            throw new BackupOperationFailed('Falha ao registrar backup enviado.', previous: $exception);
         }
 
         try {

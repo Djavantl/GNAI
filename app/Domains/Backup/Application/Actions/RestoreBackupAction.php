@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Backup\Application\Actions;
 
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
+use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Domain\Exceptions\InvalidBackup;
 use App\Domains\Backup\Domain\Models\Backup;
 use Illuminate\Support\Facades\Log;
@@ -23,7 +24,7 @@ final readonly class RestoreBackupAction
      * A autorização HTTP fica na rota/controller; esta action protege as regras do caso de uso.
      *
      * @throws InvalidBackup
-     * @throws Throwable
+     * @throws BackupOperationFailed
      */
     public function execute(Backup $backup): void
     {
@@ -52,7 +53,7 @@ final readonly class RestoreBackupAction
                 'exception' => $exception,
             ]);
 
-            throw $exception;
+            throw new BackupOperationFailed('Falha ao restaurar backup.', previous: $exception);
         }
     }
 }
