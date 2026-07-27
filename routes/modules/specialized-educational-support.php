@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\CourseController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DeficiencyController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DisciplineController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\GuardianController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\PositionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentController;
@@ -11,7 +12,6 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\TeacherController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use App\Http\Controllers\SpecializedEducationalSupport\{
     StudentDeficienciesController, StudentContextController,
-    GuardianController,
     ProfessionalController, SessionController, SessionRecordController, PedagogicalRecordController,
     StudentCourseController, PendencyController, PeiController,
     PeiEvaluationController, StudentDocumentController

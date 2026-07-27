@@ -2,31 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\SpecializedEducationalSupport\Application\Actions\Teachers;
+namespace App\Domains\SpecializedEducationalSupport\Application\Actions\Guardians;
 
-use App\Domains\Auth\Domain\Models\User;
-use App\Domains\SpecializedEducationalSupport\Application\Data\Teachers\UpdateTeacherData;
+use App\Domains\SpecializedEducationalSupport\Application\Data\Guardians\UpdateGuardianData;
+use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Guardians\UpdateGuardianDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\People\UpdatePersonDTO;
-use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Teachers\UpdateTeacherDTO;
-use App\Domains\SpecializedEducationalSupport\Domain\Enums\Gender;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Guardian;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Cpf;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Phone;
-use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Registration;
-use App\Domains\SpecializedEducationalSupport\Infrastructure\Storage\TeacherPhotoStorage;
+use App\Domains\SpecializedEducationalSupport\Infrastructure\Storage\GuardianPhotoStorage;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-final readonly class UpdateTeacherAction
+final readonly class UpdateGuardianAction
 {
     public function __construct(
-        private TeacherPhotoStorage $photoStorage,
+        private GuardianPhotoStorage $photoStorage,
     ) {}
 
     /**
      * @throws Throwable
      */
-    public function execute(Teacher $teacher, UpdateTeacherData $data): Teacher
+    public function execute(Student $student, Guardian $guardian, UpdateGuardianData $data): Guardian
     {
         $newPhotoPath = $data->photo !== null
             ? $this->photoStorage->store($data->photo)
@@ -34,13 +33,20 @@ final readonly class UpdateTeacherAction
         $oldPhotoPath = null;
 
         try {
-            $updatedTeacher = DB::transaction(function () use ($teacher, $data, $newPhotoPath, &$oldPhotoPath): Teacher {
-                $lockedTeacher = Teacher::query()
-                    ->with('person')
+            $updatedGuardian = DB::transaction(function () use ($student, $guardian, $data, $newPhotoPath, &$oldPhotoPath): Guardian {
+                $lockedStudent = Student::query()
                     ->lockForUpdate()
-                    ->findOrFail($teacher->getKey());
+                    ->findOrFail($student->getKey());
+                $lockedStudent->ensureIsActive();
 
-                $person = $lockedTeacher->person;
+                $lockedGuardian = Guardian::query()
+                    ->lockForUpdate()
+                    ->findOrFail($guardian->getKey());
+                $lockedGuardian->ensureBelongsTo($lockedStudent);
+
+                $person = Person::query()
+                    ->lockForUpdate()
+                    ->findOrFail($lockedGuardian->person_id);
                 $currentPhotoPath = $person->getRawOriginal('photo');
 
                 if ($newPhotoPath !== null) {
@@ -56,10 +62,10 @@ final readonly class UpdateTeacherAction
                 $personDTO = new UpdatePersonDTO(
                     name: $data->name,
                     birthDate: $data->birthDate,
-                    gender: Gender::from($data->gender),
+                    gender: $data->gender,
                     document: Cpf::fromNullable($data->document),
                     email: $data->email,
-                    phone: Phone::fromNullable($data->phone),
+                    phone: Phone::from($data->phone),
                     address: $data->address,
                     photo: $photoPath,
                 );
@@ -67,21 +73,14 @@ final readonly class UpdateTeacherAction
                 $person->revise($personDTO);
                 $person->save();
 
-                $teacherDTO = new UpdateTeacherDTO(
-                    registration: Registration::from($data->registration),
+                $guardianDTO = new UpdateGuardianDTO(
+                    relationship: $data->relationship,
                 );
 
-                $lockedTeacher->revise($teacherDTO);
-                $lockedTeacher->save();
+                $lockedGuardian->revise($guardianDTO);
+                $lockedGuardian->save();
 
-                User::query()
-                    ->where('teacher_id', $lockedTeacher->id)
-                    ->update([
-                        'name' => $person->name,
-                        'email' => $person->email,
-                    ]);
-
-                return $lockedTeacher->fresh('person');
+                return $lockedGuardian->load(['person', 'student.person']);
             });
         } catch (Throwable $exception) {
             $this->photoStorage->delete($newPhotoPath);
@@ -93,6 +92,6 @@ final readonly class UpdateTeacherAction
             $this->photoStorage->delete($oldPhotoPath);
         }
 
-        return $updatedTeacher;
+        return $updatedGuardian;
     }
 }

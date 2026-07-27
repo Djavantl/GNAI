@@ -16,9 +16,9 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Cpf;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Phone;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Registration;
+use App\Domains\SpecializedEducationalSupport\Infrastructure\Storage\TeacherPhotoStorage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -26,6 +26,7 @@ final readonly class CreateTeacherAction
 {
     public function __construct(
         private SendPasswordResetLinkAction $sendPasswordResetLink,
+        private TeacherPhotoStorage $photoStorage,
     ) {}
 
     /**
@@ -33,10 +34,12 @@ final readonly class CreateTeacherAction
      */
     public function execute(CreateTeacherData $data): Teacher
     {
-        $photo = $data->photo?->store('photos', 'public');
+        $photoPath = $data->photo !== null
+            ? $this->photoStorage->store($data->photo)
+            : null;
 
         try {
-            $teacher = DB::transaction(function () use ($data, $photo): Teacher {
+            $teacher = DB::transaction(function () use ($data, $photoPath): Teacher {
                 $personDTO = new CreatePersonDTO(
                     name: $data->name,
                     birthDate: $data->birthDate,
@@ -45,7 +48,7 @@ final readonly class CreateTeacherAction
                     email: $data->email,
                     phone: Phone::fromNullable($data->phone),
                     address: $data->address,
-                    photo: $photo,
+                    photo: $photoPath,
                 );
 
                 $person = Person::register($personDTO);
@@ -70,9 +73,7 @@ final readonly class CreateTeacherAction
                 return $teacher->load('person');
             });
         } catch (Throwable $exception) {
-            if ($photo !== null) {
-                Storage::disk('public')->delete($photo);
-            }
+            $this->photoStorage->delete($photoPath);
 
             throw $exception;
         }
