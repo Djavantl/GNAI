@@ -22,7 +22,7 @@ PROD_IMAGE   = gnai-php:prod
         coverage db backup backup-db list-bkp restore-db restore-full \
         build-assets dev-assets deploy composer storage-link \
         cache-dev cache-prod npm-build npm-dev logs-app sync-public-build host-storage-link \
-        permissions-sync permissions-prune
+        permissions-sync permissions-prune create-admin
 
 # -----------------------------
 # Contêineres
@@ -98,6 +98,9 @@ permissions-sync:
 
 permissions-prune:
 	$(COMPOSE) exec app php artisan permissions:sync --prune
+
+create-admin:
+	$(COMPOSE) exec app php artisan auth:create-admin
 
 npm-build:
 ifeq ($(ENV),prod)
