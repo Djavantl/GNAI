@@ -8,7 +8,7 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\PositionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use App\Http\Controllers\SpecializedEducationalSupport\{
-    StudentDeficienciesController, PersonController, StudentController, StudentContextController,
+    StudentDeficienciesController, StudentController, StudentContextController,
     GuardianController,
     ProfessionalController, SessionController, SessionRecordController, PedagogicalRecordController,
     StudentCourseController, PendencyController, PeiController,
@@ -16,14 +16,6 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
 };
 
 Route::middleware(['auth'])->group(function () {
-
-    // People
-    Route::get('/people', [PersonController::class, 'index'])->name('people.index')->middleware('can:people.view');
-    Route::get('/people/create', [PersonController::class, 'create'])->name('people.create')->middleware('can:people.create');
-    Route::post('/people/store', [PersonController::class, 'store'])->name('people.store')->middleware('can:people.create');
-    Route::get('/people/{person}/edit', [PersonController::class, 'edit'])->name('people.edit')->middleware('can:people.update');
-    Route::put('/people/{person}', [PersonController::class, 'update'])->name('people.update')->middleware('can:people.update');
-    Route::delete('/people/{person}', [PersonController::class, 'destroy'])->name('people.destroy')->middleware('can:people.delete');
 
     // Deficiencies
     Route::get('/deficiencies', [DeficiencyController::class, 'index'])->name('deficiencies.index')->middleware('can:deficiency.view');

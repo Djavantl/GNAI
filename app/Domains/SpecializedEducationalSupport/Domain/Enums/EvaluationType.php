@@ -1,6 +1,7 @@
 <?php
 
-namespace app\Domains\SpecializedEducationalSupport\Domain\Enums;
+declare(strict_types=1);
+namespace App\Domains\SpecializedEducationalSupport\Domain\Enums;
 
 enum EvaluationType: string
 {
