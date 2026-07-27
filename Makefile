@@ -21,7 +21,8 @@ PROD_IMAGE   = gnai-php:prod
 .PHONY: up down down-v build logs art migrate seed perm make tinker scheduler \
         coverage db backup backup-db list-bkp restore-db restore-full \
         build-assets dev-assets deploy composer storage-link \
-        cache-dev cache-prod npm-build npm-dev logs-app sync-public-build host-storage-link
+        cache-dev cache-prod npm-build npm-dev logs-app sync-public-build host-storage-link \
+        permissions-sync permissions-prune
 
 # -----------------------------
 # Contêineres
@@ -91,6 +92,12 @@ seed:
 
 reset-db:
 	$(COMPOSE) exec app php artisan migrate:fresh --seed
+
+permissions-sync:
+	$(COMPOSE) exec app php artisan permissions:sync
+
+permissions-prune:
+	$(COMPOSE) exec app php artisan permissions:sync --prune
 
 npm-build:
 ifeq ($(ENV),prod)
@@ -221,6 +228,7 @@ deploy:
 	$(MAKE) host-storage-link
 	$(PROD_COMPOSE) up -d
 	$(MAKE) migrate ENV=prod
+	$(MAKE) permissions-sync ENV=prod
 	@echo "✅ Deploy finalizado!"
 
 # -----------------------------

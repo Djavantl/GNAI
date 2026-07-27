@@ -27,6 +27,7 @@ return [
         'material' => 'Materiais Pedagógicos Acessíveis',
         'barrier' => 'Barreiras',
         'loan' => 'Empréstimos',
+        'waitlist' => 'Lista de Espera',
         'report' => 'Relatórios',
 
         'resource-type' => 'Tipos de Recurso',

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Domains\Auth\Application\Queries\Permissions\UserHasPermissionQuery;
+use App\Domains\Auth\Application\Permissions\PermissionCache;
+use App\Domains\Auth\Application\Permissions\PermissionRegistry;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Backup\Application\Actions\PruneBackupsAction;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
@@ -13,7 +15,6 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Models\Permission;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentContext;
@@ -34,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(BackupArchiveStorageContract::class, BackupArchiveStorage::class);
         $this->app->bind(PruneBackupsActionContract::class, PruneBackupsAction::class);
+        $this->app->scoped(PermissionCache::class);
+        $this->app->scoped(PermissionRegistry::class);
+        $this->app->scoped(UserHasPermissionQuery::class);
     }
 
     public function boot(): void
@@ -53,37 +57,26 @@ class AppServiceProvider extends ServiceProvider
             'user' => User::class,
         ]);
 
-        Gate::before(function ($user) {
+        Gate::before(function ($user, string $ability) {
             if ($user->is_admin) {
                 return true;
             }
 
-            return null;
-        });
+            if (! app(PermissionRegistry::class)->has($ability)) {
+                return null;
+            }
 
-        $this->registerPermissionGates();
+            if (! $this->canUseTable('permissions')) {
+                return false;
+            }
+
+            return app(UserHasPermissionQuery::class)->execute($user, $ability);
+        });
 
         // View Composer para a Navbar (INSTITUIÇÃO)
         View::composer('layouts.master', function ($view) {
             $view->with('institution', $this->resolveInstitutionForLayout());
         });
-    }
-
-    /**
-     * RF: registra permissões dinâmicas sem impedir o bootstrap em build, CI ou banco indisponível.
-     * Uso: autorização via Gate em toda a aplicação após migrations e banco acessível.
-     */
-    private function registerPermissionGates(): void
-    {
-        if (! $this->canUseTable('permissions')) {
-            return;
-        }
-
-        foreach (Permission::query()->get(['slug']) as $permission) {
-            Gate::define($permission->slug, function ($user) use ($permission) {
-                return app(UserHasPermissionQuery::class)->execute($user, $permission->slug);
-            });
-        }
     }
 
     /**
