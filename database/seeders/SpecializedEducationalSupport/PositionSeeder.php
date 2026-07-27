@@ -2,17 +2,21 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
-use Illuminate\Database\Seeder;
+use App\Domains\Auth\Application\Actions\Permissions\SyncPermissionsAction;
+use App\Domains\Auth\Application\Permissions\PermissionCache;
 use App\Models\Permission;
 use App\Models\SpecializedEducationalSupport\Position;
+use Illuminate\Database\Seeder;
 
 class PositionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run(SyncPermissionsAction $syncPermissions, PermissionCache $permissionCache): void
     {
+        $syncPermissions->execute();
+
         $positions = [
             [
                 'name' => 'Professor(a) AEE',
@@ -80,7 +84,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'material.index',
                     'material.create',
@@ -89,7 +92,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'barrier.index',
                     'barrier.create',
@@ -236,7 +238,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'assistive-technology.destroy',
                     'material.index',
@@ -246,7 +247,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'material.destroy',
                     'barrier.index',
@@ -367,7 +367,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'material.index',
                     'material.create',
@@ -376,7 +375,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'barrier.index',
                     'barrier.create',
@@ -485,7 +483,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'material.index',
                     'material.create',
@@ -494,7 +491,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'barrier.index',
                     'barrier.create',
@@ -568,5 +564,7 @@ class PositionSeeder extends Seeder
 
             $position->permissions()->sync($permissionIds);
         }
+
+        $permissionCache->invalidate();
     }
 }

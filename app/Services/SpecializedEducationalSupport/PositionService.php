@@ -3,11 +3,16 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
+use App\Domains\Auth\Application\Permissions\PermissionCache;
 use App\Models\SpecializedEducationalSupport\Position;
 use Illuminate\Support\Facades\DB;
 
 class PositionService
 {
+    public function __construct(
+        private readonly PermissionCache $permissionCache,
+    ) {}
+
     public function index(array $filters = [])
     {
         return Position::query()
@@ -35,6 +40,8 @@ class PositionService
                 $position->permissions()->sync($permissions);
             }
 
+            $this->permissionCache->invalidate();
+
             return $position;
         });
     }
@@ -48,6 +55,8 @@ class PositionService
 
             $position->update($data);
             $position->permissions()->sync($permissions);
+
+            $this->permissionCache->invalidate();
 
             return $position;
         });

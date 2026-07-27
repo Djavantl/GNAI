@@ -2,6 +2,7 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
+use App\Domains\Auth\Application\Permissions\PermissionCache;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Domains\Auth\Domain\Models\User;
@@ -15,6 +16,10 @@ use DomainException;
 
 class TeacherService
 {
+    public function __construct(
+        private readonly PermissionCache $permissionCache,
+    ) {}
+
     public function index(array $filters = [])
     {
         return Teacher::query()
@@ -188,6 +193,8 @@ class TeacherService
                     ])->toArray()
                 );
             }
+
+            $this->permissionCache->invalidate();
         });
     }
 
