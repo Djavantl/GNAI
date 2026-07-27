@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\CourseController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DeficiencyController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DisciplineController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
@@ -8,7 +9,7 @@ use App\Http\Controllers\SpecializedEducationalSupport\{
     StudentDeficienciesController, PersonController, StudentController, StudentContextController,
     PositionController, SemesterController, GuardianController,
     ProfessionalController, SessionController, SessionRecordController, PedagogicalRecordController,
-    StudentCourseController, CourseController, PendencyController, PeiController,
+    StudentCourseController, PendencyController, PeiController,
     PeiEvaluationController, StudentDocumentController, TeacherController
 };
 

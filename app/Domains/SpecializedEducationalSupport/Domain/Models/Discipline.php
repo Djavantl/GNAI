@@ -7,7 +7,6 @@ namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Disciplines\CreateDisciplineDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Disciplines\UpdateDisciplineDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidDiscipline;
-use App\Models\SpecializedEducationalSupport\Course;
 use App\Models\SpecializedEducationalSupport\Teacher;
 use Database\Factories\Domains\SpecializedEducationalSupport\DisciplineFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
