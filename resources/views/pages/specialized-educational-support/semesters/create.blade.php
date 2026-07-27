@@ -25,11 +25,11 @@
             <x-forms.section title="Identificação do Período" />
 
             <div class="col-md-6">
-                <x-forms.input name="year" label="Ano Letivo" type="number" :value="old('year', date('Y'))" required />
+                <x-forms.input name="year" label="Ano Letivo" type="number" :value="old('year', date('Y'))" min="1901" max="2155" required />
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="term" label="Período (Ex: 1 ou 2)" type="number" :value="old('term', 1)" min="1" required />
+                <x-forms.input name="term" label="Período (Ex: 1 ou 2)" type="number" :value="old('term', 1)" min="1" max="2" required />
             </div>
 
             <x-forms.section title="Duração do Semestre" />
