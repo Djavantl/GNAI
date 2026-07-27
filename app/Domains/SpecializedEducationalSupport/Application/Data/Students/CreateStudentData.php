@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Data\Students;
 
-use App\Domains\SpecializedEducationalSupport\Application\Data\Students\Concerns\NormalizesStudentInput;
+use App\Domains\SpecializedEducationalSupport\Application\Data\People\Concerns\NormalizesPersonInput;
+use App\Domains\SpecializedEducationalSupport\Application\Rules\ValidCpf;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\Gender;
-use App\Rules\Cpf;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Attributes\MapInputName;
@@ -16,7 +16,7 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 #[MapInputName(SnakeCaseMapper::class)]
 final class CreateStudentData extends Data
 {
-    use NormalizesStudentInput;
+    use NormalizesPersonInput;
 
     public function __construct(
         public string $name,
@@ -39,7 +39,7 @@ final class CreateStudentData extends Data
             'document' => [
                 'nullable',
                 'string',
-                new Cpf,
+                new ValidCpf,
                 Rule::unique('people', 'document'),
             ],
             'birth_date' => ['required', 'date', 'before_or_equal:today'],
