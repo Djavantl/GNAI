@@ -1,11 +1,11 @@
 <?php
 
-namespace app\Domains\SpecializedEducationalSupport\Domain\Enums;
+declare(strict_types=1);
 
+namespace App\Domains\SpecializedEducationalSupport\Domain\Enums;
 
 enum Gender: string
 {
-
     case MALE = 'male';
     case FEMALE = 'female';
     case OTHER = 'other';
@@ -13,11 +13,11 @@ enum Gender: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::MALE => 'Masculino',
             self::FEMALE => 'Feminino',
             self::OTHER => 'Outro',
-            self::NOT_SPECIFIED => 'Não Informado',
+            self::NOT_SPECIFIED => 'Não informado',
         };
     }
 }

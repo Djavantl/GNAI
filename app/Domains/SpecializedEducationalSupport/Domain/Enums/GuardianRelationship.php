@@ -1,8 +1,7 @@
 <?php
 
 declare(strict_types=1);
-
-namespace app\Domains\SpecializedEducationalSupport\Domain\Enums;
+namespace App\Domains\SpecializedEducationalSupport\Domain\Enums;
 
 enum GuardianRelationship: string
 {
