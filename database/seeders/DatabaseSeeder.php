@@ -53,7 +53,6 @@ class DatabaseSeeder extends Seeder
             StudentCourseSeeder::class,
             // ProfessionalSeeder::class,
             PendencySeeder::class,
-            AdminSeeder::class,
             GuardianSeeder::class,
             DisciplineSeeder::class,
             AttendanceSessionSeeder::class,
