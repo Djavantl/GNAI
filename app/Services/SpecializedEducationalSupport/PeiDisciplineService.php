@@ -2,13 +2,13 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
+use App\Models\SpecializedEducationalSupport\Course;
 use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\PeiDiscipline;
-use App\Models\SpecializedEducationalSupport\Teacher;
-use App\Models\SpecializedEducationalSupport\Course;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class PeiDisciplineService
 {
@@ -19,7 +19,7 @@ class PeiDisciplineService
     private function checkPeiStatus(Pei $pei)
     {
         if ($pei->is_finished) {
-            throw new Exception("Este PEI já foi finalizado e não permite alterações.");
+            throw new Exception('Este PEI já foi finalizado e não permite alterações.');
         }
     }
 
@@ -29,7 +29,7 @@ class PeiDisciplineService
     private function checkOwnership(PeiDiscipline $peiDiscipline): void
     {
         if ((int) $peiDiscipline->creator_id !== (int) Auth::id()) {
-            throw new Exception("Apenas o criador desta adaptação pode editá-la ou excluí-la.");
+            throw new Exception('Apenas o criador desta adaptação pode editá-la ou excluí-la.');
         }
     }
 
@@ -58,17 +58,17 @@ class PeiDisciplineService
         $disciplineId = $data['discipline_id'] ?? null;
         $teacherId = $data['teacher_id'] ?? null;
 
-        if (!$disciplineId) {
-            throw new Exception("Disciplina não informada.");
+        if (! $disciplineId) {
+            throw new Exception('Disciplina não informada.');
         }
 
-        if (!$teacherId) {
-            throw new Exception("Professor não informado.");
+        if (! $teacherId) {
+            throw new Exception('Professor não informado.');
         }
 
         $exists = PeiDiscipline::where('pei_id', $pei->id)->where('discipline_id', $disciplineId)->first();
         if ($exists) {
-            throw new Exception("Já existe uma adaptação para essa disciplina nesse PEI. Caso precise de alterações edite à existente");
+            throw new Exception('Já existe uma adaptação para essa disciplina nesse PEI. Caso precise de alterações edite à existente');
         }
 
         $this->assertDisciplineInStudentCourse($pei, (int) $disciplineId);
@@ -104,12 +104,12 @@ class PeiDisciplineService
         $disciplineId = $data['discipline_id'] ?? $peiDiscipline->discipline_id;
         $teacherId = $data['teacher_id'] ?? $peiDiscipline->teacher_id;
 
-        if (!$disciplineId) {
-            throw new Exception("Disciplina não informada.");
+        if (! $disciplineId) {
+            throw new Exception('Disciplina não informada.');
         }
 
-        if (!$teacherId) {
-            throw new Exception("Professor não informado.");
+        if (! $teacherId) {
+            throw new Exception('Professor não informado.');
         }
 
         $this->assertDisciplineInStudentCourse($peiDiscipline->pei, (int) $disciplineId);
@@ -155,12 +155,12 @@ class PeiDisciplineService
         // tenta obter course_id do PEI ou do contexto do aluno (currentCourse)
         $courseId = $pei->course_id ?? $pei->student->currentCourse?->course_id ?? null;
 
-        if (!$courseId) {
-            throw new Exception("Curso do PEI / curso atual do aluno não está definido.");
+        if (! $courseId) {
+            throw new Exception('Curso do PEI / curso atual do aluno não está definido.');
         }
 
         $course = Course::find($courseId);
-        if (!$course) {
+        if (! $course) {
             throw new Exception("Curso relacionado ao PEI não encontrado (id: {$courseId}).");
         }
 
@@ -169,7 +169,7 @@ class PeiDisciplineService
             ->where('disciplines.id', $disciplineId)
             ->exists();
 
-        if (!$has) {
+        if (! $has) {
             throw new Exception("Disciplina selecionada (id: {$disciplineId}) não faz parte do curso do aluno (id: {$courseId}).");
         }
     }
@@ -183,12 +183,12 @@ class PeiDisciplineService
         // reusa a lógica do course do PEI
         $courseId = $pei->course_id ?? $pei->student->currentCourse?->course_id ?? null;
 
-        if (!$courseId) {
-            throw new Exception("Curso do PEI / curso atual do aluno não está definido.");
+        if (! $courseId) {
+            throw new Exception('Curso do PEI / curso atual do aluno não está definido.');
         }
 
         $course = Course::find($courseId);
-        if (!$course) {
+        if (! $course) {
             throw new Exception("Curso relacionado ao PEI não encontrado (id: {$courseId}).");
         }
 
@@ -197,7 +197,7 @@ class PeiDisciplineService
             ->where('disciplines.id', $disciplineId)
             ->exists();
 
-        if (!$inGrade) {
+        if (! $inGrade) {
             throw new Exception("Disciplina (id: {$disciplineId}) não está presente na grade do curso (id: {$courseId}).");
         }
     }
@@ -210,7 +210,7 @@ class PeiDisciplineService
     private function assertTeacherCompatibleWithDisciplineAndCourse(Pei $pei, int $teacherId, int $disciplineId)
     {
         $teacher = Teacher::find($teacherId);
-        if (!$teacher) {
+        if (! $teacher) {
             throw new Exception("Professor não encontrado (id: {$teacherId}).");
         }
 
@@ -218,18 +218,18 @@ class PeiDisciplineService
         $teachesDiscipline = $teacher->disciplines()
             ->where('disciplines.id', $disciplineId)
             ->exists();
-        if (!$teachesDiscipline) {
+        if (! $teachesDiscipline) {
             throw new Exception("O professor (id: {$teacherId}) não está associado a essa disciplina (id: {$disciplineId}).");
         }
 
         // verifica se o professor está vinculado ao course do PEI / curso atual do aluno
         $courseId = $pei->course_id ?? $pei->student->currentCourse?->course_id ?? null;
-        if (!$courseId) {
-            throw new Exception("Curso do PEI / curso atual do aluno não está definido.");
+        if (! $courseId) {
+            throw new Exception('Curso do PEI / curso atual do aluno não está definido.');
         }
 
         $teachesInCourse = $teacher->courses()->where('courses.id', $courseId)->exists();
-        if (!$teachesInCourse) {
+        if (! $teachesInCourse) {
             throw new Exception("O professor (id: {$teacherId}) não está vinculado ao curso (id: {$courseId}).");
         }
     }

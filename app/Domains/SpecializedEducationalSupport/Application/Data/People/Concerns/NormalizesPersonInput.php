@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domains\SpecializedEducationalSupport\Application\Data\Students\Concerns;
+namespace App\Domains\SpecializedEducationalSupport\Application\Data\People\Concerns;
 
-trait NormalizesStudentInput
+trait NormalizesPersonInput
 {
     public static function prepareForPipeline(array $properties): array
     {

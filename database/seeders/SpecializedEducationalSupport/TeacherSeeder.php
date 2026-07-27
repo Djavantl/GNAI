@@ -2,15 +2,14 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
+use App\Models\SpecializedEducationalSupport\Course;
+use App\Models\SpecializedEducationalSupport\Person;
+use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-
-use App\Models\SpecializedEducationalSupport\Person;
-use App\Models\SpecializedEducationalSupport\Teacher;
-use App\Models\SpecializedEducationalSupport\Course;
-use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
-use App\Domains\Auth\Domain\Models\User;
 
 class TeacherSeeder extends Seeder
 {
@@ -30,17 +29,17 @@ class TeacherSeeder extends Seeder
                 $person = Person::firstOrCreate(
                     ['document' => $cpf],
                     [
-                        'name'       => $data['name'],
+                        'name' => $data['name'],
                         'birth_date' => now()->subYears(rand(28, 55))->format('Y-m-d'),
-                        'gender'     => $data['gender'],
-                        'email'      => strtolower(str_replace(' ', '.', $data['name'])) . '@escola.com',
+                        'gender' => $data['gender'],
+                        'email' => strtolower(str_replace(' ', '.', $data['name'])).'@escola.com',
                     ]
                 );
 
                 $teacher = Teacher::firstOrCreate(
                     ['person_id' => $person->id],
                     [
-                        'registration' => 'DOC' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                        'registration' => 'DOC'.str_pad($index + 1, 3, '0', STR_PAD_LEFT),
                     ]
                 );
 
@@ -57,8 +56,8 @@ class TeacherSeeder extends Seeder
 
                     foreach ($disciplineIds as $disciplineId) {
                         TeacherCourseDiscipline::firstOrCreate([
-                            'teacher_id'    => $teacher->id,
-                            'course_id'     => $course->id,
+                            'teacher_id' => $teacher->id,
+                            'course_id' => $course->id,
                             'discipline_id' => $disciplineId,
                         ]);
                     }
@@ -67,9 +66,9 @@ class TeacherSeeder extends Seeder
                 User::firstOrCreate(
                     ['email' => $person->email],
                     [
-                        'name'       => $person->name,
-                        'password'   => Hash::make('napne2026'),
-                        'role'       => 'teacher',
+                        'name' => $person->name,
+                        'password' => Hash::make('napne2026'),
+                        'role' => 'teacher',
                         'teacher_id' => $teacher->id,
                     ]
                 );
@@ -98,6 +97,6 @@ class TeacherSeeder extends Seeder
         $remainder2 = $sum2 % 11;
         $digit2 = ($remainder2 < 2) ? 0 : 11 - $remainder2;
 
-        return $base . $digit1 . $digit2;
+        return $base.$digit1.$digit2;
     }
 }

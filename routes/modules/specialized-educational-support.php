@@ -7,13 +7,14 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\DisciplineControlle
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\PositionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\TeacherController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use App\Http\Controllers\SpecializedEducationalSupport\{
     StudentDeficienciesController, StudentContextController,
     GuardianController,
     ProfessionalController, SessionController, SessionRecordController, PedagogicalRecordController,
     StudentCourseController, PendencyController, PeiController,
-    PeiEvaluationController, StudentDocumentController, TeacherController
+    PeiEvaluationController, StudentDocumentController
 };
 
 Route::middleware(['auth'])->group(function () {

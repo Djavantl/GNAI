@@ -58,7 +58,7 @@
                         'female' => 'Feminino',
                         'other' => 'Outro'
                     ]"
-                    :value="old('gender', 'not_specified')"
+                    :selected="old('gender', 'not_specified')"
                     required
                 />
             </div>

@@ -2,30 +2,25 @@
 
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\SpecializedEducationalSupport\PeiRequest;
-use App\Http\Requests\SpecializedEducationalSupport\SpecificObjectiveRequest;
-use App\Http\Requests\SpecializedEducationalSupport\ContentProgrammaticRequest;
-use App\Http\Requests\SpecializedEducationalSupport\MethodologyRequest;
-use App\Models\SpecializedEducationalSupport\Student;
+use App\Http\Requests\SpecializedEducationalSupport\PeiDisciplineRequest;
+use App\Models\SpecializedEducationalSupport\Discipline;
 use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\PeiDiscipline;
-use App\Models\SpecializedEducationalSupport\Course;
 use App\Models\SpecializedEducationalSupport\Semester;
-use App\Models\SpecializedEducationalSupport\Discipline;
-use App\Models\SpecializedEducationalSupport\Teacher;
-use App\Services\SpecializedEducationalSupport\PeiService;
-use App\Services\SpecializedEducationalSupport\PeiDisciplineService;
-use App\Domains\Auth\Domain\Models\User;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Requests\SpecializedEducationalSupport\PeiDisciplineRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
+use App\Services\SpecializedEducationalSupport\PeiDisciplineService;
+use App\Services\SpecializedEducationalSupport\PeiService;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PeiController extends Controller
 {
     protected PeiService $peiService;
+
     protected PeiDisciplineService $peiDisciplineService;
 
     public function __construct(PeiService $service, PeiDisciplineService $disciplineService)
@@ -69,8 +64,6 @@ class PeiController extends Controller
 
         $disciplines = Discipline::orderBy('name')
             ->get(['id', 'name']);
- 
-            
 
         if ($request->ajax()) {
             return view(
@@ -90,7 +83,7 @@ class PeiController extends Controller
         $pei->load([
             'student.person',
             'student.deficiencies',
-            'studentContext'
+            'studentContext',
         ]);
 
         $student = $pei->student;
@@ -111,19 +104,19 @@ class PeiController extends Controller
         $student->ensureIsActive();
 
         $studentCourse = $student->currentCourse()->first();
-        if (!$studentCourse) {
+        if (! $studentCourse) {
             return redirect()->back()->with('error', 'Este aluno não possui matrícula vigente');
         }
-        
+
         $course = $studentCourse->course;
 
         $currentContext = $student->contexts()->where('is_current', true)->first();
-        if (!$currentContext) {
+        if (! $currentContext) {
             return redirect()->back()->with('error', 'Este aluno não possui um contexto atual');
         }
 
         $semester = Semester::current();
-        if (!$semester) {
+        if (! $semester) {
             return redirect()->back()->with('error', 'O sistema não possui semestre atual configurado');
         }
 
@@ -133,12 +126,12 @@ class PeiController extends Controller
     }
 
     public function store(Student $student)
-    {   
+    {
         $student->ensureIsActive();
 
         try {
             $pei = $this->service->create($student);
- 
+
             return redirect()
                 ->route('specialized-educational-support.pei.show', $pei)
                 ->with('success', 'PEI gerado com sucesso.');
@@ -176,7 +169,7 @@ class PeiController extends Controller
             return redirect()
                 ->back()
                 ->with('error', $e->getMessage());
-        } 
+        }
     }
 
     // public function createVersion(Student $student)
@@ -192,7 +185,7 @@ class PeiController extends Controller
     //     }
     // }
 
-   public function generateDisciplinePdf(Pei $pei, PeiDiscipline $peiDiscipline)
+    public function generateDisciplinePdf(Pei $pei, PeiDiscipline $peiDiscipline)
     {
         // Garante que a disciplina pertence ao PEI informado
         if ($peiDiscipline->pei_id !== $pei->id) {
@@ -204,17 +197,18 @@ class PeiController extends Controller
             'student.deficiencies',
             'studentContext',
             'course',
-            'semester'
+            'semester',
         ]);
 
         $peiDiscipline->load(['discipline', 'teacher.person']);
 
         $pdf = Pdf::loadView('pages.specialized-educational-support.peis.pdf', [
             'pei' => $pei,
-            'item' => $peiDiscipline
+            'item' => $peiDiscipline,
         ])->setPaper('a4', 'portrait');
 
         $disciplineName = str_replace(' ', '_', $peiDiscipline->discipline->name);
+
         return $pdf->stream("PEI_{$disciplineName}.pdf");
     }
 
@@ -225,7 +219,7 @@ class PeiController extends Controller
             'student.deficiencies',
             'studentContext',
             'course',
-            'semester'
+            'semester',
         ]);
 
         $peiDisciplines = $pei->peiDisciplines()
@@ -235,14 +229,13 @@ class PeiController extends Controller
 
         $pdf = Pdf::loadView('pages.specialized-educational-support.peis.pdf-complete', [
             'pei' => $pei,
-            'peiDisciplines' => $peiDisciplines
+            'peiDisciplines' => $peiDisciplines,
         ])->setPaper('a4', 'portrait');
 
         $studentName = str_replace(' ', '_', $pei->student->person->name);
 
         return $pdf->stream("PEI_COMPLETO_{$studentName}_v{$pei->version}.pdf");
     }
-
 
     public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline)
     {
@@ -266,7 +259,7 @@ class PeiController extends Controller
 
         // pega o curso atual do aluno ( StudentCourse )
         $studentCourse = $pei->student->currentCourse()->first();
-        if (!$studentCourse) {
+        if (! $studentCourse) {
             return redirect()->back()->with('error', 'Este aluno não possui matrícula vigente.');
         }
 
@@ -301,7 +294,6 @@ class PeiController extends Controller
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
-    
 
     /**
      * Exibe formulário de edição
@@ -332,7 +324,7 @@ class PeiController extends Controller
     {
         $student = $pei->student;
         $student->ensureIsActive();
-        
+
         try {
             $this->disciplineService->update($peiDiscipline, $request->validated());
 
@@ -360,7 +352,7 @@ class PeiController extends Controller
         }
     }
 
-     /**
+    /**
      * Retorna via JSON as disciplinas que o professor leciona dentro do curso do PEI.
      * Usa query param teacher_id (GET).
      */

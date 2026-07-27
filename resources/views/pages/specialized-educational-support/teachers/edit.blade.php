@@ -72,8 +72,7 @@
                         'female' => 'Feminino',
                         'other' => 'Outro'
                     ]"
-                    :value="old('gender', $teacher->person->gender)"
-                    :selected="old('gender', $teacher->person->gender)"
+                    :selected="old('gender', $teacher->person->gender?->value)"
                 />
             </div>
 

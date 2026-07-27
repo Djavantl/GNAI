@@ -13,7 +13,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Phone;
 use App\Models\AuditLog;
 use App\Models\SpecializedEducationalSupport\Guardian;
 use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Teacher;
 use App\Models\Traits\Auditable;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\PersonFactory;
