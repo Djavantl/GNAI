@@ -15,7 +15,8 @@ Route::middleware('web')->group(function () {
         ->name('specialized-educational-support.')
         ->group(base_path('routes/modules/specialized-educational-support.php'));
 
-    Route::prefix('backup')
+    Route::middleware(['auth'])
+        ->prefix('backup')
         ->name('backup.')
         ->group(base_path('routes/modules/backup.php'));
 
@@ -37,14 +38,8 @@ Route::middleware('web')->group(function () {
         Route::get('/notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
         Route::get('/notifications/list', [NotificationController::class, 'list'])->name('notifications.list');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-        Route::get('/notifications', [NotificationController::class, 'index'])
-        ->name('notifications.index');
-
-    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
-        ->name('notifications.read');
-
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
-        ->name('notifications.readAll');
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+            ->name('notifications.readAll');
     });
 
     Route::get('/about-us', fn() => view('pages.about-us'))->name('about-us');
