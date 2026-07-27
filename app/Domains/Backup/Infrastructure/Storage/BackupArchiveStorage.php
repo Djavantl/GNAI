@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Process\Process;
@@ -64,10 +65,9 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
      */
     public function storeUploadedArchive(UploadedFile $file): BackupArchiveMetadata
     {
-        $fileName = $file->getClientOriginalName();
-
         $this->assertBackupArchiveIsValid((string) $file->getRealPath());
 
+        $fileName = $this->generateUploadedArchiveFileName();
         $path = $this->disk->putFileAs($this->backupFolderName(), $file, $fileName);
 
         if ($path === false) {
@@ -78,6 +78,15 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
             fileName: $fileName,
             filePath: $path,
             size: $this->formatBytes($file->getSize()),
+        );
+    }
+
+    private function generateUploadedArchiveFileName(): string
+    {
+        return sprintf(
+            'uploaded-backup-%s-%s.zip',
+            now()->format('Ymd-His'),
+            Str::random(12),
         );
     }
 

@@ -50,8 +50,8 @@ final class FakeBackupArchiveStorage implements BackupArchiveStorageContract
     public function storeUploadedArchive(UploadedFile $file): BackupArchiveMetadata
     {
         return $this->uploadedArchive ?? new BackupArchiveMetadata(
-            fileName: $file->getClientOriginalName(),
-            filePath: 'GNAIbackups/'.$file->getClientOriginalName(),
+            fileName: 'uploaded-backup-test.zip',
+            filePath: 'GNAIbackups/uploaded-backup-test.zip',
             size: '1 MB',
         );
     }
