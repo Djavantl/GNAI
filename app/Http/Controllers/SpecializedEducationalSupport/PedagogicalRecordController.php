@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
 use App\Http\Controllers\Controller;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Http\Requests\SpecializedEducationalSupport\PedagogicalRecordRequest;
 use App\Models\SpecializedEducationalSupport\PedagogicalRecord;
-use App\Models\SpecializedEducationalSupport\Session;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Services\SpecializedEducationalSupport\PedagogicalRecordService;
 use Barryvdh\DomPDF\Facade\Pdf;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
 use App\Http\Controllers\Controller;
-use App\Models\SpecializedEducationalSupport\Session; 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Models\SpecializedEducationalSupport\SessionRecord;
 use App\Services\SpecializedEducationalSupport\SessionRecordService;
 use App\Http\Requests\SpecializedEducationalSupport\SessionRecordRequest;

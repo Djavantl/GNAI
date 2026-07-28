@@ -2,9 +2,10 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
-use App\Enums\SpecializedEducationalSupport\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Models\SpecializedEducationalSupport\SessionRecord;
-use App\Models\SpecializedEducationalSupport\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SpecializedEducationalSupport\Student;
@@ -13,11 +14,6 @@ use Exception;
 
 class SessionRecordService
 {
-    private function normalizeStatus(?string $status): string
-    {
-        return mb_strtolower(trim((string) $status));
-    }
-
     private function userCanViewAll(): bool
     {
         return Auth::user()?->can('session-record.view-all') ?? false;
@@ -89,7 +85,7 @@ class SessionRecordService
 
     private function ensureScheduledSession(Session $session, string $action): void
     {
-        if (!in_array($this->normalizeStatus($session->status), ['agendada', 'agendado', 'scheduled'], true)) {
+        if (! SessionStatus::isScheduledValue($session->status)) {
             throw new Exception("O agendamento precisa estar com status Agendada para {$action}.");
         }
     }
@@ -118,7 +114,7 @@ class SessionRecordService
         $this->ensureAssignedProfessional($session, 'criar o registro deste agendamento');
         $this->ensureScheduledSession($session, 'criar o registro deste agendamento');
 
-        if (($session->attendance_type ?? AttendanceType::AEE->value) !== AttendanceType::AEE->value) {
+        if (! AttendanceType::isAee($session->attendance_type)) {
             throw new Exception('Este agendamento está classificado como Atendimento Pedagógico e não pode receber Atendimento AEE.');
         }
 
@@ -206,7 +202,7 @@ class SessionRecordService
         $this->ensureCanCreateForSession($session);
 
         return DB::transaction(function () use ($session, $data) {
-            $session->update(['status' => 'Realizada']);
+            $session->update(['status' => SessionStatus::COMPLETED_DATABASE_VALUE]);
 
             // 1. Cria o registro principal (o que o profissional fez)
             $sessionRecord = SessionRecord::create([

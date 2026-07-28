@@ -32,8 +32,8 @@
                     name="attendance_type"
                     label="Tipo de Atendimento"
                     required
-                    :options="\App\Models\SpecializedEducationalSupport\Session::attendanceTypeOptions()"
-                    :selected="old('attendance_type', \App\Enums\SpecializedEducationalSupport\AttendanceType::AEE->value)"
+                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::options()"
+                    :selected="old('attendance_type', \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::AEE->value)"
                     id="attendance_type"
                 />
             </div>
@@ -44,7 +44,7 @@
                     name="type"
                     label="Formato"
                     required
-                    :options="['individual' => 'Individual', 'group' => 'Em Grupo']"
+                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::options()"
                     :selected="old('type', 'individual')"
                     id="session_type"
                 />

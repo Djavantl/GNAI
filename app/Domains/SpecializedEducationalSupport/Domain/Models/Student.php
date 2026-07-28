@@ -9,7 +9,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\UpdateStudent
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
 use App\Models\SpecializedEducationalSupport\Pei;
-use App\Models\SpecializedEducationalSupport\Session;
 use App\Models\SpecializedEducationalSupport\StudentContext;
 use App\Models\SpecializedEducationalSupport\StudentCourse;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use DomainException;
-use App\Models\SpecializedEducationalSupport\Session;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Models\SpecializedEducationalSupport\Pendency;
 use App\Models\SpecializedEducationalSupport\Position;
 

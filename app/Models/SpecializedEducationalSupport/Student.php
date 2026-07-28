@@ -2,6 +2,7 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session as AttendanceSession;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Reportable;
@@ -220,7 +221,7 @@ class Student extends Model
     public function sessions()
     {
         return $this->belongsToMany(
-            Session::class, 
+            AttendanceSession::class,
             'attendance_session_student', 
             'student_id',                 
             'attendance_session_id'       

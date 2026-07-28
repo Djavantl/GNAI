@@ -19,6 +19,7 @@ class App {
         this.initSidebar();
         this.initActiveMenu();
         this.initNavbarScrollHide();
+        this.initPreventDoubleSubmit();
     }
 
     // ==================== SIDEBAR ====================
@@ -259,6 +260,47 @@ class App {
             });
             btn.addEventListener('hidden.bs.dropdown', () => {
                 handleScroll();
+            });
+        });
+    }
+
+    // ==================== PREVENÇÃO DE SUBMIT DUPLO ====================
+    initPreventDoubleSubmit() {
+        document.querySelectorAll('form').forEach(form => {
+            if (form.dataset.allowMultipleSubmit === 'true') {
+                return;
+            }
+
+            form.addEventListener('submit', event => {
+                if (form.dataset.submitting === 'true') {
+                    event.preventDefault();
+                    return;
+                }
+
+                form.dataset.submitting = 'true';
+
+                const submitter = event.submitter;
+
+                if (submitter?.name && submitter?.value) {
+                    const hiddenSubmitter = document.createElement('input');
+                    hiddenSubmitter.type = 'hidden';
+                    hiddenSubmitter.name = submitter.name;
+                    hiddenSubmitter.value = submitter.value;
+                    form.appendChild(hiddenSubmitter);
+                }
+
+                form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(button => {
+                    button.disabled = true;
+                    button.setAttribute('aria-busy', 'true');
+
+                    if (button instanceof HTMLButtonElement) {
+                        button.dataset.originalHtml = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Salvando...';
+                    } else if (button instanceof HTMLInputElement) {
+                        button.dataset.originalValue = button.value;
+                        button.value = 'Salvando...';
+                    }
+                });
             });
         });
     }
