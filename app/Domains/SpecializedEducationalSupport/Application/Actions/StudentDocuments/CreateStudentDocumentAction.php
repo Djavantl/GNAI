@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Application\Actions\StudentDocuments;
 
 use App\Domains\SpecializedEducationalSupport\Application\Data\StudentDocuments\CreateStudentDocumentData;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Semesters\CurrentSemesterQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentDocuments\CreateStudentDocumentDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudentDocument;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDocument;
 use App\Domains\SpecializedEducationalSupport\Infrastructure\Storage\StudentDocumentStorage;
@@ -18,6 +18,7 @@ final readonly class CreateStudentDocumentAction
 {
     public function __construct(
         private StudentDocumentStorage $storage,
+        private CurrentSemesterQuery $currentSemesterQuery,
     ) {}
 
     /**
@@ -39,15 +40,10 @@ final readonly class CreateStudentDocumentAction
                     ->findOrFail($student->getKey());
                 $lockedStudent->ensureIsActive();
 
-                $semester = Semester::query()
-                    ->where('is_current', true)
-                    ->sharedLock()
-                    ->first();
+                $semester = $this->currentSemesterQuery->execute();
 
-                if (! $semester instanceof Semester) {
-                    throw new InvalidStudentDocument(
-                        'Não existe semestre atual configurado no sistema.'
-                    );
+                if ($semester === null) {
+                    throw new InvalidStudentDocument('Não existe semestre atual configurado no sistema.');
                 }
 
                 $document = StudentDocument::register(

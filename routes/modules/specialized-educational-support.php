@@ -9,6 +9,7 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\PositionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\ProfessionalController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SessionController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentContextController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentCourseController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentDeficiencyController;
@@ -18,7 +19,6 @@ use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController
 use App\Http\Controllers\SpecializedEducationalSupport\PedagogicalRecordController;
 use App\Http\Controllers\SpecializedEducationalSupport\PeiController;
 use App\Http\Controllers\SpecializedEducationalSupport\SessionRecordController;
-use App\Http\Controllers\SpecializedEducationalSupport\StudentContextController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {

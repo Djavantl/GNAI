@@ -137,28 +137,28 @@
     <div class="row g-2 px-4 pb-3">
         <div class="col-md-3">
             <x-forms.select name="learning_level" label="Nível de Aprendizagem"
-                :options="['very_low'=>'Muito Baixo', 'low'=>'Baixo', 'adequate'=>'Adequado', 'good'=>'Bom', 'excellent'=>'Excelente']"
+                :options="$studentContextOptions['learningLevels']"
                 :selected="old('learning_level', $studentContext->learning_level)"
                 aria-label="Selecionar nível de aprendizagem" />
         </div>
 
         <div class="col-md-3">
             <x-forms.select name="attention_level" label="Nível de Atenção"
-                :options="['very_low'=>'Muito Baixo', 'low'=>'Baixo', 'moderate'=>'Moderado', 'high'=>'Alto']"
+                :options="$studentContextOptions['attentionLevels']"
                 :selected="old('attention_level', $studentContext->attention_level)"
                 aria-label="Selecionar nível de atenção" />
         </div>
 
         <div class="col-md-3">
             <x-forms.select name="memory_level" label="Nível de Memória"
-                :options="['low'=>'Baixa', 'moderate'=>'Moderada', 'good'=>'Boa']"
+                :options="$studentContextOptions['memoryLevels']"
                 :selected="old('memory_level', $studentContext->memory_level)"
                 aria-label="Selecionar nível de memória" />
         </div>
 
         <div class="col-md-3">
             <x-forms.select name="reasoning_level" label="Nível de Raciocínio"
-                :options="['concrete'=>'Concreto', 'mixed'=>'Misto', 'abstract'=>'Abstrato']"
+                :options="$studentContextOptions['reasoningLevels']"
                 :selected="old('reasoning_level', $studentContext->reasoning_level)"
                 aria-label="Selecionar nível de raciocínio" />
         </div>
@@ -175,37 +175,45 @@
     <div class="row g-2 px-4 pb-3">
         <div class="col-md-4">
             <x-forms.select name="communication_type" label="Tipo de Comunicação"
-                :options="['verbal'=>'Verbal', 'non_verbal'=>'Não verbal', 'mixed'=>'Mista']"
+                :options="$studentContextOptions['communicationTypes']"
                 :selected="old('communication_type', $studentContext->communication_type)"
                 aria-label="Selecionar tipo de comunicação" />
         </div>
 
         <div class="col-md-4">
             <x-forms.select name="interaction_level" label="Nível de Interação"
-                :options="['very_low'=>'Muito Baixo', 'low'=>'Baixo', 'moderate'=>'Moderado', 'good'=>'Bom']"
+                :options="$studentContextOptions['interactionLevels']"
                 :selected="old('interaction_level', $studentContext->interaction_level)"
                 aria-label="Selecionar nível de interação" />
         </div>
 
         <div class="col-md-4">
             <x-forms.select name="socialization_level" label="Nível de Socialização"
-                :options="['isolated'=>'Isolado', 'selective'=>'Seletivo', 'participative'=>'Participativo']"
+                :options="$studentContextOptions['socializationLevels']"
                 :selected="old('socialization_level', $studentContext->socialization_level)"
                 aria-label="Selecionar nível de socialização" />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="shows_aggressive_behavior" label="Comportamento Agressivo"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('shows_aggressive_behavior', $studentContext->shows_aggressive_behavior)"
-                aria-label="Indicar se possui comportamento agressivo" />
+            <input type="hidden" name="shows_aggressive_behavior" value="0">
+            <x-forms.checkbox
+                name="shows_aggressive_behavior"
+                label="Comportamento agressivo"
+                description="Marque se o aluno apresenta comportamento agressivo."
+                :checked="filter_var(old('shows_aggressive_behavior', $studentContext->shows_aggressive_behavior), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="shows_withdrawn_behavior" label="Comportamento Retraído"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('shows_withdrawn_behavior', $studentContext->shows_withdrawn_behavior)"
-                aria-label="Indicar se possui comportamento retraído" />
+            <input type="hidden" name="shows_withdrawn_behavior" value="0">
+            <x-forms.checkbox
+                name="shows_withdrawn_behavior"
+                label="Comportamento retraído"
+                description="Marque se o aluno apresenta comportamento retraído."
+                :checked="filter_var(old('shows_withdrawn_behavior', $studentContext->shows_withdrawn_behavior), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-12">
@@ -220,7 +228,7 @@
     <div class="row g-2 px-4 pb-3">
         <div class="col-md-12">
             <x-forms.select name="autonomy_level" label="Nível de Autonomia"
-                :options="['dependent'=>'Dependente', 'partial'=>'Parcial', 'independent'=>'Independente']"
+                :options="$studentContextOptions['autonomyLevels']"
                 :selected="old('autonomy_level', $studentContext->autonomy_level)"
                 aria-label="Selecionar nível de autonomia" />
         </div>
@@ -271,17 +279,25 @@
 
     <div class="row g-2 px-4 pb-3">
         <div class="col-md-6">
-            <x-forms.select name="has_medical_report" label="Possui Laudo Médico"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('has_medical_report', $studentContext->has_medical_report)"
-                aria-label="Indicar se possui laudo médico" />
+            <input type="hidden" name="has_medical_report" value="0">
+            <x-forms.checkbox
+                name="has_medical_report"
+                label="Possui laudo médico"
+                description="Marque se o aluno possui laudo médico."
+                :checked="filter_var(old('has_medical_report', $studentContext->has_medical_report), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="uses_medication" label="Usa Medicação"
-                :options="[1=>'Sim', 0=>'Não']"
-                :selected="old('uses_medication', $studentContext->uses_medication)"
-                aria-label="Indicar se faz uso de medicação" />
+            <input type="hidden" name="uses_medication" value="0">
+            <x-forms.checkbox
+                name="uses_medication"
+                label="Usa medicação"
+                description="Marque se o aluno faz uso de medicação."
+                :checked="filter_var(old('uses_medication', $studentContext->uses_medication), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-12">

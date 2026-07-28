@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDocuments;
 
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Semesters\CurrentSemesterQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentDocumentType;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudentDocument;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
@@ -12,6 +13,10 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDocument;
 
 final class StudentDocumentFormQuery
 {
+    public function __construct(
+        private readonly CurrentSemesterQuery $currentSemesterQuery,
+    ) {}
+
     public function forIndex(Student $student): array
     {
         return [
@@ -32,11 +37,18 @@ final class StudentDocumentFormQuery
     public function forCreation(Student $student): array
     {
         $student->ensureIsActive();
+        $semester = $this->currentSemesterQuery->execute();
+
+        if ($semester === null) {
+            throw new InvalidStudentDocument(
+                'Não existe semestre atual configurado no sistema.'
+            );
+        }
 
         return [
             'student' => $student->loadMissing('person'),
             'types' => StudentDocumentType::labels(),
-            'semester' => $this->currentSemester(),
+            'semester' => $semester,
         ];
     }
 
@@ -49,27 +61,7 @@ final class StudentDocumentFormQuery
             'studentDocument' => $document,
             'student' => $student->loadMissing('person'),
             'types' => StudentDocumentType::labels(),
-            'semester' => Semester::query()
-                ->where('is_current', true)
-                ->first(),
+            'semester' => $this->currentSemesterQuery->execute(),
         ];
-    }
-
-    /**
-     * @throws InvalidStudentDocument
-     */
-    private function currentSemester(): Semester
-    {
-        $semester = Semester::query()
-            ->where('is_current', true)
-            ->first();
-
-        if (! $semester instanceof Semester) {
-            throw new InvalidStudentDocument(
-                'Não existe semestre atual configurado no sistema.'
-            );
-        }
-
-        return $semester;
     }
 }

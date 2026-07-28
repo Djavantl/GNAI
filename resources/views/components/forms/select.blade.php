@@ -10,6 +10,9 @@
 
 @php
     $elementId = $attributes->get('id') ?? $name;
+    $selectedValue = old($name, $selected);
+    $selectedValue = is_bool($selectedValue) ? (int) $selectedValue : $selectedValue;
+    $hasSelectedValue = $selectedValue !== null && $selectedValue !== '';
 @endphp
 
 <div {{ $attributes->except('id')->merge(['class' => 'mb-3']) }}>
@@ -32,7 +35,7 @@
                        ($errors->has($name) ? ' is-invalid ' : '')
         ]) }}
     >
-        <option value="" {{ empty(old($name, $selected)) ? 'selected' : '' }}>
+        <option value="" {{ ! $hasSelectedValue ? 'selected' : '' }}>
             Selecione uma opção...
         </option>
 
@@ -48,7 +51,7 @@
             <option
                 value="{{ $value }}"
                 data-digital="{{ $isDigital ? '1' : '0' }}"
-                {{ (string) old($name, $selected) === (string) $value ? 'selected' : '' }}
+                {{ (string) $selectedValue === (string) $value ? 'selected' : '' }}
             >
                 {{ $labelOption }}
             </option>
