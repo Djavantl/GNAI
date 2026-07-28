@@ -2,6 +2,9 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
 use Illuminate\Database\Eloquent\Model;
 
 class TeacherCourseDiscipline extends Model

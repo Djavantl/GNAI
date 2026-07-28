@@ -2,12 +2,11 @@
 
 namespace App\Models\SpecializedEducationalSupport;
 
+use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Domains\Auth\Domain\Models\User;
-use App\Models\Traits\Reportable;
 
 class PeiDiscipline extends Model
 {
@@ -34,7 +33,7 @@ class PeiDiscipline extends Model
     {
         return $this->belongsTo(Pei::class, 'pei_id');
     }
-    
+
     public function discipline(): BelongsTo
     {
         return $this->belongsTo(Discipline::class);
@@ -50,46 +49,47 @@ class PeiDiscipline extends Model
         return $this->belongsTo(Teacher::class);
     }
 
-       public function creator(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function getTeacherDisplayNameAttribute(): string
-    {   
+    {
         return $this->teacher->person->name ?? 'Professor s/ Nome';
     }
 
-        public function getCreatorNameAttribute(): string
+    public function getCreatorNameAttribute(): string
     {
         if ($this->creator->is_admin) {
-            return 'admin'; 
+            return 'admin';
         } elseif ($this->creator->name) {
-            return $this->creator->name; 
-        } 
+            return $this->creator->name;
+        }
 
         return 'Sistema/Desconhecido';
     }
 
     public function scopeDiscipline($query, ?int $disciplineId)
     {
-        if (!$disciplineId) return $query;
+        if (! $disciplineId) {
+            return $query;
+        }
 
         return $query->where('discipline_id', $disciplineId);
     }
 
-
     public function scopeVisibleToUser($query, $user)
     {
         // só aplica a regra se for professor
-        if (!$user->teacher_id) {
+        if (! $user->teacher_id) {
             return $query;
         }
 
         return $query->whereIn('discipline_id', function ($q) use ($user) {
             $q->select('discipline_id')
-            ->from('discipline_teacher')
-            ->where('teacher_id', $user->teacher_id);
+                ->from('discipline_teacher')
+                ->where('teacher_id', $user->teacher_id);
         });
     }
 }
