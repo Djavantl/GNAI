@@ -62,24 +62,21 @@
                         @endcan
 
                         @can('student-document.delete')
-                            <form action="{{ route('specialized-educational-support.student-documents.destroy', $document) }}"
-                                  method="POST"
-                                  class="d-inline">
-                                <x-buttons.submit-button
-                                    type="button"
-                                    variant="danger"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#globalConfirmActionModal"
-                                    data-confirm-title="Excluir Documento"
-                                    data-confirm-message="Deseja excluir este documento permanentemente?"
-                                    data-confirm-action="{{ route('specialized-educational-support.student-documents.destroy', $document) }}"
-                                    data-confirm-method="DELETE"
-                                    data-confirm-submit-text="Confirmar Exclusao"
-                                    data-confirm-variant="danger"
-                                    title="Excluir arquivo"
-                                >
-                                    <i class="fas fa-trash"></i> Excluir
-                                </x-buttons.submit-button>
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Excluir Documento"
+                                data-confirm-message="Deseja excluir este documento permanentemente?"
+                                data-confirm-action="{{ route('specialized-educational-support.student-documents.destroy', $document) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-submit-text="Confirmar Exclusão"
+                                data-confirm-variant="danger"
+                                title="Excluir arquivo"
+                            >
+                                <i class="fas fa-trash"></i> Excluir
+                            </x-buttons.submit-button>
                         @endcan
                     @else
                         <span class="text-purple-light">Nenhuma ação</span>
