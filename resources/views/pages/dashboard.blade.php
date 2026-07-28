@@ -32,7 +32,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">Alunos</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalStudents ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $specializedEducationalSupport['totalStudents'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -48,7 +48,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">Equipe</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalProfessionals ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $specializedEducationalSupport['totalProfessionals'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -64,7 +64,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">PEIs OK</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalPeisFinished ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $specializedEducationalSupport['totalPeisFinished'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -80,7 +80,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">Agendamentos</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalSessions ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $specializedEducationalSupport['totalSessions'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -96,7 +96,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">Pendências</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalPendingPendencies ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $specializedEducationalSupport['totalPendingPendencies'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -112,7 +112,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">Atrasadas</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalOverduePendencies ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $specializedEducationalSupport['totalOverduePendencies'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -139,15 +139,15 @@
                     <div class="mt-4 pt-3 border-top">
                         <div class="d-flex justify-content-between mb-2 small">
                             <span class="text-muted"><i class="bi bi-circle-fill me-1 text-success"></i> Finalizados</span>
-                            <span class="fw-bold">{{ $totalPeisFinished ?? 0 }}</span>
+                            <span class="fw-bold">{{ $specializedEducationalSupport['totalPeisFinished'] ?? 0 }}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2 small">
                             <span class="text-muted"><i class="bi bi-circle-fill me-1 text-warning"></i> Não Finalizados</span>
-                            <span class="fw-bold">{{ $totalPeisNotFinished ?? 0 }}</span>
+                            <span class="fw-bold">{{ $specializedEducationalSupport['totalPeisNotFinished'] ?? 0 }}</span>
                         </div>
                         <div class="d-flex justify-content-between small">
                             <span class="text-muted"><i class="bi bi-circle-fill me-1 text-primary"></i> Total Geral</span>
-                            <span class="fw-bold">{{ $totalPeis ?? 0 }}</span>
+                            <span class="fw-bold">{{ $specializedEducationalSupport['totalPeis'] ?? 0 }}</span>
                         </div>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">Tecnologias Assistivas</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalAt ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $inclusiveRadar['totalAt'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -195,7 +195,7 @@
                                 </div>
                                 <h6 class="dashboard-kpi-title text-muted fw-bold">Materiais Pedagógicos Acessíveis</h6>
                             </div>
-                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalAem ?? 0 }}</h3>
+                            <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $inclusiveRadar['totalAem'] ?? 0 }}</h3>
                         </div>
                     </div>
                 </a>
@@ -212,7 +212,7 @@
                                     </div>
                                     <h6 class="dashboard-kpi-title text-muted fw-bold">Empréstimos</h6>
                                 </div>
-                                <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $totalLoans ?? 0 }}</h3>
+                                <h3 class="dashboard-kpi-value text-title mt-2 mb-0">{{ $inclusiveRadar['totalLoans'] ?? 0 }}</h3>
                             </a>
                         </div>
 
@@ -225,7 +225,7 @@
                                 </span>
                                 </div>
                                 <span class="dashboard-waitlist-badge badge bg-info text-white rounded-pill">
-                                {{ $totalWaiting ?? 0 }}
+                                {{ $inclusiveRadar['totalWaiting'] ?? 0 }}
                             </span>
                             </a>
                         </div>
@@ -242,7 +242,7 @@
                         <canvas id="doughnutChartBarriers"></canvas>
                     </div>
                     <div class="mt-4 pt-3 border-top text-center">
-                        <span class="text-muted small">Total Identificado: <strong>{{ $totalBarriers ?? 0 }}</strong></span>
+                        <span class="text-muted small">Total Identificado: <strong>{{ $inclusiveRadar['totalBarriers'] ?? 0 }}</strong></span>
                     </div>
                 </div>
             </div>
@@ -298,15 +298,15 @@
 
     <script>
         window.dashboardData = {
-            students: {{ $totalStudents ?? 0 }},
-            professionals: {{ $totalProfessionals ?? 0 }},
-            peiTotal: {{ $totalPeis ?? 0 }},
-            peiFinished: {{ $totalPeisFinished ?? 0 }},
-            peiNotFinished: {{ $totalPeisNotFinished ?? 0 }},
-            pendenciesByPriority: @json($pendenciesByPriority ?? []),
-            sessionsByStatus: @json($sessionsByStatus ?? []),
-            barrierStatuses: @json($barrierStatusCounts ?? []),
-            mapBarriers: @json($mapBarriers ?? []),
+            students: {{ $specializedEducationalSupport['totalStudents'] ?? 0 }},
+            professionals: {{ $specializedEducationalSupport['totalProfessionals'] ?? 0 }},
+            peiTotal: {{ $specializedEducationalSupport['totalPeis'] ?? 0 }},
+            peiFinished: {{ $specializedEducationalSupport['totalPeisFinished'] ?? 0 }},
+            peiNotFinished: {{ $specializedEducationalSupport['totalPeisNotFinished'] ?? 0 }},
+            pendenciesByPriority: @json($specializedEducationalSupport['pendenciesByPriority'] ?? []),
+            sessionsByStatus: @json($specializedEducationalSupport['sessionsByStatus'] ?? []),
+            barrierStatuses: @json($inclusiveRadar['barrierStatusCounts'] ?? []),
+            mapBarriers: @json($inclusiveRadar['mapBarriers'] ?? []),
 
             colors: {
                 primary: '#4D44B5',

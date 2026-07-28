@@ -3,9 +3,9 @@
 use App\Domains\Auth\UI\Controllers\ForgotPasswordController;
 use App\Domains\Auth\UI\Controllers\ImpersonationController;
 use App\Domains\Auth\UI\Controllers\LoginController;
+use App\Domains\Auth\UI\Controllers\ProfileController;
 use App\Domains\Auth\UI\Controllers\ResetPasswordController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
+use App\Domains\Dashboard\UI\Controllers\DashboardController;
 
 Route::get('/', function () {
     return auth()->check()
