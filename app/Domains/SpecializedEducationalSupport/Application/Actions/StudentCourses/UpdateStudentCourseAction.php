@@ -34,14 +34,13 @@ final readonly class UpdateStudentCourseAction
                 ->findOrFail($studentCourse->getKey());
             $lockedStudentCourse->student->ensureIsActive();
 
-            $lockedCourse = Course::query()
-                ->lockForUpdate()
+            $course = Course::query()
                 ->findOrFail($data->courseId);
-            $lockedCourse->ensureIsActive();
+            $course->ensureIsActive();
 
             $studentAlreadyHasCourse = StudentCourse::query()
                 ->where('student_id', $lockedStudentCourse->student_id)
-                ->where('course_id', $lockedCourse->getKey())
+                ->where('course_id', $course->getKey())
                 ->where('id', '!=', $lockedStudentCourse->getKey())
                 ->exists();
 
@@ -68,7 +67,7 @@ final readonly class UpdateStudentCourseAction
             );
 
             $lockedStudentCourse->revise(
-                course: $lockedCourse,
+                course: $course,
                 data: $studentCourseDTO,
             );
 

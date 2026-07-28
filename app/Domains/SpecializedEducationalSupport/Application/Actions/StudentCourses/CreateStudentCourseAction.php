@@ -34,14 +34,13 @@ final readonly class CreateStudentCourseAction
                 ->findOrFail($student->getKey());
             $lockedStudent->ensureIsActive();
 
-            $lockedCourse = Course::query()
-                ->lockForUpdate()
+            $course = Course::query()
                 ->findOrFail($data->courseId);
-            $lockedCourse->ensureIsActive();
+            $course->ensureIsActive();
 
             $studentAlreadyHasCourse = StudentCourse::query()
                 ->where('student_id', $lockedStudent->getKey())
-                ->where('course_id', $lockedCourse->getKey())
+                ->where('course_id', $course->getKey())
                 ->exists();
 
             if ($studentAlreadyHasCourse) {
@@ -67,7 +66,7 @@ final readonly class CreateStudentCourseAction
 
             $studentCourse = StudentCourse::register(
                 student: $lockedStudent,
-                course: $lockedCourse,
+                course: $course,
                 data: $studentCourseDTO,
             );
 

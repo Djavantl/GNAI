@@ -9,7 +9,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentContexts\Update
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\ContextEvaluationType;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudentContext;
 use App\Models\AuditLog;
-use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -16,11 +16,9 @@ final readonly class DeleteStudentCourseAction
     public function execute(StudentCourse $studentCourse): void
     {
         DB::transaction(function () use ($studentCourse): void {
-            $lockedStudentCourse = StudentCourse::query()
-                ->lockForUpdate()
-                ->findOrFail($studentCourse->getKey());
-
-            $lockedStudentCourse->delete();
+            StudentCourse::query()
+                ->findOrFail($studentCourse->getKey())
+                ->delete();
         });
     }
 }
