@@ -9,7 +9,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Semesters\UpdateSemest
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidSemester;
 use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\StudentContext;
-use App\Models\SpecializedEducationalSupport\StudentDocument;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\SemesterFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;

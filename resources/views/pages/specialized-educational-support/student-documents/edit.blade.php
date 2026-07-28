@@ -56,7 +56,7 @@
                 isBox="true"
             />
 
-            <x-forms.section title="Arquivo e Versão" />
+            <x-forms.section title="Arquivo" />
 
             <div class="col-md-12 mb-4">
                 <label class="form-label fw-bold">Substituir Arquivo</label>
