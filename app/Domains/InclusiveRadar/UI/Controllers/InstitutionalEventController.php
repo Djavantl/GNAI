@@ -15,7 +15,6 @@ use App\Domains\InclusiveRadar\Application\Queries\InstitutionalEvents\ListInsti
 use App\Domains\InclusiveRadar\Application\Queries\InstitutionalEvents\ShowInstitutionalEventQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitutionalEvent;
 use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
-use App\Http\Controllers\Concerns\ResolvesBackRoute;
 use App\Http\Controllers\Controller;
 use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -26,8 +25,6 @@ use Illuminate\View\View;
 
 final class InstitutionalEventController extends Controller
 {
-    use ResolvesBackRoute;
-
     public function index(ListInstitutionalEventsData $filters, ListInstitutionalEventsQuery $query, Request $request): View
     {
         $events = $query->execute($filters);
@@ -47,7 +44,8 @@ final class InstitutionalEventController extends Controller
 
     public function create(Request $request): View
     {
-        $backRoute = $this->resolveBackRoute($request, 'inclusive-radar.institutional-events.index');
+        $backRoute = $request->query('back')
+            ?? route('inclusive-radar.institutional-events.index');
 
         return view('pages.inclusive-radar.institutional-events.create', compact('backRoute'));
     }
@@ -67,7 +65,8 @@ final class InstitutionalEventController extends Controller
     public function show(Request $request, InstitutionalEvent $event, ShowInstitutionalEventQuery $query): View
     {
         $event = $query->execute($event);
-        $backRoute = $this->resolveBackRoute($request, 'inclusive-radar.institutional-events.index');
+        $backRoute = $request->query('back')
+            ?? route('inclusive-radar.institutional-events.index');
 
         return view('pages.inclusive-radar.institutional-events.show', compact('event', 'backRoute'));
     }

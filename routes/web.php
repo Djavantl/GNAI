@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\NotificationController;
+use App\Domains\Notifications\UI\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
     Route::redirect('/', '/about-us');
@@ -42,5 +42,5 @@ Route::middleware('web')->group(function () {
             ->name('notifications.readAll');
     });
 
-    Route::get('/about-us', fn() => view('pages.about-us'))->name('about-us');
+    Route::get('/about-us', fn () => view('pages.about-us'))->name('about-us');
 });
