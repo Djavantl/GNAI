@@ -31,7 +31,7 @@
             </a>
         </li>
 
-        <li class="menu-divider">Atendimento AEE</li>
+        <li class="menu-divider">Atendimento e Acompanhamento</li>
 
         @can('student.view')
         <li class="nav-item">
@@ -95,7 +95,7 @@
             <a href="{{ route('specialized-educational-support.session-records.my-records') }}"
             class="{{ request()->routeIs('specialized-educational-support.session-records.my-records') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-journal-check"></i></span>
-                <span class="text">Atendimentos AEE</span>
+                <span class="text">Atendimentos Especializados</span>
             </a>
         </li>
         @endcan
