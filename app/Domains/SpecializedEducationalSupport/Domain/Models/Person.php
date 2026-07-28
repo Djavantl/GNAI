@@ -11,7 +11,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidPerson;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Cpf;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Phone;
 use App\Models\AuditLog;
-use App\Models\SpecializedEducationalSupport\Professional;
 use App\Models\Traits\Auditable;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\PersonFactory;
