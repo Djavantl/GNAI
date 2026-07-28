@@ -9,13 +9,13 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Course;
 use App\Models\SpecializedEducationalSupport\Pei;
-use App\Models\SpecializedEducationalSupport\Pendency;
 use App\Models\SpecializedEducationalSupport\Student;
 
 class DashboardController extends Controller
@@ -30,8 +30,9 @@ class DashboardController extends Controller
         $totalCourses = Course::count();
         $totalPeisFinished = Pei::where('is_finished', true)->count();
         $totalPeisNotFinished = Pei::where('is_finished', false)->count();
-        $totalPendingPendencies = Pendency::pending()->count();
-        $totalOverduePendencies = Pendency::pending()
+        $totalPendingPendencies = Pendency::query()->where('is_completed', false)->count();
+        $totalOverduePendencies = Pendency::query()
+            ->where('is_completed', false)
             ->whereNotNull('due_date')
             ->whereDate('due_date', '<', today())
             ->count();
@@ -39,7 +40,10 @@ class DashboardController extends Controller
             return [
                 'label' => $priority->label(),
                 'color' => $priority->color(),
-                'count' => Pendency::pending()->where('priority', $priority->value)->count(),
+                'count' => Pendency::query()
+                    ->where('is_completed', false)
+                    ->where('priority', $priority->value)
+                    ->count(),
             ];
         })->values();
         $sessionsByStatus = collect(SessionStatus::options())->map(function (string $label, string $status) {

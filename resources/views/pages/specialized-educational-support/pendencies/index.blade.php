@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@php
+    use App\Enums\Priority;
+@endphp
+
 @section('title', 'Pendências')
 
 @section('content')
@@ -29,8 +33,8 @@
                 @endcan
                 @endif
                 @can('pendency.create')
-                <x-buttons.link-button 
-                    :href="route('specialized-educational-support.pendencies.create')" 
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.pendencies.create')"
                     variant="new"
                     title="Adicionar pendência"
                 >
@@ -61,12 +65,7 @@
                     [
                         'name' => 'priority',
                         'type' => 'select',
-                        'options' => [
-                            '' => 'Prioridade (Todas)',
-                            'low' => 'Baixa',
-                            'medium' => 'Média',
-                            'high' => 'Alta',
-                        ]
+                        'options' => Priority::filterOptions()
                     ],
                     [
                         'name' => 'is_completed',
