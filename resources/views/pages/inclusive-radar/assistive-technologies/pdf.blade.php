@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<x-pdf.pages />
 
 <x-pdf.header
     title="Ficha de Tecnologia Assistiva"

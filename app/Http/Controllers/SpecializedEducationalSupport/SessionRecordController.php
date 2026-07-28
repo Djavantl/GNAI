@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
-use App\Http\Controllers\Controller;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
-use App\Models\SpecializedEducationalSupport\SessionRecord;
-use App\Services\SpecializedEducationalSupport\SessionRecordService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\SpecializedEducationalSupport\SessionRecordRequest;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
-use Throwable;
 use App\Models\SpecializedEducationalSupport\Professional;
+use App\Models\SpecializedEducationalSupport\SessionRecord;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
+use App\Services\SpecializedEducationalSupport\SessionRecordService;
+use App\Support\PdfPageNumberer;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class SessionRecordController extends Controller
 {
@@ -197,10 +198,11 @@ class SessionRecordController extends Controller
                 'pages.specialized-educational-support.session-records.pdf',
                 compact('sessionRecord', 'session', 'professional', 'evaluations')
             )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
+                ->setPaper('a4', 'portrait');
 
             $date = $session->session_date->format('d-m-Y');
+            PdfPageNumberer::apply($pdf);
+
             return $pdf->stream("Registro_atendimento_AEE_{$date}_ID{$sessionRecord->id}.pdf");
         } catch (Throwable $e) {
             return back()->with('error', $e->getMessage() ?: 'Erro ao gerar o PDF do Atendimento AEE.');
@@ -219,11 +221,11 @@ class SessionRecordController extends Controller
                 'pages.specialized-educational-support.session-records.pdf',
                 compact('sessionRecord', 'session', 'professional')
             )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
+                ->setPaper('a4', 'portrait');
 
             $date = $session->session_date->format('d-m-Y');
             $studentName = str($student->person->name)->slug('-');
+            PdfPageNumberer::apply($pdf);
 
             return $pdf->stream("Registro_atendimento_AEE_{$studentName}_{$date}_ID{$sessionRecord->id}.pdf");
         } catch (Throwable $e) {
@@ -236,7 +238,7 @@ class SessionRecordController extends Controller
         try {
             $sessionEvaluations = $this->service->studentIndex($student, $request->all(), 10);
 
-            $professionals = \App\Models\SpecializedEducationalSupport\Professional::with('person')
+            $professionals = Professional::with('person')
                 ->get()
                 ->sortBy(fn ($professional) => $professional->person->name ?? '')
                 ->values();
@@ -331,5 +333,4 @@ class SessionRecordController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
-
 }

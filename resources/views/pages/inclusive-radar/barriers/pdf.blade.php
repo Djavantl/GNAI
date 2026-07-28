@@ -6,7 +6,6 @@
     <x-pdf.styles />
 </head>
 <body>
-<x-pdf.pages />
 
 <x-pdf.header
     title="Ficha de Identificação de Barreira"

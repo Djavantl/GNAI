@@ -1,22 +1,35 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\Traits\Reportable;
+use App\Support\PdfPageNumberer;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
     protected function relationAliasForMorphTarget(string $relationName, string $targetClass): string
     {
-        return $relationName . '_' . \Illuminate\Support\Str::snake(class_basename($targetClass));
+        return $relationName.'_'.Str::snake(class_basename($targetClass));
     }
 
     protected function getMorphAliasMap(string $modelClass): array
     {
-        if (!method_exists($modelClass, 'getReportMorphTargets')) {
+        if (! method_exists($modelClass, 'getReportMorphTargets')) {
             return [];
         }
 
@@ -24,7 +37,7 @@ class ReportController extends Controller
 
         foreach ((array) $modelClass::getReportMorphTargets() as $relationName => $targets) {
             foreach ((array) $targets as $targetClass) {
-                if (!class_exists($targetClass)) {
+                if (! class_exists($targetClass)) {
                     continue;
                 }
 
@@ -53,17 +66,21 @@ class ReportController extends Controller
         $modelsPath = app_path('Models');
         $files = collect(File::allFiles($modelsPath));
 
-        $entities = $files->map(function($f) use ($modelsPath) {
-            $relative = str_replace([$modelsPath . DIRECTORY_SEPARATOR, '.php'], '', $f->getPathname());
-            $class = 'App\\Models\\' . str_replace(DIRECTORY_SEPARATOR, '\\', $relative);
-            if (!class_exists($class)) return null;
+        $entities = $files->map(function ($f) use ($modelsPath) {
+            $relative = str_replace([$modelsPath.DIRECTORY_SEPARATOR, '.php'], '', $f->getPathname());
+            $class = 'App\\Models\\'.str_replace(DIRECTORY_SEPARATOR, '\\', $relative);
+            if (! class_exists($class)) {
+                return null;
+            }
 
             // só retorna se usar o trait Reportable
-            if (!in_array(\App\Models\Traits\Reportable::class, class_uses_recursive($class))) return null;
+            if (! in_array(Reportable::class, class_uses_recursive($class))) {
+                return null;
+            }
 
             return [
                 'class' => $class,
-                'label' => $class::getReportLabel()
+                'label' => $class::getReportLabel(),
             ];
         })->filter()->values();
 
@@ -72,598 +89,599 @@ class ReportController extends Controller
 
     // Meta (colunas + relações) para uma entidade específica
     public function meta(Request $request)
-{
-    $modelClass = $request->input('model');
+    {
+        $modelClass = $request->input('model');
 
-    if (!$modelClass || !class_exists($modelClass)) {
-        return response()->json(['error' => 'Modelo inválido'], 400);
-    }
+        if (! $modelClass || ! class_exists($modelClass)) {
+            return response()->json(['error' => 'Modelo inválido'], 400);
+        }
 
-    if (!in_array(\App\Models\Traits\Reportable::class, class_uses_recursive($modelClass))) {
-        return response()->json(['error' => 'Modelo não reportável'], 403);
-    }
+        if (! in_array(Reportable::class, class_uses_recursive($modelClass))) {
+            return response()->json(['error' => 'Modelo não reportável'], 403);
+        }
 
-    $model = new $modelClass;
-    $table = $model->getTable();
+        $model = new $modelClass;
+        $table = $model->getTable();
 
-    /*
-    |--------------------------------------------------------------------------
-    | BASE COLUMNS
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | BASE COLUMNS
+        |--------------------------------------------------------------------------
+        */
 
-    $baseColumns = $modelClass::getTranslatedColumns();
+        $baseColumns = $modelClass::getTranslatedColumns();
 
-    $columns = $baseColumns->toArray();
+        $columns = $baseColumns->toArray();
 
-    /*
-    |--------------------------------------------------------------------------
-    | DETECTA SE O MODEL DEFINIU COLUNAS EXPLÍCITAS
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | DETECTA SE O MODEL DEFINIU COLUNAS EXPLÍCITAS
+        |--------------------------------------------------------------------------
+        */
 
-    $declaredColumns = null;
+        $declaredColumns = null;
 
-    if (method_exists($modelClass, 'getReportColumns')) {
-        $declaredColumns = $modelClass::getReportColumns();
-    }
+        if (method_exists($modelClass, 'getReportColumns')) {
+            $declaredColumns = $modelClass::getReportColumns();
+        }
 
-    $hasDeclaredColumns =
-        is_array($declaredColumns)
-        && !empty($declaredColumns);
+        $hasDeclaredColumns =
+            is_array($declaredColumns)
+            && ! empty($declaredColumns);
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELAÇÕES PERMITIDAS PARA EMBED
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | RELAÇÕES PERMITIDAS PARA EMBED
+        |--------------------------------------------------------------------------
+        */
 
-    $allowedEmbedded = [];
-    $allowedCollections = [];
-
-    if (
-        !$hasDeclaredColumns
-        && is_callable([$modelClass, 'getEmbeddedRelations'])
-    ) {
-        $allowedEmbedded = (array) $modelClass::getEmbeddedRelations();
-    }
-
-    if (method_exists($modelClass, 'getReportCollectionRelations')) {
-        $allowedCollections = (array) $modelClass::getReportCollectionRelations();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | INSPEÇÃO DAS RELAÇÕES
-    |--------------------------------------------------------------------------
-    */
-
-    $relations = [];
-    $morphTargets = method_exists($modelClass, 'getReportMorphTargets')
-        ? (array) $modelClass::getReportMorphTargets()
-        : [];
-
-    $reflector = new \ReflectionClass($modelClass);
-
-    foreach ($reflector->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        $allowedEmbedded = [];
+        $allowedCollections = [];
 
         if (
-            $method->class !== $reflector->getName()
-            || $method->getNumberOfParameters() > 0
+            ! $hasDeclaredColumns
+            && is_callable([$modelClass, 'getEmbeddedRelations'])
         ) {
-            continue;
+            $allowedEmbedded = (array) $modelClass::getEmbeddedRelations();
         }
 
-        try {
-            $return = $method->invoke($model);
-        } catch (\Throwable $e) {
-            continue;
+        if (method_exists($modelClass, 'getReportCollectionRelations')) {
+            $allowedCollections = (array) $modelClass::getReportCollectionRelations();
         }
 
-        if (!$return instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
-            continue;
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | INSPEÇÃO DAS RELAÇÕES
+        |--------------------------------------------------------------------------
+        */
 
-        $relationName = $method->getName();
+        $relations = [];
+        $morphTargets = method_exists($modelClass, 'getReportMorphTargets')
+            ? (array) $modelClass::getReportMorphTargets()
+            : [];
 
-        $relation = $model->$relationName();
+        $reflector = new \ReflectionClass($modelClass);
 
-        if ($relation instanceof \Illuminate\Database\Eloquent\Relations\MorphMany) {
-            continue;
-        }
+        foreach ($reflector->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
 
-        if (
-            $relation instanceof \Illuminate\Database\Eloquent\Relations\HasMany
-            && !in_array($relationName, $allowedCollections, true)
-        ) {
-            continue;
-        }
+            if (
+                $method->class !== $reflector->getName()
+                || $method->getNumberOfParameters() > 0
+            ) {
+                continue;
+            }
 
-        if ($relation instanceof \Illuminate\Database\Eloquent\Relations\MorphTo) {
-            $targets = (array) ($morphTargets[$relationName] ?? []);
+            try {
+                $return = $method->invoke($model);
+            } catch (\Throwable $e) {
+                continue;
+            }
 
-            foreach ($targets as $targetClass) {
-                if (!class_exists($targetClass)) {
-                    continue;
+            if (! $return instanceof Relation) {
+                continue;
+            }
+
+            $relationName = $method->getName();
+
+            $relation = $model->$relationName();
+
+            if ($relation instanceof MorphMany) {
+                continue;
+            }
+
+            if (
+                $relation instanceof HasMany
+                && ! in_array($relationName, $allowedCollections, true)
+            ) {
+                continue;
+            }
+
+            if ($relation instanceof MorphTo) {
+                $targets = (array) ($morphTargets[$relationName] ?? []);
+
+                foreach ($targets as $targetClass) {
+                    if (! class_exists($targetClass)) {
+                        continue;
+                    }
+
+                    if (
+                        ! in_array(
+                            Reportable::class,
+                            class_uses_recursive($targetClass)
+                        )
+                    ) {
+                        continue;
+                    }
+
+                    $targetModel = new $targetClass;
+                    $relTable = $targetModel->getTable();
+                    $relCols = [];
+
+                    if (is_callable([$targetClass, 'getTranslatedColumns'])) {
+                        try {
+                            $relCols = $targetClass::getTranslatedColumns()->toArray();
+                        } catch (\Throwable $e) {
+                            $relCols = [];
+                        }
+                    }
+
+                    if (empty($relCols)) {
+                        $blacklist = method_exists($targetClass, 'getBlacklist')
+                            ? $targetClass::getBlacklist()
+                            : ['password', 'remember_token', 'deleted_at'];
+
+                        $relCols = collect(Schema::getColumnListing($relTable))
+                            ->reject(fn ($c) => in_array($c, $blacklist))
+                            ->mapWithKeys(function ($c) use ($relTable) {
+                                $transKey = "database.columns.{$relTable}.{$c}";
+                                $trans = __($transKey);
+
+                                $label = ($trans === $transKey)
+                                    ? Str::title(str_replace('_', ' ', $c))
+                                    : $trans;
+
+                                return [$c => $label];
+                            })
+                            ->toArray();
+                    }
+
+                    $relations[] = [
+                        'name' => $this->relationAliasForMorphTarget($relationName, $targetClass),
+                        'type' => class_basename(get_class($relation)),
+                        'related_class' => $targetClass,
+                        'label' => is_callable([$targetClass, 'getReportLabel'])
+                            ? $targetClass::getReportLabel()
+                            : class_basename($targetClass),
+                        'table' => $relTable,
+                        'columns' => $relCols,
+                        'morph' => [
+                            'base_relation' => $relationName,
+                            'target_class' => $targetClass,
+                        ],
+                    ];
                 }
 
-                if (
-                    !in_array(
-                        \App\Models\Traits\Reportable::class,
-                        class_uses_recursive($targetClass)
-                    )
-                ) {
-                    continue;
+                continue;
+            }
+
+            $related = $relation->getRelated();
+
+            $relatedClass = get_class($related);
+
+            $relTable = $related->getTable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | SÓ PERMITE RELAÇÕES COM MODELS REPORTABLE
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                ! in_array(
+                    Reportable::class,
+                    class_uses_recursive($relatedClass)
+                )
+            ) {
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | COLUNAS DO RELATED MODEL
+            |--------------------------------------------------------------------------
+            */
+
+            $relCols = [];
+
+            if (is_callable([$relatedClass, 'getTranslatedColumns'])) {
+                try {
+                    $relCols = $relatedClass::getTranslatedColumns()->toArray();
+                } catch (\Throwable $e) {
+                    $relCols = [];
                 }
+            }
 
-                $targetModel = new $targetClass;
-                $relTable = $targetModel->getTable();
-                $relCols = [];
+            if (empty($relCols)) {
 
-                if (is_callable([$targetClass, 'getTranslatedColumns'])) {
+                $blacklist = method_exists($relatedClass, 'getBlacklist')
+                    ? $relatedClass::getBlacklist()
+                    : ['password', 'remember_token', 'deleted_at'];
+
+                $relCols = collect(
+                    Schema::getColumnListing($relTable)
+                )
+                    ->reject(fn ($c) => in_array($c, $blacklist))
+                    ->mapWithKeys(function ($c) use ($relTable) {
+
+                        $transKey = "database.columns.{$relTable}.{$c}";
+
+                        $trans = __($transKey);
+
+                        $label =
+                            ($trans === $transKey)
+                            ? Str::title(
+                                str_replace('_', ' ', $c)
+                            )
+                            : $trans;
+
+                        return [$c => $label];
+                    })
+                    ->toArray();
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | BASE RELATION DATA
+            |--------------------------------------------------------------------------
+            */
+
+            $relData = [
+
+                'name' => $relationName,
+
+                'type' => class_basename(get_class($relation)),
+
+                'related_class' => $relatedClass,
+
+                'label' => is_callable([$relatedClass, 'getReportLabel'])
+                    ? $relatedClass::getReportLabel()
+                    : class_basename($relatedClass),
+
+                'table' => $relTable,
+
+                'columns' => $relCols,
+            ];
+
+            /*
+            |--------------------------------------------------------------------------
+            | PIVOT SUPPORT (BelongsToMany)
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $relation instanceof BelongsToMany
+            ) {
+
+                $pivotTable = $relation->getTable();
+
+                $pivotColumns = [];
+
+                if (method_exists($relation, 'getPivotColumns')) {
                     try {
-                        $relCols = $targetClass::getTranslatedColumns()->toArray();
+                        $pivotColumns = $relation->getPivotColumns();
                     } catch (\Throwable $e) {
-                        $relCols = [];
+                        $pivotColumns = [];
                     }
                 }
 
-                if (empty($relCols)) {
-                    $blacklist = method_exists($targetClass, 'getBlacklist')
-                        ? $targetClass::getBlacklist()
-                        : ['password', 'remember_token', 'deleted_at'];
+                if (empty($pivotColumns)) {
 
-                    $relCols = collect(Schema::getColumnListing($relTable))
-                        ->reject(fn($c) => in_array($c, $blacklist))
-                        ->mapWithKeys(function ($c) use ($relTable) {
-                            $transKey = "database.columns.{$relTable}.{$c}";
-                            $trans = __($transKey);
+                    $allPivotCols =
+                        Schema::getColumnListing($pivotTable);
 
-                            $label = ($trans === $transKey)
-                                ? \Illuminate\Support\Str::title(str_replace('_', ' ', $c))
-                                : $trans;
+                    $foreign1 =
+                        method_exists(
+                            $relation,
+                            'getForeignPivotKeyName'
+                        )
+                        ? $relation->getForeignPivotKeyName()
+                        : null;
 
-                            return [$c => $label];
-                        })
-                        ->toArray();
+                    $foreign2 =
+                        method_exists(
+                            $relation,
+                            'getRelatedPivotKeyName'
+                        )
+                        ? $relation->getRelatedPivotKeyName()
+                        : null;
+
+                    $exclude = array_filter([
+                        $foreign1,
+                        $foreign2,
+                        'id',
+                        'created_at',
+                        'updated_at',
+                    ]);
+
+                    $pivotColumns = array_values(
+                        array_filter(
+                            $allPivotCols,
+                            fn ($c) => ! in_array($c, $exclude)
+                        )
+                    );
                 }
 
-                $relations[] = [
-                    'name' => $this->relationAliasForMorphTarget($relationName, $targetClass),
-                    'type' => class_basename(get_class($relation)),
-                    'related_class' => $targetClass,
-                    'label' => is_callable([$targetClass, 'getReportLabel'])
-                        ? $targetClass::getReportLabel()
-                        : class_basename($targetClass),
-                    'table' => $relTable,
-                    'columns' => $relCols,
-                    'morph' => [
-                        'base_relation' => $relationName,
-                        'target_class' => $targetClass,
-                    ],
-                ];
-            }
+                $pivotColumns = array_values(
+                    array_filter(
+                        $pivotColumns,
+                        fn ($c) => ! in_array(
+                            $c,
+                            ['created_at', 'updated_at']
+                        )
+                    )
+                );
 
-            continue;
-        }
+                $pivotColsLabels = [];
+                $pivotLabelOverrides = [];
 
-        $related = $relation->getRelated();
+                if (method_exists($relation, 'getPivotClass')) {
+                    $pivotClass = $relation->getPivotClass();
 
-        $relatedClass = get_class($related);
+                    if (is_string($pivotClass) && class_exists($pivotClass)) {
+                        if (method_exists($pivotClass, 'getAuditLabels')) {
+                            $pivotLabelOverrides = (array) $pivotClass::getAuditLabels();
+                        } elseif (method_exists($pivotClass, 'getReportColumnLabels')) {
+                            $pivotLabelOverrides = (array) $pivotClass::getReportColumnLabels();
+                        }
+                    }
+                }
 
-        $relTable = $related->getTable();
+                foreach ($pivotColumns as $c) {
+                    if (isset($pivotLabelOverrides[$c])) {
+                        $pivotColsLabels[$c] = $pivotLabelOverrides[$c];
 
-        /*
-        |--------------------------------------------------------------------------
-        | SÓ PERMITE RELAÇÕES COM MODELS REPORTABLE
-        |--------------------------------------------------------------------------
-        */
+                        continue;
+                    }
 
-        if (
-            !in_array(
-                \App\Models\Traits\Reportable::class,
-                class_uses_recursive($relatedClass)
-            )
-        ) {
-            continue;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | COLUNAS DO RELATED MODEL
-        |--------------------------------------------------------------------------
-        */
-
-        $relCols = [];
-
-        if (is_callable([$relatedClass, 'getTranslatedColumns'])) {
-            try {
-                $relCols = $relatedClass::getTranslatedColumns()->toArray();
-            } catch (\Throwable $e) {
-                $relCols = [];
-            }
-        }
-
-        if (empty($relCols)) {
-
-            $blacklist = method_exists($relatedClass, 'getBlacklist')
-                ? $relatedClass::getBlacklist()
-                : ['password', 'remember_token', 'deleted_at'];
-
-            $relCols = collect(
-                Schema::getColumnListing($relTable)
-            )
-                ->reject(fn($c) => in_array($c, $blacklist))
-                ->mapWithKeys(function ($c) use ($relTable) {
-
-                    $transKey = "database.columns.{$relTable}.{$c}";
+                    $transKey =
+                        "database.columns.{$pivotTable}.{$c}";
 
                     $trans = __($transKey);
 
                     $label =
                         ($trans === $transKey)
-                        ? \Illuminate\Support\Str::title(
+                        ? Str::title(
                             str_replace('_', ' ', $c)
                         )
                         : $trans;
 
-                    return [$c => $label];
-                })
-                ->toArray();
-        }
+                    $pivotColsLabels[$c] = $label;
+                }
 
-        /*
-        |--------------------------------------------------------------------------
-        | BASE RELATION DATA
-        |--------------------------------------------------------------------------
-        */
+                if (! empty($pivotColsLabels)) {
 
-        $relData = [
+                    $relData['pivot'] = [
 
-            'name' => $relationName,
+                        'table' => $pivotTable,
 
-            'type' => class_basename(get_class($relation)),
-
-            'related_class' => $relatedClass,
-
-            'label' => is_callable([$relatedClass, 'getReportLabel'])
-                ? $relatedClass::getReportLabel()
-                : class_basename($relatedClass),
-
-            'table' => $relTable,
-
-            'columns' => $relCols,
-        ];
-
-        /*
-        |--------------------------------------------------------------------------
-        | PIVOT SUPPORT (BelongsToMany)
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $relation instanceof
-            \Illuminate\Database\Eloquent\Relations\BelongsToMany
-        ) {
-
-            $pivotTable = $relation->getTable();
-
-            $pivotColumns = [];
-
-            if (method_exists($relation, 'getPivotColumns')) {
-                try {
-                    $pivotColumns = $relation->getPivotColumns();
-                } catch (\Throwable $e) {
-                    $pivotColumns = [];
+                        'columns' => $pivotColsLabels,
+                    ];
                 }
             }
 
-            if (empty($pivotColumns)) {
+            /*
+            |--------------------------------------------------------------------------
+            | EMBED CONTROL (FIX CRÍTICO)
+            |--------------------------------------------------------------------------
+            */
 
-                $allPivotCols =
-                    Schema::getColumnListing($pivotTable);
+            $isSingular =
+                $relation instanceof BelongsTo
+                || $relation instanceof HasOne
+                || $relation instanceof MorphOne;
 
-                $foreign1 =
-                    method_exists(
-                        $relation,
-                        'getForeignPivotKeyName'
-                    )
-                    ? $relation->getForeignPivotKeyName()
-                    : null;
+            $shouldEmbed =
+                ! $hasDeclaredColumns
+                && $isSingular
+                && in_array($relationName, $allowedEmbedded);
 
-                $foreign2 =
-                    method_exists(
-                        $relation,
-                        'getRelatedPivotKeyName'
-                    )
-                    ? $relation->getRelatedPivotKeyName()
-                    : null;
+            if ($shouldEmbed) {
 
-                $exclude = array_filter([
-                    $foreign1,
-                    $foreign2,
-                    'id',
-                    'created_at',
-                    'updated_at',
-                ]);
+                foreach ($relCols as $colKey => $colLabel) {
 
-                $pivotColumns = array_values(
-                    array_filter(
-                        $allPivotCols,
-                        fn($c) => !in_array($c, $exclude)
-                    )
-                );
-            }
+                    $composedKey =
+                        "{$relationName}.{$colKey}";
 
-            $pivotColumns = array_values(
-                array_filter(
-                    $pivotColumns,
-                    fn($c) => !in_array(
-                        $c,
-                        ['created_at', 'updated_at']
-                    )
-                )
-            );
+                    if (! array_key_exists(
+                        $composedKey,
+                        $columns
+                    )) {
 
-            $pivotColsLabels = [];
-            $pivotLabelOverrides = [];
-
-            if (method_exists($relation, 'getPivotClass')) {
-                $pivotClass = $relation->getPivotClass();
-
-                if (is_string($pivotClass) && class_exists($pivotClass)) {
-                    if (method_exists($pivotClass, 'getAuditLabels')) {
-                        $pivotLabelOverrides = (array) $pivotClass::getAuditLabels();
-                    } elseif (method_exists($pivotClass, 'getReportColumnLabels')) {
-                        $pivotLabelOverrides = (array) $pivotClass::getReportColumnLabels();
+                        $columns[$composedKey] =
+                            $colLabel;
                     }
                 }
             }
 
-            foreach ($pivotColumns as $c) {
-                if (isset($pivotLabelOverrides[$c])) {
-                    $pivotColsLabels[$c] = $pivotLabelOverrides[$c];
+            $relations[] = $relData;
+        }
+
+        return response()->json([
+
+            'class' => $modelClass,
+
+            'label' => $modelClass::getReportLabel(),
+
+            'table' => $table,
+
+            'columns' => $columns,
+
+            'relations' => $relations,
+        ]);
+    }
+
+    // dentro de ReportController (substitua o método run existing)
+    public function run(Request $request)
+    {
+        try {
+            $modelClass = $request->input('model');
+            $selected = $request->input('columns', []);
+            $filters = $request->input('filters', []);
+            $limit = intval($request->input('limit', 200));
+
+            if (! $modelClass || ! class_exists($modelClass)) {
+                return response()->json(['error' => 'Modelo inválido'], 400);
+            }
+
+            if (! in_array(Reportable::class, class_uses_recursive($modelClass))) {
+                return response()->json(['error' => 'Modelo não reportável'], 403);
+            }
+
+            $query = $modelClass::query();
+
+            // relações necessárias (vindas de colunas selecionadas e filtros)
+            $relationsToLoad = [];
+            $morphAliasMap = $this->getMorphAliasMap($modelClass);
+            $selectedMorphTargets = [];
+            foreach (array_merge($selected, array_column($filters, 'column')) as $col) {
+                if (! str_contains($col ?? '', '.')) {
                     continue;
                 }
 
-                $transKey =
-                    "database.columns.{$pivotTable}.{$c}";
+                $relationName = explode('.', $col)[0];
+                $relationsToLoad[] = $morphAliasMap[$relationName]['base_relation'] ?? $relationName;
 
-                $trans = __($transKey);
-
-                $label =
-                    ($trans === $transKey)
-                    ? \Illuminate\Support\Str::title(
-                        str_replace('_', ' ', $c)
-                    )
-                    : $trans;
-
-                $pivotColsLabels[$c] = $label;
-            }
-
-            if (!empty($pivotColsLabels)) {
-
-                $relData['pivot'] = [
-
-                    'table' => $pivotTable,
-
-                    'columns' => $pivotColsLabels,
-                ];
-            }
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | EMBED CONTROL (FIX CRÍTICO)
-        |--------------------------------------------------------------------------
-        */
-
-        $isSingular =
-            $relation instanceof
-                \Illuminate\Database\Eloquent\Relations\BelongsTo
-            || $relation instanceof
-                \Illuminate\Database\Eloquent\Relations\HasOne
-            || $relation instanceof
-                \Illuminate\Database\Eloquent\Relations\MorphOne;
-
-        $shouldEmbed =
-            !$hasDeclaredColumns
-            && $isSingular
-            && in_array($relationName, $allowedEmbedded);
-
-        if ($shouldEmbed) {
-
-            foreach ($relCols as $colKey => $colLabel) {
-
-                $composedKey =
-                    "{$relationName}.{$colKey}";
-
-                if (!array_key_exists(
-                    $composedKey,
-                    $columns
-                )) {
-
-                    $columns[$composedKey] =
-                        $colLabel;
+                if (isset($morphAliasMap[$relationName])) {
+                    $baseRelation = $morphAliasMap[$relationName]['base_relation'];
+                    $morphType = $morphAliasMap[$relationName]['morph_type'];
+                    $selectedMorphTargets[$baseRelation] ??= [];
+                    $selectedMorphTargets[$baseRelation][$morphType] = $morphType;
                 }
             }
-        }
+            $relationsToLoad = array_values(array_unique(array_filter($relationsToLoad)));
 
-        $relations[] = $relData;
-    }
-
-    return response()->json([
-
-        'class' => $modelClass,
-
-        'label' => $modelClass::getReportLabel(),
-
-        'table' => $table,
-
-        'columns' => $columns,
-
-        'relations' => $relations,
-    ]);
-}
-
-    // dentro de ReportController (substitua o método run existing)
-public function run(Request $request)
-{
-    try {
-        $modelClass = $request->input('model');
-        $selected   = $request->input('columns', []);
-        $filters    = $request->input('filters', []);
-        $limit      = intval($request->input('limit', 200));
-
-        if (!$modelClass || !class_exists($modelClass))
-            return response()->json(['error' => 'Modelo inválido'], 400);
-
-        if (!in_array(\App\Models\Traits\Reportable::class, class_uses_recursive($modelClass)))
-            return response()->json(['error' => 'Modelo não reportável'], 403);
-
-        $query = $modelClass::query();
-
-        // relações necessárias (vindas de colunas selecionadas e filtros)
-        $relationsToLoad = [];
-        $morphAliasMap = $this->getMorphAliasMap($modelClass);
-        $selectedMorphTargets = [];
-        foreach (array_merge($selected, array_column($filters, 'column')) as $col) {
-            if (!str_contains($col ?? '', '.')) {
-                continue;
+            if ($relationsToLoad) {
+                $query->with($relationsToLoad);
             }
 
-            $relationName = explode('.', $col)[0];
-            $relationsToLoad[] = $morphAliasMap[$relationName]['base_relation'] ?? $relationName;
-
-            if (isset($morphAliasMap[$relationName])) {
-                $baseRelation = $morphAliasMap[$relationName]['base_relation'];
-                $morphType = $morphAliasMap[$relationName]['morph_type'];
-                $selectedMorphTargets[$baseRelation] ??= [];
-                $selectedMorphTargets[$baseRelation][$morphType] = $morphType;
+            foreach ($selectedMorphTargets as $baseRelation => $targetClasses) {
+                $query->whereHasMorph($baseRelation, array_values($targetClasses));
             }
-        }
-        $relationsToLoad = array_values(array_unique(array_filter($relationsToLoad)));
 
-        if ($relationsToLoad) $query->with($relationsToLoad);
-
-        foreach ($selectedMorphTargets as $baseRelation => $targetClasses) {
-            $query->whereHasMorph($baseRelation, array_values($targetClasses));
-        }
-
-        // filtros
-        foreach ($filters as $f) {
-            $col = $f['column'] ?? null;
-            $op  = $f['operator'] ?? '=';
-            $val = $f['value'] ?? null;
-            if (!$col || $val === null || $val === '') continue;
-
-            if (str_contains($col, '.')) {
-                [$relation, $relCol] = explode('.', $col, 2);
-
-                if (isset($morphAliasMap[$relation])) {
-                    $baseRelation = $morphAliasMap[$relation]['base_relation'];
-                    $morphType = $morphAliasMap[$relation]['morph_type'];
-
-                    $query->whereHasMorph($baseRelation, [$morphType], fn($q) =>
-                        strtolower($op) === 'like'
-                            ? $q->where($relCol, 'like', "%{$val}%")
-                            : $q->where($relCol, $op, $val)
-                    );
-                } else {
-                    $query->whereHas($relation, fn($q) =>
-                        strtolower($op) === 'like'
-                            ? $q->where($relCol, 'like', "%{$val}%")
-                            : $q->where($relCol, $op, $val)
-                    );
+            // filtros
+            foreach ($filters as $f) {
+                $col = $f['column'] ?? null;
+                $op = $f['operator'] ?? '=';
+                $val = $f['value'] ?? null;
+                if (! $col || $val === null || $val === '') {
+                    continue;
                 }
-            } else {
-                strtolower($op) === 'like'
-                    ? $query->where($col, 'like', "%{$val}%")
-                    : $query->where($col, $op, $val);
-            }
-        }
 
-        $rows   = $query->limit($limit)->get();
-        $total  = $rows->count();
-        $result = [];
+                if (str_contains($col, '.')) {
+                    [$relation, $relCol] = explode('.', $col, 2);
 
-        foreach ($rows as $row) {
+                    if (isset($morphAliasMap[$relation])) {
+                        $baseRelation = $morphAliasMap[$relation]['base_relation'];
+                        $morphType = $morphAliasMap[$relation]['morph_type'];
 
-    $out = [];
-
-            foreach ($selected as $colKey) {
-
-                $alias = str_replace('.', '__', $colKey);
-
-                $value = data_get($row, $colKey);
-
-                if ($value === null && str_contains($colKey, '.')) {
-                    [$relationName, $relCol] = explode('.', $colKey, 2);
-
-                    if (isset($morphAliasMap[$relationName])) {
-                        $baseRelation = $morphAliasMap[$relationName]['base_relation'];
-                        $targetClass = $morphAliasMap[$relationName]['target_class'];
-                        $relationValue = $row->$baseRelation ?? null;
-
-                        if (!$relationValue instanceof $targetClass) {
-                            $relationValue = null;
-                        }
+                        $query->whereHasMorph($baseRelation, [$morphType], fn ($q) => strtolower($op) === 'like'
+                                ? $q->where($relCol, 'like', "%{$val}%")
+                                : $q->where($relCol, $op, $val)
+                        );
                     } else {
-                        $relationValue = $row->$relationName ?? null;
+                        $query->whereHas($relation, fn ($q) => strtolower($op) === 'like'
+                                ? $q->where($relCol, 'like', "%{$val}%")
+                                : $q->where($relCol, $op, $val)
+                        );
                     }
-
-                    if ($relationValue instanceof \Illuminate\Support\Collection) {
-                        $value = $relationValue
-                            ->map(fn($item) => data_get($item, $relCol))
-                            ->filter()
-                            ->unique()
-                            ->values()
-                            ->implode(', ');
-                    } elseif ($relationValue) {
-                        $value = data_get($relationValue, $relCol);
-                    }
+                } else {
+                    strtolower($op) === 'like'
+                        ? $query->where($col, 'like', "%{$val}%")
+                        : $query->where($col, $op, $val);
                 }
-
-                if ($value instanceof \Illuminate\Support\Collection) {
-                    $value = $value->filter()->unique()->values()->implode(', ');
-                }
-
-                if (is_bool($value)) {
-                    $value = $value ? 'Sim' : 'Não';
-                }
-
-                if ($value instanceof \BackedEnum) {
-                    $value = method_exists($value, 'label') ? $value->label() : $value->value;
-                }
-
-                if ($value instanceof \Carbon\CarbonInterface) {
-                    $hasTime = $value->hour > 0 || $value->minute > 0 || $value->second > 0;
-                    $value = $value->format($hasTime ? 'd/m/Y H:i' : 'd/m/Y');
-                }
-
-                if (is_object($value) && !method_exists($value, '__toString')) {
-                    $value = json_encode($value);
-                }
-
-                $out[$alias] = $value;
             }
 
-            $result[] = $out;
+            $rows = $query->limit($limit)->get();
+            $total = $rows->count();
+            $result = [];
+
+            foreach ($rows as $row) {
+
+                $out = [];
+
+                foreach ($selected as $colKey) {
+
+                    $alias = str_replace('.', '__', $colKey);
+
+                    $value = data_get($row, $colKey);
+
+                    if ($value === null && str_contains($colKey, '.')) {
+                        [$relationName, $relCol] = explode('.', $colKey, 2);
+
+                        if (isset($morphAliasMap[$relationName])) {
+                            $baseRelation = $morphAliasMap[$relationName]['base_relation'];
+                            $targetClass = $morphAliasMap[$relationName]['target_class'];
+                            $relationValue = $row->$baseRelation ?? null;
+
+                            if (! $relationValue instanceof $targetClass) {
+                                $relationValue = null;
+                            }
+                        } else {
+                            $relationValue = $row->$relationName ?? null;
+                        }
+
+                        if ($relationValue instanceof Collection) {
+                            $value = $relationValue
+                                ->map(fn ($item) => data_get($item, $relCol))
+                                ->filter()
+                                ->unique()
+                                ->values()
+                                ->implode(', ');
+                        } elseif ($relationValue) {
+                            $value = data_get($relationValue, $relCol);
+                        }
+                    }
+
+                    if ($value instanceof Collection) {
+                        $value = $value->filter()->unique()->values()->implode(', ');
+                    }
+
+                    if (is_bool($value)) {
+                        $value = $value ? 'Sim' : 'Não';
+                    }
+
+                    if ($value instanceof \BackedEnum) {
+                        $value = method_exists($value, 'label') ? $value->label() : $value->value;
+                    }
+
+                    if ($value instanceof CarbonInterface) {
+                        $hasTime = $value->hour > 0 || $value->minute > 0 || $value->second > 0;
+                        $value = $value->format($hasTime ? 'd/m/Y H:i' : 'd/m/Y');
+                    }
+
+                    if (is_object($value) && ! method_exists($value, '__toString')) {
+                        $value = json_encode($value);
+                    }
+
+                    $out[$alias] = $value;
+                }
+
+                $result[] = $out;
+            }
+
+            return response()->json([
+                'rows' => $result,
+                'total' => $total,
+            ]);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ], 500);
         }
-
-        return response()->json([
-            'rows'  => $result,
-            'total' => $total,
-        ]);
-
-    } catch (\Throwable $e) {
-        return response()->json([
-            'error' => $e->getMessage(),
-            'line'  => $e->getLine(),
-            'file'  => $e->getFile(),
-        ], 500);
     }
-}
 
     // Exporta para PDF (recebe mesmo formato do run)
     public function exportPdf(Request $request)
@@ -681,8 +699,10 @@ public function run(Request $request)
 
         $pdf = Pdf::loadView('reports.pdf', [
             'data' => $rows,
-            'headers' => $labels
+            'headers' => $labels,
         ]);
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->download('relatorio.pdf');
     }

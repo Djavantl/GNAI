@@ -6,7 +6,6 @@
     <x-pdf.styles />
 </head>
 <body>
-    <x-pdf.pages />
 
     @php
         $pei = $evaluation->pei;

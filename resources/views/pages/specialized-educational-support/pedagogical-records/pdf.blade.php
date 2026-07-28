@@ -58,6 +58,5 @@
         </x-pdf.table-signatures>
     </div>
 
-    <x-pdf.pages />
 </body>
 </html>

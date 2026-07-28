@@ -19,6 +19,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\Stude
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentSessionEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Http\Controllers\Controller;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -117,9 +118,13 @@ final class StudentController extends Controller
     {
         $student = $query->execute($student);
 
-        return Pdf::loadView(
+        $pdf = Pdf::loadView(
             'pages.specialized-educational-support.students.pdf',
             compact('student'),
-        )->stream("ficha-aluno-{$student->registration}.pdf");
+        );
+
+        PdfPageNumberer::apply($pdf);
+
+        return $pdf->stream("ficha-aluno-{$student->registration}.pdf");
     }
 }

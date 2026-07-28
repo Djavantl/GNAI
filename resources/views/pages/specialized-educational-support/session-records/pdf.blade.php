@@ -7,7 +7,6 @@
     <x-pdf.styles />
 </head>
 <body>
-    <x-pdf.pages />
 
     <x-pdf.header
         title="Registro de Atendimento Educacional Especializado"

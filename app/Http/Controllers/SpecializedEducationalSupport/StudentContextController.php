@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\SpecializedEducationalSupport\StudentContextRequest;
+use App\Models\SpecializedEducationalSupport\Professional;
+use App\Models\SpecializedEducationalSupport\Semester;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentContext;
 use App\Services\SpecializedEducationalSupport\StudentContextService;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\SpecializedEducationalSupport\Professional;
+use Illuminate\Http\Request;
 use Throwable;
 
 class StudentContextController extends Controller
@@ -26,7 +28,7 @@ class StudentContextController extends Controller
         try {
             $contexts = $this->service->getByStudent($student, $request->all());
 
-            $semesters = \App\Models\SpecializedEducationalSupport\Semester::query()
+            $semesters = Semester::query()
                 ->orderByDesc('year')
                 ->orderByDesc('term')
                 ->get()
@@ -88,7 +90,7 @@ class StudentContextController extends Controller
     public function create(Student $student)
     {
         $student->ensureIsActive();
-        
+
         $exists = StudentContext::where('student_id', $student->id)->exists();
 
         if ($exists) {
@@ -126,7 +128,7 @@ class StudentContextController extends Controller
         try {
             $this->service->ensureCurrentUserIsEvaluator($studentContext, 'editar');
 
-            if (!$studentContext->is_current) {
+            if (! $studentContext->is_current) {
                 return redirect()
                     ->route('specialized-educational-support.student-context.show', $studentContext)
                     ->with('error', 'Não é possível editar um contexto que não é atual.');
@@ -243,11 +245,12 @@ class StudentContextController extends Controller
             $student = $context->student;
 
             $pdf = Pdf::loadView(
-                    'pages.specialized-educational-support.student-context.pdf',
-                    compact('context', 'student')
-                )
-                ->setPaper('a4', 'portrait')
-                ->setOption(['enable_php' => true]);
+                'pages.specialized-educational-support.student-context.pdf',
+                compact('context', 'student')
+            )
+                ->setPaper('a4', 'portrait');
+
+            PdfPageNumberer::apply($pdf);
 
             return $pdf->stream("Contexto_{$student->person->name}.pdf");
 

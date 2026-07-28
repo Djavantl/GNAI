@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
-use App\Http\Controllers\Controller;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\SpecializedEducationalSupport\PedagogicalRecordRequest;
 use App\Models\SpecializedEducationalSupport\PedagogicalRecord;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Services\SpecializedEducationalSupport\PedagogicalRecordService;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Throwable;
 
 class PedagogicalRecordController extends Controller
 {
-    public function __construct(private readonly PedagogicalRecordService $service)
-    {
-    }
+    public function __construct(private readonly PedagogicalRecordService $service) {}
 
     public function myRecords(Request $request)
     {
@@ -63,7 +62,7 @@ class PedagogicalRecordController extends Controller
                 ->route('specialized-educational-support.pedagogical-records.show', $record)
                 ->with('success', 'Atendimento pedagógico criado com sucesso.');
         } catch (Throwable $e) {
-            return back()->withInput()->with('error', 'Erro ao criar o atendimento pedagógico: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Erro ao criar o atendimento pedagógico: '.$e->getMessage());
         }
     }
 
@@ -101,7 +100,7 @@ class PedagogicalRecordController extends Controller
                 ->route('specialized-educational-support.pedagogical-records.show', $pedagogicalRecord)
                 ->with('success', 'Atendimento pedagógico atualizado com sucesso.');
         } catch (Throwable $e) {
-            return back()->withInput()->with('error', 'Erro ao atualizar o atendimento pedagógico: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Erro ao atualizar o atendimento pedagógico: '.$e->getMessage());
         }
     }
 
@@ -115,7 +114,7 @@ class PedagogicalRecordController extends Controller
                 ->route('specialized-educational-support.sessions.show', $sessionId)
                 ->with('success', 'Atendimento pedagógico removido com sucesso.');
         } catch (Throwable $e) {
-            return back()->with('error', 'Erro ao remover o atendimento pedagógico: ' . $e->getMessage());
+            return back()->with('error', 'Erro ao remover o atendimento pedagógico: '.$e->getMessage());
         }
     }
 
@@ -130,10 +129,11 @@ class PedagogicalRecordController extends Controller
             $pdf = Pdf::loadView(
                 'pages.specialized-educational-support.pedagogical-records.pdf',
                 compact('pedagogicalRecord', 'session', 'student', 'professional')
-            )->setPaper('a4', 'portrait')->setOption(['enable_php' => true]);
+            )->setPaper('a4', 'portrait');
 
             $date = $session->session_date->format('d-m-Y');
             $studentName = str($student?->person?->name ?? 'aluno')->slug('-');
+            PdfPageNumberer::apply($pdf);
 
             return $pdf->stream("registro-pedagogico-{$studentName}-{$date}.pdf");
         } catch (Throwable $e) {

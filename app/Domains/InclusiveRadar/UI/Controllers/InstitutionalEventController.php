@@ -17,6 +17,7 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitutionalEvent;
 use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
 use App\Http\Controllers\Concerns\ResolvesBackRoute;
 use App\Http\Controllers\Controller;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -108,8 +109,9 @@ final class InstitutionalEventController extends Controller
             'pages.inclusive-radar.institutional-events.pdf',
             compact('event'),
         )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
+            ->setPaper('a4', 'portrait');
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Evento_{$event->id}.pdf");
     }

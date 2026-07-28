@@ -50,6 +50,5 @@
         </x-pdf.row>
     </x-pdf.table>
 
-    <x-pdf.pages />
 </body>
 </html>

@@ -134,7 +134,6 @@
     :value="$loan->observation ?: 'Nenhuma observação registrada.'"
 />
 
-<x-pdf.pages />
 
 </body>
 </html>

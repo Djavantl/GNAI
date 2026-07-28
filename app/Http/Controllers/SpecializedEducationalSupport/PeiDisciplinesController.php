@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\SpecializedEducationalSupport;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\SpecializedEducationalSupport\PeiEvaluationRequest;
 use App\Enums\SpecializedEducationalSupport\EvaluationType;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\SpecializedEducationalSupport\PeiEvaluationRequest;
 use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\PeiEvaluation;
 use App\Models\SpecializedEducationalSupport\Semester;
 use App\Services\SpecializedEducationalSupport\PeiEvaluationService;
+use App\Support\PdfPageNumberer;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PeiEvaluationController extends Controller
-{   
+{
     protected PeiEvaluationService $service;
 
     public function __construct(PeiEvaluationService $service)
@@ -23,6 +24,7 @@ class PeiEvaluationController extends Controller
     public function index(Pei $pei)
     {
         $pei_evaluations = $this->service->index($pei);
+
         return view('pages.specialized-educational-support.pei-evaluations.index', compact('pei', 'pei_evaluations'));
     }
 
@@ -38,7 +40,7 @@ class PeiEvaluationController extends Controller
     public function create(Pei $pei)
     {
         $semester = Semester::current();
-        
+
         return view('pages.specialized-educational-support.pei-evaluations.create', compact('semester', 'pei'));
     }
 
@@ -84,7 +86,7 @@ class PeiEvaluationController extends Controller
             ->with('success', 'Avaliação do PEI removida com sucesso.');
     }
 
-    public function generatePdf(PeiEvaluation $pei_evaluation) 
+    public function generatePdf(PeiEvaluation $pei_evaluation)
     {
         // Agora o Laravel vai buscar automaticamente a avaliação no banco pelo ID da URL
         $pei_evaluation->load([
@@ -92,17 +94,19 @@ class PeiEvaluationController extends Controller
             'pei.course',
             'pei.discipline',
             'pei.semester',
-            'professional.person'
+            'professional.person',
         ]);
 
-        if (!$pei_evaluation->pei) {
+        if (! $pei_evaluation->pei) {
             abort(404, 'Plano PEI não encontrado para esta avaliação.');
         }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+        $pdf = Pdf::loadView(
             'pages.specialized-educational-support.pei-evaluations.pdf',
             ['evaluation' => $pei_evaluation] // Passamos para a view com o nome que ela espera
         );
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream(
             "Avaliacao_PEI_{$pei_evaluation->pei->student->person->name}.pdf"
