@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\SpecializedEducationalSupport\Application\Queries\StudentCourses;
+
+use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
+use Illuminate\Database\Eloquent\Collection;
+
+final class StudentCourseFormQuery
+{
+    /**
+     * @return array<string, mixed>
+     * @throws InvalidStudent
+     */
+    public function forCreation(Student $student): array
+    {
+        $student->ensureIsActive();
+        $student->loadMissing('person');
+
+        return [
+            'student' => $student,
+            'courses' => $this->activeCourses(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     * @throws InvalidStudent
+     */
+    public function forUpdate(StudentCourse $studentCourse): array
+    {
+        $studentCourse->loadMissing(['student.person', 'course']);
+        $studentCourse->student->ensureIsActive();
+
+        return [
+            'studentCourse' => $studentCourse,
+            'courses' => $this->activeCourses(),
+        ];
+    }
+
+    /**
+     * @return Collection<int, Course>
+     */
+    private function activeCourses(): Collection
+    {
+        return Course::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+    }
+}

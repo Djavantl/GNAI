@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Domains\Auth\Application\Queries\Permissions\UserHasPermissionQuery;
 use App\Domains\Auth\Application\Permissions\PermissionCache;
 use App\Domains\Auth\Application\Permissions\PermissionRegistry;
+use App\Domains\Auth\Application\Queries\Permissions\UserHasPermissionQuery;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Backup\Application\Actions\PruneBackupsAction;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
@@ -15,10 +15,10 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentContext;
-use App\Models\SpecializedEducationalSupport\StudentCourse;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use App\Models\SpecializedEducationalSupport\StudentDocument;
 use Illuminate\Database\Eloquent\Relations\Relation;

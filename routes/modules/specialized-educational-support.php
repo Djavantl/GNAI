@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\CourseController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DeficiencyController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DisciplineController;
@@ -10,14 +9,17 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\ProfessionalControl
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SessionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentCourseController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\TeacherController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
-use App\Http\Controllers\SpecializedEducationalSupport\{
-    StudentDeficienciesController, StudentContextController,
-    SessionRecordController, PedagogicalRecordController,
-    StudentCourseController, PendencyController, PeiController,
-    PeiEvaluationController, StudentDocumentController
-};
+use App\Http\Controllers\SpecializedEducationalSupport\PedagogicalRecordController;
+use App\Http\Controllers\SpecializedEducationalSupport\PeiController;
+use App\Http\Controllers\SpecializedEducationalSupport\PendencyController;
+use App\Http\Controllers\SpecializedEducationalSupport\SessionRecordController;
+use App\Http\Controllers\SpecializedEducationalSupport\StudentContextController;
+use App\Http\Controllers\SpecializedEducationalSupport\StudentDeficienciesController;
+use App\Http\Controllers\SpecializedEducationalSupport\StudentDocumentController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
 
@@ -210,7 +212,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('pedagogical-records/{pedagogicalRecord}/pdf', [PedagogicalRecordController::class, 'pdf'])
         ->name('pedagogical-records.pdf')
         ->middleware('can:session-record.view');
-
 
     /* 9. STUDENT COURSES */
     Route::get('/student-courses/{student}/create', [StudentCourseController::class, 'create'])->name('student-courses.create')->middleware('can:student-course.create');
