@@ -10,6 +10,7 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SessionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentCourseController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentDeficiencyController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\TeacherController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use App\Http\Controllers\SpecializedEducationalSupport\PedagogicalRecordController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\SpecializedEducationalSupport\PeiController;
 use App\Http\Controllers\SpecializedEducationalSupport\PendencyController;
 use App\Http\Controllers\SpecializedEducationalSupport\SessionRecordController;
 use App\Http\Controllers\SpecializedEducationalSupport\StudentContextController;
-use App\Http\Controllers\SpecializedEducationalSupport\StudentDeficienciesController;
 use App\Http\Controllers\SpecializedEducationalSupport\StudentDocumentController;
 use Illuminate\Support\Facades\Route;
 
@@ -130,13 +130,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('student-context/{studentContext}/pdf', [StudentContextController::class, 'generatePdf'])->name('student-context.pdf')->middleware('can:student-context.view');
 
     /* 6. STUDENT DEFICIENCIES */
-    Route::get('students/{student}/deficiencies', [StudentDeficienciesController::class, 'index'])->name('student-deficiencies.index')->middleware('can:student-deficiency.view');
-    Route::get('students/{student}/deficiencies/create', [StudentDeficienciesController::class, 'create'])->name('student-deficiencies.create')->middleware('can:student-deficiency.create');
-    Route::post('students/{student}/deficiencies', [StudentDeficienciesController::class, 'store'])->name('student-deficiencies.store')->middleware('can:student-deficiency.create');
-    Route::get('students/{student}/deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'show'])->name('student-deficiencies.show')->middleware('can:student-deficiency.view');
-    Route::get('students/{student}/deficiencies/{student_deficiency}/edit', [StudentDeficienciesController::class, 'edit'])->name('student-deficiencies.edit')->middleware('can:student-deficiency.update');
-    Route::put('students/{student}/deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'update'])->name('student-deficiencies.update')->middleware('can:student-deficiency.update');
-    Route::delete('students/{student}/deficiencies/{student_deficiency}', [StudentDeficienciesController::class, 'destroy'])->name('student-deficiencies.destroy')->middleware('can:student-deficiency.delete');
+    Route::get('students/{student}/deficiencies', [StudentDeficiencyController::class, 'index'])->name('student-deficiencies.index')->middleware('can:student-deficiency.view');
+    Route::get('students/{student}/deficiencies/create', [StudentDeficiencyController::class, 'create'])->name('student-deficiencies.create')->middleware('can:student-deficiency.create');
+    Route::post('students/{student}/deficiencies', [StudentDeficiencyController::class, 'store'])->name('student-deficiencies.store')->middleware('can:student-deficiency.create');
+    Route::get('students/{student}/deficiencies/{student_deficiency}', [StudentDeficiencyController::class, 'show'])->name('student-deficiencies.show')->middleware('can:student-deficiency.view');
+    Route::get('students/{student}/deficiencies/{student_deficiency}/edit', [StudentDeficiencyController::class, 'edit'])->name('student-deficiencies.edit')->middleware('can:student-deficiency.update');
+    Route::put('students/{student}/deficiencies/{student_deficiency}', [StudentDeficiencyController::class, 'update'])->name('student-deficiencies.update')->middleware('can:student-deficiency.update');
+    Route::delete('students/{student}/deficiencies/{student_deficiency}', [StudentDeficiencyController::class, 'destroy'])->name('student-deficiencies.destroy')->middleware('can:student-deficiency.delete');
 
     /* 7. SESSIONS */
     Route::get('sessions', [SessionController::class, 'index'])->name('sessions.index')->middleware('can:session.view-all');
