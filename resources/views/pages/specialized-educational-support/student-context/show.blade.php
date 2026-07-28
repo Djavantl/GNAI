@@ -77,7 +77,7 @@
             </div>
         </div>
         {{-- PERFIS DE ATENDIMENTO --}}
-        <!-- <div class="col-md-12 border-top pt-4 ">
+        <div class="col-md-12 border-top pt-4 ">
             <div class="row g-2">
                 @forelse($student->deficiencies as $def)
                     <div class="col-md-6">
@@ -99,7 +99,7 @@
                     </div>
                 @endforelse
             </div>
-        </div> -->
+        </div>
     </div>
 
     {{-- ================= INFORMAÇÕES DA AVALIAÇÃO ================= --}}
@@ -146,6 +146,20 @@
         <x-show.info-textarea label="Necessidades Educacionais Específicas" column="col-md-12" isBox="true">
             {!! nl2br(e($studentContext->specific_educational_needs)) !!}
         </x-show.info-textarea>
+    </div>
+
+    {{-- ================= SÍNTESE ================= --}}
+    <x-forms.section title="Síntese Avaliativa" />
+
+    <div class="row g-3 px-4 pb-3">
+        <x-show.info-textarea label="Conhecimentos e Interesses" column="col-md-12" isBox="true">
+            {!! nl2br(e($studentContext->knowledge ?? '—')) !!}
+        </x-show.info-textarea>
+
+        <x-show.info-textarea label="Dificuldades" column="col-md-12" isBox="true">
+            {!! nl2br(e($studentContext->difficulties ?? '—')) !!}
+        </x-show.info-textarea>
+
     </div>
 
     {{-- ================= APRENDIZAGEM ================= --}}
@@ -250,20 +264,6 @@
         <x-show.info-textarea label="Observações Médicas" column="col-md-6" isBox="true">
             {{ $studentContext->medical_notes ?? '—' }}
         </x-show.info-textarea>
-    </div>
-
-    {{-- ================= SÍNTESE ================= --}}
-    <x-forms.section title="Síntese Avaliativa" />
-
-    <div class="row g-3 px-4 pb-3">
-        <x-show.info-textarea label="Conhecimentos e Interesses" column="col-md-6" isBox="true">
-            {!! nl2br(e($studentContext->knowledge ?? '—')) !!}
-        </x-show.info-textarea>
-
-        <x-show.info-textarea label="Dificuldades" column="col-md-6" isBox="true">
-            {!! nl2br(e($studentContext->difficulties ?? '—')) !!}
-        </x-show.info-textarea>
-
     </div>
 
     {{-- ================= INFORMAÇÕES DO SISTEMA ================= --}}
