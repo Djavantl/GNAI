@@ -9,12 +9,13 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Course;
 use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\Pendency;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Session;
 use App\Models\SpecializedEducationalSupport\Student;
 
 class DashboardController extends Controller
@@ -41,7 +42,7 @@ class DashboardController extends Controller
                 'count' => Pendency::pending()->where('priority', $priority->value)->count(),
             ];
         })->values();
-        $sessionsByStatus = collect(Session::statusOptions())->map(function (string $label, string $status) {
+        $sessionsByStatus = collect(SessionStatus::options())->map(function (string $label, string $status) {
             return [
                 'label' => $label,
                 'count' => Session::where('status', $status)->count(),

@@ -15,8 +15,7 @@
         </div>
         @php
             $canManageSessionRecord = auth()->user()?->professional?->id === $session->professional_id;
-            $sessionStatus = mb_strtolower(trim((string) $session->status));
-            $isScheduledSession = in_array($sessionStatus, ['agendada', 'agendado', 'scheduled'], true);
+            $isScheduledSession = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::isScheduledValue($session->status);
             $canManageSessionLifecycle = auth()->id() === $session->creator_id;
         @endphp
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
@@ -53,16 +52,10 @@
             
             <x-show.info-item label="Status" column="col-md-6" isBox="true">
                 @php
-                    $statusValue = strtolower($session->status);
-                    $statusColor = match($statusValue) {
-                        'agendada', 'agendado' => 'warning',
-                        'realizada', 'realizado' => 'success',
-                        'cancelada', 'cancelled', 'cancelado' => 'danger',
-                        default => 'warning'
-                    };
+                    $statusColor = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::colorFor($session->status);
                 @endphp
                 <span class="text-{{ $statusColor }} fw-bold">
-                    {{ $session->statusLabel() }}
+                    {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::labelFor($session->status) }}
                 </span>
             </x-show.info-item>
 
@@ -78,9 +71,9 @@
 
             <x-show.info-item label="Local" :value="$session->location" isBox="true"/>
             
-            <x-show.info-item label="Tipo de Atendimento" :value="$session->attendanceTypeLabel()" isBox="true"/>
+            <x-show.info-item label="Tipo de Atendimento" :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::labelFor($session->attendance_type)" isBox="true"/>
 
-            <x-show.info-item label="Formato" :value="$session->typeLabel()" isBox="true"/>
+            <x-show.info-item label="Formato" :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::labelFor($session->type)" isBox="true"/>
 
             <x-forms.section title="Conteúdo do Agendamento" />
 
@@ -137,7 +130,7 @@
                     @endcan
                 @endif
                  {{-- Lógica dos registros por tipo de atendimento --}}
-                @if($session->isAeeAttendance())
+                @if(\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::isAee($session->attendance_type))
                     @if($session->sessionRecord)
                         @can('session-record.view')
                             <x-buttons.link-button
@@ -159,7 +152,7 @@
                             @endif
                         @endcan
                     @endif
-                @elseif($session->isPedagogicalAttendance())
+                @elseif(\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::isPedagogical($session->attendance_type))
                     @if($session->pedagogicalRecord)
                         @can('session-record.view')
                             <x-buttons.link-button

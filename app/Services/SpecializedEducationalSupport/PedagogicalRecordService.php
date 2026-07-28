@@ -2,9 +2,10 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
-use App\Enums\SpecializedEducationalSupport\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Models\SpecializedEducationalSupport\PedagogicalRecord;
-use App\Models\SpecializedEducationalSupport\Session;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Support\RichTextSanitizer;
 use Exception;
@@ -14,11 +15,6 @@ use Illuminate\Support\Facades\DB;
 
 class PedagogicalRecordService
 {
-    private function normalizeStatus(?string $status): string
-    {
-        return mb_strtolower(trim((string) $status));
-    }
-
     private function userCanViewOnlyOwn(): bool
     {
         $user = Auth::user();
@@ -67,14 +63,14 @@ class PedagogicalRecordService
 
     private function ensureScheduledSession(Session $session, string $action): void
     {
-        if (!in_array($this->normalizeStatus($session->status), ['agendada', 'agendado', 'scheduled'], true)) {
+        if (! SessionStatus::isScheduledValue($session->status)) {
             throw new Exception("O agendamento precisa estar com status Agendada para {$action}.");
         }
     }
 
     private function ensurePedagogicalSession(Session $session): void
     {
-        if (!$session->isPedagogicalAttendance()) {
+        if (! AttendanceType::isPedagogical($session->attendance_type)) {
             throw new Exception('Este agendamento não está classificado como Atendimento Pedagógico.');
         }
 
@@ -117,7 +113,7 @@ class PedagogicalRecordService
         $this->ensureCanCreateForSession($session);
 
         return DB::transaction(function () use ($session, $data) {
-            $session->update(['status' => 'Realizada']);
+            $session->update(['status' => SessionStatus::COMPLETED_DATABASE_VALUE]);
 
             return PedagogicalRecord::create($this->payload($data))
                 ->load(['attendanceSession.students.person', 'attendanceSession.professional.person']);

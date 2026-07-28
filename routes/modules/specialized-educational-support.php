@@ -8,12 +8,13 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\GuardianController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\PositionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\ProfessionalController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\SemesterController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\SessionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\TeacherController;
 use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use App\Http\Controllers\SpecializedEducationalSupport\{
     StudentDeficienciesController, StudentContextController,
-    SessionController, SessionRecordController, PedagogicalRecordController,
+    SessionRecordController, PedagogicalRecordController,
     StudentCourseController, PendencyController, PeiController,
     PeiEvaluationController, StudentDocumentController
 };
@@ -143,12 +144,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('sessions/{session}/edit', [SessionController::class, 'edit'])->name('sessions.edit')->middleware('can:session.update');
     Route::put('sessions/{session}', [SessionController::class, 'update'])->name('sessions.update')->middleware('can:session.update');
     Route::delete('sessions/{session}', [SessionController::class, 'destroy'])->name('sessions.destroy')->middleware('can:session.delete');
-    Route::post('sessions/{session}/restore', [SessionController::class, 'restore'])->name('sessions.restore')->middleware('can:session.update');
-    Route::delete('sessions/{session}/force-delete', [SessionController::class, 'forceDelete'])->name('sessions.force-delete')->middleware('can:session.delete');
+    Route::post('sessions/{session}/restore', [SessionController::class, 'restore'])->withTrashed()->name('sessions.restore')->middleware('can:session.update');
+    Route::delete('sessions/{session}/force-delete', [SessionController::class, 'forceDelete'])->withTrashed()->name('sessions.force-delete')->middleware('can:session.delete');
     Route::get('sessions/availability', [SessionController::class, 'availability'])->name('sessions.availability')->middleware('can:session.view');
     Route::post('sessions/{session}/cancel', [SessionController::class, 'cancel'])->name('sessions.cancel')->middleware('can:session.update');
     Route::get('students/{student}/sessions', [SessionController::class, 'indexByStudent'])->name('students.sessions.index')->middleware('can:session.view');
-    Route::get('students/{student}/sessions/create', [SessionController::class, 'createForStudent'])->name('students.sessions.create')->middleware('can:session.create');
     Route::get('my-sessions', [SessionController::class, 'mySessions'])->name('sessions.my-sessions')->middleware('can:session.view-own');
 
     /* 8. SESSION RECORDS */

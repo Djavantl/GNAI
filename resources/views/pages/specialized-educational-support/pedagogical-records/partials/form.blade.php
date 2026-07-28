@@ -21,7 +21,7 @@
 </x-show.info-item>
 
 <x-show.info-item label="Tipo" column="col-md-4" isBox="true">
-    {{ $session->attendanceTypeLabel() }}
+    {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::labelFor($session->attendance_type) }}
 </x-show.info-item>
 
 <x-forms.section title="Registro Pedagógico" />

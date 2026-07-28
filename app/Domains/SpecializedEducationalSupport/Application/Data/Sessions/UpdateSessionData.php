@@ -1,93 +1,80 @@
 <?php
 
-namespace App\Http\Requests\SpecializedEducationalSupport;
+declare(strict_types=1);
 
-use App\Enums\SpecializedEducationalSupport\AttendanceType;
-use Illuminate\Foundation\Http\FormRequest;
+namespace App\Domains\SpecializedEducationalSupport\Application\Data\Sessions;
+
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType;
 use Illuminate\Validation\Rule;
+use Spatie\LaravelData\Attributes\MapInputName;
+use Spatie\LaravelData\Attributes\MergeValidationRules;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 
-class SessionRequest extends FormRequest
+#[MapInputName(SnakeCaseMapper::class)]
+#[MergeValidationRules]
+final class UpdateSessionData extends Data
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * @param list<int> $studentIds
      */
-    public function authorize(): bool
-    {
-        return true;
-    }
+    public function __construct(
+        public int $professionalId,
+        public array $studentIds,
+        public string $sessionDate,
+        public string $startTime,
+        public ?string $endTime,
+        public string $attendanceType,
+        public string $type,
+        public string $location,
+        public string $sessionObjective,
+        public ?string $status = null,
+    ) {}
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
+    public static function rules(): array
     {
         return [
-            'professional_id' => ['required', 'exists:professionals,id'],
+            'professional_id' => ['required', 'integer', 'exists:professionals,id'],
             'student_ids' => ['required', 'array', 'min:1'],
-            'student_ids.*' => ['exists:students,id'],
+            'student_ids.*' => ['integer', 'exists:students,id'],
             'session_date' => ['required', 'date'],
-            'start_time'   => ['required', 'date_format:H:i'],
-            'end_time'     => ['nullable', 'date_format:H:i', 'after:start_time'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
             'attendance_type' => ['required', Rule::in(array_keys(AttendanceType::options()))],
-            'type' => ['required', 'string', 'max:100'],
+            'type' => ['required', Rule::in(array_keys(SessionType::options()))],
             'location' => ['required', 'string', 'max:255'],
             'session_objective' => ['required', 'string'],
-            'status' => ['sometimes'],
+            'status' => ['sometimes', 'nullable', Rule::in(array_keys(SessionStatus::options()))],
         ];
     }
 
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            if ($this->input('attendance_type') !== AttendanceType::PEDAGOGICAL->value) {
-                return;
-            }
-
-            $studentIds = array_filter((array) $this->input('student_ids', []));
-
-            if (count($studentIds) !== 1) {
-                $validator->errors()->add(
-                    'student_ids',
-                    'Atendimentos pedagógicos devem possuir exatamente um aluno.'
-                );
-            }
-        });
-    }
-
-    public function messages(): array
+    public static function messages(): array
     {
         return [
             'student_ids.required' => 'Selecione ao menos um aluno.',
             'student_ids.array' => 'Os alunos do agendamento devem ser informados em uma lista válida.',
             'student_ids.min' => 'Selecione ao menos um aluno.',
             'student_ids.*.exists' => 'Um dos alunos informados não existe.',
-
             'professional_id.required' => 'O profissional é obrigatório.',
             'professional_id.exists' => 'O profissional informado não existe.',
-
             'session_date.required' => 'A data do agendamento é obrigatória.',
             'session_date.date' => 'A data do agendamento deve ser válida.',
-
             'start_time.required' => 'O horário de início é obrigatório.',
             'start_time.date_format' => 'O horário de início deve estar no formato HH:MM.',
-
             'end_time.date_format' => 'O horário de término deve estar no formato HH:MM.',
             'end_time.after' => 'O horário de término deve ser após o início.',
-
             'attendance_type.required' => 'O tipo de atendimento é obrigatório.',
             'attendance_type.in' => 'O tipo de atendimento informado é inválido.',
             'type.required' => 'O tipo de atendimento é obrigatório.',
-            'type.string' => 'O formato do atendimento deve ser um texto válido.',
-            'type.max' => 'O formato do atendimento não pode ultrapassar 100 caracteres.',
+            'type.in' => 'O formato do atendimento informado é inválido.',
             'location.required' => 'O local do agendamento é obrigatório.',
             'location.string' => 'O local do agendamento deve ser um texto válido.',
             'location.max' => 'O local do agendamento não pode ultrapassar 255 caracteres.',
-
             'session_objective.required' => 'O objetivo do agendamento é obrigatório.',
             'session_objective.string' => 'O objetivo do agendamento deve ser um texto válido.',
-            'cancellation_reason.required_if' => 'Informe o motivo do cancelamento.',
+            'status.in' => 'O status informado é inválido.',
         ];
     }
 }

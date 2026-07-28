@@ -4,7 +4,7 @@ namespace Database\Seeders\SpecializedEducationalSupport;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\SpecializedEducationalSupport\Session; // Ajuste o namespace se necessário
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use Carbon\Carbon;
 
 class SessionRecordSeeder extends Seeder
