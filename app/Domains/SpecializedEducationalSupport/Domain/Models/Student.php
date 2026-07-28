@@ -10,7 +10,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
 use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\StudentContext;
-use App\Models\SpecializedEducationalSupport\StudentCourse;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use App\Models\SpecializedEducationalSupport\StudentDocument;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;

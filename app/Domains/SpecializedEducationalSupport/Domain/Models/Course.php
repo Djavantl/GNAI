@@ -7,7 +7,6 @@ namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Courses\CreateCourseDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Courses\UpdateCourseDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidCourse;
-use App\Models\SpecializedEducationalSupport\StudentCourse;
 use Database\Factories\Domains\SpecializedEducationalSupport\CourseFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -51,7 +50,7 @@ final class Course extends Model
     }
 
     /**
-     * @param list<int> $disciplineIds
+     * @param  list<int>  $disciplineIds
      *
      * @throws InvalidCourse
      */
