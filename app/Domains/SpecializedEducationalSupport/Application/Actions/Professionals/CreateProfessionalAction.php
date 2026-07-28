@@ -41,7 +41,6 @@ final readonly class CreateProfessionalAction
         try {
             $professional = DB::transaction(function () use ($data, $actor, $photoPath): Professional {
                 $position = Position::query()
-                    ->lockForUpdate()
                     ->findOrFail($data->positionId);
                 $position->ensureIsActive();
 

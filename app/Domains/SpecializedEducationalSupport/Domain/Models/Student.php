@@ -8,7 +8,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\CreateStudent
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\UpdateStudentDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
-use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
 use App\Models\Traits\Reportable;
 use Carbon\CarbonImmutable;

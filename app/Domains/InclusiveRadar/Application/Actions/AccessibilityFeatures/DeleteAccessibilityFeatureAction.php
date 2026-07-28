@@ -17,7 +17,6 @@ final readonly class DeleteAccessibilityFeatureAction
     {
         DB::transaction(function () use ($feature): void {
             AccessibilityFeature::query()
-                ->lockForUpdate()
                 ->findOrFail($feature->getKey())
                 ->delete();
         });

@@ -31,9 +31,8 @@ final readonly class UpdatePendencyAction
                 ->findOrFail($pendency->getKey());
             $lockedPendency->ensureCanBeEditedBy($actor);
 
-            $lockedProfessional = Professional::query()
+            $professional = Professional::query()
                 ->with('person')
-                ->lockForUpdate()
                 ->findOrFail($data->assignedTo);
 
             $pendencyDTO = new UpdatePendencyDTO(
@@ -44,7 +43,7 @@ final readonly class UpdatePendencyAction
             );
 
             $lockedPendency->revise(
-                assignedProfessional: $lockedProfessional,
+                assignedProfessional: $professional,
                 data: $pendencyDTO,
             );
 

@@ -7,7 +7,6 @@ namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Semesters\CreateSemesterDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Semesters\UpdateSemesterDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidSemester;
-use App\Models\SpecializedEducationalSupport\Pei;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\SemesterFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;

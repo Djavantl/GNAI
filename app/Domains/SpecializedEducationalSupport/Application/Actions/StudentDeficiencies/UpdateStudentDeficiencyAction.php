@@ -34,14 +34,13 @@ final readonly class UpdateStudentDeficiencyAction
                 ->findOrFail($studentDeficiency->getKey());
             $lockedStudentDeficiency->student->ensureIsActive();
 
-            $lockedDeficiency = Deficiency::query()
-                ->lockForUpdate()
+            $deficiency = Deficiency::query()
                 ->findOrFail($data->deficiencyId);
-            $lockedDeficiency->ensureIsActive();
+            $deficiency->ensureIsActive();
 
             $studentAlreadyHasDeficiency = StudentDeficiency::query()
                 ->where('student_id', $lockedStudentDeficiency->student_id)
-                ->where('deficiency_id', $lockedDeficiency->getKey())
+                ->where('deficiency_id', $deficiency->getKey())
                 ->where('id', '!=', $lockedStudentDeficiency->getKey())
                 ->exists();
 
@@ -55,7 +54,7 @@ final readonly class UpdateStudentDeficiencyAction
             );
 
             $lockedStudentDeficiency->revise(
-                deficiency: $lockedDeficiency,
+                deficiency: $deficiency,
                 data: $studentDeficiencyDTO,
             );
 

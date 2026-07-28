@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\UI\Controllers;
 
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\Auth\Application\Resolvers\AuthenticatedUserResolver;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\Pendencies\CompletePendencyAction;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\Pendencies\CreatePendencyAction;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\Pendencies\DeletePendencyAction;
@@ -65,15 +65,13 @@ final class PendencyController extends Controller
     /**
      * @throws Throwable
      */
-    public function store(CreatePendencyData $data, CreatePendencyAction $action, Request $request): RedirectResponse
-    {
-        $user = $request->user();
-
-        if (! $user instanceof User) {
-            abort(403);
-        }
-
-        $action->execute($user, $data);
+    public function store(
+        CreatePendencyData $data,
+        CreatePendencyAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($authenticatedUser->fromRequest($request), $data);
 
         return redirect()
             ->route('specialized-educational-support.pendencies.index')
@@ -91,15 +89,14 @@ final class PendencyController extends Controller
     /**
      * @throws Throwable
      */
-    public function update(UpdatePendencyData $data, Pendency $pendency, UpdatePendencyAction $action, Request $request): RedirectResponse
-    {
-        $user = $request->user();
-
-        if (! $user instanceof User) {
-            abort(403);
-        }
-
-        $action->execute($pendency, $data, $user);
+    public function update(
+        UpdatePendencyData $data,
+        Pendency $pendency,
+        UpdatePendencyAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($pendency, $data, $authenticatedUser->fromRequest($request));
 
         return redirect()
             ->route('specialized-educational-support.pendencies.index')
@@ -118,15 +115,13 @@ final class PendencyController extends Controller
             ->with('success', 'Pendência removida com sucesso.');
     }
 
-    public function myPendencies(ListPendenciesData $filters, ListMyPendenciesQuery $query, Request $request): View
-    {
-        $user = $request->user();
-
-        if (! $user instanceof User) {
-            abort(403);
-        }
-
-        $pendencies = $query->execute($filters, $user);
+    public function myPendencies(
+        ListPendenciesData $filters,
+        ListMyPendenciesQuery $query,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): View {
+        $pendencies = $query->execute($filters, $authenticatedUser->fromRequest($request));
 
         if ($request->ajax()) {
             return view(
@@ -144,15 +139,13 @@ final class PendencyController extends Controller
     /**
      * @throws Throwable
      */
-    public function markAsCompleted(Pendency $pendency, CompletePendencyAction $action, Request $request): RedirectResponse
-    {
-        $user = $request->user();
-
-        if (! $user instanceof User) {
-            abort(403);
-        }
-
-        $action->execute($pendency, $user);
+    public function markAsCompleted(
+        Pendency $pendency,
+        CompletePendencyAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($pendency, $authenticatedUser->fromRequest($request));
 
         return redirect()
             ->route('specialized-educational-support.pendencies.my')

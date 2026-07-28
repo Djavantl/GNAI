@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\UI\Controllers;
 
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\Auth\Application\Resolvers\AuthenticatedUserResolver;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\Sessions\CancelSessionAction;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\Sessions\CreateSessionAction;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\Sessions\DeleteSessionAction;
@@ -163,10 +163,10 @@ final class SessionController extends Controller
         ListSessionsData $filters,
         ListMySessionsQuery $query,
         WeeklyAgendaQuery $agendaQuery,
+        AuthenticatedUserResolver $authenticatedUser,
         Request $request,
     ): View|string {
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
+        $user = $authenticatedUser->fromRequest($request);
 
         $sessions = $query->execute($filters, $user);
         $students = Student::with('person')->orderBy('id')->get(['id', 'person_id']);

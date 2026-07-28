@@ -16,11 +16,9 @@ final readonly class DeletePendencyAction
     public function execute(Pendency $pendency): void
     {
         DB::transaction(function () use ($pendency): void {
-            $lockedPendency = Pendency::query()
-                ->lockForUpdate()
-                ->findOrFail($pendency->getKey());
-
-            $lockedPendency->delete();
+            Pendency::query()
+                ->findOrFail($pendency->getKey())
+                ->delete();
         });
     }
 }

@@ -16,11 +16,9 @@ final readonly class DeleteStudentDeficiencyAction
     public function execute(StudentDeficiency $studentDeficiency): void
     {
         DB::transaction(function () use ($studentDeficiency): void {
-            $lockedStudentDeficiency = StudentDeficiency::query()
-                ->lockForUpdate()
-                ->findOrFail($studentDeficiency->getKey());
-
-            $lockedStudentDeficiency->delete();
+            StudentDeficiency::query()
+                ->findOrFail($studentDeficiency->getKey())
+                ->delete();
         });
     }
 }

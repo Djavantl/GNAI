@@ -45,7 +45,6 @@ final readonly class UpdateProfessionalAction
                     ->lockForUpdate()
                     ->findOrFail($professional->getKey());
                 $position = Position::query()
-                    ->lockForUpdate()
                     ->findOrFail($data->positionId);
                 $position->ensureIsActive();
                 $person = Person::query()
@@ -93,7 +92,7 @@ final readonly class UpdateProfessionalAction
                 $lockedProfessional->revise($position, $professionalDTO);
                 $lockedProfessional->save();
 
-                $user = $lockedProfessional->user()->lockForUpdate()->first();
+                $user = $lockedProfessional->user()->first();
 
                 if ($user !== null) {
                     $userData = [

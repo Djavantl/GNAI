@@ -4,4 +4,4 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Exceptions;
 
-final class InvalidPendency extends SpecializedEducationalSupportException {}
+final class InvalidPeiDiscipline extends SpecializedEducationalSupportException {}

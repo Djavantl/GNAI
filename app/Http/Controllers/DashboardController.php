@@ -10,12 +10,12 @@ use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Enums\Priority;
 use App\Models\SpecializedEducationalSupport\Course;
-use App\Models\SpecializedEducationalSupport\Pei;
 use App\Models\SpecializedEducationalSupport\Student;
 
 class DashboardController extends Controller

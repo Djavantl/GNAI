@@ -27,9 +27,8 @@ final readonly class CreatePendencyAction
     public function execute(User $creator, CreatePendencyData $data): Pendency
     {
         $pendency = DB::transaction(function () use ($creator, $data): Pendency {
-            $lockedProfessional = Professional::query()
+            $professional = Professional::query()
                 ->with('person')
-                ->lockForUpdate()
                 ->findOrFail($data->assignedTo);
 
             $pendencyDTO = new CreatePendencyDTO(
@@ -41,7 +40,7 @@ final readonly class CreatePendencyAction
 
             $pendency = Pendency::register(
                 creator: $creator,
-                assignedProfessional: $lockedProfessional,
+                assignedProfessional: $professional,
                 data: $pendencyDTO,
             );
 

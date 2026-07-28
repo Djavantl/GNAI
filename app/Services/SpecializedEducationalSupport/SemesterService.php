@@ -2,7 +2,7 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
-use App\Models\SpecializedEducationalSupport\Pei;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
 use App\Models\SpecializedEducationalSupport\Semester;
 use App\Models\SpecializedEducationalSupport\StudentContext;
 use App\Models\SpecializedEducationalSupport\StudentDocument;
@@ -28,6 +28,7 @@ class SemesterService
             ->paginate(10)
             ->withQueryString();
     }
+
     /**
      * Criar semestre
      */
@@ -35,9 +36,9 @@ class SemesterService
     {
         return DB::transaction(function () use ($data) {
 
-            $label = $data['year'] . "." . $data['term'];
+            $label = $data['year'].'.'.$data['term'];
             // Se criar já como atual, desativa os outros
-            if (!empty($data['is_current']) && $data['is_current']) {
+            if (! empty($data['is_current']) && $data['is_current']) {
                 Semester::where('is_current', true)
                     ->update(['is_current' => false]);
             }
@@ -55,13 +56,13 @@ class SemesterService
     {
         return DB::transaction(function () use ($semester, $data) {
 
-            if (!empty($data['is_current']) && $data['is_current']) {
+            if (! empty($data['is_current']) && $data['is_current']) {
                 Semester::where('is_current', true)
                     ->where('id', '!=', $semester->id)
                     ->update(['is_current' => false]);
             }
 
-            $label = $data['year'] . "." . $data['term'];
+            $label = $data['year'].'.'.$data['term'];
             $data['label'] = $label;
 
             $semester->update($data);
@@ -107,7 +108,7 @@ class SemesterService
 
         if (array_sum($linkedRecords) > 0) {
             throw new DomainException(
-                'Este semestre possui registros vinculados e não pode ser excluído. ' .
+                'Este semestre possui registros vinculados e não pode ser excluído. '.
                 'Remova ou migre os vínculos antes de tentar novamente.'
             );
         }
