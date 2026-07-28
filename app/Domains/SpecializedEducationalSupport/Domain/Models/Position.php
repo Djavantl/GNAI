@@ -8,7 +8,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Positions\CreatePositi
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Positions\UpdatePositionDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidPosition;
 use App\Models\Permission;
-use App\Models\SpecializedEducationalSupport\Professional;
 use Database\Factories\Domains\SpecializedEducationalSupport\PositionFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
