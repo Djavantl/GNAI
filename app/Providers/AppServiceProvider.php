@@ -16,10 +16,10 @@ use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDeficiency;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentContext;
-use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use App\Models\SpecializedEducationalSupport\StudentDocument;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'student' => Student::class,
             'person' => Person::class,
-            'student_deficiency' => StudentDeficiencies::class,
+            'student_deficiency' => StudentDeficiency::class,
             'student_document' => StudentDocument::class,
             'student_course' => StudentCourse::class,
             'student_context' => StudentContext::class,

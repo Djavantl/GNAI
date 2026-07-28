@@ -10,8 +10,6 @@ use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Deficiencies\CreateDeficiencyDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Deficiencies\UpdateDeficiencyDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidDeficiency;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use Database\Factories\Domains\SpecializedEducationalSupport\DeficiencyFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -92,7 +90,7 @@ final class Deficiency extends Model
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'students_deficiencies')
-            ->using(StudentDeficiencies::class)
+            ->using(StudentDeficiency::class)
             ->withPivot([
                 'id',
                 'severity',
