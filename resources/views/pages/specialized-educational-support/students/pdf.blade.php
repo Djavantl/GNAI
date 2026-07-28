@@ -609,7 +609,9 @@ $relationshipMap = [
             </table>
 
             {{-- quebra entre disciplinas --}}
-            <div class="page-break"></div>
+            @if (! $loop->last)
+                <div class="page-break"></div>
+            @endif
 
         @endforeach
 
@@ -621,6 +623,5 @@ $relationshipMap = [
         </table>
     @endforelse
 
-    <x-pdf.pages />
 </body>
 </html>

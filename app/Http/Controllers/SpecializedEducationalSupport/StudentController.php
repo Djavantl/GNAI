@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SpecializedEducationalSupport\StudentRequest;
 use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\Semester;
 use App\Services\SpecializedEducationalSupport\StudentService;
-use Illuminate\Http\Request;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Throwable;
 
 class StudentController extends Controller
@@ -30,13 +30,13 @@ class StudentController extends Controller
             if ($request->ajax()) {
                 return view(
                     'pages.specialized-educational-support.students.partials.table',
-                    compact('students','semesters')
+                    compact('students', 'semesters')
                 )->render();
             }
 
             return view(
                 'pages.specialized-educational-support.students.index',
-                compact('students','semesters')
+                compact('students', 'semesters')
             );
 
         } catch (Throwable $e) {
@@ -133,6 +133,8 @@ class StudentController extends Controller
                 compact('student')
             );
 
+            PdfPageNumberer::apply($pdf);
+
             return $pdf->stream(
                 "ficha-aluno-{$student->registration}.pdf"
             );
@@ -141,5 +143,4 @@ class StudentController extends Controller
             throw $e;
         }
     }
-    
 }

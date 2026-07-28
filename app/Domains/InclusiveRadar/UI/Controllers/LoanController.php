@@ -18,6 +18,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Loans\LoanPdfQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Loans\ShowLoanQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Http\Controllers\Controller;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -154,8 +155,9 @@ final class LoanController extends Controller
                 'statusLabel' => $loan->statusLabel(),
             ],
         )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
+            ->setPaper('a4', 'portrait');
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Loan_{$loan->id}.pdf");
     }

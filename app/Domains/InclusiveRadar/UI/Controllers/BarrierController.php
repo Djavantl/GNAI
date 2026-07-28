@@ -18,6 +18,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Barriers\ShowBarrierQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Http\Controllers\Controller;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -130,11 +131,12 @@ final class BarrierController extends Controller
         $pdf = Pdf::loadView('pages.inclusive-radar.barriers.pdf', compact('barrier'))
             ->setPaper('a4', 'portrait')
             ->setOptions([
-                'enable_php' => true,
                 'isRemoteEnabled' => true,
                 'isHtml5ParserEnabled' => true,
                 'chroot' => [public_path(), storage_path()],
             ]);
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Barreira_{$barrier->id}.pdf");
     }

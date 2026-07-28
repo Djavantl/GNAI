@@ -9,6 +9,7 @@ use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\StudentContext;
 use App\Models\SpecializedEducationalSupport\StudentDeficiencies;
 use App\Models\SpecializedEducationalSupport\StudentDocument;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class StudentLogController extends Controller
@@ -31,9 +32,11 @@ class StudentLogController extends Controller
             compact('student', 'logs', 'fieldLabels')
         )
             ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true, 'isHtml5ParserEnabled' => true]);
+            ->setOption(['isHtml5ParserEnabled' => true]);
 
         $fileName = 'Historico_Completo_AEE_'.str_replace(' ', '_', $student->person->name).'.pdf';
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream($fileName);
     }

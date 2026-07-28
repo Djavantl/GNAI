@@ -13,6 +13,7 @@ use App\Models\SpecializedEducationalSupport\Student;
 use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
 use App\Services\SpecializedEducationalSupport\PeiDisciplineService;
 use App\Services\SpecializedEducationalSupport\PeiService;
+use App\Support\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -209,6 +210,8 @@ class PeiController extends Controller
 
         $disciplineName = str_replace(' ', '_', $peiDiscipline->discipline->name);
 
+        PdfPageNumberer::apply($pdf);
+
         return $pdf->stream("PEI_{$disciplineName}.pdf");
     }
 
@@ -233,6 +236,8 @@ class PeiController extends Controller
         ])->setPaper('a4', 'portrait');
 
         $studentName = str_replace(' ', '_', $pei->student->person->name);
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("PEI_COMPLETO_{$studentName}_v{$pei->version}.pdf");
     }

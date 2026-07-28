@@ -7,7 +7,6 @@
 </head>
 <body>
 {{-- 1. Adicionado componente de numeração de páginas --}}
-<x-pdf.pages />
 
 <x-pdf.header
     title="Comprovante de Fila de Espera"
