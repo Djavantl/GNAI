@@ -2,16 +2,17 @@
 
 namespace App\Services\SpecializedEducationalSupport;
 
-use App\Models\SpecializedEducationalSupport\Person;
-use App\Models\SpecializedEducationalSupport\Professional;
 use App\Domains\Auth\Domain\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use DomainException;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
-use App\Models\SpecializedEducationalSupport\Pendency;
+use App\Models\SpecializedEducationalSupport\Person;
 use App\Models\SpecializedEducationalSupport\Position;
+use App\Models\SpecializedEducationalSupport\Professional;
+use DomainException;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfessionalService
 {
@@ -21,7 +22,7 @@ class ProfessionalService
             ->select('professionals.*')
             ->join('people', 'people.id', '=', 'professionals.person_id')
             ->with(['person', 'position'])
-        
+
             ->name($filters['name'] ?? null)
             ->email($filters['email'] ?? null)
             ->position($filters['position'] ?? null)
@@ -33,7 +34,8 @@ class ProfessionalService
             ->withQueryString();
     }
 
-    public function show(Professional $professional){
+    public function show(Professional $professional)
+    {
         return $professional->load('person', 'position');
     }
 
@@ -44,32 +46,32 @@ class ProfessionalService
     {
         return DB::transaction(function () use ($data) {
             $this->ensurePositionIsActive($data['position_id']);
-            
+
             // 1. Processa a foto
-            if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
+            if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
                 $data['photo'] = $data['photo']->store('photos', 'public');
             }
-            $data['entry_date'] = now()->format('Y-m-d'); 
+            $data['entry_date'] = now()->format('Y-m-d');
 
             // 2. Cria a Pessoa vinculando a foto
             $person = Person::create([
-                'name'       => $data['name'],
-                'document'   => $data['document'] ?? null,
+                'name' => $data['name'],
+                'document' => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
-                'gender'     => $data['gender'] ?? 'not_specified',
-                'email'      => $data['email'],
-                'phone'      => $data['phone'] ?? null,
-                'address'    => $data['address'] ?? null,
-                'photo'      => $data['photo'] ?? null, 
+                'gender' => $data['gender'] ?? 'not_specified',
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'address' => $data['address'] ?? null,
+                'photo' => $data['photo'] ?? null,
             ]);
 
             // 3. Cria o Profissional
             $professional = Professional::create([
-                'person_id'    => $person->id,
-                'position_id'  => $data['position_id'],
+                'person_id' => $person->id,
+                'position_id' => $data['position_id'],
                 'registration' => $data['registration'],
-                'entry_date'   => $data['entry_date'],
-                'status'       => 'active',
+                'entry_date' => $data['entry_date'],
+                'status' => 'active',
             ]);
 
             // 4. Cria o Usuário de acesso
@@ -80,12 +82,12 @@ class ProfessionalService
             }
 
             User::create([
-                'name'             => $person->name,
-                'email'            => $person->email,
-                'password'         => Hash::make('napne2026'),
-                'role'             => 'professional',
-                'professional_id'  => $professional->id,
-                'is_admin'         => $isAdmin,
+                'name' => $person->name,
+                'email' => $person->email,
+                'password' => Hash::make('napne2026'),
+                'role' => 'professional',
+                'professional_id' => $professional->id,
+                'is_admin' => $isAdmin,
             ]);
 
             return $professional;
@@ -95,44 +97,42 @@ class ProfessionalService
     /**
      * Atualiza Pessoa + Profissional
      */
-    public function update(Professional $professional, array $data): Professional 
+    public function update(Professional $professional, array $data): Professional
     {
         return DB::transaction(function () use ($professional, $data) {
             $this->ensurePositionIsActive($data['position_id']);
 
             $person = $professional->person;
 
-            if (isset($data['photo']) && $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
+            if (isset($data['photo']) && $data['photo'] instanceof UploadedFile) {
                 if ($person->photo) {
                     Storage::disk('public')->delete($person->photo);
                 }
 
                 $data['photo'] = $data['photo']->store('photos', 'public');
-            } 
-            elseif (!empty($data['remove_photo'])) {
+            } elseif (! empty($data['remove_photo'])) {
                 if ($person->photo) {
                     Storage::disk('public')->delete($person->photo);
                 }
 
                 $data['photo'] = null;
-            } 
-            else {
+            } else {
                 $data['photo'] = $person->photo;
             }
 
             $person->update([
-                'name'       => $data['name'],
-                'document'   => $data['document'] ?? null,
+                'name' => $data['name'],
+                'document' => $data['document'] ?? null,
                 'birth_date' => $data['birth_date'],
-                'gender'     => $data['gender'] ?? $person->gender,
-                'email'      => $data['email'],
-                'phone'      => $data['phone'] ?? null,
-                'address'    => $data['address'] ?? null,
-                'photo'      => $data['photo'],
+                'gender' => $data['gender'] ?? $person->gender,
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'address' => $data['address'] ?? null,
+                'photo' => $data['photo'],
             ]);
 
             $statusAntigo = $professional->status;
-            $statusNovo   = $data['status'] ?? $professional->status;
+            $statusNovo = $data['status'] ?? $professional->status;
 
             if ($statusAntigo !== $statusNovo) {
 
@@ -145,16 +145,16 @@ class ProfessionalService
             }
 
             $professional->update([
-                'position_id'  => $data['position_id'],
+                'position_id' => $data['position_id'],
                 'registration' => $data['registration'],
-                'status'       => $statusNovo,
+                'status' => $statusNovo,
             ]);
 
             $user = $professional->user;
 
             if ($user) {
                 $userUpdate = [
-                    'name'  => $person->name,
+                    'name' => $person->name,
                     'email' => $person->email,
                 ];
 
@@ -175,7 +175,7 @@ class ProfessionalService
     public function delete(Professional $professional): void
     {
         if (auth()->check() && auth()->user()->professional_id === $professional->id) {
-            throw new DomainException("Você não pode excluir seu próprio registro de profissional.");
+            throw new DomainException('Você não pode excluir seu próprio registro de profissional.');
         }
 
         DB::transaction(function () use ($professional) {

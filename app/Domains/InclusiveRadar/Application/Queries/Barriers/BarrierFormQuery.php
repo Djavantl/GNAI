@@ -71,8 +71,7 @@ final readonly class BarrierFormQuery
                 ->get()
                 ->mapWithKeys(fn (Professional $professional) => [$professional->id => $professional->person?->name])
                 ->sort(),
-            'priorities' => collect(Priority::cases())
-                ->mapWithKeys(fn (Priority $priority) => [$priority->value => $priority->label()]),
+            'priorities' => collect(Priority::options()),
             'barrierStatuses' => collect(BarrierStatus::cases())
                 ->mapWithKeys(fn (BarrierStatus $status) => [$status->value => $status->label()]),
         ];

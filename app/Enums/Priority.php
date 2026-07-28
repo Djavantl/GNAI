@@ -28,4 +28,24 @@ enum Priority: string
             self::URGENT => 'dark',
         };
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function options(): array
+    {
+        return collect(self::cases())
+            ->mapWithKeys(fn (self $priority): array => [
+                $priority->value => $priority->label(),
+            ])
+            ->toArray();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function filterOptions(string $allLabel = 'Prioridade (Todas)'): array
+    {
+        return ['' => $allLabel] + self::options();
+    }
 }

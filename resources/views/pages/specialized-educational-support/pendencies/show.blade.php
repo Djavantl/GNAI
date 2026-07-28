@@ -67,7 +67,7 @@
             <x-forms.section title="Informações do Sistema" />
 
             <x-show.info-item label="Criado por" column="col-md-6" isBox="true">
-                {{ $pendency->creator->person->name ?? ('#' . $pendency->created_by) }}
+                {{ $pendency->creator?->name ?? ('#' . $pendency->created_by) }}
             </x-show.info-item>
 
             <x-show.info-item label="Criado em" column="col-md-3" isBox="true">
