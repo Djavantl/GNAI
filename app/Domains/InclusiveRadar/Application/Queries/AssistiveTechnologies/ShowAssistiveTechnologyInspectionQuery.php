@@ -18,7 +18,7 @@ final class ShowAssistiveTechnologyInspectionQuery
         Inspection $inspection,
     ): Inspection {
         $scopedInspection = $technology->inspections()
-            ->with('images')
+            ->with('evidences')
             ->whereKey($inspection->getKey())
             ->first();
 

@@ -20,7 +20,7 @@ final class CreateInspectionDataTest extends TestCase
         self::assertSame('2026-07-18', $data->date);
         self::assertSame(InspectionType::INITIAL, $data->type);
         self::assertNull($data->description);
-        self::assertSame([], $data->images);
+        self::assertSame([], $data->evidences);
     }
 
     public function test_it_infers_the_inspection_type_enum_rule(): void
@@ -34,7 +34,9 @@ final class CreateInspectionDataTest extends TestCase
             $rules['type'],
             static fn (mixed $rule): bool => $rule instanceof Enum,
         ));
-        self::assertContains('max:10', $rules['images']);
-        self::assertContains('max:5120', $rules['images.*']);
+        self::assertContains('max:10', $rules['evidences']);
+        self::assertContains('file', $rules['evidences.*']);
+        self::assertContains('mimes:jpeg,png,jpg,webp,pdf,doc,docx,ppt,pptx,odp,odt,ods,xls,xlsx,csv,txt', $rules['evidences.*']);
+        self::assertContains('max:20480', $rules['evidences.*']);
     }
 }

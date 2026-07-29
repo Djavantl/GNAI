@@ -36,9 +36,9 @@ final class CreateAssistiveTechnologyDataTest extends TestCase
         self::assertArrayHasKey('conservation_state', $rules);
         self::assertArrayHasKey('inspection.date', $rules);
         self::assertArrayHasKey('inspection.type', $rules);
-        self::assertArrayHasKey('inspection.images.*', $rules);
-        self::assertContains('max:5120', $rules['inspection.images.*']);
-        self::assertNotContains('max:2048', $rules['inspection.images.*']);
+        self::assertArrayHasKey('inspection.evidences.*', $rules);
+        self::assertContains('max:20480', $rules['inspection.evidences.*']);
+        self::assertNotContains('max:2048', $rules['inspection.evidences.*']);
         self::assertArrayHasKey('is_active', $rules);
         self::assertArrayNotHasKey('isDigital', $rules);
         self::assertArrayNotHasKey('assetCode', $rules);
@@ -104,7 +104,7 @@ final class CreateAssistiveTechnologyDataTest extends TestCase
         self::assertSame(InspectionType::INITIAL, $data->inspection->type);
         self::assertSame(ResourceStatus::AVAILABLE, $data->status);
         self::assertTrue($data->isActive);
-        self::assertSame([], $data->inspection->images);
+        self::assertSame([], $data->inspection->evidences);
         self::assertNull($data->inspection->description);
         self::assertNull($data->notes);
     }

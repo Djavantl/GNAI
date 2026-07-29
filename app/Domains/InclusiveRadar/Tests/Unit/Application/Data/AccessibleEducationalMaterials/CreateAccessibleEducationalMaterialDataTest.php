@@ -39,7 +39,7 @@ final class CreateAccessibleEducationalMaterialDataTest extends TestCase
         self::assertArrayHasKey('accessibility_features.*', $rules);
         self::assertArrayHasKey('inspection.date', $rules);
         self::assertArrayHasKey('inspection.type', $rules);
-        self::assertArrayHasKey('inspection.images.*', $rules);
+        self::assertArrayHasKey('inspection.evidences.*', $rules);
         self::assertArrayHasKey('is_active', $rules);
         self::assertArrayNotHasKey('isDigital', $rules);
         self::assertContainsOnlyInstancesOf(Enum::class, array_filter(
@@ -102,7 +102,7 @@ final class CreateAccessibleEducationalMaterialDataTest extends TestCase
         self::assertSame(InspectionType::INITIAL, $data->inspection->type);
         self::assertSame(ResourceStatus::AVAILABLE, $data->status);
         self::assertTrue($data->isActive);
-        self::assertSame([], $data->inspection->images);
+        self::assertSame([], $data->inspection->evidences);
         self::assertNull($data->inspection->description);
     }
 }

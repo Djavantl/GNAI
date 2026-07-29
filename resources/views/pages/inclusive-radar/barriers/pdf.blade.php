@@ -110,30 +110,30 @@
         </tr>
     </table>
 
-    {{-- Container de Imagens FORA da tabela para permitir quebra de página --}}
-    <x-pdf.section-title title="Evidências Visuais" />
+    {{-- Container de evidências FORA da tabela para permitir quebra de página --}}
+    <x-pdf.section-title title="Evidências" />
     <div class="evidence-container">
-        @if($lastInspection->images->count() > 0)
-            @foreach($lastInspection->images as $image)
+        @if($lastInspection->evidences->count() > 0)
+            @foreach($lastInspection->evidences as $evidence)
                 @php
-                    $path = public_path('storage/' . $image->path);
+                    $path = public_path('storage/' . $evidence->path);
                 @endphp
 
-                @if(file_exists($path))
+                @if($evidence->isImage() && file_exists($path))
                     <div class="evidence-card">
-                        <img class="evidence-image" src="{{ $path }}" alt="Evidência visual da vistoria">
+                        <img class="evidence-image" src="{{ $path }}" alt="Evidência da vistoria">
                         <div class="evidence-caption">
-                            Evidência {{ $loop->iteration }} de {{ $lastInspection->images->count() }}
+                            Evidência {{ $loop->iteration }} de {{ $lastInspection->evidences->count() }}
                         </div>
                     </div>
                 @else
                     <div class="evidence-placeholder">
-                        Evidência {{ $loop->iteration }}: imagem não encontrada.
+                        Evidência {{ $loop->iteration }}: {{ $evidence->displayName() }}
                     </div>
                 @endif
             @endforeach
         @else
-            <span class="value">Nenhuma imagem registrada.</span>
+            <span class="value">Nenhuma evidência registrada.</span>
         @endif
     </div>
 @else

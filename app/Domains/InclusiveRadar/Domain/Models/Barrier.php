@@ -165,7 +165,7 @@ final class Barrier extends Model
     public function inspections(): MorphMany
     {
         return $this->morphMany(Inspection::class, 'inspectable')
-            ->with('images')
+            ->with('evidences')
             ->orderByDesc('inspection_date')
             ->orderByDesc('created_at');
     }

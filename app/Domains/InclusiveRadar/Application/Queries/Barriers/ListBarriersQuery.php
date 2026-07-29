@@ -17,7 +17,7 @@ final readonly class ListBarriersQuery
         $barrierMorphClass = (new Barrier)->getMorphClass();
 
         return Barrier::query()
-            ->with(['category', 'location', 'deficiencies', 'inspections.images', 'registeredBy'])
+            ->with(['category', 'location', 'deficiencies', 'inspections.evidences', 'registeredBy'])
             ->when($name !== '', fn (Builder $query) => $query->where('name', 'like', "%{$name}%"))
             ->when($filters->category, function (Builder $query) use ($filters): void {
                 $query->whereHas('category', function (Builder $subQuery) use ($filters): void {

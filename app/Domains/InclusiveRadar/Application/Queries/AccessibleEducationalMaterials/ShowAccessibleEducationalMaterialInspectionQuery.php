@@ -18,7 +18,7 @@ final class ShowAccessibleEducationalMaterialInspectionQuery
         Inspection $inspection,
     ): Inspection {
         $scopedInspection = $material->inspections()
-            ->with('images')
+            ->with('evidences')
             ->whereKey($inspection->getKey())
             ->first();
 

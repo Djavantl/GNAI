@@ -24,7 +24,7 @@ final class UpdateAccessibleEducationalMaterialDataTest extends TestCase
         self::assertArrayHasKey('accessibility_features.*', $rules);
         self::assertArrayHasKey('inspection.date', $rules);
         self::assertArrayHasKey('inspection.type', $rules);
-        self::assertArrayHasKey('inspection.images.*', $rules);
+        self::assertArrayHasKey('inspection.evidences.*', $rules);
         self::assertArrayHasKey('is_active', $rules);
         self::assertArrayNotHasKey('isDigital', $rules);
     }

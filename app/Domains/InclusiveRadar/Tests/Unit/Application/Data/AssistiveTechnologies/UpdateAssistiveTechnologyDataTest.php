@@ -22,7 +22,7 @@ final class UpdateAssistiveTechnologyDataTest extends TestCase
         self::assertArrayHasKey('conservation_state', $rules);
         self::assertArrayHasKey('inspection.date', $rules);
         self::assertArrayHasKey('inspection.type', $rules);
-        self::assertArrayHasKey('inspection.images.*', $rules);
+        self::assertArrayHasKey('inspection.evidences.*', $rules);
         self::assertArrayHasKey('is_active', $rules);
         self::assertArrayNotHasKey('isDigital', $rules);
     }

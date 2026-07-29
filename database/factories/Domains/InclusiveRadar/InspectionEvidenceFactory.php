@@ -3,12 +3,12 @@
 namespace Database\Factories\Domains\InclusiveRadar;
 
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Domains\InclusiveRadar\Domain\Models\InspectionImage;
+use App\Domains\InclusiveRadar\Domain\Models\InspectionEvidence;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class InspectionImageFactory extends Factory
+class InspectionEvidenceFactory extends Factory
 {
-    protected $model = InspectionImage::class;
+    protected $model = InspectionEvidence::class;
 
     public function definition(): array
     {

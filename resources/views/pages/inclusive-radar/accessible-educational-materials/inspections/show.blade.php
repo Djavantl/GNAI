@@ -16,7 +16,7 @@
         <header>
             <h2 class="text-title">Detalhes da Inspeção</h2>
             <p class="text-muted mb-0">
-                Visualize o estado de conservação, tipo de inspeção, parecer técnico e evidências visuais.
+                Visualize o estado de conservação, tipo de inspeção, parecer técnico e evidências.
             </p>
         </header>
 
@@ -47,27 +47,18 @@
                 <x-show.info-textarea label="Parecer Técnico / Descrição" column="col-12" :value="$inspection->description ?: 'Nenhum parecer técnico registrado.'" :rich="true"/>
             </div>
 
-            <x-forms.section title="Evidências Visuais" />
+            <x-forms.section title="Evidências" />
 
             <div class="row g-3 px-4 pb-4">
-                @forelse($inspection->images as $index => $img)
+                @forelse($inspection->evidences as $index => $img)
                     <div class="col-12 col-md-4">
-                        <a href="{{ asset('storage/' . $img->path) }}" target="_blank" ...>
-                            <img src="{{ asset('storage/' . $img->path) }}"
-                                 class="w-100"
-                                 alt="Foto de evidência {{ $index + 1 }}"
-                                 width="444"
-                                 height="250"
-                                 @if($loop->first) fetchpriority="high" loading="eager" @else loading="lazy" @endif
-                                 style="height: 250px; object-fit: cover; transition: transform 0.3s;"
-                            >
-                        </a>
+                        <x-forms.evidence-card :evidence="$img" :priority="$loop->first" />
                     </div>
                 @empty
                     <div class="col-12">
                         <div class="text-center py-5 bg-light rounded border border-dashed">
-                            <i class="fas fa-camera fa-2x text-secondary mb-2" aria-hidden="true"></i>
-                            <p class="text-muted mb-0 small">Nenhuma evidência visual registrada para esta inspeção.</p>
+                            <i class="fas fa-paperclip fa-2x text-secondary mb-2" aria-hidden="true"></i>
+                            <p class="text-muted mb-0 small">Nenhuma evidência registrada para esta inspeção.</p>
                         </div>
                     </div>
                 @endforelse
