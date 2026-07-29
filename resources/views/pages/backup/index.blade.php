@@ -79,6 +79,25 @@
             confirmVariant="warning"
             method="POST"
         />
+
+        <template id="restoreBackupPasswordTemplate">
+            <div class="pt-2">
+                <label for="restore-backup-password" class="form-label fw-semibold">
+                    Confirme sua senha
+                </label>
+                <input
+                    type="password"
+                    name="password"
+                    id="restore-backup-password"
+                    class="form-control"
+                    autocomplete="current-password"
+                    required
+                >
+                <small class="text-muted d-block mt-2">
+                    Esta confirmação é obrigatória porque a restauração sobrescreve dados do sistema.
+                </small>
+            </div>
+        </template>
     @endcanany
 
     <div class="mt-4 alert alert-info d-flex align-items-center border-0 shadow-sm" role="alert">

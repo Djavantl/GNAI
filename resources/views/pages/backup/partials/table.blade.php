@@ -61,6 +61,7 @@
                                     data-confirm-method="POST"
                                     data-confirm-submit-text="Confirmar Restauracao"
                                     data-confirm-variant="warning"
+                                    data-confirm-template="#restoreBackupPasswordTemplate"
                                 >
                                     <i class="fas fa-history"></i> Restaurar
                                 </x-buttons.submit-button>
