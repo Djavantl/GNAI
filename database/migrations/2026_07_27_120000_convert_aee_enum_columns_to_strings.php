@@ -7,6 +7,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("ALTER TABLE people MODIFY gender VARCHAR(50) NOT NULL DEFAULT 'not_specified'");
 
         DB::statement("ALTER TABLE students MODIFY status VARCHAR(50) NOT NULL DEFAULT 'active'");
@@ -28,6 +32,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("ALTER TABLE people MODIFY gender ENUM('male', 'female', 'other', 'not_specified') NOT NULL DEFAULT 'not_specified'");
 
         DB::statement("ALTER TABLE students MODIFY status ENUM('active', 'locked', 'completed', 'dropped') NOT NULL DEFAULT 'active'");

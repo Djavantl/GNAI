@@ -84,6 +84,7 @@ final class WaitlistFormQuery
         return $model::query()
             ->where('is_active', true)
             ->where('is_loanable', true)
+            ->where('is_digital', false)
             ->orderBy('name')
             ->get()
             ->filter(

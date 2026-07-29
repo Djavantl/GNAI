@@ -18,6 +18,7 @@ final class ListAccessibleEducationalMaterialsDataTest extends TestCase
             'is_digital' => false,
             'is_active' => false,
             'available' => false,
+            'accessibility_feature_id' => 7,
             'per_page' => 20,
         ]);
 
@@ -26,6 +27,7 @@ final class ListAccessibleEducationalMaterialsDataTest extends TestCase
         self::assertFalse($filters->isDigital);
         self::assertFalse($filters->isActive);
         self::assertFalse($filters->available);
+        self::assertSame(7, $filters->accessibilityFeatureId);
         self::assertSame(20, $filters->perPage);
     }
 
@@ -38,6 +40,7 @@ final class ListAccessibleEducationalMaterialsDataTest extends TestCase
         self::assertNull($filters->isDigital);
         self::assertNull($filters->isActive);
         self::assertNull($filters->available);
+        self::assertNull($filters->accessibilityFeatureId);
         self::assertSame(10, $filters->perPage);
     }
 }
