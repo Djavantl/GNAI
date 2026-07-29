@@ -218,7 +218,7 @@ final class UpdateAssistiveTechnologyTest extends TestCase
                 'date' => now()->toDateString(),
                 'type' => InspectionType::PERIODIC->value,
                 'description' => null,
-                'images' => [],
+                'evidences' => [],
             ],
         ], $overrides);
     }

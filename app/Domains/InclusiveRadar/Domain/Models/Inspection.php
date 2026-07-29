@@ -55,8 +55,8 @@ final class Inspection extends Model
         return $this->morphTo();
     }
 
-    public function images(): HasMany
+    public function evidences(): HasMany
     {
-        return $this->hasMany(InspectionImage::class, 'inspection_id');
+        return $this->hasMany(InspectionEvidence::class, 'inspection_id');
     }
 }

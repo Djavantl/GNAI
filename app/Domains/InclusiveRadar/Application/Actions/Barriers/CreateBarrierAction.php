@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Application\Actions\Barriers;
 
-use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
+use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionEvidencesAction;
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
 use App\Domains\InclusiveRadar\Application\Data\Barriers\CreateBarrierData;
 use App\Domains\InclusiveRadar\Domain\DTOs\Barriers\CreateBarrierDTO;
@@ -17,7 +17,7 @@ final readonly class CreateBarrierAction
 {
     public function __construct(
         private CreateInspectionAction $createInspection,
-        private AttachInspectionImagesAction $attachInspectionImages,
+        private AttachInspectionEvidencesAction $attachInspectionEvidences,
     ) {}
 
     /**
@@ -67,12 +67,12 @@ final readonly class CreateBarrierAction
             return $barrier;
         });
 
-        // Anexamos imagens após o commit para não manter transação de banco aberta durante I/O de arquivo.
+        // Anexamos evidências após o commit para não manter transação de banco aberta durante I/O de arquivo.
         // Se o anexo falhar, a barreira e a inspeção inicial permanecem persistidas e a exceção é propagada.
         if ($inspection instanceof Inspection) {
-            $this->attachInspectionImages->execute(
+            $this->attachInspectionEvidences->execute(
                 inspection: $inspection,
-                images: $data->inspection->images,
+                evidences: $data->inspection->evidences,
             );
         }
 
@@ -80,7 +80,7 @@ final readonly class CreateBarrierAction
             'category',
             'location',
             'deficiencies',
-            'inspections.images',
+            'inspections.evidences',
         ]);
     }
 }

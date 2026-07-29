@@ -227,10 +227,10 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <x-forms.image-uploader
-                                        name="inspection[images][]"
-                                        label="Fotos de Evidência"
-                                        :existingImages="old('inspection.images', [])"
+                                    <x-forms.evidence-uploader
+                                        name="inspection[evidences][]"
+                                        label="Evidências"
+                                        :existingImages="old('inspection.evidences', [])"
                                     />
                                 </div>
 

@@ -665,8 +665,8 @@ th,
     color: #444;
 }
 
-/* Evidências visuais / imagens de vistoria */
-.inspection-images,
+/* Evidências da vistoria */
+.inspection-evidences,
 .evidence-container {
     border: 1px solid #d9d6ef;
     padding: 6px;
@@ -712,7 +712,7 @@ th,
     text-align: center;
 }
 
-.image-placeholder,
+.evidence-placeholder,
 .evidence-placeholder {
     font-size: 10px;
     color: #999;

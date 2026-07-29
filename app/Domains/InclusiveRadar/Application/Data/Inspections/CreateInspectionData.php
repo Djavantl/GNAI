@@ -13,13 +13,13 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 final class CreateInspectionData extends Data
 {
     /**
-     * @param  array<int, mixed>  $images
+     * @param  array<int, mixed>  $evidences
      */
     public function __construct(
         public string $date,
         public InspectionType $type = InspectionType::INITIAL,
         public ?string $description = null,
-        public array $images = [],
+        public array $evidences = [],
     ) {}
 
     public static function rules(): array
@@ -27,11 +27,11 @@ final class CreateInspectionData extends Data
         return [
             'date' => ['required', 'date', 'before_or_equal:today'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'images' => ['nullable', 'array', 'max:10'],
-            'images.*' => [
-                'image',
-                'mimes:jpeg,png,jpg,webp',
-                'max:5120',
+            'evidences' => ['nullable', 'array', 'max:10'],
+            'evidences.*' => [
+                'file',
+                'mimes:jpeg,png,jpg,webp,pdf,doc,docx,ppt,pptx,odp,odt,ods,xls,xlsx,csv,txt',
+                'max:20480',
             ],
         ];
     }
@@ -41,10 +41,10 @@ final class CreateInspectionData extends Data
         return [
             'date.required' => 'A data da inspeção é obrigatória.',
             'date.before_or_equal' => 'A data da inspeção não pode ser no futuro.',
-            'images.*.image' => 'O arquivo deve ser uma imagem.',
-            'images.*.mimes' => 'A imagem deve estar no formato JPEG, PNG ou WebP.',
-            'images.*.max' => 'Cada imagem não pode ser maior que 5MB.',
-            'images.max' => 'Uma inspeção pode possuir no máximo 10 imagens.',
+            'evidences.*.file' => 'A evidência deve ser um arquivo válido.',
+            'evidences.*.mimes' => 'A evidência deve estar em um dos formatos permitidos: JPG, PNG, WebP, PDF, DOC, DOCX, PPT, PPTX, ODP, ODT, ODS, XLS, XLSX, CSV ou TXT.',
+            'evidences.*.max' => 'Cada evidência não pode ser maior que 20MB.',
+            'evidences.max' => 'Uma inspeção pode possuir no máximo 10 evidências.',
         ];
     }
 }

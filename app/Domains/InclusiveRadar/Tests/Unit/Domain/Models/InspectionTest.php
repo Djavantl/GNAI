@@ -9,7 +9,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Domains\InclusiveRadar\Domain\Models\InspectionImage;
+use App\Domains\InclusiveRadar\Domain\Models\InspectionEvidence;
 use Tests\TestCase;
 
 final class InspectionTest extends TestCase
@@ -32,19 +32,19 @@ final class InspectionTest extends TestCase
     {
         $technology = new AssistiveTechnology;
         $inspection = new Inspection;
-        $image = new InspectionImage;
+        $evidence = new InspectionEvidence;
 
         self::assertInstanceOf(
             Inspection::class,
             $technology->inspections()->getRelated(),
         );
         self::assertInstanceOf(
-            InspectionImage::class,
-            $inspection->images()->getRelated(),
+            InspectionEvidence::class,
+            $inspection->evidences()->getRelated(),
         );
         self::assertInstanceOf(
             Inspection::class,
-            $image->inspection()->getRelated(),
+            $evidence->inspection()->getRelated(),
         );
     }
 }

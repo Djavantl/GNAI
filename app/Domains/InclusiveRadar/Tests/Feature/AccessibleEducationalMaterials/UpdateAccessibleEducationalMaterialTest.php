@@ -17,7 +17,9 @@ use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Models\SpecializedEducationalSupport\Deficiency;
 use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 final class UpdateAccessibleEducationalMaterialTest extends TestCase
@@ -178,6 +180,45 @@ final class UpdateAccessibleEducationalMaterialTest extends TestCase
         $this->assertDatabaseCount('inspections', 0);
     }
 
+    public function test_it_creates_an_inspection_when_only_a_document_evidence_is_attached(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $audience = Deficiency::factory()->create();
+        $material = $this->physicalMaterial();
+
+        $response = $this->actingAs($user)->put(
+            self::ENDPOINT.'/'.$material->id,
+            $this->payload([
+                'deficiencies' => [$audience->id],
+                'inspection' => [
+                    'date' => now()->toDateString(),
+                    'type' => InspectionType::PERIODIC->value,
+                    'description' => null,
+                    'evidences' => [
+                        UploadedFile::fake()->create(
+                            'slide-adaptado.docx',
+                            128,
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        ),
+                    ],
+                ],
+            ]),
+        );
+
+        $response->assertRedirect(
+            route('inclusive-radar.accessible-educational-materials.index'),
+        );
+
+        $inspection = $material->inspections()->firstOrFail();
+        $evidence = $inspection->evidences()->firstOrFail();
+
+        self::assertSame('slide-adaptado.docx', $evidence->original_name);
+        self::assertStringEndsWith('.docx', $evidence->path);
+        Storage::disk('public')->assertExists($evidence->path);
+    }
+
     private function physicalMaterial(): AccessibleEducationalMaterial
     {
         $material = AccessibleEducationalMaterial::register(new CreateAccessibleEducationalMaterialDTO(
@@ -229,7 +270,7 @@ final class UpdateAccessibleEducationalMaterialTest extends TestCase
                 'date' => now()->toDateString(),
                 'type' => InspectionType::PERIODIC->value,
                 'description' => null,
-                'images' => [],
+                'evidences' => [],
             ],
         ], $overrides);
     }

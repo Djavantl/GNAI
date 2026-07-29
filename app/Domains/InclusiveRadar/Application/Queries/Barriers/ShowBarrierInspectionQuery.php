@@ -16,7 +16,7 @@ final class ShowBarrierInspectionQuery
     public function execute(Barrier $barrier, Inspection $inspection): Inspection
     {
         $scopedInspection = $barrier->inspections()
-            ->with('images')
+            ->with('evidences')
             ->whereKey($inspection->getKey())
             ->first();
 

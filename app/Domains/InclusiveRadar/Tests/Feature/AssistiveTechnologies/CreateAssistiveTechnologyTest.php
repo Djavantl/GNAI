@@ -51,7 +51,7 @@ final class CreateAssistiveTechnologyTest extends TestCase
                 'date' => now()->toDateString(),
                 'type' => InspectionType::INITIAL->value,
                 'description' => 'Cadastro inicial',
-                'images' => [],
+                'evidences' => [],
             ],
             'status' => ResourceStatus::AVAILABLE->value,
             'is_active' => true,

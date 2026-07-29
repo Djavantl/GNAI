@@ -19,7 +19,7 @@ final class ShowAssistiveTechnologyQuery
             },
             'inspections' => static function (MorphMany $query): void {
                 $query
-                    ->with('images')
+                    ->with('evidences')
                     ->orderByDesc('inspection_date')
                     ->orderByDesc('created_at');
             },

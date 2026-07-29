@@ -8,28 +8,27 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInspection;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
+use Illuminate\Support\Str;
 use Throwable;
 
-final class InspectionImageStorage
+final class InspectionEvidenceStorage
 {
     /**
-     * @param  array<int, mixed>  $images
+     * @param  array<int, mixed>  $evidences
      * @return list<string>
      */
-    public function store(Inspection $inspection, array $images): array
+    public function store(Inspection $inspection, array $evidences): array
     {
-        $storedImages = $this->storeFiles($inspection, $images);
+        $storedEvidences = $this->storeFiles($inspection, $evidences);
 
-        if ($storedImages === []) {
+        if ($storedEvidences === []) {
             return [];
         }
 
-        $storedPaths = array_column($storedImages, 'path');
+        $storedPaths = array_column($storedEvidences, 'path');
 
         try {
-            $inspection->images()->createMany($storedImages);
+            $inspection->evidences()->createMany($storedEvidences);
         } catch (Throwable $exception) {
             $this->delete($storedPaths);
 
@@ -40,53 +39,49 @@ final class InspectionImageStorage
     }
 
     /**
-     * @param  array<int, mixed>  $images
+     * @param  array<int, mixed>  $evidences
      * @return list<array{path: string, original_name: string, mime_type: string, size: int}>
      */
-    public function storeFiles(Inspection $inspection, array $images): array
+    public function storeFiles(Inspection $inspection, array $evidences): array
     {
-        if ($images === []) {
+        if ($evidences === []) {
             return [];
         }
 
-        $manager = new ImageManager(new Driver);
         $storedPaths = [];
-        $storedImages = [];
+        $storedEvidences = [];
 
         try {
-            foreach ($images as $image) {
-                if (! $image instanceof UploadedFile) {
+            foreach ($evidences as $file) {
+                if (! $file instanceof UploadedFile) {
                     throw new InvalidInspection(
-                        'Uma das imagens da inspeção é inválida.'
+                        'Uma das evidências da inspeção é inválida.'
                     );
                 }
 
-                $name = pathinfo(
-                    $image->getClientOriginalName(),
-                    PATHINFO_FILENAME,
+                $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'evidencia';
+                $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
+                $fileName = $name.'_'.uniqid().'.'.$extension;
+
+                $path = Storage::disk('public')->putFileAs(
+                    "inspections/{$inspection->id}",
+                    $file,
+                    $fileName,
                 );
-                $fileName = $name.'_'.uniqid().'.webp';
-                $path = "inspections/{$inspection->id}/{$fileName}";
-                $optimizedImage = $manager->read($image)
-                    ->scale(width: 600)
-                    ->toWebp(60);
-                $contents = (string) $optimizedImage;
 
-                $stored = Storage::disk('public')->put($path, $contents);
-
-                if (! $stored) {
+                if (! is_string($path) || $path === '') {
                     throw new InvalidInspection(
-                        'Não foi possível armazenar uma das imagens da inspeção.'
+                        'Não foi possível armazenar uma das evidências da inspeção.'
                     );
                 }
 
                 $storedPaths[] = $path;
 
-                $storedImages[] = [
+                $storedEvidences[] = [
                     'path' => $path,
-                    'original_name' => $image->getClientOriginalName(),
-                    'mime_type' => 'image/webp',
-                    'size' => strlen($contents),
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType() ?: $file->getMimeType() ?: 'application/octet-stream',
+                    'size' => $file->getSize() ?? 0,
                 ];
             }
         } catch (Throwable $exception) {
@@ -95,7 +90,7 @@ final class InspectionImageStorage
             throw $exception;
         }
 
-        return $storedImages;
+        return $storedEvidences;
     }
 
     /**

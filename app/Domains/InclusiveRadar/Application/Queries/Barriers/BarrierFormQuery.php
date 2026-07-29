@@ -32,7 +32,7 @@ final readonly class BarrierFormQuery
         $data = $this->baseData();
 
         return $data + [
-            'barrier' => $barrier->loadMissing(['deficiencies', 'inspections.images', 'location', 'institution', 'category', 'registeredBy']),
+            'barrier' => $barrier->loadMissing(['deficiencies', 'inspections.evidences', 'location', 'institution', 'category', 'registeredBy']),
             'selectedInstitution' => $selectedInstitutionId !== null
                 ? $data['institutions']->firstWhere('id', $selectedInstitutionId)
                 : ($barrier->institution ?? null),

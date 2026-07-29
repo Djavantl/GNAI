@@ -13,20 +13,20 @@ use PHPUnit\Framework\TestCase;
 final class InspectionRegistrationPolicyTest extends TestCase
 {
     /**
-     * @param  array<int, mixed>  $images
+     * @param  array<int, mixed>  $evidences
      */
     #[DataProvider('registrationScenarios')]
     public function test_it_decides_when_an_inspection_must_be_registered(
         bool $stateChanged,
         ?string $description,
-        array $images,
+        array $evidences,
         bool $expected,
     ): void {
         $inspection = new CreateInspectionData(
             date: '2026-07-18',
             type: InspectionType::PERIODIC,
             description: $description,
-            images: $images,
+            evidences: $evidences,
         );
 
         $policy = new InspectionRegistrationPolicy;
@@ -44,7 +44,7 @@ final class InspectionRegistrationPolicyTest extends TestCase
     {
         yield 'estado alterado' => [true, null, [], true];
         yield 'parecer informado' => [false, 'Recurso reavaliado.', [], true];
-        yield 'imagem informada' => [false, null, ['imagem'], true];
+        yield 'evidência informada' => [false, null, ['evidência'], true];
         yield 'nenhuma mudança relevante' => [false, null, [], false];
         yield 'parecer vazio' => [false, '   ', [], false];
     }
