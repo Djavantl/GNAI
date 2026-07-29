@@ -51,6 +51,12 @@ final readonly class WaitlistRegistrationPolicy
      */
     private function ensureItemIsUnavailable(AccessibleEducationalMaterial|AssistiveTechnology $item): void
     {
+        if ($item->is_digital) {
+            throw new InvalidWaitlist(
+                'Recursos digitais não entram em fila de espera porque não possuem estoque físico.'
+            );
+        }
+
         if (! $item->status->blocksLoan() && $item->quantity_available > 0) {
             throw new InvalidWaitlist(
                 'Este recurso ainda possui unidades disponíveis e pode ser emprestado, portanto não é possível criar uma fila de espera.'

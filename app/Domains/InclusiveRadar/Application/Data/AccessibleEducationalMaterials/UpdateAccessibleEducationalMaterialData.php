@@ -9,6 +9,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\MergeValidationRules;
+use Spatie\LaravelData\Attributes\WithoutValidation;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 use Spatie\LaravelData\Support\Validation\ValidationContext;
@@ -32,6 +33,7 @@ final class UpdateAccessibleEducationalMaterialData extends Data
         public bool $isActive,
         public array $deficiencies,
         public CreateInspectionData $inspection,
+        #[WithoutValidation]
         public array $accessibilityFeatures = [],
         public ?string $notes = null,
     ) {}

@@ -92,20 +92,20 @@ final class ListAssistiveTechnologiesTest extends TestCase
 
     private function technology(
         string $name,
-        bool $digital,
-        bool $active,
+        bool $isDigital,
+        bool $isActive,
         ?int $available,
     ): AssistiveTechnology {
-        $factory = $digital
+        $factory = $isDigital
             ? AssistiveTechnology::factory()->digital()
             : AssistiveTechnology::factory()->physical();
 
         return $factory->loanable()
             ->state([
                 'name' => $name,
-                'quantity' => $digital ? null : 1,
+                'quantity' => $isDigital ? null : 1,
                 'quantity_available' => $available,
-                'is_active' => $active,
+                'is_active' => $isActive,
             ])
             ->create();
     }

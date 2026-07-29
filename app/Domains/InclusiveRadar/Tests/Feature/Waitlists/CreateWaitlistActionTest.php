@@ -81,6 +81,36 @@ final class CreateWaitlistActionTest extends TestCase
         );
     }
 
+    public function test_it_rejects_waitlist_for_digital_item(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $technology = AssistiveTechnology::factory()
+            ->digital()
+            ->loanable()
+            ->create([
+                'name' => 'Slide adaptado',
+                'quantity' => null,
+                'quantity_available' => null,
+                'status' => ResourceStatus::AVAILABLE,
+            ]);
+
+        $this->expectException(InvalidWaitlist::class);
+        $this->expectExceptionMessage(
+            'Recursos digitais não entram em fila de espera porque não possuem estoque físico.'
+        );
+
+        app(CreateWaitlistAction::class)->execute(
+            data: new CreateWaitlistData(
+                waitlistableId: $technology->id,
+                waitlistableType: LoanableType::AssistiveTechnology,
+                studentId: $student->id,
+                professionalId: null,
+            ),
+            registeredBy: $user->id,
+        );
+    }
+
     public function test_it_rejects_duplicate_active_waitlist(): void
     {
         $user = User::factory()->create();

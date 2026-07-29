@@ -17,6 +17,7 @@ use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterial
 use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterials\ShowAccessibleEducationalMaterialQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Http\Controllers\Controller;
 use App\Support\PdfPageNumberer;
@@ -42,7 +43,10 @@ final class AccessibleEducationalMaterialController extends Controller
 
         return view(
             'pages.inclusive-radar.accessible-educational-materials.index',
-            compact('materials'),
+            [
+                'materials' => $materials,
+                'accessibilityFeatureOptions' => $this->accessibilityFeatureOptions(),
+            ],
         );
     }
 
@@ -148,5 +152,21 @@ final class AccessibleEducationalMaterialController extends Controller
             'material' => $material,
             'inspection' => $scopedInspection,
         ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function accessibilityFeatureOptions(): array
+    {
+        return ['' => 'Recurso de acessibilidade (Todos)']
+            + AccessibilityFeature::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->pluck('name', 'id')
+                ->mapWithKeys(
+                    static fn (string $name, int $id): array => [(string) $id => $name],
+                )
+                ->all();
     }
 }

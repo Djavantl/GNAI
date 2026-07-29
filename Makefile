@@ -19,7 +19,7 @@ PROD_IMAGE   = gnai-php:prod
 # Declarando regras PHONY
 # -----------------------------
 .PHONY: up down down-v build logs art migrate seed perm make tinker scheduler \
-        coverage db backup backup-db list-bkp restore-db restore-full \
+        test coverage db backup backup-db list-bkp restore-db restore-full \
         build-assets dev-assets deploy composer storage-link \
         cache-dev cache-prod npm-build npm-dev logs-app sync-public-build host-storage-link \
         permissions-sync permissions-prune create-admin
@@ -124,9 +124,20 @@ build-assets:
 
 # -----------------------------
 # PHPUnit / Testes
+# ex: make test
+#     make test TEST=app/Domains/InclusiveRadar/Tests/Feature/Waitlists
+#     make coverage
+#     make coverage TEST=app/Domains/InclusiveRadar/Tests/Feature/Waitlists
 # -----------------------------
+test:
+	@if [ -n "$(TEST)" ]; then \
+		$(COMPOSE) exec app php artisan test $(TEST); \
+	else \
+		$(COMPOSE) exec app php artisan test --testsuite=Unit,Domains; \
+	fi
+
 coverage:
-	$(COMPOSE) exec app sh -lc 'mkdir -p /var/www/coverage && XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html /var/www/coverage'
+	$(COMPOSE) exec app sh -lc 'XDEBUG_MODE=coverage php artisan test --coverage $(TEST)'
 
 # -----------------------------
 # Banco de dados

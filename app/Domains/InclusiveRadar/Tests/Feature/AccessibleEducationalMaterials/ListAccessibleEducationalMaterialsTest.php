@@ -6,6 +6,7 @@ namespace App\Domains\InclusiveRadar\Tests\Feature\AccessibleEducationalMaterial
 
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
 use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -96,24 +97,73 @@ final class ListAccessibleEducationalMaterialsTest extends TestCase
         $response->assertViewHas('materials');
     }
 
+    public function test_it_filters_materials_by_accessibility_feature(): void
+    {
+        $user = User::factory()->create();
+        $matchingFeature = AccessibilityFeature::factory()
+            ->active()
+            ->named('Audiodescrição')
+            ->create();
+        $otherFeature = AccessibilityFeature::factory()
+            ->active()
+            ->named('Libras')
+            ->create();
+
+        $matching = $this->material(
+            name: 'Slide adaptado com áudio',
+            isDigital: true,
+            isActive: true,
+            available: null,
+            status: ResourceStatus::AVAILABLE,
+        );
+        $matching->accessibilityFeatures()->sync([$matchingFeature->id]);
+
+        $other = $this->material(
+            name: 'Slide adaptado com Libras',
+            isDigital: true,
+            isActive: true,
+            available: null,
+            status: ResourceStatus::AVAILABLE,
+        );
+        $other->accessibilityFeatures()->sync([$otherFeature->id]);
+
+        $response = $this->actingAs($user)->get(
+            self::ENDPOINT.'?'.http_build_query([
+                'accessibility_feature_id' => $matchingFeature->id,
+            ]),
+        );
+
+        $response->assertOk();
+        $response->assertViewHas(
+            'materials',
+            static fn ($materials): bool => $materials->total() === 1
+                && $materials->first()->is($matching),
+        );
+        $response->assertViewHas(
+            'accessibilityFeatureOptions',
+            static fn (array $options): bool => ($options[(string) $matchingFeature->id] ?? null) === 'Audiodescrição'
+                && ($options[(string) $otherFeature->id] ?? null) === 'Libras',
+        );
+    }
+
     private function material(
         string $name,
-        bool $digital,
-        bool $active,
+        bool $isDigital,
+        bool $isActive,
         ?int $available,
         ResourceStatus $status,
     ): AccessibleEducationalMaterial {
-        $factory = $digital
+        $factory = $isDigital
             ? AccessibleEducationalMaterial::factory()->digital()
             : AccessibleEducationalMaterial::factory()->physical();
 
         return $factory->loanable()
             ->state([
                 'name' => $name,
-                'quantity' => $digital ? null : 1,
+                'quantity' => $isDigital ? null : 1,
                 'quantity_available' => $available,
                 'status' => $status,
-                'is_active' => $active,
+                'is_active' => $isActive,
             ])
             ->create();
     }
