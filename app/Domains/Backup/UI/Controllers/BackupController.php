@@ -11,12 +11,14 @@ use App\Domains\Backup\Application\Actions\StoreUploadedBackupAction;
 use App\Domains\Backup\Application\Actions\SyncBackupsAction;
 use App\Domains\Backup\Application\Data\ListBackupsData;
 use App\Domains\Backup\Application\Data\UploadBackupData;
+use App\Domains\Backup\Application\Policies\Backups\BackupRestoreConfirmationPolicy;
 use App\Domains\Backup\Application\Queries\DownloadBackupQuery;
 use App\Domains\Backup\Application\Queries\ListBackupsQuery;
 use App\Domains\Backup\Application\Queries\ListBackupUsersQuery;
 use App\Domains\Backup\Application\Queries\ShowBackupQuery;
 use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Domain\Exceptions\InvalidBackup;
+use App\Domains\Backup\Domain\Exceptions\InvalidBackupRestoreConfirmation;
 use App\Domains\Backup\Domain\Models\Backup;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -107,9 +109,26 @@ final class BackupController extends Controller
     /**
      * @throws InvalidBackup
      * @throws BackupOperationFailed
+     * @throws InvalidBackupRestoreConfirmation
      */
-    public function restore(Backup $backup, RestoreBackupAction $action): RedirectResponse
+    public function restore(
+        Backup $backup,
+        RestoreBackupAction $action,
+        BackupRestoreConfirmationPolicy $confirmationPolicy,
+        Request $request,
+    ): RedirectResponse
     {
+        $validated = $request->validate([
+            'password' => ['required', 'string'],
+        ], [
+            'password.required' => 'Informe sua senha para confirmar a restauração.',
+        ]);
+
+        $confirmationPolicy->ensurePasswordMatches(
+            user: $request->user(),
+            password: $validated['password'],
+        );
+
         $action->execute($backup);
 
         return redirect()
