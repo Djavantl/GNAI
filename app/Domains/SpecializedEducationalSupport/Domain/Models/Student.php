@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
+use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\CreateStudentDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\UpdateStudentDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
 use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
-use App\Models\Traits\Reportable;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\StudentFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -24,7 +25,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 final class Student extends Model
 {
     use HasFactory;
-    use Reportable;
 
     protected $table = 'students';
 
@@ -87,49 +87,6 @@ final class Student extends Model
                 'Este aluno possui registros acadêmicos ou de atendimento vinculados e não pode ser excluído.'
             );
         }
-    }
-
-    public static function getEmbeddedRelations(): array
-    {
-        return ['person'];
-    }
-
-    public static function getReportLabel(): string
-    {
-        return 'Alunos';
-    }
-
-    public static function getReportColumns(): array
-    {
-        return [
-            'person.name',
-            'registration',
-            'status',
-            'entry_date',
-            'is_repeater',
-            'person.email',
-            'person.document',
-            'person.birth_date',
-            'person.gender',
-            'person.phone',
-            'person.address',
-        ];
-    }
-
-    public static function getReportColumnLabels(): array
-    {
-        return [
-            'registration' => 'Matrícula',
-            'person.name' => 'Nome do Aluno',
-            'entry_date' => 'Data de Ingresso',
-            'is_repeater' => 'Repetente',
-            'person.email' => 'E-mail',
-            'person.document' => 'CPF',
-            'person.birth_date' => 'Data de Nascimento',
-            'person.gender' => 'Gênero',
-            'person.phone' => 'Telefone',
-            'person.address' => 'Endereço',
-        ];
     }
 
     public function person(): BelongsTo
@@ -214,6 +171,16 @@ final class Student extends Model
     public function sessionEvaluations(): HasMany
     {
         return $this->hasMany(StudentSessionEvaluation::class, 'student_id');
+    }
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'student_id');
+    }
+
+    public function waitlists(): HasMany
+    {
+        return $this->hasMany(Waitlist::class, 'student_id');
     }
 
     /**

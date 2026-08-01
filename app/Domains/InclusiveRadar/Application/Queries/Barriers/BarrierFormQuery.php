@@ -8,10 +8,10 @@ use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Enums\Priority;
-use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
 
 final readonly class BarrierFormQuery
 {

@@ -11,7 +11,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
-use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Database\Factories\Domains\InclusiveRadar\AssistiveTechnologyFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -124,7 +124,8 @@ final class AssistiveTechnology extends Model
     }
 
     /**
-     * @param list<int> $targetAudienceIds
+     * @param  list<int>  $targetAudienceIds
+     *
      * @throws InvalidAssistiveTechnology
      */
     public function assignTargetAudience(array $targetAudienceIds): void

@@ -11,7 +11,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidStock;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\Stock;
-use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Database\Factories\Domains\InclusiveRadar\AccessibleEducationalMaterialFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -136,7 +136,8 @@ final class AccessibleEducationalMaterial extends Model
     }
 
     /**
-     * @param list<int> $targetAudienceIds
+     * @param  list<int>  $targetAudienceIds
+     *
      * @throws InvalidAccessibleEducationalMaterial
      */
     public function assignTargetAudience(array $targetAudienceIds): void
@@ -157,7 +158,8 @@ final class AccessibleEducationalMaterial extends Model
     }
 
     /**
-     * @param list<int> $featureIds
+     * @param  list<int>  $featureIds
+     *
      * @throws InvalidAccessibleEducationalMaterial
      */
     public function assignAccessibilityFeatures(array $featureIds): void

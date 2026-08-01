@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\CreateLoanDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\ReturnLoanDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\UpdateLoanDTO;
@@ -11,11 +12,10 @@ use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoan;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoanableResource;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Domains\Auth\Domain\Models\User;
-use DateTimeInterface;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Database\Factories\Domains\InclusiveRadar\LoanFactory;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
