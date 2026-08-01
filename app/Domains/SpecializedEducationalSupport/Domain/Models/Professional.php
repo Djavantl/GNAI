@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
+use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Professionals\CreateProfessionalDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Professionals\UpdateProfessionalDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\ProfessionalStatus;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[UseFactory(ProfessionalFactory::class)]
@@ -179,5 +182,15 @@ final class Professional extends Model
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'professional_id');
+    }
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'professional_id');
+    }
+
+    public function waitlists(): HasMany
+    {
+        return $this->hasMany(Waitlist::class, 'professional_id');
     }
 }

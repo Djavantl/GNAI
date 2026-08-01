@@ -8,6 +8,8 @@ namespace App\Domains\Auth\Domain\Models;
 use App\Domains\Auth\Domain\DTOs\Users\ResetUserPasswordDTO;
 use App\Domains\Auth\Infrastructure\Notifications\ResetPasswordNotification;
 use App\Domains\Backup\Domain\Models\Backup;
+use App\Domains\InclusiveRadar\Domain\Models\Loan;
+use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
 use Database\Factories\Domains\Auth\UserFactory;
@@ -64,6 +66,16 @@ class User extends Authenticatable
     public function backups(): HasMany
     {
         return $this->hasMany(Backup::class);
+    }
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'user_id');
+    }
+
+    public function waitlists(): HasMany
+    {
+        return $this->hasMany(Waitlist::class, 'user_id');
     }
 
     public function resetPassword(ResetUserPasswordDTO $data): void

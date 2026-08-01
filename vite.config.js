@@ -16,7 +16,7 @@ export default defineConfig(({ command }) => ({
                 'resources/js/pages/inclusive-radar/barriers.js',
                 'resources/js/pages/inclusive-radar/institutions.js',
                 'resources/js/pages/inclusive-radar/locations.js',
-                'resources/js/pages/inclusive-radar/image-uploader.js',
+                'resources/js/pages/inclusive-radar/evidence-uploader.js',
                 'resources/js/pages/inclusive-radar/assistive-technologies.js',
                 'resources/js/pages/inclusive-radar/accessible-educational-materials.js',
                 'resources/js/pages/inclusive-radar/loans.js',

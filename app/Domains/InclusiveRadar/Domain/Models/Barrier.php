@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Barriers\CreateBarrierDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Barriers\UpdateBarrierDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidBarrier;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Enums\Priority;
-use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Domains\Auth\Domain\Models\User;
 use Database\Factories\Domains\InclusiveRadar\BarrierFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -89,7 +89,7 @@ final class Barrier extends Model
     }
 
     /**
-     * @param list<int> $deficiencyIds
+     * @param  list<int>  $deficiencyIds
      *
      * @throws InvalidBarrier
      */
@@ -204,7 +204,7 @@ final class Barrier extends Model
     }
 
     /**
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      * @return array<string, mixed>
      */
     private static function sanitizeReporterAttributes(array $attributes): array

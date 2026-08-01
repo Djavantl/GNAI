@@ -15,12 +15,13 @@ use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\Reporting\Application\Services\ReportCatalog;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentContext;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDeficiency;
-use App\Models\SpecializedEducationalSupport\Person;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\StudentDocument;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDocument;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
@@ -38,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->scoped(PermissionCache::class);
         $this->app->scoped(PermissionRegistry::class);
         $this->app->scoped(UserHasPermissionQuery::class);
+        $this->app->scoped(ReportCatalog::class);
     }
 
     public function boot(): void

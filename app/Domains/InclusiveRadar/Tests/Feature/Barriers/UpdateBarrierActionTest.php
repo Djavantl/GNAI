@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\Barriers;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Application\Actions\Barriers\UpdateBarrierAction;
 use App\Domains\InclusiveRadar\Application\Data\Barriers\UpdateBarrierData;
 use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData;
@@ -11,9 +12,8 @@ use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use App\Enums\Priority;
-use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
