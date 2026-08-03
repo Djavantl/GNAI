@@ -2,8 +2,8 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
 use Illuminate\Database\Seeder;
-use App\Models\SpecializedEducationalSupport\Discipline;
 
 class DisciplinesSeeder extends Seeder
 {

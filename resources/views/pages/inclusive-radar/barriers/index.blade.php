@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @php
-    use App\Enums\Priority;
+    use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 @endphp
 
 @section('title', 'Barreiras')

@@ -2,10 +2,9 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Seeder;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\Deficiency;
 use Illuminate\Support\Facades\DB;
 
 class StudentDeficiencySeeder extends Seeder

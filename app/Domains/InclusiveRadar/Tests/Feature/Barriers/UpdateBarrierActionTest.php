@@ -10,10 +10,10 @@ use App\Domains\InclusiveRadar\Application\Data\Barriers\UpdateBarrierData;
 use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
-use App\Enums\Priority;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

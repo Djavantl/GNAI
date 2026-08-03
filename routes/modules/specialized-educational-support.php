@@ -1,12 +1,12 @@
 <?php
 
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\AeeRecordController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\CourseController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DeficiencyController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\DisciplineController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\GuardianController;
-use App\Domains\SpecializedEducationalSupport\UI\Controllers\AeeRecordController;
-use App\Domains\SpecializedEducationalSupport\UI\Controllers\PeiController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\PedagogicalRecordController;
+use App\Domains\SpecializedEducationalSupport\UI\Controllers\PeiController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\PendencyController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\PositionController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\ProfessionalController;
@@ -18,7 +18,6 @@ use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentCourseContro
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentDeficiencyController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\StudentDocumentController;
 use App\Domains\SpecializedEducationalSupport\UI\Controllers\TeacherController;
-use App\Http\Controllers\SpecializedEducationalSupport\logs\StudentLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
@@ -245,9 +244,5 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/student-documents/{student_document}', [StudentDocumentController::class, 'destroy'])->name('student-documents.destroy')->middleware('can:student-document.delete');
     Route::get('/student-documents/{student_document}/download', [StudentDocumentController::class, 'download'])->name('student-documents.download')->middleware('can:student-document.view');
     Route::get('/student-documents/{student_document}/view', [StudentDocumentController::class, 'show'])->name('student-documents.view')->middleware('can:student-document.view');
-
-    /* 14. STUDENT LOGS (Sem middleware de permissão conforme solicitado) */
-    Route::get('students/{student}/logs', [StudentLogController::class, 'index'])->name('students.logs.index');
-    Route::get('students/{student}/logs/pdf', [StudentLogController::class, 'generatePdf'])->name('students.logs.pdf');
 
 });

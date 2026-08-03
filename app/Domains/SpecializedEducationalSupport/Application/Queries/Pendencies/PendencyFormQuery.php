@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
-use App\Enums\Priority;
 use Illuminate\Database\Eloquent\Collection;
 
 final class PendencyFormQuery

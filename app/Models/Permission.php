@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Position;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\SpecializedEducationalSupport\Position;
 
 class Permission extends Model
 {

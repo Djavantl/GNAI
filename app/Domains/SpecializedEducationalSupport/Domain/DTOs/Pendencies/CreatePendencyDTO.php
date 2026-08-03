@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\DTOs\Pendencies;
 
-use App\Enums\Priority;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 
 final readonly class CreatePendencyDTO
 {

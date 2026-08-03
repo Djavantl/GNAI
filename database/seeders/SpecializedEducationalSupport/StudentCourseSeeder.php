@@ -2,9 +2,9 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
-use App\Models\SpecializedEducationalSupport\Course;
-use App\Models\SpecializedEducationalSupport\Student;
 use Illuminate\Database\Seeder;
 
 class StudentCourseSeeder extends Seeder

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Domain\DTOs\Barriers;
 
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
-use App\Enums\Priority;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 
 final readonly class UpdateBarrierDTO
 {

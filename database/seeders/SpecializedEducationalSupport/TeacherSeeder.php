@@ -3,10 +3,10 @@
 namespace Database\Seeders\SpecializedEducationalSupport;
 
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
-use App\Models\SpecializedEducationalSupport\Course;
-use App\Models\SpecializedEducationalSupport\Person;
-use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\TeacherCourseDiscipline;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;

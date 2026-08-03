@@ -7,7 +7,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PeiDiscipline;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\TeacherCourseDiscipline;
 use Illuminate\Database\Seeder;
 
 class PeiSeeder extends Seeder

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @php
-    use App\Enums\Priority;
+    use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 @endphp
 
 @section('title', 'Minhas Pendências')

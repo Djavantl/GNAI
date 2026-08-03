@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Dashboard\Application\Queries;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
@@ -11,7 +12,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Enums\Priority;
 use Illuminate\Support\Collection;
 
 final readonly class SpecializedEducationalSupportDashboardQuery

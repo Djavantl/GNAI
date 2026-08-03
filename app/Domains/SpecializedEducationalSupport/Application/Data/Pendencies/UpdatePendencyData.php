@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Data\Pendencies;
 
-use App\Enums\Priority;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
