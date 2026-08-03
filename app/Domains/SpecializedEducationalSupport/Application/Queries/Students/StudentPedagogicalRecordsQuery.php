@@ -6,7 +6,7 @@ namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Students
 
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Models\SpecializedEducationalSupport\PedagogicalRecord;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -27,8 +27,8 @@ final class StudentPedagogicalRecordsQuery
                 fn (Builder $studentQuery): Builder => $studentQuery->where('students.id', $student->getKey()),
             );
 
-        if (! ($user?->can('session-record.view-all') ?? false)) {
-            $canViewOwn = $user?->can('session-record.view-own') ?? false;
+        if (! ($user?->can('pedagogical-record.view-all') ?? false)) {
+            $canViewOwn = $user?->can('pedagogical-record.view-own') ?? false;
             $professionalId = $user?->professional_id;
 
             if ($canViewOwn && $professionalId !== null) {

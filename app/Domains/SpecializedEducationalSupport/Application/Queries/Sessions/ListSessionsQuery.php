@@ -13,7 +13,7 @@ final class ListSessionsQuery
     public function execute(ListSessionsData $filters): LengthAwarePaginator
     {
         return Session::query()
-            ->with(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord'])
+            ->with(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord'])
             ->when($filters->student !== null, function ($query) use ($filters): void {
                 $query->whereHas('students', fn ($studentQuery) => $studentQuery->where('students.id', $filters->student));
             })

@@ -18,7 +18,7 @@ final class ListMySessionsQuery
         abort_unless($professional !== null, 403, 'Acesso permitido apenas para profissionais.');
 
         return Session::query()
-            ->with(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord'])
+            ->with(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord'])
             ->where('professional_id', $professional->id)
             ->when($filters->student !== null, function ($query) use ($filters): void {
                 $query->whereHas('students', fn ($studentQuery) => $studentQuery->where('students.id', $filters->student));

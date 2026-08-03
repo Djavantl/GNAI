@@ -20,7 +20,7 @@ final class WeeklyAgendaQuery
         $weekEnd = $referenceDate->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay();
 
         $sessions = Session::query()
-            ->with(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord'])
+            ->with(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord'])
             ->whereBetween('session_date', [$weekStart, $weekEnd])
             ->where(function ($query) use ($filters, $fixedProfessionalId): void {
                 if ($fixedProfessionalId !== null) {

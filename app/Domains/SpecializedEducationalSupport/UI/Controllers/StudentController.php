@@ -15,8 +15,8 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\ListS
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\ShowStudentQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPdfQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentAeeEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
-use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentSessionEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Http\Controllers\Controller;
 use App\Support\PdfPageNumberer;
@@ -48,17 +48,17 @@ final class StudentController extends Controller
         );
     }
 
-    public function show(Student $student, ShowStudentQuery $showStudent, StudentSessionEvaluationsQuery $sessionEvaluationsQuery, StudentPedagogicalRecordsQuery $pedagogicalRecordsQuery, Request $request): View
+    public function show(Student $student, ShowStudentQuery $showStudent, StudentAeeEvaluationsQuery $aeeEvaluationsQuery, StudentPedagogicalRecordsQuery $pedagogicalRecordsQuery, Request $request): View
     {
         $user = $request->user();
         $authenticatedUser = $user instanceof User ? $user : null;
         $student = $showStudent->execute($student);
-        $sessionEvaluations = $sessionEvaluationsQuery->execute($student, $authenticatedUser);
+        $aeeEvaluations = $aeeEvaluationsQuery->execute($student, $authenticatedUser);
         $pedagogicalRecords = $pedagogicalRecordsQuery->execute($student, $authenticatedUser);
 
         return view(
             'pages.specialized-educational-support.students.show',
-            compact('student', 'sessionEvaluations', 'pedagogicalRecords'),
+            compact('student', 'aeeEvaluations', 'pedagogicalRecords'),
         );
     }
 

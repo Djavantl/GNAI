@@ -10,7 +10,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\CreateStudent
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\UpdateStudentDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
-use App\Models\SpecializedEducationalSupport\StudentSessionEvaluation;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\StudentFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -168,9 +167,9 @@ final class Student extends Model
         );
     }
 
-    public function sessionEvaluations(): HasMany
+    public function aeeEvaluations(): HasMany
     {
-        return $this->hasMany(StudentSessionEvaluation::class, 'student_id');
+        return $this->hasMany(AeeStudentEvaluation::class, 'student_id');
     }
 
     public function loans(): HasMany

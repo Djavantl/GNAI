@@ -10,6 +10,6 @@ final class ShowSessionQuery
 {
     public function execute(Session $session): Session
     {
-        return $session->load(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']);
+        return $session->load(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
     }
 }

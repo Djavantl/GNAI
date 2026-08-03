@@ -31,7 +31,7 @@ final readonly class CancelSessionAction
             $lockedSession->cancel($data->cancellationReason);
             $lockedSession->save();
 
-            return $lockedSession->fresh(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']);
+            return $lockedSession->fresh(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
         });
 
         $this->notifications->send(
