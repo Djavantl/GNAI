@@ -15,7 +15,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PeiDiscipline;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
-use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\TeacherCourseDiscipline;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;

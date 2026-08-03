@@ -8,7 +8,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\Teachers\UpdateTe
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidTeacher;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
-use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\TeacherCourseDiscipline;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 use Throwable;

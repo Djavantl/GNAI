@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Teachers;
 
-use App\Models\SpecializedEducationalSupport\Discipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
 use Illuminate\Database\Eloquent\Collection;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\PeiDisciplines;
 
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
-use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\TeacherCourseDiscipline;
 use Illuminate\Support\Collection;
 
 final class TeacherDisciplinesQuery
