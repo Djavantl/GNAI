@@ -7,12 +7,13 @@ namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Pendencies\CreatePendencyDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Pendencies\UpdatePendencyDTO;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidPendency;
-use App\Enums\Priority;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 final class Pendency extends Model
 {
@@ -96,11 +97,14 @@ final class Pendency extends Model
 
     public function canBeCompletedByCurrentUser(): bool
     {
-        $user = auth()->user();
-        $professionalId = $user?->professional_id;
+        $user = Auth::user();
 
-        return $professionalId !== null
-            && (int) $this->assigned_to === (int) $professionalId
+        if (! $user instanceof User) {
+            return false;
+        }
+
+        return $user->professional_id !== null
+            && (int) $this->assigned_to === (int) $user->professional_id
             && ! $this->is_completed;
     }
 

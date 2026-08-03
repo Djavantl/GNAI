@@ -1,21 +1,25 @@
 <?php
 
-namespace App\Mail;
+declare(strict_types=1);
 
+namespace App\Domains\SpecializedEducationalSupport\Infrastructure\Mail;
+
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SessionNotification extends Mailable
+final class SessionNotification extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(
-        public $session,
+        public Session $session,
         public string $title,
-        public string $messageContent
+        public string $messageContent,
     ) {}
 
     public function envelope(): Envelope

@@ -2,11 +2,11 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentContext;
 use Illuminate\Database\Seeder;
-use App\Models\SpecializedEducationalSupport\Semester;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\StudentContext;
-use App\Models\SpecializedEducationalSupport\Professional;
 
 class StudentContextSeeder extends Seeder
 {
@@ -25,7 +25,7 @@ class StudentContextSeeder extends Seeder
             ->orderByDesc('term')
             ->first();
 
-        if (!$currentSemester || !$previousSemester) {
+        if (! $currentSemester || ! $previousSemester) {
             throw new \Exception('Semestres insuficientes para criar contextos.');
         }
 
@@ -73,9 +73,9 @@ class StudentContextSeeder extends Seeder
                 'medical_notes' => 'Laudo médico arquivado.',
 
                 // Observações gerais (Ajustado)
-                'knowledge' => 'Boa memória visual e conhecimentos básicos de rotina escolar.', 
+                'knowledge' => 'Boa memória visual e conhecimentos básicos de rotina escolar.',
                 'difficulties' => 'Dificuldade de concentração prolongada.',
-                
+
             ]);
 
             // Contexto atual (Versão 2)
@@ -122,7 +122,7 @@ class StudentContextSeeder extends Seeder
                 // Observações gerais (Ajustado)
                 'knowledge' => 'Boa participação, autonomia e domínio dos conteúdos ministrados no semestre anterior.',
                 'difficulties' => 'Ainda apresenta dificuldade em atividades longas.',
-                
+
             ]);
         }
     }

@@ -4,8 +4,8 @@ namespace Database\Seeders\SpecializedEducationalSupport;
 
 use App\Domains\Auth\Application\Actions\Permissions\SyncPermissionsAction;
 use App\Domains\Auth\Application\Permissions\PermissionCache;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Position;
 use App\Models\Permission;
-use App\Models\SpecializedEducationalSupport\Position;
 use Illuminate\Database\Seeder;
 
 class PositionSeeder extends Seeder

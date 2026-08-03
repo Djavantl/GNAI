@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Application\Services\Sessions;
 
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
-use App\Mail\SessionNotification;
+use App\Domains\SpecializedEducationalSupport\Infrastructure\Mail\SessionNotification;
 use Illuminate\Support\Facades\Mail;
 
 final class SessionNotificationSender

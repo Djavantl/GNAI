@@ -6,22 +6,22 @@ use App\Audit\Formatters\AuditFormatter;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
-use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 
 class AccessibleEducationalMaterialFormatter extends AuditFormatter
 {
     protected function formatters(): array
     {
         return [
-            'is_digital'             => fn($v) => $v ? 'Digital' : 'Físico',
-            'is_active'              => fn($v) => $v ? 'Ativo' : 'Inativo',
-            'is_loanable'            => fn($v) => $v ? 'Sim' : 'Não',
-            'status'                 => ResourceStatus::class,
-            'conservation_state'     => ConservationState::class,
-            'deficiencies'           => fn($ids) => is_array($ids)
+            'is_digital' => fn ($v) => $v ? 'Digital' : 'Físico',
+            'is_active' => fn ($v) => $v ? 'Ativo' : 'Inativo',
+            'is_loanable' => fn ($v) => $v ? 'Sim' : 'Não',
+            'status' => ResourceStatus::class,
+            'conservation_state' => ConservationState::class,
+            'deficiencies' => fn ($ids) => is_array($ids)
                 ? Deficiency::whereIn('id', $ids)->pluck('name')->join(', ') ?: 'Nenhuma'
                 : null,
-            'accessibility_features' => fn($ids) => is_array($ids)
+            'accessibility_features' => fn ($ids) => is_array($ids)
                 ? AccessibilityFeature::whereIn('id', $ids)->pluck('name')->join(', ') ?: 'Nenhum'
                 : null,
         ];

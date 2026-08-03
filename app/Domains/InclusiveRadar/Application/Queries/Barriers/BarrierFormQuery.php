@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Application\Queries\Barriers;
 
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Enums\Priority;
 
 final readonly class BarrierFormQuery
 {
