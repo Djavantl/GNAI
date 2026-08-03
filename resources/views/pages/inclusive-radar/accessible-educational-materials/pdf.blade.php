@@ -6,7 +6,6 @@
     <x-pdf.styles />
 </head>
 <body>
-<x-pdf.pages />
 
 <x-pdf.header
     title="Ficha de Material Pedagógico Acessível"
@@ -62,16 +61,16 @@
 
     <x-pdf.text-area label="Parecer Técnico" :value="$lastInspection->description ?: 'Sem descrição registrada.'" />
 
-    <x-pdf.section-title title="Evidências Visuais" />
-    <div class="inspection-images">
-        @if($lastInspection->images->count() > 0)
-            @foreach($lastInspection->images as $image)
+    <x-pdf.section-title title="Evidências" />
+    <div class="inspection-evidences">
+        @if($lastInspection->evidences->count() > 0)
+            @foreach($lastInspection->evidences as $evidence)
                 @php
                     $base64 = null;
                     $ratio = null;
 
-                    if (Storage::disk('public')->exists($image->path)) {
-                        $imageData = Storage::disk('public')->get($image->path);
+                    if ($evidence->isImage() && Storage::disk('public')->exists($evidence->path)) {
+                        $imageData = Storage::disk('public')->get($evidence->path);
                         $src = @imagecreatefromstring($imageData);
 
                         if ($src !== false) {
@@ -101,29 +100,29 @@
                     }
 
                     if ($base64 && $ratio) {
-                        if ($ratio > 1.5) $imageClass = 'wide';
-                        elseif ($ratio < 0.67) $imageClass = 'tall';
-                        else $imageClass = 'square';
+                        if ($ratio > 1.5) $evidenceClass = 'wide';
+                        elseif ($ratio < 0.67) $evidenceClass = 'tall';
+                        else $evidenceClass = 'square';
                     } else {
-                        $imageClass = null;
+                        $evidenceClass = null;
                     }
                 @endphp
 
                 @if($base64)
-                    <div class="evidence-card {{ $imageClass }}">
-                        <img class="evidence-image" src="{{ $base64 }}" alt="Evidência visual da vistoria">
+                    <div class="evidence-card {{ $evidenceClass }}">
+                        <img class="evidence-image" src="{{ $base64 }}" alt="Evidência da vistoria">
                         <div class="evidence-caption">
-                            Evidência {{ $loop->iteration }} de {{ $lastInspection->images->count() }}
+                            Evidência {{ $loop->iteration }} de {{ $lastInspection->evidences->count() }}
                         </div>
                     </div>
                 @else
-                    <div class="image-placeholder">
-                        Evidência {{ $loop->iteration }}: arquivo não encontrado ou formato inválido.
+                    <div class="evidence-placeholder">
+                        Evidência {{ $loop->iteration }}: {{ $evidence->displayName() }}
                     </div>
                 @endif
             @endforeach
         @else
-            <div class="image-placeholder">Nenhuma imagem registrada.</div>
+            <div class="evidence-placeholder">Nenhuma evidência registrada.</div>
         @endif
     </div>
 @else

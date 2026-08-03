@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\Barriers;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Application\Actions\Barriers\CreateBarrierAction;
 use App\Domains\InclusiveRadar\Application\Data\Barriers\CreateBarrierData;
 use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Enums\Priority;
-use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -16,7 +16,8 @@ return [
         'student-context' => 'Contexto do Aluno',
         'student-deficiency' => 'Perfis de Atendimento do Aluno',
         'session' => 'Agendamentos',
-        'session-record' => 'Registros de atendimento AEE',
+        'aee-record' => 'Registros de Atendimento Educacional Especializado',
+        'pedagogical-record' => 'Registros de atendimento pedagógico',
         'student-course' => 'Cursos do Aluno',
         'pendency' => 'Pendências',
         'pei' => 'PEI',
@@ -27,6 +28,7 @@ return [
         'material' => 'Materiais Pedagógicos Acessíveis',
         'barrier' => 'Barreiras',
         'loan' => 'Empréstimos',
+        'waitlist' => 'Lista de Espera',
         'report' => 'Relatórios',
 
         'resource-type' => 'Tipos de Recurso',

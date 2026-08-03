@@ -2,10 +2,10 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
 use Illuminate\Database\Seeder;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\Course;
-use App\Models\SpecializedEducationalSupport\StudentCourse;
 
 class StudentCourseSeeder extends Seeder
 {
@@ -13,10 +13,10 @@ class StudentCourseSeeder extends Seeder
     {
         // Pegamos os cursos disponíveis
         $courseInfo = Course::where('name', 'Técnico em Informática')->first();
-        $courseAdm  = Course::where('name', 'Técnico em Administração')->first();
-        
+        $courseAdm = Course::where('name', 'Técnico em Administração')->first();
+
         // Se não existirem, pegamos os dois primeiros que encontrar
-        if (!$courseInfo || !$courseAdm) {
+        if (! $courseInfo || ! $courseAdm) {
             $courses = Course::limit(2)->get();
             $courseInfo = $courses->first();
             $courseAdm = $courses->last();

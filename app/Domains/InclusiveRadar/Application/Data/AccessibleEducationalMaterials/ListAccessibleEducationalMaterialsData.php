@@ -18,6 +18,7 @@ final class ListAccessibleEducationalMaterialsData extends Data
         public ?bool $isDigital = null,
         public ?bool $isActive = null,
         public ?bool $available = null,
+        public ?int $accessibilityFeatureId = null,
         public int $perPage = 10,
     ) {}
 
@@ -29,6 +30,7 @@ final class ListAccessibleEducationalMaterialsData extends Data
             'is_digital' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'available' => ['nullable', 'boolean'],
+            'accessibility_feature_id' => ['nullable', 'integer', 'exists:accessibility_features,id'],
             'per_page' => ['integer', 'min:1', 'max:100'],
         ];
     }

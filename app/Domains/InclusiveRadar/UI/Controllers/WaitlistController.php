@@ -16,7 +16,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Waitlists\ShowWaitlistQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Waitlists\WaitlistFormQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Waitlists\WaitlistPdfQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
-use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class WaitlistController extends Controller
+final class WaitlistController
 {
     public function index(ListWaitlistsData $filters, ListWaitlistsQuery $query, Request $request): View
     {
@@ -146,11 +146,12 @@ final class WaitlistController extends Controller
         )
             ->setPaper('a4', 'portrait')
             ->setOptions([
-                'enable_php' => true,
                 'isRemoteEnabled' => true,
                 'isHtml5ParserEnabled' => true,
                 'chroot' => [public_path(), storage_path()],
             ]);
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Fila_Espera_{$waitlist->id}.pdf");
     }

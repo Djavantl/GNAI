@@ -15,6 +15,8 @@
             <directory suffix="Test.php">app/Domains/InclusiveRadar</directory>
             <directory suffix="Test.php">app/Domains/Backup</directory>
             <directory suffix="Test.php">app/Domains/Auth</directory>
+            <directory suffix="Test.php">app/Domains/SpecializedEducationalSupport</directory>
+            <directory suffix="Test.php">app/Domains/Reporting</directory>
         </testsuite>
     </testsuites>
     <source>

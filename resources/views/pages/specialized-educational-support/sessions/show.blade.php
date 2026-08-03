@@ -14,9 +14,8 @@
             <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
         </div>
         @php
-            $canManageSessionRecord = auth()->user()?->professional?->id === $session->professional_id;
-            $sessionStatus = mb_strtolower(trim((string) $session->status));
-            $isScheduledSession = in_array($sessionStatus, ['agendada', 'agendado', 'scheduled'], true);
+            $canManageAttendanceRecord = auth()->user()?->professional?->id === $session->professional_id;
+            $isScheduledSession = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::isScheduledValue($session->status);
             $canManageSessionLifecycle = auth()->id() === $session->creator_id;
         @endphp
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
@@ -53,16 +52,10 @@
             
             <x-show.info-item label="Status" column="col-md-6" isBox="true">
                 @php
-                    $statusValue = strtolower($session->status);
-                    $statusColor = match($statusValue) {
-                        'agendada', 'agendado' => 'warning',
-                        'realizada', 'realizado' => 'success',
-                        'cancelada', 'cancelled', 'cancelado' => 'danger',
-                        default => 'warning'
-                    };
+                    $statusColor = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::colorFor($session->status);
                 @endphp
                 <span class="text-{{ $statusColor }} fw-bold">
-                    {{ $session->statusLabel() }}
+                    {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::labelFor($session->status) }}
                 </span>
             </x-show.info-item>
 
@@ -78,9 +71,9 @@
 
             <x-show.info-item label="Local" :value="$session->location" isBox="true"/>
             
-            <x-show.info-item label="Tipo de Atendimento" :value="$session->attendanceTypeLabel()" isBox="true"/>
+            <x-show.info-item label="Tipo de Atendimento" :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::labelFor($session->attendance_type)" isBox="true"/>
 
-            <x-show.info-item label="Formato" :value="$session->typeLabel()" isBox="true"/>
+            <x-show.info-item label="Formato" :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::labelFor($session->type)" isBox="true"/>
 
             <x-forms.section title="Conteúdo do Agendamento" />
 
@@ -137,21 +130,21 @@
                     @endcan
                 @endif
                  {{-- Lógica dos registros por tipo de atendimento --}}
-                @if($session->isAeeAttendance())
-                    @if($session->sessionRecord)
-                        @can('session-record.view')
+                @if(\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::isAee($session->attendance_type))
+                    @if($session->aeeRecord)
+                        @can('aee-record.view')
                             <x-buttons.link-button
-                                :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
+                                :href="route('specialized-educational-support.aee-records.show', $session->aeeRecord->id)"
                                 variant="info"
                             >
                                 <i class="fas fa-eye" aria-hidden="true"></i> Ver Atendimento AEE
                             </x-buttons.link-button>
                         @endcan
                     @else
-                        @can('session-record.create')
-                            @if($canManageSessionRecord && $isScheduledSession)
+                        @can('aee-record.create')
+                            @if($canManageAttendanceRecord && $isScheduledSession)
                                 <x-buttons.link-button
-                                    :href="route('specialized-educational-support.session-records.create', $session->id)"
+                                    :href="route('specialized-educational-support.aee-records.create', $session->id)"
                                     variant="new"
                                 >
                                     <i class="fas fa-plus" aria-hidden="true"></i> Criar Atendimento AEE
@@ -159,9 +152,9 @@
                             @endif
                         @endcan
                     @endif
-                @elseif($session->isPedagogicalAttendance())
+                @elseif(\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::isPedagogical($session->attendance_type))
                     @if($session->pedagogicalRecord)
-                        @can('session-record.view')
+                        @can('pedagogical-record.view')
                             <x-buttons.link-button
                                 :href="route('specialized-educational-support.pedagogical-records.show', $session->pedagogicalRecord)"
                                 variant="info"
@@ -177,8 +170,8 @@
                             </x-buttons.link-button>
                         @endcan
                     @else
-                        @can('session-record.create')
-                            @if($canManageSessionRecord && $isScheduledSession)
+                        @can('pedagogical-record.create')
+                            @if($canManageAttendanceRecord && $isScheduledSession)
                                 <x-buttons.link-button
                                     :href="route('specialized-educational-support.pedagogical-records.create', $session)"
                                     variant="new"

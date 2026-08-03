@@ -2,12 +2,15 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Domains\Auth\Domain\Models\User;
-use Carbon\Carbon;
 
 class AttendanceSessionSeeder extends Seeder
 {
@@ -92,11 +95,16 @@ class AttendanceSessionSeeder extends Seeder
                         continue; // todos ocupados nesse slot, tenta o próximo
                     }
 
-                    // Define tipo: a cada 3 agendamentos um é em grupo
-                    $type = ($sessionIndex % 3 === 0) ? 'group' : 'individual';
+                    $attendanceType = $sessionIndex % 4 === 0
+                        ? AttendanceType::PEDAGOGICAL
+                        : AttendanceType::AEE;
 
-                    if ($type === 'group' && $students->count() < 2) {
-                        $type = 'individual';
+                    $type = $attendanceType === AttendanceType::PEDAGOGICAL
+                        ? SessionType::INDIVIDUAL->value
+                        : ($sessionIndex % 3 === 0 ? SessionType::GROUP->value : SessionType::INDIVIDUAL->value);
+
+                    if ($type === SessionType::GROUP->value && $students->count() < 2) {
+                        $type = SessionType::INDIVIDUAL->value;
                     }
 
                     // Seleciona alunos disponíveis nesse slot
@@ -127,7 +135,8 @@ class AttendanceSessionSeeder extends Seeder
                         'start_time'        => $startTime,
                         'end_time'          => $endTime,
                         'type'              => $type,
-                        'location'          => 'Sala do AEE',
+                        'attendance_type'   => $attendanceType->value,
+                        'location'          => $attendanceType === AttendanceType::AEE ? 'Sala do AEE' : 'Sala de Atendimento Pedagógico',
                         'session_objective' => 'Acompanhamento pedagógico e evolução do atendimento especializado.',
                         'status'            => $this->resolveStatus($date),
                         'created_at'        => now(),
@@ -187,12 +196,8 @@ class AttendanceSessionSeeder extends Seeder
     /**
      * Retorna o primeiro profissional disponível no slot do dia.
      */
-    private function pickAvailableProfessional(
-        $professionals,
-        string $date,
-        int $slotIndex,
-        array $professionalSlots
-    ) {
+    private function pickAvailableProfessional($professionals, string $date, int $slotIndex, array $professionalSlots)
+    {
         foreach ($professionals->shuffle() as $professional) {
             $occupied = $professionalSlots[$professional->id][$date][$slotIndex] ?? false;
 
@@ -207,13 +212,8 @@ class AttendanceSessionSeeder extends Seeder
     /**
      * Seleciona alunos disponíveis no slot, respeitando o tipo de agendamento.
      */
-    private function pickAvailableStudents(
-        $students,
-        string $type,
-        string $date,
-        int $slotIndex,
-        array $studentSlots
-    ) {
+    private function pickAvailableStudents($students, string $type, string $date, int $slotIndex, array $studentSlots)
+    {
         $available = $students->filter(function ($student) use ($date, $slotIndex, $studentSlots) {
             return !($studentSlots[$student->id][$date][$slotIndex] ?? false);
         })->values();
@@ -222,7 +222,7 @@ class AttendanceSessionSeeder extends Seeder
             return collect();
         }
 
-        if ($type === 'individual') {
+        if ($type === SessionType::INDIVIDUAL->value) {
             return collect([$available->first()]);
         }
 
@@ -242,7 +242,7 @@ class AttendanceSessionSeeder extends Seeder
     private function resolveStatus(string $date): string
     {
         return Carbon::parse($date)->startOfDay()->lt(Carbon::today())
-            ? 'Realizada'
-            : 'Agendada';
+            ? SessionStatus::COMPLETED_DATABASE_VALUE
+            : SessionStatus::SCHEDULED_DATABASE_VALUE;
     }
 }

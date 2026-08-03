@@ -5,7 +5,7 @@
 </head>
 <body>
     <x-pdf.header
-        title="Relatório Dinâmico"
+        :title="'Relatório — '.$subject"
         :meta="[
             'Gerado em' => now()->format('d/m/Y H:i'),
             'Registros' => count($data),
@@ -16,7 +16,7 @@
         <thead>
             <tr>
                 @foreach($headers as $header)
-                    <th>{!! \App\Support\RichTextSanitizer::sanitize((string) $header) !!}</th>
+                    <th>{!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $header) !!}</th>
                 @endforeach
             </tr>
         </thead>
@@ -24,7 +24,7 @@
             @foreach($data as $row)
                 <tr>
                     @foreach((array)$row as $value)
-                        <td>{!! \App\Support\RichTextSanitizer::sanitize((string) $value) !!}</td>
+                        <td>{!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $value) !!}</td>
                     @endforeach
                 </tr>
             @endforeach

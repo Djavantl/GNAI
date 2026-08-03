@@ -49,7 +49,7 @@
     $boolStrong = fn ($value) => $value ? '<strong>SIM</strong>' : 'Não';
 
     $renderHtml = fn ($value) => filled($value)
-        ? \App\Support\RichTextSanitizer::sanitize((string) $value)
+        ? \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $value)
         : '<span class="text-muted">---</span>';
 
     $renderText = fn ($value) => filled($value)
@@ -226,6 +226,5 @@
         </x-pdf.table-signatures>
     </div>
 
-    <x-pdf.pages />
 </body>
 </html>

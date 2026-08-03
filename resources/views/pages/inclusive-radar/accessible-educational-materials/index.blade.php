@@ -37,6 +37,7 @@
                         '1' => 'Digital',
                         '0' => 'Físico'
                     ]],
+                    ['name' => 'accessibility_feature_id', 'type' => 'select', 'options' => $accessibilityFeatureOptions],
                     ['name' => 'is_active', 'type' => 'select', 'options' => [
                         '' => 'Status (Todos)',
                         '1' => 'Ativo',

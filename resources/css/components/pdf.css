@@ -572,45 +572,39 @@ th,
     font-style: italic;
 }
 
-/* Relatórios genéricos e auditoria */
-.report-table,
-.audit-table {
+/* Relatórios genéricos */
+.report-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
     font-size: 9px;
+    page-break-inside: auto;
+}
+
+.report-table thead {
+    display: table-header-group;
+}
+
+.report-table tbody {
+    display: table-row-group;
+    page-break-inside: auto;
 }
 
 .report-table th,
-.report-table td,
-.audit-table th,
-.audit-table td {
+.report-table td {
     border: 1px solid #ccc;
     padding: 8px;
     text-align: left;
     vertical-align: top;
 }
 
-.report-table th,
-.audit-table th {
+.report-table th {
     background-color: #f6f4ff;
     color: #322b75;
     font-weight: bold;
     text-transform: uppercase;
 }
 
-.arrow {
-    font-family: DejaVu Sans, sans-serif;
-    color: #777;
-    font-weight: bold;
-}
-
-.old-val {
-    color: #b02a37;
-    text-decoration: line-through;
-    background-color: #fff2f2;
-    padding: 1px 2px;
-}
 
 .new-val {
     color: #198754;
@@ -665,8 +659,8 @@ th,
     color: #444;
 }
 
-/* Evidências visuais / imagens de vistoria */
-.inspection-images,
+/* Evidências da vistoria */
+.inspection-evidences,
 .evidence-container {
     border: 1px solid #d9d6ef;
     padding: 6px;
@@ -712,7 +706,7 @@ th,
     text-align: center;
 }
 
-.image-placeholder,
+.evidence-placeholder,
 .evidence-placeholder {
     font-size: 10px;
     color: #999;

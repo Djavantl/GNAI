@@ -42,6 +42,16 @@ final class ListAccessibleEducationalMaterialsQuery
             $query->where('quantity_available', '<=', 0);
         }
 
+        if ($filters->accessibilityFeatureId !== null) {
+            $query->whereHas(
+                'accessibilityFeatures',
+                static fn ($featureQuery) => $featureQuery->where(
+                    'accessibility_features.id',
+                    $filters->accessibilityFeatureId,
+                ),
+            );
+        }
+
         return $query
             ->orderBy('name')
             ->paginate($filters->perPage)

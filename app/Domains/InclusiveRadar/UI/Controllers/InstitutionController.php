@@ -13,13 +13,12 @@ use App\Domains\InclusiveRadar\Application\Data\Institutions\UpdateInstitutionDa
 use App\Domains\InclusiveRadar\Application\Queries\Institutions\ListInstitutionsQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Institutions\ShowInstitutionQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class InstitutionController extends Controller
+final class InstitutionController
 {
     public function index(ListInstitutionsData $filters, ListInstitutionsQuery $query, Request $request): View
     {

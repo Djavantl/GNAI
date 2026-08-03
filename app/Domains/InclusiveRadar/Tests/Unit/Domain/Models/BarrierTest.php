@@ -7,9 +7,9 @@ namespace App\Domains\InclusiveRadar\Tests\Unit\Domain\Models;
 use App\Domains\InclusiveRadar\Domain\DTOs\Barriers\CreateBarrierDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Barriers\UpdateBarrierDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidBarrier;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
-use App\Enums\Priority;
 use Tests\TestCase;
 
 final class BarrierTest extends TestCase
@@ -70,7 +70,7 @@ final class BarrierTest extends TestCase
 
     public function test_it_marks_resolution_when_status_requires_it(): void
     {
-        $barrier = new Barrier();
+        $barrier = new Barrier;
 
         $barrier->resolveIfStatusRequires(BarrierStatus::RESOLVED);
 
@@ -95,6 +95,6 @@ final class BarrierTest extends TestCase
 
     public function test_it_uses_barrier_morph_class(): void
     {
-        self::assertSame('barrier', (new Barrier())->getMorphClass());
+        self::assertSame('barrier', (new Barrier)->getMorphClass());
     }
 }

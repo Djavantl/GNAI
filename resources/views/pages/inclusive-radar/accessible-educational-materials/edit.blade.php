@@ -131,9 +131,9 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.image-uploader
-                    name="inspection[images][]"
-                    label="Fotos de Evidência"
+                <x-forms.evidence-uploader
+                    name="inspection[evidences][]"
+                    label="Evidências"
                 />
             </div>
 

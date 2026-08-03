@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\AccessibleEducationalMaterials;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\CreateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Inspections\CreateInspectionDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
@@ -13,8 +14,7 @@ use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
-use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;

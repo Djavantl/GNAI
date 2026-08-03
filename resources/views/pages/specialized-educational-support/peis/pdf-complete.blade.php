@@ -51,22 +51,22 @@
 
     <span class="field-label">Histórico (Trajetória do Estudante):</span>
     <div class="content-box">
-        {!! \App\Support\RichTextSanitizer::sanitize((string) ($pei->studentContext->history ?? '')) !!}
+        {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pei->studentContext->history ?? '')) !!}
     </div>
 
     <span class="field-label">Necessidades Educacionais Específicas:</span>
     <div class="content-box">
-        {!! \App\Support\RichTextSanitizer::sanitize((string) ($pei->studentContext->specific_educational_needs ?? '')) !!}
+        {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pei->studentContext->specific_educational_needs ?? '')) !!}
     </div>
 
     <span class="field-label">Conhecimentos e Interesses:</span>
     <div class="content-box">
-        {!! \App\Support\RichTextSanitizer::sanitize((string) ($pei->studentContext->knowledge ?? '')) !!}
+        {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pei->studentContext->knowledge ?? '')) !!}
     </div>
 
     <span class="field-label">Dificuldades Apresentadas:</span>
     <div class="content-box">
-        {!! \App\Support\RichTextSanitizer::sanitize((string) ($pei->studentContext->difficulties ?? '')) !!}
+        {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pei->studentContext->difficulties ?? '')) !!}
     </div>
 
     <div class="section-title">Adaptações Razoáveis e/ou Acessibilidades Curriculares</div>
@@ -101,32 +101,32 @@
 
             <span class="field-label">Objetivos Específicos:</span>
             <div class="content-box">
-                {!! \App\Support\RichTextSanitizer::sanitize((string) ($item->specific_objectives ?? '')) !!}
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($item->specific_objectives ?? '')) !!}
             </div>
 
             <span class="field-label">Conteúdos Programáticos:</span>
             <div class="content-box">
-                {!! \App\Support\RichTextSanitizer::sanitize((string) ($item->content_programmatic ?? '')) !!}
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($item->content_programmatic ?? '')) !!}
             </div>
 
             <span class="field-label">Metodologia:</span>
             <div class="content-box">
-                {!! \App\Support\RichTextSanitizer::sanitize((string) ($item->methodologies ?? '')) !!}
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($item->methodologies ?? '')) !!}
             </div>
 
             <span class="field-label">Avaliação:</span>
             <div class="content-box">
-                {!! \App\Support\RichTextSanitizer::sanitize((string) ($item->evaluations ?? '')) !!}
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($item->evaluations ?? '')) !!}
             </div>
 
             <span class="field-label">Registros Complementares:</span>
             <div class="content-box">
-                {!! \App\Support\RichTextSanitizer::sanitize((string) ($item->complementary_records ?? '')) !!}
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($item->complementary_records ?? '')) !!}
             </div>
 
             <span class="field-label">Parecer:</span>
             <div class="content-box">
-                {!! \App\Support\RichTextSanitizer::sanitize((string) ($item->opinion ?? '')) !!}
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($item->opinion ?? '')) !!}
             </div>
 
         

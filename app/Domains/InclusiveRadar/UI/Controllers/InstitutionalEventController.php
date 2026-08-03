@@ -15,18 +15,15 @@ use App\Domains\InclusiveRadar\Application\Queries\InstitutionalEvents\ListInsti
 use App\Domains\InclusiveRadar\Application\Queries\InstitutionalEvents\ShowInstitutionalEventQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitutionalEvent;
 use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
-use App\Http\Controllers\Concerns\ResolvesBackRoute;
-use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 
-final class InstitutionalEventController extends Controller
+final class InstitutionalEventController
 {
-    use ResolvesBackRoute;
-
     public function index(ListInstitutionalEventsData $filters, ListInstitutionalEventsQuery $query, Request $request): View
     {
         $events = $query->execute($filters);
@@ -46,7 +43,8 @@ final class InstitutionalEventController extends Controller
 
     public function create(Request $request): View
     {
-        $backRoute = $this->resolveBackRoute($request, 'inclusive-radar.institutional-events.index');
+        $backRoute = $request->query('back')
+            ?? route('inclusive-radar.institutional-events.index');
 
         return view('pages.inclusive-radar.institutional-events.create', compact('backRoute'));
     }
@@ -66,7 +64,8 @@ final class InstitutionalEventController extends Controller
     public function show(Request $request, InstitutionalEvent $event, ShowInstitutionalEventQuery $query): View
     {
         $event = $query->execute($event);
-        $backRoute = $this->resolveBackRoute($request, 'inclusive-radar.institutional-events.index');
+        $backRoute = $request->query('back')
+            ?? route('inclusive-radar.institutional-events.index');
 
         return view('pages.inclusive-radar.institutional-events.show', compact('event', 'backRoute'));
     }
@@ -108,8 +107,9 @@ final class InstitutionalEventController extends Controller
             'pages.inclusive-radar.institutional-events.pdf',
             compact('event'),
         )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
+            ->setPaper('a4', 'portrait');
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Evento_{$event->id}.pdf");
     }

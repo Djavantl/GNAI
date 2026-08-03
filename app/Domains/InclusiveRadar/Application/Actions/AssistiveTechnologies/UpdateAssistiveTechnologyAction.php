@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Application\Actions\AssistiveTechnologies;
 
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
-use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
+use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionEvidencesAction;
 use App\Domains\InclusiveRadar\Application\Data\AssistiveTechnologies\UpdateAssistiveTechnologyData;
 use App\Domains\InclusiveRadar\Application\Policies\Inspections\InspectionRegistrationPolicy;
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\AssetCodeExistsQuery;
@@ -22,7 +22,7 @@ final readonly class UpdateAssistiveTechnologyAction
 {
     public function __construct(
         private CreateInspectionAction $createInspection,
-        private AttachInspectionImagesAction $attachInspectionImages,
+        private AttachInspectionEvidencesAction $attachInspectionEvidences,
         private InspectionRegistrationPolicy $inspectionRegistration,
         private AssetCodeExistsQuery $assetCodeExists,
     ) {}
@@ -103,15 +103,15 @@ final readonly class UpdateAssistiveTechnologyAction
         });
 
         if ($inspection instanceof Inspection) {
-            $this->attachInspectionImages->execute(
+            $this->attachInspectionEvidences->execute(
                 inspection: $inspection,
-                images: $data->inspection->images,
+                evidences: $data->inspection->evidences,
             );
         }
 
         return $updatedTechnology->fresh([
             'deficiencies',
-            'inspections.images',
+            'inspections.evidences',
         ]);
     }
 }

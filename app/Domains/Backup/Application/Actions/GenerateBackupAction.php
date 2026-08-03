@@ -8,6 +8,7 @@ use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
 use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
+use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Domain\Models\Backup;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +22,7 @@ final readonly class GenerateBackupAction
     ) {}
 
     /**
-     * @throws Throwable
+     * @throws BackupOperationFailed
      */
     public function execute(?int $userId = null): Backup
     {
@@ -36,7 +37,7 @@ final readonly class GenerateBackupAction
                 'exception' => $exception,
             ]);
 
-            throw $exception;
+            throw new BackupOperationFailed('Falha ao gerar arquivo de backup.', previous: $exception);
         }
 
         try {
@@ -71,7 +72,7 @@ final readonly class GenerateBackupAction
                 'exception' => $exception,
             ]);
 
-            throw $exception;
+            throw new BackupOperationFailed('Falha ao registrar backup gerado.', previous: $exception);
         }
 
         try {

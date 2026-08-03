@@ -36,7 +36,7 @@
             <x-forms.photo-upload
                 name="photo"
                 label="Foto do Responsável"
-                :current="$guardian->person->photo ? asset('storage/' . $guardian->person->photo) : null"
+                :current="$guardian->person->photo_url"
             />
 
             <div class="col-md-6">
@@ -74,9 +74,8 @@
                     name="gender"
                     label="Gênero"
                     required
-                    :options="\App\Models\SpecializedEducationalSupport\Guardian::genderOptions()"
-                    :value="old('gender', $guardian->person->gender)"
-                    :selected="old('gender', $guardian->person->gender)"
+                    :options="$genders"
+                    :selected="old('gender', $guardian->person->gender?->value)"
                 />
             </div>
 
@@ -95,6 +94,7 @@
                 <x-forms.input
                     name="phone"
                     label="Telefone / WhatsApp"
+                    required
                     :value="old('phone', $guardian->person->phone)"
                     class="phone-mask"
                     maxlength="15"
@@ -107,9 +107,8 @@
                     name="relationship"
                     label="Parentesco / Vínculo"
                     required
-                    :options="\App\Models\SpecializedEducationalSupport\Guardian::relationshipOptions()"
-                    :value="old('relationship', $guardian->relationship)"
-                    :selected="old('relationship', $guardian->relationship)"
+                    :options="$relationships"
+                    :selected="old('relationship', $guardian->relationship?->value)"
                 />
             </div>
 
@@ -118,6 +117,7 @@
                     name="address"
                     label="Endereço Completo"
                     rows="2"
+                    maxlength="500"
                     :value="old('address', $guardian->person->address)"
                 />
             </div>

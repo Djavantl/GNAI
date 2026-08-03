@@ -14,6 +14,6 @@ final readonly class InspectionRegistrationPolicy
     ): bool {
         return $stateChanged
             || filled($inspection->description)
-            || $inspection->images !== [];
+            || $inspection->evidences !== [];
     }
 }

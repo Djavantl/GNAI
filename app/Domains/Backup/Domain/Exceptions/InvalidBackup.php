@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Domain\Exceptions;
 
-use DomainException;
+use App\Shared\Domain\Exceptions\BusinessRuleException;
 
-final class InvalidBackup extends DomainException
+final class InvalidBackup extends BusinessRuleException
 {
 }

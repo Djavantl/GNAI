@@ -9,8 +9,6 @@
 @php
 
 $map = [
-    'gender' => \App\Models\SpecializedEducationalSupport\Person::genderOptions(),
-
     'eval' => [
         'initial' => 'Inicial',
         'periodic_review' => 'Periódica',
@@ -65,7 +63,7 @@ $boolStrong = fn ($value) =>
 
 $renderHtml = fn ($value) =>
     filled($value)
-        ? \App\Support\RichTextSanitizer::sanitize((string) $value)
+        ? \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $value)
         : '<span class="text-muted">---</span>';
 
 $renderText = fn ($value) =>
@@ -97,7 +95,7 @@ $relationshipMap = [
 
     <x-pdf.header
         title="Ficha do Aluno"
-        :status="\App\Models\SpecializedEducationalSupport\Student::statusOptions()[$student->status->value ?? $student->status] ?? null"
+        :status="$student->status?->label()"
         :meta="[
             'Aluno(a)' => $student->person->name ?? '---',
             'Matrícula' => $student->registration ?? '---',
@@ -128,11 +126,11 @@ $relationshipMap = [
         </tr>
         <tr>
             <td class="pdf-cell" colspan="2">
-                <strong>Gênero:</strong> {{ ['male' => 'Masculino', 'female' => 'Feminino', 'other' => 'Outro'][$student->person->gender] ?? 'Não informado' }}
+                <strong>Gênero:</strong> {{ $student->person->gender_label }}
             </td>
             <td class="pdf-cell" colspan="2">
                 <strong>Status:</strong>
-                {{ \App\Models\SpecializedEducationalSupport\Student::statusOptions()[$student->status->value ?? $student->status] ?? '---' }}
+                {{ $student->status?->label() ?? '---' }}
             </td>
         </tr>
         <tr>
@@ -220,7 +218,7 @@ $relationshipMap = [
             <table class="pdf-table pdf-mb-12">
                 <tr>
                     <td class="pdf-cell" colspan="4">
-                        <strong>Relação com o aluno:</strong> {!! $renderHtml($guardian->relationship ?? null) !!}
+                        <strong>Relação com o aluno:</strong> {!! $renderHtml($guardian->relationshipLabel()) !!}
                     </td>
                 </tr>
                 <tr>
@@ -236,9 +234,7 @@ $relationshipMap = [
                         <strong>Data de Nascimento:</strong> {{ $formatDate($guardian->person->birth_date ?? null) }}
                     </td>
                     <td class="pdf-cell" colspan="2">
-                        <strong>Gênero:</strong> {{
-                            \App\Models\SpecializedEducationalSupport\Guardian::genderOptions()[$guardian->person->gender ?? null] ?? '---'
-                        }}
+                        <strong>Gênero:</strong> {{ $guardian->person->gender_label }}
                     </td>
                 </tr>
                 <tr>
@@ -613,7 +609,9 @@ $relationshipMap = [
             </table>
 
             {{-- quebra entre disciplinas --}}
-            <div class="page-break"></div>
+            @if (! $loop->last)
+                <div class="page-break"></div>
+            @endif
 
         @endforeach
 
@@ -625,6 +623,5 @@ $relationshipMap = [
         </table>
     @endforelse
 
-    <x-pdf.pages />
 </body>
 </html>

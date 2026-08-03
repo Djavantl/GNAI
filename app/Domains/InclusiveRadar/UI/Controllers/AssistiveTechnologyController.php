@@ -13,12 +13,12 @@ use App\Domains\InclusiveRadar\Application\Data\AssistiveTechnologies\UpdateAssi
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\AssistiveTechnologyFormQuery;
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\AssistiveTechnologyPdfQuery;
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ListAssistiveTechnologiesQuery;
-use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ShowAssistiveTechnologyQuery;
 use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ShowAssistiveTechnologyInspectionQuery;
+use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ShowAssistiveTechnologyQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class AssistiveTechnologyController extends Controller
+final class AssistiveTechnologyController
 {
     public function index(ListAssistiveTechnologiesData $filters, ListAssistiveTechnologiesQuery $query, Request $request): View
     {
@@ -131,8 +131,9 @@ final class AssistiveTechnologyController extends Controller
             'pages.inclusive-radar.assistive-technologies.pdf',
             ['assistiveTechnology' => $technology],
         )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
+            ->setPaper('a4', 'portrait');
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("TA_{$technology->name}.pdf");
     }

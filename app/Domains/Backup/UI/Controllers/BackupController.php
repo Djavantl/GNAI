@@ -11,19 +11,22 @@ use App\Domains\Backup\Application\Actions\StoreUploadedBackupAction;
 use App\Domains\Backup\Application\Actions\SyncBackupsAction;
 use App\Domains\Backup\Application\Data\ListBackupsData;
 use App\Domains\Backup\Application\Data\UploadBackupData;
+use App\Domains\Backup\Application\Policies\Backups\BackupRestoreConfirmationPolicy;
 use App\Domains\Backup\Application\Queries\DownloadBackupQuery;
 use App\Domains\Backup\Application\Queries\ListBackupsQuery;
 use App\Domains\Backup\Application\Queries\ListBackupUsersQuery;
 use App\Domains\Backup\Application\Queries\ShowBackupQuery;
+use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
+use App\Domains\Backup\Domain\Exceptions\InvalidBackup;
+use App\Domains\Backup\Domain\Exceptions\InvalidBackupRestoreConfirmation;
 use App\Domains\Backup\Domain\Models\Backup;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
-final class BackupController extends Controller
+final class BackupController
 {
     public function index(
         ListBackupsData $filters,
@@ -44,15 +47,12 @@ final class BackupController extends Controller
         return view('pages.backup.index', compact('backups', 'users'));
     }
 
+    /**
+     * @throws BackupOperationFailed
+     */
     public function store(GenerateBackupAction $action): RedirectResponse
     {
-        try {
-            $action->execute();
-        } catch (Throwable $exception) {
-            return redirect()
-                ->route('backup.backups.index')
-                ->with('error', 'Falha ao gerar backup: ' . $exception->getMessage());
-        }
+        $action->execute();
 
         return redirect()
             ->route('backup.backups.index')
@@ -77,25 +77,18 @@ final class BackupController extends Controller
         return $response;
     }
 
+    /**
+     * @throws BackupOperationFailed
+     */
     public function upload(Request $request, StoreUploadedBackupAction $action): RedirectResponse
     {
-        if (! $request->hasFile('backup_file')) {
-            return redirect()->back()->with('error', 'O servidor não recebeu o arquivo. Verifique se o formulário tem enctype="multipart/form-data".');
+        $data = UploadBackupData::validateAndCreate($request->all());
+
+        if (! $data->backupFile->isValid()) {
+            return redirect()->back()->with('error', 'Erro no upload do PHP: ' . $data->backupFile->getErrorMessage());
         }
 
-        $file = $request->file('backup_file');
-
-        if (! $file->isValid()) {
-            return redirect()->back()->with('error', 'Erro no upload do PHP: ' . $file->getErrorMessage());
-        }
-
-        $request->validate(UploadBackupData::rules(), UploadBackupData::messages());
-
-        try {
-            $action->execute(new UploadBackupData(backupFile: $file));
-        } catch (Throwable $exception) {
-            return redirect()->back()->with('error', 'Falha ao importar backup: ' . $exception->getMessage());
-        }
+        $action->execute($data);
 
         return redirect()->back()->with('success', 'Backup importado com sucesso!');
     }
@@ -112,15 +105,30 @@ final class BackupController extends Controller
             ->with('success', 'Registro e arquivo removidos permanentemente.');
     }
 
-    public function restore(Backup $backup, RestoreBackupAction $action): RedirectResponse
+    /**
+     * @throws InvalidBackup
+     * @throws BackupOperationFailed
+     * @throws InvalidBackupRestoreConfirmation
+     */
+    public function restore(
+        Backup $backup,
+        RestoreBackupAction $action,
+        BackupRestoreConfirmationPolicy $confirmationPolicy,
+        Request $request,
+    ): RedirectResponse
     {
-        try {
-            $action->execute($backup);
-        } catch (Throwable $exception) {
-            return redirect()
-                ->route('backup.backups.index')
-                ->with('error', 'Falha ao restaurar backup: ' . $exception->getMessage());
-        }
+        $validated = $request->validate([
+            'password' => ['required', 'string'],
+        ], [
+            'password.required' => 'Informe sua senha para confirmar a restauração.',
+        ]);
+
+        $confirmationPolicy->ensurePasswordMatches(
+            user: $request->user(),
+            password: $validated['password'],
+        );
+
+        $action->execute($backup);
 
         return redirect()
             ->route('backup.backups.index')

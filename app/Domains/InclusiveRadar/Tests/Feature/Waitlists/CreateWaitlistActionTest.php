@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\Waitlists;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Application\Actions\Waitlists\CreateWaitlistAction;
 use App\Domains\InclusiveRadar\Application\Data\Waitlists\CreateWaitlistData;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
@@ -14,8 +15,7 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidWaitlist;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -68,6 +68,36 @@ final class CreateWaitlistActionTest extends TestCase
         $this->expectException(InvalidWaitlist::class);
         $this->expectExceptionMessage(
             'Este recurso ainda possui unidades disponíveis e pode ser emprestado, portanto não é possível criar uma fila de espera.'
+        );
+
+        app(CreateWaitlistAction::class)->execute(
+            data: new CreateWaitlistData(
+                waitlistableId: $technology->id,
+                waitlistableType: LoanableType::AssistiveTechnology,
+                studentId: $student->id,
+                professionalId: null,
+            ),
+            registeredBy: $user->id,
+        );
+    }
+
+    public function test_it_rejects_waitlist_for_digital_item(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $technology = AssistiveTechnology::factory()
+            ->digital()
+            ->loanable()
+            ->create([
+                'name' => 'Slide adaptado',
+                'quantity' => null,
+                'quantity_available' => null,
+                'status' => ResourceStatus::AVAILABLE,
+            ]);
+
+        $this->expectException(InvalidWaitlist::class);
+        $this->expectExceptionMessage(
+            'Recursos digitais não entram em fila de espera porque não possuem estoque físico.'
         );
 
         app(CreateWaitlistAction::class)->execute(

@@ -17,7 +17,6 @@ final readonly class DeleteInstitutionalEventAction
     {
         DB::transaction(function () use ($event): void {
             InstitutionalEvent::query()
-                ->lockForUpdate()
                 ->findOrFail($event->getKey())
                 ->delete();
         });

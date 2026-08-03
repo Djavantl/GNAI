@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Inspections\CreateInspectionDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
@@ -12,6 +13,7 @@ use Database\Factories\Domains\InclusiveRadar\InspectionFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -55,8 +57,13 @@ final class Inspection extends Model
         return $this->morphTo();
     }
 
-    public function images(): HasMany
+    public function evidences(): HasMany
     {
-        return $this->hasMany(InspectionImage::class, 'inspection_id');
+        return $this->hasMany(InspectionEvidence::class, 'inspection_id');
+    }
+
+    public function registeredBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

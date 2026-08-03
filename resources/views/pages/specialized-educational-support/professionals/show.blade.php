@@ -88,11 +88,9 @@
             </x-show.info-item>
 
             <x-show.info-item label="Status" column="col-md-3" isBox="true">
-                @if($professional->status === 'active')
-                    <span class="text-success fw-bold">ATIVO</span>
-                @else
-                    <span class="text-danger fw-bold">INATIVO</span>
-                @endif
+                <span class="text-{{ $professional->status->color() }} fw-bold text-uppercase">
+                    {{ $professional->status->label() }}
+                </span>
             </x-show.info-item>
 
             <x-show.info-item label="Data de Admissão" column="col-md-6" isBox="true">

@@ -19,7 +19,8 @@ use Database\Seeders\SpecializedEducationalSupport\CoursesSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DisciplinesSeeder;
 use Database\Seeders\SpecializedEducationalSupport\CourseDisciplineSeeder;
 use Database\Seeders\SpecializedEducationalSupport\StudentCourseSeeder;
-use Database\Seeders\SpecializedEducationalSupport\SessionRecordSeeder;
+use Database\Seeders\SpecializedEducationalSupport\AeeRecordSeeder;
+use Database\Seeders\SpecializedEducationalSupport\PedagogicalRecordSeeder;
 use Database\Seeders\SpecializedEducationalSupport\PendencySeeder;
 use Database\Seeders\SpecializedEducationalSupport\GuardianSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DisciplineSeeder;
@@ -39,7 +40,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SemesterSeeder::class,
             DeficiencySeeder::class,
-            PermissionSeeder::class,
             PositionSeeder::class,
             BarrierCategorySeeder::class,
             AccessibilityFeatureSeeder::class,
@@ -54,7 +54,6 @@ class DatabaseSeeder extends Seeder
             StudentCourseSeeder::class,
             // ProfessionalSeeder::class,
             PendencySeeder::class,
-            AdminSeeder::class,
             GuardianSeeder::class,
             DisciplineSeeder::class,
             AttendanceSessionSeeder::class,
@@ -66,7 +65,8 @@ class DatabaseSeeder extends Seeder
             BarrierSeeder::class,
             InstitutionalEventSeeder::class,
             DemoLoanWaitlistSeeder::class,
-            SessionRecordSeeder::class,
+            AeeRecordSeeder::class,
+            PedagogicalRecordSeeder::class,
         ]);
     }
 }

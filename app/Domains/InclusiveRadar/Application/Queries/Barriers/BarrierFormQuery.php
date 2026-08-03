@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Application\Queries\Barriers;
 
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Enums\Priority;
-use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 
 final readonly class BarrierFormQuery
 {
@@ -32,7 +32,7 @@ final readonly class BarrierFormQuery
         $data = $this->baseData();
 
         return $data + [
-            'barrier' => $barrier->loadMissing(['deficiencies', 'inspections.images', 'location', 'institution', 'category', 'registeredBy']),
+            'barrier' => $barrier->loadMissing(['deficiencies', 'inspections.evidences', 'location', 'institution', 'category', 'registeredBy']),
             'selectedInstitution' => $selectedInstitutionId !== null
                 ? $data['institutions']->firstWhere('id', $selectedInstitutionId)
                 : ($barrier->institution ?? null),
@@ -71,8 +71,7 @@ final readonly class BarrierFormQuery
                 ->get()
                 ->mapWithKeys(fn (Professional $professional) => [$professional->id => $professional->person?->name])
                 ->sort(),
-            'priorities' => collect(Priority::cases())
-                ->mapWithKeys(fn (Priority $priority) => [$priority->value => $priority->label()]),
+            'priorities' => collect(Priority::options()),
             'barrierStatuses' => collect(BarrierStatus::cases())
                 ->mapWithKeys(fn (BarrierStatus $status) => [$status->value => $status->label()]),
         ];

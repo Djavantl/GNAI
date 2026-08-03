@@ -5,7 +5,7 @@ namespace Database\Factories\Domains\InclusiveRadar;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
-use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AssistiveTechnologyFactory extends Factory
@@ -18,7 +18,7 @@ class AssistiveTechnologyFactory extends Factory
         $isDigital = $this->faker->boolean(35);
 
         return [
-            'name' => 'TA - ' . $this->faker->words(3, true),
+            'name' => 'TA - '.$this->faker->words(3, true),
             'is_digital' => $isDigital,
             'notes' => $this->faker->optional()->paragraph(),
             'asset_code' => strtoupper($this->faker->unique()->bothify('TA-####')),

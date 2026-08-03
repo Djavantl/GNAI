@@ -67,14 +67,9 @@
                 <x-forms.select
                     name="gender"
                     label="Gênero"
-                    :options="[
-                        'not_specified' => 'Não informado',
-                        'male' => 'Masculino',
-                        'female' => 'Feminino',
-                        'other' => 'Outro'
-                    ]"
-                    :value="old('gender', $student->person->gender)"
-                    :selected="old('gender', $student->person->gender)"
+                    :options="$genders"
+                    :selected="old('gender', $student->person->gender?->value)"
+                    required
                 />
             </div>
 
@@ -114,6 +109,7 @@
                 <x-forms.input 
                     name="registration" 
                     label="Matrícula " 
+                    maxlength="50"
                     required 
                     :value="old('registration', $student->registration)" 
                 />
@@ -143,16 +139,16 @@
                     name="status"
                     label="Status do Aluno"
                     required
-                    :options="\App\Enums\SpecializedEducationalSupport\StudentStatus::options()"
+                    :options="$studentStatuses"
                     :value="old(
                         'status',
                         $student->status?->value 
-                            ?? \App\Enums\SpecializedEducationalSupport\StudentStatus::ACTIVE->value
+                            ?? $defaultStatus
                     )"
                     :selected="old(
                         'status',
                         $student->status?->value 
-                            ?? \App\Enums\SpecializedEducationalSupport\StudentStatus::ACTIVE->value
+                            ?? $defaultStatus
                     )"
                 />
             </div>

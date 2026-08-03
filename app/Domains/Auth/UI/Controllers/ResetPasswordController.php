@@ -7,12 +7,11 @@ namespace App\Domains\Auth\UI\Controllers;
 use App\Domains\Auth\Application\Actions\Passwords\ResetPasswordAction;
 use App\Domains\Auth\Application\Data\Passwords\ResetPasswordData;
 use App\Domains\Auth\Domain\Exceptions\InvalidPasswordReset;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final class ResetPasswordController extends Controller
+final class ResetPasswordController
 {
     public function showForm(Request $request, string $token): View
     {

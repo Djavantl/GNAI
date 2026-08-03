@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\Inspections;
 
-use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
+use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionEvidencesAction;
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
 use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
@@ -21,7 +21,7 @@ final class CreateInspectionActionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_removes_stored_images_when_image_attachment_fails(): void
+    public function test_it_removes_stored_evidences_when_evidence_attachment_fails(): void
     {
         Storage::fake('public');
 
@@ -35,9 +35,9 @@ final class CreateInspectionActionTest extends TestCase
         $data = new CreateInspectionData(
             date: now()->toDateString(),
             type: InspectionType::INITIAL,
-            images: [
+            evidences: [
                 UploadedFile::fake()->image('valid-image.jpg'),
-                'invalid-image',
+                'invalid-evidence',
             ],
         );
 
@@ -49,16 +49,59 @@ final class CreateInspectionActionTest extends TestCase
         );
 
         try {
-            app(AttachInspectionImagesAction::class)->execute(
+            app(AttachInspectionEvidencesAction::class)->execute(
                 inspection: $inspection,
-                images: $data->images,
+                evidences: $data->evidences,
             );
 
-            self::fail('O anexo deveria rejeitar uma imagem inválida.');
+            self::fail('O anexo deveria rejeitar uma evidência inválida.');
         } catch (InvalidInspection) {
             self::assertSame([], Storage::disk('public')->allFiles('inspections'));
             $this->assertDatabaseCount('inspections', 1);
-            $this->assertDatabaseCount('inspection_images', 0);
+            $this->assertDatabaseCount('inspection_evidences', 0);
         }
+    }
+
+    public function test_it_stores_non_image_evidences_without_conversion(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $technology = AssistiveTechnology::factory()
+            ->digital()
+            ->notLoanable()
+            ->state(['name' => 'Slide adaptado'])
+            ->create();
+
+        $data = new CreateInspectionData(
+            date: now()->toDateString(),
+            type: InspectionType::INITIAL,
+            evidences: [
+                UploadedFile::fake()->create(
+                    'slide-adaptado.pptx',
+                    128,
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                ),
+            ],
+        );
+
+        $inspection = app(CreateInspectionAction::class)->execute(
+            inspectable: $technology,
+            data: $data,
+            registeredBy: $user->id,
+            state: ConservationState::NOT_APPLICABLE->value,
+        );
+
+        app(AttachInspectionEvidencesAction::class)->execute(
+            inspection: $inspection,
+            evidences: $data->evidences,
+        );
+
+        $evidence = $inspection->evidences()->firstOrFail();
+
+        self::assertSame('slide-adaptado.pptx', $evidence->original_name);
+        self::assertStringEndsWith('.pptx', $evidence->path);
+        self::assertFalse($evidence->isImage());
+        Storage::disk('public')->assertExists($evidence->path);
     }
 }

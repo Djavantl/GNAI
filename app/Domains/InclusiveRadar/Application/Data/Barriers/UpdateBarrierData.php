@@ -6,7 +6,7 @@ namespace App\Domains\InclusiveRadar\Application\Data\Barriers;
 
 use App\Domains\InclusiveRadar\Application\Data\Inspections\CreateInspectionData;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
-use App\Enums\Priority;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Validator;
 use Spatie\LaravelData\Attributes\MapInputName;
@@ -19,7 +19,7 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 final class UpdateBarrierData extends Data
 {
     /**
-     * @param list<int> $deficiencies
+     * @param  list<int>  $deficiencies
      */
     public function __construct(
         public string $name,

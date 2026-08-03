@@ -2,9 +2,9 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Seeder;
-use App\Models\SpecializedEducationalSupport\Person;
-use App\Models\SpecializedEducationalSupport\Student;
 
 class StudentSeeder extends Seeder
 {
@@ -39,9 +39,9 @@ class StudentSeeder extends Seeder
             // 2. Criar o Aluno vinculado à Pessoa
             Student::create([
                 'person_id' => $person->id,
-                'registration' => 'ALU' . str_pad($index + 4, 3, '0', STR_PAD_LEFT), // Começa do ALU004
+                'registration' => 'ALU'.str_pad($index + 4, 3, '0', STR_PAD_LEFT), // Começa do ALU004
                 'entry_date' => now()->subMonths(rand(1, 12)), // Data de ingresso aleatória no último ano
-                'status' => 'active'
+                'status' => 'active',
             ]);
         }
     }

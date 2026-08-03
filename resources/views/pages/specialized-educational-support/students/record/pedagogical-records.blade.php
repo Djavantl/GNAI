@@ -51,7 +51,7 @@
 
                         <x-table.td :responsive="false">
                             <x-table.actions>
-                                @can('session-record.view')
+                                @can('pedagogical-record.view')
                                     <x-buttons.link-button
                                         :href="route('specialized-educational-support.pedagogical-records.show', $record)"
                                         variant="info"

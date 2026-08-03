@@ -1,14 +1,4 @@
 @php
-    $statusStyles = [
-        'agendada' => ['warning', 'Agendada'],
-        'scheduled' => ['warning', 'Agendada'],
-        'realizada' => ['success', 'Realizada'],
-        'completed' => ['success', 'Realizada'],
-        'cancelada' => ['danger', 'Cancelada'],
-        'cancelled' => ['danger', 'Cancelada'],
-        'canceled' => ['danger', 'Cancelada'],
-    ];
-
     $totalSessions = collect($agenda['days'] ?? [])
         ->sum(fn ($day) => $day['sessions']->count());
 @endphp
@@ -40,8 +30,9 @@
                         <div class="d-flex flex-column gap-2 weekly-sessions-list">
                             @forelse($day['sessions'] as $session)
                                 @php
-                                    $statusKey = strtolower($session->status ?? '');
-                                    $statusData = $statusStyles[$statusKey] ?? ['secondary', $session->statusLabel()];
+                                    $statusColor = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::colorFor($session->status);
+                                    $statusLabel = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::labelFor($session->status);
+                                    $isPedagogical = \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::isPedagogical($session->attendance_type);
 
                                     $studentsText = $session->students
                                         ->map(fn ($student) => $student->person->name ?? 'Aluno')
@@ -49,15 +40,15 @@
 
                                     $professionalName = $session->professional->person->name ?? 'Profissional';
 
-                                    $hasRecord = $session->isPedagogicalAttendance()
+                                    $hasRecord = $isPedagogical
                                         ? (bool) $session->pedagogicalRecord
-                                        : (bool) $session->sessionRecord;
+                                        : (bool) $session->aeeRecord;
                                     $recordLabel = $hasRecord
-                                        ? ($session->isPedagogicalAttendance() ? 'Atendimento Pedagógico registrado' : 'Atendimento AEE registrado')
+                                        ? ($isPedagogical ? 'Atendimento Pedagógico registrado' : 'Atendimento AEE registrado')
                                         : 'Sem registro';
                                     $recordClass = $hasRecord
-                                        ? 'weekly-session-record weekly-session-record--done'
-                                        : 'weekly-session-record weekly-session-record--missing';
+                                        ? 'weekly-attendance-record weekly-attendance-record--done'
+                                        : 'weekly-attendance-record weekly-attendance-record--missing';
 
                                     $startTime = \Carbon\Carbon::parse($session->start_time)->format('H:i');
                                     $endTime = \Carbon\Carbon::parse($session->end_time)->format('H:i');
@@ -71,8 +62,8 @@
                                             </div>
                                         </div>
 
-                                        <span class="badge bg-{{ $statusData[0] }}">
-                                            {{ $statusData[1] }}
+                                        <span class="badge bg-{{ $statusColor }}">
+                                            {{ $statusLabel }}
                                         </span>
                                     </div>
 

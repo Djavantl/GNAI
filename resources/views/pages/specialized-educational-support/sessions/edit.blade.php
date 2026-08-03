@@ -26,10 +26,10 @@
 
             {{-- Inputs Hidden Críticos para o Funcionamento --}}
             <input type="hidden" name="professional_id" value="{{ $session->professional_id }}">
-            @php($hasLinkedRecord = $session->sessionRecord || $session->pedagogicalRecord)
+            @php($hasLinkedRecord = $session->aeeRecord || $session->pedagogicalRecord)
             <input type="hidden" name="status" value="{{ $session->status }}">
             @if($hasLinkedRecord)
-                <input type="hidden" name="attendance_type" value="{{ $session->attendance_type ?? \App\Enums\SpecializedEducationalSupport\AttendanceType::AEE->value }}">
+                <input type="hidden" name="attendance_type" value="{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::valueOf($session->attendance_type) }}">
             @endif
             @foreach($session->students as $student)
                 <input type="hidden" name="student_ids[]" class="student-select-item" value="{{ $student->id }}">
@@ -63,8 +63,8 @@
                     name="attendance_type"
                     label="Tipo de Atendimento"
                     required
-                    :options="\App\Models\SpecializedEducationalSupport\Session::attendanceTypeOptions()"
-                    :selected="old('attendance_type', $session->attendance_type ?? \App\Enums\SpecializedEducationalSupport\AttendanceType::AEE->value)"
+                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::options()"
+                    :selected="old('attendance_type', \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::valueOf($session->attendance_type))"
                     id="attendance_type"
                     :disabled="$hasLinkedRecord"
                 />
@@ -78,7 +78,7 @@
                     name="type"
                     label="Formato"
                     required
-                    :options="['individual' => 'Individual', 'group' => 'Em Grupo']"
+                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::options()"
                     :selected="old('type', $session->type)"
                     id="session_type"
                 />

@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+namespace App\Domains\SpecializedEducationalSupport\Domain\Enums;
+
+enum AutonomyLevel: string
+{
+
+    case DEPENDENT = 'dependent';
+    case PARTIAL = 'partial';
+    case INDEPENDENT = 'independent';
+
+    public function label(): string
+    {
+        return match($this) {
+            self::DEPENDENT => 'Dependente',
+            self::PARTIAL => 'Parcial',
+            self::INDEPENDENT => 'Independente',
+        };
+    }
+
+    public function color(): string
+    {
+        return match($this) {
+            self::DEPENDENT => 'danger',
+            self::PARTIAL => 'warning',
+            self::INDEPENDENT => 'success',
+        };
+    }
+}

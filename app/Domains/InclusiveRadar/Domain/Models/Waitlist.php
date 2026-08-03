@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Waitlists\CreateWaitlistDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Waitlists\UpdateWaitlistDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidWaitlist;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Database\Factories\Domains\InclusiveRadar\WaitlistFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

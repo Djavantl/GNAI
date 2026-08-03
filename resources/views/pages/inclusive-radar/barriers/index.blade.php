@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@php
+    use App\Domains\InclusiveRadar\Domain\Enums\Priority;
+@endphp
+
 @section('title', 'Barreiras')
 
 @section('content')
@@ -33,10 +37,7 @@
                 :fields="[
                     ['name' => 'name', 'placeholder' => 'Filtrar por nome da barreira...'],
                     ['name' => 'category', 'placeholder' => 'Filtrar por categoria...'],
-                    ['name' => 'priority', 'type' => 'select', 'options' => collect(\App\Enums\Priority::cases())
-                        ->mapWithKeys(fn ($case) => [$case->value => $case->label()])
-                        ->prepend('Prioridade (Todas)', '')
-                        ->toArray()],
+                    ['name' => 'priority', 'type' => 'select', 'options' => Priority::filterOptions()],
                     ['name' => 'status', 'type' => 'select', 'options' => collect(\App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus::cases())
                         ->mapWithKeys(fn ($case) => [$case->value => $case->label()])
                         ->prepend('Status (Todos)', '')

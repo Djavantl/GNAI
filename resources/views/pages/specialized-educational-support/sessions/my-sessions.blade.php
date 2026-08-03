@@ -132,12 +132,12 @@
                             [
                                 'name' => 'type',
                                 'type' => 'select',
-                                'options' => ['' => 'Tipo (Todos)', 'individual' => 'Individual', 'group' => 'Grupo']
+                                'options' => ['' => 'Tipo (Todos)'] + \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::options()
                             ],
                             [
                                 'name' => 'status',
                                 'type' => 'select',
-                                'options' => ['' => 'Status (Todos)', 'Agendada' => 'Agendada', 'Realizada' => 'Realizada', 'Cancelada' => 'Cancelada']
+                                'options' => ['' => 'Status (Todos)'] + \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::options()
                             ],
                         ]"
                     />

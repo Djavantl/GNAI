@@ -7,9 +7,9 @@ namespace App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMa
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
-use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 
 final class AccessibleEducationalMaterialFormQuery
 {

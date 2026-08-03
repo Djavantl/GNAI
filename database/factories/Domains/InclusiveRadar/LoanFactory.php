@@ -2,13 +2,13 @@
 
 namespace Database\Factories\Domains\InclusiveRadar;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use App\Models\SpecializedEducationalSupport\Professional;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LoanFactory extends Factory
@@ -23,7 +23,7 @@ class LoanFactory extends Factory
     public function definition(): array
     {
         $loanDate = $this->faker->dateTimeBetween('-30 days', 'now');
-        $dueDate = (clone $loanDate)->modify('+' . $this->faker->numberBetween(1, 15) . ' days');
+        $dueDate = (clone $loanDate)->modify('+'.$this->faker->numberBetween(1, 15).' days');
 
         return [
             'loanable_id' => null,
@@ -45,7 +45,7 @@ class LoanFactory extends Factory
             $assistiveTechnology ?? AssistiveTechnology::factory()->physical()->available(),
             'loanable'
         )->state(fn () => [
-            'loanable_type' => (new AssistiveTechnology())->getMorphClass(),
+            'loanable_type' => (new AssistiveTechnology)->getMorphClass(),
         ]);
     }
 
@@ -55,7 +55,7 @@ class LoanFactory extends Factory
             $material ?? AccessibleEducationalMaterial::factory()->physical()->available(),
             'loanable'
         )->state(fn () => [
-            'loanable_type' => (new AccessibleEducationalMaterial())->getMorphClass(),
+            'loanable_type' => (new AccessibleEducationalMaterial)->getMorphClass(),
         ]);
     }
 

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\Waitlists;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Application\Actions\Waitlists\CancelWaitlistAction;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -2,11 +2,11 @@
 
 namespace Database\Factories\Domains\InclusiveRadar;
 
+use App\Domains\Auth\Domain\Models\User;
+use App\Domains\InclusiveRadar\Domain\Enums\Priority;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Enums\Priority;
-use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BarrierFactory extends Factory

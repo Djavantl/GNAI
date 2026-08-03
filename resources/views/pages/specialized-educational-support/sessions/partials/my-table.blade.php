@@ -18,19 +18,12 @@
             @endforelse
         </x-table.td>
 
-        <x-table.td>{{ $session->typeLabel() }}</x-table.td>
+        <x-table.td>{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::labelFor($session->type) }}</x-table.td>
 
         <x-table.td>
-            @php
-                $statusColor = match(strtolower($session->status ?? '')) {
-                    'agendada', 'agendado', 'scheduled', 'pending'    => 'warning',
-                    'realizada', 'realizado', 'completed', 'confirmed' => 'success',
-                    'cancelada', 'cancelado', 'cancelled', 'canceled'  => 'danger',
-                    default => 'warning'
-                };
-            @endphp
+            @php($statusColor = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::colorFor($session->status))
             <span class="text-{{ $statusColor }} fw-bold">
-                {{ $session->statusLabel() }}
+                {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::labelFor($session->status) }}
             </span>
         </x-table.td>
 

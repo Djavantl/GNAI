@@ -8,7 +8,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
-use App\Models\SpecializedEducationalSupport\Deficiency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 
 final class AssistiveTechnologyFormQuery
 {

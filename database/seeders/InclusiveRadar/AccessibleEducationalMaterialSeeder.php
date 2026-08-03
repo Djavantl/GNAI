@@ -2,7 +2,6 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
-use Database\Seeders\AdminSeeder;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
@@ -106,13 +105,9 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         }
     }
 
-    private function ensureUserExists(): int
+    private function ensureUserExists(): ?int
     {
-        if (DB::table('users')->count() === 0) {
-            $this->call(AdminSeeder::class);
-        }
-
-        return DB::table('users')->first()->id;
+        return DB::table('users')->value('id');
     }
 
     private function attachDeficiencies(AccessibleEducationalMaterial $mpa, array $deficiencyIds): void
@@ -154,7 +149,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         return $notes[$state] ?? 'Material pedagógico acessível disponível para empréstimo.';
     }
 
-    private function createInspections(AccessibleEducationalMaterial $mpa, string $currentState, int $userId): void
+    private function createInspections(AccessibleEducationalMaterial $mpa, string $currentState, ?int $userId): void
     {
         $numInspections = rand(1, 3);
         $acquisitionDate = Carbon::now()->subMonths(rand(6, 24))->subDays(rand(0, 30));
@@ -195,7 +190,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         }
     }
 
-    private function createDigitalInspection(AccessibleEducationalMaterial $mpa, int $userId): void
+    private function createDigitalInspection(AccessibleEducationalMaterial $mpa, ?int $userId): void
     {
         $mpa->inspections()->create([
             'state' => ConservationState::NOT_APPLICABLE->value,

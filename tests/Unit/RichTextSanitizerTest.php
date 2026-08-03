@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Support\RichTextSanitizer;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use PHPUnit\Framework\TestCase;
 
 class RichTextSanitizerTest extends TestCase

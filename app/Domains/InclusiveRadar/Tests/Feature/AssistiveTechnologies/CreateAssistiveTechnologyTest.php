@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\AssistiveTechnologies;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\AssistiveTechnologies\CreateAssistiveTechnologyDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
@@ -11,8 +12,7 @@ use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\ValueObjects\AssetCode;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
-use App\Models\SpecializedEducationalSupport\Deficiency;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +51,7 @@ final class CreateAssistiveTechnologyTest extends TestCase
                 'date' => now()->toDateString(),
                 'type' => InspectionType::INITIAL->value,
                 'description' => 'Cadastro inicial',
-                'images' => [],
+                'evidences' => [],
             ],
             'status' => ResourceStatus::AVAILABLE->value,
             'is_active' => true,

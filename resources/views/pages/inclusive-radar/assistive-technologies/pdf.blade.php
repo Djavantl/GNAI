@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<x-pdf.pages />
 
 <x-pdf.header
     title="Ficha de Tecnologia Assistiva"
@@ -28,7 +27,7 @@
 <table class="pdf-table">
     <tr>
         <td class="pdf-cell pdf-w-50">
-            <strong>Nome:</strong> {!! \App\Support\RichTextSanitizer::sanitize((string) ($assistiveTechnology->name ?? '---')) !!}
+            <strong>Nome:</strong> {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->name ?? '---')) !!}
         </td>
         <td class="pdf-cell pdf-w-50">
             <strong>Natureza:</strong> {{ $assistiveTechnology->is_digital ? 'Recurso Digital' : 'Recurso Físico' }}
@@ -37,7 +36,7 @@
 
     <tr>
         <td class="pdf-cell">
-            <strong>Patrimônio / Tombamento:</strong> {!! \App\Support\RichTextSanitizer::sanitize((string) ($assistiveTechnology->asset_code ?? '---')) !!}
+            <strong>Patrimônio / Tombamento:</strong> {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->asset_code ?? '---')) !!}
         </td>
         <td class="pdf-cell">
             <strong>Status no Sistema:</strong> {{ $assistiveTechnology->is_active ? 'Ativo' : 'Inativo' }}
@@ -60,7 +59,7 @@
         <td class="pdf-cell" colspan="4">
             <strong>Descrição Detalhada</strong>
             <div class="long-text">
-                {!! \App\Support\RichTextSanitizer::sanitize((string) ($assistiveTechnology->notes ?: '---')) !!}
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->notes ?: '---')) !!}
             </div>
         </td>
     </tr>
@@ -89,7 +88,7 @@
     <tr>
         <td class="pdf-cell" colspan="4">
             <strong>Deficiências Atendidas:</strong>
-            {!! \App\Support\RichTextSanitizer::sanitize((string) ($assistiveTechnology->deficiencies->pluck('name')->join(', ') ?: '---')) !!}
+            {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->deficiencies->pluck('name')->join(', ') ?: '---')) !!}
         </td>
     </tr>
 </table>
@@ -123,25 +122,25 @@
             <td class="pdf-cell" colspan="3">
                 <strong>Parecer Técnico</strong>
                 <div class="long-text">
-                    {!! \App\Support\RichTextSanitizer::sanitize((string) ($lastInspection->description ?: 'Sem descrição registrada.')) !!}
+                    {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($lastInspection->description ?: 'Sem descrição registrada.')) !!}
                 </div>
             </td>
         </tr>
     </table>
 
-    <div class="section-title">Evidências Visuais</div>
-    <div class="inspection-images">
+    <div class="section-title">Evidências</div>
+    <div class="inspection-evidences">
 
-        @if($lastInspection->images->count() > 0)
+        @if($lastInspection->evidences->count() > 0)
 
-            @foreach($lastInspection->images as $image)
+            @foreach($lastInspection->evidences as $evidence)
 
                 @php
                     $base64 = null;
                     $ratio = null;
 
-                    if (Storage::disk('public')->exists($image->path)) {
-                        $imageData = Storage::disk('public')->get($image->path);
+                    if ($evidence->isImage() && Storage::disk('public')->exists($evidence->path)) {
+                        $imageData = Storage::disk('public')->get($evidence->path);
                         $src = @imagecreatefromstring($imageData);
 
                         if ($src !== false) {
@@ -173,34 +172,34 @@
                     }
 
                     if (!$base64 || !$ratio) {
-                        $imageClass = null;
+                        $evidenceClass = null;
                     } elseif ($ratio > 1.5) {
-                        $imageClass = 'wide';
+                        $evidenceClass = 'wide';
                     } elseif ($ratio < 0.67) {
-                        $imageClass = 'tall';
+                        $evidenceClass = 'tall';
                     } else {
-                        $imageClass = 'square';
+                        $evidenceClass = 'square';
                     }
                 @endphp
 
                 @if($base64)
-                    <div class="evidence-card {{ $imageClass }}">
-                        <img class="evidence-image" src="{{ $base64 }}" alt="Evidência visual da vistoria">
+                    <div class="evidence-card {{ $evidenceClass }}">
+                        <img class="evidence-image" src="{{ $base64 }}" alt="Evidência da vistoria">
                         <div class="evidence-caption">
-                            Evidência {{ $loop->iteration }} de {{ $lastInspection->images->count() }}
+                            Evidência {{ $loop->iteration }} de {{ $lastInspection->evidences->count() }}
                         </div>
                     </div>
                 @else
-                    <div class="image-placeholder">
-                        Evidência {{ $loop->iteration }}: arquivo não encontrado ou formato inválido.
+                    <div class="evidence-placeholder">
+                        Evidência {{ $loop->iteration }}: {{ $evidence->displayName() }}
                     </div>
                 @endif
 
             @endforeach
 
         @else
-            <div class="image-placeholder">
-                Nenhuma imagem registrada.
+            <div class="evidence-placeholder">
+                Nenhuma evidência registrada.
             </div>
         @endif
     </div>

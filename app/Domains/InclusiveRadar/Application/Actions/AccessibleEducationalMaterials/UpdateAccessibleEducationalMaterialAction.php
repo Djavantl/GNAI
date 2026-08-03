@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Application\Actions\AccessibleEducationalMaterials;
 
 use App\Domains\InclusiveRadar\Application\Actions\Inspections\CreateInspectionAction;
-use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionImagesAction;
+use App\Domains\InclusiveRadar\Application\Actions\Inspections\AttachInspectionEvidencesAction;
 use App\Domains\InclusiveRadar\Application\Data\AccessibleEducationalMaterials\UpdateAccessibleEducationalMaterialData;
 use App\Domains\InclusiveRadar\Application\Policies\Inspections\InspectionRegistrationPolicy;
 use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterials\AccessibleEducationalMaterialAssetCodeExistsQuery;
@@ -22,7 +22,7 @@ final readonly class UpdateAccessibleEducationalMaterialAction
 {
     public function __construct(
         private CreateInspectionAction $createInspection,
-        private AttachInspectionImagesAction $attachInspectionImages,
+        private AttachInspectionEvidencesAction $attachInspectionEvidences,
         private InspectionRegistrationPolicy $inspectionRegistration,
         private AccessibleEducationalMaterialAssetCodeExistsQuery $assetCodeExists,
     ) {}
@@ -104,16 +104,16 @@ final readonly class UpdateAccessibleEducationalMaterialAction
         });
 
         if ($inspection instanceof Inspection) {
-            $this->attachInspectionImages->execute(
+            $this->attachInspectionEvidences->execute(
                 inspection: $inspection,
-                images: $data->inspection->images,
+                evidences: $data->inspection->evidences,
             );
         }
 
         return $updatedMaterial->fresh([
             'deficiencies',
             'accessibilityFeatures',
-            'inspections.images',
+            'inspections.evidences',
         ]);
     }
 }

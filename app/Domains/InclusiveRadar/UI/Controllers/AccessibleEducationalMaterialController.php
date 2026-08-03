@@ -17,8 +17,9 @@ use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterial
 use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterials\ShowAccessibleEducationalMaterialQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Http\Controllers\Controller;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,9 +27,9 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class AccessibleEducationalMaterialController extends Controller
+final class AccessibleEducationalMaterialController
 {
-    public function index(ListAccessibleEducationalMaterialsData $filters,ListAccessibleEducationalMaterialsQuery $query,Request $request): View
+    public function index(ListAccessibleEducationalMaterialsData $filters, ListAccessibleEducationalMaterialsQuery $query, Request $request): View
     {
         $materials = $query->execute($filters);
 
@@ -41,7 +42,10 @@ final class AccessibleEducationalMaterialController extends Controller
 
         return view(
             'pages.inclusive-radar.accessible-educational-materials.index',
-            compact('materials'),
+            [
+                'materials' => $materials,
+                'accessibilityFeatureOptions' => $this->accessibilityFeatureOptions(),
+            ],
         );
     }
 
@@ -129,8 +133,9 @@ final class AccessibleEducationalMaterialController extends Controller
             'pages.inclusive-radar.accessible-educational-materials.pdf',
             compact('material'),
         )
-            ->setPaper('a4', 'portrait')
-            ->setOption(['enable_php' => true]);
+            ->setPaper('a4', 'portrait');
+
+        PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("MPA_{$material->name}.pdf");
     }
@@ -146,5 +151,21 @@ final class AccessibleEducationalMaterialController extends Controller
             'material' => $material,
             'inspection' => $scopedInspection,
         ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function accessibilityFeatureOptions(): array
+    {
+        return ['' => 'Recurso de acessibilidade (Todos)']
+            + AccessibilityFeature::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->pluck('name', 'id')
+                ->mapWithKeys(
+                    static fn (string $name, int $id): array => [(string) $id => $name],
+                )
+                ->all();
     }
 }

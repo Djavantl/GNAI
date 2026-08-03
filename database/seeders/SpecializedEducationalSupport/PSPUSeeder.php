@@ -2,14 +2,13 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\SpecializedEducationalSupport\Person;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\SpecializedEducationalSupport\Professional;
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Position;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use App\Models\SpecializedEducationalSupport\Position;
 
 class PSPUSeeder extends Seeder
 {

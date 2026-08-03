@@ -66,14 +66,8 @@
                 <x-forms.select
                     name="gender"
                     label="Gênero"
-                    :options="[
-                        'not_specified' => 'Não informado',
-                        'male' => 'Masculino',
-                        'female' => 'Feminino',
-                        'other' => 'Outro'
-                    ]"
-                    :value="old('gender', $professional->person->gender)"
-                    :selected="old('gender', $professional->person->gender)"
+                    :options="$genders"
+                    :selected="old('gender', $professional->person->gender?->value)"
                     required
                 />
             </div>
@@ -104,6 +98,7 @@
                     rows="2"
                     name="address"
                     label="Endereço"
+                    maxlength="500"
                     :value="old('address', $professional->person->address)"
                 />
             </div>
@@ -125,8 +120,19 @@
                 <x-forms.input 
                     name="registration" 
                     label="Matrícula " 
+                    maxlength="50"
                     required 
                     :value="old('registration', $professional->registration)" 
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input
+                    name="entry_date"
+                    label="Data de Ingresso"
+                    type="date"
+                    required
+                    :value="old('entry_date', optional($professional->entry_date)->format('Y-m-d'))"
                 />
             </div>
 
@@ -134,12 +140,8 @@
                 <x-forms.select
                     name="status"
                     label="Status"
-                    :options="[
-                        'active' => 'Ativo',
-                        'inactive' => 'Inativo'
-                    ]"
-                    :value="old('status', $professional->status)"
-                    :selected="old('status', $professional->status)"
+                    :options="$professionalStatuses"
+                    :selected="old('status', $professional->status?->value ?? $defaultStatus)"
                     required
                 />
             </div>

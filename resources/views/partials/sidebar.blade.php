@@ -31,7 +31,7 @@
             </a>
         </li>
 
-        <li class="menu-divider">Atendimento AEE</li>
+        <li class="menu-divider">Atendimento e Acompanhamento</li>
 
         @can('student.view')
         <li class="nav-item">
@@ -83,24 +83,24 @@
             <a href="{{ auth()->user()->is_admin
                     ? route('specialized-educational-support.sessions.index')
                     : route('specialized-educational-support.sessions.my-sessions') }}"
-            class="{{ (request()->routeIs(['specialized-educational-support.sessions.*', 'specialized-educational-support.session-records.*']) && !request()->routeIs('specialized-educational-support.session-records.my-records')) ? 'active' : '' }}">
+            class="{{ (request()->routeIs(['specialized-educational-support.sessions.*', 'specialized-educational-support.aee-records.*']) && !request()->routeIs('specialized-educational-support.aee-records.my-records')) ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-calendar-check"></i></span>
                 <span class="text">Agendamentos</span>
             </a>
         </li>   
         @endcanany
 
-        @can('session-record.view-own')
+        @can('aee-record.view-own')
         <li>
-            <a href="{{ route('specialized-educational-support.session-records.my-records') }}"
-            class="{{ request()->routeIs('specialized-educational-support.session-records.my-records') ? 'active' : '' }}">
+            <a href="{{ route('specialized-educational-support.aee-records.my-records') }}"
+            class="{{ request()->routeIs('specialized-educational-support.aee-records.my-records') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-journal-check"></i></span>
-                <span class="text">Atendimentos AEE</span>
+                <span class="text">Atendimentos Especializados</span>
             </a>
         </li>
         @endcan
 
-        @can('session-record.view-own')
+        @can('pedagogical-record.view-own')
         <li>
             <a href="{{ route('specialized-educational-support.pedagogical-records.my-records') }}"
             class="{{ request()->routeIs('specialized-educational-support.pedagogical-records.*') ? 'active' : '' }}">
