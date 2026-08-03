@@ -26,7 +26,7 @@
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.pedagogical-records.pdf', $pedagogicalRecord)" />
 
-            @can('session-record.update')
+            @can('pedagogical-record.update')
                 @if($canManageRecord)
                     <x-buttons.link-button :href="route('specialized-educational-support.pedagogical-records.edit', $pedagogicalRecord)" variant="warning">
                         <i class="fas fa-edit"></i> Editar
@@ -99,7 +99,7 @@
             @endif
 
             <footer class="col-12 border-top p-4 d-flex flex-wrap justify-content-end gap-2 bg-light-subtle">
-                @can('session-record.delete')
+                @can('pedagogical-record.delete')
                     @if($canManageRecord)
                         <x-buttons.submit-button
                             type="button"

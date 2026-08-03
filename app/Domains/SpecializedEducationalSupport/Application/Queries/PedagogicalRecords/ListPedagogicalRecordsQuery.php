@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords;
+
+use App\Domains\Auth\Domain\Models\User;
+use App\Domains\SpecializedEducationalSupport\Application\Data\PedagogicalRecords\ListPedagogicalRecordsData;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
+final class ListPedagogicalRecordsQuery
+{
+    public function execute(ListPedagogicalRecordsData $filters, User $user, ?Student $student = null): LengthAwarePaginator
+    {
+        return PedagogicalRecord::query()
+            ->with([
+                'attendanceSession.students.person',
+                'attendanceSession.professional.person',
+            ])
+            ->whereHas('attendanceSession', fn ($session) => $session->where('professional_id', $user->professional_id ?? 0))
+            ->when($student !== null, fn ($query) => $query->whereHas('attendanceSession.students', fn ($students) => $students->where('students.id', $student->getKey())))
+            ->when($student === null && $filters->student !== null, fn ($query) => $query->whereHas('attendanceSession.students', fn ($students) => $students->where('students.id', $filters->student)))
+            ->orderByDesc('id')
+            ->paginate($filters->perPage, ['*'], $student === null ? 'page' : 'pedagogical_page')
+            ->withQueryString();
+    }
+}

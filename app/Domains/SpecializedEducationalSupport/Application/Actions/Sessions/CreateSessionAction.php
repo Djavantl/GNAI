@@ -8,6 +8,8 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\Sessions\CreateSe
 use App\Domains\SpecializedEducationalSupport\Application\Services\Sessions\SessionNotificationSender;
 use App\Domains\SpecializedEducationalSupport\Application\Services\Sessions\SessionSchedulingValidator;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Sessions\CreateSessionDTO;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -32,8 +34,8 @@ final readonly class CreateSessionAction
             'session_date' => $data->sessionDate,
             'start_time' => $data->startTime,
             'end_time' => $data->endTime,
-            'attendance_type' => $data->attendanceType,
-            'type' => $data->type,
+            'attendance_type' => $data->attendanceType->value,
+            'type' => $data->type->value,
             'location' => $data->location,
             'session_objective' => $data->sessionObjective,
         ]);
@@ -65,8 +67,8 @@ final readonly class CreateSessionAction
                     sessionDate: (string) $payload['session_date'],
                     startTime: (string) $payload['start_time'],
                     endTime: (string) $payload['end_time'],
-                    type: (string) $payload['type'],
-                    attendanceType: (string) $payload['attendance_type'],
+                    type: SessionType::from((string) $payload['type']),
+                    attendanceType: AttendanceType::from((string) $payload['attendance_type']),
                     location: (string) $payload['location'],
                     sessionObjective: (string) $payload['session_objective'],
                 );
@@ -75,7 +77,7 @@ final readonly class CreateSessionAction
                 $session->save();
                 $session->students()->sync($payload['student_ids']);
 
-                return $session->fresh(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']);
+                return $session->fresh(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
             });
         } finally {
             try {

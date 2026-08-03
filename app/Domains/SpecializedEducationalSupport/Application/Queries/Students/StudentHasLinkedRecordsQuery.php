@@ -23,7 +23,7 @@ final readonly class StudentHasLinkedRecordsQuery
             || $student->studentCourses()->exists()
             || $student->documents()->exists()
             || $student->sessions()->exists()
-            || $student->sessionEvaluations()->exists()
+            || $student->aeeEvaluations()->exists()
             || DB::table('loans')->where('student_id', $student->getKey())->exists()
             || DB::table('waitlists')->where('student_id', $student->getKey())->exists();
     }

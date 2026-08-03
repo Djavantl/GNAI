@@ -26,7 +26,7 @@ final class SessionFormQuery
     public function forUpdate(Session $session): array
     {
         return $this->timeOptions() + [
-            'session' => $session->load(['students.person', 'professional.person', 'sessionRecord', 'pedagogicalRecord']),
+            'session' => $session->load(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']),
         ];
     }
 

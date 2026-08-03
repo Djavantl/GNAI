@@ -11,8 +11,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidSession;
-use App\Models\SpecializedEducationalSupport\PedagogicalRecord;
-use App\Models\SpecializedEducationalSupport\SessionRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -41,6 +39,7 @@ final class Session extends Model
 
     protected $casts = [
         'session_date' => 'date',
+        'attendance_type' => AttendanceType::class,
     ];
 
     /**
@@ -56,7 +55,7 @@ final class Session extends Model
             'session_date' => $data->sessionDate,
             'start_time' => $data->startTime,
             'end_time' => $data->endTime,
-            'type' => $data->type,
+            'type' => $data->type->value,
             'attendance_type' => $data->attendanceType,
             'location' => $data->location,
             'session_objective' => $data->sessionObjective,
@@ -77,7 +76,7 @@ final class Session extends Model
             'session_date' => $data->sessionDate,
             'start_time' => $data->startTime,
             'end_time' => $data->endTime,
-            'type' => $data->type,
+            'type' => $data->type->value,
             'attendance_type' => $data->attendanceType,
             'location' => $data->location,
             'session_objective' => $data->sessionObjective,
@@ -113,7 +112,7 @@ final class Session extends Model
         ]);
     }
 
-    public static function typeForAttendance(string $attendanceType, string $type): string
+    public static function typeForAttendance(AttendanceType|string $attendanceType, string $type): string
     {
         if (AttendanceType::isPedagogical($attendanceType)) {
             return SessionType::INDIVIDUAL->value;
@@ -122,7 +121,7 @@ final class Session extends Model
         return $type;
     }
 
-    public static function acceptsStudentCountForAttendance(string $attendanceType, int $studentCount): bool
+    public static function acceptsStudentCountForAttendance(AttendanceType|string $attendanceType, int $studentCount): bool
     {
         return ! AttendanceType::isPedagogical($attendanceType) || $studentCount === 1;
     }
@@ -132,7 +131,7 @@ final class Session extends Model
      *
      * @throws InvalidSession
      */
-    public static function ensureAttendanceTypeAcceptsStudents(string $attendanceType, array $studentIds): void
+    public static function ensureAttendanceTypeAcceptsStudents(AttendanceType|string $attendanceType, array $studentIds): void
     {
         if (! self::acceptsStudentCountForAttendance($attendanceType, count($studentIds))) {
             throw new InvalidSession('Atendimentos pedagógicos devem possuir exatamente um aluno.');
@@ -141,20 +140,20 @@ final class Session extends Model
 
     public function hasLinkedAttendanceRecord(): bool
     {
-        return $this->sessionRecord()->exists() || $this->pedagogicalRecord()->exists();
+        return $this->aeeRecord()->exists() || $this->pedagogicalRecord()->exists();
     }
 
-    public function canChangeAttendanceTypeTo(string $attendanceType): bool
+    public function canChangeAttendanceTypeTo(AttendanceType|string $attendanceType): bool
     {
-        $currentType = $this->attendance_type ?? AttendanceType::AEE->value;
+        $currentType = AttendanceType::valueOf($this->attendance_type);
 
-        return $currentType === $attendanceType || ! $this->hasLinkedAttendanceRecord();
+        return $currentType === AttendanceType::valueOf($attendanceType) || ! $this->hasLinkedAttendanceRecord();
     }
 
     /**
      * @throws InvalidSession
      */
-    public function ensureCanChangeAttendanceTypeTo(string $attendanceType): void
+    public function ensureCanChangeAttendanceTypeTo(AttendanceType|string $attendanceType): void
     {
         if (! $this->canChangeAttendanceTypeTo($attendanceType)) {
             throw new InvalidSession('Não é possível alterar o tipo de atendimento de um agendamento que já possui registro vinculado.');
@@ -181,9 +180,9 @@ final class Session extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function sessionRecord(): HasOne
+    public function aeeRecord(): HasOne
     {
-        return $this->hasOne(SessionRecord::class, 'attendance_session_id');
+        return $this->hasOne(AeeRecord::class, 'attendance_session_id');
     }
 
     public function pedagogicalRecord(): HasOne

@@ -48,6 +48,7 @@ final class PositionFormQuery
                 return $translation !== "permissions.entities.{$prefix}"
                     ? $translation
                     : ucfirst($prefix);
-            });
+            })
+            ->sortKeys();
     }
 }

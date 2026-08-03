@@ -123,5 +123,5 @@
 </div>
 
 @push('scripts')
-    @vite(['resources/js/pages/specialized-educational-support/session-record-create.js'])
+    @vite(['resources/js/pages/specialized-educational-support/attendance-record-form.js'])
 @endpush

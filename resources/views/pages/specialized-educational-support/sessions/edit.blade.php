@@ -26,10 +26,10 @@
 
             {{-- Inputs Hidden Críticos para o Funcionamento --}}
             <input type="hidden" name="professional_id" value="{{ $session->professional_id }}">
-            @php($hasLinkedRecord = $session->sessionRecord || $session->pedagogicalRecord)
+            @php($hasLinkedRecord = $session->aeeRecord || $session->pedagogicalRecord)
             <input type="hidden" name="status" value="{{ $session->status }}">
             @if($hasLinkedRecord)
-                <input type="hidden" name="attendance_type" value="{{ $session->attendance_type ?? \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::AEE->value }}">
+                <input type="hidden" name="attendance_type" value="{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::valueOf($session->attendance_type) }}">
             @endif
             @foreach($session->students as $student)
                 <input type="hidden" name="student_ids[]" class="student-select-item" value="{{ $student->id }}">
@@ -64,7 +64,7 @@
                     label="Tipo de Atendimento"
                     required
                     :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::options()"
-                    :selected="old('attendance_type', $session->attendance_type ?? \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::AEE->value)"
+                    :selected="old('attendance_type', \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::valueOf($session->attendance_type))"
                     id="attendance_type"
                     :disabled="$hasLinkedRecord"
                 />

@@ -42,13 +42,13 @@
 
                                     $hasRecord = $isPedagogical
                                         ? (bool) $session->pedagogicalRecord
-                                        : (bool) $session->sessionRecord;
+                                        : (bool) $session->aeeRecord;
                                     $recordLabel = $hasRecord
                                         ? ($isPedagogical ? 'Atendimento Pedagógico registrado' : 'Atendimento AEE registrado')
                                         : 'Sem registro';
                                     $recordClass = $hasRecord
-                                        ? 'weekly-session-record weekly-session-record--done'
-                                        : 'weekly-session-record weekly-session-record--missing';
+                                        ? 'weekly-attendance-record weekly-attendance-record--done'
+                                        : 'weekly-attendance-record weekly-attendance-record--missing';
 
                                     $startTime = \Carbon\Carbon::parse($session->start_time)->format('H:i');
                                     $endTime = \Carbon\Carbon::parse($session->end_time)->format('H:i');

@@ -146,7 +146,7 @@ body.high-contrast .table-striped > tbody > tr:nth-of-type(odd) > * {
     color: #e0e0e0 !important;
 }
 
-/* ── 6. SESSÕES — CORES HARDCODED (session-records.css) ──── */
+/* ── 6. SESSÕES — CORES HARDCODED (attendance-records.css) ──── */
 body.high-contrast #students-list .list-group-item {
     color: #cccccc !important;
     background-color: #111111 !important;
@@ -229,10 +229,10 @@ body.high-contrast .weekly-agenda .weekly-session-professional,
 body.high-contrast .weekly-agenda .weekly-session-students {
     color: #cccccc !important;
 }
-body.high-contrast .weekly-agenda .weekly-session-record--missing {
+body.high-contrast .weekly-agenda .weekly-attendance-record--missing {
     color: #ffdd00 !important;
 }
-body.high-contrast .weekly-agenda .weekly-session-record--done {
+body.high-contrast .weekly-agenda .weekly-attendance-record--done {
     color: #00dd00 !important;
 }
 body.high-contrast .weekly-agenda .weekly-empty-state {
@@ -444,7 +444,7 @@ body.high-contrast .alert-info {
     border-color: #00aaaa !important;
     color: #00dddd !important;
 }
-/* Override do alert-danger hardcoded em session-records.css */
+/* Override do alert-danger hardcoded em attendance-records.css */
 body.high-contrast .alert-danger {
     background-color: #330000 !important;
     border: 1px solid #cc3333 !important;

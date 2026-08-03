@@ -6,6 +6,7 @@ namespace App\Domains\SpecializedEducationalSupport\Application\Services\Session
 
 use App\Domains\Auth\Application\Queries\Permissions\UserHasPermissionQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Sessions\DetectSessionConflictQuery;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidProfessional;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidSession;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
@@ -49,7 +50,7 @@ final readonly class SessionSchedulingValidator
     {
         $this->ensureAttendanceTypeAcceptsStudents($data);
         $this->ensureProfessionalIsActive((int) $data['professional_id']);
-        $this->ensureProfessionalCanCreateSessionRecords((int) $data['professional_id']);
+        $this->ensureProfessionalCanCreateAttendanceRecord((int) $data['professional_id'], (string) $data['attendance_type']);
         $this->ensureStudentsAreActive($data['student_ids']);
         $this->ensureNoConflict($data);
     }
@@ -62,7 +63,7 @@ final readonly class SessionSchedulingValidator
         $this->ensureCanChangeAttendanceType($session, (string) $data['attendance_type']);
         $this->ensureAttendanceTypeAcceptsStudents($data);
         $this->ensureProfessionalIsActive((int) $data['professional_id']);
-        $this->ensureProfessionalCanCreateSessionRecords((int) $data['professional_id']);
+        $this->ensureProfessionalCanCreateAttendanceRecord((int) $data['professional_id'], (string) $data['attendance_type']);
         $this->ensureStudentsAreActive($data['student_ids']);
         $this->ensureNoConflict($data, (int) $session->getKey());
     }
@@ -114,13 +115,14 @@ final readonly class SessionSchedulingValidator
         }
     }
 
-    private function ensureProfessionalCanCreateSessionRecords(int $professionalId): void
+    private function ensureProfessionalCanCreateAttendanceRecord(int $professionalId, string $attendanceType): void
     {
         $professional = Professional::with('position.permissions', 'person', 'user')->findOrFail($professionalId);
+        $permission = AttendanceType::isPedagogical($attendanceType) ? 'pedagogical-record.create' : 'aee-record.create';
 
         $canCreateRecords = $professional->user !== null
-            ? $this->userHasPermission->execute($professional->user, 'session-record.create')
-            : ($professional->position?->permissions?->contains('slug', 'session-record.create') ?? false);
+            ? $this->userHasPermission->execute($professional->user, $permission)
+            : ($professional->position?->permissions?->contains('slug', $permission) ?? false);
 
         if (! $canCreateRecords) {
             throw ValidationException::withMessages([

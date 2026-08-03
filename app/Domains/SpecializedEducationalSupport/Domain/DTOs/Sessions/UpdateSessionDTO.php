@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\DTOs\Sessions;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType;
+
 final readonly class UpdateSessionDTO
 {
     /**
@@ -15,8 +18,8 @@ final readonly class UpdateSessionDTO
         public string $sessionDate,
         public string $startTime,
         public string $endTime,
-        public string $type,
-        public string $attendanceType,
+        public SessionType $type,
+        public AttendanceType $attendanceType,
         public string $location,
         public string $sessionObjective,
         public string $status,
