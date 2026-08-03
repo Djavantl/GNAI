@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Teachers;
 
-use App\Models\Permission;
+use App\Domains\Auth\Domain\Models\Permission;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 

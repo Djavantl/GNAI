@@ -25,29 +25,29 @@
     @if(!$pedagogicalRecord->is_present)
         <x-pdf.text-area
             label="Motivo da Ausência"
-            :value="\App\Support\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->absence_reason ?? 'Não informado.'))"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->absence_reason ?? 'Não informado.'))"
         />
     @else
         <x-pdf.text-area
             label="Atividades Planejadas/Realizadas"
-            :value="\App\Support\RichTextSanitizer::sanitize((string) $pedagogicalRecord->planned_performed_activities)"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->planned_performed_activities)"
         />
 
         <x-pdf.text-area
             label="Registro Pedagógico"
-            :value="\App\Support\RichTextSanitizer::sanitize((string) $pedagogicalRecord->pedagogical_record)"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->pedagogical_record)"
         />
 
         <x-pdf.section-title title="Complementos" />
 
         <x-pdf.text-area
             label="Recursos Utilizados"
-            :value="\App\Support\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->resources_used ?? 'N/A'))"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->resources_used ?? 'N/A'))"
         />
 
         <x-pdf.text-area
             label="Observações Gerais"
-            :value="\App\Support\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->general_observations ?? 'N/A'))"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->general_observations ?? 'N/A'))"
         />
     @endif
 

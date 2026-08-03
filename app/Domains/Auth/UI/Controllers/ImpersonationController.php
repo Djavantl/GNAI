@@ -7,11 +7,10 @@ namespace App\Domains\Auth\UI\Controllers;
 use App\Domains\Auth\Application\Actions\Impersonation\LeaveImpersonationAction;
 use App\Domains\Auth\Application\Actions\Impersonation\StartImpersonationAction;
 use App\Domains\Auth\Domain\Models\User;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
-final class ImpersonationController extends Controller
+final class ImpersonationController
 {
     public function start(User $user, StartImpersonationAction $action, Request $request): RedirectResponse
     {

@@ -46,7 +46,7 @@ final class LoanOverdueNotification extends Notification
             'loan_id' => $loan->id,
             'title' => 'Empréstimo Atrasado',
             'message' => "O item '{$itemName}' está com o beneficiário {$beneficiary} e encontra-se atrasado há {$daysOverdue} dia(s).",
-            'url' => route('inclusive-radar.loans.show', $loan->id),
+            'url' => route('inclusive-radar.loans.show', $loan->id, absolute: false),
         ];
     }
 }

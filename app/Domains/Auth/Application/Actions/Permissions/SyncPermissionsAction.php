@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Application\Actions\Permissions;
 
-use App\Domains\Auth\Application\Permissions\PermissionRegistry;
 use App\Domains\Auth\Application\Permissions\PermissionCache;
+use App\Domains\Auth\Application\Permissions\PermissionRegistry;
 use App\Domains\Auth\Domain\DTOs\Permissions\PermissionDTO;
-use App\Models\Permission;
+use App\Domains\Auth\Domain\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 use Throwable;
@@ -20,9 +20,9 @@ final readonly class SyncPermissionsAction
     ) {}
 
     /**
-     * @throws Throwable
-     *
      * @return array{created: int, updated: int, deleted: int, total: int}
+     *
+     * @throws Throwable
      */
     public function execute(bool $prune = false): array
     {
@@ -44,26 +44,17 @@ final readonly class SyncPermissionsAction
                 ->get()
                 ->keyBy('slug');
 
-            $now = now();
+            foreach ($permissionsBySlug as $slug => $data) {
+                $permission = $existingPermissions->get($slug);
 
-            $newPermissions = $permissionsBySlug
-                ->reject(fn (PermissionDTO $permission): bool => $existingPermissions->has($permission->slug))
-                ->map(fn (PermissionDTO $permission): array => [
-                    'name' => $permission->name,
-                    'slug' => $permission->slug,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ])
-                ->values();
+                if ($permission === null) {
+                    Permission::register($data)->save();
+                    $created++;
 
-            if ($newPermissions->isNotEmpty()) {
-                Permission::query()->insert($newPermissions->all());
-                $created = $newPermissions->count();
-            }
+                    continue;
+                }
 
-            foreach ($existingPermissions as $permission) {
-                if (blank($permission->name)) {
-                    $permission->name = $permissionsBySlug->get($permission->slug)->name;
+                if ($permission->synchronize($data)) {
                     $permission->save();
                     $updated++;
                 }

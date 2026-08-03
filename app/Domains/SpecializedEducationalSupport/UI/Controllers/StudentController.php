@@ -18,8 +18,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\Stude
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentAeeEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +26,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class StudentController extends Controller
+final class StudentController
 {
     public function index(ListStudentsData $filters, ListStudentsQuery $query, Request $request): View
     {

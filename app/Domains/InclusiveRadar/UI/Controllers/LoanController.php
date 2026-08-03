@@ -17,8 +17,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Loans\LoanFormQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Loans\LoanPdfQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Loans\ShowLoanQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +25,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class LoanController extends Controller
+final class LoanController
 {
     public function index(ListLoansData $filters, ListLoansQuery $query, Request $request): View
     {

@@ -33,7 +33,7 @@ final class PendencyCompletedNotification extends Notification
             'title' => 'Pendência concluída',
             'message' => "A pendência '{$this->pendency->title}' foi concluída.",
             'pendency_id' => $this->pendency->id,
-            'url' => route('specialized-educational-support.pendencies.show', $this->pendency->id),
+            'url' => route('specialized-educational-support.pendencies.show', $this->pendency->id, absolute: false),
             'created_at' => now(),
         ];
     }

@@ -20,7 +20,7 @@
 
             if ($rich) {
                 $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $content = \App\Support\RichTextSanitizer::sanitize((string) $content);
+                $content = \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $content);
             }
 
             $maxHeight = $maxLines * 1.5; // altura baseada em line-height

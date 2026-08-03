@@ -8,17 +8,12 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentContexts\Create
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentContexts\UpdateStudentContextDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\ContextEvaluationType;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudentContext;
-use App\Models\AuditLog;
-use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class StudentContext extends Model
 {
-    use Auditable;
-
     protected $table = 'student_contexts';
 
     protected $fillable = [
@@ -158,72 +153,6 @@ final class StudentContext extends Model
         return $this->canBeManagedBy(
             $professionalId === null ? null : (int) $professionalId,
         );
-    }
-
-    public static function getAuditLabels(): array
-    {
-        return [
-            'semester_id' => 'Semestre da Avaliação',
-            'evaluation_type' => 'Tipo de Avaliação',
-            'is_current' => 'Contexto Atual',
-            'evaluated_by_professional_id' => 'Profissional Avaliador',
-            'history' => 'Histórico do Aluno',
-            'specific_educational_needs' => 'Necessidades Educacionais Específicas',
-            'learning_level' => 'Nível de Aprendizagem',
-            'attention_level' => 'Nível de Atenção',
-            'memory_level' => 'Nível de Memória',
-            'reasoning_level' => 'Nível de Raciocínio',
-            'learning_observations' => 'Observações de Aprendizagem',
-            'communication_type' => 'Tipo de Comunicação',
-            'interaction_level' => 'Nível de Interação',
-            'socialization_level' => 'Nível de Socialização',
-            'shows_aggressive_behavior' => 'Apresenta Comportamento Agressivo',
-            'shows_withdrawn_behavior' => 'Apresenta Comportamento Retraído',
-            'behavior_notes' => 'Notas Comportamentais',
-            'autonomy_level' => 'Nível de Autonomia',
-            'needs_mobility_support' => 'Necessita Apoio de Mobilidade',
-            'needs_communication_support' => 'Necessita Apoio de Comunicação',
-            'needs_pedagogical_adaptation' => 'Necessita Adaptação Pedagógica',
-            'uses_assistive_technology' => 'Usa Tecnologia Assistiva',
-            'has_medical_report' => 'Possui Laudo Médico',
-            'uses_medication' => 'Usa Medicação',
-            'medical_notes' => 'Notas Médicas',
-            'knowledge' => 'Conhecimentos e Interesses',
-            'difficulties' => 'Dificuldades',
-            'version' => 'Versão',
-        ];
-    }
-
-    public static function formatAuditValue(string $field, mixed $value): ?string
-    {
-        if (in_array($field, [
-            'is_current',
-            'shows_aggressive_behavior',
-            'shows_withdrawn_behavior',
-            'has_medical_report',
-            'uses_medication',
-        ], true)) {
-            return $value ? 'Sim' : 'Não';
-        }
-
-        if ($field === 'evaluation_type') {
-            return ContextEvaluationType::tryFrom((string) $value)?->label();
-        }
-
-        if ($field === 'semester_id') {
-            return Semester::find($value)?->label ?? "ID: {$value}";
-        }
-
-        if ($field === 'evaluated_by_professional_id') {
-            return Professional::find($value)?->person?->name ?? "ID: {$value}";
-        }
-
-        return null;
-    }
-
-    public function logs(): MorphMany
-    {
-        return $this->morphMany(AuditLog::class, 'auditable');
     }
 
     public function student(): BelongsTo

@@ -13,13 +13,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\Disciplines\Updat
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Disciplines\ListDisciplinesQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Disciplines\ShowDisciplineQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class DisciplineController extends Controller
+final class DisciplineController
 {
     public function index(ListDisciplinesData $filters, ListDisciplinesQuery $query, Request $request): View
     {

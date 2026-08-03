@@ -9,16 +9,11 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentDocuments\Creat
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentDocuments\UpdateStudentDocumentDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentDocumentType;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudentDocument;
-use App\Models\AuditLog;
-use App\Models\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class StudentDocument extends Model
 {
-    use Auditable;
-
     protected $table = 'student_documents';
 
     protected $fillable = [
@@ -60,48 +55,6 @@ final class StudentDocument extends Model
     public function revise(UpdateStudentDocumentDTO $data): void
     {
         $this->fill(self::attributesFrom($data));
-    }
-
-    public static function getAuditLabels(): array
-    {
-        return [
-            'title' => 'Título do Documento',
-            'type' => 'Tipo de Documento',
-            'original_name' => 'Nome do Arquivo',
-            'file_size' => 'Tamanho',
-            'semester_id' => 'Semestre Acadêmico',
-            'uploaded_by' => 'Responsável pelo Upload',
-        ];
-    }
-
-    public static function formatAuditValue(string $field, mixed $value): ?string
-    {
-        if ($field === 'type') {
-            $type = $value instanceof StudentDocumentType
-                ? $value
-                : StudentDocumentType::tryFrom((string) $value);
-
-            return $type?->label();
-        }
-
-        if ($field === 'file_size' && is_numeric($value)) {
-            return round((float) $value / 1024, 2).' KB';
-        }
-
-        if ($field === 'semester_id') {
-            return Semester::find($value)?->label ?? "ID: {$value}";
-        }
-
-        if ($field === 'uploaded_by') {
-            return User::find($value)?->name ?? "ID: {$value}";
-        }
-
-        return null;
-    }
-
-    public function logs(): MorphMany
-    {
-        return $this->morphMany(AuditLog::class, 'auditable');
     }
 
     public function student(): BelongsTo

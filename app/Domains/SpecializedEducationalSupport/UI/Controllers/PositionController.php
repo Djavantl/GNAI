@@ -15,13 +15,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Positions\List
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Positions\PositionFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Positions\ShowPositionQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Position;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class PositionController extends Controller
+final class PositionController
 {
     public function index(ListPositionsData $filters, ListPositionsQuery $query, Request $request): View
     {

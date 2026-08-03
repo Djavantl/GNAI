@@ -15,15 +15,14 @@ use App\Domains\InclusiveRadar\Application\Queries\InstitutionalEvents\ListInsti
 use App\Domains\InclusiveRadar\Application\Queries\InstitutionalEvents\ShowInstitutionalEventQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitutionalEvent;
 use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 
-final class InstitutionalEventController extends Controller
+final class InstitutionalEventController
 {
     public function index(ListInstitutionalEventsData $filters, ListInstitutionalEventsQuery $query, Request $request): View
     {

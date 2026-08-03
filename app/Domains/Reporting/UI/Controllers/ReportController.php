@@ -10,13 +10,12 @@ use App\Domains\Reporting\Application\Data\RunReportData;
 use App\Domains\Reporting\Application\Queries\GetReportMetadataQuery;
 use App\Domains\Reporting\Application\Queries\ListReportSourcesQuery;
 use App\Domains\Reporting\Domain\Exceptions\ReportingException;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ReportController extends Controller
+final class ReportController
 {
     public function index(): View
     {

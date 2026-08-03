@@ -63,7 +63,7 @@ $boolStrong = fn ($value) =>
 
 $renderHtml = fn ($value) =>
     filled($value)
-        ? \App\Support\RichTextSanitizer::sanitize((string) $value)
+        ? \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $value)
         : '<span class="text-muted">---</span>';
 
 $renderText = fn ($value) =>

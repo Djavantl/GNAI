@@ -38,7 +38,7 @@ final class NewPendencyNotification extends Notification
             'message' => 'Você foi atribuído(a) a uma nova pendência.',
             'assigned_by' => $pendency->creator?->name,
             'priority' => $pendency->priority?->value,
-            'url' => route('specialized-educational-support.pendencies.show', $pendency->id),
+            'url' => route('specialized-educational-support.pendencies.show', $pendency->id, absolute: false),
             'created_at' => $pendency->created_at?->toDateTimeString(),
         ];
     }

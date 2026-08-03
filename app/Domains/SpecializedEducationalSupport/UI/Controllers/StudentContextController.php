@@ -20,7 +20,6 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentContext
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentContexts\StudentContextPdfQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentContext;
-use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,7 +27,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class StudentContextController extends Controller
+final class StudentContextController
 {
     public function index(ListStudentContextsData $filters, Student $student, ListStudentContextsQuery $query, StudentContextFilterOptionsQuery $filterOptions, Request $request): View
     {

@@ -9,13 +9,12 @@ use App\Domains\Auth\Application\Data\Profiles\UpdateProfileData;
 use App\Domains\Auth\Application\Queries\Profiles\EditProfileQuery;
 use App\Domains\Auth\Application\Resolvers\AuthenticatedUserResolver;
 use App\Domains\Auth\Domain\Exceptions\InvalidProfile;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class ProfileController extends Controller
+final class ProfileController
 {
     public function edit(
         EditProfileQuery $query,

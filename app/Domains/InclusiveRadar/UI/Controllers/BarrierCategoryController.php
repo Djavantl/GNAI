@@ -13,13 +13,12 @@ use App\Domains\InclusiveRadar\Application\Data\BarrierCategories\UpdateBarrierC
 use App\Domains\InclusiveRadar\Application\Queries\BarrierCategories\ListBarrierCategoriesQuery;
 use App\Domains\InclusiveRadar\Application\Queries\BarrierCategories\ShowBarrierCategoryQuery;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class BarrierCategoryController extends Controller
+final class BarrierCategoryController
 {
     public function index(ListBarrierCategoriesData $filters, ListBarrierCategoriesQuery $query, Request $request): View
     {

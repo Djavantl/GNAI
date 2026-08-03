@@ -58,7 +58,7 @@
         @if(!$loop->first) <div class="pdf-page-break"></div> @endif
 
         <div class="pdf-subject-header">
-            <strong>Aluno(a): {!! \App\Support\RichTextSanitizer::sanitize((string) ($evaluation->student->person->name ?? '---')) !!}</strong>
+            <strong>Aluno(a): {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($evaluation->student->person->name ?? '---')) !!}</strong>
             @if(!$evaluation->is_present)
                 <span class="pdf-status-danger"> — Ausente</span>
             @endif

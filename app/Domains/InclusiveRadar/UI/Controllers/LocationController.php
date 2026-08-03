@@ -15,12 +15,11 @@ use App\Domains\InclusiveRadar\Application\Queries\Locations\LocationFormQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Locations\ShowLocationQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLocation;
 use App\Domains\InclusiveRadar\Domain\Models\Location;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final class LocationController extends Controller
+final class LocationController
 {
     public function index(ListLocationsData $filters, ListLocationsQuery $query, Request $request): View
     {

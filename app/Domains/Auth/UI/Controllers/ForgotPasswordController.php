@@ -6,12 +6,11 @@ namespace App\Domains\Auth\UI\Controllers;
 
 use App\Domains\Auth\Application\Actions\Passwords\SendPasswordResetLinkAction;
 use App\Domains\Auth\Application\Data\Passwords\SendPasswordResetLinkData;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
 
-final class ForgotPasswordController extends Controller
+final class ForgotPasswordController
 {
     public function showForm(): View
     {

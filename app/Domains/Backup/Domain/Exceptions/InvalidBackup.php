@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Domain\Exceptions;
 
-use App\Exceptions\BusinessRuleException;
+use App\Shared\Domain\Exceptions\BusinessRuleException;
 
 final class InvalidBackup extends BusinessRuleException
 {

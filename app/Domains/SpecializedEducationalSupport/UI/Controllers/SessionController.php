@@ -26,7 +26,6 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Sessions\Weekl
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +33,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class SessionController extends Controller
+final class SessionController
 {
     /**
      * @throws Throwable

@@ -17,9 +17,8 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRec
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\ShowPedagogicalRecordQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
-use App\Exceptions\AccessDeniedException;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Application\Exceptions\AccessDeniedException;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +26,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class PedagogicalRecordController extends Controller
+final class PedagogicalRecordController
 {
     public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
     {

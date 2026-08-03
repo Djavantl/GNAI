@@ -15,14 +15,13 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDocumen
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDocument;
 use App\Domains\SpecializedEducationalSupport\Infrastructure\Storage\StudentDocumentStorage;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
-final class StudentDocumentController extends Controller
+final class StudentDocumentController
 {
     public function index(Student $student, ListStudentDocumentsData $filters, ListStudentDocumentsQuery $query, StudentDocumentFormQuery $form, Request $request): View
     {

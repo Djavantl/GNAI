@@ -104,7 +104,7 @@
             <td class="pdf-cell" colspan="2">
                 <strong>Parecer Técnico</strong>
                 <div class="long-text">
-                    {!! \App\Support\RichTextSanitizer::sanitize((string) ($lastInspection->description ?: 'Sem descrição registrada.')) !!}
+                    {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($lastInspection->description ?: 'Sem descrição registrada.')) !!}
                 </div>
             </td>
         </tr>

@@ -26,8 +26,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PeiDiscipline;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -36,7 +35,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class PeiController extends Controller
+final class PeiController
 {
     /**
      * @throws Throwable

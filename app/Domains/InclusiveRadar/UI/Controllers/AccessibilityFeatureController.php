@@ -14,12 +14,11 @@ use App\Domains\InclusiveRadar\Application\Queries\AccessibilityFeatures\ListAcc
 use App\Domains\InclusiveRadar\Application\Queries\AccessibilityFeatures\ShowAccessibilityFeatureQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibilityFeature;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final class AccessibilityFeatureController extends Controller
+final class AccessibilityFeatureController
 {
     public function index(ListAccessibilityFeaturesData $filters, ListAccessibilityFeaturesQuery $query, Request $request): View
     {

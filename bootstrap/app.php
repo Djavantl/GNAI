@@ -1,9 +1,9 @@
 <?php
 
 use App\Domains\Auth\UI\Middleware\EnsureUserIsAdmin;
-use App\Exceptions\AccessDeniedException;
-use App\Exceptions\BusinessRuleException;
-use App\Http\Middleware\SanitizeRichTextInput;
+use App\Shared\Application\Exceptions\AccessDeniedException;
+use App\Shared\Domain\Exceptions\BusinessRuleException;
+use App\Shared\Infrastructure\Http\Middleware\SanitizeRichTextInput;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;

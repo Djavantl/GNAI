@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Domain\Exceptions;
 
-use App\Exceptions\AccessDeniedException;
+use App\Shared\Application\Exceptions\AccessDeniedException;
 
 final class InvalidImpersonation extends AccessDeniedException
 {

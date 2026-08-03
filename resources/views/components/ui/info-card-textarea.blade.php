@@ -24,7 +24,7 @@
             $content = trim($slot) !== ''
                 ? $slot->toHtml()
                 : ($value ?? $empty);
-            $content = \App\Support\RichTextSanitizer::sanitize((string) $content);
+            $content = \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $content);
         @endphp
 
         <div
