@@ -10,13 +10,12 @@ use App\Domains\Notifications\Application\Actions\MarkNotificationAsReadAction;
 use App\Domains\Notifications\Application\Queries\CountUnreadNotificationsQuery;
 use App\Domains\Notifications\Application\Queries\ListNotificationsQuery;
 use App\Domains\Notifications\Application\Queries\ListRecentNotificationsQuery;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final class NotificationController extends Controller
+final class NotificationController
 {
     public function index(
         ListNotificationsQuery $query,

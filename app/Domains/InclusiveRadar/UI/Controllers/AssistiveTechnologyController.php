@@ -18,8 +18,7 @@ use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ShowAss
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +26,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class AssistiveTechnologyController extends Controller
+final class AssistiveTechnologyController
 {
     public function index(ListAssistiveTechnologiesData $filters, ListAssistiveTechnologiesQuery $query, Request $request): View
     {

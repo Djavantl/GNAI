@@ -20,13 +20,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Teachers\Teach
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Teachers\TeacherFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Teachers\TeacherPermissionsFormQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class TeacherController extends Controller
+final class TeacherController
 {
     public function index(ListTeachersData $filters, ListTeachersQuery $query, Request $request): View
     {

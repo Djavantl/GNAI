@@ -16,13 +16,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentCourses
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentCourses\StudentCourseFormQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class StudentCourseController extends Controller
+final class StudentCourseController
 {
     public function index(
         ListStudentCoursesData $filters,

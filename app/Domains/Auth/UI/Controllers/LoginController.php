@@ -10,12 +10,11 @@ use App\Domains\Auth\Application\Data\Sessions\LoginData;
 use App\Domains\Auth\Domain\Exceptions\InactiveProfessionalAccount;
 use App\Domains\Auth\Domain\Exceptions\InvalidCredentials;
 use App\Domains\Auth\Domain\Exceptions\UserWithoutAccess;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-final class LoginController extends Controller
+final class LoginController
 {
     public function showLoginForm(): View
     {

@@ -52,7 +52,7 @@ final class LoanableItemAvailableNotification extends Notification
             'waitlist_id' => $waitlist->id,
             'title' => 'Próximo da fila disponível',
             'message' => "O item '{$itemName}' está disponível para o beneficiário: {$beneficiaryName}. Realize o empréstimo.",
-            'url' => route('inclusive-radar.loans.create', $loanCreationParameters),
+            'url' => route('inclusive-radar.loans.create', $loanCreationParameters, absolute: false),
         ];
     }
 }

@@ -16,13 +16,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDeficie
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDeficiencies\StudentDeficiencyFormQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDeficiency;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class StudentDeficiencyController extends Controller
+final class StudentDeficiencyController
 {
     public function index(
         ListStudentDeficienciesData $filters,

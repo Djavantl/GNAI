@@ -10,8 +10,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\Enums\Gender;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidPerson;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Cpf;
 use App\Domains\SpecializedEducationalSupport\Domain\ValueObjects\Phone;
-use App\Models\AuditLog;
-use App\Models\Traits\Auditable;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\PersonFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -20,13 +18,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Throwable;
 
 #[UseFactory(PersonFactory::class)]
 final class Person extends Model
 {
-    use Auditable;
     use HasFactory;
 
     protected $table = 'people';
@@ -63,37 +59,6 @@ final class Person extends Model
         $this->fill(self::attributesFrom($data));
     }
 
-    public static function getAuditLabels(): array
-    {
-        return [
-            'name' => 'Nome Completo',
-            'document' => 'CPF/Documento',
-            'birth_date' => 'Data de Nascimento',
-            'gender' => 'Gênero',
-            'email' => 'E-mail',
-            'phone' => 'Telefone',
-            'address' => 'Endereço',
-            'photo' => 'Foto de Perfil',
-        ];
-    }
-
-    public static function formatAuditValue(string $field, mixed $value): ?string
-    {
-        if ($field === 'gender') {
-            $gender = $value instanceof Gender
-                ? $value
-                : Gender::tryFrom((string) $value);
-
-            return $gender?->label() ?? (string) $value;
-        }
-
-        if ($field === 'birth_date' && filled($value)) {
-            return CarbonImmutable::parse($value)->format('d/m/Y');
-        }
-
-        return null;
-    }
-
     public function getGenderLabelAttribute(): string
     {
         return $this->gender->label();
@@ -124,11 +89,6 @@ final class Person extends Model
     public function guardians(): HasMany
     {
         return $this->hasMany(Guardian::class, 'person_id');
-    }
-
-    public function logs(): MorphMany
-    {
-        return $this->morphMany(AuditLog::class, 'auditable');
     }
 
     protected function document(): Attribute

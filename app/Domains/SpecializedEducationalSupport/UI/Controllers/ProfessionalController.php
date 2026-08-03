@@ -15,13 +15,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\ProfessionalFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\ShowProfessionalQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class ProfessionalController extends Controller
+final class ProfessionalController
 {
     public function index(ListProfessionalsData $filters, ListProfessionalsQuery $query, ProfessionalFormQuery $form, Request $request): View
     {

@@ -19,8 +19,7 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,7 +27,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class AccessibleEducationalMaterialController extends Controller
+final class AccessibleEducationalMaterialController
 {
     public function index(ListAccessibleEducationalMaterialsData $filters, ListAccessibleEducationalMaterialsQuery $query, Request $request): View
     {

@@ -19,6 +19,6 @@
     <h2>{{ $title }}</h2>
 
     @if($subtitle)
-        <p>{!! \App\Support\RichTextSanitizer::sanitize((string) $subtitle) !!}</p>
+        <p>{!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $subtitle) !!}</p>
     @endif
 </div>

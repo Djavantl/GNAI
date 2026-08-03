@@ -8,7 +8,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Guardians\CreateGuardi
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Guardians\UpdateGuardianDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\GuardianRelationship;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidGuardian;
-use App\Models\Traits\Reportable;
 use Database\Factories\Domains\SpecializedEducationalSupport\GuardianFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class Guardian extends Model
 {
     use HasFactory;
-    use Reportable;
 
     protected $table = 'student_guardians';
 
@@ -69,44 +67,6 @@ final class Guardian extends Model
     public function relationshipLabel(): string
     {
         return $this->relationship->label();
-    }
-
-    public static function getEmbeddedRelations(): array
-    {
-        return ['person'];
-    }
-
-    public static function getReportLabel(): string
-    {
-        return 'Responsáveis';
-    }
-
-    public static function getReportColumns(): array
-    {
-        return [
-            'person.name',
-            'relationship',
-            'person.email',
-            'person.document',
-            'person.birth_date',
-            'person.gender',
-            'person.phone',
-            'person.address',
-        ];
-    }
-
-    public static function getReportColumnLabels(): array
-    {
-        return [
-            'person.name' => 'Nome do Responsável',
-            'relationship' => 'Relação com aluno',
-            'person.email' => 'E-mail',
-            'person.document' => 'CPF',
-            'person.birth_date' => 'Data de Nascimento',
-            'person.gender' => 'Gênero',
-            'person.phone' => 'Telefone',
-            'person.address' => 'Endereço',
-        ];
     }
 
     public function student(): BelongsTo

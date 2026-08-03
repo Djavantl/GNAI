@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Positions;
 
+use App\Domains\Auth\Domain\Models\Permission;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Position;
-use App\Models\Permission;
 use Illuminate\Support\Collection;
 
 final class PositionFormQuery

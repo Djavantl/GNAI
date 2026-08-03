@@ -14,13 +14,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\Deficiencies\Upda
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Deficiencies\ListDeficienciesQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Deficiencies\ShowDeficiencyQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class DeficiencyController extends Controller
+final class DeficiencyController
 {
     public function index(
         ListDeficienciesData $filters,

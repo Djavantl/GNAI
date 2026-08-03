@@ -11,7 +11,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Professionals\CreatePr
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Professionals\UpdateProfessionalDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\ProfessionalStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidProfessional;
-use App\Models\Traits\Reportable;
 use Carbon\CarbonImmutable;
 use Database\Factories\Domains\SpecializedEducationalSupport\ProfessionalFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -25,7 +24,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 final class Professional extends Model
 {
     use HasFactory;
-    use Reportable;
 
     protected $table = 'professionals';
 
@@ -126,47 +124,6 @@ final class Professional extends Model
                 "O profissional {$this->person->name} não está ativo e não pode realizar esta ação."
             );
         }
-    }
-
-    public static function getEmbeddedRelations(): array
-    {
-        return ['person'];
-    }
-
-    public static function getReportLabel(): string
-    {
-        return 'Profissionais';
-    }
-
-    public static function getReportColumns(): array
-    {
-        return [
-            'person.name',
-            'registration',
-            'status',
-            'entry_date',
-            'person.email',
-            'person.document',
-            'person.birth_date',
-            'person.gender',
-            'person.phone',
-            'person.address',
-        ];
-    }
-
-    public static function getReportColumnLabels(): array
-    {
-        return [
-            'registration' => 'Matrícula',
-            'person.name' => 'Nome do Profissional',
-            'entry_date' => 'Data de Ingresso',
-            'person.email' => 'E-mail',
-            'person.document' => 'CPF',
-            'person.birth_date' => 'Data de Nascimento',
-            'person.gender' => 'Gênero',
-            'person.phone' => 'Telefone',
-            'person.address' => 'Endereço',
-        ];
     }
 
     public function person(): BelongsTo

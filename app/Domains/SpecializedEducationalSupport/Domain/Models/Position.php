@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Auth\Domain\Models\Permission;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Positions\CreatePositionDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Positions\UpdatePositionDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidPosition;
-use App\Models\Permission;
 use Database\Factories\Domains\SpecializedEducationalSupport\PositionFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,7 +50,7 @@ final class Position extends Model
     }
 
     /**
-     * @param list<int> $permissionIds
+     * @param  list<int>  $permissionIds
      *
      * @throws InvalidPosition
      */

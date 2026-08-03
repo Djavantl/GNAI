@@ -20,14 +20,13 @@ use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Domain\Exceptions\InvalidBackup;
 use App\Domains\Backup\Domain\Exceptions\InvalidBackupRestoreConfirmation;
 use App\Domains\Backup\Domain\Models\Backup;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
-final class BackupController extends Controller
+final class BackupController
 {
     public function index(
         ListBackupsData $filters,

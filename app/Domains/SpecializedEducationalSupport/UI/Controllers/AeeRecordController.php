@@ -23,9 +23,8 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeRecord;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeStudentEvaluation;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Exceptions\AccessDeniedException;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Application\Exceptions\AccessDeniedException;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,7 +32,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class AeeRecordController extends Controller
+final class AeeRecordController
 {
     public function index(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, Request $request): View
     {

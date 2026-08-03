@@ -15,13 +15,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Guardians\List
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Guardians\ShowGuardianQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Guardian;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class GuardianController extends Controller
+final class GuardianController
 {
     public function index(Student $student, ListGuardiansData $filters, ListGuardiansQuery $query, GuardianFormQuery $form, Request $request): View
     {

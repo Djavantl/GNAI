@@ -14,13 +14,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Courses\Course
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Courses\ListCoursesQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Courses\ShowCourseQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class CourseController extends Controller
+final class CourseController
 {
     public function index(ListCoursesData $filters, ListCoursesQuery $query, Request $request): View
     {

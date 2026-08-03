@@ -7,7 +7,7 @@ namespace App\Domains\Reporting\Application\Actions;
 use App\Domains\Reporting\Application\Data\RunReportData;
 use App\Domains\Reporting\Application\Services\ReportCatalog;
 use App\Domains\Reporting\Domain\Exceptions\ReportingException;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;

@@ -17,8 +17,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Barriers\ShowBarrierInspectio
 use App\Domains\InclusiveRadar\Application\Queries\Barriers\ShowBarrierQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
-use App\Http\Controllers\Controller;
-use App\Support\PdfPageNumberer;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +25,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
 
-final class BarrierController extends Controller
+final class BarrierController
 {
     public function index(ListBarriersData $filters, ListBarriersQuery $query, Request $request): View
     {

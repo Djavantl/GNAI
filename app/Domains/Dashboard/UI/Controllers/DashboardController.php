@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Domains\Dashboard\UI\Controllers;
 
 use App\Domains\Dashboard\Application\Queries\DashboardMetricsQuery;
-use App\Http\Controllers\Controller;
 use Illuminate\View\View;
 
-final class DashboardController extends Controller
+final class DashboardController
 {
     public function index(DashboardMetricsQuery $query): View
     {

@@ -18,13 +18,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\Pen
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\PendencyFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\ShowPendencyQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class PendencyController extends Controller
+final class PendencyController
 {
     public function index(ListPendenciesData $filters, ListPendenciesQuery $query, PendencyFilterOptionsQuery $filterOptions, Request $request): View
     {

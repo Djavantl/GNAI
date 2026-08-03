@@ -14,13 +14,12 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\Semesters\UpdateS
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Semesters\ListSemestersQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Semesters\ShowSemesterQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-final class SemesterController extends Controller
+final class SemesterController
 {
     public function index(ListSemestersData $filters, ListSemestersQuery $query, Request $request): View
     {

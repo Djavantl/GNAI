@@ -110,7 +110,7 @@
                                             <h5 class="mb-1">Aluno Ausente</h5>
                                             <p class="mb-0">
                                                 <strong>Motivo:</strong>
-                                                {!! \App\Support\RichTextSanitizer::sanitize((string) ($evaluation->absence_reason ?? 'Não justificado.')) !!}
+                                                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($evaluation->absence_reason ?? 'Não justificado.')) !!}
                                             </p>
                                         </div>
                                     </div>
