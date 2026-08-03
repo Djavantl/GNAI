@@ -7,7 +7,6 @@ namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Teachers\CreateTeacherDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Teachers\UpdateTeacherDTO;
-use App\Models\SpecializedEducationalSupport\TeacherCourseDiscipline;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
