@@ -170,6 +170,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('students/{student}/aee-records/{evaluation}/pdf', [AeeRecordController::class, 'studentPdf'])->name('students.aee-records.pdf')->middleware('can:aee-record.view');
 
     /* 8.1 PEDAGOGICAL RECORDS */
+    Route::get('pedagogical-records', [PedagogicalRecordController::class, 'index'])
+        ->name('pedagogical-records.index')
+        ->middleware('can:pedagogical-record.view-all');
     Route::get('my-pedagogical-records', [PedagogicalRecordController::class, 'myRecords'])
         ->name('pedagogical-records.my-records')
         ->middleware('can:pedagogical-record.view-own');

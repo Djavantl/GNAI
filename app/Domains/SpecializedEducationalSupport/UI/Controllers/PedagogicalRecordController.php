@@ -28,11 +28,21 @@ use Throwable;
 
 final class PedagogicalRecordController
 {
-    public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function index(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
     {
         $pedagogicalRecords = $query->execute($filters, $this->user($request));
         if ($request->ajax()) {
-            return view('pages.specialized-educational-support.pedagogical-records.partials.my-table', compact('pedagogicalRecords'));
+            return view('pages.specialized-educational-support.pedagogical-records.partials.table', compact('pedagogicalRecords'));
+        }
+
+        return view('pages.specialized-educational-support.pedagogical-records.index', compact('pedagogicalRecords') + $options->execute());
+    }
+
+    public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    {
+        $pedagogicalRecords = $query->execute($filters, $this->user($request), onlyOwn: true);
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.pedagogical-records.partials.table', compact('pedagogicalRecords'));
         }
 
         return view('pages.specialized-educational-support.pedagogical-records.my-records', compact('pedagogicalRecords') + $options->execute());
