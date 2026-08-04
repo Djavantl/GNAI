@@ -3,6 +3,8 @@
 namespace Database\Seeders\SpecializedEducationalSupport;
 
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\PedagogicalDisciplineCategory;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\PedagogicalFollowUpStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -48,18 +50,25 @@ class PedagogicalRecordSeeder extends Seeder
             DB::transaction(function () use ($session): void {
                 $isPresent = random_int(1, 100) > 15;
 
-                DB::table('pedagogical_records')->insert([
+                $recordId = DB::table('pedagogical_records')->insertGetId([
                     'attendance_session_id' => $session->id,
+                    'follow_up_reason' => 'Necessidade de acompanhamento do desempenho acadêmico e da participação escolar do estudante.',
+                    'follow_up_status' => $this->randomFollowUpStatus()->value,
                     'duration' => '1 hora',
                     'is_present' => $isPresent,
                     'absence_reason' => $isPresent ? null : $this->randomAbsenceReason(),
-                    'planned_performed_activities' => $isPresent ? 'Atividades de acompanhamento da aprendizagem planejadas conforme as necessidades do aluno.' : null,
-                    'pedagogical_record' => $isPresent ? 'O aluno participou das atividades propostas e apresentou evolução durante o atendimento.' : null,
-                    'resources_used' => $isPresent ? 'Material didático adaptado, recursos visuais e atividades impressas.' : null,
-                    'general_observations' => $isPresent ? 'O atendimento ocorreu conforme o planejamento pedagógico.' : null,
+                    'systematic_pedagogical_follow_up_record' => $isPresent ? 'O aluno participou das atividades propostas e apresentou evolução durante o acompanhamento.' : null,
+                    'strategies_and_resources_adopted' => $isPresent ? 'Material didático adaptado, recursos visuais, atividades impressas e mediação individualizada.' : null,
+                    'school_attendance_status' => $isPresent ? 'Frequência regular, sem ausências recorrentes no período.' : null,
+                    'referrals_made' => $isPresent ? 'Orientação aos docentes e contato com a equipe pedagógica para acompanhamento.' : null,
+                    'complementary_observations' => $isPresent ? 'O atendimento ocorreu conforme o planejamento pedagógico.' : null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                if ($isPresent) {
+                    $this->seedDisciplines($recordId, (int) $session->id);
+                }
 
                 DB::table('attendance_sessions')->where('id', $session->id)->update([
                     'status' => SessionStatus::COMPLETED_DATABASE_VALUE,
@@ -83,5 +92,54 @@ class PedagogicalRecordSeeder extends Seeder
         ];
 
         return $reasons[array_rand($reasons)];
+    }
+
+    private function randomFollowUpStatus(): PedagogicalFollowUpStatus
+    {
+        $statuses = PedagogicalFollowUpStatus::cases();
+
+        return $statuses[array_rand($statuses)];
+    }
+
+    private function seedDisciplines(int $recordId, int $sessionId): void
+    {
+        $studentId = DB::table('attendance_session_student')
+            ->where('attendance_session_id', $sessionId)
+            ->value('student_id');
+        $courseId = DB::table('student_courses')
+            ->where('student_id', $studentId)
+            ->where('is_current', true)
+            ->value('course_id');
+        $disciplineIds = DB::table('course_disciplines')
+            ->where('course_id', $courseId)
+            ->pluck('discipline_id')
+            ->shuffle()
+            ->values();
+        $now = now();
+        $rows = [];
+
+        if ($disciplineIds->isNotEmpty()) {
+            $rows[] = [
+                'pedagogical_record_id' => $recordId,
+                'discipline_id' => $disciplineIds->first(),
+                'category' => PedagogicalDisciplineCategory::FAILED->value,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        foreach ($disciplineIds->slice(1, 2) as $disciplineId) {
+            $rows[] = [
+                'pedagogical_record_id' => $recordId,
+                'discipline_id' => $disciplineId,
+                'category' => PedagogicalDisciplineCategory::AT_ACADEMIC_RISK->value,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if ($rows !== []) {
+            DB::table('pedagogical_record_disciplines')->insert($rows);
+        }
     }
 }

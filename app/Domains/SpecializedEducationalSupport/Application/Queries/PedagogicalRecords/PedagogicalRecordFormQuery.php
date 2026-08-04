@@ -14,21 +14,41 @@ final class PedagogicalRecordFormQuery
 {
     public function forCreation(Session $session, int $professionalId): array
     {
-        $session->load(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
+        $session->load([
+            'students.person',
+            'students.currentCourse.course.disciplines',
+            'professional.person',
+            'aeeRecord',
+            'pedagogicalRecord',
+        ]);
         if ((int) $session->professional_id !== $professionalId || ! AttendanceType::isPedagogical($session->attendance_type) || ! SessionStatus::isScheduledValue($session->status) || $session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
             throw new InvalidPedagogicalRecord('Este agendamento não está disponível para criação de registro pedagógico.');
         }
 
-        return compact('session');
+        return $this->formData($session) + compact('session');
     }
 
     public function forUpdate(PedagogicalRecord $pedagogicalRecord, int $professionalId): array
     {
-        $pedagogicalRecord->load(['attendanceSession.students.person', 'attendanceSession.professional.person']);
+        $pedagogicalRecord->load([
+            'attendanceSession.students.person',
+            'attendanceSession.students.currentCourse.course.disciplines',
+            'attendanceSession.professional.person',
+            'failedDisciplines',
+            'atRiskDisciplines',
+        ]);
         if ((int) $pedagogicalRecord->attendanceSession->professional_id !== $professionalId) {
             throw new InvalidPedagogicalRecord('Apenas o profissional vinculado pode editar este registro pedagógico.');
         }
 
-        return compact('pedagogicalRecord');
+        return $this->formData($pedagogicalRecord->attendanceSession) + compact('pedagogicalRecord');
+    }
+
+    private function formData(Session $session): array
+    {
+        $currentCourse = $session->students->first()?->currentCourse?->course;
+        $disciplines = $currentCourse?->disciplines?->sortBy('name')->values() ?? collect();
+
+        return compact('currentCourse', 'disciplines');
     }
 }

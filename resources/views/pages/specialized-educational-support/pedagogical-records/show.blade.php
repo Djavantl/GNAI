@@ -1,7 +1,9 @@
 @extends('layouts.master')
 
 @section('content')
-    @php($session = $pedagogicalRecord->attendanceSession)
+    @php
+        $session = $pedagogicalRecord->attendanceSession;
+    @endphp
 
     <div class="mb-5">
         <x-breadcrumb :items="[
@@ -21,7 +23,9 @@
             </p>
         </div>
 
-        @php($canManageRecord = auth()->user()?->professional?->id === $session->professional_id)
+        @php
+            $canManageRecord = auth()->user()?->professional?->id === $session->professional_id;
+        @endphp
 
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             <x-buttons.pdf-button class="ms-3" :href="route('specialized-educational-support.pedagogical-records.pdf', $pedagogicalRecord)" />
@@ -42,7 +46,7 @@
 
     <div class="custom-table-card bg-white shadow-sm overflow-hidden">
         <div class="row g-0">
-            <x-forms.section title="Identificação" />
+            <x-forms.section title="Identificação do Estudante" />
 
             <x-show.info-item label="Aluno" column="col-md-6" isBox="true">
                 {{ $session->students->first()?->person?->name ?? 'Aluno não informado' }}
@@ -52,17 +56,29 @@
                 {{ $session->professional?->person?->name ?? 'Profissional não informado' }}
             </x-show.info-item>
 
-            <x-show.info-item label="Duração" column="col-md-4" isBox="true">
-                {{ $pedagogicalRecord->duration }}
-            </x-show.info-item>
-
-            <x-show.info-item label="Horário" column="col-md-8" isBox="true">
+            <x-show.info-item label="Horário" column="col-md-12" isBox="true">
                 {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}
                 às
                 {{ $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--' }}
             </x-show.info-item>
 
-            <x-show.info-item label="Presença" column="col-md-12" isBox="true">
+            <x-forms.section title="Acompanhamento Pedagógico" />
+
+            <x-show.info-textarea label="Motivo do Acompanhamento" column="col-md-12" isBox="true">
+                {!! $pedagogicalRecord->follow_up_reason ?? 'Não informado.' !!}
+            </x-show.info-textarea>
+
+            <x-show.info-item label="Situação do Acompanhamento" column="col-md-4" isBox="true">
+                <span class="badge bg-{{ $pedagogicalRecord->follow_up_status->color() }}">
+                    {{ $pedagogicalRecord->follow_up_status->label() }}
+                </span>
+            </x-show.info-item>
+
+            <x-show.info-item label="Período/Duração do Acompanhamento" column="col-md-4" isBox="true">
+                {{ $pedagogicalRecord->duration }}
+            </x-show.info-item>
+
+            <x-show.info-item label="Presença do Estudante no Atendimento" column="col-md-4" isBox="true">
                 @if($pedagogicalRecord->is_present)
                     <span class="badge bg-success">
                         <i class="fas fa-check-circle me-1"></i> Presente
@@ -74,27 +90,45 @@
                 @endif
             </x-show.info-item>
 
-            <x-forms.section title="Execução do Atendimento Pedagógico" />
-
             @if(!$pedagogicalRecord->is_present)
                 <x-show.info-textarea label="Motivo da Ausência" column="col-md-12" isBox="true">
                     {!! $pedagogicalRecord->absence_reason ?? 'Não informado.' !!}
                 </x-show.info-textarea>
             @else
-                <x-show.info-textarea label="Atividades Planejadas/Realizadas" column="col-md-12" isBox="true">
-                    {!! $pedagogicalRecord->planned_performed_activities !!}
+                <x-show.info-textarea label="Registro do Acompanhamento Pedagógico Sistemático" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->systematic_pedagogical_follow_up_record !!}
                 </x-show.info-textarea>
 
-                <x-show.info-textarea label="Registro Pedagógico" column="col-md-12" isBox="true">
-                    {!! $pedagogicalRecord->pedagogical_record !!}
+                <x-show.info-textarea label="Estratégias e Recursos Adotados (quando necessário)" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->strategies_and_resources_adopted ?? 'N/A' !!}
                 </x-show.info-textarea>
 
-                <x-show.info-textarea label="Recursos Utilizados" column="col-md-6" isBox="true">
-                    {!! $pedagogicalRecord->resources_used ?? 'N/A' !!}
+                <x-show.info-textarea
+                    label="Disciplinas com Reprovação no Curso {{ $session->students->first()?->currentCourse?->course?->name ?? 'Atual do Estudante' }}"
+                    column="col-md-12"
+                    isBox="true"
+                >
+                    {{ $pedagogicalRecord->failedDisciplineNames ?: 'N/A' }}
                 </x-show.info-textarea>
 
-                <x-show.info-textarea label="Observações Gerais" column="col-md-6" isBox="true">
-                    {!! $pedagogicalRecord->general_observations ?? 'N/A' !!}
+                <x-show.info-textarea
+                    label="Disciplinas com Risco de Insucesso Acadêmico no Curso {{ $session->students->first()?->currentCourse?->course?->name ?? 'Atual do Estudante' }}"
+                    column="col-md-12"
+                    isBox="true"
+                >
+                    {{ $pedagogicalRecord->atRiskDisciplineNames ?: 'N/A' }}
+                </x-show.info-textarea>
+
+                <x-show.info-textarea label="Situação da Frequência Escolar" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->school_attendance_status ?? 'N/A' !!}
+                </x-show.info-textarea>
+
+                <x-show.info-textarea label="Encaminhamentos Realizados" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->referrals_made ?? 'N/A' !!}
+                </x-show.info-textarea>
+
+                <x-show.info-textarea label="Observações Complementares" column="col-md-12" isBox="true">
+                    {!! $pedagogicalRecord->complementary_observations ?? 'N/A' !!}
                 </x-show.info-textarea>
             @endif
 

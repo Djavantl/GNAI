@@ -2,6 +2,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const presenceToggles = document.querySelectorAll('.presence-toggle');
 
     presenceToggles.forEach(toggle => {
+        const clearInput = (input) => {
+            if (input.matches('input[type="checkbox"], input[type="radio"]')) {
+                input.checked = false;
+                return;
+            }
+
+            input.value = '';
+        };
+
         // Função para atualizar o estado inicial (caso venha do old() ou edição)
         const updateState = (checkbox) => {
             const index = checkbox.id.split('_')[1];
@@ -26,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 evalInputs.forEach(input => input.disabled = false);
                 absenceInputs.forEach(input => {
                     input.disabled = true;
-                    input.value = ''; // Limpa o valor se tinha algo
+                    clearInput(input);
                 });
 
                 if (tabButton) {
@@ -42,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Desabilita campos de avaliação e habilita os de falta
                 evalInputs.forEach(input => {
                     input.disabled = true;
-                    input.value = ''; // Limpa para não enviar lixo
+                    clearInput(input);
                 });
                 absenceInputs.forEach(input => input.disabled = false);
 

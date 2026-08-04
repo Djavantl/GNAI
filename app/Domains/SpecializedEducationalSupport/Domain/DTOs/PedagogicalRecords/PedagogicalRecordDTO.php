@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\DTOs\PedagogicalRecords;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\PedagogicalFollowUpStatus;
+
 final readonly class PedagogicalRecordDTO
 {
     public function __construct(
+        public string $followUpReason,
+        public PedagogicalFollowUpStatus $followUpStatus,
         public string $duration,
         public bool $isPresent,
         public ?string $absenceReason,
-        public ?string $plannedPerformedActivities,
-        public ?string $pedagogicalRecord,
-        public ?string $resourcesUsed,
-        public ?string $generalObservations,
+        public ?string $systematicPedagogicalFollowUpRecord,
+        public ?string $strategiesAndResourcesAdopted,
+        public ?string $schoolAttendanceStatus,
+        public ?string $referralsMade,
+        public ?string $complementaryObservations,
     ) {}
 }

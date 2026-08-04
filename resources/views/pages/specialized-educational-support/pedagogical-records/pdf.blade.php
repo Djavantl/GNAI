@@ -16,11 +16,30 @@
             'Agendamento' => '#' . $session->id,
             'Data' => $session->session_date->format('d/m/Y'),
             'Horário' => \Carbon\Carbon::parse($session->start_time)->format('H:i') . ' às ' . ($session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--'),
-            'Duração registrada' => $pedagogicalRecord->duration,
         ]"
     />
 
-    <x-pdf.section-title title="Planejamento e Execução" />
+    <x-pdf.section-title title="Acompanhamento Pedagógico" />
+
+    <x-pdf.text-area
+        label="Motivo do Acompanhamento"
+        :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->follow_up_reason ?? 'Não informado.'))"
+    />
+
+    <x-pdf.text-area
+        label="Situação do Acompanhamento"
+        :value="$pedagogicalRecord->follow_up_status->label()"
+    />
+
+    <x-pdf.text-area
+        label="Período/Duração do Acompanhamento"
+        :value="$pedagogicalRecord->duration"
+    />
+
+    <x-pdf.text-area
+        label="Presença do Estudante no Atendimento"
+        :value="$pedagogicalRecord->is_present ? 'Presente' : 'Ausente'"
+    />
 
     @if(!$pedagogicalRecord->is_present)
         <x-pdf.text-area
@@ -29,25 +48,38 @@
         />
     @else
         <x-pdf.text-area
-            label="Atividades Planejadas/Realizadas"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->planned_performed_activities)"
+            label="Registro do Acompanhamento Pedagógico Sistemático"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->systematic_pedagogical_follow_up_record)"
         />
 
         <x-pdf.text-area
-            label="Registro Pedagógico"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->pedagogical_record)"
-        />
-
-        <x-pdf.section-title title="Complementos" />
-
-        <x-pdf.text-area
-            label="Recursos Utilizados"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->resources_used ?? 'N/A'))"
+            label="Estratégias e Recursos Adotados (quando necessário)"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->strategies_and_resources_adopted ?? 'N/A'))"
         />
 
         <x-pdf.text-area
-            label="Observações Gerais"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->general_observations ?? 'N/A'))"
+            :label="'Disciplinas com Reprovação no Curso ' . ($student?->currentCourse?->course?->name ?? 'Atual do Estudante')"
+            :value="$pedagogicalRecord->failedDisciplineNames ?: 'N/A'"
+        />
+
+        <x-pdf.text-area
+            :label="'Disciplinas com Risco de Insucesso Acadêmico no Curso ' . ($student?->currentCourse?->course?->name ?? 'Atual do Estudante')"
+            :value="$pedagogicalRecord->atRiskDisciplineNames ?: 'N/A'"
+        />
+
+        <x-pdf.text-area
+            label="Situação da Frequência Escolar"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->school_attendance_status ?? 'N/A'))"
+        />
+
+        <x-pdf.text-area
+            label="Encaminhamentos Realizados"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->referrals_made ?? 'N/A'))"
+        />
+
+        <x-pdf.text-area
+            label="Observações Complementares"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->complementary_observations ?? 'N/A'))"
         />
     @endif
 
