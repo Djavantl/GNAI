@@ -72,9 +72,3 @@
         </tr>
     @endforelse
 </x-table.table>
-
-@if(method_exists($barriers, 'hasPages') && $barriers->hasPages())
-    <div class="mt-4 px-3">
-        {{ $barriers->links() }}
-    </div>
-@endif

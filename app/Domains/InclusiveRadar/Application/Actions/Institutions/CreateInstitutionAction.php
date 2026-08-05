@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Application\Actions\Institutions;
 
 use App\Domains\InclusiveRadar\Application\Data\Institutions\CreateInstitutionData;
-use App\Domains\InclusiveRadar\Application\Queries\Institutions\DuplicateInstitutionExistsQuery;
+use App\Domains\InclusiveRadar\Application\Queries\Institutions\InstitutionExistsQuery;
 use App\Domains\InclusiveRadar\Domain\DTOs\Institutions\CreateInstitutionDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitution;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
@@ -15,7 +15,7 @@ use Throwable;
 final readonly class CreateInstitutionAction
 {
     public function __construct(
-        private DuplicateInstitutionExistsQuery $duplicateInstitutionExists,
+        private InstitutionExistsQuery $institutionExists,
     ) {}
 
     /**
@@ -40,8 +40,8 @@ final readonly class CreateInstitutionAction
 
             $institution = Institution::register($institutionDTO);
 
-            if ($this->duplicateInstitutionExists->execute($data)) {
-                throw new InvalidInstitution('Já existe uma instituição cadastrada com esses dados.');
+            if ($this->institutionExists->execute($data)) {
+                throw new InvalidInstitution('Já existe uma instituição cadastrada.');
             }
 
             $institution->save();
