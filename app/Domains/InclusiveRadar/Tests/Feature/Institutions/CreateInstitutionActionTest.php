@@ -50,7 +50,7 @@ final class CreateInstitutionActionTest extends TestCase
         ]);
 
         $this->expectException(InvalidInstitution::class);
-        $this->expectExceptionMessage('Já existe uma instituição cadastrada com esses dados.');
+        $this->expectExceptionMessage('Já existe uma instituição cadastrada.');
 
         app(CreateInstitutionAction::class)->execute(
             new CreateInstitutionData(
