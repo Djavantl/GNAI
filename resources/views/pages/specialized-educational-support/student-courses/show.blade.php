@@ -21,12 +21,14 @@
 
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('student-course.update')
+            @if($studentCourse->is_current)
             <x-buttons.link-button
                 :href="route('specialized-educational-support.student-courses.edit', $studentCourse)"
                 variant="warning"
                 aria-label="Editar matrícula">
                 <i class="fas fa-edit me-1" aria-hidden="true"></i> Editar
             </x-buttons.link-button>
+            @endif
             @endcan
 
             <x-buttons.link-button
@@ -67,19 +69,39 @@
                 {!! nl2br(e($studentCourse->course->description ?? '—')) !!}
             </x-show.info-item>
 
-            <x-forms.section title="Disciplinas do Curso" />
+            <x-forms.section title="Acompanhamento Acadêmico no Curso" />
+
+            <x-show.info-textarea label="Situação da Frequência Escolar" column="col-md-12" isBox="true">
+                {!! $studentCourse->school_attendance_status ?? 'Não informada.' !!}
+            </x-show.info-textarea>
+
+            @foreach([
+                ['title' => 'Disciplinas com Reprovação', 'items' => $studentCourse->failedDisciplines, 'class' => 'bg-danger'],
+                ['title' => 'Disciplinas com Risco de Insucesso Acadêmico', 'items' => $studentCourse->atRiskDisciplines, 'class' => 'bg-warning text-dark'],
+            ] as $group)
+                <x-show.info-item :label="$group['title']" column="col-md-6" isBox="true">
+                    <div class="d-flex flex-wrap gap-2">
+                        @forelse($group['items'] as $discipline)
+                            <span class="badge {{ $group['class'] }}">{{ $discipline->name }}</span>
+                        @empty
+                            <span class="text-muted">Nenhuma.</span>
+                        @endforelse
+                    </div>
+                </x-show.info-item>
+            @endforeach
+
+            <x-forms.section title="Matriz Curricular" />
 
             <div class="col-12 p-4" aria-label="Lista de disciplinas do curso">
-                @forelse($studentCourse->course->disciplines as $discipline)
-                    <div class="border rounded p-3 mb-2">
-                        <strong>{{ $discipline->name }}</strong>
-                        <div class="text-muted small">
-                            {{ $discipline->description ?? 'Sem descrição' }}
-                        </div>
-                    </div>
-                @empty
-                    <div class="text-muted">Nenhuma disciplina vinculada ao curso.</div>
-                @endforelse
+                <div class="d-flex flex-wrap gap-2">
+                    @forelse($studentCourse->course->disciplines->sortBy('name') as $discipline)
+                        <span class="badge rounded-pill bg-light text-dark border px-3 py-2" title="{{ $discipline->description }}">
+                            {{ $discipline->name }}
+                        </span>
+                    @empty
+                        <span class="text-muted">Nenhuma disciplina vinculada ao curso.</span>
+                    @endforelse
+                </div>
             </div>
 
             <x-forms.section title="Informações do Sistema" />

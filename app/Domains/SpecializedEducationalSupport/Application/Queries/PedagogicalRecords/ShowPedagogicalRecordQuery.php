@@ -14,10 +14,7 @@ final class ShowPedagogicalRecordQuery
     {
         $pedagogicalRecord->load([
             'attendanceSession.students.person',
-            'attendanceSession.students.currentCourse.course',
             'attendanceSession.professional.person',
-            'failedDisciplines',
-            'atRiskDisciplines',
         ]);
         if (! $user->can('pedagogical-record.view-all') && (int) $pedagogicalRecord->attendanceSession->professional_id !== (int) $user->professional_id) {
             throw new InvalidPedagogicalRecord('Você não possui permissão para visualizar este registro pedagógico.');

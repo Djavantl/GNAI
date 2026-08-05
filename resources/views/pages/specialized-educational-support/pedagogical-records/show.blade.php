@@ -68,17 +68,11 @@
                 {!! $pedagogicalRecord->follow_up_reason ?? 'Não informado.' !!}
             </x-show.info-textarea>
 
-            <x-show.info-item label="Situação do Acompanhamento" column="col-md-4" isBox="true">
-                <span class="badge bg-{{ $pedagogicalRecord->follow_up_status->color() }}">
-                    {{ $pedagogicalRecord->follow_up_status->label() }}
-                </span>
-            </x-show.info-item>
-
-            <x-show.info-item label="Período/Duração do Acompanhamento" column="col-md-4" isBox="true">
+            <x-show.info-item label="Período/Duração do Acompanhamento" column="col-md-6" isBox="true">
                 {{ $pedagogicalRecord->duration }}
             </x-show.info-item>
 
-            <x-show.info-item label="Presença do Estudante no Atendimento" column="col-md-4" isBox="true">
+            <x-show.info-item label="Presença do Estudante no Atendimento" column="col-md-6" isBox="true">
                 @if($pedagogicalRecord->is_present)
                     <span class="badge bg-success">
                         <i class="fas fa-check-circle me-1"></i> Presente
@@ -101,26 +95,6 @@
 
                 <x-show.info-textarea label="Estratégias e Recursos Adotados (quando necessário)" column="col-md-12" isBox="true">
                     {!! $pedagogicalRecord->strategies_and_resources_adopted ?? 'N/A' !!}
-                </x-show.info-textarea>
-
-                <x-show.info-textarea
-                    label="Disciplinas com Reprovação no Curso {{ $session->students->first()?->currentCourse?->course?->name ?? 'Atual do Estudante' }}"
-                    column="col-md-12"
-                    isBox="true"
-                >
-                    {{ $pedagogicalRecord->failedDisciplineNames ?: 'N/A' }}
-                </x-show.info-textarea>
-
-                <x-show.info-textarea
-                    label="Disciplinas com Risco de Insucesso Acadêmico no Curso {{ $session->students->first()?->currentCourse?->course?->name ?? 'Atual do Estudante' }}"
-                    column="col-md-12"
-                    isBox="true"
-                >
-                    {{ $pedagogicalRecord->atRiskDisciplineNames ?: 'N/A' }}
-                </x-show.info-textarea>
-
-                <x-show.info-textarea label="Situação da Frequência Escolar" column="col-md-12" isBox="true">
-                    {!! $pedagogicalRecord->school_attendance_status ?? 'N/A' !!}
                 </x-show.info-textarea>
 
                 <x-show.info-textarea label="Encaminhamentos Realizados" column="col-md-12" isBox="true">

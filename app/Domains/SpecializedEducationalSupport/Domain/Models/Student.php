@@ -31,14 +31,12 @@ final class Student extends Model
         'person_id',
         'registration',
         'entry_date',
-        'is_repeater',
         'status',
     ];
 
     protected $casts = [
         'status' => StudentStatus::class,
         'entry_date' => 'date',
-        'is_repeater' => 'boolean',
     ];
 
     /**
@@ -146,7 +144,7 @@ final class Student extends Model
             'course_id',
         )
             ->using(StudentCourse::class)
-            ->withPivot(['academic_year', 'is_current'])
+            ->withPivot(['academic_year', 'is_current', 'school_attendance_status'])
             ->withTimestamps();
     }
 
@@ -192,7 +190,6 @@ final class Student extends Model
         return [
             'registration' => $data->registration->value(),
             'entry_date' => self::normalizeDate($data->entryDate),
-            'is_repeater' => $data->isRepeater,
             'status' => $data->status->value,
         ];
     }

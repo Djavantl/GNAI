@@ -6,10 +6,10 @@ namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Discipli
 
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
 
-final class DisciplineHasPedagogicalRecordsQuery
+final class DisciplineHasStudentCourseRecordsQuery
 {
     public function execute(Discipline $discipline): bool
     {
-        return $discipline->pedagogicalRecords()->exists();
+        return $discipline->studentCoursesWithAcademicRecords()->exists();
     }
 }

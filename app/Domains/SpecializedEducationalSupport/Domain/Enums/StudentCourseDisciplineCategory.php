@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Enums;
 
-enum PedagogicalDisciplineCategory: string
+enum StudentCourseDisciplineCategory: string
 {
     case FAILED = 'failed';
     case AT_ACADEMIC_RISK = 'at_academic_risk';

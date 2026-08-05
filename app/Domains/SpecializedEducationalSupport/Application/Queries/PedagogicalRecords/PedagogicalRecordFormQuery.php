@@ -16,7 +16,6 @@ final class PedagogicalRecordFormQuery
     {
         $session->load([
             'students.person',
-            'students.currentCourse.course.disciplines',
             'professional.person',
             'aeeRecord',
             'pedagogicalRecord',
@@ -25,30 +24,19 @@ final class PedagogicalRecordFormQuery
             throw new InvalidPedagogicalRecord('Este agendamento não está disponível para criação de registro pedagógico.');
         }
 
-        return $this->formData($session) + compact('session');
+        return compact('session');
     }
 
     public function forUpdate(PedagogicalRecord $pedagogicalRecord, int $professionalId): array
     {
         $pedagogicalRecord->load([
             'attendanceSession.students.person',
-            'attendanceSession.students.currentCourse.course.disciplines',
             'attendanceSession.professional.person',
-            'failedDisciplines',
-            'atRiskDisciplines',
         ]);
         if ((int) $pedagogicalRecord->attendanceSession->professional_id !== $professionalId) {
             throw new InvalidPedagogicalRecord('Apenas o profissional vinculado pode editar este registro pedagógico.');
         }
 
-        return $this->formData($pedagogicalRecord->attendanceSession) + compact('pedagogicalRecord');
-    }
-
-    private function formData(Session $session): array
-    {
-        $currentCourse = $session->students->first()?->currentCourse?->course;
-        $disciplines = $currentCourse?->disciplines?->sortBy('name')->values() ?? collect();
-
-        return compact('currentCourse', 'disciplines');
+        return compact('pedagogicalRecord');
     }
 }

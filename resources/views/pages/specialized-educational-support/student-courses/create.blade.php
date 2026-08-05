@@ -73,6 +73,55 @@
                 />
             </div>
 
+            <div id="academic-follow-up-fields" class="row g-3 m-0 p-0">
+                <x-forms.section title="Acompanhamento Acadêmico do Curso Atual" />
+
+                <div class="col-md-12">
+                    <x-forms.textarea
+                        name="school_attendance_status"
+                        label="Situação da Frequência Escolar"
+                        rows="3"
+                        placeholder="Descreva como está a frequência escolar do aluno neste curso..."
+                        :value="old('school_attendance_status')"
+                    />
+                </div>
+
+                @foreach($courses as $course)
+                    <div class="col-12 course-discipline-fields d-none" data-course-id="{{ $course->id }}">
+                        <div class="row g-3">
+                            @foreach([
+                                ['name' => 'failed_discipline_ids', 'title' => 'Disciplinas com Reprovação', 'color' => 'danger'],
+                                ['name' => 'at_risk_discipline_ids', 'title' => 'Disciplinas com Risco de Insucesso Acadêmico', 'color' => 'warning'],
+                            ] as $group)
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <h6 class="fw-bold text-{{ $group['color'] }} mb-3">{{ $group['title'] }}</h6>
+                                        @forelse($course->disciplines as $discipline)
+                                            <div class="form-check mb-2">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    name="{{ $group['name'] }}[]"
+                                                    value="{{ $discipline->id }}"
+                                                    id="{{ $group['name'] }}_{{ $course->id }}_{{ $discipline->id }}"
+                                                    {{ in_array((int) $discipline->id, array_map('intval', (array) old($group['name'], [])), true) ? 'checked' : '' }}
+                                                    disabled
+                                                >
+                                                <label class="form-check-label" for="{{ $group['name'] }}_{{ $course->id }}_{{ $discipline->id }}">
+                                                    {{ $discipline->name }}
+                                                </label>
+                                            </div>
+                                        @empty
+                                            <span class="text-muted">Nenhuma disciplina vinculada ao curso.</span>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
             <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button 
                     href="{{ route('specialized-educational-support.student-courses.history', $student) }}" 
@@ -91,3 +140,28 @@
         </x-forms.form-card>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const courseSelect = document.getElementById('course_id');
+            const currentSelect = document.getElementById('is_current');
+            const followUpFields = document.getElementById('academic-follow-up-fields');
+
+            const updateAcademicFields = () => {
+                const isCurrent = currentSelect?.value === '1';
+                followUpFields?.classList.toggle('d-none', !isCurrent);
+
+                document.querySelectorAll('.course-discipline-fields').forEach((container) => {
+                    const visible = isCurrent && container.dataset.courseId === courseSelect?.value;
+                    container.classList.toggle('d-none', !visible);
+                    container.querySelectorAll('input').forEach((input) => input.disabled = !visible);
+                });
+            };
+
+            courseSelect?.addEventListener('change', updateAcademicFields);
+            currentSelect?.addEventListener('change', updateAcademicFields);
+            updateAcademicFields();
+        });
+    </script>
+@endpush

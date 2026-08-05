@@ -17,6 +17,9 @@ final class UpdateStudentCourseData extends Data
         public int $courseId,
         public int $academicYear,
         public bool $isCurrent = false,
+        public ?string $schoolAttendanceStatus = null,
+        public array $failedDisciplineIds = [],
+        public array $atRiskDisciplineIds = [],
     ) {}
 
     public static function rules(): array
@@ -40,6 +43,11 @@ final class UpdateStudentCourseData extends Data
             ],
             'academic_year' => ['required', 'digits:4'],
             'is_current' => ['sometimes', 'boolean'],
+            'school_attendance_status' => ['nullable', 'string', 'max:100000'],
+            'failed_discipline_ids' => ['nullable', 'array'],
+            'failed_discipline_ids.*' => ['integer', 'distinct', 'exists:disciplines,id'],
+            'at_risk_discipline_ids' => ['nullable', 'array'],
+            'at_risk_discipline_ids.*' => ['integer', 'distinct', 'exists:disciplines,id'],
         ];
     }
 

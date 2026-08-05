@@ -161,7 +161,6 @@ final class ReportControllerTest extends TestCase
         Student::factory()->create([
             'registration' => 'MAT000001',
             'status' => StudentStatus::ACTIVE,
-            'is_repeater' => true,
         ]);
         Student::factory()->create([
             'registration' => 'MAT000002',
@@ -170,7 +169,7 @@ final class ReportControllerTest extends TestCase
 
         $response = $this->actingAs($this->admin())->postJson(route('reports.run'), [
             'source' => 'specialized-support.students',
-            'columns' => ['registration', 'status', 'is_repeater'],
+            'columns' => ['registration', 'status'],
             'filters' => [[
                 'field' => 'status',
                 'operator' => 'eq',
@@ -182,8 +181,7 @@ final class ReportControllerTest extends TestCase
             ->assertOk()
             ->assertJsonPath('total', 1)
             ->assertJsonPath('rows.0.registration', 'MAT000001')
-            ->assertJsonPath('rows.0.status', 'Ativo')
-            ->assertJsonPath('rows.0.is_repeater', 'Sim');
+            ->assertJsonPath('rows.0.status', 'Ativo');
     }
 
     public function test_students_metadata_exposes_reportable_relations(): void

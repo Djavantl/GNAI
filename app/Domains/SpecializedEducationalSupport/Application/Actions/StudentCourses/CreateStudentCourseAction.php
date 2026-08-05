@@ -62,6 +62,7 @@ final readonly class CreateStudentCourseAction
             $studentCourseDTO = new CreateStudentCourseDTO(
                 academicYear: $data->academicYear,
                 isCurrent: $data->isCurrent,
+                schoolAttendanceStatus: $data->isCurrent ? $data->schoolAttendanceStatus : null,
             );
 
             $studentCourse = StudentCourse::register(
@@ -79,7 +80,23 @@ final readonly class CreateStudentCourseAction
                 );
             }
 
-            return $studentCourse->load(['student.person', 'course']);
+            if ($data->isCurrent) {
+                $this->ensureDisciplinesBelongToCourse($course, $data->failedDisciplineIds, $data->atRiskDisciplineIds);
+                $studentCourse->syncFailedDisciplines($data->failedDisciplineIds);
+                $studentCourse->syncAtRiskDisciplines($data->atRiskDisciplineIds);
+            }
+
+            return $studentCourse->load(['student.person', 'course', 'failedDisciplines', 'atRiskDisciplines']);
         });
+    }
+
+    /** @param list<int> $failedIds @param list<int> $atRiskIds */
+    private function ensureDisciplinesBelongToCourse(Course $course, array $failedIds, array $atRiskIds): void
+    {
+        $allowedIds = $course->disciplines()->pluck('disciplines.id')->map(static fn (mixed $id): int => (int) $id)->all();
+
+        if (array_diff(array_map('intval', [...$failedIds, ...$atRiskIds]), $allowedIds) !== []) {
+            throw new InvalidStudentCourse('As disciplinas selecionadas devem pertencer ao curso do aluno.');
+        }
     }
 }

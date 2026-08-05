@@ -27,11 +27,6 @@
     />
 
     <x-pdf.text-area
-        label="Situação do Acompanhamento"
-        :value="$pedagogicalRecord->follow_up_status->label()"
-    />
-
-    <x-pdf.text-area
         label="Período/Duração do Acompanhamento"
         :value="$pedagogicalRecord->duration"
     />
@@ -55,21 +50,6 @@
         <x-pdf.text-area
             label="Estratégias e Recursos Adotados (quando necessário)"
             :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->strategies_and_resources_adopted ?? 'N/A'))"
-        />
-
-        <x-pdf.text-area
-            :label="'Disciplinas com Reprovação no Curso ' . ($student?->currentCourse?->course?->name ?? 'Atual do Estudante')"
-            :value="$pedagogicalRecord->failedDisciplineNames ?: 'N/A'"
-        />
-
-        <x-pdf.text-area
-            :label="'Disciplinas com Risco de Insucesso Acadêmico no Curso ' . ($student?->currentCourse?->course?->name ?? 'Atual do Estudante')"
-            :value="$pedagogicalRecord->atRiskDisciplineNames ?: 'N/A'"
-        />
-
-        <x-pdf.text-area
-            label="Situação da Frequência Escolar"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->school_attendance_status ?? 'N/A'))"
         />
 
         <x-pdf.text-area

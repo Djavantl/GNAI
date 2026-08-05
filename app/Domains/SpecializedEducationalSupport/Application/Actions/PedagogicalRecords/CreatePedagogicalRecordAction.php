@@ -21,7 +21,7 @@ final class CreatePedagogicalRecordAction
     {
         return DB::transaction(function () use ($data, $professionalId): PedagogicalRecord {
             $session = Session::query()->with([
-                'students.currentCourse.course.disciplines',
+                'students.person',
                 'aeeRecord',
                 'pedagogicalRecord',
             ])->lockForUpdate()->findOrFail($data->attendanceSessionId);
@@ -34,22 +34,13 @@ final class CreatePedagogicalRecordAction
             if ($session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
                 throw new InvalidPedagogicalRecord('O agendamento não está disponível para receber um registro pedagógico.');
             }
-            $this->ensureDisciplinesBelongToCurrentCourse(
-                $session,
-                $data->isPresent ? $data->failedDisciplineIds : [],
-                $data->isPresent ? $data->atRiskDisciplineIds : [],
-            );
             $record = PedagogicalRecord::register($session, $this->dto($data));
             $record->save();
-            $record->syncFailedDisciplines($data->isPresent ? $data->failedDisciplineIds : []);
-            $record->syncAtRiskDisciplines($data->isPresent ? $data->atRiskDisciplineIds : []);
             $session->update(['status' => SessionStatus::COMPLETED_DATABASE_VALUE]);
 
             return $record->load([
                 'attendanceSession.students.person',
                 'attendanceSession.professional.person',
-                'failedDisciplines',
-                'atRiskDisciplines',
             ]);
         });
     }
@@ -58,32 +49,13 @@ final class CreatePedagogicalRecordAction
     {
         return new PedagogicalRecordDTO(
             followUpReason: $data->followUpReason,
-            followUpStatus: $data->followUpStatus,
             duration: $data->duration,
             isPresent: $data->isPresent,
             absenceReason: $data->absenceReason,
             systematicPedagogicalFollowUpRecord: $data->systematicPedagogicalFollowUpRecord,
             strategiesAndResourcesAdopted: $data->strategiesAndResourcesAdopted,
-            schoolAttendanceStatus: $data->schoolAttendanceStatus,
             referralsMade: $data->referralsMade,
             complementaryObservations: $data->complementaryObservations,
         );
-    }
-
-    /**
-     * @param  list<int>  $failedDisciplineIds
-     * @param  list<int>  $atRiskDisciplineIds
-     */
-    private function ensureDisciplinesBelongToCurrentCourse(Session $session, array $failedDisciplineIds, array $atRiskDisciplineIds): void
-    {
-        $allowedIds = $session->students->first()?->currentCourse?->course?->disciplines
-            ?->pluck('id')
-            ->map(static fn (mixed $id): int => (int) $id)
-            ->all() ?? [];
-        $selectedIds = array_map('intval', [...$failedDisciplineIds, ...$atRiskDisciplineIds]);
-
-        if (array_diff($selectedIds, $allowedIds) !== []) {
-            throw new InvalidPedagogicalRecord('As disciplinas selecionadas devem pertencer ao curso atual do estudante.');
-        }
     }
 }

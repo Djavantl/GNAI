@@ -9,7 +9,6 @@
         @php
             $session = $record->attendanceSession;
             $student = $session?->students?->first();
-            $followUpStatus = $record->follow_up_status;
         @endphp
         <tr>
             <x-table.td :responsive="false">

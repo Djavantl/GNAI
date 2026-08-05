@@ -69,7 +69,6 @@ final class ListAttendanceRecordsQueryTest extends TestCase
             $table->id();
             $table->foreignId('attendance_session_id');
             $table->boolean('is_present');
-            $table->string('follow_up_status')->nullable();
             $table->string('duration')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -157,8 +156,8 @@ final class ListAttendanceRecordsQueryTest extends TestCase
             ['aee_record_id' => 2, 'student_id' => 1, 'is_present' => false, 'created_at' => $now, 'updated_at' => $now],
         ]);
         DB::table('pedagogical_records')->insert([
-            ['id' => 1, 'attendance_session_id' => 3, 'is_present' => false, 'follow_up_status' => 'ongoing', 'created_at' => $now, 'updated_at' => $now],
-            ['id' => 2, 'attendance_session_id' => 4, 'is_present' => true, 'follow_up_status' => 'completed', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 1, 'attendance_session_id' => 3, 'is_present' => false, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 2, 'attendance_session_id' => 4, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
         ]);
     }
 }

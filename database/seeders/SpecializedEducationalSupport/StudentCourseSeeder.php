@@ -29,12 +29,26 @@ class StudentCourseSeeder extends Seeder
             $courseId = ($index % 2 == 0) ? $courseInfo->id : $courseAdm->id;
 
             // Evita duplicados caso a seeder rode duas vezes
-            StudentCourse::updateOrCreate(
+            $studentCourse = StudentCourse::updateOrCreate(
                 ['student_id' => $student->id, 'course_id' => $courseId],
                 [
                     'academic_year' => 2026,
                     'is_current' => true,
+                    'school_attendance_status' => 'Frequência regular, sem ausências recorrentes no período.',
                 ]
+            );
+
+            $disciplineIds = $studentCourse->course
+                ->disciplines()
+                ->pluck('disciplines.id')
+                ->shuffle()
+                ->values();
+
+            $studentCourse->syncFailedDisciplines(
+                $disciplineIds->take(1)->map(static fn (mixed $id): int => (int) $id)->all()
+            );
+            $studentCourse->syncAtRiskDisciplines(
+                $disciplineIds->slice(1, 2)->map(static fn (mixed $id): int => (int) $id)->all()
             );
         }
     }

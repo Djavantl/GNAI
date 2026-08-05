@@ -41,17 +41,7 @@
     />
 </div>
 
-<div class="col-md-6">
-    <x-forms.select
-        name="follow_up_status"
-        label="Situação do Acompanhamento"
-        :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\PedagogicalFollowUpStatus::options()"
-        :selected="old('follow_up_status', $record?->follow_up_status?->value)"
-        required
-    />
-</div>
-
-<div class="col-md-6">
+<div class="col-md-12">
     <x-forms.input
         name="duration"
         label="Período/Duração do Acompanhamento"
@@ -109,105 +99,6 @@
             />
         </div>
 
-        @php
-            $failedDisciplineIds = array_map('intval', (array) old('failed_discipline_ids', $record?->failedDisciplines?->pluck('id')->all() ?? []));
-            $atRiskDisciplineIds = array_map('intval', (array) old('at_risk_discipline_ids', $record?->atRiskDisciplines?->pluck('id')->all() ?? []));
-        @endphp
-
-        <div class="col-md-12">
-            <label for="failed-discipline-search" class="form-label fw-bold text-purple-dark">
-                Disciplinas com Reprovação no Curso {{ $currentCourse?->name ?? 'Atual do Estudante' }}
-            </label>
-
-            @if($disciplines->isEmpty())
-                <p class="text-muted border rounded p-3 mb-3">
-                    O estudante não possui curso atual com disciplinas cadastradas.
-                </p>
-            @else
-                <input
-                    type="search"
-                    id="failed-discipline-search"
-                    class="form-control mb-3 discipline-search"
-                    data-target="failed-discipline-list"
-                    placeholder="Buscar disciplina com reprovação..."
-                    autocomplete="off"
-                >
-
-                <div class="row px-2 mb-3 discipline-list" id="failed-discipline-list">
-                    @foreach($disciplines as $discipline)
-                        <div class="col-md-4 mb-2 discipline-item" data-name="{{ mb_strtolower($discipline->name) }}">
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    name="failed_discipline_ids[]"
-                                    value="{{ $discipline->id }}"
-                                    id="failed_discipline_{{ $discipline->id }}"
-                                    {{ in_array((int) $discipline->id, $failedDisciplineIds, true) ? 'checked' : '' }}
-                                >
-                                <label class="form-check-label" for="failed_discipline_{{ $discipline->id }}">
-                                    {{ $discipline->name }}
-                                </label>
-                            </div>
-                        </div>
-                    @endforeach
-                    <p class="text-muted small d-none discipline-empty">Nenhuma disciplina encontrada.</p>
-                </div>
-            @endif
-        </div>
-
-        <div class="col-md-12">
-            <label for="at-risk-discipline-search" class="form-label fw-bold text-purple-dark">
-                Disciplinas com Risco de Insucesso Acadêmico no Curso {{ $currentCourse?->name ?? 'Atual do Estudante' }}
-            </label>
-
-            @if($disciplines->isEmpty())
-                <p class="text-muted border rounded p-3 mb-3">
-                    O estudante não possui curso atual com disciplinas cadastradas.
-                </p>
-            @else
-                <input
-                    type="search"
-                    id="at-risk-discipline-search"
-                    class="form-control mb-3 discipline-search"
-                    data-target="at-risk-discipline-list"
-                    placeholder="Buscar disciplina com risco acadêmico..."
-                    autocomplete="off"
-                >
-
-                <div class="row px-2 mb-3 discipline-list" id="at-risk-discipline-list">
-                    @foreach($disciplines as $discipline)
-                        <div class="col-md-4 mb-2 discipline-item" data-name="{{ mb_strtolower($discipline->name) }}">
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    name="at_risk_discipline_ids[]"
-                                    value="{{ $discipline->id }}"
-                                    id="at_risk_discipline_{{ $discipline->id }}"
-                                    {{ in_array((int) $discipline->id, $atRiskDisciplineIds, true) ? 'checked' : '' }}
-                                >
-                                <label class="form-check-label" for="at_risk_discipline_{{ $discipline->id }}">
-                                    {{ $discipline->name }}
-                                </label>
-                            </div>
-                        </div>
-                    @endforeach
-                    <p class="text-muted small d-none discipline-empty">Nenhuma disciplina encontrada.</p>
-                </div>
-            @endif
-        </div>
-
-        <div class="col-md-12">
-            <x-forms.textarea
-                name="school_attendance_status"
-                label="Situação da Frequência Escolar"
-                rows="3"
-                placeholder="Descreva a situação da frequência escolar..."
-                :value="old('school_attendance_status', $record?->school_attendance_status)"
-            />
-        </div>
-
         <div class="col-md-12">
             <x-forms.textarea
                 name="referrals_made"
@@ -245,23 +136,4 @@
 
 @push('scripts')
     @vite(['resources/js/pages/specialized-educational-support/attendance-record-form.js'])
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.discipline-search').forEach(function (searchInput) {
-                searchInput.addEventListener('input', function () {
-                    const term = this.value.toLocaleLowerCase('pt-BR').trim();
-                    const list = document.getElementById(this.dataset.target);
-                    let visibleItems = 0;
-
-                    list.querySelectorAll('.discipline-item').forEach(function (item) {
-                        const isVisible = item.dataset.name.includes(term);
-                        item.classList.toggle('d-none', !isVisible);
-                        visibleItems += isVisible ? 1 : 0;
-                    });
-
-                    list.querySelector('.discipline-empty').classList.toggle('d-none', visibleItems !== 0);
-                });
-            });
-        });
-    </script>
 @endpush

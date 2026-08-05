@@ -33,6 +33,10 @@ final readonly class UpdateStudentCourseAction
                 ->lockForUpdate()
                 ->findOrFail($studentCourse->getKey());
             $lockedStudentCourse->student->ensureIsActive();
+            $wasCurrent = $lockedStudentCourse->is_current;
+            if (! $wasCurrent) {
+                throw new InvalidStudentCourse('Cursos anteriores são históricos e não podem mais ser editados.');
+            }
 
             $course = Course::query()
                 ->findOrFail($data->courseId);
@@ -64,6 +68,7 @@ final readonly class UpdateStudentCourseAction
             $studentCourseDTO = new UpdateStudentCourseDTO(
                 academicYear: $data->academicYear,
                 isCurrent: $data->isCurrent,
+                schoolAttendanceStatus: $data->schoolAttendanceStatus,
             );
 
             $lockedStudentCourse->revise(
@@ -80,7 +85,23 @@ final readonly class UpdateStudentCourseAction
                 );
             }
 
-            return $lockedStudentCourse->load(['student.person', 'course']);
+            if ($wasCurrent) {
+                $this->ensureDisciplinesBelongToCourse($course, $data->failedDisciplineIds, $data->atRiskDisciplineIds);
+                $lockedStudentCourse->syncFailedDisciplines($data->failedDisciplineIds);
+                $lockedStudentCourse->syncAtRiskDisciplines($data->atRiskDisciplineIds);
+            }
+
+            return $lockedStudentCourse->load(['student.person', 'course', 'failedDisciplines', 'atRiskDisciplines']);
         });
+    }
+
+    /** @param list<int> $failedIds @param list<int> $atRiskIds */
+    private function ensureDisciplinesBelongToCourse(Course $course, array $failedIds, array $atRiskIds): void
+    {
+        $allowedIds = $course->disciplines()->pluck('disciplines.id')->map(static fn (mixed $id): int => (int) $id)->all();
+
+        if (array_diff(array_map('intval', [...$failedIds, ...$atRiskIds]), $allowedIds) !== []) {
+            throw new InvalidStudentCourse('As disciplinas selecionadas devem pertencer ao curso do aluno.');
+        }
     }
 }

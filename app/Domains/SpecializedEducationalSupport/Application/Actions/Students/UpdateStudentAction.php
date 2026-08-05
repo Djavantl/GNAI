@@ -70,7 +70,6 @@ final readonly class UpdateStudentAction
                     registration: Registration::from($data->registration),
                     status: $data->status,
                     entryDate: $data->entryDate,
-                    isRepeater: $data->isRepeater,
                 );
 
                 $lockedStudent->revise($studentDTO);
