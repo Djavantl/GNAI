@@ -61,15 +61,6 @@
                                     >
                                         <i class="fas fa-eye"></i>
                                     </x-buttons.link-button>
-
-                                    <x-buttons.link-button
-                                        :href="route('specialized-educational-support.pedagogical-records.pdf', $record)"
-                                        variant="secondary"
-                                        class="btn-sm"
-                                        target="_blank"
-                                    >
-                                        <i class="fas fa-file-pdf"></i>
-                                    </x-buttons.link-button>
                                 @endcan
                             </x-table.actions>
                         </x-table.td>
@@ -85,8 +76,19 @@
             </x-table.table>
         </div>
 
-        <div class="mt-3">
-            {{ $pedagogicalRecords->links() }}
-        </div>
+        @canany(['pedagogical-record.view-all', 'pedagogical-record.view-own'])
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 pt-3 border-top">
+                <small class="text-muted">
+                    São exibidos até 5 registros mais recentes. Para consultar todos, clique em “Gerenciar Registros”.
+                </small>
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.students.pedagogical-records.index', $student)"
+                    variant="warning"
+                    class="btn-sm"
+                >
+                    <i class="fas fa-folder-open"></i> Gerenciar Registros
+                </x-buttons.link-button>
+            </div>
+        @endcanany
     </div>
 </section>

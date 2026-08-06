@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Students;
 
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeStudentEvaluation;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 final class StudentAeeEvaluationsQuery
 {
     /**
-     * @return LengthAwarePaginator<int, AeeStudentEvaluation>
+     * @return Collection<int, AeeStudentEvaluation>
      */
-    public function execute(Student $student, ?User $user, int $perPage = 5): LengthAwarePaginator
+    public function execute(Student $student, ?User $user): Collection
     {
         $query = AeeStudentEvaluation::query()
             ->with('aeeRecord.attendanceSession.professional.person')
@@ -37,7 +37,7 @@ final class StudentAeeEvaluationsQuery
 
         return $query
             ->orderByDesc('id')
-            ->paginate($perPage)
-            ->withQueryString();
+            ->limit(5)
+            ->get();
     }
 }
