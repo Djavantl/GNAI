@@ -20,7 +20,7 @@ final class PedagogicalRecordFormQuery
             'aeeRecord',
             'pedagogicalRecord',
         ]);
-        if ((int) $session->professional_id !== $professionalId || ! AttendanceType::isPedagogical($session->attendance_type) || ! SessionStatus::isScheduledValue($session->status) || $session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
+        if ((int) $session->professional_id !== $professionalId || ! AttendanceType::isPedagogical($session->attendance_type) || ! SessionStatus::isScheduledValue($session->status) || ! $session->sessionDateHasArrived() || $session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
             throw new InvalidPedagogicalRecord('Este agendamento não está disponível para criação de registro pedagógico.');
         }
 

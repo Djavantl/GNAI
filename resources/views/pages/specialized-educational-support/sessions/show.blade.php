@@ -17,6 +17,8 @@
             $canManageAttendanceRecord = auth()->user()?->professional?->id === $session->professional_id;
             $isScheduledSession = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::isScheduledValue($session->status);
             $canManageSessionLifecycle = auth()->id() === $session->creator_id;
+            $sessionDateHasArrived = $session->sessionDateHasArrived();
+            $sessionDateIsUpcoming = $session->sessionDateIsUpcoming();
         @endphp
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('session.update')
@@ -86,41 +88,40 @@
             @endif
 
             {{-- MODAL DE CANCELAMENTO --}}
-            <div class="modal fade" id="modalCancelAgendamento" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form action="{{ route('specialized-educational-support.sessions.cancel', $session->id) }}" method="POST">
-                            @csrf
-                            <div class="modal-header">
-                                <h5 class="modal-title">Confirmar Cancelamento</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Tem certeza que deseja cancelar este agendamento? Esta ação enviará um e-mail de notificação para os participantes.</p>
-                                
-                                <div class="form-group">
-                                    <label for="cancellation_reason" class="form-label">Motivo do Cancelamento <span class="text-danger">*</span></label>
-                                    <textarea 
-                                        name="cancellation_reason" 
-                                        id="cancellation_reason" 
-                                        class="form-control" 
-                                        rows="3" 
-                                        required 
-                                        placeholder="Descreva o motivo obrigatório..."></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
-                                <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
-                            </div>
-                        </form>
+            <x-modal id="modalCancelAgendamento" title="Confirmar Cancelamento">
+                <form id="cancelSessionForm" action="{{ route('specialized-educational-support.sessions.cancel', $session->id) }}" method="POST">
+                    @csrf
+                    <p>Tem certeza que deseja cancelar este agendamento?</p>
+
+                    <div class="form-group">
+                        <label for="cancellation_reason" class="form-label">Motivo do Cancelamento <span class="text-danger">*</span></label>
+                        <textarea
+                            name="cancellation_reason"
+                            id="cancellation_reason"
+                            class="form-control"
+                            rows="3"
+                            required
+                            placeholder="Descreva o motivo obrigatório..."
+                        ></textarea>
                     </div>
-                </div>
-            </div>
+                </form>
+
+                @slot('footer')
+                    <x-buttons.link-button variant="secondary" data-bs-dismiss="modal">
+                        Voltar
+                    </x-buttons.link-button>
+                    <button type="submit" form="cancelSessionForm" name="send_notification" value="0" class="btn-action dark">
+                        Cancelar sem E-mail
+                    </button>
+                    <button type="submit" form="cancelSessionForm" name="send_notification" value="1" class="btn-action danger">
+                        Cancelar e Enviar E-mail
+                    </button>
+                @endslot
+            </x-modal>
 
             {{-- Rodapé do Card --}}
             <div class="col-12 border-top p-4  d-flex flex-wrap justify-content-end gap-2">
-                @if($isScheduledSession)
+                @if($isScheduledSession && $sessionDateIsUpcoming)
                     @can('session.update')
                     @if($canManageSessionLifecycle)
                         <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelAgendamento" type="button">
@@ -142,7 +143,7 @@
                         @endcan
                     @else
                         @can('aee-record.create')
-                            @if($canManageAttendanceRecord && $isScheduledSession)
+                            @if($canManageAttendanceRecord && $isScheduledSession && $sessionDateHasArrived)
                                 <x-buttons.link-button
                                     :href="route('specialized-educational-support.aee-records.create', $session->id)"
                                     variant="new"
@@ -171,7 +172,7 @@
                         @endcan
                     @else
                         @can('pedagogical-record.create')
-                            @if($canManageAttendanceRecord && $isScheduledSession)
+                            @if($canManageAttendanceRecord && $isScheduledSession && $sessionDateHasArrived)
                                 <x-buttons.link-button
                                     :href="route('specialized-educational-support.pedagogical-records.create', $session)"
                                     variant="new"
@@ -195,6 +196,7 @@
                     data-confirm-method="DELETE"
                     data-confirm-submit-text="Confirmar Exclusao"
                     data-confirm-variant="danger"
+                    data-confirm-template="{{ $isScheduledSession ? '#sessionEmailNotificationTemplate' : '' }}"
                 >
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>

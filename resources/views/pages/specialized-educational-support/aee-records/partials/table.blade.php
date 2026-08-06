@@ -34,6 +34,14 @@
                         <x-buttons.link-button :href="route('specialized-educational-support.aee-records.show', $record)" variant="info" class="btn-sm">
                             <i class="fas fa-eye"></i> Ver
                         </x-buttons.link-button>
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.aee-records.pdf', $record)"
+                            variant="secondary"
+                            class="btn-sm"
+                            target="_blank"
+                        >
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </x-buttons.link-button>
                     @endcan
                 </x-table.actions>
             </x-table.td>

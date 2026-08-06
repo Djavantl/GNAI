@@ -55,6 +55,22 @@
     method="POST"
 />
 
+<template id="sessionEmailNotificationTemplate">
+    <div class="form-check">
+        <input type="hidden" name="send_notification" value="0">
+        <input
+            class="form-check-input"
+            type="checkbox"
+            name="send_notification"
+            value="1"
+            id="confirm_session_email_notification"
+        >
+        <label class="form-check-label" for="confirm_session_email_notification">
+            Enviar e-mail de aviso aos participantes
+        </label>
+    </div>
+</template>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>

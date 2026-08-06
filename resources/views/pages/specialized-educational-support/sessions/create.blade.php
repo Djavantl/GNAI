@@ -23,7 +23,12 @@
     </div>
 
     <div class="mt-3">
-        <x-forms.form-card action="{{ route('specialized-educational-support.sessions.store') }}" method="POST">
+        <x-forms.form-card
+            id="createSessionForm"
+            action="{{ route('specialized-educational-support.sessions.store') }}"
+            method="POST"
+            data-email-confirmation-modal="#confirmCreateSessionModal"
+        >
             
             <x-forms.section title="Participantes e Horário" />
 
@@ -141,6 +146,22 @@
 
         </x-forms.form-card>
     </div>
+
+    <x-modal id="confirmCreateSessionModal" title="Confirmar Novo Agendamento">
+        <p class="mb-0">Deseja enviar um e-mail aos participantes sobre este agendamento?</p>
+
+        @slot('footer')
+            <x-buttons.link-button variant="secondary" data-bs-dismiss="modal">
+                Voltar
+            </x-buttons.link-button>
+            <button type="submit" form="createSessionForm" name="send_notification" value="0" class="btn-action dark" data-email-confirmation-choice>
+                Salvar sem E-mail
+            </button>
+            <button type="submit" form="createSessionForm" name="send_notification" value="1" class="btn-action new" data-email-confirmation-choice data-send-notification-button>
+                Salvar e Enviar E-mail
+            </button>
+        @endslot
+    </x-modal>
     
     @push('scripts')
         @vite('resources/js/pages/specialized-educational-support/session.js')

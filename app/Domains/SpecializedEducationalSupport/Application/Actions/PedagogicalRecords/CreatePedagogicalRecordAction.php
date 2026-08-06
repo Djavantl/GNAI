@@ -31,6 +31,9 @@ final class CreatePedagogicalRecordAction
             if (! SessionStatus::isScheduledValue($session->status) || ! AttendanceType::isPedagogical($session->attendance_type)) {
                 throw new InvalidPedagogicalRecord('O agendamento deve estar agendado e classificado como Atendimento Pedagógico.');
             }
+            if (! $session->sessionDateHasArrived()) {
+                throw new InvalidPedagogicalRecord('O registro pedagógico só pode ser criado quando a data do agendamento chegar.');
+            }
             if ($session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
                 throw new InvalidPedagogicalRecord('O agendamento não está disponível para receber um registro pedagógico.');
             }
