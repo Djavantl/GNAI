@@ -9,7 +9,7 @@
                 'Profissional',
                 'Duração',
                 'Presença',
-                'Resumo',
+                'Com responsáveis',
                 ['label' => '', 'responsive' => false],
             ]">
                 @forelse($pedagogicalRecords as $record)
@@ -46,7 +46,9 @@
                         </x-table.td>
 
                         <x-table.td>
-                            {{ \Illuminate\Support\Str::limit(strip_tags($record->is_present ? $record->pedagogical_record : $record->absence_reason), 100) }}
+                            <span class="badge bg-{{ $record->guardians->isNotEmpty() ? 'success' : 'secondary' }}">
+                                {{ $record->guardians->isNotEmpty() ? 'Sim' : 'Não' }}
+                            </span>
                         </x-table.td>
 
                         <x-table.td :responsive="false">

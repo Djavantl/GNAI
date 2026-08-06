@@ -3,6 +3,7 @@
     ['label' => 'Horário', 'responsive' => false],
     'Estudante',
     'Profissional responsável',
+    'Com responsáveis',
     ['label' => 'Ações', 'responsive' => false],
 ]" :records="$pedagogicalRecords">
     @forelse($pedagogicalRecords as $record)
@@ -25,6 +26,11 @@
                 </span>
             </x-table.td>
             <x-table.td>{{ $session?->professional?->person?->name ?? 'Não informado' }}</x-table.td>
+            <x-table.td>
+                <span class="badge bg-{{ $record->guardians->isNotEmpty() ? 'success' : 'secondary' }}">
+                    {{ $record->guardians->isNotEmpty() ? 'Sim' : 'Não' }}
+                </span>
+            </x-table.td>
             <x-table.td :responsive="false">
                 <x-table.actions>
                     @can('pedagogical-record.view')

@@ -39,6 +39,11 @@
                         'type' => 'select',
                         'options' => ['' => 'Presença (Todas)', '1' => 'Presente', '0' => 'Ausente'],
                     ],
+                    [
+                        'name' => 'with_guardians',
+                        'type' => 'select',
+                        'options' => ['' => 'Com responsáveis (Todos)', '1' => 'Sim', '0' => 'Não'],
+                    ],
                 ]"
             />
         </div>

@@ -3,6 +3,7 @@
 @section('content')
     @php
         $session = $pedagogicalRecord->attendanceSession;
+        $student = $session->students->first();
     @endphp
 
     <div class="mb-5">
@@ -49,7 +50,7 @@
             <x-forms.section title="Identificação do Estudante" />
 
             <x-show.info-item label="Aluno" column="col-md-6" isBox="true">
-                {{ $session->students->first()?->person?->name ?? 'Aluno não informado' }}
+                {{ $student?->person?->name ?? 'Aluno não informado' }}
             </x-show.info-item>
 
             <x-show.info-item label="Profissional" column="col-md-6" isBox="true">
@@ -61,6 +62,12 @@
                 às
                 {{ $session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--' }}
             </x-show.info-item>
+
+            @if($pedagogicalRecord->guardians->isNotEmpty())
+                <x-show.info-item label="Responsáveis participantes" column="col-md-12" isBox="true">
+                    {{ $pedagogicalRecord->guardian_names }}
+                </x-show.info-item>
+            @endif
 
             <x-forms.section title="Acompanhamento Pedagógico" />
 

@@ -15,12 +15,13 @@ final class ListPedagogicalRecordsData extends Data
         public ?int $student = null,
         public ?int $professionalId = null,
         public ?bool $isPresent = null,
+        public ?bool $withGuardians = null,
         public int $perPage = 10,
     ) {}
 
     public static function prepareForPipeline(array $properties): array
     {
-        foreach (['student', 'professional_id', 'is_present'] as $field) {
+        foreach (['student', 'professional_id', 'is_present', 'with_guardians'] as $field) {
             if (($properties[$field] ?? null) === '') {
                 $properties[$field] = null;
             }
@@ -35,6 +36,7 @@ final class ListPedagogicalRecordsData extends Data
             'student' => ['nullable', 'integer', 'exists:students,id'],
             'professional_id' => ['nullable', 'integer', 'exists:professionals,id'],
             'is_present' => ['nullable', 'boolean'],
+            'with_guardians' => ['nullable', 'boolean'],
             'per_page' => ['integer', 'min:1', 'max:100'],
         ];
     }

@@ -15,7 +15,7 @@ final class PedagogicalRecordFormQuery
     public function forCreation(Session $session, int $professionalId): array
     {
         $session->load([
-            'students.person',
+            'students.guardians.person',
             'professional.person',
             'aeeRecord',
             'pedagogicalRecord',
@@ -30,8 +30,9 @@ final class PedagogicalRecordFormQuery
     public function forUpdate(PedagogicalRecord $pedagogicalRecord, int $professionalId): array
     {
         $pedagogicalRecord->load([
-            'attendanceSession.students.person',
+            'attendanceSession.students.guardians.person',
             'attendanceSession.professional.person',
+            'guardians.person',
         ]);
         if ((int) $pedagogicalRecord->attendanceSession->professional_id !== $professionalId) {
             throw new InvalidPedagogicalRecord('Apenas o profissional vinculado pode editar este registro pedagógico.');

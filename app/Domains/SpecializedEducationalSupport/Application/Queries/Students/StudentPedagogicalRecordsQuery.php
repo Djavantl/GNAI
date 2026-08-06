@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Students;
 
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -21,6 +21,7 @@ final class StudentPedagogicalRecordsQuery
             ->with([
                 'attendanceSession.professional.person',
                 'attendanceSession.students.person',
+                'guardians.person',
             ])
             ->whereHas(
                 'attendanceSession.students',

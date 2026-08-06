@@ -19,12 +19,15 @@ final class ListPedagogicalRecordsQuery
             ->with([
                 'attendanceSession.students.person',
                 'attendanceSession.professional.person',
+                'guardians.person',
             ])
             ->when($onlyOwn || ! $user->can('pedagogical-record.view-all'), fn ($query) => $query->whereHas('attendanceSession', fn ($session) => $session->where('professional_id', $user->professional_id ?? 0)))
             ->when($student !== null, fn ($query) => $query->whereHas('attendanceSession.students', fn ($students) => $students->where('students.id', $student->getKey())))
             ->when($student === null && $filters->student !== null, fn ($query) => $query->whereHas('attendanceSession.students', fn ($students) => $students->where('students.id', $filters->student)))
             ->when($filters->professionalId !== null, fn ($query) => $query->whereHas('attendanceSession', fn ($session) => $session->where('professional_id', $filters->professionalId)))
             ->when($filters->isPresent !== null, fn ($query) => $query->where('is_present', $filters->isPresent))
+            ->when($filters->withGuardians === true, fn ($query) => $query->whereHas('guardians'))
+            ->when($filters->withGuardians === false, fn ($query) => $query->whereDoesntHave('guardians'))
             ->orderByDesc(
                 Session::query()
                     ->select('session_date')

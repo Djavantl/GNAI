@@ -71,4 +71,23 @@ document.addEventListener('DOMContentLoaded', function () {
         // Executa ao carregar a página (importante para erros de validação/old)
         updateState(toggle);
     });
+
+    const guardianToggle = document.getElementById('with_guardians');
+    const guardianFields = document.getElementById('guardian_participants_fields');
+
+    if (guardianToggle && guardianFields) {
+        const updateGuardianFields = () => {
+            guardianFields.classList.toggle('d-none', !guardianToggle.checked);
+            guardianFields.querySelectorAll('.guardian-participant-input').forEach(input => {
+                input.disabled = !guardianToggle.checked;
+
+                if (!guardianToggle.checked) {
+                    input.checked = false;
+                }
+            });
+        };
+
+        guardianToggle.addEventListener('change', updateGuardianFields);
+        updateGuardianFields();
+    }
 });

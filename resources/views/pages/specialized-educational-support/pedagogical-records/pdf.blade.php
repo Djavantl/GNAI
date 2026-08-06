@@ -9,38 +9,55 @@
 <body>
     <x-pdf.header
         title="Registro de Atendimento Pedagógico"
-        :status="$pedagogicalRecord->is_present ? 'Presente' : 'Ausente'"
-        :meta="[
-            'Aluno' => $student?->person?->name ?? 'Não informado',
-            'Profissional' => $professional?->person?->name ?? 'Não informado',
-            'Agendamento' => '#' . $session->id,
-            'Data' => $session->session_date->format('d/m/Y'),
-            'Horário' => \Carbon\Carbon::parse($session->start_time)->format('H:i') . ' às ' . ($session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--'),
-        ]"
     />
 
+    <div class="category-header">Informações do Atendimento</div>
+
+    <div class="section-title">Identificação</div>
+    <x-pdf.table>
+        <x-pdf.row>
+            <x-pdf.info-item label="Estudante" :value="$student?->person?->name ?? 'Não informado'" colspan="2" />
+            <x-pdf.info-item label="Matrícula" :value="$student?->registration ?? 'Não informada'" colspan="2" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Curso" :value="$student?->currentCourse?->course?->name ?? 'Não informado'" colspan="2" />
+            <x-pdf.info-item label="Profissional" :value="$professional?->person?->name ?? 'Não informado'" colspan="2" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Data do Atendimento" :value="$session->session_date->format('d/m/Y')" />
+            <x-pdf.info-item label="Horário" :value="\Carbon\Carbon::parse($session->start_time)->format('H:i') . ' às ' . ($session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--')" />
+            <x-pdf.info-item label="Duração" :value="$pedagogicalRecord->duration" />
+            <x-pdf.info-item label="Presença" :value="$pedagogicalRecord->is_present ? 'Presente' : 'Ausente'" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Agendamento" :value="'#' . $session->id" colspan="2" />
+            <x-pdf.info-item label="Gerado em" :value="date('d/m/Y H:i')" colspan="2" />
+        </x-pdf.row>
+        @if($pedagogicalRecord->guardians->isNotEmpty())
+            <x-pdf.row>
+                <x-pdf.info-item label="Responsáveis participantes" :value="$pedagogicalRecord->guardian_names" colspan="4" />
+            </x-pdf.row>
+        @endif
+    </x-pdf.table>
+
     <x-pdf.section-title title="Acompanhamento Pedagógico" />
+
 
     <x-pdf.text-area
         label="Motivo do Acompanhamento"
         :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->follow_up_reason ?? 'Não informado.'))"
     />
 
-    <x-pdf.text-area
-        label="Período/Duração do Acompanhamento"
-        :value="$pedagogicalRecord->duration"
-    />
-
-    <x-pdf.text-area
-        label="Presença do Estudante no Atendimento"
-        :value="$pedagogicalRecord->is_present ? 'Presente' : 'Ausente'"
-    />
-
     @if(!$pedagogicalRecord->is_present)
-        <x-pdf.text-area
-            label="Motivo da Ausência"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->absence_reason ?? 'Não informado.'))"
-        />
+        <x-pdf.table>
+            <x-pdf.row>
+                <x-pdf.info-item
+                    label="Motivo da Ausência"
+                    :value="$pedagogicalRecord->absence_reason ?? 'Não informado.'"
+                    colspan="4"
+                />
+            </x-pdf.row>
+        </x-pdf.table>
     @else
         <x-pdf.text-area
             label="Registro do Acompanhamento Pedagógico Sistemático"
@@ -63,7 +80,7 @@
         />
     @endif
 
-    <div class="signature-wrapper pdf-mt-50">
+    <div class="signature-wrapper">
         <x-pdf.table-signatures>
             <x-pdf.table-signature-label label="Profissional Responsável" />
             <x-pdf.table-signature-label label="Coordenação / Direção" />

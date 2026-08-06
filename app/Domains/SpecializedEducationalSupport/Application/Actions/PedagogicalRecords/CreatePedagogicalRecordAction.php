@@ -21,7 +21,7 @@ final class CreatePedagogicalRecordAction
     {
         return DB::transaction(function () use ($data, $professionalId): PedagogicalRecord {
             $session = Session::query()->with([
-                'students.person',
+                'students.guardians.person',
                 'aeeRecord',
                 'pedagogicalRecord',
             ])->lockForUpdate()->findOrFail($data->attendanceSessionId);
@@ -34,13 +34,17 @@ final class CreatePedagogicalRecordAction
             if ($session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
                 throw new InvalidPedagogicalRecord('O agendamento não está disponível para receber um registro pedagógico.');
             }
+            $guardianIds = $data->withGuardians ? $data->guardianIds : [];
+            $this->ensureGuardiansBelongToStudent($session, $guardianIds);
             $record = PedagogicalRecord::register($session, $this->dto($data));
             $record->save();
+            $record->syncGuardians($guardianIds);
             $session->update(['status' => SessionStatus::COMPLETED_DATABASE_VALUE]);
 
             return $record->load([
                 'attendanceSession.students.person',
                 'attendanceSession.professional.person',
+                'guardians.person',
             ]);
         });
     }
@@ -57,5 +61,18 @@ final class CreatePedagogicalRecordAction
             referralsMade: $data->referralsMade,
             complementaryObservations: $data->complementaryObservations,
         );
+    }
+
+    /** @param list<int> $guardianIds */
+    private function ensureGuardiansBelongToStudent(Session $session, array $guardianIds): void
+    {
+        $allowedIds = $session->students->first()?->guardians
+            ->pluck('id')
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->all() ?? [];
+
+        if (array_diff(array_map('intval', $guardianIds), $allowedIds) !== []) {
+            throw new InvalidPedagogicalRecord('Os responsáveis selecionados devem estar vinculados ao estudante do atendimento.');
+        }
     }
 }

@@ -23,6 +23,8 @@ final class UpdatePedagogicalRecordData extends Data
         public ?string $strategiesAndResourcesAdopted = null,
         public ?string $referralsMade = null,
         public ?string $complementaryObservations = null,
+        public bool $withGuardians = false,
+        public array $guardianIds = [],
     ) {}
 
     public static function prepareForPipeline(array $properties): array

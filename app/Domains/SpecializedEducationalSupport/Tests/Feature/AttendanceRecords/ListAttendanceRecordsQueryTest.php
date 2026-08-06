@@ -73,13 +73,25 @@ final class ListAttendanceRecordsQueryTest extends TestCase
             $table->timestamps();
             $table->softDeletes();
         });
+        Schema::create('student_guardians', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('student_id');
+            $table->foreignId('person_id');
+            $table->timestamps();
+        });
+        Schema::create('pedagogical_record_guardians', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('pedagogical_record_id');
+            $table->foreignId('guardian_id');
+            $table->timestamps();
+        });
 
         $this->seedRecords();
     }
 
     protected function tearDown(): void
     {
-        foreach (['pedagogical_records', 'aee_student_evaluations', 'aee_records', 'attendance_session_student', 'attendance_sessions', 'students', 'professionals', 'people'] as $table) {
+        foreach (['pedagogical_record_guardians', 'student_guardians', 'pedagogical_records', 'aee_student_evaluations', 'aee_records', 'attendance_session_student', 'attendance_sessions', 'students', 'professionals', 'people'] as $table) {
             Schema::dropIfExists($table);
         }
 
@@ -118,6 +130,12 @@ final class ListAttendanceRecordsQueryTest extends TestCase
 
         $own = app(ListPedagogicalRecordsQuery::class)->execute(new ListPedagogicalRecordsData, $admin, onlyOwn: true);
         self::assertSame([1], $own->pluck('id')->all());
+
+        $withGuardians = app(ListPedagogicalRecordsQuery::class)->execute(new ListPedagogicalRecordsData(withGuardians: true), $admin);
+        self::assertSame([2], $withGuardians->pluck('id')->all());
+
+        $withoutGuardians = app(ListPedagogicalRecordsQuery::class)->execute(new ListPedagogicalRecordsData(withGuardians: false), $admin);
+        self::assertSame([1], $withoutGuardians->pluck('id')->all());
     }
 
     private function seedRecords(): void
@@ -128,6 +146,7 @@ final class ListAttendanceRecordsQueryTest extends TestCase
             ['id' => 2, 'name' => 'Profissional Dois', 'created_at' => $now, 'updated_at' => $now],
             ['id' => 3, 'name' => 'Estudante Um', 'created_at' => $now, 'updated_at' => $now],
             ['id' => 4, 'name' => 'Estudante Dois', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 5, 'name' => 'Responsável Dois', 'created_at' => $now, 'updated_at' => $now],
         ]);
         DB::table('professionals')->insert([
             ['id' => 1, 'person_id' => 1, 'created_at' => $now, 'updated_at' => $now],
@@ -158,6 +177,19 @@ final class ListAttendanceRecordsQueryTest extends TestCase
         DB::table('pedagogical_records')->insert([
             ['id' => 1, 'attendance_session_id' => 3, 'is_present' => false, 'created_at' => $now, 'updated_at' => $now],
             ['id' => 2, 'attendance_session_id' => 4, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('student_guardians')->insert([
+            'id' => 1,
+            'student_id' => 2,
+            'person_id' => 5,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+        DB::table('pedagogical_record_guardians')->insert([
+            'pedagogical_record_id' => 2,
+            'guardian_id' => 1,
+            'created_at' => $now,
+            'updated_at' => $now,
         ]);
     }
 }

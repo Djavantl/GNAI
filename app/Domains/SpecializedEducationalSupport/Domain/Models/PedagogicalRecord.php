@@ -8,6 +8,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\DTOs\PedagogicalRecords\Ped
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidPedagogicalRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class PedagogicalRecord extends Model
@@ -53,6 +54,32 @@ final class PedagogicalRecord extends Model
     public function attendanceSession(): BelongsTo
     {
         return $this->belongsTo(Session::class, 'attendance_session_id')->withTrashed();
+    }
+
+    public function guardians(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Guardian::class,
+            'pedagogical_record_guardians',
+            'pedagogical_record_id',
+            'guardian_id',
+        )->withTimestamps();
+    }
+
+    /** @param list<int> $guardianIds */
+    public function syncGuardians(array $guardianIds): void
+    {
+        $this->guardians()->sync(array_values(array_unique($guardianIds)));
+    }
+
+    public function getGuardianNamesAttribute(): string
+    {
+        return $this->guardians->pluck('person.name')->filter()->join(', ');
+    }
+
+    public function getHasGuardiansAttribute(): bool
+    {
+        return $this->guardians->isNotEmpty();
     }
 
     private static function attributesFrom(PedagogicalRecordDTO $data): array

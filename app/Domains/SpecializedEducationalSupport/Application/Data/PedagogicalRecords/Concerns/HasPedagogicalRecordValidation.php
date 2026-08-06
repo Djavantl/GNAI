@@ -12,6 +12,9 @@ trait HasPedagogicalRecordValidation
             'follow_up_reason' => ['required', 'string', 'max:100000'],
             'duration' => ['required', 'string', 'max:50'],
             'is_present' => ['required', 'boolean'],
+            'with_guardians' => ['required', 'boolean'],
+            'guardian_ids' => ['required_if:with_guardians,1', 'nullable', 'array', 'min:1'],
+            'guardian_ids.*' => ['integer', 'distinct', 'exists:student_guardians,id'],
             'absence_reason' => ['required_if:is_present,0', 'nullable', 'string', 'max:100000'],
             'systematic_pedagogical_follow_up_record' => ['required_if:is_present,1', 'nullable', 'string', 'max:100000'],
             'strategies_and_resources_adopted' => ['nullable', 'string', 'max:100000'],
@@ -23,6 +26,7 @@ trait HasPedagogicalRecordValidation
     protected static function preparePresence(array $properties): array
     {
         $properties['is_present'] = filter_var($properties['is_present'] ?? false, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        $properties['with_guardians'] = filter_var($properties['with_guardians'] ?? false, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         return $properties;
     }

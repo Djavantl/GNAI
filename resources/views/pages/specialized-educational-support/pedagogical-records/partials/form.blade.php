@@ -24,6 +24,60 @@
     {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::labelFor($session->attendance_type) }}
 </x-show.info-item>
 
+@php
+    $student = $session->students->first();
+    $guardians = $student?->guardians?->sortBy('person.name')->values() ?? collect();
+    $withGuardians = filter_var(old('with_guardians', $record?->guardians?->isNotEmpty() ?? false), FILTER_VALIDATE_BOOLEAN);
+    $selectedGuardianIds = array_map('intval', (array) old('guardian_ids', $record?->guardians?->pluck('id')->all() ?? []));
+@endphp
+
+<div class="col-md-12">
+    <input type="hidden" name="with_guardians" value="0">
+    <x-forms.checkbox
+        name="with_guardians"
+        id="with_guardians"
+        label="Atendimento realizado com responsável pelo aluno"
+        :checked="$withGuardians"
+        :disabled="$guardians->isEmpty()"
+        :description="$guardians->isEmpty()
+            ? 'O aluno não possui responsáveis cadastrados no sistema.'
+            : 'Marque para selecionar os responsáveis que participaram do atendimento.'"
+        class="guardian-participation-toggle"
+    />
+</div>
+
+<div class="col-md-12 {{ $withGuardians ? '' : 'd-none' }}" id="guardian_participants_fields">
+    <div class="border rounded p-3">
+        <label class="form-label fw-bold text-purple-dark d-block mb-3">
+            Responsáveis participantes
+        </label>
+        <div class="row g-2">
+            @foreach($guardians as $guardian)
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input guardian-participant-input"
+                            type="checkbox"
+                            name="guardian_ids[]"
+                            value="{{ $guardian->id }}"
+                            id="guardian_{{ $guardian->id }}"
+                            {{ in_array((int) $guardian->id, $selectedGuardianIds, true) ? 'checked' : '' }}
+                            {{ $withGuardians ? '' : 'disabled' }}
+                        >
+                        <label class="form-check-label" for="guardian_{{ $guardian->id }}">
+                            <strong>{{ $guardian->person->name }}</strong>
+                            <span class="text-muted">— {{ $guardian->relationshipLabel() }}</span>
+                        </label>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        @error('guardian_ids')
+            <div class="text-danger small mt-2">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
+
 <x-forms.section title="Acompanhamento Pedagógico" />
 
 @php
