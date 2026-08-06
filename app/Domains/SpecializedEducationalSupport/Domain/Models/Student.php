@@ -67,7 +67,7 @@ final class Student extends Model
      */
     public function ensureIsActive(): void
     {
-        if ($this->status !== StudentStatus::ACTIVE) {
+        if (! $this->status->isEnabled()) {
             throw new InvalidStudent(
                 "O aluno {$this->person->name} não está ativo e não pode realizar esta ação."
             );
