@@ -16,9 +16,30 @@ final readonly class DeleteStudentCourseAction
     public function execute(StudentCourse $studentCourse): void
     {
         DB::transaction(function () use ($studentCourse): void {
-            StudentCourse::query()
-                ->findOrFail($studentCourse->getKey())
-                ->delete();
+            $lockedStudentCourse = StudentCourse::query()
+                ->lockForUpdate()
+                ->findOrFail($studentCourse->getKey());
+            $studentId = (int) $lockedStudentCourse->student_id;
+            $wasCurrent = (bool) $lockedStudentCourse->is_current;
+
+            $lockedStudentCourse->delete();
+
+            if (! $wasCurrent) {
+                return;
+            }
+
+            $previousStudentCourse = StudentCourse::query()
+                ->where('student_id', $studentId)
+                ->orderByDesc('academic_year')
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->lockForUpdate()
+                ->first();
+
+            if ($previousStudentCourse !== null) {
+                $previousStudentCourse->markAsCurrent();
+                $previousStudentCourse->save();
+            }
         });
     }
 }

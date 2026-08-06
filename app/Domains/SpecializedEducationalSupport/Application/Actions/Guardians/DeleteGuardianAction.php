@@ -32,6 +32,7 @@ final readonly class DeleteGuardianAction
                 ->lockForUpdate()
                 ->findOrFail($guardian->getKey());
             $lockedGuardian->ensureBelongsTo($lockedStudent);
+            $lockedGuardian->ensureCanBeDeleted();
 
             $person = Person::query()
                 ->lockForUpdate()

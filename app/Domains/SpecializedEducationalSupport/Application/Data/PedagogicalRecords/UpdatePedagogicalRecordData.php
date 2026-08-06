@@ -15,13 +15,16 @@ final class UpdatePedagogicalRecordData extends Data
     use HasPedagogicalRecordValidation;
 
     public function __construct(
+        public string $followUpReason,
         public string $duration,
         public bool $isPresent,
         public ?string $absenceReason = null,
-        public ?string $plannedPerformedActivities = null,
-        public ?string $pedagogicalRecord = null,
-        public ?string $resourcesUsed = null,
-        public ?string $generalObservations = null,
+        public ?string $systematicPedagogicalFollowUpRecord = null,
+        public ?string $strategiesAndResourcesAdopted = null,
+        public ?string $referralsMade = null,
+        public ?string $complementaryObservations = null,
+        public bool $withGuardians = false,
+        public array $guardianIds = [],
     ) {}
 
     public static function prepareForPipeline(array $properties): array

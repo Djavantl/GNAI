@@ -58,14 +58,51 @@
                     :value="old('academic_year', $studentCourse->academic_year)" />
             </div>
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="is_current"
-                    label="Curso atual"
-                    :options="[1 => 'Ativo', 0 => 'Inativo']"
-                    :selected="old('is_current', $studentCourse->is_current)"
+            <x-forms.section title="Acompanhamento Acadêmico do Curso Atual" />
+
+            @php
+                $failedDisciplineIds = array_map('intval', (array) old('failed_discipline_ids', $studentCourse->failedDisciplines->pluck('id')->all()));
+                $atRiskDisciplineIds = array_map('intval', (array) old('at_risk_discipline_ids', $studentCourse->atRiskDisciplines->pluck('id')->all()));
+                $disciplines = $studentCourse->course->disciplines->sortBy('name')->values();
+            @endphp
+
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="school_attendance_status"
+                    label="Situação da Frequência Escolar"
+                    rows="3"
+                    placeholder="Descreva como está a frequência escolar do aluno neste curso..."
+                    :value="old('school_attendance_status', $studentCourse->school_attendance_status)"
                 />
             </div>
+
+            @foreach([
+                ['name' => 'failed_discipline_ids', 'title' => 'Disciplinas com Reprovação', 'selected' => $failedDisciplineIds, 'color' => 'danger'],
+                ['name' => 'at_risk_discipline_ids', 'title' => 'Disciplinas com Risco de Insucesso Acadêmico', 'selected' => $atRiskDisciplineIds, 'color' => 'warning'],
+            ] as $group)
+                <div class="col-md-6">
+                    <div class="border rounded p-3 h-100">
+                        <h6 class="fw-bold text-{{ $group['color'] }} mb-3">{{ $group['title'] }}</h6>
+                        @forelse($disciplines as $discipline)
+                            <div class="form-check mb-2">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="{{ $group['name'] }}[]"
+                                    value="{{ $discipline->id }}"
+                                    id="{{ $group['name'] }}_{{ $discipline->id }}"
+                                    {{ in_array((int) $discipline->id, $group['selected'], true) ? 'checked' : '' }}
+                                >
+                                <label class="form-check-label" for="{{ $group['name'] }}_{{ $discipline->id }}">
+                                    {{ $discipline->name }}
+                                </label>
+                            </div>
+                        @empty
+                            <span class="text-muted">Nenhuma disciplina vinculada ao curso.</span>
+                        @endforelse
+                    </div>
+                </div>
+            @endforeach
 
             <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button

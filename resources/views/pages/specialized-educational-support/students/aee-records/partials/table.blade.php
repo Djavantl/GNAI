@@ -1,11 +1,10 @@
-<div class="table-responsive">
-    <x-table.table :headers="[
+<x-table.table :headers="[
         ['label' => 'Data', 'responsive' => false],
         'Profissional',
         'Duração',
         'Presença',
         ['label' => 'Ações', 'responsive' => false],
-    ]">
+    ]" :records="$aeeEvaluations">
         @forelse($aeeEvaluations as $evaluation)
             @php
                 $aeeRecord = $evaluation->aeeRecord;
@@ -94,9 +93,4 @@
                 </td>
             </tr>
         @endforelse
-    </x-table.table>
-</div>
-
-<div class="mt-3 px-3 pb-3">
-    {{ $aeeEvaluations->links() }}
-</div>
+</x-table.table>

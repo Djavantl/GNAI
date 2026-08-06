@@ -28,7 +28,6 @@ final class CreateStudentData extends Data
         public ?string $phone = null,
         public ?string $address = null,
         public ?string $entryDate = null,
-        public bool $isRepeater = false,
         public ?UploadedFile $photo = null,
     ) {}
 
@@ -54,7 +53,6 @@ final class CreateStudentData extends Data
                 Rule::unique('students', 'registration'),
             ],
             'entry_date' => ['nullable', 'date', 'after_or_equal:birth_date'],
-            'is_repeater' => ['sometimes', 'boolean'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ];
     }
@@ -86,7 +84,6 @@ final class CreateStudentData extends Data
             'registration.unique' => 'Esta matrícula já está cadastrada para outro aluno.',
             'entry_date.date' => 'A data de ingresso do aluno deve ser válida.',
             'entry_date.after_or_equal' => 'A data de ingresso não pode ser anterior à data de nascimento.',
-            'is_repeater.boolean' => 'A indicação de repetência é inválida.',
             'photo.image' => 'O arquivo da foto deve ser uma imagem válida.',
             'photo.mimes' => 'A foto deve estar nos formatos JPEG, JPG ou PNG.',
             'photo.max' => 'A foto não pode ultrapassar 2 MB.',

@@ -38,21 +38,23 @@ final readonly class CreateStudentCourseAction
                 ->findOrFail($data->courseId);
             $course->ensureIsActive();
 
-            $studentAlreadyHasCourse = StudentCourse::query()
+            $existingStudentCourses = StudentCourse::query()
                 ->where('student_id', $lockedStudent->getKey())
-                ->where('course_id', $course->getKey())
-                ->exists();
+                ->lockForUpdate()
+                ->get();
+            $studentAlreadyHasCourse = $existingStudentCourses->contains(
+                static fn (StudentCourse $studentCourse): bool => (int) $studentCourse->course_id === (int) $course->getKey()
+            );
 
             if ($studentAlreadyHasCourse) {
                 throw new InvalidStudentCourse('Este aluno já possui vínculo com o curso selecionado.');
             }
 
-            if ($data->isCurrent) {
-                StudentCourse::query()
-                    ->where('student_id', $lockedStudent->getKey())
+            $isCurrent = $data->isCurrent || $existingStudentCourses->isEmpty();
+
+            if ($isCurrent) {
+                $existingStudentCourses
                     ->where('is_current', true)
-                    ->lockForUpdate()
-                    ->get()
                     ->each(function (StudentCourse $studentCourse): void {
                         $studentCourse->markAsNotCurrent();
                         $studentCourse->save();
@@ -61,7 +63,8 @@ final readonly class CreateStudentCourseAction
 
             $studentCourseDTO = new CreateStudentCourseDTO(
                 academicYear: $data->academicYear,
-                isCurrent: $data->isCurrent,
+                isCurrent: $isCurrent,
+                schoolAttendanceStatus: $isCurrent ? $data->schoolAttendanceStatus : null,
             );
 
             $studentCourse = StudentCourse::register(
@@ -79,7 +82,23 @@ final readonly class CreateStudentCourseAction
                 );
             }
 
-            return $studentCourse->load(['student.person', 'course']);
+            if ($isCurrent) {
+                $this->ensureDisciplinesBelongToCourse($course, $data->failedDisciplineIds, $data->atRiskDisciplineIds);
+                $studentCourse->syncFailedDisciplines($data->failedDisciplineIds);
+                $studentCourse->syncAtRiskDisciplines($data->atRiskDisciplineIds);
+            }
+
+            return $studentCourse->load(['student.person', 'course', 'failedDisciplines', 'atRiskDisciplines']);
         });
+    }
+
+    /** @param list<int> $failedIds @param list<int> $atRiskIds */
+    private function ensureDisciplinesBelongToCourse(Course $course, array $failedIds, array $atRiskIds): void
+    {
+        $allowedIds = $course->disciplines()->pluck('disciplines.id')->map(static fn (mixed $id): int => (int) $id)->all();
+
+        if (array_diff(array_map('intval', [...$failedIds, ...$atRiskIds]), $allowedIds) !== []) {
+            throw new InvalidStudentCourse('As disciplinas selecionadas devem pertencer ao curso do aluno.');
+        }
     }
 }

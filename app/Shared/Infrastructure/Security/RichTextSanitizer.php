@@ -65,6 +65,27 @@ final class RichTextSanitizer
         return trim(html_entity_decode($output, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     }
 
+    public static function toPlainText(string $html): string
+    {
+        $sanitized = self::containsHtmlTag($html)
+            ? self::sanitize($html)
+            : $html;
+
+        $withSeparators = preg_replace(
+            '/<br\s*\/?>|<\/(p|div|li|h[1-6]|tr)>/i',
+            ' ',
+            $sanitized,
+        ) ?? $sanitized;
+
+        $plainText = html_entity_decode(
+            strip_tags($withSeparators),
+            ENT_QUOTES | ENT_HTML5,
+            'UTF-8',
+        );
+
+        return trim(preg_replace('/\s+/u', ' ', $plainText) ?? $plainText);
+    }
+
     private static function containsHtmlTag(string $value): bool
     {
         return preg_match('/<\/?[a-z][\s\S]*>/i', $value) === 1;

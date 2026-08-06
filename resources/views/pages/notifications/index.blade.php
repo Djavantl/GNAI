@@ -86,7 +86,7 @@
 
     {{-- Paginação --}}
     <div class="mt-4">
-        {{ $notifications->links() }}
+        <x-ui.pagination :records="$notifications" />
     </div>
 
 @endsection

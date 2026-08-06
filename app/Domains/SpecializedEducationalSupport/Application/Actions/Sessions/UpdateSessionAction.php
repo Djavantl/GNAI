@@ -41,8 +41,8 @@ final readonly class UpdateSessionAction
                 'session_date' => $data->sessionDate,
                 'start_time' => $data->startTime,
                 'end_time' => $data->endTime,
-                'attendance_type' => $data->attendanceType->value,
-                'type' => $data->type->value,
+                'attendance_type' => AttendanceType::valueOf($lockedSession->attendance_type),
+                'type' => $lockedSession->type,
                 'location' => $data->location,
                 'session_objective' => $data->sessionObjective,
                 'status' => $data->status ?? $lockedSession->status,
@@ -70,11 +70,13 @@ final readonly class UpdateSessionAction
             return $lockedSession->fresh(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
         });
 
-        $this->notifications->send(
-            $updatedSession,
-            'Agendamento de Atendimento Atualizado',
-            'Houve uma alteração nos detalhes do seu agendamento.',
-        );
+        if ($data->sendNotification) {
+            $this->notifications->send(
+                $updatedSession,
+                'Agendamento de Atendimento Atualizado',
+                'Houve uma alteração nos detalhes do seu agendamento.',
+            );
+        }
 
         return $updatedSession;
     }

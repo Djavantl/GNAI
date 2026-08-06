@@ -5,22 +5,23 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Students;
 
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 final class StudentPedagogicalRecordsQuery
 {
     /**
-     * @return LengthAwarePaginator<int, PedagogicalRecord>
+     * @return Collection<int, PedagogicalRecord>
      */
-    public function execute(Student $student, ?User $user, int $perPage = 5): LengthAwarePaginator
+    public function execute(Student $student, ?User $user): Collection
     {
         $query = PedagogicalRecord::query()
             ->with([
                 'attendanceSession.professional.person',
                 'attendanceSession.students.person',
+                'guardians.person',
             ])
             ->whereHas(
                 'attendanceSession.students',
@@ -43,7 +44,7 @@ final class StudentPedagogicalRecordsQuery
 
         return $query
             ->orderByDesc('id')
-            ->paginate($perPage, ['*'], 'pedagogical_page')
-            ->withQueryString();
+            ->limit(5)
+            ->get();
     }
 }

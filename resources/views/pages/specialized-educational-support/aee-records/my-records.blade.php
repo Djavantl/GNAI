@@ -12,9 +12,14 @@
 
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
         <x-table.page-header
-            title="Atendimentos AEE"
+            title="Meus Atendimentos Especializados"
             subtitle="Histórico de registros dos seus atendimentos AEE."
         >
+            @can('aee-record.view-all')
+                <x-buttons.link-button :href="route('specialized-educational-support.aee-records.index')" variant="secondary">
+                    <i class="bi bi-people me-1"></i> Todos os Atendimentos
+                </x-buttons.link-button>
+            @endcan
         </x-table.page-header>
 
         <div class="px-3 pt-3">
@@ -25,17 +30,21 @@
                     [
                         'name' => 'student',
                         'type' => 'select',
-                        'options' => ['' => 'Aluno (Todos)'] +
-                            collect($students)->mapWithKeys(fn($s) => [
-                                $s->id => $s->person->name ?? ('ID ' . $s->id)
-                            ])->toArray()
+                        'options' => ['' => 'Estudante (Todos)'] + collect($students)->mapWithKeys(fn ($student) => [
+                            $student->id => $student->person->name ?? ('ID ' . $student->id),
+                        ])->toArray(),
+                    ],
+                    [
+                        'name' => 'is_present',
+                        'type' => 'select',
+                        'options' => ['' => 'Presença (Todas)', '1' => 'Presente', '0' => 'Ausente'],
                     ],
                 ]"
             />
         </div>
 
         <div id="my-records-table" class="p-3">
-            @include('pages.specialized-educational-support.aee-records.partials.my-table')
+            @include('pages.specialized-educational-support.aee-records.partials.table')
         </div>
     </div>
 

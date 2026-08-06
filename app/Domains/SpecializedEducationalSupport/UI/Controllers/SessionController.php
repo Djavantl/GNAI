@@ -79,13 +79,13 @@ final class SessionController
      */
     public function store(CreateSessionData $data, CreateSessionAction $action, Request $request): RedirectResponse
     {
-        $action->execute(
+        $session = $action->execute(
             data: $data,
             creatorId: (int) $request->user()?->getAuthIdentifier(),
         );
 
         return redirect()
-            ->route('specialized-educational-support.sessions.index')
+            ->route('specialized-educational-support.sessions.show', $session)
             ->with('success', 'Agendamento criado com sucesso.');
     }
 
@@ -205,9 +205,13 @@ final class SessionController
             userId: (int) $request->user()?->getAuthIdentifier(),
         );
 
+        $message = $data->sendNotification
+            ? 'Agendamento cancelado e participantes notificados.'
+            : 'Agendamento cancelado com sucesso.';
+
         return redirect()
             ->back()
-            ->with('success', 'Agendamento cancelado e participantes notificados.');
+            ->with('success', $message);
     }
 
     /**
@@ -218,6 +222,7 @@ final class SessionController
         $action->execute(
             session: $session,
             userId: (int) $request->user()?->getAuthIdentifier(),
+            sendNotification: $request->boolean('send_notification'),
         );
 
         return redirect()

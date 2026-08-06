@@ -27,21 +27,31 @@ final class PedagogicalRecordsReportSource extends EloquentReportSource
 
     protected function with(): array
     {
-        return ['attendanceSession.professional.person'];
+        return [
+            'attendanceSession.students.person',
+            'attendanceSession.professional.person',
+        ];
+    }
+
+    public function excludedRelations(): array
+    {
+        return [];
     }
 
     protected function definitions(): array
     {
         return [
+            'student' => ['label' => 'Estudante', 'path' => 'attendanceSession.students.0.person.name'],
             'professional' => ['label' => 'Profissional', 'path' => 'attendanceSession.professional.person.name'],
             'session_date' => ['label' => 'Data do atendimento', 'path' => 'attendanceSession.session_date', 'type' => ReportColumnType::DATE],
-            'duration' => ['label' => 'Duração'],
-            'is_present' => ['label' => 'Aluno presente', 'type' => ReportColumnType::BOOLEAN],
+            'follow_up_reason' => ['label' => 'Motivo do acompanhamento'],
+            'duration' => ['label' => 'Período/duração do acompanhamento'],
+            'is_present' => ['label' => 'Presença do estudante no atendimento', 'type' => ReportColumnType::BOOLEAN],
             'absence_reason' => ['label' => 'Motivo da ausência'],
-            'planned_performed_activities' => ['label' => 'Atividades planejadas e realizadas'],
-            'pedagogical_record' => ['label' => 'Registro pedagógico'],
-            'resources_used' => ['label' => 'Recursos utilizados'],
-            'general_observations' => ['label' => 'Observações gerais'],
+            'systematic_pedagogical_follow_up_record' => ['label' => 'Registro do acompanhamento pedagógico sistemático'],
+            'strategies_and_resources_adopted' => ['label' => 'Estratégias e recursos adotados'],
+            'referrals_made' => ['label' => 'Encaminhamentos realizados'],
+            'complementary_observations' => ['label' => 'Observações complementares'],
             'created_at' => ['label' => 'Criado em', 'type' => ReportColumnType::DATE],
         ];
     }

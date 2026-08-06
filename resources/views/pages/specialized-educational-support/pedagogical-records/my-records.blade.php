@@ -12,9 +12,15 @@
 
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
         <x-table.page-header
-            title="Atendimentos Pedagógicos"
+            title="Meus Atendimentos Pedagógicos"
             subtitle="Histórico dos seus atendimentos pedagógicos."
-        />
+        >
+            @can('pedagogical-record.view-all')
+                <x-buttons.link-button :href="route('specialized-educational-support.pedagogical-records.index')" variant="secondary">
+                    <i class="bi bi-people me-1"></i> Todos os Atendimentos
+                </x-buttons.link-button>
+            @endcan
+        </x-table.page-header>
 
         <div class="px-3 pt-3">
             <x-table.filters.form
@@ -24,17 +30,26 @@
                     [
                         'name' => 'student',
                         'type' => 'select',
-                        'options' => ['' => 'Aluno (Todos)'] +
-                            collect($students)->mapWithKeys(fn($s) => [
-                                $s->id => $s->person->name ?? ('ID ' . $s->id)
-                            ])->toArray()
+                        'options' => ['' => 'Estudante (Todos)'] + collect($students)->mapWithKeys(fn ($student) => [
+                            $student->id => $student->person->name ?? ('ID ' . $student->id),
+                        ])->toArray(),
+                    ],
+                    [
+                        'name' => 'is_present',
+                        'type' => 'select',
+                        'options' => ['' => 'Presença (Todas)', '1' => 'Presente', '0' => 'Ausente'],
+                    ],
+                    [
+                        'name' => 'with_guardians',
+                        'type' => 'select',
+                        'options' => ['' => 'Com responsáveis (Todos)', '1' => 'Sim', '0' => 'Não'],
                     ],
                 ]"
             />
         </div>
 
         <div id="my-pedagogical-records-table" class="p-3">
-            @include('pages.specialized-educational-support.pedagogical-records.partials.my-table')
+            @include('pages.specialized-educational-support.pedagogical-records.partials.table')
         </div>
     </div>
 

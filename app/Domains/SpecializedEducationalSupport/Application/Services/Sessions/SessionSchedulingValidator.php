@@ -23,7 +23,7 @@ final readonly class SessionSchedulingValidator
     ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      * @return array<string, mixed>
      */
     public function normalize(array $data): array
@@ -44,19 +44,19 @@ final readonly class SessionSchedulingValidator
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function validateForCreation(array $data): void
     {
         $this->ensureAttendanceTypeAcceptsStudents($data);
         $this->ensureProfessionalIsActive((int) $data['professional_id']);
         $this->ensureProfessionalCanCreateAttendanceRecord((int) $data['professional_id'], (string) $data['attendance_type']);
-        $this->ensureStudentsAreActive($data['student_ids']);
+        $this->ensureStudentsCanReceiveAttendance($data['student_ids'], (string) $data['attendance_type']);
         $this->ensureNoConflict($data);
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function validateForUpdate(Session $session, array $data): void
     {
@@ -64,12 +64,12 @@ final readonly class SessionSchedulingValidator
         $this->ensureAttendanceTypeAcceptsStudents($data);
         $this->ensureProfessionalIsActive((int) $data['professional_id']);
         $this->ensureProfessionalCanCreateAttendanceRecord((int) $data['professional_id'], (string) $data['attendance_type']);
-        $this->ensureStudentsAreActive($data['student_ids']);
+        $this->ensureStudentsCanReceiveAttendance($data['student_ids'], (string) $data['attendance_type']);
         $this->ensureNoConflict($data, (int) $session->getKey());
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     private function ensureAttendanceTypeAcceptsStudents(array $data): void
     {
@@ -132,14 +132,16 @@ final readonly class SessionSchedulingValidator
     }
 
     /**
-     * @param list<int> $studentIds
+     * @param  list<int>  $studentIds
      */
-    private function ensureStudentsAreActive(array $studentIds): void
+    private function ensureStudentsCanReceiveAttendance(array $studentIds, string $attendanceType): void
     {
-        $inactiveStudents = Student::whereIn('id', $studentIds)
-            ->where('status', '!=', 'active')
+        $students = Student::whereIn('id', $studentIds)
             ->with('person')
-            ->get()
+            ->get();
+
+        $inactiveStudents = $students
+            ->reject(fn (Student $student): bool => $student->status->isEnabled())
             ->pluck('person.name')
             ->toArray();
 
@@ -150,10 +152,24 @@ final readonly class SessionSchedulingValidator
                 'student_ids' => "Não é possível agendar ou editar agendamento para aluno inativo: {$names}.",
             ]);
         }
+
+        $incompatibleStudents = $students
+            ->reject(fn (Student $student): bool => $student->status->allowsAttendanceType($attendanceType))
+            ->pluck('person.name')
+            ->toArray();
+
+        if ($incompatibleStudents !== []) {
+            $names = implode(', ', $incompatibleStudents);
+            $attendanceLabel = AttendanceType::labelFor($attendanceType);
+
+            throw ValidationException::withMessages([
+                'student_ids' => "O status de atendimento de {$names} não permite agendamentos do tipo {$attendanceLabel}.",
+            ]);
+        }
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     private function ensureNoConflict(array $data, ?int $ignoreId = null): void
     {

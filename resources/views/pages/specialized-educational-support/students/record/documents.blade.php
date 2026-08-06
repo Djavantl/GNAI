@@ -63,16 +63,19 @@
         </div>
 
         {{-- BOTÃO GERENCIAR --}}
-        <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
-            @can('student-document.view')
-            <x-buttons.link-button
-                :href="route('specialized-educational-support.student-documents.index', $student)"
-                variant="warning"
-                class="btn-sm">
-                <i class="fas fa-folder-open"></i> Gerenciar Documentos
-            </x-buttons.link-button>
-            @endcan
-        </div>
+        @can('student-document.view')
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 pt-3 border-top">
+                <small class="text-muted">
+                    São exibidos até 5 registros mais recentes. Para consultar todos, clique em “Gerenciar Documentos”.
+                </small>
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.student-documents.index', $student)"
+                    variant="warning"
+                    class="btn-sm">
+                    <i class="fas fa-folder-open"></i> Gerenciar Documentos
+                </x-buttons.link-button>
+            </div>
+        @endcan
 
     </div>
 </section>

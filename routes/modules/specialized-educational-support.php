@@ -170,6 +170,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('students/{student}/aee-records/{evaluation}/pdf', [AeeRecordController::class, 'studentPdf'])->name('students.aee-records.pdf')->middleware('can:aee-record.view');
 
     /* 8.1 PEDAGOGICAL RECORDS */
+    Route::get('pedagogical-records', [PedagogicalRecordController::class, 'index'])
+        ->name('pedagogical-records.index')
+        ->middleware('can:pedagogical-record.view-all');
     Route::get('my-pedagogical-records', [PedagogicalRecordController::class, 'myRecords'])
         ->name('pedagogical-records.my-records')
         ->middleware('can:pedagogical-record.view-own');
@@ -194,6 +197,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('pedagogical-records/{pedagogicalRecord}/pdf', [PedagogicalRecordController::class, 'pdf'])
         ->name('pedagogical-records.pdf')
         ->middleware('can:pedagogical-record.view');
+    Route::get('students/{student}/pedagogical-records', [PedagogicalRecordController::class, 'studentIndex'])
+        ->name('students.pedagogical-records.index')
+        ->middleware('can:pedagogical-record.view');
 
     /* 9. STUDENT COURSES */
     Route::get('/student-courses/{student}/create', [StudentCourseController::class, 'create'])->name('student-courses.create')->middleware('can:student-course.create');
@@ -202,6 +208,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('student-courses/{studentCourse}', [StudentCourseController::class, 'show'])->name('student-courses.show')->middleware('can:student-course.view');
     Route::get('/student-courses/{studentCourse}/edit', [StudentCourseController::class, 'edit'])->name('student-courses.edit')->middleware('can:student-course.update');
     Route::put('/student-courses/{studentCourse}', [StudentCourseController::class, 'update'])->name('student-courses.update')->middleware('can:student-course.update');
+    Route::patch('/student-courses/{studentCourse}/make-current', [StudentCourseController::class, 'makeCurrent'])->name('student-courses.make-current')->middleware('can:student-course.update');
     Route::delete('/student-courses/{studentCourse}', [StudentCourseController::class, 'destroy'])->name('student-courses.destroy')->middleware('can:student-course.delete');
 
     /* 10. PENDENCIES */

@@ -15,6 +15,7 @@ use App\Domains\Reporting\Domain\DTOs\ReportRequestDTO;
 use App\Domains\Reporting\Domain\DTOs\ReportResultDTO;
 use App\Domains\Reporting\Domain\Enums\ReportOperator;
 use App\Domains\Reporting\Domain\Exceptions\ReportingException;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use BackedEnum;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -356,7 +357,11 @@ final readonly class RunReportAction
             return $column->options[$optionKey];
         }
 
-        if ($value === null || is_string($value) || is_int($value) || is_float($value)) {
+        if (is_string($value)) {
+            return RichTextSanitizer::toPlainText($value);
+        }
+
+        if ($value === null || is_int($value) || is_float($value)) {
             return $value;
         }
 
@@ -373,7 +378,7 @@ final readonly class RunReportAction
         }
 
         if ($value instanceof Stringable) {
-            return (string) $value;
+            return RichTextSanitizer::toPlainText((string) $value);
         }
 
         return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);

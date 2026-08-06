@@ -7,12 +7,14 @@ namespace App\Domains\SpecializedEducationalSupport\Domain\DTOs\PedagogicalRecor
 final readonly class PedagogicalRecordDTO
 {
     public function __construct(
+        public string $followUpReason,
         public string $duration,
         public bool $isPresent,
         public ?string $absenceReason,
-        public ?string $plannedPerformedActivities,
-        public ?string $pedagogicalRecord,
-        public ?string $resourcesUsed,
-        public ?string $generalObservations,
+        public ?string $systematicPedagogicalFollowUpRecord,
+        public ?string $strategiesAndResourcesAdopted,
+        public ?string $referralsMade,
+        public ?string $complementaryObservations,
+        public bool $withGuardians = false,
     ) {}
 }

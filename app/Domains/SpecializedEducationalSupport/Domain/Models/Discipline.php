@@ -69,8 +69,14 @@ final class Discipline extends Model
     /**
      * @throws InvalidDiscipline
      */
-    public function ensureCanBeDeleted(bool $hasTeachers, bool $hasCourses): void
+    public function ensureCanBeDeleted(bool $hasTeachers, bool $hasCourses, bool $hasStudentCourseRecords): void
     {
+        if ($hasStudentCourseRecords) {
+            throw new InvalidDiscipline(
+                "Não é possível excluir a disciplina '{$this->name}' pois ela possui registros no histórico de cursos de alunos."
+            );
+        }
+
         if ($hasTeachers) {
             throw new InvalidDiscipline(
                 "Não é possível excluir a disciplina '{$this->name}' pois ela está vinculada a professores."
@@ -82,6 +88,7 @@ final class Discipline extends Model
                 "Não é possível excluir a disciplina '{$this->name}' pois ela está vinculada a cursos."
             );
         }
+
     }
 
     /**
@@ -114,6 +121,18 @@ final class Discipline extends Model
             'discipline_id',
             'teacher_id',
         );
+    }
+
+    public function studentCoursesWithAcademicRecords(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            StudentCourse::class,
+            'student_course_disciplines',
+            'discipline_id',
+            'student_course_id',
+        )
+            ->withPivot('category')
+            ->withTimestamps();
     }
 
     private static function normalizeName(string $name): string

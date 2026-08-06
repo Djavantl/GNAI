@@ -50,7 +50,6 @@ final readonly class CreateStudentAction
                 $studentDTO = new CreateStudentDTO(
                     registration: Registration::from($data->registration),
                     entryDate: $data->entryDate,
-                    isRepeater: $data->isRepeater,
                 );
 
                 $student = Student::register($person, $studentDTO);
