@@ -21,14 +21,29 @@
 
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('student-course.update')
-            @if($studentCourse->is_current)
-            <x-buttons.link-button
-                :href="route('specialized-educational-support.student-courses.edit', $studentCourse)"
-                variant="warning"
-                aria-label="Editar matrícula">
-                <i class="fas fa-edit me-1" aria-hidden="true"></i> Editar
-            </x-buttons.link-button>
-            @endif
+                @if($studentCourse->is_current)
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.student-courses.edit', $studentCourse)"
+                        variant="warning"
+                        aria-label="Editar matrícula">
+                        <i class="fas fa-edit me-1" aria-hidden="true"></i> Editar
+                    </x-buttons.link-button>
+                @else
+                    <x-buttons.submit-button
+                        type="button"
+                        variant="success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#globalConfirmActionModal"
+                        data-confirm-title="Tornar Curso Atual"
+                        data-confirm-message="Deseja tornar este o curso atual do aluno? O curso atual será movido para o histórico."
+                        data-confirm-action="{{ route('specialized-educational-support.student-courses.make-current', $studentCourse) }}"
+                        data-confirm-method="PATCH"
+                        data-confirm-submit-text="Tornar Atual"
+                        data-confirm-variant="success"
+                        aria-label="Tornar {{ $studentCourse->course->name }} o curso atual">
+                        <i class="fas fa-check-circle me-1" aria-hidden="true"></i> Tornar Atual
+                    </x-buttons.submit-button>
+                @endif
             @endcan
 
             <x-buttons.link-button
@@ -57,11 +72,11 @@
                 {{ $studentCourse->academic_year }}
             </x-show.info-item>
 
-            <x-show.info-item label="Vigente" column="col-md-6" isBox="true">
+            <x-show.info-item label="Situação" column="col-md-6" isBox="true">
                 @if($studentCourse->is_current)
-                    <span class="text-success" aria-label="Curso atual">SIM</span>
+                    <span class="text-success fw-bold" aria-label="Curso atual">ATUAL</span>
                 @else
-                    <span class="text-dark" aria-label="Não é curso atual">NÃO</span>
+                    <span class="text-secondary fw-bold" aria-label="Curso no histórico">HISTÓRICO</span>
                 @endif
             </x-show.info-item>
 

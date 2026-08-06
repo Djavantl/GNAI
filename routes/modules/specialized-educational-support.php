@@ -205,6 +205,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('student-courses/{studentCourse}', [StudentCourseController::class, 'show'])->name('student-courses.show')->middleware('can:student-course.view');
     Route::get('/student-courses/{studentCourse}/edit', [StudentCourseController::class, 'edit'])->name('student-courses.edit')->middleware('can:student-course.update');
     Route::put('/student-courses/{studentCourse}', [StudentCourseController::class, 'update'])->name('student-courses.update')->middleware('can:student-course.update');
+    Route::patch('/student-courses/{studentCourse}/make-current', [StudentCourseController::class, 'makeCurrent'])->name('student-courses.make-current')->middleware('can:student-course.update');
     Route::delete('/student-courses/{studentCourse}', [StudentCourseController::class, 'destroy'])->name('student-courses.destroy')->middleware('can:student-course.delete');
 
     /* 10. PENDENCIES */

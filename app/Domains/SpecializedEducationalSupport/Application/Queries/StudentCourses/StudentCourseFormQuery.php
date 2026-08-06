@@ -22,10 +22,12 @@ final class StudentCourseFormQuery
     {
         $student->ensureIsActive();
         $student->loadMissing('person');
+        $mustBeCurrent = ! $student->studentCourses()->exists();
 
         return [
             'student' => $student,
             'courses' => $this->activeCourses(),
+            'mustBeCurrent' => $mustBeCurrent,
         ];
     }
 

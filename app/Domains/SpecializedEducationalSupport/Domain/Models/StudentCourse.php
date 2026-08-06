@@ -64,7 +64,6 @@ final class StudentCourse extends Pivot
         $this->fill([
             'course_id' => $course->getKey(),
             'academic_year' => $data->academicYear,
-            'is_current' => $data->isCurrent,
             'school_attendance_status' => self::nullableText($data->schoolAttendanceStatus),
         ]);
     }
@@ -72,6 +71,11 @@ final class StudentCourse extends Pivot
     public function markAsNotCurrent(): void
     {
         $this->fill(['is_current' => false]);
+    }
+
+    public function markAsCurrent(): void
+    {
+        $this->fill(['is_current' => true]);
     }
 
     public function student(): BelongsTo

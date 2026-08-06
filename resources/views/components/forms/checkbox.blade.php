@@ -5,7 +5,8 @@
     'checked' => false,
     'description' => null,
     'id' => null,
-    'required' => false
+    'required' => false,
+    'disabled' => false,
 ])
 
 @php
@@ -19,6 +20,7 @@
         id="{{ $checkboxId }}"
         value="{{ $value }}"
         {{ $checked ? 'checked' : '' }}
+        {{ $disabled ? 'disabled' : '' }}
         class="form-check-input custom-checkbox"
     >
 

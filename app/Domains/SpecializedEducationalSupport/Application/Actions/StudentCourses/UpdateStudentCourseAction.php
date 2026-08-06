@@ -33,8 +33,7 @@ final readonly class UpdateStudentCourseAction
                 ->lockForUpdate()
                 ->findOrFail($studentCourse->getKey());
             $lockedStudentCourse->student->ensureIsActive();
-            $wasCurrent = $lockedStudentCourse->is_current;
-            if (! $wasCurrent) {
+            if (! $lockedStudentCourse->is_current) {
                 throw new InvalidStudentCourse('Cursos anteriores são históricos e não podem mais ser editados.');
             }
 
@@ -52,22 +51,8 @@ final readonly class UpdateStudentCourseAction
                 throw new InvalidStudentCourse('Este aluno já possui vínculo com o curso selecionado.');
             }
 
-            if ($data->isCurrent && ! $lockedStudentCourse->is_current) {
-                StudentCourse::query()
-                    ->where('student_id', $lockedStudentCourse->student_id)
-                    ->where('is_current', true)
-                    ->where('id', '!=', $lockedStudentCourse->getKey())
-                    ->lockForUpdate()
-                    ->get()
-                    ->each(function (StudentCourse $studentCourse): void {
-                        $studentCourse->markAsNotCurrent();
-                        $studentCourse->save();
-                    });
-            }
-
             $studentCourseDTO = new UpdateStudentCourseDTO(
                 academicYear: $data->academicYear,
-                isCurrent: $data->isCurrent,
                 schoolAttendanceStatus: $data->schoolAttendanceStatus,
             );
 
@@ -85,11 +70,9 @@ final readonly class UpdateStudentCourseAction
                 );
             }
 
-            if ($wasCurrent) {
-                $this->ensureDisciplinesBelongToCourse($course, $data->failedDisciplineIds, $data->atRiskDisciplineIds);
-                $lockedStudentCourse->syncFailedDisciplines($data->failedDisciplineIds);
-                $lockedStudentCourse->syncAtRiskDisciplines($data->atRiskDisciplineIds);
-            }
+            $this->ensureDisciplinesBelongToCourse($course, $data->failedDisciplineIds, $data->atRiskDisciplineIds);
+            $lockedStudentCourse->syncFailedDisciplines($data->failedDisciplineIds);
+            $lockedStudentCourse->syncAtRiskDisciplines($data->atRiskDisciplineIds);
 
             return $lockedStudentCourse->load(['student.person', 'course', 'failedDisciplines', 'atRiskDisciplines']);
         });

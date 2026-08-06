@@ -3,7 +3,7 @@
         ['label' => 'Aluno',         'responsive' => false],
         ['label' => 'Curso / Série', 'responsive' => false],
         ['label' => 'Ano Letivo',    'responsive' => true],
-        ['label' => 'Vigente',       'responsive' => true],
+        ['label' => 'Situação',      'responsive' => true],
         ['label' => 'Ações',         'responsive' => false],
     ]"
     :records="$studentCourses"
@@ -19,8 +19,8 @@
             <x-table.td>
                 @php
                     $statusColor = $enrollment->is_current ? 'success' : 'secondary';
-                    $statusLabel = $enrollment->is_current ? 'Ativo' : 'Inativo';
-                    $statusAria  = $enrollment->is_current ? 'Matrícula vigente' : 'Matrícula não vigente';
+                    $statusLabel = $enrollment->is_current ? 'Atual' : 'Histórico';
+                    $statusAria  = $enrollment->is_current ? 'Curso atual do aluno' : 'Curso no histórico do aluno';
                 @endphp
 
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase"

@@ -6,6 +6,7 @@ namespace App\Domains\SpecializedEducationalSupport\UI\Controllers;
 
 use App\Domains\SpecializedEducationalSupport\Application\Actions\StudentCourses\CreateStudentCourseAction;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\StudentCourses\DeleteStudentCourseAction;
+use App\Domains\SpecializedEducationalSupport\Application\Actions\StudentCourses\SetCurrentStudentCourseAction;
 use App\Domains\SpecializedEducationalSupport\Application\Actions\StudentCourses\UpdateStudentCourseAction;
 use App\Domains\SpecializedEducationalSupport\Application\Data\StudentCourses\CreateStudentCourseData;
 use App\Domains\SpecializedEducationalSupport\Application\Data\StudentCourses\ListStudentCoursesData;
@@ -114,5 +115,19 @@ final class StudentCourseController
         return redirect()
             ->route('specialized-educational-support.student-courses.history', $student)
             ->with('success', 'Registro de histórico removido.');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function makeCurrent(
+        StudentCourse $studentCourse,
+        SetCurrentStudentCourseAction $action,
+    ): RedirectResponse {
+        $studentCourse = $action->execute($studentCourse);
+
+        return redirect()
+            ->route('specialized-educational-support.student-courses.show', $studentCourse)
+            ->with('success', 'Curso definido como atual com sucesso.');
     }
 }

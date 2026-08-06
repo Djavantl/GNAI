@@ -28,7 +28,10 @@ final class ListStudentCoursesQuery
             ->when($filters->isCurrent !== null, static function ($query) use ($filters): void {
                 $query->where('is_current', $filters->isCurrent);
             })
+            ->orderByDesc('is_current')
             ->orderByDesc('academic_year')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate($filters->perPage)
             ->withQueryString();
     }

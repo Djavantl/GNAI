@@ -104,15 +104,6 @@
                 </div>
             @endforeach
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="is_current"
-                    label="Curso atual"
-                    :options="[1 => 'Ativo', 0 => 'Inativo']"
-                    :selected="old('is_current', $studentCourse->is_current)"
-                />
-            </div>
-
             <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4">
                 <x-buttons.link-button
                     href="{{ route('specialized-educational-support.student-courses.show', $studentCourse) }}"

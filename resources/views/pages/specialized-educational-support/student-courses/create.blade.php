@@ -66,10 +66,15 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.select
+                <input type="hidden" name="is_current" value="{{ $mustBeCurrent ? 1 : 0 }}">
+                <x-forms.checkbox
                     name="is_current"
-                    label="Curso atual "
-                    :options="[1 => 'Ativo', 0 => 'Inativo']"
+                    label="Definir este como o curso atual do aluno"
+                    :checked="$mustBeCurrent || filter_var(old('is_current', false), FILTER_VALIDATE_BOOLEAN)"
+                    :disabled="$mustBeCurrent"
+                    :description="$mustBeCurrent
+                        ? 'Este será o primeiro curso do aluno e precisa ser definido como atual.'
+                        : 'Ao marcar, o curso atual anterior será movido para o histórico.'"
                 />
             </div>
 
@@ -145,11 +150,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const courseSelect = document.getElementById('course_id');
-            const currentSelect = document.getElementById('is_current');
+            const currentCheckbox = document.getElementById('is_current');
             const followUpFields = document.getElementById('academic-follow-up-fields');
 
             const updateAcademicFields = () => {
-                const isCurrent = currentSelect?.value === '1';
+                const isCurrent = currentCheckbox?.checked ?? false;
                 followUpFields?.classList.toggle('d-none', !isCurrent);
 
                 document.querySelectorAll('.course-discipline-fields').forEach((container) => {
@@ -160,7 +165,7 @@
             };
 
             courseSelect?.addEventListener('change', updateAcademicFields);
-            currentSelect?.addEventListener('change', updateAcademicFields);
+            currentCheckbox?.addEventListener('change', updateAcademicFields);
             updateAcademicFields();
         });
     </script>
