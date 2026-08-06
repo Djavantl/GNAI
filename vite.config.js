@@ -13,6 +13,7 @@ export default defineConfig(({ command }) => ({
                 'resources/js/pages/dashboard.js',
                 'resources/js/components/photos.js',
                 'resources/js/pages/specialized-educational-support/attendance-record-form.js',
+                'resources/js/pages/specialized-educational-support/session.js',
                 'resources/js/pages/inclusive-radar/barriers.js',
                 'resources/js/pages/inclusive-radar/institutions.js',
                 'resources/js/pages/inclusive-radar/locations.js',
