@@ -15,5 +15,6 @@ final readonly class PedagogicalRecordDTO
         public ?string $strategiesAndResourcesAdopted,
         public ?string $referralsMade,
         public ?string $complementaryObservations,
+        public bool $withGuardians = false,
     ) {}
 }

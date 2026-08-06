@@ -63,6 +63,7 @@ final class CreatePedagogicalRecordAction
             strategiesAndResourcesAdopted: $data->strategiesAndResourcesAdopted,
             referralsMade: $data->referralsMade,
             complementaryObservations: $data->complementaryObservations,
+            withGuardians: $data->withGuardians,
         );
     }
 

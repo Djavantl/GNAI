@@ -34,6 +34,7 @@ final class UpdatePedagogicalRecordAction
                 strategiesAndResourcesAdopted: $data->strategiesAndResourcesAdopted,
                 referralsMade: $data->referralsMade,
                 complementaryObservations: $data->complementaryObservations,
+                withGuardians: $data->withGuardians,
             ));
             $record->save();
             $record->syncGuardians($guardianIds);

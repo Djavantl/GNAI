@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const evalFields = document.getElementById(`eval_fields_${index}`);
             const absenceFields = document.getElementById(`absence_fields_${index}`);
             const tabButton = document.getElementById(`tab-${index}`);
+            const withGuardians = document.getElementById('with_guardians')?.checked ?? false;
 
             if (!evalFields || !absenceFields) {
                 return;
@@ -42,6 +43,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     tabButton.classList.remove('border-danger');
                     const icon = tabButton.querySelector('i');
                     if (icon) icon.className = 'fas fa-chevron-right small opacity-50';
+                }
+            } else if (withGuardians) {
+                // Aluno ausente em atendimento realizado com responsáveis.
+                // Mantém o conteúdo pedagógico e acrescenta o motivo da ausência.
+                evalFields.style.display = 'block';
+                absenceFields.style.display = 'block';
+
+                evalInputs.forEach(input => input.disabled = false);
+                absenceInputs.forEach(input => input.disabled = false);
+
+                if (tabButton) {
+                    tabButton.classList.add('border-danger');
+                    const icon = tabButton.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user-times text-danger';
                 }
             } else {
                 // Aluno Ausente
@@ -84,6 +99,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!guardianToggle.checked) {
                     input.checked = false;
                 }
+            });
+
+            presenceToggles.forEach(toggle => {
+                toggle.dispatchEvent(new Event('change'));
             });
         };
 

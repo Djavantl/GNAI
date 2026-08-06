@@ -84,15 +84,17 @@ final class PedagogicalRecord extends Model
 
     private static function attributesFrom(PedagogicalRecordDTO $data): array
     {
+        $keepsPedagogicalContent = $data->isPresent || $data->withGuardians;
+
         return [
             'follow_up_reason' => trim($data->followUpReason),
             'duration' => trim($data->duration),
             'is_present' => $data->isPresent,
             'absence_reason' => $data->isPresent ? null : self::nullableText($data->absenceReason),
-            'systematic_pedagogical_follow_up_record' => $data->isPresent ? self::nullableText($data->systematicPedagogicalFollowUpRecord) : null,
-            'strategies_and_resources_adopted' => $data->isPresent ? self::nullableText($data->strategiesAndResourcesAdopted) : null,
-            'referrals_made' => $data->isPresent ? self::nullableText($data->referralsMade) : null,
-            'complementary_observations' => $data->isPresent ? self::nullableText($data->complementaryObservations) : null,
+            'systematic_pedagogical_follow_up_record' => $keepsPedagogicalContent ? self::nullableText($data->systematicPedagogicalFollowUpRecord) : null,
+            'strategies_and_resources_adopted' => $keepsPedagogicalContent ? self::nullableText($data->strategiesAndResourcesAdopted) : null,
+            'referrals_made' => $keepsPedagogicalContent ? self::nullableText($data->referralsMade) : null,
+            'complementary_observations' => $keepsPedagogicalContent ? self::nullableText($data->complementaryObservations) : null,
         ];
     }
 

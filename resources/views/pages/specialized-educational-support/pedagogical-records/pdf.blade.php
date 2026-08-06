@@ -58,7 +58,9 @@
                 />
             </x-pdf.row>
         </x-pdf.table>
-    @else
+    @endif
+
+    @if($pedagogicalRecord->is_present || $pedagogicalRecord->guardians->isNotEmpty())
         <x-pdf.text-area
             label="Registro do Acompanhamento Pedagógico Sistemático"
             :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->systematic_pedagogical_follow_up_record)"

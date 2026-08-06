@@ -95,7 +95,9 @@
                 <x-show.info-textarea label="Motivo da Ausência" column="col-md-12" isBox="true">
                     {!! $pedagogicalRecord->absence_reason ?? 'Não informado.' !!}
                 </x-show.info-textarea>
-            @else
+            @endif
+
+            @if($pedagogicalRecord->is_present || $pedagogicalRecord->guardians->isNotEmpty())
                 <x-show.info-textarea label="Registro do Acompanhamento Pedagógico Sistemático" column="col-md-12" isBox="true">
                     {!! $pedagogicalRecord->systematic_pedagogical_follow_up_record !!}
                 </x-show.info-textarea>
