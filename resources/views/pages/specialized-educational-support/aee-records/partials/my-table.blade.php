@@ -52,5 +52,3 @@
         </tr>
     @endforelse
 </x-table.table>
-
-{{ $aeeRecords->withQueryString()->links() }}

@@ -1,5 +1,4 @@
-<div class="table-responsive">
-    <x-table.table :headers="[
+<x-table.table :headers="[
         ['label' => 'Data', 'responsive' => false],
         ['label' => 'Horário', 'responsive' => false],
         'Profissional',
@@ -7,7 +6,7 @@
         'Presença',
         'Com responsáveis',
         ['label' => 'Ações', 'responsive' => false],
-    ]">
+    ]" :records="$pedagogicalRecords">
         @forelse($pedagogicalRecords as $record)
             @php
                 $session = $record->attendanceSession;
@@ -106,9 +105,4 @@
                 </td>
             </tr>
         @endforelse
-    </x-table.table>
-</div>
-
-<div class="mt-3 px-3 pb-3">
-    {{ $pedagogicalRecords->links() }}
-</div>
+</x-table.table>
