@@ -21,16 +21,19 @@
     </div>
 
     <div class="mt-3">
-        <x-forms.form-card action="{{ route('specialized-educational-support.sessions.update', $session) }}" method="POST">
+        <x-forms.form-card
+            id="updateSessionForm"
+            action="{{ route('specialized-educational-support.sessions.update', $session) }}"
+            method="POST"
+            data-email-confirmation-modal="#confirmUpdateSessionModal"
+        >
             @method('PUT')
 
             {{-- Inputs Hidden Críticos para o Funcionamento --}}
             <input type="hidden" name="professional_id" value="{{ $session->professional_id }}">
-            @php($hasLinkedRecord = $session->aeeRecord || $session->pedagogicalRecord)
             <input type="hidden" name="status" value="{{ $session->status }}">
-            @if($hasLinkedRecord)
-                <input type="hidden" name="attendance_type" value="{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::valueOf($session->attendance_type) }}">
-            @endif
+            <input type="hidden" name="attendance_type" value="{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::valueOf($session->attendance_type) }}">
+            <input type="hidden" name="type" value="{{ $session->type }}">
             @foreach($session->students as $student)
                 <input type="hidden" name="student_ids[]" class="student-select-item" value="{{ $student->id }}">
             @endforeach
@@ -58,31 +61,19 @@
 
             <x-forms.section title="Agendamento" />
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="attendance_type"
-                    label="Tipo de Atendimento"
-                    required
-                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::options()"
-                    :selected="old('attendance_type', \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::valueOf($session->attendance_type))"
-                    id="attendance_type"
-                    :disabled="$hasLinkedRecord"
-                />
-                @if($hasLinkedRecord)
-                    <small class="text-muted">O tipo de atendimento não pode ser alterado porque já existe registro vinculado.</small>
-                @endif
-            </div>
+            <x-show.info-item
+                label="Tipo de Atendimento"
+                :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::labelFor($session->attendance_type)"
+                column="col-md-6"
+                isBox="true"
+            />
 
-            <div class="col-md-6">
-                <x-forms.select
-                    name="type"
-                    label="Formato"
-                    required
-                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::options()"
-                    :selected="old('type', $session->type)"
-                    id="session_type"
-                />
-            </div>
+            <x-show.info-item
+                label="Formato"
+                :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::labelFor($session->type)"
+                column="col-md-6"
+                isBox="true"
+            />
 
             <div class="col-md-6">
                 <x-forms.input 
@@ -158,6 +149,22 @@
 
         </x-forms.form-card>
     </div>
+
+    <x-modal id="confirmUpdateSessionModal" title="Confirmar Alterações">
+        <p class="mb-0">Deseja enviar um e-mail aos participantes sobre as alterações deste agendamento?</p>
+
+        @slot('footer')
+            <x-buttons.link-button variant="secondary" data-bs-dismiss="modal">
+                Voltar
+            </x-buttons.link-button>
+            <button type="submit" form="updateSessionForm" name="send_notification" value="0" class="btn-action dark" data-email-confirmation-choice>
+                Salvar sem E-mail
+            </button>
+            <button type="submit" form="updateSessionForm" name="send_notification" value="1" class="btn-action warning" data-email-confirmation-choice>
+                Salvar e Enviar E-mail
+            </button>
+        @endslot
+    </x-modal>
     
     @push('scripts')
         @vite('resources/js/pages/specialized-educational-support/session.js')

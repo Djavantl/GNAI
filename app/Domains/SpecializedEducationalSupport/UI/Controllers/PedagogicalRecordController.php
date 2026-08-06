@@ -17,6 +17,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRec
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\ShowPedagogicalRecordQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Shared\Application\Exceptions\AccessDeniedException;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -28,14 +29,35 @@ use Throwable;
 
 final class PedagogicalRecordController
 {
-    public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function index(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
     {
         $pedagogicalRecords = $query->execute($filters, $this->user($request));
         if ($request->ajax()) {
-            return view('pages.specialized-educational-support.pedagogical-records.partials.my-table', compact('pedagogicalRecords'));
+            return view('pages.specialized-educational-support.pedagogical-records.partials.table', compact('pedagogicalRecords'));
+        }
+
+        return view('pages.specialized-educational-support.pedagogical-records.index', compact('pedagogicalRecords') + $options->execute());
+    }
+
+    public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    {
+        $pedagogicalRecords = $query->execute($filters, $this->user($request), onlyOwn: true);
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.pedagogical-records.partials.table', compact('pedagogicalRecords'));
         }
 
         return view('pages.specialized-educational-support.pedagogical-records.my-records', compact('pedagogicalRecords') + $options->execute());
+    }
+
+    public function studentIndex(Student $student, ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    {
+        $student->loadMissing('person');
+        $pedagogicalRecords = $query->execute($filters, $this->user($request), student: $student);
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.students.pedagogical-records.partials.table', compact('student', 'pedagogicalRecords'));
+        }
+
+        return view('pages.specialized-educational-support.students.pedagogical-records.index', compact('student', 'pedagogicalRecords') + $options->execute());
     }
 
     public function create(Session $session, PedagogicalRecordFormQuery $form, Request $request): View

@@ -19,7 +19,6 @@ final class StudentFactory extends Factory
             'person_id' => Person::factory(),
             'registration' => $this->faker->unique()->bothify('MAT######'),
             'entry_date' => $this->faker->optional()->dateTimeBetween('-5 years', 'now')?->format('Y-m-d'),
-            'is_repeater' => $this->faker->boolean(10),
             'status' => $this->faker->randomElement(StudentStatus::cases()),
         ];
     }

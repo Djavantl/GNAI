@@ -58,11 +58,6 @@ final class StudentsReportSource extends EloquentReportSource
                 'options' => $this->enumOptions(StudentStatus::class),
             ],
             'entry_date' => ['label' => 'Data de ingresso', 'type' => ReportColumnType::DATE],
-            'is_repeater' => [
-                'label' => 'Repetente',
-                'type' => ReportColumnType::BOOLEAN,
-                'options' => ['1' => 'Sim', '0' => 'Não'],
-            ],
             'email' => ['label' => 'E-mail', 'path' => 'person.email'],
             'document' => ['label' => 'CPF', 'path' => 'person.document'],
             'birth_date' => [
@@ -84,7 +79,7 @@ final class StudentsReportSource extends EloquentReportSource
 
     protected function filterable(): array
     {
-        return ['name', 'registration', 'status', 'entry_date', 'is_repeater', 'current_course'];
+        return ['name', 'registration', 'status', 'entry_date', 'current_course'];
     }
 
     protected function relationPolicy(string $parentModel, string $relationName): array

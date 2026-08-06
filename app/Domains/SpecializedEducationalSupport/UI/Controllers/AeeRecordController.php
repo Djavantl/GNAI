@@ -34,18 +34,21 @@ use Throwable;
 
 final class AeeRecordController
 {
-    public function index(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, Request $request): View
+    public function index(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
     {
         $aeeRecords = $query->execute($filters, $this->user($request));
+        if ($request->ajax()) {
+            return view('pages.specialized-educational-support.aee-records.partials.table', compact('aeeRecords'));
+        }
 
-        return view('pages.specialized-educational-support.aee-records.index', compact('aeeRecords'));
+        return view('pages.specialized-educational-support.aee-records.index', compact('aeeRecords') + $options->execute());
     }
 
     public function myRecords(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
     {
         $aeeRecords = $query->execute($filters, $this->user($request), onlyOwn: true);
         if ($request->ajax()) {
-            return view('pages.specialized-educational-support.aee-records.partials.my-table', compact('aeeRecords'));
+            return view('pages.specialized-educational-support.aee-records.partials.table', compact('aeeRecords'));
         }
 
         return view('pages.specialized-educational-support.aee-records.my-records', compact('aeeRecords') + $options->execute());

@@ -13,12 +13,14 @@ final class CancelSessionData extends Data
 {
     public function __construct(
         public string $cancellationReason,
+        public bool $sendNotification = false,
     ) {}
 
     public static function rules(): array
     {
         return [
             'cancellation_reason' => ['required', 'string', 'min:5'],
+            'send_notification' => ['sometimes', 'boolean'],
         ];
     }
 

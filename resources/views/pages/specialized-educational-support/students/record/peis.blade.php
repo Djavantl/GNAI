@@ -7,8 +7,8 @@
 
         <div class="table-responsive">
             <x-table.table :headers="[
-                ['label' => 'Curso', 'responsive' => false],
-                'Disciplina',
+                ['label' => 'Semestre', 'responsive' => false],
+                'Curso',
                 'Professor',
                 'Status',
                 ['label' => '', 'responsive' => false],
@@ -17,23 +17,21 @@
                 @forelse($student->peis as $pei)
                     <tr>
 
-                        {{-- CURSO --}}
+                        {{-- SEMESTRE --}}
                         <x-table.td :responsive="false">
                             <span class="fw-bold text-purple-dark">
-                                {{ $pei->course->name ?? 'Geral' }}
+                                {{ $pei->semester->label ?? 'Não informado' }}
                             </span>
                         </x-table.td>
 
                         {{-- CURSO --}}
                         <x-table.td>
-                            
-                            {{ $pei->discipline->name ?? 'Geral' }}
-                            
+                            {{ $pei->course->name ?? 'Geral' }}
                         </x-table.td>
 
                         {{-- PROFESSOR --}}
                         <x-table.td>
-                            {{ $pei->teacher_name ?? 'Não informado' }}
+                            {{ $pei->peiDisciplines->pluck('teacher.person.name')->filter()->unique()->join(', ') ?: 'Não informado' }}
                         </x-table.td>
 
                         {{-- STATUS --}}
@@ -79,16 +77,19 @@
         </div>
 
         {{-- BOTÃO GERENCIAR --}}
-        <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
-            @can('pei.view')
-            <x-buttons.link-button
-                :href="route('specialized-educational-support.pei.index', $student)"
-                variant="warning"
-                class="btn-sm">
-                <i class="fas fa-folder-open"></i> Gerenciar PEIs
-            </x-buttons.link-button>
-            @endcan
-        </div>
+        @can('pei.view')
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 pt-3 border-top">
+                <small class="text-muted">
+                    São exibidos até 5 registros mais recentes. Para consultar todos, clique em “Gerenciar PEIs”.
+                </small>
+                <x-buttons.link-button
+                    :href="route('specialized-educational-support.pei.index', $student)"
+                    variant="warning"
+                    class="btn-sm">
+                    <i class="fas fa-folder-open"></i> Gerenciar PEIs
+                </x-buttons.link-button>
+            </div>
+        @endcan
 
     </div>
 </section>

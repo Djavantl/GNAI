@@ -1,7 +1,9 @@
 @extends('layouts.master')
 
 @section('content')
-    @php($session = $pedagogicalRecord->attendanceSession)
+    @php
+        $session = $pedagogicalRecord->attendanceSession;
+    @endphp
 
     <div class="mb-5">
         <x-breadcrumb :items="[

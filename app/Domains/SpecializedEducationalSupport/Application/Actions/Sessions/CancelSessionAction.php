@@ -22,23 +22,27 @@ final readonly class CancelSessionAction
     public function execute(Session $session, CancelSessionData $data, int $userId): Session
     {
         $session->ensureCreatedBy($userId, 'cancelá-la');
+        $session->ensureCanBeCancelled();
 
         $cancelledSession = DB::transaction(function () use ($session, $data): Session {
             $lockedSession = Session::query()
                 ->lockForUpdate()
                 ->findOrFail($session->getKey());
 
+            $lockedSession->ensureCanBeCancelled();
             $lockedSession->cancel($data->cancellationReason);
             $lockedSession->save();
 
             return $lockedSession->fresh(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
         });
 
-        $this->notifications->send(
-            $cancelledSession,
-            'Agendamento Cancelado',
-            "Informamos que o seu agendamento foi cancelado. Motivo: {$data->cancellationReason}",
-        );
+        if ($data->sendNotification) {
+            $this->notifications->send(
+                $cancelledSession,
+                'Agendamento Cancelado',
+                "Informamos que o seu agendamento foi cancelado. Motivo: {$data->cancellationReason}",
+            );
+        }
 
         return $cancelledSession;
     }

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[UseFactory(GuardianFactory::class)]
 final class Guardian extends Model
@@ -64,6 +65,14 @@ final class Guardian extends Model
         }
     }
 
+    /** @throws InvalidGuardian */
+    public function ensureCanBeDeleted(): void
+    {
+        if ($this->pedagogicalRecords()->exists()) {
+            throw new InvalidGuardian('Este responsável participou de atendimentos pedagógicos e não pode ser excluído.');
+        }
+    }
+
     public function relationshipLabel(): string
     {
         return $this->relationship->label();
@@ -77,5 +86,15 @@ final class Guardian extends Model
     public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class, 'person_id');
+    }
+
+    public function pedagogicalRecords(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            PedagogicalRecord::class,
+            'pedagogical_record_guardians',
+            'guardian_id',
+            'pedagogical_record_id',
+        )->withTimestamps();
     }
 }

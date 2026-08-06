@@ -112,6 +112,32 @@ final class Session extends Model
         ]);
     }
 
+    public function ensureCanBeCancelled(): void
+    {
+        if (! $this->isScheduled()) {
+            throw new InvalidSession('Apenas agendamentos com status Agendada podem ser cancelados.');
+        }
+
+        if (! $this->sessionDateIsUpcoming()) {
+            throw new InvalidSession('Apenas agendamentos de datas futuras podem ser cancelados.');
+        }
+    }
+
+    public function sessionDateHasPassed(): bool
+    {
+        return $this->session_date->copy()->startOfDay()->isBefore(today());
+    }
+
+    public function sessionDateHasArrived(): bool
+    {
+        return ! $this->session_date->copy()->startOfDay()->isAfter(today());
+    }
+
+    public function sessionDateIsUpcoming(): bool
+    {
+        return $this->session_date->copy()->startOfDay()->isAfter(today());
+    }
+
     public static function typeForAttendance(AttendanceType|string $attendanceType, string $type): string
     {
         if (AttendanceType::isPedagogical($attendanceType)) {
@@ -127,7 +153,7 @@ final class Session extends Model
     }
 
     /**
-     * @param list<int> $studentIds
+     * @param  list<int>  $studentIds
      *
      * @throws InvalidSession
      */

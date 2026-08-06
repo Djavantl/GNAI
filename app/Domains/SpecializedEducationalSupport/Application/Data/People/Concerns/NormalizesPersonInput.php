@@ -20,7 +20,7 @@ trait NormalizesPersonInput
             }
         }
 
-        foreach (['is_repeater', 'remove_photo', 'is_admin'] as $field) {
+        foreach (['remove_photo', 'is_admin'] as $field) {
             if (array_key_exists($field, $properties)) {
                 $properties[$field] = filter_var(
                     $properties[$field],

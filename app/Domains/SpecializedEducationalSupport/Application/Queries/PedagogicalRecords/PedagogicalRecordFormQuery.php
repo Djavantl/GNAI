@@ -14,8 +14,13 @@ final class PedagogicalRecordFormQuery
 {
     public function forCreation(Session $session, int $professionalId): array
     {
-        $session->load(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
-        if ((int) $session->professional_id !== $professionalId || ! AttendanceType::isPedagogical($session->attendance_type) || ! SessionStatus::isScheduledValue($session->status) || $session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
+        $session->load([
+            'students.guardians.person',
+            'professional.person',
+            'aeeRecord',
+            'pedagogicalRecord',
+        ]);
+        if ((int) $session->professional_id !== $professionalId || ! AttendanceType::isPedagogical($session->attendance_type) || ! SessionStatus::isScheduledValue($session->status) || ! $session->sessionDateHasArrived() || $session->students->count() !== 1 || $session->aeeRecord !== null || $session->pedagogicalRecord !== null) {
             throw new InvalidPedagogicalRecord('Este agendamento não está disponível para criação de registro pedagógico.');
         }
 
@@ -24,7 +29,11 @@ final class PedagogicalRecordFormQuery
 
     public function forUpdate(PedagogicalRecord $pedagogicalRecord, int $professionalId): array
     {
-        $pedagogicalRecord->load(['attendanceSession.students.person', 'attendanceSession.professional.person']);
+        $pedagogicalRecord->load([
+            'attendanceSession.students.guardians.person',
+            'attendanceSession.professional.person',
+            'guardians.person',
+        ]);
         if ((int) $pedagogicalRecord->attendanceSession->professional_id !== $professionalId) {
             throw new InvalidPedagogicalRecord('Apenas o profissional vinculado pode editar este registro pedagógico.');
         }

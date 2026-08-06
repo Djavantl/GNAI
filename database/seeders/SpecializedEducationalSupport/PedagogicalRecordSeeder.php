@@ -48,18 +48,41 @@ class PedagogicalRecordSeeder extends Seeder
             DB::transaction(function () use ($session): void {
                 $isPresent = random_int(1, 100) > 15;
 
-                DB::table('pedagogical_records')->insert([
+                $recordId = DB::table('pedagogical_records')->insertGetId([
                     'attendance_session_id' => $session->id,
+                    'follow_up_reason' => 'Necessidade de acompanhamento do desempenho acadêmico e da participação escolar do estudante.',
                     'duration' => '1 hora',
                     'is_present' => $isPresent,
                     'absence_reason' => $isPresent ? null : $this->randomAbsenceReason(),
-                    'planned_performed_activities' => $isPresent ? 'Atividades de acompanhamento da aprendizagem planejadas conforme as necessidades do aluno.' : null,
-                    'pedagogical_record' => $isPresent ? 'O aluno participou das atividades propostas e apresentou evolução durante o atendimento.' : null,
-                    'resources_used' => $isPresent ? 'Material didático adaptado, recursos visuais e atividades impressas.' : null,
-                    'general_observations' => $isPresent ? 'O atendimento ocorreu conforme o planejamento pedagógico.' : null,
+                    'systematic_pedagogical_follow_up_record' => $isPresent ? 'O aluno participou das atividades propostas e apresentou evolução durante o acompanhamento.' : null,
+                    'strategies_and_resources_adopted' => $isPresent ? 'Material didático adaptado, recursos visuais, atividades impressas e mediação individualizada.' : null,
+                    'referrals_made' => $isPresent ? 'Orientação aos docentes e contato com a equipe pedagógica para acompanhamento.' : null,
+                    'complementary_observations' => $isPresent ? 'O atendimento ocorreu conforme o planejamento pedagógico.' : null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                if (random_int(0, 1) === 1) {
+                    $studentId = DB::table('attendance_session_student')
+                        ->where('attendance_session_id', $session->id)
+                        ->value('student_id');
+                    $guardianIds = DB::table('student_guardians')
+                        ->where('student_id', $studentId)
+                        ->pluck('id')
+                        ->shuffle()
+                        ->take(random_int(1, 2));
+
+                    $rows = $guardianIds->map(static fn (mixed $guardianId): array => [
+                        'pedagogical_record_id' => $recordId,
+                        'guardian_id' => $guardianId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ])->all();
+
+                    if ($rows !== []) {
+                        DB::table('pedagogical_record_guardians')->insert($rows);
+                    }
+                }
 
                 DB::table('attendance_sessions')->where('id', $session->id)->update([
                     'status' => SessionStatus::COMPLETED_DATABASE_VALUE,

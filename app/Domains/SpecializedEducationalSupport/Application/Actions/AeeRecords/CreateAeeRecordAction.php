@@ -13,7 +13,6 @@ use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidAeeRecord
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeRecord;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeStudentEvaluation;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -50,6 +49,9 @@ final class CreateAeeRecordAction
         }
         if (! SessionStatus::isScheduledValue($session->status)) {
             throw new InvalidAeeRecord('O agendamento precisa estar com status Agendada para receber o registro AEE.');
+        }
+        if (! $session->sessionDateHasArrived()) {
+            throw new InvalidAeeRecord('O registro AEE só pode ser criado quando a data do agendamento chegar.');
         }
         if (! AttendanceType::isAee($session->attendance_type)) {
             throw new InvalidAeeRecord('Este agendamento não está classificado como Atendimento AEE.');

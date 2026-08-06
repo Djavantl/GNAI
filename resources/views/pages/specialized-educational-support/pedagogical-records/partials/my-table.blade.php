@@ -68,5 +68,3 @@
         </tr>
     @endforelse
 </x-table.table>
-
-{{ $pedagogicalRecords->withQueryString()->links() }}

@@ -29,7 +29,12 @@ final class StudentCoursesReportSource extends EloquentReportSource
 
     protected function with(): array
     {
-        return ['student.person', 'course'];
+        return ['student.person', 'course', 'failedDisciplines', 'atRiskDisciplines'];
+    }
+
+    public function excludedRelations(): array
+    {
+        return ['failedDisciplines', 'atRiskDisciplines'];
     }
 
     protected function definitions(): array
@@ -40,6 +45,9 @@ final class StudentCoursesReportSource extends EloquentReportSource
             'course' => ['label' => 'Curso', 'path' => 'course.name'],
             'academic_year' => ['label' => 'Ano letivo'],
             'is_current' => ['label' => 'Matrícula atual', 'type' => ReportColumnType::BOOLEAN],
+            'school_attendance_status' => ['label' => 'Situação da frequência escolar'],
+            'failed_disciplines' => ['label' => 'Disciplinas com reprovação', 'path' => 'failed_discipline_names'],
+            'at_risk_disciplines' => ['label' => 'Disciplinas com risco de insucesso acadêmico', 'path' => 'at_risk_discipline_names'],
         ];
     }
 

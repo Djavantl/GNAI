@@ -13,13 +13,6 @@
             <x-show.info-item label="Data de Ingresso" column="col-md-6" isBox="true">
                 {{ $student->entry_date ? \Carbon\Carbon::parse($student->entry_date)->format('d/m/Y') : '---' }}
             </x-show.info-item>
-            <x-show.info-item label="Repetente" column="col-md-6" isBox="true">
-                @if($student->is_repeater)
-                    <span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Sim</span>
-                @else
-                    <span class="text-danger fw-bold"><i class="fas fa-times-circle me-1"></i>Não</span>
-                @endif
-            </x-show.info-item>
         </div>
 
         <div class="ms-3 me-3">

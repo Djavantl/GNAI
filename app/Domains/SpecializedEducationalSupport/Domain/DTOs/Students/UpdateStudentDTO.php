@@ -13,6 +13,5 @@ final readonly class UpdateStudentDTO
         public Registration $registration,
         public StudentStatus $status,
         public ?string $entryDate = null,
-        public bool $isRepeater = false,
     ) {}
 }

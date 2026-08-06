@@ -1,6 +1,6 @@
 <input type="hidden" name="attendance_session_id" value="{{ $session->id }}">
 
-<x-forms.section title="Identificação" />
+<x-forms.section title="Identificação do Estudante" />
 
 <x-show.info-item label="Aluno" column="col-md-6" isBox="true">
     {{ $session->students->first()?->person?->name ?? 'Aluno não informado' }}
@@ -24,14 +24,81 @@
     {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::labelFor($session->attendance_type) }}
 </x-show.info-item>
 
-<x-forms.section title="Registro Pedagógico" />
+@php
+    $student = $session->students->first();
+    $guardians = $student?->guardians?->sortBy('person.name')->values() ?? collect();
+    $withGuardians = filter_var(old('with_guardians', $record?->guardians?->isNotEmpty() ?? false), FILTER_VALIDATE_BOOLEAN);
+    $selectedGuardianIds = array_map('intval', (array) old('guardian_ids', $record?->guardians?->pluck('id')->all() ?? []));
+@endphp
 
-@php($isPresent = old('is_present', $record?->is_present ?? true))
+<div class="col-md-12">
+    <input type="hidden" name="with_guardians" value="0">
+    <x-forms.checkbox
+        name="with_guardians"
+        id="with_guardians"
+        label="Atendimento realizado com responsável pelo aluno"
+        :checked="$withGuardians"
+        :disabled="$guardians->isEmpty()"
+        :description="$guardians->isEmpty()
+            ? 'O aluno não possui responsáveis cadastrados no sistema.'
+            : 'Marque para selecionar os responsáveis que participaram do atendimento.'"
+        class="guardian-participation-toggle"
+    />
+</div>
 
-<div class="col-md-6">
+<div class="col-md-12 {{ $withGuardians ? '' : 'd-none' }}" id="guardian_participants_fields">
+    <div class="border rounded p-3">
+        <label class="form-label fw-bold text-purple-dark d-block mb-3">
+            Responsáveis participantes
+        </label>
+        <div class="row g-2">
+            @foreach($guardians as $guardian)
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input guardian-participant-input"
+                            type="checkbox"
+                            name="guardian_ids[]"
+                            value="{{ $guardian->id }}"
+                            id="guardian_{{ $guardian->id }}"
+                            {{ in_array((int) $guardian->id, $selectedGuardianIds, true) ? 'checked' : '' }}
+                            {{ $withGuardians ? '' : 'disabled' }}
+                        >
+                        <label class="form-check-label" for="guardian_{{ $guardian->id }}">
+                            <strong>{{ $guardian->person->name }}</strong>
+                            <span class="text-muted">— {{ $guardian->relationshipLabel() }}</span>
+                        </label>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        @error('guardian_ids')
+            <div class="text-danger small mt-2">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
+
+<x-forms.section title="Acompanhamento Pedagógico" />
+
+@php
+    $isPresent = old('is_present', $record?->is_present ?? true);
+@endphp
+
+<div class="col-md-12">
+    <x-forms.textarea
+        name="follow_up_reason"
+        label="Motivo do Acompanhamento"
+        rows="3"
+        placeholder="Informe o motivo do acompanhamento pedagógico..."
+        required
+        :value="old('follow_up_reason', $record?->follow_up_reason ?? $session->session_objective)"
+    />
+</div>
+
+<div class="col-md-12">
     <x-forms.input
         name="duration"
-        label="Duração"
+        label="Período/Duração do Acompanhamento"
         placeholder="Ex: 50 minutos ou 01:00"
         required
         :value="old('duration', $record?->duration)"
@@ -48,7 +115,7 @@
             value="1"
             {{ filter_var($isPresent, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}
         >
-        <label class="form-label fw-bold text-purple-dark" for="presence_0">Aluno Presente</label>
+        <label class="form-label fw-bold text-purple-dark" for="presence_0">Presença do Estudante no Atendimento</label>
     </div>
 </div>
 
@@ -67,43 +134,42 @@
     <div class="row g-3">
         <div class="col-md-12">
             <x-forms.textarea
-                name="planned_performed_activities"
-                label="Atividades Planejadas/Realizadas"
-                rows="3"
-                placeholder="Descreva as atividades planejadas e realizadas..."
+                name="systematic_pedagogical_follow_up_record"
+                label="Registro do Acompanhamento Pedagógico Sistemático"
+                rows="4"
+                placeholder="Registre o acompanhamento pedagógico sistemático realizado..."
                 required
-                :value="old('planned_performed_activities', $record?->planned_performed_activities)"
+                :value="old('systematic_pedagogical_follow_up_record', $record?->systematic_pedagogical_follow_up_record)"
             />
         </div>
 
         <div class="col-md-12">
             <x-forms.textarea
-                name="pedagogical_record"
-                label="Registro Pedagógico"
-                rows="4"
-                placeholder="Descreva o acompanhamento pedagógico realizado..."
-                required
-                :value="old('pedagogical_record', $record?->pedagogical_record)"
+                name="strategies_and_resources_adopted"
+                label="Estratégias e Recursos Adotados (quando necessário)"
+                rows="3"
+                placeholder="Descreva as estratégias e os recursos adotados, quando necessário..."
+                :value="old('strategies_and_resources_adopted', $record?->strategies_and_resources_adopted)"
             />
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12">
             <x-forms.textarea
-                name="resources_used"
-                label="Recursos Utilizados"
-                rows="2"
-                placeholder="Materiais, instrumentos ou tecnologias utilizados..."
-                :value="old('resources_used', $record?->resources_used)"
+                name="referrals_made"
+                label="Encaminhamentos Realizados"
+                rows="3"
+                placeholder="Informe os encaminhamentos realizados..."
+                :value="old('referrals_made', $record?->referrals_made)"
             />
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12">
             <x-forms.textarea
-                name="general_observations"
-                label="Observações Gerais"
-                rows="2"
-                placeholder="Observações relevantes sobre o atendimento..."
-                :value="old('general_observations', $record?->general_observations)"
+                name="complementary_observations"
+                label="Observações Complementares"
+                rows="3"
+                placeholder="Registre informações complementares relevantes..."
+                :value="old('complementary_observations', $record?->complementary_observations)"
             />
         </div>
     </div>

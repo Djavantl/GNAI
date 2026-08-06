@@ -31,7 +31,6 @@ final class UpdateStudentData extends Data
         public ?string $phone = null,
         public ?string $address = null,
         public ?string $entryDate = null,
-        public bool $isRepeater = false,
         public ?UploadedFile $photo = null,
         public bool $removePhoto = false,
     ) {}
@@ -62,7 +61,6 @@ final class UpdateStudentData extends Data
                 Rule::unique('students', 'registration')->ignore($studentId),
             ],
             'entry_date' => ['nullable', 'date', 'after_or_equal:birth_date'],
-            'is_repeater' => ['sometimes', 'boolean'],
             'status' => ['required', Rule::enum(StudentStatus::class)],
             'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
             'remove_photo' => ['sometimes', 'boolean'],
@@ -96,7 +94,6 @@ final class UpdateStudentData extends Data
             'registration.unique' => 'Esta matrícula já está cadastrada para outro aluno.',
             'entry_date.date' => 'A data de ingresso do aluno deve ser válida.',
             'entry_date.after_or_equal' => 'A data de ingresso não pode ser anterior à data de nascimento.',
-            'is_repeater.boolean' => 'A indicação de repetência é inválida.',
             'status.required' => 'Selecione o status do aluno.',
             'status.enum' => 'O status selecionado é inválido.',
             'photo.image' => 'O arquivo da foto deve ser uma imagem válida.',

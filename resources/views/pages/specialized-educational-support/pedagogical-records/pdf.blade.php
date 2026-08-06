@@ -9,49 +9,80 @@
 <body>
     <x-pdf.header
         title="Registro de Atendimento Pedagógico"
-        :status="$pedagogicalRecord->is_present ? 'Presente' : 'Ausente'"
-        :meta="[
-            'Aluno' => $student?->person?->name ?? 'Não informado',
-            'Profissional' => $professional?->person?->name ?? 'Não informado',
-            'Agendamento' => '#' . $session->id,
-            'Data' => $session->session_date->format('d/m/Y'),
-            'Horário' => \Carbon\Carbon::parse($session->start_time)->format('H:i') . ' às ' . ($session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--'),
-            'Duração registrada' => $pedagogicalRecord->duration,
-        ]"
     />
 
-    <x-pdf.section-title title="Planejamento e Execução" />
+    <div class="category-header">Informações do Atendimento</div>
+
+    <div class="section-title">Identificação</div>
+    <x-pdf.table>
+        <x-pdf.row>
+            <x-pdf.info-item label="Estudante" :value="$student?->person?->name ?? 'Não informado'" colspan="2" />
+            <x-pdf.info-item label="Matrícula" :value="$student?->registration ?? 'Não informada'" colspan="2" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Curso" :value="$student?->currentCourse?->course?->name ?? 'Não informado'" colspan="2" />
+            <x-pdf.info-item label="Profissional" :value="$professional?->person?->name ?? 'Não informado'" colspan="2" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Data do Atendimento" :value="$session->session_date->format('d/m/Y')" />
+            <x-pdf.info-item label="Horário" :value="\Carbon\Carbon::parse($session->start_time)->format('H:i') . ' às ' . ($session->end_time ? \Carbon\Carbon::parse($session->end_time)->format('H:i') : '--:--')" />
+            <x-pdf.info-item label="Duração" :value="$pedagogicalRecord->duration" />
+            <x-pdf.info-item label="Presença" :value="$pedagogicalRecord->is_present ? 'Presente' : 'Ausente'" />
+        </x-pdf.row>
+        <x-pdf.row>
+            <x-pdf.info-item label="Agendamento" :value="'#' . $session->id" colspan="2" />
+            <x-pdf.info-item label="Gerado em" :value="date('d/m/Y H:i')" colspan="2" />
+        </x-pdf.row>
+        @if($pedagogicalRecord->guardians->isNotEmpty())
+            <x-pdf.row>
+                <x-pdf.info-item label="Responsáveis participantes" :value="$pedagogicalRecord->guardian_names" colspan="4" />
+            </x-pdf.row>
+        @endif
+    </x-pdf.table>
+
+    <x-pdf.section-title title="Acompanhamento Pedagógico" />
+
+
+    <x-pdf.text-area
+        label="Motivo do Acompanhamento"
+        :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->follow_up_reason ?? 'Não informado.'))"
+    />
 
     @if(!$pedagogicalRecord->is_present)
-        <x-pdf.text-area
-            label="Motivo da Ausência"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->absence_reason ?? 'Não informado.'))"
-        />
-    @else
-        <x-pdf.text-area
-            label="Atividades Planejadas/Realizadas"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->planned_performed_activities)"
-        />
+        <x-pdf.table>
+            <x-pdf.row>
+                <x-pdf.info-item
+                    label="Motivo da Ausência"
+                    :value="$pedagogicalRecord->absence_reason ?? 'Não informado.'"
+                    colspan="4"
+                />
+            </x-pdf.row>
+        </x-pdf.table>
+    @endif
 
+    @if($pedagogicalRecord->is_present || $pedagogicalRecord->guardians->isNotEmpty())
         <x-pdf.text-area
-            label="Registro Pedagógico"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->pedagogical_record)"
-        />
-
-        <x-pdf.section-title title="Complementos" />
-
-        <x-pdf.text-area
-            label="Recursos Utilizados"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->resources_used ?? 'N/A'))"
+            label="Registro do Acompanhamento Pedagógico Sistemático"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $pedagogicalRecord->systematic_pedagogical_follow_up_record)"
         />
 
         <x-pdf.text-area
-            label="Observações Gerais"
-            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->general_observations ?? 'N/A'))"
+            label="Estratégias e Recursos Adotados (quando necessário)"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->strategies_and_resources_adopted ?? 'N/A'))"
+        />
+
+        <x-pdf.text-area
+            label="Encaminhamentos Realizados"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->referrals_made ?? 'N/A'))"
+        />
+
+        <x-pdf.text-area
+            label="Observações Complementares"
+            :value="\App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($pedagogicalRecord->complementary_observations ?? 'N/A'))"
         />
     @endif
 
-    <div class="signature-wrapper pdf-mt-50">
+    <div class="signature-wrapper">
         <x-pdf.table-signatures>
             <x-pdf.table-signature-label label="Profissional Responsável" />
             <x-pdf.table-signature-label label="Coordenação / Direção" />

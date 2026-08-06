@@ -51,6 +51,7 @@
                         data-confirm-method="DELETE"
                         data-confirm-submit-text="Confirmar Exclusao"
                         data-confirm-variant="danger"
+                        data-confirm-template="{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::isScheduledValue($session->status) ? '#sessionEmailNotificationTemplate' : '' }}"
                     >
                            <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                         </x-buttons.submit-button>

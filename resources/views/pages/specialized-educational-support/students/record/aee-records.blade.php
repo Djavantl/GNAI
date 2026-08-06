@@ -84,20 +84,19 @@
             </x-table.table>
         </div>
 
-        <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
-            @canany(['aee-record.view-all', 'aee-record.view-own'])
+        @canany(['aee-record.view-all', 'aee-record.view-own'])
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 pt-3 border-top">
+                <small class="text-muted">
+                    São exibidos até 5 registros mais recentes. Para consultar todos, clique em “Gerenciar Registros”.
+                </small>
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.students.aee-records.index', $student)"
                     variant="warning"
                     class="btn-sm">
                     <i class="fas fa-folder-open"></i> Gerenciar Registros
                 </x-buttons.link-button>
-            @endcanany
-        </div>
-
-        <div class="mt-3">
-            {{ $aeeEvaluations->links() }}
-        </div>
+            </div>
+        @endcanany
 
     </div>
 </section>
