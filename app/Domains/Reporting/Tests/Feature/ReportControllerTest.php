@@ -42,12 +42,14 @@ final class ReportControllerTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonCount(31)
+            ->assertJsonCount(33)
             ->assertJsonFragment(['key' => 'auth.users'])
             ->assertJsonFragment(['key' => 'backup.backups'])
             ->assertJsonFragment(['key' => 'inclusive-radar.loans'])
             ->assertJsonFragment(['key' => 'inclusive-radar.inspections'])
             ->assertJsonFragment(['key' => 'specialized-support.pei-disciplines'])
+            ->assertJsonFragment(['key' => 'specialized-support.pedagogical-records'])
+            ->assertJsonFragment(['key' => 'specialized-support.student-courses'])
             ->assertJsonMissing(['key' => 'specialized-support.student-deficiencies']);
     }
 
