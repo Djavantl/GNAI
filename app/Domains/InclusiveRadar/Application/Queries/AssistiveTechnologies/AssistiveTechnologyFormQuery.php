@@ -25,6 +25,18 @@ final class AssistiveTechnologyFormQuery
     /**
      * @return array<string, mixed>
      */
+    public function forCloning(AssistiveTechnology $technology): array
+    {
+        $technology->loadMissing('deficiencies');
+
+        return $this->forCreation() + [
+            'cloneSource' => $technology,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function forUpdate(AssistiveTechnology $technology): array
     {
         $technology->loadMissing('deficiencies');
