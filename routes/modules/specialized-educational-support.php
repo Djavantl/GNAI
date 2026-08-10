@@ -163,6 +163,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('aee-records/{aeeRecord}', [AeeRecordController::class, 'destroy'])->name('aee-records.destroy')->middleware('can:aee-record.delete');
     Route::get('aee-records/{aeeRecord}/pdf', [AeeRecordController::class, 'pdf'])->name('aee-records.pdf')->middleware('can:aee-record.view');
     Route::get('students/{student}/aee-records', [AeeRecordController::class, 'studentIndex'])->name('students.aee-records.index')->middleware('can:aee-record.view');
+    Route::get('students/{student}/aee-records/pdf', [AeeRecordController::class, 'studentHistoryPdf'])->name('students.aee-records.history-pdf')->middleware('can:aee-record.view');
     Route::get('students/{student}/aee-records/{evaluation}/show', [AeeRecordController::class, 'studentShow'])->name('students.aee-records.show')->middleware('can:aee-record.view');
     Route::get('students/{student}/aee-records/{evaluation}/edit', [AeeRecordController::class, 'studentEdit'])->name('students.aee-records.edit')->middleware('can:aee-record.update');
     Route::put('students/{student}/aee-records/{evaluation}', [AeeRecordController::class, 'studentUpdate'])->name('students.aee-records.update')->middleware('can:aee-record.update');

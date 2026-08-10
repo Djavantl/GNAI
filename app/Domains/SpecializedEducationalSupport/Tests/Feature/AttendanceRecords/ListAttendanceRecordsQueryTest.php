@@ -9,6 +9,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\AeeRecords\ListAe
 use App\Domains\SpecializedEducationalSupport\Application\Data\PedagogicalRecords\ListPedagogicalRecordsData;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\AeeRecords\ListAeeRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\ListPedagogicalRecordsQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentAeeEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Schema\Blueprint;
@@ -182,6 +183,50 @@ final class ListAttendanceRecordsQueryTest extends TestCase
         preg_match_all('/Atendimento Pedagógico (\d{2}\/\d{2}\/\d{4})/', $html, $headings);
         self::assertSame(
             ['01/08/2026', '01/08/2026', '03/08/2026', '04/08/2026'],
+            $headings[1],
+        );
+    }
+
+    public function test_student_aee_history_contains_all_evaluations_in_chronological_order(): void
+    {
+        $now = now();
+        DB::table('attendance_sessions')->insert([
+            ['id' => 5, 'professional_id' => 1, 'session_date' => '2026-08-01', 'start_time' => '10:00:00', 'status' => 'Realizada', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 6, 'professional_id' => 1, 'session_date' => '2026-08-01', 'start_time' => '09:00:00', 'status' => 'Realizada', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 7, 'professional_id' => 1, 'session_date' => '2026-08-04', 'start_time' => '08:00:00', 'status' => 'Realizada', 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('aee_records')->insert([
+            ['id' => 30, 'attendance_session_id' => 5, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 20, 'attendance_session_id' => 6, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 10, 'attendance_session_id' => 7, 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('aee_student_evaluations')->insert([
+            ['id' => 30, 'aee_record_id' => 30, 'student_id' => 1, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 20, 'aee_record_id' => 20, 'student_id' => 1, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 10, 'aee_record_id' => 10, 'student_id' => 1, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
+        ]);
+
+        $admin = new User(['is_admin' => true]);
+        $student = Student::query()->findOrFail(1);
+        $history = app(StudentAeeEvaluationsQuery::class)->history($student, $admin);
+
+        self::assertSame([20, 30, 2, 10], $history->pluck('id')->all());
+
+        $student->registration = 'MAT000001';
+        $student->load('person');
+        $student->setRelation('currentCourse', null);
+        $html = view(
+            'pages.specialized-educational-support.aee-records.student-history-pdf',
+            ['student' => $student, 'aeeEvaluations' => $history],
+        )->render();
+
+        self::assertStringContainsString('Histórico de Atendimentos Educacionais Especializados', $html);
+        self::assertStringContainsString('MAT000001', $html);
+        self::assertStringNotContainsString('Atendimento AEE #', $html);
+        self::assertStringNotContainsString('label">Agendamento', $html);
+        preg_match_all('/Atendimento AEE (\d{2}\/\d{2}\/\d{4})/', $html, $headings);
+        self::assertSame(
+            ['01/08/2026', '01/08/2026', '02/08/2026', '04/08/2026'],
             $headings[1],
         );
     }
