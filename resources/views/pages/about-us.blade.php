@@ -41,7 +41,7 @@
 
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <span class="hero-stat-num">25</span>
+                    <span class="hero-stat-num">33</span>
                     <span class="hero-stat-label">Funcionalidades</span>
                 </div>
                 <div class="hero-stat">
@@ -87,6 +87,10 @@
                 <div class="feature-card" data-cat="sistema">
                     <div class="feature-icon pink"><i class="bi bi-bell"></i></div>
                     <div><div class="feature-name">Notificações</div><div class="feature-desc">Avisos importantes do sistema: eventos, atualizações e alertas.</div></div>
+                </div>
+                <div class="feature-card" data-cat="sistema">
+                    <div class="feature-icon violet"><i class="bi bi-shield-lock"></i></div>
+                    <div><div class="feature-name">Acesso e Permissões</div><div class="feature-desc">Autenticação, recuperação de senha e controle de acesso por perfil e permissão.</div></div>
                 </div>
                 <div class="feature-card" data-cat="sistema">
                     <div class="feature-icon green"><i class="bi bi-cloud-arrow-down"></i></div>
@@ -141,12 +145,36 @@
                     <div><div class="feature-name">Professores</div><div class="feature-desc">Cadastro de professores vinculados aos alunos atendidos.</div></div>
                 </div>
                 <div class="feature-card" data-cat="aee">
+                    <div class="feature-icon purple"><i class="bi bi-person-hearts"></i></div>
+                    <div><div class="feature-name">Responsáveis</div><div class="feature-desc">Cadastro e acompanhamento dos responsáveis vinculados a cada aluno.</div></div>
+                </div>
+                <div class="feature-card" data-cat="aee">
+                    <div class="feature-icon green"><i class="bi bi-journal-text"></i></div>
+                    <div><div class="feature-name">Contexto do Aluno</div><div class="feature-desc">Caracterização do aluno com histórico, versionamento, restauração e emissão em PDF.</div></div>
+                </div>
+                <div class="feature-card" data-cat="aee">
+                    <div class="feature-icon pink"><i class="bi bi-folder2-open"></i></div>
+                    <div><div class="feature-name">Documentos do Aluno</div><div class="feature-desc">Gestão de laudos, avaliações, planos e outros documentos do prontuário.</div></div>
+                </div>
+                <div class="feature-card" data-cat="aee">
+                    <div class="feature-icon violet"><i class="bi bi-clock-history"></i></div>
+                    <div><div class="feature-name">Histórico Acadêmico</div><div class="feature-desc">Vínculos do aluno com cursos, anos acadêmicos e definição do curso atual.</div></div>
+                </div>
+                <div class="feature-card" data-cat="aee">
                     <div class="feature-icon pink"><i class="bi bi-file-text"></i></div>
                     <div><div class="feature-name">PEIs</div><div class="feature-desc">Planos Educacionais Individualizados de cada aluno.</div></div>
                 </div>
                 <div class="feature-card" data-cat="aee">
                     <div class="feature-icon purple"><i class="bi bi-calendar-check"></i></div>
-                    <div><div class="feature-name">Agendamentos</div><div class="feature-desc">Registro completo dos atendimentos realizados pela equipe.</div></div>
+                    <div><div class="feature-name">Agendamentos</div><div class="feature-desc">Organização da agenda, disponibilidade, cancelamento e acompanhamento dos atendimentos.</div></div>
+                </div>
+                <div class="feature-card" data-cat="aee">
+                    <div class="feature-icon green"><i class="bi bi-clipboard2-check"></i></div>
+                    <div><div class="feature-name">Atendimentos Especializados</div><div class="feature-desc">Registro, avaliação e histórico dos atendimentos educacionais especializados.</div></div>
+                </div>
+                <div class="feature-card" data-cat="aee">
+                    <div class="feature-icon violet"><i class="bi bi-chat-square-text"></i></div>
+                    <div><div class="feature-name">Atendimentos Pedagógicos</div><div class="feature-desc">Registro e histórico dos acompanhamentos pedagógicos realizados com alunos e responsáveis.</div></div>
                 </div>
                 <div class="feature-card" data-cat="aee">
                     <div class="feature-icon pink"><i class="bi bi-exclamation-triangle"></i></div>
@@ -175,6 +203,10 @@
                 <div class="feature-card" data-cat="radar">
                     <div class="feature-icon green"><i class="bi bi-calendar-day"></i></div>
                     <div><div class="feature-name">Agenda Institucional</div><div class="feature-desc">Eventos e atividades planejadas da instituição.</div></div>
+                </div>
+                <div class="feature-card" data-cat="radar">
+                    <div class="feature-icon pink"><i class="bi bi-search"></i></div>
+                    <div><div class="feature-name">Vistorias e Evidências</div><div class="feature-desc">Histórico de inspeções e evidências de barreiras, tecnologias e materiais acessíveis.</div></div>
                 </div>
             </div>
         </div>
@@ -205,8 +237,10 @@
                         <li><i class="bi bi-check2"></i> Alunos e responsáveis</li>
                         <li><i class="bi bi-check2"></i> Equipe de profissionais</li>
                         <li><i class="bi bi-check2"></i> Professores vinculados</li>
+                        <li><i class="bi bi-check2"></i> Contextos, documentos e histórico acadêmico</li>
                         <li><i class="bi bi-check2"></i> Planos Educacionais (PEIs)</li>
-                        <li><i class="bi bi-check2"></i> Registro de atendimentos AEE</li>
+                        <li><i class="bi bi-check2"></i> Atendimentos Especializados</li>
+                        <li><i class="bi bi-check2"></i> Atendimentos pedagógicos</li>
                         <li><i class="bi bi-check2"></i> Controle de pendências</li>
                     </ul>
                 </div>
@@ -232,6 +266,7 @@
                         <li><i class="bi bi-check2"></i> Tecnologias assistivas</li>
                         <li><i class="bi bi-check2"></i> Materiais pedagógicos</li>
                         <li><i class="bi bi-check2"></i> Registro de barreiras</li>
+                        <li><i class="bi bi-check2"></i> Vistorias e evidências</li>
                         <li><i class="bi bi-check2"></i> Empréstimos de recursos</li>
                         <li><i class="bi bi-check2"></i> Fila de espera</li>
                         <li><i class="bi bi-check2"></i> Agenda institucional</li>

@@ -1,486 +1,234 @@
 # GNAI
 
-Sistema de gestao do Nucleo de Acessibilidade e Inclusao. O projeto concentra dois modulos no mesmo repositorio:
+Sistema de Gestao do Nucleo de Acessibilidade e Inclusao do IF Baiano. A
+plataforma integra dois modulos:
 
-- `Atendimento Educacional Especializado (AEE)`
-- `Radar Inclusivo`
+- Atendimento Educacional Especializado (AEE);
+- Radar Inclusivo.
 
-O ambiente foi padronizado para subir via Docker com bootstrap automatico, `entrypoint` unico para os containers PHP e `docker-compose` separado para desenvolvimento e producao.
+O projeto utiliza Laravel 12, PHP 8.2, MySQL 8, Vite e Docker Compose. Em
+desenvolvimento, o acesso ocorre pelo Nginx em container. Em producao, o Apache
+do servidor encaminha as requisicoes PHP ao PHP-FPM do container.
 
-## Stack
+## Requisitos
 
-- `Laravel 12`
-- `PHP 8.2` via Docker
-- `MySQL 8.0`
-- `Redis 7`
-- `Node 20 + Vite`
-- `Nginx`
-- `Docker Compose`
+- Git;
+- Docker Engine;
+- Docker Compose (`docker compose`);
+- Make;
+- Apache 2 apenas em producao.
 
-## Estrutura do ambiente
+## Desenvolvimento
 
-### Desenvolvimento
+### 1. Preparar o ambiente
 
-O arquivo [docker-compose.dev.yml](/home/marley/Projetos/GNAI/docker-compose.dev.yml:1) sobe:
-
-- `app`: container principal do Laravel/PHP-FPM
-- `scheduler`: roda o agendador do Laravel
-- `db`: MySQL
-- `nginx`: proxy reverso da aplicacao
-- `node`: Vite em modo desenvolvimento
-- `phpmyadmin`: opcional, via profile `tools`
-
-Portas padrao em `dev`:
-
-- aplicacao: `http://localhost:8080`
-- Vite: `http://localhost:5173`
-- MySQL exposto no host: `3307`
-- PHP-FPM: `9000`
-- phpMyAdmin: `http://localhost:8081` com `--profile tools`
-
-### Producao
-
-O arquivo [docker-compose.prod.yml](/home/marley/Projetos/GNAI/docker-compose.prod.yml:1) sobe:
-
-- `app`
-- `scheduler`
-- `queue`
-- `db`
-- `nginx`
-
-Diferencas principais da producao:
-
-- usa `.env.prod`
-- `nginx` exposto em `80` e `443`
-- existe um container `queue`
-- o `entrypoint` faz cache de config/rotas/views em vez de rodar migration automatica
-
-## Como o Docker esta funcionando
-
-### Dockerfile
-
-O [Dockerfile](/home/marley/Projetos/GNAI/Dockerfile:1) e multi-stage:
-
-1. `php_builder`
-   - instala extensoes PHP necessarias
-   - instala dependencias do Composer sem scripts
-2. `node_builder`
-   - instala dependencias frontend
-   - gera `public/build`
-3. imagem final PHP
-   - copia extensoes, `composer`, `vendor` e assets compilados
-   - ajusta usuario `www-data` para o UID/GID local
-   - prepara diretorios de `storage`
-
-### Imagem PHP compartilhada
-
-Em `dev`, `app` e `scheduler` usam a mesma imagem:
-
-- `gnai-php:dev`
-
-Em `prod`, `app`, `scheduler` e `queue` usam:
-
-- `gnai-php:prod`
-
-Isso evita construir imagens PHP duplicadas para papeis diferentes.
-
-### Entrypoint unico
-
-O script [docker/php/entrypoint.sh](/home/marley/Projetos/GNAI/docker/php/entrypoint.sh:1) e o mesmo para os containers PHP. Ele recebe um papel:
-
-- `app`
-- `scheduler`
-- `queue`
-
-Fluxo do `entrypoint`:
-
-1. cria diretorios criticos de `storage` e `bootstrap/cache`
-2. copia `.env.example` para `.env` se nao houver arquivo
-3. sincroniza `vendor` com `composer.lock` e com a versao atual do PHP
-4. espera o banco responder via `PDO`
-5. executa bootstrap do Laravel quando necessario
-
-Comportamento por papel:
-
-- `app`
-  - garante dependencias PHP
-  - roda `php artisan package:discover`
-  - roda `php artisan storage:link --force`
-  - em `APP_ENV=local`: roda `php artisan migrate --force`
-  - em `APP_ENV=production`: roda `config:cache`, `route:cache` e `view:cache`
-  - ao final inicia `php-fpm`
-- `scheduler`
-  - espera o bootstrap completo do container `app`
-  - executa `php artisan schedule:work`
-- `queue`
-  - espera o bootstrap completo do container `app`
-  - executa `php artisan queue:work --sleep=3 --tries=3 --max-time=3600`
-
-## Variaveis de ambiente
-
-Arquivos base:
-
-- [\.env.example](/home/marley/Projetos/GNAI/.env.example:1)
-- [\.env.dev.example](/home/marley/Projetos/GNAI/.env.dev.example:1)
-- [\.env.prod.example](/home/marley/Projetos/GNAI/.env.prod.example:1)
-
-Arquivos usados pelo Docker:
-
-- `dev`: [\.env.dev](/home/marley/Projetos/GNAI/.env.dev:1)
-- `prod`: [\.env.prod](/home/marley/Projetos/GNAI/.env.prod:1)
-
-### Variaveis obrigatorias
-
-Estas merecem atencao antes de subir o projeto:
-
-- `APP_NAME`
-  - nome da aplicacao
-- `APP_ENV`
-  - use `local` em desenvolvimento e `production` em producao
-- `APP_KEY`
-  - chave do Laravel; gere com `php artisan key:generate`
-- `APP_DEBUG`
-  - `true` em desenvolvimento, `false` em producao
-- `APP_URL`
-  - URL principal da aplicacao
-- `DB_CONNECTION`
-  - deve permanecer `mysql`
-- `DB_HOST`
-  - no Docker deve permanecer `db`
-- `DB_PORT`
-  - no Docker normalmente `3306`
-- `DB_DATABASE`
-  - nome do banco
-- `DB_USERNAME`
-  - usuario da aplicacao
-- `DB_PASSWORD`
-  - senha do usuario da aplicacao
-
-### Variaveis de localizacao e mapa
-
-- `OSM_API_URL`
-  - endpoint de geocodificacao
-- `OSM_USER_AGENT`
-  - identificacao obrigatoria para consumo do Nominatim/OpenStreetMap
-
-Recomendacao:
-
-- informe nome e e-mail reais do projeto/equipe em `OSM_USER_AGENT`
-
-### Variaveis de backup
-
-- `BACKUP_DISK_NAME`
-  - nome do disco configurado para os backups
-- `BACKUP_MYSQL_BINARY_PATH`
-  - caminho do cliente MySQL dentro do container
-- `BACKUP_MYSQL_EXTRA_OPTIONS`
-  - opcoes extras de dump; hoje o projeto usa `--protocol=tcp --skip-ssl`
-- `BACKUP_ARCHIVE_PASSWORD`
-  - senha opcional do arquivo compactado
-- `BACKUP_MAIL_TO`
-  - destinatario de notificacoes de backup
-
-### Variaveis de sessao, cache e fila
-
-- `SESSION_DRIVER`
-  - recomendado `database`
-- `CACHE_STORE`
-  - recomendado `database`
-- `QUEUE_CONNECTION`
-  - recomendado `database`
-- `FILESYSTEM_DISK`
-  - recomendado `public`
-- `BROADCAST_CONNECTION`
-  - pode permanecer `log` se nao houver broadcast em tempo real
-
-### Variaveis de e-mail
-
-Desenvolvimento:
-
-- pode usar `MAIL_MAILER=log`
-
-Producao:
-
-- configure `MAIL_MAILER=smtp`
-- preencha `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`
-- ajuste `MAIL_SCHEME` conforme o provedor (`smtp` para STARTTLS/587, `smtps` para SSL/465)
-- ajuste `MAIL_FROM_ADDRESS` e `MAIL_FROM_NAME`
-
-## Como preparar os arquivos `.env`
-
-### Desenvolvimento
-
-1. Crie o arquivo:
+Na raiz do projeto, crie o arquivo de configuracao:
 
 ```bash
-cp .env.dev.example .env.dev
+cp .env.example .env.dev
 ```
 
-2. Ajuste pelo menos:
+Revise principalmente as variaveis abaixo:
 
 ```env
-APP_NAME=GNAI
 APP_ENV=local
-APP_KEY=
+APP_KEY=base64:chave_gerada
 APP_DEBUG=true
-APP_URL=http://localhost:8080
+APP_URL=http://localhost
 
-DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
 DB_DATABASE=gnai_db
 DB_USERNAME=gnai_user
-DB_PASSWORD=sua_senha
-
-OSM_USER_AGENT="SeuNome - seuemail@dominio.com"
+DB_PASSWORD=troque_esta_senha
+MYSQL_ROOT_PASSWORD=troque_esta_senha
 ```
 
-3. Depois de subir o ambiente, gere a chave:
+O arquivo `.env.dev` contem dados locais e nao deve ser versionado.
+Gere o valor da chave com o comando abaixo e copie a saida completa para
+`APP_KEY`:
 
 ```bash
-make art key:generate
+printf 'base64:%s\n' "$(openssl rand -base64 32)"
 ```
 
-### Producao
+### 2. Construir e iniciar
 
-1. Crie o arquivo:
+```bash
+make build
+make up
+```
+
+O sistema estara disponivel em:
+
+- aplicacao: `http://localhost`;
+- Vite: `http://localhost:5173`;
+- phpMyAdmin opcional: `http://localhost:8081`.
+
+Para iniciar o phpMyAdmin:
+
+```bash
+docker compose --env-file .env.dev -f docker-compose.dev.yml --profile tools up -d
+```
+
+O ambiente executa as migrations automaticamente. Para inserir os dados
+iniciais:
+
+```bash
+make seed
+```
+
+Comandos mais usados:
+
+```bash
+make logs
+make test
+make art migrate:status
+make down
+```
+
+O Nginx de desenvolvimento ocupa a porta `80`. Se o Apache estiver ativo na
+mesma maquina, pare-o antes de iniciar o projeto:
+
+```bash
+sudo systemctl stop apache2
+```
+
+## Producao
+
+Em producao, os containers executam PHP-FPM, MySQL, scheduler e fila. O Apache
+fica instalado no host, entrega os arquivos de `public/` e encaminha os scripts
+PHP para `127.0.0.1:9000`.
+
+### 1. Preparar o ambiente
 
 ```bash
 cp .env.prod.example .env.prod
 ```
 
-2. Ajuste obrigatoriamente:
+Configure ao menos:
 
-- `APP_ENV=production`
-- `APP_DEBUG=false`
-- `APP_URL=https://seu-dominio`
-- credenciais reais de banco
-- credenciais reais de SMTP
-- `MYSQL_ROOT_PASSWORD`
-- `APP_KEY`
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://gnai.example.edu.br
 
-3. Em producao, mantenha:
-
-- `DB_HOST=db`
-
-porque os servicos se comunicam pela rede interna do Compose.
-
-4. Suba o ambiente informando explicitamente o arquivo de variaveis de producao:
-
-```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=gnai_db
+DB_USERNAME=gnai_user
+DB_PASSWORD=troque_esta_senha
+MYSQL_ROOT_PASSWORD=troque_esta_senha
 ```
 
-O `--env-file .env.prod` e necessario porque o `docker-compose.prod.yml` usa `DB_DATABASE`, `DB_USERNAME` e `DB_PASSWORD` para montar as variaveis `MYSQL_*` esperadas pelo container MySQL.
-
-## Como rodar o sistema
-
-### Subida rapida em desenvolvimento
+Preencha tambem as configuracoes reais de e-mail e backup. Para gerar a
+`APP_KEY`:
 
 ```bash
-cp .env.dev.example .env.dev
-make build
-make up
+printf 'base64:%s\n' "$(openssl rand -base64 32)"
 ```
 
-Depois, em outro terminal:
+Copie o resultado completo para `APP_KEY` no `.env.prod`. Esse arquivo contem
+segredos e nao deve ser versionado.
+
+### 2. Instalar e configurar o Apache
+
+Em Debian ou Ubuntu:
 
 ```bash
-make art key:generate
+sudo apt update
+sudo apt install -y apache2
+sudo a2enmod proxy proxy_fcgi setenvif rewrite headers
+sudo systemctl enable --now apache2
 ```
 
-URLs uteis:
+Crie `/etc/apache2/sites-available/gnai.conf` e ajuste os valores ficticios do
+exemplo para o servidor real:
 
-- app: `http://localhost:8080`
-- Vite: `http://localhost:5173`
+```apache
+<VirtualHost *:80>
+    ServerName gnai.example.edu.br
+    ServerAlias gnai.interno.example.edu.br 192.0.2.10
+    ServerAdmin webmaster@localhost
 
-### Fluxo recomendado no primeiro uso
+    DocumentRoot /srv/gnai/public
+    DirectoryIndex index.php
 
-1. copiar `.env.dev.example` para `.env.dev`
-2. revisar variaveis de banco, Redis, mail e OSM
-3. rodar `make build`
-4. rodar `make up`
-5. gerar `APP_KEY` com `make art key:generate`
-6. se necessario, reconstruir o banco com:
+    <Directory /srv/gnai/public>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    <Directory /srv/gnai/storage/app/public>
+        Options FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    <FilesMatch "\.php$">
+        SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+
+    ProxyFCGISetEnvIf "true" HTTP_HOST "gnai.example.edu.br"
+    ProxyFCGISetEnvIf "true" SERVER_NAME "gnai.example.edu.br"
+    ProxyFCGISetEnvIf "true" SERVER_PORT "443"
+    ProxyFCGISetEnvIf "true" HTTPS "on"
+    ProxyFCGISetEnvIf "true" HTTP_X_FORWARDED_PROTO "https"
+    ProxyFCGISetEnvIf "true" SCRIPT_FILENAME "/var/www/public%{reqenv:SCRIPT_NAME}"
+
+    ErrorLog ${APACHE_LOG_DIR}/gnai_error.log
+    CustomLog ${APACHE_LOG_DIR}/gnai_access.log combined
+</VirtualHost>
+```
+
+O exemplo considera que o HTTPS e finalizado por um proxy institucional antes
+do Apache. Se o Apache gerenciar o certificado, habilite `ssl` e configure um
+VirtualHost `*:443`. Se o acesso for somente HTTP, remova as variaveis de HTTPS
+e use uma `APP_URL` iniciada por `http://`.
+
+Ative e valide o VirtualHost:
 
 ```bash
-make reset-db
+sudo a2ensite gnai.conf
+sudo a2dissite 000-default.conf
+sudo apache2ctl configtest
+sudo systemctl reload apache2
 ```
 
-### O que e automatico em `dev`
+O teste deve retornar `Syntax OK`.
 
-Ao subir o `app`, o `entrypoint` ja faz:
+### 3. Publicar o sistema
 
-- sincronizacao do Composer
-- bootstrap do Laravel
-- `storage:link`
-- `migrate --force`
-
-O que nao e automatico:
-
-- `key:generate`
-- `db:seed`
-- `migrate:fresh --seed`
-
-### Seeders
-
-O projeto nao roda seed automaticamente no `up`.
-
-Comandos uteis:
+Na raiz do projeto:
 
 ```bash
-make seed
-make reset-db
+make deploy
 ```
 
-Observacao:
+Esse comando constroi a imagem, publica os assets, cria o link de `storage`,
+inicia os containers, executa as migrations e sincroniza as permissoes.
 
-- `make reset-db` executa `migrate:fresh --seed`
-- `make seed` apenas roda `db:seed` sobre a base atual
-
-## Comandos uteis do Makefile
-
-Arquivo: [Makefile](/home/marley/Projetos/GNAI/Makefile:1)
-
-### Containers
+Confira a implantacao:
 
 ```bash
-make build
-make up
-make down
-make down-v
-make logs
-make logs-app
+docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+curl -I https://gnai.example.edu.br
 ```
 
-### Laravel
+Logs uteis:
 
 ```bash
-make art migrate:status
-make art optimize:clear
-make art key:generate
-make migrate
-make seed
-make reset-db
-make tinker
+make logs-app ENV=prod
+sudo tail -f /var/log/apache2/gnai_error.log
 ```
 
-### Frontend
+Depois de alterar a configuracao do Apache, valide e recarregue:
 
 ```bash
-make npm-dev
-make npm-build
+sudo apache2ctl configtest
+sudo systemctl reload apache2
 ```
 
-### Banco
-
-```bash
-make db
-```
-
-### Backup
-
-```bash
-make backup
-make backup-db
-make list-bkp
-make restore-db FILE=arquivo.sql
-make restore-full FILE=arquivo.zip
-```
-
-## Scheduler, fila e backup
-
-### Scheduler
-
-O container `scheduler` roda continuamente:
-
-```bash
-php artisan schedule:work
-```
-
-Isso e o que permite executar tarefas agendadas sem depender de cron no host.
-
-### Backup automatico
-
-O agendamento esta em [routes/console.php](/home/marley/Projetos/GNAI/routes/console.php:1):
-
-- `backup:clean` diariamente as `12:00`
-- `backup:run` diariamente as `12:05`
-- timezone da tarefa: `America/Bahia`
-
-Depois do backup, o sistema ainda chama o `BackupService::sync()` no `onSuccess`.
-
-### Fila
-
-Em producao existe um container `queue` dedicado, iniciado com:
-
-```bash
-sh /var/www/docker/php/entrypoint.sh queue
-```
-
-Ele executa:
-
-```bash
-php artisan queue:work --sleep=3 --tries=3 --max-time=3600
-```
-
-## Arquivos importantes do Docker
-
-- [Dockerfile](/home/marley/Projetos/GNAI/Dockerfile:1)
-- [docker-compose.dev.yml](/home/marley/Projetos/GNAI/docker-compose.dev.yml:1)
-- [docker-compose.prod.yml](/home/marley/Projetos/GNAI/docker-compose.prod.yml:1)
-- [docker/php/entrypoint.sh](/home/marley/Projetos/GNAI/docker/php/entrypoint.sh:1)
-- [docker/php/www.conf](/home/marley/Projetos/GNAI/docker/php/www.conf:1)
-- [docker/mysql/my.dev.cnf](/home/marley/Projetos/GNAI/docker/mysql/my.dev.cnf:1)
-- [docker/mysql/my.prod.cnf](/home/marley/Projetos/GNAI/docker/mysql/my.prod.cnf:1)
-- [docker/mysql/init/01-auth-plugin.sh](/home/marley/Projetos/GNAI/docker/mysql/init/01-auth-plugin.sh:1)
-- [nginx/nginx.conf](/home/marley/Projetos/GNAI/nginx/nginx.conf:1)
-
-## Observacoes importantes
-
-- o build da imagem PHP nao depende do banco
-- `app` e `scheduler` compartilham a mesma imagem PHP
-- em `dev`, o Vite roda em container separado
-- o MySQL usa script de inicializacao para ajustar autenticacao do usuario da aplicacao, o que tambem evita falhas no dump de backup
-- alguns warnings de `Redis` e `MySQL` podem depender do host ou da imagem oficial e nao necessariamente indicam problema real do projeto
-
-## Problemas comuns
-
-### O app subiu mas falta `APP_KEY`
-
-Rode:
-
-```bash
-make art key:generate
-```
-
-### Quero recriar o banco do zero
-
-Rode:
-
-```bash
-make down-v
-make up
-make reset-db
-```
-
-### O CSS/JS nao refletiu uma mudanca
-
-Se estiver em `dev`, confirme se o container `node` esta ativo e se o Vite esta acessivel em `5173`.
-
-### O backup falhou por autenticacao MySQL
-
-O projeto ja possui o script [01-auth-plugin.sh](/home/marley/Projetos/GNAI/docker/mysql/init/01-auth-plugin.sh:1) para ajustar o usuario da aplicacao em bancos novos. Se o volume do MySQL ja existia antes da mudanca, pode ser necessario recriar o banco ou ajustar o usuario manualmente.
-
-## Documentacao complementar
-
-Documentos do modulo `Radar Inclusivo` em:
-
-- [Docs/inclusive-radar/accessibility-features.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/accessibility-features.md)
-- [Docs/inclusive-radar/accessible-educational-materials.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/accessible-educational-materials.md)
-- [Docs/inclusive-radar/loans.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/loans.md)
-- [Docs/inclusive-radar/waitlists.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/waitlists.md)
-- [Docs/inclusive-radar/inspections.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/inspections.md)
-- [Docs/inclusive-radar/barriers.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/barriers.md)
-- [Docs/inclusive-radar/institutions.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/institutions.md)
-- [Docs/inclusive-radar/locations.md](/home/marley/Projetos/GNAI/Docs/inclusive-radar/locations.md)
+Todos os dominios, IPs e caminhos apresentados neste README sao ficticios e
+devem ser substituidos pelos valores do ambiente sem publicar dados sensiveis.
