@@ -16,8 +16,8 @@ use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterial
 use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterials\ShowAccessibleEducationalMaterialInspectionQuery;
 use App\Domains\InclusiveRadar\Application\Queries\AccessibleEducationalMaterials\ShowAccessibleEducationalMaterialQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -54,6 +54,14 @@ final class AccessibleEducationalMaterialController
         return view(
             'pages.inclusive-radar.accessible-educational-materials.create',
             $form->forCreation(),
+        );
+    }
+
+    public function clone(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form): View
+    {
+        return view(
+            'pages.inclusive-radar.accessible-educational-materials.create',
+            $form->forCloning($material),
         );
     }
 

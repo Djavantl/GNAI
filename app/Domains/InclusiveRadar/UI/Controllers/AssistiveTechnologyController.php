@@ -53,6 +53,14 @@ final class AssistiveTechnologyController
         );
     }
 
+    public function clone(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): View
+    {
+        return view(
+            'pages.inclusive-radar.assistive-technologies.create',
+            $form->forCloning($assistiveTechnology),
+        );
+    }
+
     public function store(CreateAssistiveTechnologyData $data, CreateAssistiveTechnologyAction $action, Request $request): RedirectResponse
     {
         try {

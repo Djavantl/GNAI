@@ -20,6 +20,14 @@
         </header>
 
         <div class="d-flex gap-2 justify-content-end ms-md-auto" role="group" aria-label="Ações principais">
+            @can('material.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.accessible-educational-materials.clone', $material)"
+                    variant="primary">
+                    <i class="fas fa-copy"></i> Clonar
+                </x-buttons.link-button>
+            @endcan
+
             @can('material.edit')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"

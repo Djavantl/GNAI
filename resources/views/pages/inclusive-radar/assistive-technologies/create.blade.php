@@ -1,6 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Cadastrar - Tecnologia Assistiva')
+@php($cloneSource = $cloneSource ?? null)
+
+@section('title', isset($cloneSource) ? 'Clonar - Tecnologia Assistiva' : 'Cadastrar - Tecnologia Assistiva')
 
 @section('content')
     <div class="mb-5">
@@ -13,7 +15,7 @@
 
     <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
         <header>
-            <h2 class="text-title">Nova Tecnologia Assistiva</h2>
+            <h2 class="text-title">{{ isset($cloneSource) ? 'Clonar Tecnologia Assistiva' : 'Nova Tecnologia Assistiva' }}</h2>
             <p class="text-muted mb-0">
                 Cadastre novos recursos institucionais e realize a vistoria inicial.
             </p>
@@ -45,7 +47,7 @@
                     label="Tipo da Tecnologia"
                     required
                     placeholder="Ex: Cadeira de Rodas Motorizada"
-                    :value="old('name')"
+                    :value="old('name', $cloneSource?->name ?? null)"
                 />
             </div>
 
@@ -55,7 +57,7 @@
                     label="Natureza do Recurso"
                     required
                     :options="[0 => 'Recurso Físico', 1 => 'Recurso Digital']"
-                    :selected="old('is_digital', 0)"
+                    :selected="old('is_digital', $cloneSource?->is_digital ?? 0)"
                 />
             </div>
 
@@ -72,7 +74,7 @@
                     name="notes"
                     label="Descrição"
                     rows="3"
-                    :value="old('notes')"
+                    :value="old('notes', $cloneSource?->notes ?? null)"
                 />
             </div>
 
@@ -84,7 +86,7 @@
                     label="Tipo de Inspeção"
                     required
                     :options="$inspectionTypes"
-                    :selected="old('inspection.type', $defaultInspection)"
+                    :selected="old('inspection.type', isset($cloneSource) ? null : $defaultInspection)"
                 />
             </div>
 
@@ -94,7 +96,7 @@
                     label="Data da Inspeção"
                     type="date"
                     required
-                    :value="old('inspection.date', date('Y-m-d'))"
+                    :value="old('inspection.date', isset($cloneSource) ? null : date('Y-m-d'))"
                 />
             </div>
 
@@ -133,7 +135,7 @@
                     label="Quantidade Total"
                     type="number"
                     min="1"
-                    :value="old('quantity', 1)"
+                    :value="old('quantity', $cloneSource?->quantity ?? 1)"
                 />
 
                 <input type="hidden" name="is_loanable" value="0">
@@ -141,7 +143,7 @@
                     name="is_loanable"
                     label="Permitir Empréstimos"
                     description="Marque se este recurso pode ser emprestado"
-                    :checked="old('is_loanable', true)"
+                    :checked="old('is_loanable', $cloneSource?->is_loanable ?? true)"
                 />
             </div>
 
@@ -150,7 +152,7 @@
                     name="status"
                     label="Status do Recurso"
                     :options="$resourceStatuses"
-                    :selected="old('status', $defaultStatus)"
+                    :selected="old('status', $cloneSource?->status?->value ?? $defaultStatus)"
                 />
 
                 <input type="hidden" name="is_active" value="0">
@@ -158,7 +160,7 @@
                     name="is_active"
                     label="Ativar no Sistema"
                     description="Disponível para visualização e empréstimos"
-                    :checked="old('is_active', true)"
+                    :checked="old('is_active', $cloneSource?->is_active ?? true)"
                 />
             </div>
 
@@ -174,7 +176,7 @@
                             id="def_{{ $def->id }}"
                             :value="$def->id"
                             :label="$def->name"
-                            :checked="is_array(old('deficiencies')) && in_array($def->id, old('deficiencies'))"
+                            :checked="in_array($def->id, old('deficiencies', $cloneSource?->deficiencies->modelKeys() ?? []))"
                         />
                     @endforeach
                 </div>

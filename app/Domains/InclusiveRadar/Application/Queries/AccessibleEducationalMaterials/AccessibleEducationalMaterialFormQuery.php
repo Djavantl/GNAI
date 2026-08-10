@@ -26,6 +26,18 @@ final class AccessibleEducationalMaterialFormQuery
     /**
      * @return array<string, mixed>
      */
+    public function forCloning(AccessibleEducationalMaterial $material): array
+    {
+        $material->loadMissing(['deficiencies', 'accessibilityFeatures']);
+
+        return $this->forCreation() + [
+            'cloneSource' => $material,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function forUpdate(AccessibleEducationalMaterial $material): array
     {
         $material->loadMissing(['deficiencies', 'accessibilityFeatures']);
