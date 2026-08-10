@@ -200,6 +200,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('students/{student}/pedagogical-records', [PedagogicalRecordController::class, 'studentIndex'])
         ->name('students.pedagogical-records.index')
         ->middleware('can:pedagogical-record.view');
+    Route::get('students/{student}/pedagogical-records/pdf', [PedagogicalRecordController::class, 'studentHistoryPdf'])
+        ->name('students.pedagogical-records.pdf')
+        ->middleware('can:pedagogical-record.view');
 
     /* 9. STUDENT COURSES */
     Route::get('/student-courses/{student}/create', [StudentCourseController::class, 'create'])->name('student-courses.create')->middleware('can:student-course.create');

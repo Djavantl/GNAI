@@ -9,6 +9,8 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\AeeRecords\ListAe
 use App\Domains\SpecializedEducationalSupport\Application\Data\PedagogicalRecords\ListPedagogicalRecordsData;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\AeeRecords\ListAeeRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\ListPedagogicalRecordsQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -136,6 +138,52 @@ final class ListAttendanceRecordsQueryTest extends TestCase
 
         $withoutGuardians = app(ListPedagogicalRecordsQuery::class)->execute(new ListPedagogicalRecordsData(withGuardians: false), $admin);
         self::assertSame([1], $withoutGuardians->pluck('id')->all());
+    }
+
+    public function test_student_pedagogical_history_contains_all_records_in_chronological_order(): void
+    {
+        $now = now();
+        DB::table('attendance_sessions')->insert([
+            ['id' => 5, 'professional_id' => 1, 'session_date' => '2026-08-01', 'start_time' => '10:00:00', 'status' => 'Realizada', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 6, 'professional_id' => 1, 'session_date' => '2026-08-01', 'start_time' => '09:00:00', 'status' => 'Realizada', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 7, 'professional_id' => 1, 'session_date' => '2026-08-04', 'start_time' => '08:00:00', 'status' => 'Realizada', 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('attendance_session_student')->insert([
+            ['attendance_session_id' => 5, 'student_id' => 1],
+            ['attendance_session_id' => 6, 'student_id' => 1],
+            ['attendance_session_id' => 7, 'student_id' => 1],
+        ]);
+        DB::table('pedagogical_records')->insert([
+            ['id' => 30, 'attendance_session_id' => 5, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 20, 'attendance_session_id' => 6, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 10, 'attendance_session_id' => 7, 'is_present' => true, 'created_at' => $now, 'updated_at' => $now],
+        ]);
+
+        $admin = new User(['is_admin' => true]);
+        $student = Student::query()->findOrFail(1);
+
+        $history = app(StudentPedagogicalRecordsQuery::class)->history($student, $admin);
+
+        self::assertSame([20, 30, 1, 10], $history->pluck('id')->all());
+
+        $student->registration = 'MAT000001';
+        $student->load('person');
+        $student->setRelation('currentCourse', null);
+        $html = view(
+            'pages.specialized-educational-support.pedagogical-records.student-history-pdf',
+            ['student' => $student, 'pedagogicalRecords' => $history],
+        )->render();
+
+        self::assertStringContainsString('Histórico de Atendimentos Pedagógicos', $html);
+        self::assertStringContainsString('MAT000001', $html);
+        self::assertStringNotContainsString('Atendimento Pedagógico #', $html);
+        self::assertStringNotContainsString('label">Agendamento', $html);
+        self::assertStringNotContainsString('label">Atendimento', $html);
+        preg_match_all('/Atendimento Pedagógico (\d{2}\/\d{2}\/\d{4})/', $html, $headings);
+        self::assertSame(
+            ['01/08/2026', '01/08/2026', '03/08/2026', '04/08/2026'],
+            $headings[1],
+        );
     }
 
     private function seedRecords(): void

@@ -15,6 +15,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\AttendanceReco
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\ListPedagogicalRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\PedagogicalRecordFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\ShowPedagogicalRecordQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
@@ -111,6 +112,19 @@ final class PedagogicalRecordController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("registro-pedagogico-{$session->session_date->format('d-m-Y')}.pdf");
+    }
+
+    public function studentHistoryPdf(Student $student, StudentPedagogicalRecordsQuery $query, Request $request): Response
+    {
+        $student->loadMissing(['person', 'currentCourse.course']);
+        $pedagogicalRecords = $query->history($student, $this->user($request));
+        $pdf = Pdf::loadView(
+            'pages.specialized-educational-support.pedagogical-records.student-history-pdf',
+            compact('student', 'pedagogicalRecords'),
+        )->setPaper('a4', 'portrait');
+        PdfPageNumberer::apply($pdf);
+
+        return $pdf->stream("historico-atendimentos-pedagogicos-{$student->registration}.pdf");
     }
 
     private function user(Request $request): User
