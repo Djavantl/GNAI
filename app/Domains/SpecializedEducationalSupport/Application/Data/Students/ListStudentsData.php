@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\SpecializedEducationalSupport\Application\Data\Students;
 
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus;
+use Illuminate\Support\Fluent;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
@@ -19,11 +20,19 @@ final class ListStudentsData extends Data
         public ?string $email = null,
         public ?string $registration = null,
         public ?StudentStatus $status = null,
+        public ?int $courseId = null,
+        public ?int $deficiencyId = null,
         public int $perPage = 10,
     ) {}
 
     public static function prepareForPipeline(array $properties): array
     {
+        foreach (['course_id', 'deficiency_id'] as $field) {
+            if (($properties[$field] ?? null) === '') {
+                $properties[$field] = null;
+            }
+        }
+
         if (array_key_exists('phone', $properties)) {
             $digits = preg_replace('/\D/', '', (string) $properties['phone']) ?? '';
             $properties['phone'] = $digits === '' ? null : $digits;
@@ -40,6 +49,24 @@ final class ListStudentsData extends Data
             'email' => ['nullable', 'string', 'max:255'],
             'registration' => ['nullable', 'string', 'max:50'],
             'status' => ['nullable', Rule::enum(StudentStatus::class)],
+            'course_id' => [
+                'nullable',
+                'integer',
+                'min:0',
+                Rule::when(
+                    static fn (Fluent $input): bool => (int) ($input->course_id ?? 0) > 0,
+                    Rule::exists('courses', 'id'),
+                ),
+            ],
+            'deficiency_id' => [
+                'nullable',
+                'integer',
+                'min:0',
+                Rule::when(
+                    static fn (Fluent $input): bool => (int) ($input->deficiency_id ?? 0) > 0,
+                    Rule::exists('deficiencies', 'id'),
+                ),
+            ],
             'per_page' => ['integer', 'min:1', 'max:100'],
         ];
     }
@@ -56,6 +83,8 @@ final class ListStudentsData extends Data
             'registration.string' => 'O filtro de matrícula deve ser um texto válido.',
             'registration.max' => 'O filtro de matrícula não pode ultrapassar 50 caracteres.',
             'status.enum' => 'O filtro de status é inválido.',
+            'course_id.exists' => 'O curso selecionado é inválido.',
+            'deficiency_id.exists' => 'O perfil de atendimento selecionado é inválido.',
         ];
     }
 }

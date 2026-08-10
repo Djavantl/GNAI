@@ -18,11 +18,14 @@ final class ListAeeRecordsQuery
             ->with([
                 'attendanceSession.professional.person',
                 'studentEvaluations.student.person',
+                'studentEvaluations.student.currentCourse.course',
             ])
             ->when($onlyOwn || ! $user->can('aee-record.view-all'), fn ($query) => $query->whereHas('attendanceSession', fn ($session) => $session->where('professional_id', $user->professional_id ?? 0)))
             ->when($filters->student !== null, fn ($query) => $query->whereHas('studentEvaluations', fn ($evaluation) => $evaluation->where('student_id', $filters->student)))
             ->when($filters->professionalId !== null, fn ($query) => $query->whereHas('attendanceSession', fn ($session) => $session->where('professional_id', $filters->professionalId)))
             ->when($filters->isPresent !== null, fn ($query) => $query->whereHas('studentEvaluations', fn ($evaluation) => $evaluation->where('is_present', $filters->isPresent)))
+            ->when($filters->courseId === 0, fn ($query) => $query->whereHas('studentEvaluations.student', fn ($student) => $student->whereDoesntHave('currentCourse')))
+            ->when($filters->courseId !== null && $filters->courseId > 0, fn ($query) => $query->whereHas('studentEvaluations.student.currentCourse', fn ($course) => $course->where('course_id', $filters->courseId)))
             ->orderByDesc(
                 Session::query()
                     ->select('session_date')

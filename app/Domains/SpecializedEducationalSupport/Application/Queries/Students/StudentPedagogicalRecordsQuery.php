@@ -6,6 +6,7 @@ namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Students
 
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PedagogicalRecord;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,6 +17,37 @@ final class StudentPedagogicalRecordsQuery
      * @return Collection<int, PedagogicalRecord>
      */
     public function execute(Student $student, ?User $user): Collection
+    {
+        return $this->query($student, $user)
+            ->orderByDesc('id')
+            ->limit(5)
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, PedagogicalRecord>
+     */
+    public function history(Student $student, User $user): Collection
+    {
+        return $this->query($student, $user)
+            ->orderBy(
+                Session::query()
+                    ->select('session_date')
+                    ->whereColumn('attendance_sessions.id', 'pedagogical_records.attendance_session_id')
+                    ->limit(1),
+            )
+            ->orderBy(
+                Session::query()
+                    ->select('start_time')
+                    ->whereColumn('attendance_sessions.id', 'pedagogical_records.attendance_session_id')
+                    ->limit(1),
+            )
+            ->orderBy('id')
+            ->get();
+    }
+
+    /** @return Builder<PedagogicalRecord> */
+    private function query(Student $student, ?User $user): Builder
     {
         $query = PedagogicalRecord::query()
             ->with([
@@ -42,9 +74,6 @@ final class StudentPedagogicalRecordsQuery
             }
         }
 
-        return $query
-            ->orderByDesc('id')
-            ->limit(5)
-            ->get();
+        return $query;
     }
 }

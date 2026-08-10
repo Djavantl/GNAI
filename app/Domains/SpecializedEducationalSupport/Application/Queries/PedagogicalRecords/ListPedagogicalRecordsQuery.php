@@ -18,6 +18,7 @@ final class ListPedagogicalRecordsQuery
         return PedagogicalRecord::query()
             ->with([
                 'attendanceSession.students.person',
+                'attendanceSession.students.currentCourse.course',
                 'attendanceSession.professional.person',
                 'guardians.person',
             ])
@@ -28,6 +29,8 @@ final class ListPedagogicalRecordsQuery
             ->when($filters->isPresent !== null, fn ($query) => $query->where('is_present', $filters->isPresent))
             ->when($filters->withGuardians === true, fn ($query) => $query->whereHas('guardians'))
             ->when($filters->withGuardians === false, fn ($query) => $query->whereDoesntHave('guardians'))
+            ->when($filters->courseId === 0, fn ($query) => $query->whereHas('attendanceSession.students', fn ($students) => $students->whereDoesntHave('currentCourse')))
+            ->when($filters->courseId !== null && $filters->courseId > 0, fn ($query) => $query->whereHas('attendanceSession.students.currentCourse', fn ($course) => $course->where('course_id', $filters->courseId)))
             ->orderByDesc(
                 Session::query()
                     ->select('session_date')
