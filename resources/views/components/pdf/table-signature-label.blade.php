@@ -2,7 +2,7 @@
     'label' => 'Assinatura'
 ])
 
-<td class="signature-box" style="border: none;">
+<td class="signature-box">
     <div class="line"></div>
     <span class="label">{{ $label }}</span>
 </td>

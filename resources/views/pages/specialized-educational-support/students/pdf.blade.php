@@ -3,28 +3,12 @@
 <head>
     <meta charset="utf-8">
     <title>Ficha do Aluno - {{ $student->person->name }}</title>
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-
-        .category-header {
-            background-color: #2d3748;
-            color: #ffffff;
-            padding: 8px 12px;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            border-radius: 3px;
-            font-size: 13pt;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-    </style>
+    <x-pdf.styles />
 </head>
 <body>
 @php
 
 $map = [
-    'gender' => \App\Models\SpecializedEducationalSupport\Person::genderOptions(),
-
     'eval' => [
         'initial' => 'Inicial',
         'periodic_review' => 'Periódica',
@@ -79,7 +63,7 @@ $boolStrong = fn ($value) =>
 
 $renderHtml = fn ($value) =>
     filled($value)
-        ? $value
+        ? \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $value)
         : '<span class="text-muted">---</span>';
 
 $renderText = fn ($value) =>
@@ -109,29 +93,32 @@ $relationshipMap = [
 
 @endphp
 
-    <div class="header">
-        <h2>Ficha do Aluno</h2>
-        <p>
-            <strong>Gerado em:</strong> {{ now()->format('d/m/Y H:i') }}
-        </p>
-    </div>
+    <x-pdf.header
+        title="Ficha do Aluno"
+        :status="$student->status?->label()"
+        :meta="[
+            'Aluno(a)' => $student->person->name ?? '---',
+            'Matrícula' => $student->registration ?? '---',
+            'Gerado em' => now()->format('d/m/Y H:i'),
+        ]"
+    />
 
-    <div class="category-header">1. Informações do Aluno</div>
+    <div class="category-header">Informações do Aluno</div>
 
     {{-- ================= DADOS BÁSICOS ================= --}}
     <div class="section-title">Dados Básicos</div>
     <table class="pdf-table">
         <tr>
             <td class="pdf-cell" colspan="2">
-                <strong>Nome:</strong> {{ $student->person->name ?? '---' }}
+                <strong>Nome:</strong> {!! $renderHtml($student->person->name ?? null) !!}
             </td>
             <td class="pdf-cell" colspan="2">
-                <strong>Matrícula:</strong> {{ $student->registration ?? '---' }}
+                <strong>Matrícula:</strong> {!! $renderHtml($student->registration ?? null) !!}
             </td>
         </tr>
         <tr>
             <td class="pdf-cell" colspan="2">
-                <strong>Documento:</strong> {{ $student->person->document ?? '---' }}
+                <strong>Documento:</strong> {!! $renderHtml($student->person->document ?? null) !!}
             </td>
             <td class="pdf-cell" colspan="2">
                 <strong>Data de Nascimento:</strong> {{ $formatDate($student->person->birth_date ?? null) }}
@@ -139,24 +126,24 @@ $relationshipMap = [
         </tr>
         <tr>
             <td class="pdf-cell" colspan="2">
-                <strong>Gênero:</strong> {{ ['male' => 'Masculino', 'female' => 'Feminino', 'other' => 'Outro'][$student->person->gender] ?? 'Não informado' }}
+                <strong>Gênero:</strong> {{ $student->person->gender_label }}
             </td>
             <td class="pdf-cell" colspan="2">
                 <strong>Status:</strong>
-                {{ \App\Models\SpecializedEducationalSupport\Student::statusOptions()[$student->status->value ?? $student->status] ?? '---' }}
+                {{ $student->status?->label() ?? '---' }}
             </td>
         </tr>
         <tr>
             <td class="pdf-cell" colspan="2">
-                <strong>E-mail:</strong> {{ $student->person->email ?? '---' }}
+                <strong>E-mail:</strong> {!! $renderHtml($student->person->email ?? null) !!}
             </td>
             <td class="pdf-cell" colspan="2">
-                <strong>Telefone:</strong> {{ $student->person->phone ?? '---' }}
+                <strong>Telefone:</strong> {!! $renderHtml($student->person->phone ?? null) !!}
             </td>
         </tr>
         <tr>
             <td class="pdf-cell" colspan="4">
-                <strong>Endereço:</strong> {{ $student->person->address ?? '---' }}
+                <strong>Endereço:</strong> {!! $renderHtml($student->person->address ?? null) !!}
             </td>
         </tr>
         <tr>
@@ -175,20 +162,20 @@ $relationshipMap = [
     @if($student->deficiencies && $student->deficiencies->count())
         <table class="pdf-table">
             <tr>
-                <th class="pdf-cell" style="width: 24%;">Perfil de Atendimento</th>
-                <th class="pdf-cell" style="width: 16%;">Severidade</th>
+                <th class="pdf-cell pdf-w-24">Perfil de Atendimento</th>
+                <th class="pdf-cell pdf-w-16">Severidade</th>
                 <th class="pdf-cell">Observações</th>
             </tr>
             @foreach($student->deficiencies as $deficiency)
                 <tr>
                     <td class="pdf-cell">
-                        {{ $deficiency->name ?? '---' }}
+                        {!! $renderHtml($deficiency->name ?? null) !!}
                     </td>
                     <td class="pdf-cell">
                         {{ $severityMap[$deficiency->pivot->severity ?? null] ?? '---' }}
                     </td>
                     <td class="pdf-cell">
-                        {{ $deficiency->pivot->notes ?? '---' }}
+                        {!! $renderHtml($deficiency->pivot->notes ?? null) !!}
                     </td>
                 </tr>
             @endforeach
@@ -208,10 +195,10 @@ $relationshipMap = [
         <table class="pdf-table">
             <tr>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Curso:</strong> {{ $student->currentCourse->course->name ?? '---' }}
+                    <strong>Curso:</strong> {!! $renderHtml($student->currentCourse->course->name ?? null) !!}
                 </td>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Ano Acadêmico:</strong> {{ $student->currentCourse->academic_year ?? '---' }}
+                    <strong>Ano Acadêmico:</strong> {!! $renderHtml($student->currentCourse->academic_year ?? null) !!}
                 </td>
             </tr>
         </table>
@@ -228,18 +215,18 @@ $relationshipMap = [
 
     @if($student->guardians && $student->guardians->count())
         @foreach($student->guardians as $guardian)
-            <table class="pdf-table" style="margin-bottom: 12px;">
+            <table class="pdf-table pdf-mb-12">
                 <tr>
                     <td class="pdf-cell" colspan="4">
-                        <strong>Relação com o aluno:</strong> {{ $guardian->relationship ?? '---' }}
+                        <strong>Relação com o aluno:</strong> {!! $renderHtml($guardian->relationshipLabel()) !!}
                     </td>
                 </tr>
                 <tr>
                     <td class="pdf-cell" colspan="2">
-                        <strong>Nome:</strong> {{ $guardian->person->name ?? '---' }}
+                        <strong>Nome:</strong> {!! $renderHtml($guardian->person->name ?? null) !!}
                     </td>
                     <td class="pdf-cell" colspan="2">
-                        <strong>Documento:</strong> {{ $guardian->person->document ?? '---' }}
+                        <strong>Documento:</strong> {!! $renderHtml($guardian->person->document ?? null) !!}
                     </td>
                 </tr>
                 <tr>
@@ -247,22 +234,20 @@ $relationshipMap = [
                         <strong>Data de Nascimento:</strong> {{ $formatDate($guardian->person->birth_date ?? null) }}
                     </td>
                     <td class="pdf-cell" colspan="2">
-                        <strong>Gênero:</strong> {{
-                            \App\Models\SpecializedEducationalSupport\Guardian::genderOptions()[$guardian->person->gender ?? null] ?? '---'
-                        }}
+                        <strong>Gênero:</strong> {{ $guardian->person->gender_label }}
                     </td>
                 </tr>
                 <tr>
                     <td class="pdf-cell" colspan="2">
-                        <strong>E-mail:</strong> {{ $guardian->person->email ?? '---' }}
+                        <strong>E-mail:</strong> {!! $renderHtml($guardian->person->email ?? null) !!}
                     </td>
                     <td class="pdf-cell" colspan="2">
-                        <strong>Telefone:</strong> {{ $guardian->person->phone ?? '---' }}
+                        <strong>Telefone:</strong> {!! $renderHtml($guardian->person->phone ?? null) !!}
                     </td>
                 </tr>
                 <tr>
                     <td class="pdf-cell" colspan="4">
-                        <strong>Endereço:</strong> {{ $guardian->person->address ?? '---' }}
+                        <strong>Endereço:</strong> {!! $renderHtml($guardian->person->address ?? null) !!}
                     </td>
                 </tr>
             </table>
@@ -275,7 +260,7 @@ $relationshipMap = [
         </table>
     @endif
 
-    <div class="category-header">2. Contexto do Aluno</div>
+    <div class="category-header">Contexto do Aluno</div>
 
         {{-- ================= CONTEXTO ATUAL ================= --}}
     <div class="section-title">Identificação</div>
@@ -292,12 +277,12 @@ $relationshipMap = [
                     {{ $map['eval'][$context->evaluation_type] ?? e($context->evaluation_type ?? '---') }}
                 </td>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Semestre:</strong> {{ $context->semester->label ?? $context->semester->name ?? '---' }}
+                    <strong>Semestre:</strong> {!! $renderHtml($context->semester->label ?? $context->semester->name ?? null) !!}
                 </td>
             </tr>
             <tr>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Avaliado por:</strong> {{ $context->evaluator->person->name ?? '---' }}
+                    <strong>Avaliado por:</strong> {!! $renderHtml($context->evaluator->person->name ?? null) !!}
                 </td>
                 <td class="pdf-cell" colspan="2">
                     <strong>Registro Atual:</strong> {{ $boolLabel($context->is_current) }}
@@ -305,7 +290,7 @@ $relationshipMap = [
             </tr>
             <tr>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Versão:</strong> {{ $context->version ?? '---' }}
+                    <strong>Versão:</strong> {!! $renderHtml($context->version ?? null) !!}
                 </td>
                 <td class="pdf-cell" colspan="2">
                     <strong>Última Atualização:</strong> {{ optional($context->updated_at)->format('d/m/Y H:i') ?? '---' }}
@@ -457,7 +442,7 @@ $relationshipMap = [
     {{-- ========================= --}}
     {{-- PEIs e Adaptações por Disciplina --}}
     {{-- ========================= --}}
-    <div class="category-header">3. Peis do aluno</div>
+    <div class="category-header">PEIs do Aluno</div>
 
     <div class="divider"></div>
 
@@ -468,13 +453,7 @@ $relationshipMap = [
 
             <div class="page-break"></div>
 
-            <div style="
-                width: 100%;
-                height: 4px;
-                background-color: #000;
-                margin-top: 25px;
-                margin-bottom: 25px;
-            "></div>
+            <div class="pdf-divider-strong"></div>
 
         @endif
 
@@ -488,15 +467,15 @@ $relationshipMap = [
         <table class="pdf-table">
             <tr>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Estudante:</strong> {{ $student->person->name }}
+                    <strong>Estudante:</strong> {!! $renderHtml($student->person->name ?? null) !!}
                 </td>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Curso:</strong> {{ $pei->course->name }}
+                    <strong>Curso:</strong> {!! $renderHtml($pei->course->name ?? null) !!}
                 </td>
             </tr>
             <tr>
                 <td class="pdf-cell" colspan="2">
-                    <strong>Semestre/Ano:</strong> {{ $pei->semester->label }}
+                    <strong>Semestre/Ano:</strong> {!! $renderHtml($pei->semester->label ?? null) !!}
                 </td>
                 <td class="pdf-cell" colspan="2">
                     <strong>Gerado em:</strong> {{ now()->format('d/m/Y H:i') }}
@@ -554,7 +533,7 @@ $relationshipMap = [
 
             <div class="section-title">
                 Adaptações Razoáveis e/ou Acessibilidades Curriculares —
-                {{ mb_strtoupper($item->discipline->name, 'UTF-8') }}
+                {!! $renderHtml(mb_strtoupper($item->discipline->name, 'UTF-8')) !!}
             </div>
 
             <table class="pdf-table">
@@ -562,12 +541,12 @@ $relationshipMap = [
                 <tr>
                     <td class="pdf-cell" colspan="2">
                         <strong>Componente Curricular:</strong>
-                        {{ mb_strtoupper($item->discipline->name, 'UTF-8') }}
+                        {!! $renderHtml(mb_strtoupper($item->discipline->name, 'UTF-8')) !!}
                     </td>
 
                     <td class="pdf-cell" colspan="2">
                         <strong>Docente:</strong>
-                        {{ $item->teacher->person->name ?? '---' }}
+                        {!! $renderHtml($item->teacher->person->name ?? null) !!}
                     </td>
                 </tr>
 
@@ -630,7 +609,9 @@ $relationshipMap = [
             </table>
 
             {{-- quebra entre disciplinas --}}
-            <div class="page-break"></div>
+            @if (! $loop->last)
+                <div class="page-break"></div>
+            @endif
 
         @endforeach
 
@@ -642,6 +623,5 @@ $relationshipMap = [
         </table>
     @endforelse
 
-    <x-pdf.pages />
 </body>
 </html>

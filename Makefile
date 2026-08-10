@@ -5,28 +5,30 @@
 ENV ?= dev
 
 ifeq ($(ENV),prod)
-  COMPOSE  = docker compose -f docker-compose.prod.yml
+  COMPOSE  = docker compose --env-file .env.prod -f docker-compose.prod.yml
   ENV_FILE = .env.prod
 else
-  COMPOSE  = docker compose -f docker-compose.dev.yml
+  COMPOSE  = docker compose --env-file .env.dev -f docker-compose.dev.yml
   ENV_FILE = .env.dev
 endif
 
-APP_CONTAINER = gnai_app
+PROD_COMPOSE = docker compose --env-file .env.prod -f docker-compose.prod.yml
+PROD_IMAGE   = gnai-php:prod
 
 # -----------------------------
 # Declarando regras PHONY
 # -----------------------------
 .PHONY: up down down-v build logs art migrate seed perm make tinker scheduler \
-        coverage db backup backup-db list-bkp restore-db restore-full \
+        test coverage db backup backup-db list-bkp restore-db restore-full \
         build-assets dev-assets deploy composer storage-link \
-        cache-dev cache-prod npm-build logs-app
+        cache-dev cache-prod npm-build npm-dev logs-app sync-public-build host-storage-link \
+        permissions-sync permissions-prune create-admin
 
 # -----------------------------
 # Contêineres
 # -----------------------------
 up:
-	$(COMPOSE) up
+	$(COMPOSE) up -d
 
 down:
 	$(COMPOSE) down
@@ -91,8 +93,22 @@ seed:
 reset-db:
 	$(COMPOSE) exec app php artisan migrate:fresh --seed
 
+permissions-sync:
+	$(COMPOSE) exec app php artisan permissions:sync
+
+permissions-prune:
+	$(COMPOSE) exec app php artisan permissions:sync --prune
+
+create-admin:
+	$(COMPOSE) exec app php artisan auth:create-admin
+
 npm-build:
+ifeq ($(ENV),prod)
+	$(PROD_COMPOSE) build app
+	$(MAKE) sync-public-build
+else
 	$(COMPOSE) exec node npm run build
+endif
 
 npm-dev:
 	$(COMPOSE) exec node npm run dev
@@ -108,9 +124,20 @@ build-assets:
 
 # -----------------------------
 # PHPUnit / Testes
+# ex: make test
+#     make test TEST=app/Domains/InclusiveRadar/Tests/Feature/Waitlists
+#     make coverage
+#     make coverage TEST=app/Domains/InclusiveRadar/Tests/Feature/Waitlists
 # -----------------------------
+test:
+	@if [ -n "$(TEST)" ]; then \
+		$(COMPOSE) exec app php artisan test $(TEST); \
+	else \
+		$(COMPOSE) exec app php artisan test --testsuite=Unit,Domains; \
+	fi
+
 coverage:
-	docker exec -i $(APP_CONTAINER) sh -lc 'mkdir -p /var/www/coverage && XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html /var/www/coverage'
+	$(COMPOSE) exec app sh -lc 'XDEBUG_MODE=coverage php artisan test --coverage $(TEST)'
 
 # -----------------------------
 # Banco de dados
@@ -122,7 +149,7 @@ ifneq (,$(wildcard $(ENV_FILE)))
     export
 endif
 
-BKP_DIR = $(BACKUP_PATH)
+BKP_DIR = $(or $(BACKUP_PATH),storage/app/private/$(or $(BACKUP_DISK_NAME),GNAIbackups))
 
 db:
 	$(COMPOSE) exec db mysql -u$(DB_USERNAME) -p$(DB_PASSWORD) $(DB_DATABASE)
@@ -190,12 +217,32 @@ restore-full:
 # -----------------------------
 # Deploy prod
 # -----------------------------
+sync-public-build:
+	@tmp_container=$$(docker create $(PROD_IMAGE)); \
+	rm -rf public/build; \
+	docker cp "$$tmp_container:/var/www/public/build" public/build; \
+	docker rm "$$tmp_container" >/dev/null; \
+	chmod -R u+rwX,go+rX public/build; \
+	echo "✅ public/build sincronizado a partir da imagem $(PROD_IMAGE)"
+
+host-storage-link:
+	@if [ -L public/storage ] || [ ! -e public/storage ]; then \
+		rm -f public/storage; \
+		ln -s ../storage/app/public public/storage; \
+		echo "✅ public/storage aponta para ../storage/app/public"; \
+	else \
+		echo "❌ public/storage existe e não é symlink. Remova/backup manualmente antes de continuar."; \
+		exit 1; \
+	fi
+
 deploy:
 	@echo "🚀 Iniciando deploy em produção..."
-	$(MAKE) npm-build ENV=prod
-	$(COMPOSE) build --no-cache
-	$(COMPOSE) up -d
+	$(PROD_COMPOSE) build --no-cache
+	$(MAKE) sync-public-build
+	$(MAKE) host-storage-link
+	$(PROD_COMPOSE) up -d
 	$(MAKE) migrate ENV=prod
+	$(MAKE) permissions-sync ENV=prod
 	@echo "✅ Deploy finalizado!"
 
 # -----------------------------

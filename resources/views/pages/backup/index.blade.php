@@ -79,6 +79,25 @@
             confirmVariant="warning"
             method="POST"
         />
+
+        <template id="restoreBackupPasswordTemplate">
+            <div class="pt-2">
+                <label for="restore-backup-password" class="form-label fw-semibold">
+                    Confirme sua senha
+                </label>
+                <input
+                    type="password"
+                    name="password"
+                    id="restore-backup-password"
+                    class="form-control"
+                    autocomplete="current-password"
+                    required
+                >
+                <small class="text-muted d-block mt-2">
+                    Esta confirmação é obrigatória porque a restauração sobrescreve dados do sistema.
+                </small>
+            </div>
+        </template>
     @endcanany
 
     <div class="mt-4 alert alert-info d-flex align-items-center border-0 shadow-sm" role="alert">
@@ -87,7 +106,7 @@
             <span class="fw-bold d-block">Política de Armazenamento</span>
             <small>
                 Os backups são armazenados em <code class="fw-bold text-dark">storage/app/private/{{ config('backup.backup.name') }}</code>.
-                Arquivos com status <span class="badge bg-info-subtle text-info-emphasis border px-1">Arquivado</span> não serão removidos por limpezas automáticas.
+                O sistema mantém sempre os 30 registros mais recentes; backups excedentes são removidos automaticamente com seus arquivos físicos.
             </small>
         </div>
     </div>

@@ -102,21 +102,21 @@
 
             <div class="col-md-6">
                 <x-forms.select
-                    name="inspection_type"
+                    name="inspection[type]"
                     label="Tipo de Inspeção"
                     required
                     :options="$inspectionTypes"
-                    :selected="old('inspection_type', $defaultInspection)"
+                    :selected="old('inspection.type', $defaultInspection)"
                 />
             </div>
 
             <div class="col-md-6">
                 <x-forms.input
-                    name="inspection_date"
+                    name="inspection[date]"
                     label="Data da Inspeção"
                     type="date"
                     required
-                    :value="old('inspection_date', date('Y-m-d'))"
+                    :value="old('inspection.date', date('Y-m-d'))"
                 />
             </div>
 
@@ -131,19 +131,19 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.image-uploader
-                    name="images[]"
-                    label="Fotos de Evidência"
+                <x-forms.evidence-uploader
+                    name="inspection[evidences][]"
+                    label="Evidências"
                 />
             </div>
 
             <div class="col-md-12">
                 <x-forms.textarea
-                    name="inspection_description"
+                    name="inspection[description]"
                     label="Parecer Técnico"
                     rows="3"
                     placeholder="Descreva o motivo da mudança de estado ou detalhes da nova vistoria..."
-                    :value="old('inspection_description')"
+                    :value="old('inspection.description')"
                 />
             </div>
 
@@ -166,6 +166,7 @@
                     </div>
                 @endif
 
+                <input type="hidden" name="is_loanable" value="0">
                 <x-forms.checkbox
                     name="is_loanable"
                     label="Permitir Empréstimos"
@@ -182,6 +183,7 @@
                     :selected="old('status', $material->status?->value)"
                 />
 
+                <input type="hidden" name="is_active" value="0">
                 <x-forms.checkbox
                     name="is_active"
                     label="Ativar no Sistema"

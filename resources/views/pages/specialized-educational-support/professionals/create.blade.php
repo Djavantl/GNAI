@@ -53,13 +53,8 @@
                 <x-forms.select
                     name="gender"
                     label="Gênero"
-                    :options="[
-                        'not_specified' => 'Não informado',
-                        'male' => 'Masculino',
-                        'female' => 'Feminino',
-                        'other' => 'Outro'
-                    ]"
-                    :value="old('gender', 'not_specified')"
+                    :options="$genders"
+                    :selected="old('gender', $defaultGender)"
                     required
                 />
             </div>
@@ -79,7 +74,7 @@
             </div>
 
             <div class="col-md-12">
-                <x-forms.textarea rows="2" name="address" label="Endereço" :value="old('address')" />
+                <x-forms.textarea rows="2" name="address" label="Endereço" maxlength="500" :value="old('address')" />
             </div>
 
             <x-forms.section title="Dados do Profissional" />
@@ -94,7 +89,17 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.input name="registration" label="Matrícula " required :value="old('registration')" />
+                <x-forms.input name="registration" label="Matrícula " maxlength="50" required :value="old('registration')" />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input
+                    name="entry_date"
+                    label="Data de Ingresso"
+                    type="date"
+                    required
+                    :value="old('entry_date')"
+                />
             </div>
 
             @if(auth()->check() && auth()->user()->isAdmin())

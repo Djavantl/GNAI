@@ -35,6 +35,7 @@
         @php
             $data = $notification->data;
             $isUnread = is_null($notification->read_at);
+            $destination = \App\Domains\Notifications\UI\Presenters\NotificationDestination::toLocalUrl($data['url'] ?? null);
         @endphp
 
         <div class="card card-custom {{ $isUnread ? 'border-start border-4 border-primary-custom' : '' }}">
@@ -57,8 +58,8 @@
 
                 <div class="d-flex flex-wrap flex-sm-column gap-2 align-items-start align-items-sm-end flex-shrink-0">
 
-                    @if(isset($data['url']))
-                        <x-buttons.link-button href="{!! $data['url'] !!}" variant="success">
+                    @if($destination !== null)
+                        <x-buttons.link-button :href="$destination" variant="success">
                             <i class="fas fa-arrow-right"></i> Abrir
                         </x-buttons.link-button>
                     @endif
@@ -85,7 +86,7 @@
 
     {{-- Paginação --}}
     <div class="mt-4">
-        {{ $notifications->links() }}
+        <x-ui.pagination :records="$notifications" />
     </div>
 
 @endsection

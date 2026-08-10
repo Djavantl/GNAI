@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
     plugins: [
         laravel({
             input: [
@@ -12,11 +12,12 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/pages/dashboard.js',
                 'resources/js/components/photos.js',
-                'resources/js/pages/specialized-educational-support/session-record-create.js',
+                'resources/js/pages/specialized-educational-support/attendance-record-form.js',
+                'resources/js/pages/specialized-educational-support/session.js',
                 'resources/js/pages/inclusive-radar/barriers.js',
                 'resources/js/pages/inclusive-radar/institutions.js',
                 'resources/js/pages/inclusive-radar/locations.js',
-                'resources/js/pages/inclusive-radar/image-uploader.js',
+                'resources/js/pages/inclusive-radar/evidence-uploader.js',
                 'resources/js/pages/inclusive-radar/assistive-technologies.js',
                 'resources/js/pages/inclusive-radar/accessible-educational-materials.js',
                 'resources/js/pages/inclusive-radar/loans.js',
@@ -24,10 +25,11 @@ export default defineConfig({
                 'resources/js/pages/inclusive-radar/file-uploader.js',
                 'resources/js/pages/inclusive-radar/waitlists.js',
             ],
-            refresh: true,
+            refresh: command === 'serve',
         }),
     ],
-    server: {
+    ...(command === 'serve' ? {
+        server: {
         host: '0.0.0.0',
         port: 5173,
         strictPort: true,
@@ -45,5 +47,6 @@ export default defineConfig({
                 '**/.git/**',
             ]
         }
-    }
-});
+        }
+    } : {})
+}));

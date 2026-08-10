@@ -1,19 +1,19 @@
 @extends('layouts.master')
 
-@section('title', 'Agendar Nova Sessão')
+@section('title', 'Novo Agendamento')
 
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
             'Cadastrar' => null
         ]" />
     </div>
 
     <div class="d-flex justify-content-between mb-3">
         <div>
-            <h2 class="text-title">Agendar Nova Sessão</h2>
+            <h2 class="text-title">Novo Agendamento</h2>
             <p class="text-muted">Preencha os dados para agendar o atendimento especializado.</p>
         </div>
         <x-buttons.link-button href="{{ route('specialized-educational-support.sessions.index') }}" variant="secondary">
@@ -23,18 +23,34 @@
     </div>
 
     <div class="mt-3">
-        <x-forms.form-card action="{{ route('specialized-educational-support.sessions.store') }}" method="POST">
+        <x-forms.form-card
+            id="createSessionForm"
+            action="{{ route('specialized-educational-support.sessions.store') }}"
+            method="POST"
+            data-email-confirmation-modal="#confirmCreateSessionModal"
+        >
             
             <x-forms.section title="Participantes e Horário" />
 
-             {{-- Tipo de Atendimento --}}
+            <div class="col-md-6">
+                <x-forms.select
+                    name="attendance_type"
+                    label="Tipo de Atendimento"
+                    required
+                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::options()"
+                    :selected="old('attendance_type', \App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::AEE->value)"
+                    id="attendance_type"
+                />
+            </div>
+
+             {{-- Formato --}}
             <div class="col-md-6">
                 <x-forms.select
                     name="type"
-                    label="Tipo de Atendimento "
+                    label="Formato"
                     required
-                    :options="['individual' => 'Individual', 'group' => 'Em Grupo']"
-                    :value="old('type', 'individual')"
+                    :options="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::options()"
+                    :selected="old('type', 'individual')"
                     id="session_type"
                 />
             </div>
@@ -64,7 +80,7 @@
             <div class="col-md-6">
                 <x-forms.input
                     name="session_date"
-                    label="Data da Sessão "
+                    label="Data do Agendamento "
                     type="date"
                     required
                 />
@@ -111,7 +127,7 @@
             <div class="col-md-12">
                 <x-forms.textarea
                     name="session_objective"
-                    label="Objetivo da Sessão"
+                    label="Objetivo do Agendamento"
                     required
                     rows="3"
                     :value="old('session_objective')"
@@ -130,47 +146,29 @@
 
         </x-forms.form-card>
     </div>
+
+    <x-modal id="confirmCreateSessionModal" title="Confirmar Novo Agendamento">
+        <p class="mb-0">Deseja enviar um e-mail aos participantes sobre este agendamento?</p>
+
+        @slot('footer')
+            <x-buttons.link-button variant="secondary" data-bs-dismiss="modal">
+                Voltar
+            </x-buttons.link-button>
+            <button type="submit" form="createSessionForm" name="send_notification" value="0" class="btn-action dark" data-email-confirmation-choice>
+                Salvar sem E-mail
+            </button>
+            <button type="submit" form="createSessionForm" name="send_notification" value="1" class="btn-action new" data-email-confirmation-choice data-send-notification-button>
+                Salvar e Enviar E-mail
+            </button>
+        @endslot
+    </x-modal>
     
     @push('scripts')
-    <script>
+        @vite('resources/js/pages/specialized-educational-support/session.js')
+        <script>
         window.routes = {
             sessionAvailability: "{{ route('specialized-educational-support.sessions.availability') }}"
         };
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const type = document.getElementById('session_type');
-            const single = document.getElementById('single-student-wrapper');
-            const group = document.getElementById('group-students-wrapper');
-
-            const status = document.querySelector('[name="status"]');
-            const cancelBox = document.getElementById('cancel-reason-wrapper');
-
-            function toggleStudents() {
-                if (type.value === 'group') {
-                    single.classList.add('d-none');
-                    group.classList.remove('d-none');
-                } else {
-                    single.classList.remove('d-none');
-                    group.classList.add('d-none');
-                }
-            }
-
-            function toggleCancelReason() {
-                if (status.value === 'Cancelado') {
-                    cancelBox.classList.remove('d-none');
-                } else {
-                    cancelBox.classList.add('d-none');
-                }
-            }
-
-            type.addEventListener('change', toggleStudents);
-            status.addEventListener('change', toggleCancelReason);
-
-            toggleStudents();
-            toggleCancelReason();
-        });
         </script>
-
     @endpush
 @endsection

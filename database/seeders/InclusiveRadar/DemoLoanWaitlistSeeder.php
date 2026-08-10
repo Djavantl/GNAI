@@ -2,13 +2,13 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
-use App\Enums\InclusiveRadar\ConservationState;
-use App\Enums\InclusiveRadar\LoanStatus;
-use App\Enums\InclusiveRadar\ResourceStatus;
-use App\Enums\InclusiveRadar\WaitlistStatus;
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use App\Models\SpecializedEducationalSupport\Student;
-use App\Models\User;
+use App\Domains\Auth\Domain\Models\User;
+use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
+use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -43,14 +43,14 @@ class DemoLoanWaitlistSeeder extends Seeder
             $item1 = AccessibleEducationalMaterial::updateOrCreate(
                 ['name' => 'Leitor Portátil com Áudio'],
                 [
-                    'asset_code'         => 'AEM-LOAN-001',
-                    'is_digital'         => false,
-                    'quantity'           => 1,
+                    'asset_code' => 'AEM-LOAN-001',
+                    'is_digital' => false,
+                    'quantity' => 1,
                     'quantity_available' => 0,
                     'conservation_state' => ConservationState::GOOD->value,
-                    'is_loanable'        => true,
-                    'status'             => ResourceStatus::IN_USE->value,
-                    'is_active'          => true,
+                    'is_loanable' => true,
+                    'status' => ResourceStatus::IN_USE->value,
+                    'is_active' => true,
                 ]
             );
 
@@ -97,14 +97,14 @@ class DemoLoanWaitlistSeeder extends Seeder
             $item2 = AccessibleEducationalMaterial::updateOrCreate(
                 ['name' => 'Mapa Tátil'],
                 [
-                    'asset_code'         => 'AEM-LOAN-002',
-                    'is_digital'         => false,
-                    'quantity'           => 1,
+                    'asset_code' => 'AEM-LOAN-002',
+                    'is_digital' => false,
+                    'quantity' => 1,
                     'quantity_available' => 0,
                     'conservation_state' => ConservationState::GOOD->value,
-                    'is_loanable'        => true,
-                    'status'             => ResourceStatus::IN_USE->value,
-                    'is_active'          => true,
+                    'is_loanable' => true,
+                    'status' => ResourceStatus::IN_USE->value,
+                    'is_active' => true,
                 ]
             );
 
@@ -131,14 +131,14 @@ class DemoLoanWaitlistSeeder extends Seeder
             $item3 = AccessibleEducationalMaterial::updateOrCreate(
                 ['name' => 'Software Leitor de Tela'],
                 [
-                    'asset_code'         => 'AEM-DIG-001',
-                    'is_digital'         => true,
-                    'quantity'           => 999,
+                    'asset_code' => 'AEM-DIG-001',
+                    'is_digital' => true,
+                    'quantity' => 999,
                     'quantity_available' => 999,
                     'conservation_state' => ConservationState::NOT_APPLICABLE->value,
-                    'is_loanable'        => true,
-                    'status'             => ResourceStatus::AVAILABLE->value,
-                    'is_active'          => true,
+                    'is_loanable' => true,
+                    'status' => ResourceStatus::AVAILABLE->value,
+                    'is_active' => true,
                 ]
             );
 
@@ -155,14 +155,14 @@ class DemoLoanWaitlistSeeder extends Seeder
             $item4 = AccessibleEducationalMaterial::updateOrCreate(
                 ['name' => 'Livro em Braille'],
                 [
-                    'asset_code'         => 'AEM-LOAN-003',
-                    'is_digital'         => false,
-                    'quantity'           => 1,
+                    'asset_code' => 'AEM-LOAN-003',
+                    'is_digital' => false,
+                    'quantity' => 1,
                     'quantity_available' => 0,
                     'conservation_state' => ConservationState::GOOD->value,
-                    'is_loanable'        => true,
-                    'status'             => ResourceStatus::IN_USE->value,
-                    'is_active'          => true,
+                    'is_loanable' => true,
+                    'status' => ResourceStatus::IN_USE->value,
+                    'is_active' => true,
                 ]
             );
 
@@ -219,14 +219,14 @@ class DemoLoanWaitlistSeeder extends Seeder
         $item->loans()->updateOrCreate(
             [
                 'student_id' => $studentId,
-                'loan_date'  => $loanDate,
+                'loan_date' => $loanDate,
             ],
             [
-                'user_id'      => $userId,
-                'due_date'     => $dueDate,
-                'return_date'  => $returnDate,
-                'status'       => $status->value,
-                'observation'  => $obs,
+                'user_id' => $userId,
+                'due_date' => $dueDate,
+                'return_date' => $returnDate,
+                'status' => $status->value,
+                'observation' => $obs,
             ]
         );
     }
@@ -241,12 +241,12 @@ class DemoLoanWaitlistSeeder extends Seeder
     ): void {
         $item->waitlists()->updateOrCreate(
             [
-                'student_id'   => $studentId,
+                'student_id' => $studentId,
                 'requested_at' => $date,
             ],
             [
-                'user_id'     => $userId,
-                'status'      => $status->value,
+                'user_id' => $userId,
+                'status' => $status->value,
                 'observation' => $obs,
             ]
         );

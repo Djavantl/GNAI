@@ -2,16 +2,14 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
-use App\Models\InclusiveRadar\AccessibleEducationalMaterial;
-use Database\Seeders\AdminSeeder;
+use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
+use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
-use App\Models\InclusiveRadar\AssistiveTechnology;
-use App\Enums\InclusiveRadar\InspectionType;
-use App\Enums\InclusiveRadar\ConservationState;
-use App\Enums\InclusiveRadar\ResourceStatus; // <-- Adicionado
 
 class AssistiveTechnologySeeder extends Seeder
 {
@@ -81,13 +79,9 @@ class AssistiveTechnologySeeder extends Seeder
         }
     }
 
-    private function ensureUserExists(): int
+    private function ensureUserExists(): ?int
     {
-        if (DB::table('users')->count() === 0) {
-            $this->call(AdminSeeder::class);
-        }
-
-        return DB::table('users')->first()->id;
+        return DB::table('users')->value('id');
     }
 
     private function attachDeficiencies(AssistiveTechnology $assistiveTechnology, array $deficiencyIds): void
@@ -116,7 +110,7 @@ class AssistiveTechnologySeeder extends Seeder
         return $base;
     }
 
-    private function createInspections(AssistiveTechnology $technology, string $currentState, int $userId): void
+    private function createInspections(AssistiveTechnology $technology, string $currentState, ?int $userId): void
     {
         $numInspections = rand(1, 4);
         $acquisitionDate = Carbon::now()->subMonths(rand(6, 24))->subDays(rand(0, 30));

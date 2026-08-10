@@ -64,13 +64,8 @@
                 <x-forms.select
                     name="gender"
                     label="Gênero"
-                    :options="[
-                        'male' => 'Masculino',
-                        'female' => 'Feminino',
-                        'other' => 'Outro',
-                        'not_specified' => 'Não informado'
-                    ]"
-                    :value="old('gender', 'not_specified')"
+                    :options="$genders"
+                    :selected="old('gender', $defaultGender)"
                     required
                 />
             </div>
@@ -111,6 +106,7 @@
                 <x-forms.input 
                     name="registration" 
                     label="Matrícula " 
+                    maxlength="50"
                     required 
                     :value="old('registration')" 
                 />
@@ -122,16 +118,6 @@
                     label="Data de Ingresso"
                     type="date"
                     :value="old('entry_date')"
-                />
-            </div>
-
-            <div class="col-md-6">
-                <input type="hidden" name="is_repeater" value="">
-                <x-forms.checkbox
-                    name="is_repeater"
-                    label="Aluno repetente?"
-                    :checked="old('is_repeater')"
-                    description="Marque caso o aluno apresente histórico ou tendência de repetência."
                 />
             </div>
 

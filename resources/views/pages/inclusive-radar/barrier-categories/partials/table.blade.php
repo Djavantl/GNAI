@@ -62,7 +62,3 @@
         </tr>
     @endforelse
 </x-table.table>
-
-<div class="mt-4">
-    {{ $categories->links() }}
-</div>

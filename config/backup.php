@@ -67,7 +67,7 @@ return [
         'mail' => [
             'to' => env('BACKUP_MAIL_TO', 'your@example.com'),
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'marleyextreme02@gmail.com'),
+                'address' => env('MAIL_FROM_ADDRESS', 'no-reply@example.com'),
                 'name' => env('MAIL_FROM_NAME', 'GNAI'),
             ],
         ],

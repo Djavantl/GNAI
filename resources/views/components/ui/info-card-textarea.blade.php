@@ -21,17 +21,17 @@
         @php
             $lineHeight = 1.5;
             $height = $rows * $lineHeight;
+            $content = trim($slot) !== ''
+                ? $slot->toHtml()
+                : ($value ?? $empty);
+            $content = \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) $content);
         @endphp
 
         <div
             class="small custom-display-box-textarea"
             style="overflow-y: {{ $scroll ? 'auto' : 'visible' }};"
         >
-            @if(trim($slot) !== '')
-                {!! $slot !!}
-            @else
-                {!! $value ?? $empty !!}
-            @endif
+            {!! $content !!}
         </div>
 
     </div>

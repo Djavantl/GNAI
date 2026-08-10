@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $isReturned = $loan->status !== 'active' || $loan->return_date !== null;
+        $isReturned = $loan->isReturned();
     @endphp
 
     <div class="mb-5">
@@ -39,7 +39,7 @@
         </div>
     @endif
 
-    @if($loan->status === 'active' && $loan->due_date?->isPast())
+    @if($loan->isOverdue())
         <div class="alert alert-warning border-0 shadow-sm mb-4 d-flex align-items-center gap-3">
             <i class="fas fa-clock fa-spin fs-4"></i>
             <div>
@@ -62,7 +62,7 @@
             <div class="col-md-12 mb-4">
                 <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
                     <div class="bg-purple-dark text-white p-3 rounded shadow-sm" style="background-color: #4c1d95;">
-                        <i class="fas {{ $loan->loanable_type === 'App\Models\InclusiveRadar\AssistiveTechnology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
+                        <i class="fas {{ $loan->loanableType()->icon() }} fa-lg"></i>
                     </div>
                     <div>
                         <h5 class="mb-0 fw-bold text-purple-dark">
@@ -131,7 +131,7 @@
                 <x-forms.input
                     name="status_display"
                     label="Status Atual"
-                    :value="$loan->status?->label() ?? 'Status desconhecido'"
+                    :value="$loan->statusLabel()"
                     disabled
                 />
             </div>

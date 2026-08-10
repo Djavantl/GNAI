@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- 3. GRÁFICO DE BARRAS (Sessões por status) ---
+    // --- 3. GRÁFICO DE BARRAS (Agendamentos por status) ---
     const ctxSessions = document.getElementById('barChartSessions');
     if (ctxSessions) {
         new Chart(ctxSessions.getContext('2d'), {
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 labels: data.sessionsByStatus.map(status => status.label),
                 datasets: [{
-                    label: 'Sessões',
+                    label: 'Agendamentos',
                     data: data.sessionsByStatus.map(status => status.count),
                     backgroundColor: [colors.warning, colors.success, colors.danger],
                     borderRadius: 10,

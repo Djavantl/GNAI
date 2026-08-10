@@ -2,10 +2,10 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\SpecializedEducationalSupport\Course;
-use App\Models\SpecializedEducationalSupport\Discipline;
 
 class DisciplineSeeder extends Seeder
 {
@@ -28,7 +28,7 @@ class DisciplineSeeder extends Seeder
                 'Interface Homem-Computador',
                 'Estrutura de Dados',
                 'Manutenção de Computadores',
-                'Ética Profissional e Cidadania'
+                'Ética Profissional e Cidadania',
             ],
             'Técnico em Administração' => [
                 'Teoria Geral da Administração',
@@ -45,8 +45,8 @@ class DisciplineSeeder extends Seeder
                 'Processos Administrativos',
                 'Comunicação Empresarial',
                 'Matemática Financeira',
-                'Economia e Mercados'
-            ]
+                'Economia e Mercados',
+            ],
         ];
 
         foreach ($data as $courseName => $disciplines) {
@@ -66,7 +66,7 @@ class DisciplineSeeder extends Seeder
                     DB::table('course_disciplines')->updateOrInsert(
                         [
                             'course_id' => $course->id,
-                            'discipline_id' => $discipline->id
+                            'discipline_id' => $discipline->id,
                         ],
                         ['created_at' => now(), 'updated_at' => now()]
                     );

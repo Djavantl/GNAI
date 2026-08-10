@@ -1,13 +1,13 @@
 @extends('layouts.master')
 
-@section('title', 'Minhas Sessões')
+@section('title', 'Meus Agendamentos')
 
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
-            'Minhas Sessões' => null
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
+            'Meus Agendamentos' => null
         ]" />
     </div>
 
@@ -15,13 +15,13 @@
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden mb-5">
         <x-table.page-header
             title="Minha agenda semanal"
-            subtitle="Visão das suas sessões, organizada por dia da semana."
+            subtitle="Visão dos seus agendamentos, organizada por dia da semana."
         >
         @can('session.create')
             <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.create')"
                 variant="new"
-                title="Nova sessão"
+                title="Novo agendamento"
             >
                 <i class="fas fa-plus"></i>
             </x-buttons.link-button>
@@ -31,9 +31,9 @@
             <x-buttons.link-button
                 :href="route('specialized-educational-support.sessions.index')"
                 variant="secondary"
-                title="Voltar para sessões"
+                title="Voltar para agendamentos"
             >
-                <i class="fas fa-calendar"></i> Todas Sessões
+                <i class="fas fa-calendar"></i> Todos Agendamentos
             </x-buttons.link-button>
         @endcan
         </x-table.page-header>
@@ -110,11 +110,11 @@
         </div>
     </div>
 
-    {{-- TABELA DE SESSÕES ABAIXO --}}
+    {{-- TABELA DE AGENDAMENTOS ABAIXO --}}
     <div class="custom-table-card shadow-sm border rounded-3 overflow-hidden">
         <x-table.page-header
-            title="Minhas Sessões"
-            subtitle="Veja suas sessões cadastradas em tabela e acompanhe a agenda semanal acima."
+            title="Meus Agendamentos"
+            subtitle="Veja seus agendamentos cadastrados em tabela e acompanhe a agenda semanal acima."
         />
 
         <div class="px-3 pt-3">
@@ -132,12 +132,12 @@
                             [
                                 'name' => 'type',
                                 'type' => 'select',
-                                'options' => ['' => 'Tipo (Todos)', 'individual' => 'Individual', 'group' => 'Grupo']
+                                'options' => ['' => 'Tipo (Todos)'] + \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::options()
                             ],
                             [
                                 'name' => 'status',
                                 'type' => 'select',
-                                'options' => ['' => 'Status (Todos)', 'Agendada' => 'Agendada', 'Realizada' => 'Realizada', 'Cancelada' => 'Cancelada']
+                                'options' => ['' => 'Status (Todos)'] + \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::options()
                             ],
                         ]"
                     />

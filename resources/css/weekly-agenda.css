@@ -106,16 +106,16 @@
   line-height: 1.35;
 }
 
-.weekly-agenda .weekly-session-record {
+.weekly-agenda .weekly-attendance-record {
   font-size: 0.85rem;
   font-weight: 700;
 }
 
-.weekly-agenda .weekly-session-record--missing {
+.weekly-agenda .weekly-attendance-record--missing {
   color: #c98a00;
 }
 
-.weekly-agenda .weekly-session-record--done {
+.weekly-agenda .weekly-attendance-record--done {
   color: var(--bs-success);
 }
 

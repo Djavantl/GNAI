@@ -20,6 +20,14 @@
         </header>
 
         <div class="d-flex gap-2 justify-content-end ms-md-auto" role="group" aria-label="Ações principais">
+            @can('assistive-technology.create')
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.assistive-technologies.clone', $assistiveTechnology)"
+                    variant="primary">
+                    <i class="fas fa-copy"></i> Clonar
+                </x-buttons.link-button>
+            @endcan
+
             @can('assistive-technology.edit')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.assistive-technologies.edit', $assistiveTechnology)"
@@ -119,11 +127,6 @@
                     @endcan
                 </div>
                 <div class="d-flex flex-wrap gap-2 justify-content-end">
-                    @can('assistive-technology.logs')
-                        <x-buttons.link-button :href="route('inclusive-radar.assistive-technologies.logs', $assistiveTechnology)" variant="secondary-outline">
-                            <i class="fas fa-history"></i> Logs
-                        </x-buttons.link-button>
-                    @endcan
                     @can('assistive-technology.destroy')
                         <x-buttons.submit-button
                             type="button"
@@ -131,10 +134,10 @@
                             data-bs-toggle="modal"
                             data-bs-target="#globalConfirmActionModal"
                             data-confirm-title="Excluir Tecnologia Assistiva"
-                            data-confirm-message="A tecnologia {{ $assistiveTechnology->name }} sera excluida permanentemente."
+                            data-confirm-message="A tecnologia {{ $assistiveTechnology->name }} será removida do sistema."
                             data-confirm-action="{{ route('inclusive-radar.assistive-technologies.destroy', $assistiveTechnology) }}"
                             data-confirm-method="DELETE"
-                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-submit-text="Confirmar Exclusão"
                             data-confirm-variant="danger"
                         >
                             <i class="fas fa-trash-alt"></i> Excluir

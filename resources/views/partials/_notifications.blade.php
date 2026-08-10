@@ -35,9 +35,13 @@
 
             <div class="notification-scroll" style="max-height: 350px; overflow-y: auto;">
                 @forelse($notifications as $notification)
-                    @php $data = $notification->data; @endphp
+                    @php
+                        $data = $notification->data;
+                        $destination = \App\Domains\Notifications\UI\Presenters\NotificationDestination::toLocalUrl($data['url'] ?? null);
+                    @endphp
                     <li>
-                        <a href="{!! $data['url'] ?? '#' !!}"
+                        <a href="{{ $destination ?? '#' }}"
+                           data-id="{{ $notification->id }}"
                            class="dropdown-item py-3 border-bottom text-wrap notify-item"
                            style="transition: background 0.2s;">
                             <div class="d-flex flex-column">
@@ -49,7 +53,7 @@
                                 </small>
                                 <small class="text-primary fw-bold" style="font-size: 0.7rem;">
                                     <i class="bi bi-clock me-1" aria-hidden="true"></i>
-                                    {{ \Carbon\Carbon::parse($data['created_at'] ?? now())->diffForHumans() }}
+                                    {{ ($notification->created_at ?? \Carbon\Carbon::parse($data['created_at'] ?? now()))->diffForHumans() }}
                                 </small>
                             </div>
                         </a>

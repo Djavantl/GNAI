@@ -31,16 +31,11 @@
             </x-table.td>
 
             <x-table.td>
-                @php
-                    $statusColor = $professional->status === 'active' ? 'success' : 'danger';
-                    $statusLabel = $professional->status === 'active' ? 'Ativo' : 'Inativo';
-                @endphp
-
-                <span class="text-{{ $statusColor }} fw-bold text-uppercase"
+                <span class="text-{{ $professional->status->color() }} fw-bold text-uppercase"
                       style="font-size: 0.85rem;"
-                      aria-label="Status: {{ $statusLabel }}">
-                {{ $statusLabel }}
-            </span>
+                      aria-label="Status: {{ $professional->status->label() }}">
+                    {{ $professional->status->label() }}
+                </span>
             </x-table.td>
 
             <x-table.td :responsive="false">

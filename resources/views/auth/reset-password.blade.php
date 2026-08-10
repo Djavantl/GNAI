@@ -33,6 +33,16 @@
 
                 <h2 class="form-title mb-3">Redefinir senha</h2>
 
+                @if($errors->any())
+                    <div class="alert alert-danger border-0 small">
+                        <ul class="mb-0 ps-3">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('password.update') }}">
                     @csrf
 
@@ -42,7 +52,7 @@
                         <label class="form-label fw-bold">E-mail</label>
                         <input type="email"
                                name="email"
-                               value="{{ $email }}"
+                               value="{{ old('email', $email) }}"
                                class="form-control custom-input"
                                required>
                     </div>

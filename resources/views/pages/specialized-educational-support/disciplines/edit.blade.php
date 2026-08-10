@@ -35,7 +35,7 @@
             </div>
 
             <div class="col-md-6">
-                <x-forms.select name="is_active" label="Status" :options="[1 => 'Ativo', 0 => 'Inativo']" :selected="old('is_active', $discipline->is_active)" />
+                <x-forms.select name="is_active" label="Status" :options="[1 => 'Ativo', 0 => 'Inativo']" :selected="old('is_active', $discipline->is_active)" required />
             </div>
 
             <div class="col-12 d-flex flex-wrap justify-content-end gap-2 border-t pt-4 px-4 pb-4">

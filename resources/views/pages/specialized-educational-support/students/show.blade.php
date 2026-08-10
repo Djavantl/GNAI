@@ -87,9 +87,10 @@
             @include('pages.specialized-educational-support.students.record.documents')
         @endcan
             
-        {{-- Seção de Sessões --}}
-        @canany(['session-record.view-all', 'session-record.view-own'])
-            @include('pages.specialized-educational-support.students.record.session-records')
+        {{-- Seção de atendimentos AEE --}}
+        @canany(['aee-record.view-all', 'aee-record.view-own', 'pedagogical-record.view-all', 'pedagogical-record.view-own'])
+            @include('pages.specialized-educational-support.students.record.aee-records')
+            @include('pages.specialized-educational-support.students.record.pedagogical-records')
         @endcanany
         
 

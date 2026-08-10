@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@php
+    use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
+@endphp
+
 @section('title', 'Minhas Pendências')
 
 @section('content')
@@ -37,12 +41,7 @@
                     [
                         'name' => 'priority',
                         'type' => 'select',
-                        'options' => [
-                            '' => 'Prioridade (Todas)',
-                            'low' => 'Baixa',
-                            'medium' => 'Média',
-                            'high' => 'Alta',
-                        ]
+                        'options' => Priority::filterOptions()
                     ],
                     [
                         'name' => 'is_completed',

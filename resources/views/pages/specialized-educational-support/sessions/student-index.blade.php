@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', "Sessões de Atendimento - {$student->person->name}")
+@section('title', "Agendamentos de Atendimento - {$student->person->name}")
 
 @section('content')
 
@@ -9,7 +9,7 @@
             'Home' => route('dashboard'),
             'Prontuários' => route('specialized-educational-support.students.index'),
             $student->person->name => route('specialized-educational-support.students.show', $student),
-            'Sessões' => null
+            'Agendamentos' => null
         ]" />
     </div>
 
@@ -18,7 +18,7 @@
 
         {{-- HEADER --}}
         <x-table.page-header
-            title="Sessões de Atendimento — {{ $student->person->name }}"
+            title="Agendamentos de Atendimento — {{ $student->person->name }}"
             subtitle="Histórico de atendimentos realizados para o aluno."
         >
             <x-buttons.link-button
@@ -47,21 +47,12 @@
                     [
                         'name' => 'type',
                         'type' => 'select',
-                        'options' => [
-                            '' => 'Tipo (Todos)',
-                            'individual' => 'Individual',
-                            'group' => 'Grupo',
-                        ]
+                        'options' => ['' => 'Tipo (Todos)'] + \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::options()
                     ],
                     [
                         'name' => 'status',
                         'type' => 'select',
-                        'options' => [
-                            '' => 'Status (Todos)',
-                            'scheduled' => 'Agendada',
-                            'realized' => 'Realizada',
-                            'canceled' => 'Cancelada',
-                        ]
+                        'options' => ['' => 'Status (Todos)'] + \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::options()
                     ],
                 ]"
             />

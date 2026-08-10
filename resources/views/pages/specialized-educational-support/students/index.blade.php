@@ -49,13 +49,25 @@
                     [
                         'name' => 'status',
                         'type' => 'select',
-                        'options' => [
-                            '' => 'Status (Todos)',
-                            'active' => 'Ativo',
-                            'locked' => 'Trancado',
-                            'completed' => 'Concluído',
-                            'dropped' => 'Evadido',
-                        ]
+                        'options' => collect(
+                            \App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus::cases()
+                        )->mapWithKeys(
+                            fn ($status) => [$status->value => $status->label()]
+                        )->prepend('Status (Todos)', '')->all()
+                    ],
+                    [
+                        'name' => 'course_id',
+                        'type' => 'select',
+                        'options' => ['' => 'Curso (Todos)', 0 => 'Sem curso'] + collect($courses)->mapWithKeys(fn ($course) => [
+                            $course->id => $course->name,
+                        ])->toArray(),
+                    ],
+                    [
+                        'name' => 'deficiency_id',
+                        'type' => 'select',
+                        'options' => ['' => 'Perfil de atendimento (Todos)', 0 => 'Sem perfil de atendimento'] + collect($deficiencies)->mapWithKeys(fn ($deficiency) => [
+                            $deficiency->id => $deficiency->name,
+                        ])->toArray(),
                     ],
                 ]"
             />

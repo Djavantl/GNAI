@@ -11,6 +11,13 @@
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
+        <testsuite name="Domains">
+            <directory suffix="Test.php">app/Domains/InclusiveRadar</directory>
+            <directory suffix="Test.php">app/Domains/Backup</directory>
+            <directory suffix="Test.php">app/Domains/Auth</directory>
+            <directory suffix="Test.php">app/Domains/SpecializedEducationalSupport</directory>
+            <directory suffix="Test.php">app/Domains/Reporting</directory>
+        </testsuite>
     </testsuites>
     <source>
         <include>
@@ -19,6 +26,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

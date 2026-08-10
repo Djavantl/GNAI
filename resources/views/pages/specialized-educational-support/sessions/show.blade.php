@@ -4,20 +4,21 @@
     <div class="mb-5">
         <x-breadcrumb :items="[
             'Home' => route('dashboard'),
-            'Sessões' => route('specialized-educational-support.sessions.index'),
-            'Sessão #' . $session->id => null
+            'Agendamentos' => route('specialized-educational-support.sessions.index'),
+            'Agendamento #' . $session->id => null
         ]" />
     </div>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h2 class="text-title">Detalhes da Sessão</h2>
+            <h2 class="text-title">Detalhes do Agendamento</h2>
             <p class="text-muted">Informações detalhadas do atendimento especializado.</p>
         </div>
         @php
-            $canManageSessionRecord = auth()->user()?->professional?->id === $session->professional_id;
-            $sessionStatus = mb_strtolower(trim((string) $session->status));
-            $isScheduledSession = in_array($sessionStatus, ['agendada', 'agendado', 'scheduled'], true);
+            $canManageAttendanceRecord = auth()->user()?->professional?->id === $session->professional_id;
+            $isScheduledSession = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::isScheduledValue($session->status);
             $canManageSessionLifecycle = auth()->id() === $session->creator_id;
+            $sessionDateHasArrived = $session->sessionDateHasArrived();
+            $sessionDateIsUpcoming = $session->sessionDateIsUpcoming();
         @endphp
         <div class="d-flex gap-2 flex-wrap justify-content-end ms-md-auto">
             @can('session.update')
@@ -53,16 +54,10 @@
             
             <x-show.info-item label="Status" column="col-md-6" isBox="true">
                 @php
-                    $statusValue = strtolower($session->status);
-                    $statusColor = match($statusValue) {
-                        'agendada', 'agendado' => 'warning',
-                        'realizada', 'realizado' => 'success',
-                        'cancelada', 'cancelled', 'cancelado' => 'danger',
-                        default => 'warning'
-                    };
+                    $statusColor = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::colorFor($session->status);
                 @endphp
                 <span class="text-{{ $statusColor }} fw-bold">
-                    {{ $session->statusLabel() }}
+                    {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::labelFor($session->status) }}
                 </span>
             </x-show.info-item>
 
@@ -78,11 +73,13 @@
 
             <x-show.info-item label="Local" :value="$session->location" isBox="true"/>
             
-            <x-show.info-item label="Tipo de Atendimento" :value="$session->typeLabel()" isBox="true"/>
+            <x-show.info-item label="Tipo de Atendimento" :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::labelFor($session->attendance_type)" isBox="true"/>
 
-            <x-forms.section title="Conteúdo da Sessão" />
+            <x-show.info-item label="Formato" :value="\App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::labelFor($session->type)" isBox="true"/>
 
-            <x-show.info-textarea label="Objetivo da Sessão" column="col-md-12" isBox="true">{{ $session->session_objective }}</x-show.info-textarea>
+            <x-forms.section title="Conteúdo do Agendamento" />
+
+            <x-show.info-textarea label="Objetivo do Agendamento" column="col-md-12" isBox="true">{{ $session->session_objective }}</x-show.info-textarea>
 
             @if($session->cancellation_reason)
                 <x-show.info-textarea label="Motivo do Cancelamento" column="col-md-12" isBox="true">
@@ -91,71 +88,100 @@
             @endif
 
             {{-- MODAL DE CANCELAMENTO --}}
-            <div class="modal fade" id="modalCancelSessao" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form action="{{ route('specialized-educational-support.sessions.cancel', $session->id) }}" method="POST">
-                            @csrf
-                            <div class="modal-header">
-                                <h5 class="modal-title">Confirmar Cancelamento</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Tem certeza que deseja cancelar esta sessão? Esta ação enviará um e-mail de notificação para os participantes.</p>
-                                
-                                <div class="form-group">
-                                    <label for="cancellation_reason" class="form-label">Motivo do Cancelamento <span class="text-danger">*</span></label>
-                                    <textarea 
-                                        name="cancellation_reason" 
-                                        id="cancellation_reason" 
-                                        class="form-control" 
-                                        rows="3" 
-                                        required 
-                                        placeholder="Descreva o motivo obrigatório..."></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
-                                <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
-                            </div>
-                        </form>
+            <x-modal id="modalCancelAgendamento" title="Confirmar Cancelamento">
+                <form id="cancelSessionForm" action="{{ route('specialized-educational-support.sessions.cancel', $session->id) }}" method="POST">
+                    @csrf
+                    <p>Tem certeza que deseja cancelar este agendamento?</p>
+
+                    <div class="form-group">
+                        <label for="cancellation_reason" class="form-label">Motivo do Cancelamento <span class="text-danger">*</span></label>
+                        <textarea
+                            name="cancellation_reason"
+                            id="cancellation_reason"
+                            class="form-control"
+                            rows="3"
+                            required
+                            placeholder="Descreva o motivo obrigatório..."
+                        ></textarea>
                     </div>
-                </div>
-            </div>
+                </form>
+
+                @slot('footer')
+                    <x-buttons.link-button variant="secondary" data-bs-dismiss="modal">
+                        Voltar
+                    </x-buttons.link-button>
+                    <button type="submit" form="cancelSessionForm" name="send_notification" value="0" class="btn-action dark">
+                        Cancelar sem E-mail
+                    </button>
+                    <button type="submit" form="cancelSessionForm" name="send_notification" value="1" class="btn-action danger">
+                        Cancelar e Enviar E-mail
+                    </button>
+                @endslot
+            </x-modal>
 
             {{-- Rodapé do Card --}}
             <div class="col-12 border-top p-4  d-flex flex-wrap justify-content-end gap-2">
-                @if($isScheduledSession)
+                @if($isScheduledSession && $sessionDateIsUpcoming)
                     @can('session.update')
                     @if($canManageSessionLifecycle)
-                        <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelSessao" type="button">
-                            <i class="fas fa-times" aria-hidden="true"></i> Cancelar Sessão
+                        <x-buttons.submit-button variant="dark" data-bs-toggle="modal" data-bs-target="#modalCancelAgendamento" type="button">
+                            <i class="fas fa-times" aria-hidden="true"></i> Cancelar Agendamento
                         </x-buttons.submit-button>
                     @endif
                     @endcan
                 @endif
-                 {{-- Lógica do Registro --}}
-                @if($session->sessionRecord)
-                    @can('session-record.view')
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.session-records.show', $session->sessionRecord->id)"
-                        variant="info"
-                        
-                    >
-                        <i class="fas fa-eye" aria-hidden="true"></i>  Ver Registro
-                    </x-buttons.link-button>
-                    @endcan
-                @else
-                    @can('session-record.create')
-                    @if($canManageSessionRecord && $isScheduledSession)
-                    <x-buttons.link-button
-                        :href="route('specialized-educational-support.session-records.create', $session->id)"
-                        variant="new"
-                    >
-                        <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro
-                    </x-buttons.link-button>
+                 {{-- Lógica dos registros por tipo de atendimento --}}
+                @if(\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::isAee($session->attendance_type))
+                    @if($session->aeeRecord)
+                        @can('aee-record.view')
+                            <x-buttons.link-button
+                                :href="route('specialized-educational-support.aee-records.show', $session->aeeRecord->id)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i> Ver Atendimento AEE
+                            </x-buttons.link-button>
+                        @endcan
+                    @else
+                        @can('aee-record.create')
+                            @if($canManageAttendanceRecord && $isScheduledSession && $sessionDateHasArrived)
+                                <x-buttons.link-button
+                                    :href="route('specialized-educational-support.aee-records.create', $session->id)"
+                                    variant="new"
+                                >
+                                    <i class="fas fa-plus" aria-hidden="true"></i> Criar Atendimento AEE
+                                </x-buttons.link-button>
+                            @endif
+                        @endcan
                     @endif
-                    @endcan
+                @elseif(\App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType::isPedagogical($session->attendance_type))
+                    @if($session->pedagogicalRecord)
+                        @can('pedagogical-record.view')
+                            <x-buttons.link-button
+                                :href="route('specialized-educational-support.pedagogical-records.show', $session->pedagogicalRecord)"
+                                variant="info"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i> Ver Atendimento Pedagógico
+                            </x-buttons.link-button>
+                            <x-buttons.link-button
+                                :href="route('specialized-educational-support.pedagogical-records.pdf', $session->pedagogicalRecord)"
+                                variant="secondary"
+                                target="_blank"
+                            >
+                                <i class="fas fa-file-pdf" aria-hidden="true"></i> PDF Pedagógico
+                            </x-buttons.link-button>
+                        @endcan
+                    @else
+                        @can('pedagogical-record.create')
+                            @if($canManageAttendanceRecord && $isScheduledSession && $sessionDateHasArrived)
+                                <x-buttons.link-button
+                                    :href="route('specialized-educational-support.pedagogical-records.create', $session)"
+                                    variant="new"
+                                >
+                                    <i class="fas fa-plus" aria-hidden="true"></i> Criar Registro Pedagógico
+                                </x-buttons.link-button>
+                            @endif
+                        @endcan
+                    @endif
                 @endif
                 @can('session.delete')
                 @if($canManageSessionLifecycle)
@@ -164,12 +190,13 @@
                     variant="danger"
                     data-bs-toggle="modal"
                     data-bs-target="#globalConfirmActionModal"
-                    data-confirm-title="Excluir Sessao"
-                    data-confirm-message="Excluir esta sessao permanentemente?"
+                    data-confirm-title="Excluir Agendamento"
+                    data-confirm-message="Excluir este agendamento permanentemente?"
                     data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session->id) }}"
                     data-confirm-method="DELETE"
                     data-confirm-submit-text="Confirmar Exclusao"
                     data-confirm-variant="danger"
+                    data-confirm-template="{{ $isScheduledSession ? '#sessionEmailNotificationTemplate' : '' }}"
                 >
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>

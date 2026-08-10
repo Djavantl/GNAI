@@ -46,17 +46,52 @@
                     </div>
                 @endif
 
+                @if($errors->any())
+                    <div class="alert alert-danger border-0 small mb-4">
+                        <ul class="mb-0 ps-3">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">E-mail</label>
-                        <input type="email" name="email" class="form-control custom-input" placeholder="exemplo@ifbaiano.edu.br" required autofocus>
+                        <input type="email"
+                               name="email"
+                               value="{{ old('email') }}"
+                               class="form-control custom-input @error('email') is-invalid @enderror"
+                               placeholder="exemplo@ifbaiano.edu.br"
+                               required
+                               autofocus>
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label fw-bold">Senha</label>
-                        <input type="password" name="password" class="form-control custom-input" placeholder="••••••••" required>
+                        <label for="login-password" class="form-label fw-bold">Senha</label>
+                        <div class="password-input-wrapper">
+                            <input type="password"
+                                   id="login-password"
+                                   name="password"
+                                   class="form-control custom-input @error('password') is-invalid @enderror"
+                                   placeholder="••••••••"
+                                   autocomplete="current-password"
+                                   required>
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                aria-controls="login-password"
+                                aria-label="Mostrar senha"
+                                aria-pressed="false"
+                                title="Mostrar senha"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                <span class="visually-hidden">Mostrar senha</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="text-end mb-4">
@@ -79,5 +114,23 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const passwordInput = document.getElementById('login-password');
+    const passwordToggle = document.querySelector('.password-toggle');
+
+    passwordToggle?.addEventListener('click', () => {
+        const isVisible = passwordInput.type === 'text';
+        const nextLabel = isVisible ? 'Mostrar senha' : 'Ocultar senha';
+
+        passwordInput.type = isVisible ? 'password' : 'text';
+        passwordToggle.setAttribute('aria-label', nextLabel);
+        passwordToggle.setAttribute('aria-pressed', String(!isVisible));
+        passwordToggle.setAttribute('title', nextLabel);
+        passwordToggle.querySelector('span').textContent = nextLabel;
+        passwordToggle.querySelector('i').classList.toggle('fa-eye', isVisible);
+        passwordToggle.querySelector('i').classList.toggle('fa-eye-slash', !isVisible);
+        passwordInput.focus();
+    });
+</script>
 </body>
 </html>

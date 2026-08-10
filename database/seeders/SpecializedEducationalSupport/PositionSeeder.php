@@ -2,17 +2,21 @@
 
 namespace Database\Seeders\SpecializedEducationalSupport;
 
+use App\Domains\Auth\Application\Actions\Permissions\SyncPermissionsAction;
+use App\Domains\Auth\Application\Permissions\PermissionCache;
+use App\Domains\Auth\Domain\Models\Permission;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Position;
 use Illuminate\Database\Seeder;
-use App\Models\Permission;
-use App\Models\SpecializedEducationalSupport\Position;
 
 class PositionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run(SyncPermissionsAction $syncPermissions, PermissionCache $permissionCache): void
     {
+        $syncPermissions->execute();
+
         $positions = [
             [
                 'name' => 'Professor(a) AEE',
@@ -42,11 +46,11 @@ class PositionSeeder extends Seeder
                     'session.view-own',
                     'session.create',
                     'session.update',
-                    'session-record.view',
-                    'session-record.view-all',
-                    'session-record.view-own',
-                    'session-record.create',
-                    'session-record.update',
+                    'aee-record.view',
+                    'aee-record.view-all',
+                    'aee-record.view-own',
+                    'aee-record.create',
+                    'aee-record.update',
                     'student-course.view',
                     'student-course.create',
                     'student-course.update',
@@ -80,7 +84,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'material.index',
                     'material.create',
@@ -89,7 +92,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'barrier.index',
                     'barrier.create',
@@ -190,12 +192,12 @@ class PositionSeeder extends Seeder
                     'session.create',
                     'session.update',
                     'session.delete',
-                    'session-record.view',
-                    'session-record.view-all',
-                    'session-record.view-own',
-                    'session-record.create',
-                    'session-record.update',
-                    'session-record.delete',
+                    'aee-record.view',
+                    'aee-record.view-all',
+                    'aee-record.view-own',
+                    'aee-record.create',
+                    'aee-record.update',
+                    'aee-record.delete',
                     'student-course.view',
                     'student-course.create',
                     'student-course.update',
@@ -236,7 +238,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'assistive-technology.destroy',
                     'material.index',
@@ -246,7 +247,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'material.destroy',
                     'barrier.index',
@@ -337,10 +337,10 @@ class PositionSeeder extends Seeder
                     'session.view-own',
                     'session.create',
                     'session.update',
-                    'session-record.view',
-                    'session-record.view-own',
-                    'session-record.create',
-                    'session-record.update',
+                    'aee-record.view',
+                    'aee-record.view-own',
+                    'aee-record.create',
+                    'aee-record.update',
                     'student-course.view',
                     'student-course.create',
                     'student-course.update',
@@ -367,7 +367,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'material.index',
                     'material.create',
@@ -376,7 +375,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'barrier.index',
                     'barrier.create',
@@ -450,11 +448,11 @@ class PositionSeeder extends Seeder
                     'session.view-own',
                     'session.create',
                     'session.update',
-                    'session-record.view',
-                    'session-record.view-all',
-                    'session-record.view-own',
-                    'session-record.create',
-                    'session-record.update',
+                    'aee-record.view',
+                    'aee-record.view-all',
+                    'aee-record.view-own',
+                    'aee-record.create',
+                    'aee-record.update',
                     'student-course.view',
                     'pendency.view',
                     'pendency.create',
@@ -485,7 +483,6 @@ class PositionSeeder extends Seeder
                     'assistive-technology.edit',
                     'assistive-technology.update',
                     'assistive-technology.pdf',
-                    'assistive-technology.logs',
                     'assistive-technology.inspection.show',
                     'material.index',
                     'material.create',
@@ -494,7 +491,6 @@ class PositionSeeder extends Seeder
                     'material.edit',
                     'material.update',
                     'material.pdf',
-                    'material.logs',
                     'material.inspection.show',
                     'barrier.index',
                     'barrier.create',
@@ -543,10 +539,10 @@ class PositionSeeder extends Seeder
                 'permissions' => [
                     'session.view',
                     'session.view-own',
-                    'session-record.view',
-                    'session-record.view-own',
-                    'session-record.create',
-                    'session-record.update',
+                    'aee-record.view',
+                    'aee-record.view-own',
+                    'aee-record.create',
+                    'aee-record.update',
                 ],
             ],
         ];
@@ -568,5 +564,7 @@ class PositionSeeder extends Seeder
 
             $position->permissions()->sync($permissionIds);
         }
+
+        $permissionCache->invalidate();
     }
 }

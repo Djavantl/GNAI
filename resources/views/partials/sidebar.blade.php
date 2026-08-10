@@ -31,7 +31,7 @@
             </a>
         </li>
 
-        <li class="menu-divider">Atendimento AEE</li>
+        <li class="menu-divider">Atendimento e Acompanhamento</li>
 
         @can('student.view')
         <li class="nav-item">
@@ -83,22 +83,36 @@
             <a href="{{ auth()->user()->is_admin
                     ? route('specialized-educational-support.sessions.index')
                     : route('specialized-educational-support.sessions.my-sessions') }}"
-            class="{{ (request()->routeIs(['specialized-educational-support.sessions.*', 'specialized-educational-support.session-records.*']) && !request()->routeIs('specialized-educational-support.session-records.my-records')) ? 'active' : '' }}">
+            class="{{ request()->routeIs('specialized-educational-support.sessions.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-calendar-check"></i></span>
-                <span class="text">Sessões</span>
+                <span class="text">Agendamentos</span>
             </a>
         </li>   
         @endcanany
 
-        @can('session-record.view-own')
+        @canany(['aee-record.view-own', 'aee-record.view-all'])
         <li>
-            <a href="{{ route('specialized-educational-support.session-records.my-records') }}"
-            class="{{ request()->routeIs('specialized-educational-support.session-records.my-records') ? 'active' : '' }}">
+            <a href="{{ auth()->user()->can('aee-record.view-all')
+                    ? route('specialized-educational-support.aee-records.index')
+                    : route('specialized-educational-support.aee-records.my-records') }}"
+            class="{{ request()->routeIs('specialized-educational-support.aee-records.*') ? 'active' : '' }}">
                 <span class="icon"><i class="bi bi-journal-check"></i></span>
-                <span class="text">Meus Atendimentos</span>
+                <span class="text">Atendimentos Especializados</span>
             </a>
         </li>
-        @endcan
+        @endcanany
+
+        @canany(['pedagogical-record.view-own', 'pedagogical-record.view-all'])
+        <li>
+            <a href="{{ auth()->user()->can('pedagogical-record.view-all')
+                    ? route('specialized-educational-support.pedagogical-records.index')
+                    : route('specialized-educational-support.pedagogical-records.my-records') }}"
+            class="{{ request()->routeIs('specialized-educational-support.pedagogical-records.*') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-journal-text"></i></span>
+                <span class="text">Atendimentos Pedagógicos</span>
+            </a>
+        </li>
+        @endcanany
 
         @can('pendency.view')
         <li>

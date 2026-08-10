@@ -25,7 +25,7 @@
 
             <x-table.td>
                 @php
-                    $status = $barrier->latestStatus();
+                    $status = $barrier->inspections->first()?->status;
                     $statusColor = $status ? $status->color() : 'secondary';
                 @endphp
                 <span class="text-{{ $statusColor }} fw-bold text-uppercase" style="font-size: 0.85rem;">
@@ -72,9 +72,3 @@
         </tr>
     @endforelse
 </x-table.table>
-
-@if(method_exists($barriers, 'hasPages') && $barriers->hasPages())
-    <div class="mt-4 px-3">
-        {{ $barriers->links() }}
-    </div>
-@endif

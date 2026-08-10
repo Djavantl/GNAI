@@ -4,105 +4,99 @@
     <meta charset="utf-8">
     <title>Relatório - {{ $assistiveTechnology->name }}</title>
 
-    <style>
-        {!! file_get_contents(resource_path('css/components/pdf.css')) !!}
-        body { font-family: sans-serif; }
-
-        .inspection-images {
-            width: 100%;
-            border: 1px solid #ccc;
-            border-top: none;
-            padding: 10px;
-            background: #fff;
-        }
-
-        .image-container {
-            margin-bottom: 10px;
-            page-break-inside: avoid;
-            background-color: #f9f9f9;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: contain;
-            border: 1px solid #eee;
-        }
-
-        .image-container.wide { height: 300px; }
-        .image-container.square { height: 400px; }
-        .image-container.tall {
-            height: 700px;
-            page-break-before: always;
-            page-break-after: always;
-        }
-
-        .image-placeholder {
-            font-size: 10px;
-            color: #999;
-            padding: 20px;
-            border: 1px solid #eee;
-            margin-bottom: 10px;
-        }
-    </style>
+    <x-pdf.styles />
 </head>
 
 <body>
 
-<div class="header">
-    <h2>Ficha de Tecnologia Assistiva</h2>
-    <p><strong>Nome:</strong> {{ $assistiveTechnology->name }}</p>
-    <p><strong>Gerado em:</strong> {{ now()->format('d/m/Y H:i') }}</p>
-    <p><strong>Status no Sistema:</strong> {{ $assistiveTechnology->is_active ? 'Ativo' : 'Inativo' }}</p>
-</div>
+<x-pdf.header
+    title="Ficha de Tecnologia Assistiva"
+    :status="$assistiveTechnology->is_active ? 'Ativo' : 'Inativo'"
+    :meta="[
+        'Nome' => $assistiveTechnology->name,
+        'Patrimônio' => $assistiveTechnology->asset_code ?? '---',
+        'Gerado em' => now()->format('d/m/Y H:i'),
+    ]"
+/>
 
+<div class="category-header">Informações da Tecnologia Assistiva</div>
 
-{{-- 1. IDENTIFICAÇÃO --}}
-<x-pdf.section-title title="1. Identificação do Recurso" />
+{{-- ================= DADOS BÁSICOS ================= --}}
+<div class="section-title">Dados Básicos</div>
 
-<x-pdf.table>
-    <x-pdf.row>
-        <x-pdf.info-item label="Nome" :value="$assistiveTechnology->name" colspan="2" />
-        <x-pdf.info-item label="Natureza"
-                         :value="$assistiveTechnology->is_digital ? 'Recurso Digital' : 'Recurso Físico'" colspan="2" />
-    </x-pdf.row>
+<table class="pdf-table">
+    <tr>
+        <td class="pdf-cell pdf-w-50">
+            <strong>Nome:</strong> {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->name ?? '---')) !!}
+        </td>
+        <td class="pdf-cell pdf-w-50">
+            <strong>Natureza:</strong> {{ $assistiveTechnology->is_digital ? 'Recurso Digital' : 'Recurso Físico' }}
+        </td>
+    </tr>
 
-    <x-pdf.row>
-        <x-pdf.info-item label="Patrimônio / Tombamento"
-                         :value="$assistiveTechnology->asset_code ?? '---'" colspan="2" />
-        <x-pdf.info-item label="Quantidade Total"
-                         :value="$assistiveTechnology->quantity" colspan="2" />
-    </x-pdf.row>
-</x-pdf.table>
+    <tr>
+        <td class="pdf-cell">
+            <strong>Patrimônio / Tombamento:</strong> {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->asset_code ?? '---')) !!}
+        </td>
+        <td class="pdf-cell">
+            <strong>Status no Sistema:</strong> {{ $assistiveTechnology->is_active ? 'Ativo' : 'Inativo' }}
+        </td>
+    </tr>
 
-<x-pdf.text-area
-    label="Descrição Detalhada"
-    :value="$assistiveTechnology->notes ?: '---'" />
+    <tr>
+        <td class="pdf-cell">
+            <strong>Quantidade Total:</strong> {{ $assistiveTechnology->quantity ?? '---' }}
+        </td>
+        <td class="pdf-cell">
+            <strong>Quantidade Disponível:</strong> {{ $assistiveTechnology->quantity_available ?? '---' }}
+        </td>
+    </tr>
+</table>
 
+<div class="section-title">Descrição</div>
+<table class="pdf-table">
+    <tr>
+        <td class="pdf-cell" colspan="4">
+            <strong>Descrição Detalhada</strong>
+            <div class="long-text">
+                {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->notes ?: '---')) !!}
+            </div>
+        </td>
+    </tr>
+</table>
 
-{{-- 2. GESTÃO E PÚBLICO --}}
-<x-pdf.section-title title="2. Gestão e Público" />
+<div class="category-header">Gestão e Público</div>
 
-<x-pdf.table>
-    <x-pdf.row>
-        <x-pdf.info-item
-            label="Status do Recurso"
-            :value="$assistiveTechnology->status?->label() ?? '---'" />
+{{-- ================= CONTROLE DO RECURSO ================= --}}
+<div class="section-title">Controle do Recurso</div>
 
-        <x-pdf.info-item
-            label="Permite Empréstimos"
-            :value="$assistiveTechnology->is_loanable ? 'Sim' : 'Não'" />
+<table class="pdf-table">
+    <tr>
+        <td class="pdf-cell" colspan="2">
+            <strong>Status do Recurso:</strong> {{ $assistiveTechnology->status?->label() ?? '---' }}
+        </td>
+        <td class="pdf-cell" colspan="2">
+            <strong>Permite Empréstimos:</strong> {{ $assistiveTechnology->is_loanable ? 'Sim' : 'Não' }}
+        </td>
+    </tr>
+</table>
 
-        <x-pdf.info-item
-            label="Quantidade Disponível"
-            :value="$assistiveTechnology->quantity_available ?? '---'" />
-    </x-pdf.row>
-</x-pdf.table>
+{{-- ================= PÚBLICO-ALVO ================= --}}
+<div class="section-title">Público-Alvo</div>
 
-<x-pdf.text-area
-    label="Público-Alvo (Deficiências Atendidas)"
-    :value="$assistiveTechnology->deficiencies->pluck('name')->join(', ') ?: '---'" />
+<table class="pdf-table">
+    <tr>
+        <td class="pdf-cell" colspan="4">
+            <strong>Deficiências Atendidas:</strong>
+            {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($assistiveTechnology->deficiencies->pluck('name')->join(', ') ?: '---')) !!}
+        </td>
+    </tr>
+</table>
 
+<div class="category-header">Vistorias</div>
 
-{{-- 3. ÚLTIMA VISTORIA --}}
-<x-pdf.section-title title="3. Última Vistoria" />
+{{-- ================= ÚLTIMA VISTORIA ================= --}}
+<div class="section-title">Última Vistoria</div>
 
 @php
     $lastInspection = $assistiveTechnology->inspections
@@ -112,40 +106,41 @@
 
 @if($lastInspection)
 
-    <x-pdf.table>
-        <x-pdf.row>
-            <x-pdf.info-item
-                label="Data"
-                :value="$lastInspection->inspection_date?->format('d/m/Y') ?? '---'" />
+    <table class="pdf-table">
+        <tr>
+            <td class="pdf-cell">
+                <strong>Data:</strong> {{ $lastInspection->inspection_date?->format('d/m/Y') ?? '---' }}
+            </td>
+            <td class="pdf-cell">
+                <strong>Tipo de Vistoria:</strong> {{ $lastInspection->type?->label() ?? '---' }}
+            </td>
+            <td class="pdf-cell">
+                <strong>Estado de Conservação:</strong> {{ $lastInspection->state?->label() ?? '---' }}
+            </td>
+        </tr>
+        <tr>
+            <td class="pdf-cell" colspan="3">
+                <strong>Parecer Técnico</strong>
+                <div class="long-text">
+                    {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($lastInspection->description ?: 'Sem descrição registrada.')) !!}
+                </div>
+            </td>
+        </tr>
+    </table>
 
-            <x-pdf.info-item
-                label="Tipo de Vistoria"
-                :value="$lastInspection->type?->label() ?? '---'"
-            />
+    <div class="section-title">Evidências</div>
+    <div class="inspection-evidences">
 
-            <x-pdf.info-item
-                label="Estado de Conservação"
-                :value="$lastInspection->state?->label() ?? '---'"
-            />
-        </x-pdf.row>
-    </x-pdf.table>
+        @if($lastInspection->evidences->count() > 0)
 
-    <x-pdf.text-area
-        label="Parecer Técnico"
-        :value="$lastInspection->description ?: 'Sem descrição registrada.'" />
-
-    <div class="inspection-images">
-        <strong style="font-size:10px;">Imagens da Vistoria</strong>
-
-        @if($lastInspection->images->count() > 0)
-
-            @foreach($lastInspection->images as $image)
+            @foreach($lastInspection->evidences as $evidence)
 
                 @php
                     $base64 = null;
+                    $ratio = null;
 
-                    if (Storage::disk('public')->exists($image->path)) {
-                        $imageData = Storage::disk('public')->get($image->path);
+                    if ($evidence->isImage() && Storage::disk('public')->exists($evidence->path)) {
+                        $imageData = Storage::disk('public')->get($evidence->path);
                         $src = @imagecreatefromstring($imageData);
 
                         if ($src !== false) {
@@ -176,44 +171,48 @@
                         }
                     }
 
-                    if (!$base64) {
-                        $imageClass = null;
+                    if (!$base64 || !$ratio) {
+                        $evidenceClass = null;
                     } elseif ($ratio > 1.5) {
-                        $imageClass = 'wide';
+                        $evidenceClass = 'wide';
                     } elseif ($ratio < 0.67) {
-                        $imageClass = 'tall';
+                        $evidenceClass = 'tall';
                     } else {
-                        $imageClass = 'square';
+                        $evidenceClass = 'square';
                     }
                 @endphp
 
                 @if($base64)
-                    <div class="image-container {{ $imageClass }}"
-                         style="background-image: url('{{ $base64 }}');"></div>
+                    <div class="evidence-card {{ $evidenceClass }}">
+                        <img class="evidence-image" src="{{ $base64 }}" alt="Evidência da vistoria">
+                        <div class="evidence-caption">
+                            Evidência {{ $loop->iteration }} de {{ $lastInspection->evidences->count() }}
+                        </div>
+                    </div>
                 @else
-                    <div class="image-placeholder">
-                        Arquivo não encontrado ou formato inválido.
+                    <div class="evidence-placeholder">
+                        Evidência {{ $loop->iteration }}: {{ $evidence->displayName() }}
                     </div>
                 @endif
 
             @endforeach
 
         @else
-            <div class="image-placeholder">
-                Nenhuma imagem registrada.
+            <div class="evidence-placeholder">
+                Nenhuma evidência registrada.
             </div>
         @endif
     </div>
 
 @else
 
-    <x-pdf.text-area
-        label="Última Vistoria"
-        :value="'Nenhuma vistoria registrada.'" />
+    <table class="pdf-table">
+        <tr>
+            <td class="pdf-cell">Nenhuma vistoria registrada.</td>
+        </tr>
+    </table>
 
 @endif
-
-<x-pdf.pages />
 
 </body>
 </html>

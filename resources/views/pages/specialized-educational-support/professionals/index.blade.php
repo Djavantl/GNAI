@@ -43,6 +43,10 @@
                         'placeholder' => 'Email...'
                     ],
                     [
+                        'name' => 'registration',
+                        'placeholder' => 'Matrícula...'
+                    ],
+                    [
                         'name' => 'position',
                         'type' => 'select',
                         'options' => ['' => 'Cargo (Todos)'] +
@@ -55,23 +59,8 @@
                     [
                         'name' => 'status',
                         'type' => 'select',
-                        'options' => [
-                            '' => 'Status (Todos)',
-                            'active' => 'Ativo',
-                            'locked' => 'Trancado',
-                            'completed' => 'Concluído',
-                            'dropped' => 'Evadido',
-                        ]
-                    ],
-                    [
-                        'name' => 'semester',
-                        'type' => 'select',
-                        'options' => ['' => 'Semestre (Todos)'] +
-                            collect($semesters)
-                                ->mapWithKeys(fn($semester) => [
-                                    $semester->id => $semester->label
-                                ])
-                                ->toArray()
+                        'options' => ['' => 'Status (Todos)'] +
+                            $professionalStatuses->all()
                     ],
                 ]"
             />

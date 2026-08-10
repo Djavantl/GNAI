@@ -70,7 +70,7 @@
             </x-show.info-item>
 
             <x-show.info-item label="Gênero" column="col-md-4" isBox="true">
-                {{ \App\Models\SpecializedEducationalSupport\Guardian::genderOptions()[$guardian->person->gender] ?? 'Não informado' }}
+                {{ $guardian->person->gender_label }}
             </x-show.info-item>
 
             <x-show.info-item label="CPF / Documento" column="col-md-4" isBox="true">

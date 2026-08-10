@@ -26,7 +26,7 @@
         @if($shouldRenderPlainText)
             {{ $plainTextValue }}
         @else
-            {!! $displayValue !!}
+            {{ $slot }}
         @endif
     </div>
 </div>

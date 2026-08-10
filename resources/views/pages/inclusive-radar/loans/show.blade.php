@@ -48,7 +48,7 @@
             <div class="col-md-12 mb-4 px-4">
                 <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
                     <div class="bg-purple-dark text-white p-3 rounded shadow-sm" style="background-color: #4c1d95;">
-                        <i class="fas {{ $loan->loanable_type === 'App\Models\InclusiveRadar\AssistiveTechnology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
+                        <i class="fas {{ $loan->loanableType()->icon() }} fa-lg"></i>
                     </div>
 
                     <div>
@@ -105,7 +105,7 @@
 
                 <div class="d-flex flex-wrap gap-2 justify-content-end">
                     @can('loan.return')
-                        @if($loan->status->value === 'active')
+                        @if($loan->isActive())
                             <x-buttons.submit-button
                                 type="button"
                                 variant="success"

@@ -59,7 +59,7 @@
                         'options' => [
                             '' => 'Status (Todos)',
                             '1' => 'Curso Atual',
-                            '0' => 'Histórico Antigo',
+                            '0' => 'Histórico',
                         ]
                     ],
                 ]"

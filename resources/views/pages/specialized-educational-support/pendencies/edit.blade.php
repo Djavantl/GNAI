@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+    use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
+@endphp
+
 @section('content')
     <div class="mb-5">
         <x-breadcrumb :items="[
@@ -63,11 +67,7 @@
                 <x-forms.select
                     name="priority"
                     label="Prioridade "
-                    :options="collect(\App\Enums\Priority::cases())
-                                ->mapWithKeys(fn($priority) => [
-                                    $priority->value => $priority->label()
-                                ])
-                                ->toArray()"
+                    :options="Priority::options()"
                     :value="old('priority', $pendency->priority?->value)"
                     :selected="old('priority', $pendency->priority?->value)"
                     required

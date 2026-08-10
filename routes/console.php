@@ -1,6 +1,5 @@
 <?php
 
-use App\Services\Backup\BackupService;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Log;
 
@@ -10,12 +9,9 @@ Schedule::command('backup:clean')
     ->timezone('America/Bahia');
 
 // Roda o backup às 12:05
-Schedule::command('backup:run')
+Schedule::command('backup:automatic')
     ->dailyAt('12:05')
-    ->timezone('America/Bahia')
-    ->onSuccess(function () {
-        app(BackupService::class)->sync();
-    });
+    ->timezone('America/Bahia');
 
 // Roda verificacao de emprestimos em atraso
 Schedule::command('loans:check-overdue')
@@ -29,6 +25,7 @@ Schedule::command('loans:check-overdue')
 Schedule::command('inclusive-radar:send-event-reminders')
     ->everyMinute()
     ->timezone('America/Bahia')
+    ->withoutOverlapping(10)
     ->onFailure(function () {
         Log::error('Falha ao enviar lembretes de eventos institucionais.');
     });

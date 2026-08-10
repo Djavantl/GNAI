@@ -142,7 +142,7 @@
 
                     <x-ui.info-card
                         label="Responsável"
-                        :value="$pei->creator_name"
+                        :value="$pei->creator?->is_admin ? 'admin' : ($pei->creator?->name ?: 'Sistema/Desconhecido')"
                     />
 
                     <x-ui.info-card

@@ -3,7 +3,7 @@
 namespace Database\Seeders\InclusiveRadar;
 
 use Illuminate\Database\Seeder;
-use App\Models\InclusiveRadar\Location;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 
 class LocationSeeder extends Seeder
 {

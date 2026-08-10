@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AdminController;
+use App\Domains\Auth\UI\Controllers\ForgotPasswordController;
+use App\Domains\Auth\UI\Controllers\ImpersonationController;
+use App\Domains\Auth\UI\Controllers\LoginController;
+use App\Domains\Auth\UI\Controllers\ProfileController;
+use App\Domains\Auth\UI\Controllers\ResetPasswordController;
+use App\Domains\Dashboard\UI\Controllers\DashboardController;
 
 Route::get('/', function () {
     return auth()->check()
@@ -22,15 +23,15 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [LoginController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::post('/impersonate/leave', [AdminController::class, 'leaveImpersonate'])
-    ->name('admin.impersonate.leave');
+    Route::post('/impersonate/leave', [ImpersonationController::class, 'leave'])
+        ->name('admin.impersonate.leave');
 
-    Route::post('/impersonate/{user}', [AdminController::class, 'impersonate'])
+    Route::post('/impersonate/{user}', [ImpersonationController::class, 'start'])
         ->name('admin.impersonate')
         ->middleware('admin');
 

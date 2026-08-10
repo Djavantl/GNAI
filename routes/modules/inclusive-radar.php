@@ -1,27 +1,23 @@
 <?php
 
+use App\Domains\InclusiveRadar\UI\Controllers\AccessibilityFeatureController;
+use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
+use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
+use App\Domains\InclusiveRadar\UI\Controllers\BarrierCategoryController;
+use App\Domains\InclusiveRadar\UI\Controllers\BarrierController;
+use App\Domains\InclusiveRadar\UI\Controllers\InstitutionalEventController;
+use App\Domains\InclusiveRadar\UI\Controllers\InstitutionController;
+use App\Domains\InclusiveRadar\UI\Controllers\LoanController;
+use App\Domains\InclusiveRadar\UI\Controllers\LocationController;
+use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InclusiveRadar\{AssistiveTechnologyController,
-    AccessibleEducationalMaterialController,
-    AccessibilityFeatureController,
-    BarrierCategoryController,
-    BarrierController,
-    InstitutionalEventController,
-    InstitutionController,
-    LoanController,
-    LocationController,
-    Logs\AccessibleEducationalMaterialLogController,
-    Logs\AssistiveTechnologyLogController,
-    WaitlistController};
 
 /*
 |--------------------------------------------------------------------------
 | ADMIN – Gestão de Cadastros (somente administradores)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-
-});
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {});
 
 /*
 |--------------------------------------------------------------------------
@@ -103,6 +99,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/assistive-technologies/store', [AssistiveTechnologyController::class, 'store'])
         ->name('assistive-technologies.store')->middleware('can:assistive-technology.store');
 
+    Route::get('/assistive-technologies/{assistiveTechnology}/clone', [AssistiveTechnologyController::class, 'clone'])
+        ->name('assistive-technologies.clone')->middleware('can:assistive-technology.create');
+
     Route::get('assistive-technologies/{assistiveTechnology}/inspection/{inspection}', [AssistiveTechnologyController::class, 'showInspection'])
         ->name('assistive-technologies.inspection.show')->middleware('can:assistive-technology.inspection.show');
 
@@ -120,9 +119,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [AssistiveTechnologyController::class, 'generatePdf'])
         ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
-
-    Route::get('/assistive-technologies/{assistiveTechnology}/logs', [AssistiveTechnologyLogController::class, 'index'])
-        ->name('assistive-technologies.logs')->middleware('can:assistive-technology.logs');
 
     // ------------------- BARREIRAS -------------------
     Route::get('/barriers', [BarrierController::class, 'index'])
@@ -162,6 +158,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/accessible-educational-materials/store', [AccessibleEducationalMaterialController::class, 'store'])
         ->name('accessible-educational-materials.store')->middleware('can:material.store');
 
+    Route::get('/accessible-educational-materials/{material}/clone', [AccessibleEducationalMaterialController::class, 'clone'])
+        ->name('accessible-educational-materials.clone')->middleware('can:material.create');
+
     Route::get('accessible-educational-materials/{material}/inspection/{inspection}', [AccessibleEducationalMaterialController::class, 'showInspection'])
         ->name('accessible-educational-materials.inspection.show')->middleware('can:material.inspection.show');
 
@@ -179,9 +178,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/accessible-educational-materials/{material}/pdf', [AccessibleEducationalMaterialController::class, 'generatePdf'])
         ->name('accessible-educational-materials.pdf')->middleware('can:material.pdf');
-
-    Route::get('/accessible-educational-materials/{material}/logs', [AccessibleEducationalMaterialLogController::class, 'index'])
-        ->name('accessible-educational-materials.logs')->middleware('can:material.logs');
 
     // ------------------- AGENDA INSTITUCIONAL -------------------
     Route::get('/institutional-events', [InstitutionalEventController::class, 'index'])

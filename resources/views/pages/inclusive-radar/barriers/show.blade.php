@@ -134,7 +134,7 @@
                     <div class="px-4 pb-4">
                         <div class="row g-3">
                             <x-show.info-item label="Relator" column="col-6" isBox="true">
-                                {{ $barrier->reporter_display_name }}
+                                {{ $barrier->is_anonymous ? 'Contribuidor Anônimo' : ($barrier->registeredBy?->name ?? 'Usuário não identificado') }}
                             </x-show.info-item>
 
                             <x-show.info-item label="Status no Sistema" column="col-6" isBox="true">

@@ -74,20 +74,11 @@
                 <div class="row g-3 mb-4">
                     <x-show.info-item label="Status do Backup" column="col-md-6" isBox="true">
                         @php
-                            $statusColors = [
-                                'success'  => 'success',
-                                'failed'   => 'danger',
-                                'archived' => 'info'
-                            ];
-                            $statusLabels = [
-                                'success'  => 'Sucesso (Arquivo íntegro)',
-                                'failed'   => 'Falha (Problema no dump)',
-                                'archived' => 'Arquivado (Protegido)'
-                            ];
-                            $color = $statusColors[$backup->status] ?? 'secondary';
+                            $status = $backup->status;
+                            $color = $status?->color() ?? 'secondary';
                         @endphp
                         <span class="badge bg-{{ $color }}-subtle text-{{ $color }}-emphasis border px-3 py-2">
-                            <i class="fas fa-circle me-1 small"></i> {{ $statusLabels[$backup->status] ?? $backup->status }}
+                            <i class="fas fa-circle me-1 small"></i> {{ $status?->label() ?? 'Status desconhecido' }}
                         </span>
                     </x-show.info-item>
 
@@ -96,11 +87,7 @@
                             <small>
                                 <i class="fas fa-shield-alt me-2"></i>
                                 <strong>Regra de Retenção:</strong>
-                                @if($backup->status === 'archived')
-                                    Este arquivo está **protegido** contra rotinas de limpeza automática.
-                                @else
-                                    Este arquivo pode ser removido automaticamente conforme as políticas de limpeza do servidor.
-                                @endif
+                                O sistema mantém os 30 registros de backup mais recentes. Registros excedentes podem ser removidos automaticamente com seus arquivos físicos.
                             </small>
                         </div>
                     </div>

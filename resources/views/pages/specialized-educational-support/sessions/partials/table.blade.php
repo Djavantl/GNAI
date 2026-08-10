@@ -19,25 +19,18 @@
         </x-table.td>
         <x-table.td>{{ $session->professional->person->name }}</x-table.td>
         
-        <x-table.td>{{ $session->typeLabel() }}</x-table.td>
+        <x-table.td>{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType::labelFor($session->type) }}</x-table.td>
 
         <x-table.td>
-            @php
-                $statusColor = match(strtolower($session->status ?? '')) {
-                    'agendada', 'agendado', 'scheduled', 'pending'    => 'warning',
-                    'realizada', 'realizado', 'completed', 'confirmed' => 'success',
-                    'cancelada', 'cancelado', 'cancelled', 'canceled'  => 'danger',
-                    default => 'warning'
-                };
-            @endphp
+            @php($statusColor = \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::colorFor($session->status))
             <span class="text-{{ $statusColor }} fw-bold">
-                {{ $session->statusLabel() }}
+                {{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::labelFor($session->status) }}
             </span>
         </x-table.td>
 
         <x-table.td :responsive="false">
             <x-table.actions>
-                {{-- Ver Sessão --}}
+                {{-- Ver Agendamento --}}
                 @can('session.view')
                 <x-buttons.link-button
                     :href="route('specialized-educational-support.sessions.show', $session)"
@@ -53,12 +46,13 @@
                     variant="danger"
                     data-bs-toggle="modal"
                     data-bs-target="#globalConfirmActionModal"
-                    data-confirm-title="Excluir Sessao"
-                    data-confirm-message="Mover esta sessao para a lixeira?"
+                    data-confirm-title="Excluir Agendamento"
+                    data-confirm-message="Mover este agendamento para a lixeira?"
                     data-confirm-action="{{ route('specialized-educational-support.sessions.destroy', $session) }}"
                     data-confirm-method="DELETE"
                     data-confirm-submit-text="Confirmar Exclusao"
                     data-confirm-variant="danger"
+                    data-confirm-template="{{ \App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionStatus::isScheduledValue($session->status) ? '#sessionEmailNotificationTemplate' : '' }}"
                 >
                         <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                     </x-buttons.submit-button>
@@ -70,7 +64,7 @@
     <tr>
         <td colspan="6" class="text-center text-muted fw-bold py-5">
             <i class="fas fa-folder-open d-block mb-2" style="font-size: 2.5rem;"></i>
-            Nenhuma sessão encontrada.
+            Nenhum agendamento encontrado.
         </td>
     </tr>
 @endforelse

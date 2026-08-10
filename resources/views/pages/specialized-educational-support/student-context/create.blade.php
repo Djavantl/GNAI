@@ -148,41 +148,26 @@
 
         <div class="col-md-3">
             <x-forms.select name="learning_level" label="Nível de Aprendizagem"
-            :options="[
-            'very_low'=>'Muito Baixo',
-            'low'=>'Baixo',
-            'adequate'=>'Adequado',
-            'good'=>'Bom',
-            'excellent'=>'Excelente'
-            ]" :value="old('learning_level')" />
+            :options="$studentContextOptions['learningLevels']"
+            :selected="old('learning_level')" />
         </div>
 
         <div class="col-md-3">
             <x-forms.select name="attention_level" label="Nível de Atenção"
-            :options="[
-            'very_low'=>'Muito Baixo',
-            'low'=>'Baixo',
-            'moderate'=>'Moderado',
-            'high'=>'Alto'
-            ]" :value="old('attention_level')" />
+            :options="$studentContextOptions['attentionLevels']"
+            :selected="old('attention_level')" />
         </div>
 
         <div class="col-md-3">
             <x-forms.select name="memory_level" label="Nível de Memória"
-            :options="[
-            'low'=>'Baixa',
-            'moderate'=>'Moderada',
-            'good'=>'Boa'
-            ]" :value="old('memory_level')" />
+            :options="$studentContextOptions['memoryLevels']"
+            :selected="old('memory_level')" />
         </div>
 
         <div class="col-md-3">
             <x-forms.select name="reasoning_level" label="Nível de Raciocínio"
-            :options="[
-            'concrete'=>'Concreto',
-            'mixed'=>'Misto',
-            'abstract'=>'Abstrato'
-            ]" :value="old('reasoning_level')" />
+            :options="$studentContextOptions['reasoningLevels']"
+            :selected="old('reasoning_level')" />
         </div>
 
         <div class="col-md-12">
@@ -203,42 +188,42 @@
 
         <div class="col-md-4">
             <x-forms.select name="communication_type" label="Tipo de Comunicação"
-            :options="[
-            'verbal'=>'Verbal',
-            'non_verbal'=>'Não verbal',
-            'mixed'=>'Mista'
-            ]" :value="old('communication_type')" />
+            :options="$studentContextOptions['communicationTypes']"
+            :selected="old('communication_type')" />
         </div>
 
         <div class="col-md-4">
             <x-forms.select name="interaction_level" label="Nível de Interação"
-            :options="[
-            'very_low'=>'Muito Baixo',
-            'low'=>'Baixo',
-            'moderate'=>'Moderado',
-            'good'=>'Bom'
-            ]" :value="old('interaction_level')" />
+            :options="$studentContextOptions['interactionLevels']"
+            :selected="old('interaction_level')" />
         </div>
 
         <div class="col-md-4">
             <x-forms.select name="socialization_level" label="Nível de Socialização"
-            :options="[
-            'isolated'=>'Isolado',
-            'selective'=>'Seletivo',
-            'participative'=>'Participativo'
-            ]" :value="old('socialization_level')" />
+            :options="$studentContextOptions['socializationLevels']"
+            :selected="old('socialization_level')" />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="shows_aggressive_behavior" label="Comportamento Agressivo"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('shows_aggressive_behavior')" />
+            <input type="hidden" name="shows_aggressive_behavior" value="0">
+            <x-forms.checkbox
+                name="shows_aggressive_behavior"
+                label="Comportamento agressivo"
+                description="Marque se o aluno apresenta comportamento agressivo."
+                :checked="filter_var(old('shows_aggressive_behavior', false), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="shows_withdrawn_behavior" label="Comportamento Retraído"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('shows_withdrawn_behavior')" />
+            <input type="hidden" name="shows_withdrawn_behavior" value="0">
+            <x-forms.checkbox
+                name="shows_withdrawn_behavior"
+                label="Comportamento retraído"
+                description="Marque se o aluno apresenta comportamento retraído."
+                :checked="filter_var(old('shows_withdrawn_behavior', false), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-12">
@@ -257,11 +242,8 @@
 
         <div class="col-md-12">
             <x-forms.select name="autonomy_level" label="Nível de Autonomia"
-            :options="[
-            'dependent'=>'Dependente',
-            'partial'=>'Parcial',
-            'independent'=>'Independente'
-            ]" :value="old('autonomy_level')" />
+            :options="$studentContextOptions['autonomyLevels']"
+            :selected="old('autonomy_level')" />
         </div>
 
         <div class="col-md-6">
@@ -312,15 +294,25 @@
     <div class="row g-2 px-4 pb-3">
 
         <div class="col-md-6">
-            <x-forms.select name="has_medical_report" label="Possui Laudo Médico"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('has_medical_report')" />
+            <input type="hidden" name="has_medical_report" value="0">
+            <x-forms.checkbox
+                name="has_medical_report"
+                label="Possui laudo médico"
+                description="Marque se o aluno possui laudo médico."
+                :checked="filter_var(old('has_medical_report', false), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-6">
-            <x-forms.select name="uses_medication" label="Usa Medicação"
-            :options="[1=>'Sim',0=>'Não']"
-            :value="old('uses_medication')" />
+            <input type="hidden" name="uses_medication" value="0">
+            <x-forms.checkbox
+                name="uses_medication"
+                label="Usa medicação"
+                description="Marque se o aluno faz uso de medicação."
+                :checked="filter_var(old('uses_medication', false), FILTER_VALIDATE_BOOLEAN)"
+                class="p-3 border rounded bg-light"
+            />
         </div>
 
         <div class="col-md-12">

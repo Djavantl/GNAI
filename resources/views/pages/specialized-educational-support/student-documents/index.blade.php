@@ -58,11 +58,6 @@
                         'type' => 'select',
                         'options' => $semesters
                     ],
-                    [
-                        'name' => 'version',
-                        'type' => 'select',
-                        'options' => $versions
-                    ],
                 ]"
             />
         </div>

@@ -33,7 +33,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-white-50 mb-0">Sessões Hoje</h6>
+                            <h6 class="text-white-50 mb-0">Agendamentos Hoje</h6>
                             <h3 class="text-white mb-0">8</h3>
                         </div>
                         <div class="bg-white p-3 rounded-circle">
@@ -109,7 +109,7 @@
                         </a>
                         <a href="#" class="list-group-item list-group-item-action border-0">
                             <i class="bi bi-calendar-plus text-primary me-2"></i>
-                            Agendar Sessão
+                            Novo Agendamento
                         </a>
                         <a href="#" class="list-group-item list-group-item-action border-0">
                             <i class="bi bi-file-earmark-text text-primary me-2"></i>
