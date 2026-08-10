@@ -35,6 +35,13 @@
                         ])->toArray(),
                     ],
                     [
+                        'name' => 'course_id',
+                        'type' => 'select',
+                        'options' => ['' => 'Curso (Todos)', 0 => 'Sem curso'] + collect($courses)->mapWithKeys(fn ($course) => [
+                            $course->id => $course->name,
+                        ])->toArray(),
+                    ],
+                    [
                         'name' => 'is_present',
                         'type' => 'select',
                         'options' => ['' => 'Presença (Todas)', '1' => 'Presente', '0' => 'Ausente'],

@@ -81,13 +81,27 @@
                 <small class="text-muted">
                     São exibidos até 5 registros mais recentes. Para consultar todos, clique em “Gerenciar Registros”.
                 </small>
-                <x-buttons.link-button
-                    :href="route('specialized-educational-support.students.pedagogical-records.index', $student)"
-                    variant="warning"
-                    class="btn-sm"
-                >
-                    <i class="fas fa-folder-open"></i> Gerenciar Registros
-                </x-buttons.link-button>
+                <div class="d-flex flex-wrap gap-2">
+                    @can('pedagogical-record.view')
+                        <x-buttons.link-button
+                            :href="route('specialized-educational-support.students.pedagogical-records.pdf', $student)"
+                            variant="secondary"
+                            class="btn-sm"
+                            target="_blank"
+                            label="Gerar histórico de atendimentos pedagógicos em PDF"
+                        >
+                            <i class="fas fa-file-pdf"></i> Histórico em PDF
+                        </x-buttons.link-button>
+                    @endcan
+
+                    <x-buttons.link-button
+                        :href="route('specialized-educational-support.students.pedagogical-records.index', $student)"
+                        variant="warning"
+                        class="btn-sm"
+                    >
+                        <i class="fas fa-folder-open"></i> Gerenciar Registros
+                    </x-buttons.link-button>
+                </div>
             </div>
         @endcanany
     </div>

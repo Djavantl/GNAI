@@ -1,6 +1,6 @@
 <x-table.table :headers="[
     ['label' => 'Data', 'responsive' => false],
-    ['label' => 'Horário', 'responsive' => false],
+    ['label' => 'Curso', 'responsive' => false],
     'Estudante',
     'Profissional responsável',
     'Com responsáveis',
@@ -16,8 +16,11 @@
                 <span class="fw-bold text-purple-dark">{{ $session?->session_date?->format('d/m/Y') ?? '—' }}</span>
             </x-table.td>
             <x-table.td :responsive="false">
-                {{ $session?->start_time ? substr($session->start_time, 0, 5) : '—' }}
-                @if($session?->end_time) – {{ substr($session->end_time, 0, 5) }} @endif
+                @if($student?->currentCourse?->course)
+                    {{ $student->currentCourse->course->name }}
+                @else
+                    <span class="text-muted">Sem curso</span>
+                @endif
             </x-table.td>
             <x-table.td>
                 {{ $student?->person?->name ?? 'Estudante não informado' }}

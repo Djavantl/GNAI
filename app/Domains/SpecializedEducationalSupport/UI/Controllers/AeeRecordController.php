@@ -19,6 +19,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\AeeRecords\Lis
 use App\Domains\SpecializedEducationalSupport\Application\Queries\AeeRecords\ListStudentAeeEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\AeeRecords\ShowAeeRecordQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\AttendanceRecords\AttendanceRecordFilterOptionsQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentAeeEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeRecord;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeStudentEvaluation;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
@@ -162,6 +163,19 @@ final class AeeRecordController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("registro-aee-{$student->person->name}-{$session->session_date->format('d-m-Y')}.pdf");
+    }
+
+    public function studentHistoryPdf(Student $student, StudentAeeEvaluationsQuery $query, Request $request): Response
+    {
+        $student->loadMissing(['person', 'currentCourse.course']);
+        $aeeEvaluations = $query->history($student, $this->user($request));
+        $pdf = Pdf::loadView(
+            'pages.specialized-educational-support.aee-records.student-history-pdf',
+            compact('student', 'aeeEvaluations'),
+        )->setPaper('a4', 'portrait');
+        PdfPageNumberer::apply($pdf);
+
+        return $pdf->stream("historico-atendimentos-aee-{$student->registration}.pdf");
     }
 
     private function user(Request $request): User
