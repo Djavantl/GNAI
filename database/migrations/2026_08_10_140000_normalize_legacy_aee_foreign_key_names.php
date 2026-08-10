@@ -22,6 +22,14 @@ return new class extends Migration
             currentName: 'aee_student_evaluations_student_id_foreign',
             referencedTable: 'students',
         );
+
+        $this->renameForeignKey(
+            table: 'inspection_evidences',
+            column: 'inspection_id',
+            legacyName: 'inspection_images_inspection_id_foreign',
+            currentName: 'inspection_evidences_inspection_id_foreign',
+            referencedTable: 'inspections',
+        );
     }
 
     public function down(): void
@@ -40,6 +48,14 @@ return new class extends Migration
             legacyName: 'aee_student_evaluations_student_id_foreign',
             currentName: 'student_session_evaluations_student_id_foreign',
             referencedTable: 'students',
+        );
+
+        $this->renameForeignKey(
+            table: 'inspection_evidences',
+            column: 'inspection_id',
+            legacyName: 'inspection_evidences_inspection_id_foreign',
+            currentName: 'inspection_images_inspection_id_foreign',
+            referencedTable: 'inspections',
         );
     }
 
