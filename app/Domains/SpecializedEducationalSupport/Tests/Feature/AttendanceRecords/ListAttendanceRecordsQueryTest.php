@@ -7,8 +7,10 @@ namespace App\Domains\SpecializedEducationalSupport\Tests\Feature\AttendanceReco
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Application\Data\AeeRecords\ListAeeRecordsData;
 use App\Domains\SpecializedEducationalSupport\Application\Data\PedagogicalRecords\ListPedagogicalRecordsData;
+use App\Domains\SpecializedEducationalSupport\Application\Data\Students\ListStudentsData;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\AeeRecords\ListAeeRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\PedagogicalRecords\ListPedagogicalRecordsQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\ListStudentsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentAeeEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
@@ -36,6 +38,31 @@ final class ListAttendanceRecordsQueryTest extends TestCase
         Schema::create('students', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('person_id');
+            $table->timestamps();
+        });
+        Schema::create('courses', function (Blueprint $table): void {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+        Schema::create('student_courses', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('student_id');
+            $table->foreignId('course_id');
+            $table->boolean('is_current');
+            $table->timestamps();
+        });
+        Schema::create('deficiencies', function (Blueprint $table): void {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+        Schema::create('students_deficiencies', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('student_id');
+            $table->foreignId('deficiency_id');
+            $table->string('severity')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
         Schema::create('attendance_sessions', function (Blueprint $table): void {
@@ -94,7 +121,7 @@ final class ListAttendanceRecordsQueryTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['pedagogical_record_guardians', 'student_guardians', 'pedagogical_records', 'aee_student_evaluations', 'aee_records', 'attendance_session_student', 'attendance_sessions', 'students', 'professionals', 'people'] as $table) {
+        foreach (['pedagogical_record_guardians', 'student_guardians', 'pedagogical_records', 'aee_student_evaluations', 'aee_records', 'attendance_session_student', 'attendance_sessions', 'students_deficiencies', 'deficiencies', 'student_courses', 'courses', 'students', 'professionals', 'people'] as $table) {
             Schema::dropIfExists($table);
         }
 
@@ -116,6 +143,12 @@ final class ListAttendanceRecordsQueryTest extends TestCase
 
         $own = app(ListAeeRecordsQuery::class)->execute(new ListAeeRecordsData, $admin, onlyOwn: true);
         self::assertSame([1], $own->pluck('id')->all());
+
+        $fromCourse = app(ListAeeRecordsQuery::class)->execute(ListAeeRecordsData::from(['course_id' => '1']), $admin);
+        self::assertSame([2], $fromCourse->pluck('id')->all());
+
+        $withoutCourse = app(ListAeeRecordsQuery::class)->execute(ListAeeRecordsData::from(['course_id' => '0']), $admin);
+        self::assertSame([1], $withoutCourse->pluck('id')->all());
     }
 
     public function test_pedagogical_filters_can_be_combined_and_own_scope_is_respected(): void
@@ -139,6 +172,27 @@ final class ListAttendanceRecordsQueryTest extends TestCase
 
         $withoutGuardians = app(ListPedagogicalRecordsQuery::class)->execute(new ListPedagogicalRecordsData(withGuardians: false), $admin);
         self::assertSame([1], $withoutGuardians->pluck('id')->all());
+
+        $fromCourse = app(ListPedagogicalRecordsQuery::class)->execute(ListPedagogicalRecordsData::from(['course_id' => '1']), $admin);
+        self::assertSame([1], $fromCourse->pluck('id')->all());
+
+        $withoutCourse = app(ListPedagogicalRecordsQuery::class)->execute(ListPedagogicalRecordsData::from(['course_id' => '0']), $admin);
+        self::assertSame([2], $withoutCourse->pluck('id')->all());
+    }
+
+    public function test_students_can_be_filtered_by_current_course_deficiency_or_missing_information(): void
+    {
+        $fromCourse = app(ListStudentsQuery::class)->execute(ListStudentsData::from(['course_id' => '1']));
+        self::assertSame([1], $fromCourse->pluck('id')->all());
+
+        $withoutCourse = app(ListStudentsQuery::class)->execute(ListStudentsData::from(['course_id' => '0']));
+        self::assertSame([2], $withoutCourse->pluck('id')->all());
+
+        $withDeficiency = app(ListStudentsQuery::class)->execute(ListStudentsData::from(['deficiency_id' => '1']));
+        self::assertSame([2], $withDeficiency->pluck('id')->all());
+
+        $withoutDeficiency = app(ListStudentsQuery::class)->execute(ListStudentsData::from(['deficiency_id' => '0']));
+        self::assertSame([1], $withoutDeficiency->pluck('id')->all());
     }
 
     public function test_student_pedagogical_history_contains_all_records_in_chronological_order(): void
@@ -248,6 +302,19 @@ final class ListAttendanceRecordsQueryTest extends TestCase
         DB::table('students')->insert([
             ['id' => 1, 'person_id' => 3, 'created_at' => $now, 'updated_at' => $now],
             ['id' => 2, 'person_id' => 4, 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('courses')->insert([
+            ['id' => 1, 'name' => 'Curso Um', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 2, 'name' => 'Curso Dois', 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('student_courses')->insert([
+            ['student_id' => 1, 'course_id' => 1, 'is_current' => true, 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('deficiencies')->insert([
+            ['id' => 1, 'name' => 'Deficiência Um', 'created_at' => $now, 'updated_at' => $now],
+        ]);
+        DB::table('students_deficiencies')->insert([
+            ['student_id' => 2, 'deficiency_id' => 1, 'created_at' => $now, 'updated_at' => $now],
         ]);
         DB::table('attendance_sessions')->insert([
             ['id' => 1, 'professional_id' => 1, 'session_date' => '2026-08-01', 'status' => 'Realizada', 'created_at' => $now, 'updated_at' => $now],

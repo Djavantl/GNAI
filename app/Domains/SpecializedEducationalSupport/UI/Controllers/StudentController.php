@@ -13,9 +13,10 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\Students\ListStud
 use App\Domains\SpecializedEducationalSupport\Application\Data\Students\UpdateStudentData;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\ListStudentsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\ShowStudentQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentAeeEvaluationsQuery;
+use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentFilterOptionsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPdfQuery;
-use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentAeeEvaluationsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
@@ -28,7 +29,7 @@ use Throwable;
 
 final class StudentController
 {
-    public function index(ListStudentsData $filters, ListStudentsQuery $query, Request $request): View
+    public function index(ListStudentsData $filters, ListStudentsQuery $query, StudentFilterOptionsQuery $options, Request $request): View
     {
         $user = $request->user();
         $teacherId = $user instanceof User ? $user->teacher_id : null;
@@ -43,7 +44,7 @@ final class StudentController
 
         return view(
             'pages.specialized-educational-support.students.index',
-            compact('students'),
+            compact('students') + $options->execute(),
         );
     }
 

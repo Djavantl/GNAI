@@ -52,6 +52,24 @@ final class ListStudentsQuery
             $query->where('students.status', $filters->status->value);
         }
 
+        if ($filters->courseId === 0) {
+            $query->whereDoesntHave('currentCourse');
+        } elseif ($filters->courseId !== null) {
+            $query->whereHas(
+                'currentCourse',
+                fn (Builder $courseQuery): Builder => $courseQuery->where('course_id', $filters->courseId),
+            );
+        }
+
+        if ($filters->deficiencyId === 0) {
+            $query->whereDoesntHave('deficiencies');
+        } elseif ($filters->deficiencyId !== null) {
+            $query->whereHas(
+                'deficiencies',
+                fn (Builder $deficiencyQuery): Builder => $deficiencyQuery->where('deficiencies.id', $filters->deficiencyId),
+            );
+        }
+
         return $query
             ->orderBy('people.name')
             ->paginate($filters->perPage)
