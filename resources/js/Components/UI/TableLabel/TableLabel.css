@@ -1,0 +1,34 @@
+.tableLabel {
+  display: inline;
+  padding: 0.3em 0.6em;
+  font-size: 75%;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25em;
+}
+.tableLabel--success {
+  background: var(--bold-color-success, #81c868);
+}
+.tableLabel--primary {
+  background: var(--bold-color-primary, #5d9cec);
+}
+.tableLabel--inverse {
+  background: #4c5667;
+}
+.tableLabel--danger {
+  background: var(--bold-color-danger, #f05050);
+}
+.tableLabel--warning {
+  background: #ffbd4a;
+}
+.tableLabel--info {
+  background: var(--bold-color-info, #34d3eb);
+}
+.tableLabel--purple {
+  background: var(--bold-color-purple, #7266ba);
+}

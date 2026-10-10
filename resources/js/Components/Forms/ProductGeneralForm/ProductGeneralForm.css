@@ -1,0 +1,15 @@
+.productGeneralForm__status {
+  margin-bottom: 20px;
+}
+.productGeneralForm__status > label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+.productGeneralForm__status .radio + .radio {
+  margin-top: 0;
+}
+.productGeneralForm__comment.formField {
+  margin-bottom: 10px;
+}

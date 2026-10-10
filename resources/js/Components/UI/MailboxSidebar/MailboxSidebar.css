@@ -1,0 +1,67 @@
+.mailboxSidebar {
+  padding: 20px;
+}
+.mailboxSidebar__folders {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.mailboxSidebar__folders a,
+.mailboxSidebar__labels a {
+  display: block;
+  position: relative;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  color: #555;
+  background: transparent;
+  text-decoration: none;
+}
+.mailboxSidebar__folders a:hover,
+.mailboxSidebar__folders a:focus,
+.mailboxSidebar__labels a:hover,
+.mailboxSidebar__labels a:focus {
+  color: #555;
+  background: #f4f8fb;
+}
+.mailboxSidebar__folders a.is-active,
+.mailboxSidebar__folders a.is-active:hover,
+.mailboxSidebar__folders a.is-active:focus {
+  z-index: 2;
+  color: #fff;
+  background: #5fbeaa;
+  border-radius: 3px;
+}
+.mailboxSidebar i {
+  margin-right: 10px;
+}
+.mailboxSidebar h3.mailboxSidebar__heading {
+  margin: 40px 0 0;
+  color: #797979;
+  font-size: 15px;
+  line-height: 30px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.mailboxSidebar__color--info {
+  color: #34d3eb;
+}
+.mailboxSidebar__color--warning {
+  color: #ffbd4a;
+}
+.mailboxSidebar__color--purple {
+  color: #7266ba;
+}
+.mailboxSidebar__color--pink {
+  color: #fb6d9d;
+}
+.mailboxSidebar__color--success {
+  color: #81c868;
+}
+
+.mailboxSidebar__folders a:last-child,
+.mailboxSidebar__labels a:last-child {
+  margin-bottom: 0;
+}
+.mailboxSidebar__labels {
+  margin-bottom: 20px;
+}

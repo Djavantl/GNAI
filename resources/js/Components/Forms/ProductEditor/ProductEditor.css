@@ -1,0 +1,31 @@
+.productEditor__columns {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.productEditor__columns > div {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 10px;
+}
+.productEditor .formField {
+  margin-bottom: 20px;
+}
+.productEditor .productGeneralForm__comment {
+  margin-bottom: 10px;
+}
+.productEditor hr {
+  height: 0;
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.productEditor__actions {
+  text-align: center;
+  padding: 20px;
+}
+@media (min-width: 1200px) {
+  .productEditor__columns > div {
+    width: 50%;
+  }
+}

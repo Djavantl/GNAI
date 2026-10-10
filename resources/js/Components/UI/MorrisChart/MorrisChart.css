@@ -1,0 +1,12 @@
+@import url('/assets/gnai/plugins/morris/morris.css');
+.morris-hover.morris-default-style {
+  border-radius: 5px;
+  padding: 10px 12px;
+  color: #666;
+  background: #36404a;
+  border: none;
+  color: #ffffff !important;
+}
+.morris-hover.morris-default-style .morris-hover-point {
+  color: #f4f8fb !important;
+}

@@ -1,0 +1,24 @@
+.productImagesForm__row {
+  display: table;
+  height: 100%;
+  width: 100%;
+  margin-bottom: 30px;
+}
+.productImagesForm__row > div {
+  display: table-cell;
+  vertical-align: middle;
+}
+.productImagesForm__row .imageDisplay {
+  display: inline;
+  max-width: none;
+}
+.productImagesForm__row .radio + .radio {
+  margin-top: 0;
+}
+.productImagesForm__actions {
+  min-width: 60px;
+}
+.productImagesForm__upload {
+  text-align: center;
+  margin-top: 30px;
+}

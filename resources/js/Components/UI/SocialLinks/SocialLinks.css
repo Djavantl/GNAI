@@ -1,0 +1,23 @@
+.socialLinks {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.socialLinks li {
+  display: inline-block;
+  padding-inline: 5px;
+}
+.socialLinks li a {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background: #eff0f4;
+  color: #7a7676;
+  text-align: center;
+}
+.socialLinks li a:hover,
+.socialLinks li a:focus {
+  color: #7a7676;
+}

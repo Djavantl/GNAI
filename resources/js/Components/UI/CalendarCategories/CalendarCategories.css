@@ -1,0 +1,42 @@
+.calendarCategories {
+  display: flow-root;
+}
+.calendarCategories__events {
+  margin-top: 20px;
+}
+.calendarCategories__event {
+  color: #fff;
+  cursor: move;
+  margin: 10px 0;
+  padding: 6px 10px;
+  position: relative;
+  touch-action: none;
+}
+.calendarCategories__event--primary {
+  background: #5d9cec;
+}
+.calendarCategories__event--pink {
+  background: #fb6d9d;
+}
+.calendarCategories__event--info {
+  background: #34d3eb;
+}
+.calendarCategories__event--purple {
+  background: #7266ba;
+}
+.calendarCategories__event--success {
+  background: #81c868;
+}
+.calendarCategories__event--danger {
+  background: #f05050;
+}
+.calendarCategories__event--warning {
+  background: #ffbd4a;
+}
+.calendarCategories__event--inverse {
+  background: #4c5667;
+}
+.calendarCategories .calendarCategories__remove {
+  margin-top: 40px;
+  margin-bottom: 10px;
+}

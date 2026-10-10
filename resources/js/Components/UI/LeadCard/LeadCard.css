@@ -1,0 +1,42 @@
+.leadCard.card-box {
+  margin-bottom: 10px;
+}
+.leadCard__row {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+.leadCard__row > div {
+  display: table-cell;
+  vertical-align: middle;
+}
+.leadCard__avatar.imageDisplay {
+  display: inline-block;
+  max-width: none;
+  margin-right: 15px;
+}
+.leadCard__member {
+  padding-right: 10px;
+}
+.leadCard__member h4 {
+  margin: 0 0 10px;
+  font: 500 16px/22px var(--bold-font-ui);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.leadCard__member p {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.leadCard__member p span {
+  color: var(--bold-color-legacy-muted);
+}
+.leadCard__status {
+  width: 20%;
+  text-align: center;
+}

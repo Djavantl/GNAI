@@ -1,0 +1,15 @@
+.owlCarouselRuntime {
+  width: 100%;
+  min-width: 0;
+}
+.owlCarouselRuntime .owl-stage {
+  touch-action: pan-y;
+}
+.owlCarouselRuntime .owl-item img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.owlCarouselRuntime .owl-dot:focus-visible {
+  outline: 2px solid var(--bold-color-custom, #5fbeaa);
+  outline-offset: 2px;
+}

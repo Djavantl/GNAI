@@ -1,0 +1,7 @@
+.tabsPage { color: #777; }
+.tabsPage__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 0; }
+.tabsPage__row--single { grid-template-columns: 1fr; }
+.tabsPage__column { min-width: 0; }
+.tabsPage__titleRow { margin-bottom: 20px; }
+.tabsPage__title { margin: 7px 0 0; color: #505458; font: 600 20px/22px var(--bold-font-ui); }
+@media (max-width: 991px) { .tabsPage__row { grid-template-columns: 1fr; } }

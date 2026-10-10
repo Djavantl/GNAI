@@ -1,0 +1,51 @@
+.dashboardTwo__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.dashboardTwo__row::before,
+.dashboardTwo__row::after {
+  display: table;
+  content: " ";
+}
+
+.dashboardTwo__row::after {
+  clear: both;
+}
+
+.dashboardTwo__col {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.dashboardTwo__col--full {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .dashboardTwo__col--stat {
+    float: left;
+    width: 50%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dashboardTwo__col--stat,
+  .dashboardTwo__col--third {
+    float: left;
+    width: 25%;
+  }
+
+  .dashboardTwo__col--third {
+    width: 33.33333333%;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .dashboardTwo__col--third {
+    float: left;
+    width: 33.33333333%;
+  }
+}

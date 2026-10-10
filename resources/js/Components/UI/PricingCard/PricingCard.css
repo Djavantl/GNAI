@@ -1,0 +1,120 @@
+.pricingCard {
+  background: #fafafa;
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+.pricingCard header {
+  border-radius: 5px 5px 0 0;
+  background: var(--plan-color);
+  color: white;
+}
+.pricingCard__price {
+  display: block;
+  font-size: 48px;
+  font-weight: 300;
+  padding: 30px 0 10px;
+}
+.pricingCard__name {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0 0 30px;
+}
+.pricingCard ul {
+  color: #8a8a8a;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pricingCard li {
+  margin: 0 35px;
+  padding: 20px 15px;
+}
+.pricingCard .button {
+  margin-top: 20px;
+}
+.pricingCard--primary {
+  --plan-color: var(--bold-color-primary);
+}
+.pricingCard--pink,
+.iconPricingCard--pink {
+  --plan-color: var(--bold-color-pink);
+}
+.pricingCard--purple,
+.iconPricingCard--purple {
+  --plan-color: var(--bold-color-purple);
+}
+.pricingCard--success,
+.iconPricingCard--success {
+  --plan-color: var(--bold-color-success);
+}
+.iconPricingCard--warning {
+  --plan-color: var(--bold-color-warning);
+}
+.iconPricingCard {
+  margin: 0 0 30px;
+  position: relative;
+  text-align: center;
+}
+.iconPricingCard__inner {
+  border: 2px solid rgba(151, 160, 175, 0.2);
+  border-radius: 7px;
+  transition: all 0.27s cubic-bezier(0, 0, 0.58, 1);
+  vertical-align: middle;
+}
+.iconPricingCard__wrap {
+  overflow: hidden;
+  padding: 30px 20px;
+  position: relative;
+}
+.iconPricingCard__icon {
+  font-size: 32px;
+  padding: 10px 0 5px;
+}
+.iconPricingCard__title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+}
+.iconPricingCard__icon,
+.iconPricingCard__title {
+  color: var(--plan-color);
+  position: relative;
+  z-index: 1;
+}
+.iconPricingCard ul {
+  color: #97a0af;
+  font-size: 12px;
+  font-weight: 400;
+  margin: 0 -20px 30px;
+  padding: 0;
+  text-transform: uppercase;
+  list-style: none;
+}
+.iconPricingCard li {
+  padding: 12px 20px;
+}
+.iconPricingCard__price {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+}
+.iconPricingCard__price sup {
+  font-size: 18px;
+  font-weight: 400;
+  left: -3px;
+  margin-left: -7px;
+  position: relative;
+  top: -20px;
+}
+.iconPricingCard__period {
+  color: #97a0af;
+  font-size: 12px;
+}
+.iconPricingCard__button {
+  margin-top: 30px;
+}

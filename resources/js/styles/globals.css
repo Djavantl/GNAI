@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:400,700');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300');
+
+@import './icons.css';
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  background: #ebeff2;
+  color: var(--bold-color-text);
+  font-family: var(--bold-font-body);
+}
+
+html {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #98a6ad transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #98a6ad;
+  border-radius: 5px;
+  border: 0;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #8b99a0;
+}
+
+/* The page rail is fixed below the top bar and never changes layout width. */
+html::-webkit-scrollbar {
+  display: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+
+
+.text-center {
+  text-align: center;
+}
+
+.card-box {
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-clip: padding-box;
+  background-color: #ffffff;
+}
+
+.tooltip-inner {
+  border-radius: 1px;
+  padding: 6px 10px;
+}
+
+.jqstooltip {
+  box-sizing: content-box;
+  width: auto !important;
+  height: auto !important;
+}

@@ -1,0 +1,104 @@
+.notificationsPage {
+  color: #797979;
+}
+
+.notificationsPage__pageTitleRow {
+  margin-bottom: 20px;
+}
+
+.notificationsPage__pageTitle {
+  margin: 7px 0 0;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.notificationsPage__card {
+  margin-bottom: 20px;
+}
+
+.notificationsPage__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.notificationsPage__row::before,
+.notificationsPage__row::after {
+  display: table;
+  content: " ";
+}
+
+.notificationsPage__row::after {
+  clear: both;
+}
+
+.notificationsPage__col {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.notificationsPage__sectionTitle {
+  margin: 0 0 8px;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notificationsPage__sectionTitle b {
+  font-weight: inherit;
+}
+
+.notificationsPage__description {
+  margin: 0 0 30px;
+  color: #98a6ad;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.notificationsPage code {
+  padding: 2px 4px;
+  background-color: #f4f8fb;
+  color: #5d9cec;
+  border-radius: 4px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 90%;
+}
+
+.notificationsPage__buttonList {
+  margin-bottom: -12px;
+  margin-left: -8px;
+  font-size: 0;
+}
+
+.notificationsPage__buttonList .button {
+  margin-bottom: 12px;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.notificationsPage__lineBreak {
+  display: block;
+  width: 100%;
+  height: 0;
+}
+
+@media (min-width: 768px) {
+  .notificationsPage__col {
+    float: left;
+    width: 50%;
+  }
+}
+
+@media (max-width: 767px) {
+  .notificationsPage__col + .notificationsPage__col {
+    margin-top: 20px;
+  }
+}

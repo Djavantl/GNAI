@@ -1,0 +1,22 @@
+.pricingPlans {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.pricingPlans > div {
+  width: 100%;
+  padding-inline: 10px;
+}
+.pricingPlans--first {
+  padding-bottom: 50px;
+}
+@media (min-width: 768px) {
+  .pricingPlans > div {
+    width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  .pricingPlans > div {
+    width: 25%;
+  }
+}

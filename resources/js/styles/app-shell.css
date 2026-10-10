@@ -1,0 +1,31 @@
+.app-page {
+  min-height: 100vh;
+}
+
+.app-content-placeholder {
+  margin-left: var(--bold-sidebar-width);
+  overflow: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+.app-content-placeholder__inner {
+  margin-top: var(--bold-topbar-height);
+  margin-bottom: 60px;
+  min-height: calc(100vh - var(--bold-topbar-height) - 60px);
+  padding: 20px 20px 15px;
+}
+
+.app-page--sidebarCollapsed .app-content-placeholder {
+  margin-left: var(--bold-sidebar-collapsed-width);
+}
+
+@media (max-width: 767px) {
+  .app-content-placeholder {
+    margin-left: 0;
+  }
+
+  .app-content-placeholder__inner {
+    padding: 20px 15px 15px;
+  }
+}

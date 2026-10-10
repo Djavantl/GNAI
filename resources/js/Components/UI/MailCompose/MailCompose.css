@@ -1,0 +1,43 @@
+.mailCompose {
+  margin-top: 20px;
+}
+.mailCompose__form {
+  padding: 20px;
+}
+.mailCompose__field {
+  margin-bottom: 15px;
+}
+.mailCompose__copies {
+  margin-inline: -10px;
+}
+.mailCompose__copies > div {
+  padding-inline: 10px;
+}
+.mailCompose__actions {
+  text-align: right;
+}
+.mailCompose__actionsGroup > .button:not(:last-child) {
+  margin-right: 5px;
+}
+.mailCompose__sendIcon {
+  margin-left: 10px;
+}
+@media (min-width: 992px) {
+  .mailCompose__copies {
+    display: flex;
+  }
+  .mailCompose__copies > div {
+    width: 50%;
+  }
+}
+
+.mailCompose__actions {
+  margin-left: -5px;
+  display: flow-root;
+}
+.mailCompose__actionsGroup {
+  float: right;
+}
+.mailCompose__actionsGroup .button {
+  float: left;
+}

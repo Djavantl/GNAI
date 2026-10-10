@@ -1,0 +1,7 @@
+.formMasks__columns { margin: 0 -10px; }
+.formMasks__columns::before, .formMasks__columns::after { display: table; content: ' '; }
+.formMasks__columns::after { clear: both; }
+.formMasks__column { position: relative; min-height: 1px; padding: 0 10px; }
+.formMasks__examples { padding: 20px; }
+.formMasks__examples > .formField:last-child { margin-bottom: 0; }
+@media (min-width: 992px) { .formMasks__column { float: left; width: 50%; } }

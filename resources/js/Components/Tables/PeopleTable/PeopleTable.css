@@ -1,0 +1,51 @@
+.peopleTable__scroll {
+  min-height: 0.01%;
+  overflow-x: auto;
+}
+.peopleTable.boldTable {
+  margin: 0;
+}
+.peopleTable td {
+  position: relative;
+  vertical-align: middle !important;
+}
+.peopleTable td:last-of-type {
+  width: 100px;
+  padding-right: 20px;
+}
+.peopleTable a,
+.peopleTable a:hover,
+.peopleTable a:focus {
+  color: #797979;
+  text-decoration: none;
+}
+.peopleTable .checkbox {
+  display: inline-block;
+  vertical-align: middle;
+  height: 17px;
+  margin: 0 15px 0 0;
+}
+.peopleTable .checkbox label {
+  min-height: 16px;
+}
+.peopleTable .imageDisplay {
+  display: inline-block;
+}
+.peopleTable--sellers th:first-child {
+  min-width: 95px;
+}
+.peopleTable--sellers th:last-child {
+  min-width: 90px;
+}
+@media (max-width: 767px) {
+  .peopleTable__scroll {
+    width: 100%;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    overflow-y: hidden;
+  }
+  .peopleTable > thead > tr > th,
+  .peopleTable > tbody > tr > td {
+    white-space: nowrap;
+  }
+}

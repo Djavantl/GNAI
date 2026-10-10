@@ -1,0 +1,25 @@
+.productCatalog__grid {
+  margin-inline: -10px;
+  margin-bottom: 15px;
+}
+.productCatalog__item {
+  position: relative;
+  min-height: 1px;
+  padding-inline: 10px;
+}
+@media (min-width: 768px) {
+  .productCatalog__item {
+    float: left;
+    width: 50%;
+  }
+}
+@media (min-width: 992px) {
+  .productCatalog__item {
+    width: 33.33333333%;
+  }
+}
+@media (min-width: 1200px) {
+  .productCatalog__item {
+    width: 25%;
+  }
+}

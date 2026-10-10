@@ -1,0 +1,41 @@
+.imageDisplay {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.imageDisplay--rounded {
+  border-radius: 6px;
+}
+
+.imageDisplay--circle {
+  border-radius: 50%;
+}
+
+.imageDisplay--thumbnail {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  padding: 4px;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  background-color: #ffffff;
+  line-height: 1.42857143;
+  transition: all 0.2s ease-in-out;
+}
+
+.imageDisplay--sm {
+  width: 32px;
+  height: 32px;
+}
+
+.imageDisplay--md {
+  width: 48px;
+  height: 48px;
+}
+
+.imageDisplay--lg {
+  width: 88px;
+  height: 88px;
+}

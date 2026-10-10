@@ -1,0 +1,14 @@
+.recordActions a {
+  display: inline-block;
+  width: 28px;
+  border-radius: 50%;
+  text-align: center;
+  color: var(--bold-color-legacy-muted) !important;
+  line-height: 24px;
+  font-size: 20px;
+  text-decoration: none !important;
+}
+.recordActions a:hover {
+  color: var(--bold-color-custom) !important;
+  border-color: var(--bold-color-custom);
+}

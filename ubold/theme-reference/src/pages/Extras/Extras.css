@@ -1,0 +1,62 @@
+.extrasPage {
+  color: var(--bold-color-legacy-text);
+  font-family: var(--bold-font-body);
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+:where(.extrasPage) h3,
+:where(.extrasPage) h4,
+:where(.extrasPage) h5 {
+  color: var(--bold-color-heading);
+  font-family: var(--bold-font-ui);
+  font-weight: 500;
+  margin: 10px 0;
+}
+:where(.extrasPage) h3 {
+  font-size: 24px;
+  line-height: 30px;
+}
+:where(.extrasPage) h4 {
+  font-size: 18px;
+  line-height: 22px;
+}
+:where(.extrasPage) h5 {
+  font-size: 15px;
+  line-height: 1.1;
+}
+:where(.extrasPage) p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+:where(.extrasPage) b {
+  font-weight: 600;
+}
+:where(.extrasPage) strong {
+  font-weight: 700;
+}
+:where(.extrasPage) a {
+  color: #337ab7;
+}
+:where(.extrasPage) a:hover,
+:where(.extrasPage) a:focus {
+  color: #23527c;
+}
+.extrasPage h4.extrasPage__title {
+  margin: 7px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+.extrasPage .pageBreadcrumb {
+  margin-bottom: 15px;
+  padding: 10px 0 8px;
+}
+@media (max-width: 767px) {
+  .extrasPage {
+    margin-inline: 5px;
+  }
+}
+
+:where(.extrasPage) .card-box {
+  margin-bottom: 20px;
+}

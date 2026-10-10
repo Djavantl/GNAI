@@ -1,0 +1,16 @@
+.searchResultItem {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ebeff2;
+  margin-bottom: 30px;
+}
+.searchResultItem h3 {
+  font: 600 14px/1.1 var(--bold-font-body);
+  color: #777;
+  margin-bottom: 5px;
+}
+.searchResultItem__url {
+  font-size: 13px;
+  color: var(--bold-color-success);
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}

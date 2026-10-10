@@ -1,0 +1,15 @@
+.contactForm {
+  text-align: left;
+}
+.contactForm__field {
+  margin-bottom: 15px;
+}
+.contactForm__field label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.contactForm__cancel {
+  margin-left: 10px;
+}

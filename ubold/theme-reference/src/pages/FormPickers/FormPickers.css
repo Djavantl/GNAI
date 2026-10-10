@@ -1,0 +1,668 @@
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('/assets/gnai/fonts/glyphicons-halflings-regular.eot');
+  src: url('/assets/gnai/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+    url('/assets/gnai/fonts/glyphicons-halflings-regular.woff2') format('woff2'),
+    url('/assets/gnai/fonts/glyphicons-halflings-regular.woff') format('woff'),
+    url('/assets/gnai/fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+    url('/assets/gnai/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.glyphicon-time::before {
+  content: "\e023";
+}
+
+.glyphicon-calendar::before {
+  content: "\e109";
+}
+
+.glyphicon-chevron-up::before {
+  content: "\e113";
+}
+
+.glyphicon-chevron-down::before {
+  content: "\e114";
+}
+
+.formPickersPage {
+  color: #797979;
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+
+.formPickersPage__pageTitleRow,
+.formPickersPage__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.formPickersPage__pageTitleRow::before,
+.formPickersPage__pageTitleRow::after,
+.formPickersPage__row::before,
+.formPickersPage__row::after,
+.formPickersPage .form-horizontal .form-group::before,
+.formPickersPage .form-horizontal .form-group::after {
+  display: table;
+  content: " ";
+}
+
+.formPickersPage__pageTitleRow::after,
+.formPickersPage__row::after,
+.formPickersPage .form-horizontal .form-group::after {
+  clear: both;
+}
+
+.formPickersPage__col,
+.formPickersPage .col-sm-12,
+.formPickersPage .col-sm-8,
+.formPickersPage .col-sm-4,
+.formPickersPage .col-lg-10,
+.formPickersPage .col-lg-9,
+.formPickersPage .col-lg-8,
+.formPickersPage .col-lg-6,
+.formPickersPage .col-lg-4 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.formPickersPage .page-title {
+  margin-top: 7px;
+  margin-bottom: 0;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.formPickersPage .pageBreadcrumb.breadcrumb {
+  margin-bottom: 15px;
+  padding: 10px 15px 8px 0;
+  border-radius: 4px;
+  color: #797979;
+}
+
+.formPickersPage__card.card-box {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-color: #fff;
+  background-clip: padding-box;
+}
+
+.formPickersPage .header-title {
+  margin: 0 0 8px;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.formPickersPage .header-title b {
+  font-weight: inherit;
+}
+
+.formPickersPage p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.formPickersPage .text-muted {
+  color: #98a6ad !important;
+}
+
+.formPickersPage .font-13 {
+  font-size: 13px !important;
+  line-height: 20.8px;
+}
+
+.formPickersPage .m-t-0 { margin-top: 0 !important; }
+.formPickersPage .m-b-0 { margin-bottom: 0 !important; }
+.formPickersPage .m-b-15 { margin-bottom: 15px !important; }
+.formPickersPage .m-b-30 { margin-bottom: 30px !important; }
+.formPickersPage .p-20 { padding: 20px !important; }
+.formPickersPage .pull-right { float: right !important; }
+.formPickersPage .b-0 { border: 0 !important; }
+.formPickersPage .text-white { color: #fff !important; }
+.formPickersPage .bg-custom { background-color: #5fbeaa !important; }
+
+.formPickersPage .form-group {
+  margin-bottom: 15px;
+}
+
+.formPickersPage label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.formPickersPage .control-label {
+  color: #797979;
+}
+
+.formPickersPage .form-control {
+  display: block;
+  width: 100%;
+  height: 38px;
+  max-width: 100%;
+  padding: 7px 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  background-color: #fff;
+  background-image: none;
+  box-shadow: none;
+  color: #565656;
+  font-family: var(--bold-font-body);
+  font-size: 14px;
+  line-height: 1.42857143;
+  transition: all 300ms linear;
+}
+
+.formPickersPage .form-control[readonly] {
+  background-color: #eeeeee;
+  opacity: 1;
+}
+
+.formPickersPage .form-control:focus {
+  border: 1px solid #aaa;
+  background-color: #fff;
+  box-shadow: none;
+  color: #333;
+  outline: 0 !important;
+}
+
+.formPickersPage .form-control::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+.formPickersPage .input-group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+}
+
+.formPickersPage .input-group .form-control {
+  position: relative;
+  z-index: 2;
+  float: left;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.formPickersPage .input-group-addon,
+.formPickersPage .input-group-btn,
+.formPickersPage .input-group .form-control {
+  display: table-cell;
+}
+
+.formPickersPage .input-group-addon,
+.formPickersPage .input-group-btn {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.formPickersPage .input-group-addon {
+  padding: 6px 12px;
+  border: 1px solid #eee;
+  border-radius: 2px;
+  background-color: #eee;
+  color: #555;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1;
+  text-align: center;
+}
+
+.formPickersPage .input-group-addon:last-child {
+  border-left: 0;
+}
+
+.formPickersPage .input-group .form-control:first-child,
+.formPickersPage .input-group-addon:first-child,
+.formPickersPage .input-group-btn:first-child > .btn {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.formPickersPage .input-group .form-control:last-child,
+.formPickersPage .input-group-addon:last-child,
+.formPickersPage .input-group-btn:last-child > .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.formPickersPage .input-group-btn {
+  position: relative;
+  font-size: 0;
+  white-space: nowrap;
+}
+
+.formPickersPage .input-group-btn > .btn {
+  position: relative;
+}
+
+.formPickersPage .dropdown-menu,
+.bootstrap-timepicker-widget.dropdown-menu,
+.datepicker.dropdown-menu,
+.daterangepicker.dropdown-menu,
+.colorpicker.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 4px 0;
+  margin: 2px 0 0;
+  border: 0;
+  border-radius: 4px;
+  background-color: #fff;
+  background-clip: padding-box;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+  color: #797979;
+  font-size: 14px;
+  line-height: 1.42857143;
+  transition: all 300ms ease;
+  text-align: left;
+  list-style: none;
+}
+
+.formPickersPage .open > .dropdown-menu,
+.bootstrap-timepicker-widget.dropdown-menu.open {
+  display: block;
+}
+
+.formPickersPage .btn {
+  display: inline-block;
+  margin-bottom: 0;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background-image: none;
+  font-family: var(--bold-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  outline: none !important;
+}
+
+.formPickersPage .btn-primary,
+.formPickersPage .btn-primary:hover,
+.formPickersPage .btn-primary:focus,
+.formPickersPage .btn-primary:active {
+  border-color: #5d9cec !important;
+  background-color: #5d9cec !important;
+  color: #fff !important;
+}
+
+.formPickersPage .btn-white,
+.formPickersPage .btn-white:hover,
+.formPickersPage .btn-white:focus,
+.formPickersPage .btn-white:active {
+  border: 1px solid #eaeaea !important;
+  background-color: #fff;
+  color: #4c5667;
+}
+
+.formPickersPage .btn-default,
+.daterangepicker .btn-default,
+.daterangepicker .btn-default:hover,
+.daterangepicker .btn-default:focus,
+.daterangepicker .btn-default:active {
+  border-color: #5fbeaa !important;
+  background-color: #5fbeaa !important;
+  color: #fff !important;
+}
+
+.daterangepicker .btn-white,
+.daterangepicker .btn-white:hover,
+.daterangepicker .btn-white:focus,
+.daterangepicker .btn-white:active {
+  border: 1px solid #eaeaea !important;
+  background-color: #fff;
+  color: #4c5667;
+}
+
+.daterangepicker .btn {
+  border-radius: 3px;
+  font-family: var(--bold-font-body);
+  outline: none !important;
+}
+
+.formPickersPage .form-horizontal .form-group {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.formPickersPage .form-horizontal .control-label {
+  padding-top: 7px;
+  margin-bottom: 0;
+  text-align: right;
+}
+
+.formPickersPage .bootstrap-timepicker {
+  position: relative;
+  display: table-cell;
+  width: 100%;
+}
+
+.formPickersPage .bootstrap-timepicker .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.formPickersPage .bootstrap-timepicker .bootstrap-timepicker-widget.dropdown-menu {
+  top: 0;
+  padding: 2px 3px 2px 2px;
+  border: 0;
+}
+
+.colorpicker.dropdown-menu.colorpicker-visible {
+  display: block;
+}
+
+.colorpicker.dropdown-menu.colorpicker-with-alpha {
+  min-width: 140px;
+}
+
+.formPickersPage .bootstrap-timepicker-widget table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.formPickersPage .colorpicker-default.input-group .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.formPickersPage .colorpicker-default.input-group .btn {
+  height: 38px;
+}
+
+.formPickersPage .colorpicker-default.input-group .btn i {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: text-top;
+}
+
+.formPickersPage #reportrange {
+  cursor: pointer;
+}
+
+.formPickersPage #reportrange i {
+  margin-right: 4px;
+}
+
+.formPickersPage #datepicker-inline {
+  display: block;
+}
+
+.datepicker.dropdown-menu,
+.formPickersPage .datepicker {
+  padding: 8px;
+}
+
+.datepicker th {
+  color: #666;
+  font-size: 14px !important;
+  font-weight: 600;
+}
+
+.datepicker table,
+.daterangepicker table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.datepicker .table-condensed > :is(thead, tbody, tfoot) > tr > :is(th, td),
+.daterangepicker .table-condensed > :is(thead, tbody, tfoot) > tr > :is(th, td) {
+  padding: 5px;
+}
+
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover,
+.datepicker table tr td.selected,
+.datepicker table tr td.selected:hover,
+.datepicker table tr td.selected.disabled,
+.datepicker table tr td.selected.disabled:hover,
+.datepicker table tr td span.active,
+.datepicker table tr td span.active:hover,
+.datepicker table tr td span.active.disabled,
+.datepicker table tr td span.active.disabled:hover {
+  background-image: none;
+}
+
+.datepicker table tr td span.active,
+.datepicker table tr td span.active:hover,
+.datepicker table tr td span.active.disabled,
+.datepicker table tr td span.active.disabled:hover {
+  background-color: #5fbeaa !important;
+}
+
+.datepicker table tr td.active,
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active.disabled,
+.datepicker table tr td.active.disabled:hover {
+  background-color: #5fbeaa !important;
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.datepicker thead tr:first-child th:hover,
+.datepicker tfoot tr th:hover {
+  background-color: #fafafa;
+}
+
+.datepicker-inline {
+  border: 2px solid #eeeeee;
+}
+
+.daterangepicker td.active,
+.daterangepicker td.active:hover {
+  border-color: #5d9cec;
+  background-color: #5d9cec;
+}
+
+.daterangepicker .input-mini.active {
+  border: 1px solid #aaa;
+}
+
+.daterangepicker .ranges li {
+  border-radius: 2px;
+  background-clip: padding-box;
+  color: #36404a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.daterangepicker select.hourselect,
+.daterangepicker select.minuteselect,
+.daterangepicker select.secondselect,
+.daterangepicker select.ampmselect {
+  width: 60px;
+  padding: 2px;
+  border: 1px solid #e3e3e3;
+}
+
+.daterangepicker select {
+  margin: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.daterangepicker .ranges li.active,
+.daterangepicker .ranges li:hover {
+  border: 1px solid #5d9cec;
+  background-color: #5d9cec;
+}
+
+.bootstrap-timepicker-widget table td a:hover {
+  border-color: transparent;
+  border-radius: 4px;
+  background-color: transparent;
+  color: #5d9cec;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .formPickersPage .col-sm-12 { width: 100%; }
+  .formPickersPage .col-sm-8 { width: 66.66666667%; }
+  .formPickersPage .col-sm-4 { width: 33.33333333%; }
+
+  .formPickersPage .col-sm-12,
+  .formPickersPage .col-sm-8,
+  .formPickersPage .col-sm-4 {
+    float: left;
+  }
+}
+
+@media (min-width: 1200px) {
+  .formPickersPage .col-lg-10 { width: 83.33333333%; }
+  .formPickersPage .col-lg-9 { width: 75%; }
+  .formPickersPage .col-lg-8 { width: 66.66666667%; }
+  .formPickersPage .col-lg-6 { width: 50%; }
+  .formPickersPage .col-lg-4 { width: 33.33333333%; }
+
+  .formPickersPage .col-lg-10,
+  .formPickersPage .col-lg-9,
+  .formPickersPage .col-lg-8,
+  .formPickersPage .col-lg-6,
+  .formPickersPage .col-lg-4 {
+    float: left;
+  }
+}
+
+@media (max-width: 767px) {
+  .formPickersPage {
+    margin-inline: 5px;
+  }
+
+  .formPickersPage .form-horizontal .control-label {
+    margin-bottom: 5px;
+    padding-top: 0;
+    text-align: start;
+  }
+}
+
+/* Plugin overlays are mounted under body, outside .formPickersPage. */
+.daterangepicker th {
+  color: #666;
+  font-weight: 600;
+}
+
+.clockpicker-popover.popover {
+  border: 0;
+  border-radius: 3px;
+  color: #797979;
+  font-family: var(--bold-font-body);
+  font-size: 14px;
+  line-height: 1.42857143;
+  text-align: start;
+}
+
+.clockpicker-popover.popover .popover-title {
+  background-color: transparent;
+  color: var(--bold-color-custom);
+  font-weight: 600;
+}
+
+.clockpicker-popover .text-primary {
+  color: var(--bold-color-primary);
+}
+
+.clockpicker-popover .btn,
+.daterangepicker .btn {
+  display: inline-block;
+  margin-bottom: 0;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font-family: var(--bold-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none !important;
+}
+
+.clockpicker-popover .btn-sm,
+.daterangepicker .btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.clockpicker-popover .btn-block {
+  display: block;
+  width: 100%;
+}
+
+.clockpicker-popover .btn-default {
+  border: 1px solid var(--bold-color-custom) !important;
+  background-color: var(--bold-color-custom) !important;
+  color: #fff !important;
+}
+
+.clockpicker-popover .btn:active,
+.daterangepicker .btn:active,
+.formPickersPage .btn:active {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.daterangepicker .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  box-shadow: none;
+}
+
+.daterangepicker .btn-white:is(:hover, :focus, :active),
+.formPickersPage .btn-white:is(:hover, :focus, :active) {
+  background-color: #f9f9f9;
+}
+
+.formPickersPage .input-group-btn > .btn {
+  padding: 8px 12px;
+}
+
+.formPickersPage .input-group-btn:last-child > .btn {
+  z-index: 2;
+  margin-left: -1px;
+}
+
+.formPickersPage .input-daterange .input-group-addon {
+  border-radius: 0;
+}

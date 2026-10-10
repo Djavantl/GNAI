@@ -1,0 +1,68 @@
+.mailMessage {
+  margin-top: 20px;
+}
+.mailMessage h4.mailMessage__subject {
+  margin-top: 0;
+}
+.mailMessage hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.mailMessage__sender {
+  display: flex;
+  margin-bottom: 30px;
+  gap: 10px;
+}
+.mailMessage__sender > div {
+  flex: 1;
+  min-width: 0;
+}
+.mailMessage__sender h4 {
+  color: #5d9cec;
+  margin: 0;
+}
+.mailMessage__sender small {
+  color: #98a6ad;
+  font-size: 85%;
+}
+.mailMessage__address {
+  overflow-wrap: anywhere;
+}
+.mailMessage__time {
+  float: right;
+}
+.mailMessage__clip {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.mailMessage__attachments {
+  display: flex;
+  margin-inline: -10px;
+}
+.mailMessage__attachments > div {
+  padding-inline: 10px;
+  width: 33.33333333%;
+}
+.mailMessage__attachments .imageDisplay {
+  max-width: 100%;
+  height: auto;
+}
+.mailMessage__reply {
+  display: flex;
+  gap: 10px;
+}
+.mailMessage__reply .mailMessage__replyCard {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+}
+.mailMessage__send {
+  text-align: right;
+  margin-bottom: 30px;
+}
+@media (min-width: 768px) {
+  .mailMessage__attachments > div {
+    width: 16.66666667%;
+  }
+}

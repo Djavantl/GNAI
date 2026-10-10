@@ -1,0 +1,258 @@
+.componentsGridPage {
+  color: #797979;
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+
+.componentsGridPage__container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.componentsGridPage__pageTitleRow {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.componentsGridPage__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.componentsGridPage__pageTitleRow::before,
+.componentsGridPage__pageTitleRow::after,
+.componentsGridPage__row::before,
+.componentsGridPage__row::after {
+  display: table;
+  content: " ";
+}
+
+.componentsGridPage__pageTitleRow::after,
+.componentsGridPage__row::after {
+  clear: both;
+}
+
+.componentsGridPage__col,
+.componentsGridPage__gridColumn {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.componentsGridPage__col--full,
+.componentsGridPage__gridColumn--12,
+.componentsGridPage__gridColumn--11,
+.componentsGridPage__gridColumn--10,
+.componentsGridPage__gridColumn--9,
+.componentsGridPage__gridColumn--8,
+.componentsGridPage__gridColumn--7,
+.componentsGridPage__gridColumn--6,
+.componentsGridPage__gridColumn--5,
+.componentsGridPage__gridColumn--4,
+.componentsGridPage__gridColumn--3,
+.componentsGridPage__gridColumn--2,
+.componentsGridPage__gridColumn--1 {
+  width: 100%;
+}
+
+.componentsGridPage__pageTitle {
+  margin: 7px 0 0;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+
+.componentsGridPage .pageBreadcrumb.breadcrumb {
+  padding: 10px 15px 8px 0;
+  color: #797979;
+}
+
+.componentsGridPage__card {
+  margin-bottom: 20px;
+}
+
+.componentsGridPage__card--last {
+  margin-bottom: 0;
+}
+
+.componentsGridPage__sectionTitle {
+  margin: 0 0 8px;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.componentsGridPage__sectionTitle b {
+  font-weight: 600;
+}
+
+.componentsGridPage__description {
+  margin: 0 0 30px;
+  color: #98a6ad;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.componentsGridPage code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: #f4f8fb;
+  color: #5d9cec;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 90%;
+}
+
+.componentsGridPage__table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+  border-spacing: 0;
+  border-collapse: collapse;
+  background-color: transparent;
+}
+
+
+.componentsGridPage__tableColumn--label {
+  width: 14.81%;
+}
+
+.componentsGridPage__tableColumn--extraSmall {
+  width: 22.85%;
+}
+
+.componentsGridPage__tableColumn--small {
+  width: 19.12%;
+}
+
+.componentsGridPage__tableColumn--medium {
+  width: 22.07%;
+}
+
+.componentsGridPage__tableColumn--large {
+  width: 21.07%;
+}
+
+.componentsGridPage__table > thead > tr > th,
+.componentsGridPage__table > tbody > tr > th,
+.componentsGridPage__table > tbody > tr > td {
+  padding: 8px;
+  border-top: 1px solid #ebeff2;
+  color: #797979;
+  font-size: 14px;
+  line-height: 1.42857143;
+  text-align: left;
+  vertical-align: top;
+}
+
+.componentsGridPage__table > thead > tr > th {
+  border-top: 0;
+  border-bottom: 2px solid #ebeff2;
+  color: #666666;
+  font-weight: 600;
+  vertical-align: bottom;
+}
+
+.componentsGridPage__table > tbody > tr > th {
+  color: #666666;
+  font-weight: 600;
+}
+
+.componentsGridPage__table.table-bordered,
+.componentsGridPage__table.table-bordered > thead > tr > th,
+.componentsGridPage__table.table-bordered > tbody > tr > th,
+.componentsGridPage__table.table-bordered > tbody > tr > td {
+  border: 1px solid #ebeff2;
+}
+
+.componentsGridPage__table.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f4f8fb;
+}
+
+.componentsGridPage__table small {
+  color: inherit;
+  font-size: 85%;
+  font-weight: inherit;
+  line-height: 1;
+}
+
+.componentsGridPage .text-muted {
+  color: #98a6ad;
+}
+
+.componentsGridPage__gridContainer {
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  background-color: #f4f8fb;
+  color: #797979;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+@media (min-width: 992px) {
+  .componentsGridPage__col,
+  .componentsGridPage__gridColumn {
+    float: left;
+  }
+
+  .componentsGridPage__col--full,
+  .componentsGridPage__gridColumn--12 {
+    width: 100%;
+  }
+
+  .componentsGridPage__gridColumn--11 {
+    width: 91.66666667%;
+  }
+
+  .componentsGridPage__gridColumn--10 {
+    width: 83.33333333%;
+  }
+
+  .componentsGridPage__gridColumn--9 {
+    width: 75%;
+  }
+
+  .componentsGridPage__gridColumn--8 {
+    width: 66.66666667%;
+  }
+
+  .componentsGridPage__gridColumn--7 {
+    width: 58.33333333%;
+  }
+
+  .componentsGridPage__gridColumn--6 {
+    width: 50%;
+  }
+
+  .componentsGridPage__gridColumn--5 {
+    width: 41.66666667%;
+  }
+
+  .componentsGridPage__gridColumn--4 {
+    width: 33.33333333%;
+  }
+
+  .componentsGridPage__gridColumn--3 {
+    width: 25%;
+  }
+
+  .componentsGridPage__gridColumn--2 {
+    width: 16.66666667%;
+  }
+
+  .componentsGridPage__gridColumn--1 {
+    width: 8.33333333%;
+  }
+}
+
+.componentsGridPage__table.table-bordered > thead > tr > th {
+  border-top: 0;
+  border-bottom: 2px solid #ebeff2;
+}

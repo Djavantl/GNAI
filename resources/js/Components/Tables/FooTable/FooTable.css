@@ -1,0 +1,30 @@
+/* Controls inherit the same label weights and spacing as the legacy demo. */
+.fooTable__statusLabel {
+  margin-right: 5px;
+}
+.fooTable select[data-size] {
+  font-weight: 700;
+}
+@media (min-width: 768px) {
+  .fooTable .form-inline .fooTable__statusLabel {
+    margin-bottom: 0;
+    vertical-align: middle;
+  }
+}
+
+.fooTable__addIcon {
+  margin-right: 5px;
+}
+
+/* Theme overrides follow the plugin's core rules, as in the legacy page. */
+.fooTable .footable-odd {
+  background-color: #fff;
+}
+.fooTable .footable-row-detail {
+  background-color: #f0f4f7;
+}
+
+/* Initial and appended rows share the legacy action-column alignment. */
+.fooTable--rows > table > tbody > tr:not(.footable-row-detail) > td:first-child {
+  text-align: center;
+}

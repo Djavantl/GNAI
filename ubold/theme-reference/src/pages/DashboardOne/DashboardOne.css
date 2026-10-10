@@ -1,0 +1,65 @@
+.dashboardOne__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.dashboardOne__row::before,
+.dashboardOne__row::after {
+  display: table;
+  content: " ";
+}
+
+.dashboardOne__row::after {
+  clear: both;
+}
+
+.dashboardOne__col {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.dashboardOne__col--full {
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .dashboardOne__col--stat {
+    float: left;
+    width: 50%;
+  }
+
+  .dashboardOne__col--half {
+    float: left;
+    width: 50%;
+  }
+
+  .dashboardOne__col--revenue {
+    float: left;
+    width: 33.33333333%;
+  }
+
+  .dashboardOne__col--analytics {
+    float: left;
+    width: 66.66666667%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dashboardOne__col--stat {
+    width: 25%;
+  }
+
+  .dashboardOne__col--half {
+    width: 50%;
+  }
+
+  .dashboardOne__col--revenue {
+    width: 33.33333333%;
+  }
+
+  .dashboardOne__col--analytics {
+    width: 66.66666667%;
+  }
+}

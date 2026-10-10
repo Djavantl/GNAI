@@ -1,0 +1,8 @@
+.productFormSection__title {
+  color: var(--bold-color-legacy-muted) !important;
+  text-transform: uppercase;
+  margin: 0 0 20px !important;
+}
+.productFormSection__title--images {
+  margin-bottom: 30px !important;
+}

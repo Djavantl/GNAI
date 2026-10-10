@@ -1,0 +1,42 @@
+.crmPage {
+  color: var(--bold-color-legacy-text);
+  font: 14px/1.42857143 var(--bold-font-body);
+}
+:where(.crmPage) h4,
+:where(.crmPage) h5 {
+  margin: 10px 0;
+  color: var(--bold-color-heading);
+  font-family: var(--bold-font-ui);
+  font-weight: 500;
+}
+:where(.crmPage) h4 {
+  font-size: 18px;
+  line-height: 22px;
+}
+:where(.crmPage) h5 {
+  font-size: 15px;
+  line-height: 16.5px;
+}
+:where(.crmPage) p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+:where(.crmPage) b {
+  font-weight: 600;
+}
+:where(.crmPage) a {
+  color: #337ab7;
+  text-decoration: none;
+}
+:where(.crmPage) a:hover,
+:where(.crmPage) a:focus {
+  color: #23527c;
+}
+:where(.crmPage) .card-box {
+  margin-bottom: 20px;
+}
+@media (max-width: 767px) {
+  .crmPage {
+    margin-inline: 5px;
+  }
+}

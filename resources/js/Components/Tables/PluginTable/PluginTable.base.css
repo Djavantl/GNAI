@@ -1,0 +1,2795 @@
+/*! Bootstrap v3.3.4, Copyright 2011-2015 Twitter, Inc. MIT license. Scoped table primitives from the legacy theme. */
+@media print {
+  :where(.tableSurface) .btn > .caret,
+  :where(.tableSurface) .dropup > .btn > .caret {
+    border-top-color: #000 !important;
+  }
+  :where(.tableSurface) .label {
+    border: 1px solid #000;
+  }
+  :where(.tableSurface) .table {
+    border-collapse: collapse !important;
+  }
+  :where(.tableSurface) .table td,
+  :where(.tableSurface) .table th {
+    background-color: #fff !important;
+  }
+  :where(.tableSurface) .table-bordered td,
+  :where(.tableSurface) .table-bordered th {
+    border: 1px solid #ddd !important;
+  }
+}
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url(/assets/gnai/fonts/glyphicons-halflings-regular.eot);
+  src:
+    url(/assets/gnai/fonts/glyphicons-halflings-regular.eot?#iefix)
+      format('embedded-opentype'),
+    url(/assets/gnai/fonts/glyphicons-halflings-regular.woff2) format('woff2'),
+    url(/assets/gnai/fonts/glyphicons-halflings-regular.woff) format('woff'),
+    url(/assets/gnai/fonts/glyphicons-halflings-regular.ttf) format('truetype'),
+    url(/assets/gnai/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular)
+      format('svg');
+}
+:where(.tableSurface) .glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+:where(.tableSurface) .glyphicon-asterisk:before {
+  content: '\2a';
+}
+:where(.tableSurface) .glyphicon-plus:before {
+  content: '\2b';
+}
+:where(.tableSurface) .glyphicon-eur:before,
+:where(.tableSurface) .glyphicon-euro:before {
+  content: '\20ac';
+}
+:where(.tableSurface) .glyphicon-minus:before {
+  content: '\2212';
+}
+:where(.tableSurface) .glyphicon-cloud:before {
+  content: '\2601';
+}
+:where(.tableSurface) .glyphicon-envelope:before {
+  content: '\2709';
+}
+:where(.tableSurface) .glyphicon-pencil:before {
+  content: '\270f';
+}
+:where(.tableSurface) .glyphicon-glass:before {
+  content: '\e001';
+}
+:where(.tableSurface) .glyphicon-music:before {
+  content: '\e002';
+}
+:where(.tableSurface) .glyphicon-search:before {
+  content: '\e003';
+}
+:where(.tableSurface) .glyphicon-heart:before {
+  content: '\e005';
+}
+:where(.tableSurface) .glyphicon-star:before {
+  content: '\e006';
+}
+:where(.tableSurface) .glyphicon-star-empty:before {
+  content: '\e007';
+}
+:where(.tableSurface) .glyphicon-user:before {
+  content: '\e008';
+}
+:where(.tableSurface) .glyphicon-film:before {
+  content: '\e009';
+}
+:where(.tableSurface) .glyphicon-th-large:before {
+  content: '\e010';
+}
+:where(.tableSurface) .glyphicon-th:before {
+  content: '\e011';
+}
+:where(.tableSurface) .glyphicon-th-list:before {
+  content: '\e012';
+}
+:where(.tableSurface) .glyphicon-ok:before {
+  content: '\e013';
+}
+:where(.tableSurface) .glyphicon-remove:before {
+  content: '\e014';
+}
+:where(.tableSurface) .glyphicon-zoom-in:before {
+  content: '\e015';
+}
+:where(.tableSurface) .glyphicon-zoom-out:before {
+  content: '\e016';
+}
+:where(.tableSurface) .glyphicon-off:before {
+  content: '\e017';
+}
+:where(.tableSurface) .glyphicon-signal:before {
+  content: '\e018';
+}
+:where(.tableSurface) .glyphicon-cog:before {
+  content: '\e019';
+}
+:where(.tableSurface) .glyphicon-trash:before {
+  content: '\e020';
+}
+:where(.tableSurface) .glyphicon-home:before {
+  content: '\e021';
+}
+:where(.tableSurface) .glyphicon-file:before {
+  content: '\e022';
+}
+:where(.tableSurface) .glyphicon-time:before {
+  content: '\e023';
+}
+:where(.tableSurface) .glyphicon-road:before {
+  content: '\e024';
+}
+:where(.tableSurface) .glyphicon-download-alt:before {
+  content: '\e025';
+}
+:where(.tableSurface) .glyphicon-download:before {
+  content: '\e026';
+}
+:where(.tableSurface) .glyphicon-upload:before {
+  content: '\e027';
+}
+:where(.tableSurface) .glyphicon-inbox:before {
+  content: '\e028';
+}
+:where(.tableSurface) .glyphicon-play-circle:before {
+  content: '\e029';
+}
+:where(.tableSurface) .glyphicon-repeat:before {
+  content: '\e030';
+}
+:where(.tableSurface) .glyphicon-refresh:before {
+  content: '\e031';
+}
+:where(.tableSurface) .glyphicon-list-alt:before {
+  content: '\e032';
+}
+:where(.tableSurface) .glyphicon-lock:before {
+  content: '\e033';
+}
+:where(.tableSurface) .glyphicon-flag:before {
+  content: '\e034';
+}
+:where(.tableSurface) .glyphicon-headphones:before {
+  content: '\e035';
+}
+:where(.tableSurface) .glyphicon-volume-off:before {
+  content: '\e036';
+}
+:where(.tableSurface) .glyphicon-volume-down:before {
+  content: '\e037';
+}
+:where(.tableSurface) .glyphicon-volume-up:before {
+  content: '\e038';
+}
+:where(.tableSurface) .glyphicon-qrcode:before {
+  content: '\e039';
+}
+:where(.tableSurface) .glyphicon-barcode:before {
+  content: '\e040';
+}
+:where(.tableSurface) .glyphicon-tag:before {
+  content: '\e041';
+}
+:where(.tableSurface) .glyphicon-tags:before {
+  content: '\e042';
+}
+:where(.tableSurface) .glyphicon-book:before {
+  content: '\e043';
+}
+:where(.tableSurface) .glyphicon-bookmark:before {
+  content: '\e044';
+}
+:where(.tableSurface) .glyphicon-print:before {
+  content: '\e045';
+}
+:where(.tableSurface) .glyphicon-camera:before {
+  content: '\e046';
+}
+:where(.tableSurface) .glyphicon-font:before {
+  content: '\e047';
+}
+:where(.tableSurface) .glyphicon-bold:before {
+  content: '\e048';
+}
+:where(.tableSurface) .glyphicon-italic:before {
+  content: '\e049';
+}
+:where(.tableSurface) .glyphicon-text-height:before {
+  content: '\e050';
+}
+:where(.tableSurface) .glyphicon-text-width:before {
+  content: '\e051';
+}
+:where(.tableSurface) .glyphicon-align-left:before {
+  content: '\e052';
+}
+:where(.tableSurface) .glyphicon-align-center:before {
+  content: '\e053';
+}
+:where(.tableSurface) .glyphicon-align-right:before {
+  content: '\e054';
+}
+:where(.tableSurface) .glyphicon-align-justify:before {
+  content: '\e055';
+}
+:where(.tableSurface) .glyphicon-list:before {
+  content: '\e056';
+}
+:where(.tableSurface) .glyphicon-indent-left:before {
+  content: '\e057';
+}
+:where(.tableSurface) .glyphicon-indent-right:before {
+  content: '\e058';
+}
+:where(.tableSurface) .glyphicon-facetime-video:before {
+  content: '\e059';
+}
+:where(.tableSurface) .glyphicon-picture:before {
+  content: '\e060';
+}
+:where(.tableSurface) .glyphicon-map-marker:before {
+  content: '\e062';
+}
+:where(.tableSurface) .glyphicon-adjust:before {
+  content: '\e063';
+}
+:where(.tableSurface) .glyphicon-tint:before {
+  content: '\e064';
+}
+:where(.tableSurface) .glyphicon-edit:before {
+  content: '\e065';
+}
+:where(.tableSurface) .glyphicon-share:before {
+  content: '\e066';
+}
+:where(.tableSurface) .glyphicon-check:before {
+  content: '\e067';
+}
+:where(.tableSurface) .glyphicon-move:before {
+  content: '\e068';
+}
+:where(.tableSurface) .glyphicon-step-backward:before {
+  content: '\e069';
+}
+:where(.tableSurface) .glyphicon-fast-backward:before {
+  content: '\e070';
+}
+:where(.tableSurface) .glyphicon-backward:before {
+  content: '\e071';
+}
+:where(.tableSurface) .glyphicon-play:before {
+  content: '\e072';
+}
+:where(.tableSurface) .glyphicon-pause:before {
+  content: '\e073';
+}
+:where(.tableSurface) .glyphicon-stop:before {
+  content: '\e074';
+}
+:where(.tableSurface) .glyphicon-forward:before {
+  content: '\e075';
+}
+:where(.tableSurface) .glyphicon-fast-forward:before {
+  content: '\e076';
+}
+:where(.tableSurface) .glyphicon-step-forward:before {
+  content: '\e077';
+}
+:where(.tableSurface) .glyphicon-eject:before {
+  content: '\e078';
+}
+:where(.tableSurface) .glyphicon-chevron-left:before {
+  content: '\e079';
+}
+:where(.tableSurface) .glyphicon-chevron-right:before {
+  content: '\e080';
+}
+:where(.tableSurface) .glyphicon-plus-sign:before {
+  content: '\e081';
+}
+:where(.tableSurface) .glyphicon-minus-sign:before {
+  content: '\e082';
+}
+:where(.tableSurface) .glyphicon-remove-sign:before {
+  content: '\e083';
+}
+:where(.tableSurface) .glyphicon-ok-sign:before {
+  content: '\e084';
+}
+:where(.tableSurface) .glyphicon-question-sign:before {
+  content: '\e085';
+}
+:where(.tableSurface) .glyphicon-info-sign:before {
+  content: '\e086';
+}
+:where(.tableSurface) .glyphicon-screenshot:before {
+  content: '\e087';
+}
+:where(.tableSurface) .glyphicon-remove-circle:before {
+  content: '\e088';
+}
+:where(.tableSurface) .glyphicon-ok-circle:before {
+  content: '\e089';
+}
+:where(.tableSurface) .glyphicon-ban-circle:before {
+  content: '\e090';
+}
+:where(.tableSurface) .glyphicon-arrow-left:before {
+  content: '\e091';
+}
+:where(.tableSurface) .glyphicon-arrow-right:before {
+  content: '\e092';
+}
+:where(.tableSurface) .glyphicon-arrow-up:before {
+  content: '\e093';
+}
+:where(.tableSurface) .glyphicon-arrow-down:before {
+  content: '\e094';
+}
+:where(.tableSurface) .glyphicon-share-alt:before {
+  content: '\e095';
+}
+:where(.tableSurface) .glyphicon-resize-full:before {
+  content: '\e096';
+}
+:where(.tableSurface) .glyphicon-resize-small:before {
+  content: '\e097';
+}
+:where(.tableSurface) .glyphicon-exclamation-sign:before {
+  content: '\e101';
+}
+:where(.tableSurface) .glyphicon-gift:before {
+  content: '\e102';
+}
+:where(.tableSurface) .glyphicon-leaf:before {
+  content: '\e103';
+}
+:where(.tableSurface) .glyphicon-fire:before {
+  content: '\e104';
+}
+:where(.tableSurface) .glyphicon-eye-open:before {
+  content: '\e105';
+}
+:where(.tableSurface) .glyphicon-eye-close:before {
+  content: '\e106';
+}
+:where(.tableSurface) .glyphicon-warning-sign:before {
+  content: '\e107';
+}
+:where(.tableSurface) .glyphicon-plane:before {
+  content: '\e108';
+}
+:where(.tableSurface) .glyphicon-calendar:before {
+  content: '\e109';
+}
+:where(.tableSurface) .glyphicon-random:before {
+  content: '\e110';
+}
+:where(.tableSurface) .glyphicon-comment:before {
+  content: '\e111';
+}
+:where(.tableSurface) .glyphicon-magnet:before {
+  content: '\e112';
+}
+:where(.tableSurface) .glyphicon-chevron-up:before {
+  content: '\e113';
+}
+:where(.tableSurface) .glyphicon-chevron-down:before {
+  content: '\e114';
+}
+:where(.tableSurface) .glyphicon-retweet:before {
+  content: '\e115';
+}
+:where(.tableSurface) .glyphicon-shopping-cart:before {
+  content: '\e116';
+}
+:where(.tableSurface) .glyphicon-folder-close:before {
+  content: '\e117';
+}
+:where(.tableSurface) .glyphicon-folder-open:before {
+  content: '\e118';
+}
+:where(.tableSurface) .glyphicon-resize-vertical:before {
+  content: '\e119';
+}
+:where(.tableSurface) .glyphicon-resize-horizontal:before {
+  content: '\e120';
+}
+:where(.tableSurface) .glyphicon-hdd:before {
+  content: '\e121';
+}
+:where(.tableSurface) .glyphicon-bullhorn:before {
+  content: '\e122';
+}
+:where(.tableSurface) .glyphicon-bell:before {
+  content: '\e123';
+}
+:where(.tableSurface) .glyphicon-certificate:before {
+  content: '\e124';
+}
+:where(.tableSurface) .glyphicon-thumbs-up:before {
+  content: '\e125';
+}
+:where(.tableSurface) .glyphicon-thumbs-down:before {
+  content: '\e126';
+}
+:where(.tableSurface) .glyphicon-hand-right:before {
+  content: '\e127';
+}
+:where(.tableSurface) .glyphicon-hand-left:before {
+  content: '\e128';
+}
+:where(.tableSurface) .glyphicon-hand-up:before {
+  content: '\e129';
+}
+:where(.tableSurface) .glyphicon-hand-down:before {
+  content: '\e130';
+}
+:where(.tableSurface) .glyphicon-circle-arrow-right:before {
+  content: '\e131';
+}
+:where(.tableSurface) .glyphicon-circle-arrow-left:before {
+  content: '\e132';
+}
+:where(.tableSurface) .glyphicon-circle-arrow-up:before {
+  content: '\e133';
+}
+:where(.tableSurface) .glyphicon-circle-arrow-down:before {
+  content: '\e134';
+}
+:where(.tableSurface) .glyphicon-globe:before {
+  content: '\e135';
+}
+:where(.tableSurface) .glyphicon-wrench:before {
+  content: '\e136';
+}
+:where(.tableSurface) .glyphicon-tasks:before {
+  content: '\e137';
+}
+:where(.tableSurface) .glyphicon-filter:before {
+  content: '\e138';
+}
+:where(.tableSurface) .glyphicon-briefcase:before {
+  content: '\e139';
+}
+:where(.tableSurface) .glyphicon-fullscreen:before {
+  content: '\e140';
+}
+:where(.tableSurface) .glyphicon-dashboard:before {
+  content: '\e141';
+}
+:where(.tableSurface) .glyphicon-paperclip:before {
+  content: '\e142';
+}
+:where(.tableSurface) .glyphicon-heart-empty:before {
+  content: '\e143';
+}
+:where(.tableSurface) .glyphicon-link:before {
+  content: '\e144';
+}
+:where(.tableSurface) .glyphicon-phone:before {
+  content: '\e145';
+}
+:where(.tableSurface) .glyphicon-pushpin:before {
+  content: '\e146';
+}
+:where(.tableSurface) .glyphicon-usd:before {
+  content: '\e148';
+}
+:where(.tableSurface) .glyphicon-gbp:before {
+  content: '\e149';
+}
+:where(.tableSurface) .glyphicon-sort:before {
+  content: '\e150';
+}
+:where(.tableSurface) .glyphicon-sort-by-alphabet:before {
+  content: '\e151';
+}
+:where(.tableSurface) .glyphicon-sort-by-alphabet-alt:before {
+  content: '\e152';
+}
+:where(.tableSurface) .glyphicon-sort-by-order:before {
+  content: '\e153';
+}
+:where(.tableSurface) .glyphicon-sort-by-order-alt:before {
+  content: '\e154';
+}
+:where(.tableSurface) .glyphicon-sort-by-attributes:before {
+  content: '\e155';
+}
+:where(.tableSurface) .glyphicon-sort-by-attributes-alt:before {
+  content: '\e156';
+}
+:where(.tableSurface) .glyphicon-unchecked:before {
+  content: '\e157';
+}
+:where(.tableSurface) .glyphicon-expand:before {
+  content: '\e158';
+}
+:where(.tableSurface) .glyphicon-collapse-down:before {
+  content: '\e159';
+}
+:where(.tableSurface) .glyphicon-collapse-up:before {
+  content: '\e160';
+}
+:where(.tableSurface) .glyphicon-log-in:before {
+  content: '\e161';
+}
+:where(.tableSurface) .glyphicon-flash:before {
+  content: '\e162';
+}
+:where(.tableSurface) .glyphicon-log-out:before {
+  content: '\e163';
+}
+:where(.tableSurface) .glyphicon-new-window:before {
+  content: '\e164';
+}
+:where(.tableSurface) .glyphicon-record:before {
+  content: '\e165';
+}
+:where(.tableSurface) .glyphicon-save:before {
+  content: '\e166';
+}
+:where(.tableSurface) .glyphicon-open:before {
+  content: '\e167';
+}
+:where(.tableSurface) .glyphicon-saved:before {
+  content: '\e168';
+}
+:where(.tableSurface) .glyphicon-import:before {
+  content: '\e169';
+}
+:where(.tableSurface) .glyphicon-export:before {
+  content: '\e170';
+}
+:where(.tableSurface) .glyphicon-send:before {
+  content: '\e171';
+}
+:where(.tableSurface) .glyphicon-floppy-disk:before {
+  content: '\e172';
+}
+:where(.tableSurface) .glyphicon-floppy-saved:before {
+  content: '\e173';
+}
+:where(.tableSurface) .glyphicon-floppy-remove:before {
+  content: '\e174';
+}
+:where(.tableSurface) .glyphicon-floppy-save:before {
+  content: '\e175';
+}
+:where(.tableSurface) .glyphicon-floppy-open:before {
+  content: '\e176';
+}
+:where(.tableSurface) .glyphicon-credit-card:before {
+  content: '\e177';
+}
+:where(.tableSurface) .glyphicon-transfer:before {
+  content: '\e178';
+}
+:where(.tableSurface) .glyphicon-cutlery:before {
+  content: '\e179';
+}
+:where(.tableSurface) .glyphicon-header:before {
+  content: '\e180';
+}
+:where(.tableSurface) .glyphicon-compressed:before {
+  content: '\e181';
+}
+:where(.tableSurface) .glyphicon-earphone:before {
+  content: '\e182';
+}
+:where(.tableSurface) .glyphicon-phone-alt:before {
+  content: '\e183';
+}
+:where(.tableSurface) .glyphicon-tower:before {
+  content: '\e184';
+}
+:where(.tableSurface) .glyphicon-stats:before {
+  content: '\e185';
+}
+:where(.tableSurface) .glyphicon-sd-video:before {
+  content: '\e186';
+}
+:where(.tableSurface) .glyphicon-hd-video:before {
+  content: '\e187';
+}
+:where(.tableSurface) .glyphicon-subtitles:before {
+  content: '\e188';
+}
+:where(.tableSurface) .glyphicon-sound-stereo:before {
+  content: '\e189';
+}
+:where(.tableSurface) .glyphicon-sound-dolby:before {
+  content: '\e190';
+}
+:where(.tableSurface) .glyphicon-sound-5-1:before {
+  content: '\e191';
+}
+:where(.tableSurface) .glyphicon-sound-6-1:before {
+  content: '\e192';
+}
+:where(.tableSurface) .glyphicon-sound-7-1:before {
+  content: '\e193';
+}
+:where(.tableSurface) .glyphicon-copyright-mark:before {
+  content: '\e194';
+}
+:where(.tableSurface) .glyphicon-registration-mark:before {
+  content: '\e195';
+}
+:where(.tableSurface) .glyphicon-cloud-download:before {
+  content: '\e197';
+}
+:where(.tableSurface) .glyphicon-cloud-upload:before {
+  content: '\e198';
+}
+:where(.tableSurface) .glyphicon-tree-conifer:before {
+  content: '\e199';
+}
+:where(.tableSurface) .glyphicon-tree-deciduous:before {
+  content: '\e200';
+}
+:where(.tableSurface) .glyphicon-cd:before {
+  content: '\e201';
+}
+:where(.tableSurface) .glyphicon-save-file:before {
+  content: '\e202';
+}
+:where(.tableSurface) .glyphicon-open-file:before {
+  content: '\e203';
+}
+:where(.tableSurface) .glyphicon-level-up:before {
+  content: '\e204';
+}
+:where(.tableSurface) .glyphicon-copy:before {
+  content: '\e205';
+}
+:where(.tableSurface) .glyphicon-paste:before {
+  content: '\e206';
+}
+:where(.tableSurface) .glyphicon-alert:before {
+  content: '\e209';
+}
+:where(.tableSurface) .glyphicon-equalizer:before {
+  content: '\e210';
+}
+:where(.tableSurface) .glyphicon-king:before {
+  content: '\e211';
+}
+:where(.tableSurface) .glyphicon-queen:before {
+  content: '\e212';
+}
+:where(.tableSurface) .glyphicon-pawn:before {
+  content: '\e213';
+}
+:where(.tableSurface) .glyphicon-bishop:before {
+  content: '\e214';
+}
+:where(.tableSurface) .glyphicon-knight:before {
+  content: '\e215';
+}
+:where(.tableSurface) .glyphicon-baby-formula:before {
+  content: '\e216';
+}
+:where(.tableSurface) .glyphicon-tent:before {
+  content: '\26fa';
+}
+:where(.tableSurface) .glyphicon-blackboard:before {
+  content: '\e218';
+}
+:where(.tableSurface) .glyphicon-bed:before {
+  content: '\e219';
+}
+:where(.tableSurface) .glyphicon-apple:before {
+  content: '\f8ff';
+}
+:where(.tableSurface) .glyphicon-erase:before {
+  content: '\e221';
+}
+:where(.tableSurface) .glyphicon-hourglass:before {
+  content: '\231b';
+}
+:where(.tableSurface) .glyphicon-lamp:before {
+  content: '\e223';
+}
+:where(.tableSurface) .glyphicon-duplicate:before {
+  content: '\e224';
+}
+:where(.tableSurface) .glyphicon-piggy-bank:before {
+  content: '\e225';
+}
+:where(.tableSurface) .glyphicon-scissors:before {
+  content: '\e226';
+}
+:where(.tableSurface) .glyphicon-bitcoin:before {
+  content: '\e227';
+}
+:where(.tableSurface) .glyphicon-btc:before {
+  content: '\e227';
+}
+:where(.tableSurface) .glyphicon-xbt:before {
+  content: '\e227';
+}
+:where(.tableSurface) .glyphicon-yen:before {
+  content: '\00a5';
+}
+:where(.tableSurface) .glyphicon-jpy:before {
+  content: '\00a5';
+}
+:where(.tableSurface) .glyphicon-ruble:before {
+  content: '\20bd';
+}
+:where(.tableSurface) .glyphicon-rub:before {
+  content: '\20bd';
+}
+:where(.tableSurface) .glyphicon-scale:before {
+  content: '\e230';
+}
+:where(.tableSurface) .glyphicon-ice-lolly:before {
+  content: '\e231';
+}
+:where(.tableSurface) .glyphicon-ice-lolly-tasted:before {
+  content: '\e232';
+}
+:where(.tableSurface) .glyphicon-education:before {
+  content: '\e233';
+}
+:where(.tableSurface) .glyphicon-option-horizontal:before {
+  content: '\e234';
+}
+:where(.tableSurface) .glyphicon-option-vertical:before {
+  content: '\e235';
+}
+:where(.tableSurface) .glyphicon-menu-hamburger:before {
+  content: '\e236';
+}
+:where(.tableSurface) .glyphicon-modal-window:before {
+  content: '\e237';
+}
+:where(.tableSurface) .glyphicon-oil:before {
+  content: '\e238';
+}
+:where(.tableSurface) .glyphicon-grain:before {
+  content: '\e239';
+}
+:where(.tableSurface) .glyphicon-sunglasses:before {
+  content: '\e240';
+}
+:where(.tableSurface) .glyphicon-text-size:before {
+  content: '\e241';
+}
+:where(.tableSurface) .glyphicon-text-color:before {
+  content: '\e242';
+}
+:where(.tableSurface) .glyphicon-text-background:before {
+  content: '\e243';
+}
+:where(.tableSurface) .glyphicon-object-align-top:before {
+  content: '\e244';
+}
+:where(.tableSurface) .glyphicon-object-align-bottom:before {
+  content: '\e245';
+}
+:where(.tableSurface) .glyphicon-object-align-horizontal:before {
+  content: '\e246';
+}
+:where(.tableSurface) .glyphicon-object-align-left:before {
+  content: '\e247';
+}
+:where(.tableSurface) .glyphicon-object-align-vertical:before {
+  content: '\e248';
+}
+:where(.tableSurface) .glyphicon-object-align-right:before {
+  content: '\e249';
+}
+:where(.tableSurface) .glyphicon-triangle-right:before {
+  content: '\e250';
+}
+:where(.tableSurface) .glyphicon-triangle-left:before {
+  content: '\e251';
+}
+:where(.tableSurface) .glyphicon-triangle-bottom:before {
+  content: '\e252';
+}
+:where(.tableSurface) .glyphicon-triangle-top:before {
+  content: '\e253';
+}
+:where(.tableSurface) .glyphicon-console:before {
+  content: '\e254';
+}
+:where(.tableSurface) .glyphicon-superscript:before {
+  content: '\e255';
+}
+:where(.tableSurface) .glyphicon-subscript:before {
+  content: '\e256';
+}
+:where(.tableSurface) .glyphicon-menu-left:before {
+  content: '\e257';
+}
+:where(.tableSurface) .glyphicon-menu-right:before {
+  content: '\e258';
+}
+:where(.tableSurface) .glyphicon-menu-down:before {
+  content: '\e259';
+}
+:where(.tableSurface) .glyphicon-menu-up:before {
+  content: '\e260';
+}
+:where(.tableSurface) .text-right {
+  text-align: right;
+}
+:where(.tableSurface) .text-center {
+  text-align: center;
+}
+:where(.tableSurface) blockquote.pull-right {
+  padding-right: 15px;
+  padding-left: 0;
+  text-align: right;
+  border-right: 5px solid #eee;
+  border-left: 0;
+}
+:where(.tableSurface) blockquote.pull-right footer:before,
+:where(.tableSurface) blockquote.pull-right small:before {
+  content: '';
+}
+:where(.tableSurface) blockquote.pull-right footer:after,
+:where(.tableSurface) blockquote.pull-right small:after {
+  content: '\00A0 \2014';
+}
+:where(.tableSurface) .row {
+  margin-right: -15px;
+  margin-left: -15px;
+}
+:where(.tableSurface) .col-sm-1,
+:where(.tableSurface) .col-sm-10,
+:where(.tableSurface) .col-sm-11,
+:where(.tableSurface) .col-sm-12,
+:where(.tableSurface) .col-sm-2,
+:where(.tableSurface) .col-sm-3,
+:where(.tableSurface) .col-sm-4,
+:where(.tableSurface) .col-sm-5,
+:where(.tableSurface) .col-sm-6,
+:where(.tableSurface) .col-sm-7,
+:where(.tableSurface) .col-sm-8,
+:where(.tableSurface) .col-sm-9 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+@media (min-width: 768px) {
+  :where(.tableSurface) .col-sm-1,
+  :where(.tableSurface) .col-sm-10,
+  :where(.tableSurface) .col-sm-11,
+  :where(.tableSurface) .col-sm-12,
+  :where(.tableSurface) .col-sm-2,
+  :where(.tableSurface) .col-sm-3,
+  :where(.tableSurface) .col-sm-4,
+  :where(.tableSurface) .col-sm-5,
+  :where(.tableSurface) .col-sm-6,
+  :where(.tableSurface) .col-sm-7,
+  :where(.tableSurface) .col-sm-8,
+  :where(.tableSurface) .col-sm-9 {
+    float: left;
+  }
+  :where(.tableSurface) .col-sm-12 {
+    width: 100%;
+  }
+  :where(.tableSurface) .col-sm-11 {
+    width: 91.66666667%;
+  }
+  :where(.tableSurface) .col-sm-10 {
+    width: 83.33333333%;
+  }
+  :where(.tableSurface) .col-sm-9 {
+    width: 75%;
+  }
+  :where(.tableSurface) .col-sm-8 {
+    width: 66.66666667%;
+  }
+  :where(.tableSurface) .col-sm-7 {
+    width: 58.33333333%;
+  }
+  :where(.tableSurface) .col-sm-6 {
+    width: 50%;
+  }
+  :where(.tableSurface) .col-sm-5 {
+    width: 41.66666667%;
+  }
+  :where(.tableSurface) .col-sm-4 {
+    width: 33.33333333%;
+  }
+  :where(.tableSurface) .col-sm-3 {
+    width: 25%;
+  }
+  :where(.tableSurface) .col-sm-2 {
+    width: 16.66666667%;
+  }
+  :where(.tableSurface) .col-sm-1 {
+    width: 8.33333333%;
+  }
+}
+:where(.tableSurface) .table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+:where(.tableSurface) .table > tbody > tr > td,
+:where(.tableSurface) .table > tbody > tr > th,
+:where(.tableSurface) .table > tfoot > tr > td,
+:where(.tableSurface) .table > tfoot > tr > th,
+:where(.tableSurface) .table > thead > tr > td,
+:where(.tableSurface) .table > thead > tr > th {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+:where(.tableSurface) .table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ddd;
+}
+:where(.tableSurface) .table > caption + thead > tr:first-child > td,
+:where(.tableSurface) .table > caption + thead > tr:first-child > th,
+:where(.tableSurface) .table > colgroup + thead > tr:first-child > td,
+:where(.tableSurface) .table > colgroup + thead > tr:first-child > th,
+:where(.tableSurface) .table > thead:first-child > tr:first-child > td,
+:where(.tableSurface) .table > thead:first-child > tr:first-child > th {
+  border-top: 0;
+}
+:where(.tableSurface) .table > tbody + tbody {
+  border-top: 2px solid #ddd;
+}
+:where(.tableSurface) .table .table {
+  background-color: #fff;
+}
+:where(.tableSurface) .table-condensed > tbody > tr > td,
+:where(.tableSurface) .table-condensed > tbody > tr > th,
+:where(.tableSurface) .table-condensed > tfoot > tr > td,
+:where(.tableSurface) .table-condensed > tfoot > tr > th,
+:where(.tableSurface) .table-condensed > thead > tr > td,
+:where(.tableSurface) .table-condensed > thead > tr > th {
+  padding: 5px;
+}
+:where(.tableSurface) .table-bordered {
+  border: 1px solid #ddd;
+}
+:where(.tableSurface) .table-bordered > tbody > tr > td,
+:where(.tableSurface) .table-bordered > tbody > tr > th,
+:where(.tableSurface) .table-bordered > tfoot > tr > td,
+:where(.tableSurface) .table-bordered > tfoot > tr > th,
+:where(.tableSurface) .table-bordered > thead > tr > td,
+:where(.tableSurface) .table-bordered > thead > tr > th {
+  border: 1px solid #ddd;
+}
+:where(.tableSurface) .table-bordered > thead > tr > td,
+:where(.tableSurface) .table-bordered > thead > tr > th {
+  border-bottom-width: 2px;
+}
+:where(.tableSurface) .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+:where(.tableSurface) .table-hover > tbody > tr:hover {
+  background-color: #f5f5f5;
+}
+:where(.tableSurface) .table > tbody > tr.active > td,
+:where(.tableSurface) .table > tbody > tr.active > th,
+:where(.tableSurface) .table > tbody > tr > td.active,
+:where(.tableSurface) .table > tbody > tr > th.active,
+:where(.tableSurface) .table > tfoot > tr.active > td,
+:where(.tableSurface) .table > tfoot > tr.active > th,
+:where(.tableSurface) .table > tfoot > tr > td.active,
+:where(.tableSurface) .table > tfoot > tr > th.active,
+:where(.tableSurface) .table > thead > tr.active > td,
+:where(.tableSurface) .table > thead > tr.active > th,
+:where(.tableSurface) .table > thead > tr > td.active,
+:where(.tableSurface) .table > thead > tr > th.active {
+  background-color: #f5f5f5;
+}
+:where(.tableSurface) .table-hover > tbody > tr.active:hover > td,
+:where(.tableSurface) .table-hover > tbody > tr.active:hover > th,
+:where(.tableSurface) .table-hover > tbody > tr:hover > .active,
+:where(.tableSurface) .table-hover > tbody > tr > td.active:hover,
+:where(.tableSurface) .table-hover > tbody > tr > th.active:hover {
+  background-color: #e8e8e8;
+}
+:where(.tableSurface) .table-responsive {
+  min-height: 0.01%;
+  overflow-x: auto;
+}
+@media screen and (max-width: 767px) {
+  :where(.tableSurface) .table-responsive {
+    width: 100%;
+    margin-bottom: 15px;
+    overflow-y: hidden;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    border: 1px solid #ddd;
+  }
+  :where(.tableSurface) .table-responsive > .table {
+    margin-bottom: 0;
+  }
+  :where(.tableSurface) .table-responsive > .table > tbody > tr > td,
+  :where(.tableSurface) .table-responsive > .table > tbody > tr > th,
+  :where(.tableSurface) .table-responsive > .table > tfoot > tr > td,
+  :where(.tableSurface) .table-responsive > .table > tfoot > tr > th,
+  :where(.tableSurface) .table-responsive > .table > thead > tr > td,
+  :where(.tableSurface) .table-responsive > .table > thead > tr > th {
+    white-space: nowrap;
+  }
+  :where(.tableSurface) .table-responsive > .table-bordered {
+    border: 0;
+  }
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tbody
+    > tr
+    > td:first-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tbody
+    > tr
+    > th:first-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tfoot
+    > tr
+    > td:first-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tfoot
+    > tr
+    > th:first-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > thead
+    > tr
+    > td:first-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > thead
+    > tr
+    > th:first-child {
+    border-left: 0;
+  }
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tbody
+    > tr
+    > td:last-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tbody
+    > tr
+    > th:last-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tfoot
+    > tr
+    > td:last-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tfoot
+    > tr
+    > th:last-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > thead
+    > tr
+    > td:last-child,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > thead
+    > tr
+    > th:last-child {
+    border-right: 0;
+  }
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tbody
+    > tr:last-child
+    > td,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tbody
+    > tr:last-child
+    > th,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tfoot
+    > tr:last-child
+    > td,
+  :where(.tableSurface)
+    .table-responsive
+    > .table-bordered
+    > tfoot
+    > tr:last-child
+    > th {
+    border-bottom: 0;
+  }
+}
+:where(.tableSurface) .form-control {
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition:
+    border-color ease-in-out 0.15s,
+    -webkit-box-shadow ease-in-out 0.15s;
+  -o-transition:
+    border-color ease-in-out 0.15s,
+    box-shadow ease-in-out 0.15s;
+  transition:
+    border-color ease-in-out 0.15s,
+    box-shadow ease-in-out 0.15s;
+}
+:where(.tableSurface) .form-control:focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.075),
+    0 0 8px rgba(102, 175, 233, 0.6);
+}
+:where(.tableSurface) .form-control::-moz-placeholder {
+  color: #999;
+  opacity: 1;
+}
+:where(.tableSurface) .form-control:-ms-input-placeholder {
+  color: #999;
+}
+:where(.tableSurface) .form-control::-webkit-input-placeholder {
+  color: #999;
+}
+:where(.tableSurface) .form-control[disabled],
+:where(.tableSurface) .form-control[readonly],
+:where(.tableSurface) fieldset[disabled] .form-control {
+  background-color: #eee;
+  opacity: 1;
+}
+:where(.tableSurface) .form-control[disabled],
+:where(.tableSurface) fieldset[disabled] .form-control {
+  cursor: not-allowed;
+}
+:where(.tableSurface) textarea.form-control {
+  height: auto;
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  :where(.tableSurface) input[type='date'].form-control,
+  :where(.tableSurface) input[type='time'].form-control,
+  :where(.tableSurface) input[type='datetime-local'].form-control,
+  :where(.tableSurface) input[type='month'].form-control {
+    line-height: 34px;
+  }
+  :where(.tableSurface) input[type='date'].input-sm,
+  :where(.tableSurface) input[type='time'].input-sm,
+  :where(.tableSurface) input[type='datetime-local'].input-sm,
+  :where(.tableSurface) input[type='month'].input-sm {
+    line-height: 30px;
+  }
+}
+:where(.tableSurface) .form-group {
+  margin-bottom: 15px;
+}
+:where(.tableSurface) .input-sm {
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+:where(.tableSurface) select.input-sm {
+  height: 30px;
+  line-height: 30px;
+}
+:where(.tableSurface) select[multiple].input-sm,
+:where(.tableSurface) textarea.input-sm {
+  height: auto;
+}
+@media (min-width: 768px) {
+  :where(.tableSurface) .form-inline .form-group {
+    display: inline-block;
+    margin-bottom: 0;
+    vertical-align: middle;
+  }
+  :where(.tableSurface) .form-inline .form-control {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+  }
+}
+:where(.tableSurface) .btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+:where(.tableSurface) .btn.active.focus,
+:where(.tableSurface) .btn.active:focus,
+:where(.tableSurface) .btn.focus,
+:where(.tableSurface) .btn:active.focus,
+:where(.tableSurface) .btn:active:focus,
+:where(.tableSurface) .btn:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+:where(.tableSurface) .btn.focus,
+:where(.tableSurface) .btn:focus,
+:where(.tableSurface) .btn:hover {
+  color: #333;
+  text-decoration: none;
+}
+:where(.tableSurface) .btn.active,
+:where(.tableSurface) .btn:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+:where(.tableSurface) .btn.disabled,
+:where(.tableSurface) .btn[disabled],
+:where(.tableSurface) fieldset[disabled] .btn {
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: 0.65;
+}
+:where(.tableSurface) a.btn.disabled,
+:where(.tableSurface) fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+:where(.tableSurface) .btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+:where(.tableSurface) .btn-default.focus,
+:where(.tableSurface) .btn-default:focus {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #8c8c8c;
+}
+:where(.tableSurface) .btn-default:hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+:where(.tableSurface) .btn-default.active,
+:where(.tableSurface) .btn-default:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-default {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+:where(.tableSurface) .btn-default.active.focus,
+:where(.tableSurface) .btn-default.active:focus,
+:where(.tableSurface) .btn-default.active:hover,
+:where(.tableSurface) .btn-default:active.focus,
+:where(.tableSurface) .btn-default:active:focus,
+:where(.tableSurface) .btn-default:active:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-default.focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-default:focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-default:hover {
+  color: #333;
+  background-color: #d4d4d4;
+  border-color: #8c8c8c;
+}
+:where(.tableSurface) .btn-default.active,
+:where(.tableSurface) .btn-default:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-default {
+  background-image: none;
+}
+:where(.tableSurface) .btn-default.disabled,
+:where(.tableSurface) .btn-default.disabled.active,
+:where(.tableSurface) .btn-default.disabled.focus,
+:where(.tableSurface) .btn-default.disabled:active,
+:where(.tableSurface) .btn-default.disabled:focus,
+:where(.tableSurface) .btn-default.disabled:hover,
+:where(.tableSurface) .btn-default[disabled],
+:where(.tableSurface) .btn-default[disabled].active,
+:where(.tableSurface) .btn-default[disabled].focus,
+:where(.tableSurface) .btn-default[disabled]:active,
+:where(.tableSurface) .btn-default[disabled]:focus,
+:where(.tableSurface) .btn-default[disabled]:hover,
+:where(.tableSurface) fieldset[disabled] .btn-default,
+:where(.tableSurface) fieldset[disabled] .btn-default.active,
+:where(.tableSurface) fieldset[disabled] .btn-default.focus,
+:where(.tableSurface) fieldset[disabled] .btn-default:active,
+:where(.tableSurface) fieldset[disabled] .btn-default:focus,
+:where(.tableSurface) fieldset[disabled] .btn-default:hover {
+  background-color: #fff;
+  border-color: #ccc;
+}
+:where(.tableSurface) .btn-primary {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+:where(.tableSurface) .btn-primary.focus,
+:where(.tableSurface) .btn-primary:focus {
+  color: #fff;
+  background-color: #286090;
+  border-color: #122b40;
+}
+:where(.tableSurface) .btn-primary:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+:where(.tableSurface) .btn-primary.active,
+:where(.tableSurface) .btn-primary:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-primary {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+:where(.tableSurface) .btn-primary.active.focus,
+:where(.tableSurface) .btn-primary.active:focus,
+:where(.tableSurface) .btn-primary.active:hover,
+:where(.tableSurface) .btn-primary:active.focus,
+:where(.tableSurface) .btn-primary:active:focus,
+:where(.tableSurface) .btn-primary:active:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-primary.focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-primary:focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-primary:hover {
+  color: #fff;
+  background-color: #204d74;
+  border-color: #122b40;
+}
+:where(.tableSurface) .btn-primary.active,
+:where(.tableSurface) .btn-primary:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-primary {
+  background-image: none;
+}
+:where(.tableSurface) .btn-primary.disabled,
+:where(.tableSurface) .btn-primary.disabled.active,
+:where(.tableSurface) .btn-primary.disabled.focus,
+:where(.tableSurface) .btn-primary.disabled:active,
+:where(.tableSurface) .btn-primary.disabled:focus,
+:where(.tableSurface) .btn-primary.disabled:hover,
+:where(.tableSurface) .btn-primary[disabled],
+:where(.tableSurface) .btn-primary[disabled].active,
+:where(.tableSurface) .btn-primary[disabled].focus,
+:where(.tableSurface) .btn-primary[disabled]:active,
+:where(.tableSurface) .btn-primary[disabled]:focus,
+:where(.tableSurface) .btn-primary[disabled]:hover,
+:where(.tableSurface) fieldset[disabled] .btn-primary,
+:where(.tableSurface) fieldset[disabled] .btn-primary.active,
+:where(.tableSurface) fieldset[disabled] .btn-primary.focus,
+:where(.tableSurface) fieldset[disabled] .btn-primary:active,
+:where(.tableSurface) fieldset[disabled] .btn-primary:focus,
+:where(.tableSurface) fieldset[disabled] .btn-primary:hover {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+:where(.tableSurface) .btn-success {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+:where(.tableSurface) .btn-success.focus,
+:where(.tableSurface) .btn-success:focus {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #255625;
+}
+:where(.tableSurface) .btn-success:hover {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+:where(.tableSurface) .btn-success.active,
+:where(.tableSurface) .btn-success:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-success {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+:where(.tableSurface) .btn-success.active.focus,
+:where(.tableSurface) .btn-success.active:focus,
+:where(.tableSurface) .btn-success.active:hover,
+:where(.tableSurface) .btn-success:active.focus,
+:where(.tableSurface) .btn-success:active:focus,
+:where(.tableSurface) .btn-success:active:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-success.focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-success:focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-success:hover {
+  color: #fff;
+  background-color: #398439;
+  border-color: #255625;
+}
+:where(.tableSurface) .btn-success.active,
+:where(.tableSurface) .btn-success:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-success {
+  background-image: none;
+}
+:where(.tableSurface) .btn-success.disabled,
+:where(.tableSurface) .btn-success.disabled.active,
+:where(.tableSurface) .btn-success.disabled.focus,
+:where(.tableSurface) .btn-success.disabled:active,
+:where(.tableSurface) .btn-success.disabled:focus,
+:where(.tableSurface) .btn-success.disabled:hover,
+:where(.tableSurface) .btn-success[disabled],
+:where(.tableSurface) .btn-success[disabled].active,
+:where(.tableSurface) .btn-success[disabled].focus,
+:where(.tableSurface) .btn-success[disabled]:active,
+:where(.tableSurface) .btn-success[disabled]:focus,
+:where(.tableSurface) .btn-success[disabled]:hover,
+:where(.tableSurface) fieldset[disabled] .btn-success,
+:where(.tableSurface) fieldset[disabled] .btn-success.active,
+:where(.tableSurface) fieldset[disabled] .btn-success.focus,
+:where(.tableSurface) fieldset[disabled] .btn-success:active,
+:where(.tableSurface) fieldset[disabled] .btn-success:focus,
+:where(.tableSurface) fieldset[disabled] .btn-success:hover {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+:where(.tableSurface) .btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+:where(.tableSurface) .btn-info.focus,
+:where(.tableSurface) .btn-info:focus {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #1b6d85;
+}
+:where(.tableSurface) .btn-info:hover {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #269abc;
+}
+:where(.tableSurface) .btn-info.active,
+:where(.tableSurface) .btn-info:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-info {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #269abc;
+}
+:where(.tableSurface) .btn-info.active.focus,
+:where(.tableSurface) .btn-info.active:focus,
+:where(.tableSurface) .btn-info.active:hover,
+:where(.tableSurface) .btn-info:active.focus,
+:where(.tableSurface) .btn-info:active:focus,
+:where(.tableSurface) .btn-info:active:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-info.focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-info:focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-info:hover {
+  color: #fff;
+  background-color: #269abc;
+  border-color: #1b6d85;
+}
+:where(.tableSurface) .btn-info.active,
+:where(.tableSurface) .btn-info:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-info {
+  background-image: none;
+}
+:where(.tableSurface) .btn-info.disabled,
+:where(.tableSurface) .btn-info.disabled.active,
+:where(.tableSurface) .btn-info.disabled.focus,
+:where(.tableSurface) .btn-info.disabled:active,
+:where(.tableSurface) .btn-info.disabled:focus,
+:where(.tableSurface) .btn-info.disabled:hover,
+:where(.tableSurface) .btn-info[disabled],
+:where(.tableSurface) .btn-info[disabled].active,
+:where(.tableSurface) .btn-info[disabled].focus,
+:where(.tableSurface) .btn-info[disabled]:active,
+:where(.tableSurface) .btn-info[disabled]:focus,
+:where(.tableSurface) .btn-info[disabled]:hover,
+:where(.tableSurface) fieldset[disabled] .btn-info,
+:where(.tableSurface) fieldset[disabled] .btn-info.active,
+:where(.tableSurface) fieldset[disabled] .btn-info.focus,
+:where(.tableSurface) fieldset[disabled] .btn-info:active,
+:where(.tableSurface) fieldset[disabled] .btn-info:focus,
+:where(.tableSurface) fieldset[disabled] .btn-info:hover {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+:where(.tableSurface) .btn-warning {
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+:where(.tableSurface) .btn-warning.focus,
+:where(.tableSurface) .btn-warning:focus {
+  color: #fff;
+  background-color: #ec971f;
+  border-color: #985f0d;
+}
+:where(.tableSurface) .btn-warning:hover {
+  color: #fff;
+  background-color: #ec971f;
+  border-color: #d58512;
+}
+:where(.tableSurface) .btn-warning.active,
+:where(.tableSurface) .btn-warning:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-warning {
+  color: #fff;
+  background-color: #ec971f;
+  border-color: #d58512;
+}
+:where(.tableSurface) .btn-warning.active.focus,
+:where(.tableSurface) .btn-warning.active:focus,
+:where(.tableSurface) .btn-warning.active:hover,
+:where(.tableSurface) .btn-warning:active.focus,
+:where(.tableSurface) .btn-warning:active:focus,
+:where(.tableSurface) .btn-warning:active:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-warning.focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-warning:focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-warning:hover {
+  color: #fff;
+  background-color: #d58512;
+  border-color: #985f0d;
+}
+:where(.tableSurface) .btn-warning.active,
+:where(.tableSurface) .btn-warning:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-warning {
+  background-image: none;
+}
+:where(.tableSurface) .btn-warning.disabled,
+:where(.tableSurface) .btn-warning.disabled.active,
+:where(.tableSurface) .btn-warning.disabled.focus,
+:where(.tableSurface) .btn-warning.disabled:active,
+:where(.tableSurface) .btn-warning.disabled:focus,
+:where(.tableSurface) .btn-warning.disabled:hover,
+:where(.tableSurface) .btn-warning[disabled],
+:where(.tableSurface) .btn-warning[disabled].active,
+:where(.tableSurface) .btn-warning[disabled].focus,
+:where(.tableSurface) .btn-warning[disabled]:active,
+:where(.tableSurface) .btn-warning[disabled]:focus,
+:where(.tableSurface) .btn-warning[disabled]:hover,
+:where(.tableSurface) fieldset[disabled] .btn-warning,
+:where(.tableSurface) fieldset[disabled] .btn-warning.active,
+:where(.tableSurface) fieldset[disabled] .btn-warning.focus,
+:where(.tableSurface) fieldset[disabled] .btn-warning:active,
+:where(.tableSurface) fieldset[disabled] .btn-warning:focus,
+:where(.tableSurface) fieldset[disabled] .btn-warning:hover {
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+:where(.tableSurface) .btn-danger {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+:where(.tableSurface) .btn-danger.focus,
+:where(.tableSurface) .btn-danger:focus {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #761c19;
+}
+:where(.tableSurface) .btn-danger:hover {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+:where(.tableSurface) .btn-danger.active,
+:where(.tableSurface) .btn-danger:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-danger {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+:where(.tableSurface) .btn-danger.active.focus,
+:where(.tableSurface) .btn-danger.active:focus,
+:where(.tableSurface) .btn-danger.active:hover,
+:where(.tableSurface) .btn-danger:active.focus,
+:where(.tableSurface) .btn-danger:active:focus,
+:where(.tableSurface) .btn-danger:active:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-danger.focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-danger:focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-danger:hover {
+  color: #fff;
+  background-color: #ac2925;
+  border-color: #761c19;
+}
+:where(.tableSurface) .btn-danger.active,
+:where(.tableSurface) .btn-danger:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-danger {
+  background-image: none;
+}
+:where(.tableSurface) .btn-danger.disabled,
+:where(.tableSurface) .btn-danger.disabled.active,
+:where(.tableSurface) .btn-danger.disabled.focus,
+:where(.tableSurface) .btn-danger.disabled:active,
+:where(.tableSurface) .btn-danger.disabled:focus,
+:where(.tableSurface) .btn-danger.disabled:hover,
+:where(.tableSurface) .btn-danger[disabled],
+:where(.tableSurface) .btn-danger[disabled].active,
+:where(.tableSurface) .btn-danger[disabled].focus,
+:where(.tableSurface) .btn-danger[disabled]:active,
+:where(.tableSurface) .btn-danger[disabled]:focus,
+:where(.tableSurface) .btn-danger[disabled]:hover,
+:where(.tableSurface) fieldset[disabled] .btn-danger,
+:where(.tableSurface) fieldset[disabled] .btn-danger.active,
+:where(.tableSurface) fieldset[disabled] .btn-danger.focus,
+:where(.tableSurface) fieldset[disabled] .btn-danger:active,
+:where(.tableSurface) fieldset[disabled] .btn-danger:focus,
+:where(.tableSurface) fieldset[disabled] .btn-danger:hover {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+:where(.tableSurface) .btn-link {
+  font-weight: 400;
+  color: #337ab7;
+  border-radius: 0;
+}
+:where(.tableSurface) .btn-link,
+:where(.tableSurface) .btn-link.active,
+:where(.tableSurface) .btn-link:active,
+:where(.tableSurface) .btn-link[disabled],
+:where(.tableSurface) fieldset[disabled] .btn-link {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+:where(.tableSurface) .btn-link,
+:where(.tableSurface) .btn-link:active,
+:where(.tableSurface) .btn-link:focus,
+:where(.tableSurface) .btn-link:hover {
+  border-color: transparent;
+}
+:where(.tableSurface) .btn-link:focus,
+:where(.tableSurface) .btn-link:hover {
+  color: #23527c;
+  text-decoration: underline;
+  background-color: transparent;
+}
+:where(.tableSurface) .btn-link[disabled]:focus,
+:where(.tableSurface) .btn-link[disabled]:hover,
+:where(.tableSurface) fieldset[disabled] .btn-link:focus,
+:where(.tableSurface) fieldset[disabled] .btn-link:hover {
+  color: #777;
+  text-decoration: none;
+}
+:where(.tableSurface) .btn-group-lg > .btn,
+:where(.tableSurface) .btn-lg {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 6px;
+}
+:where(.tableSurface) .btn-group-sm > .btn,
+:where(.tableSurface) .btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+:where(.tableSurface) .btn-group-xs > .btn,
+:where(.tableSurface) .btn-xs {
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+:where(.tableSurface) .btn-block {
+  display: block;
+  width: 100%;
+}
+:where(.tableSurface) .btn-block + .btn-block {
+  margin-top: 5px;
+}
+:where(.tableSurface) input[type='button'].btn-block,
+:where(.tableSurface) input[type='reset'].btn-block,
+:where(.tableSurface) input[type='submit'].btn-block {
+  width: 100%;
+}
+:where(.tableSurface) .caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid\9;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+:where(.tableSurface) .dropdown {
+  position: relative;
+}
+:where(.tableSurface) .dropdown-toggle:focus {
+  outline: 0;
+}
+:where(.tableSurface) .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+:where(.tableSurface) .dropdown-menu.pull-right {
+  right: 0;
+  left: auto;
+}
+:where(.tableSurface) .dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+:where(.tableSurface) .dropdown-menu > li > a:focus,
+:where(.tableSurface) .dropdown-menu > li > a:hover {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+:where(.tableSurface) .dropdown-menu > .active > a,
+:where(.tableSurface) .dropdown-menu > .active > a:focus,
+:where(.tableSurface) .dropdown-menu > .active > a:hover {
+  color: #fff;
+  text-decoration: none;
+  background-color: #337ab7;
+  outline: 0;
+}
+:where(.tableSurface) .dropdown-menu > .disabled > a,
+:where(.tableSurface) .dropdown-menu > .disabled > a:focus,
+:where(.tableSurface) .dropdown-menu > .disabled > a:hover {
+  color: #777;
+}
+:where(.tableSurface) .dropdown-menu > .disabled > a:focus,
+:where(.tableSurface) .dropdown-menu > .disabled > a:hover {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+:where(.tableSurface) .open > .dropdown-menu {
+  display: block;
+}
+:where(.tableSurface) .open > a {
+  outline: 0;
+}
+:where(.tableSurface) .dropdown-menu-right {
+  right: 0;
+  left: auto;
+}
+:where(.tableSurface) .dropdown-menu-left {
+  right: auto;
+  left: 0;
+}
+:where(.tableSurface) .dropdown-header {
+  display: block;
+  padding: 3px 20px;
+  font-size: 12px;
+  line-height: 1.42857143;
+  color: #777;
+  white-space: nowrap;
+}
+:where(.tableSurface) .dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 990;
+}
+:where(.tableSurface) .pull-right > .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+:where(.tableSurface) .dropup .caret {
+  content: '';
+  border-top: 0;
+  border-bottom: 4px dashed;
+  border-bottom: 4px solid\9;
+}
+:where(.tableSurface) .dropup .dropdown-menu {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 2px;
+}
+:where(.tableSurface) .btn-group,
+:where(.tableSurface) .btn-group-vertical {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+:where(.tableSurface) .btn-group-vertical > .btn,
+:where(.tableSurface) .btn-group > .btn {
+  position: relative;
+  float: left;
+}
+:where(.tableSurface) .btn-group-vertical > .btn.active,
+:where(.tableSurface) .btn-group-vertical > .btn:active,
+:where(.tableSurface) .btn-group-vertical > .btn:focus,
+:where(.tableSurface) .btn-group-vertical > .btn:hover,
+:where(.tableSurface) .btn-group > .btn.active,
+:where(.tableSurface) .btn-group > .btn:active,
+:where(.tableSurface) .btn-group > .btn:focus,
+:where(.tableSurface) .btn-group > .btn:hover {
+  z-index: 2;
+}
+:where(.tableSurface) .btn-group .btn + .btn,
+:where(.tableSurface) .btn-group .btn + .btn-group,
+:where(.tableSurface) .btn-group .btn-group + .btn,
+:where(.tableSurface) .btn-group .btn-group + .btn-group {
+  margin-left: -1px;
+}
+:where(.tableSurface) .btn-toolbar {
+  margin-left: -5px;
+}
+:where(.tableSurface) .btn-toolbar .btn,
+:where(.tableSurface) .btn-toolbar .btn-group {
+  float: left;
+}
+:where(.tableSurface) .btn-toolbar > .btn,
+:where(.tableSurface) .btn-toolbar > .btn-group {
+  margin-left: 5px;
+}
+:where(.tableSurface)
+  .btn-group
+  > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  border-radius: 0;
+}
+:where(.tableSurface) .btn-group > .btn:first-child {
+  margin-left: 0;
+}
+:where(.tableSurface)
+  .btn-group
+  > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+:where(.tableSurface) .btn-group > .btn:last-child:not(:first-child),
+:where(.tableSurface) .btn-group > .dropdown-toggle:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+:where(.tableSurface) .btn-group > .btn-group {
+  float: left;
+}
+:where(.tableSurface)
+  .btn-group
+  > .btn-group:not(:first-child):not(:last-child)
+  > .btn {
+  border-radius: 0;
+}
+:where(.tableSurface)
+  .btn-group
+  > .btn-group:first-child:not(:last-child)
+  > .btn:last-child,
+:where(.tableSurface)
+  .btn-group
+  > .btn-group:first-child:not(:last-child)
+  > .dropdown-toggle {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+:where(.tableSurface)
+  .btn-group
+  > .btn-group:last-child:not(:first-child)
+  > .btn:first-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+:where(.tableSurface) .btn-group .dropdown-toggle:active,
+:where(.tableSurface) .btn-group.open .dropdown-toggle {
+  outline: 0;
+}
+:where(.tableSurface) .btn-group > .btn + .dropdown-toggle {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+:where(.tableSurface) .btn-group > .btn-lg + .dropdown-toggle {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+:where(.tableSurface) .btn-group.open .dropdown-toggle {
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+:where(.tableSurface) .btn-group.open .dropdown-toggle.btn-link {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+:where(.tableSurface) .btn .caret {
+  margin-left: 0;
+}
+:where(.tableSurface) .btn-lg .caret {
+  border-width: 5px 5px 0;
+  border-bottom-width: 0;
+}
+:where(.tableSurface) .dropup .btn-lg .caret {
+  border-width: 0 5px 5px;
+}
+:where(.tableSurface) .btn-group-vertical > .btn,
+:where(.tableSurface) .btn-group-vertical > .btn-group,
+:where(.tableSurface) .btn-group-vertical > .btn-group > .btn {
+  display: block;
+  float: none;
+  width: 100%;
+  max-width: 100%;
+}
+:where(.tableSurface) .btn-group-vertical > .btn-group > .btn {
+  float: none;
+}
+:where(.tableSurface) .btn-group-vertical > .btn + .btn,
+:where(.tableSurface) .btn-group-vertical > .btn + .btn-group,
+:where(.tableSurface) .btn-group-vertical > .btn-group + .btn,
+:where(.tableSurface) .btn-group-vertical > .btn-group + .btn-group {
+  margin-top: -1px;
+  margin-left: 0;
+}
+:where(.tableSurface)
+  .btn-group-vertical
+  > .btn:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+:where(.tableSurface) .btn-group-vertical > .btn:first-child:not(:last-child) {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+:where(.tableSurface) .btn-group-vertical > .btn:last-child:not(:first-child) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 4px;
+}
+:where(.tableSurface)
+  .btn-group-vertical
+  > .btn-group:not(:first-child):not(:last-child)
+  > .btn {
+  border-radius: 0;
+}
+:where(.tableSurface)
+  .btn-group-vertical
+  > .btn-group:first-child:not(:last-child)
+  > .btn:last-child,
+:where(.tableSurface)
+  .btn-group-vertical
+  > .btn-group:first-child:not(:last-child)
+  > .dropdown-toggle {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+:where(.tableSurface)
+  .btn-group-vertical
+  > .btn-group:last-child:not(:first-child)
+  > .btn:first-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+:where(.tableSurface) [data-toggle='buttons'] > .btn input[type='checkbox'],
+:where(.tableSurface) [data-toggle='buttons'] > .btn input[type='radio'],
+:where(.tableSurface)
+  [data-toggle='buttons']
+  > .btn-group
+  > .btn
+  input[type='checkbox'],
+:where(.tableSurface)
+  [data-toggle='buttons']
+  > .btn-group
+  > .btn
+  input[type='radio'] {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+}
+:where(.tableSurface) .pagination {
+  display: inline-block;
+  padding-left: 0;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+:where(.tableSurface) .pagination > li {
+  display: inline;
+}
+:where(.tableSurface) .pagination > li > a,
+:where(.tableSurface) .pagination > li > span {
+  position: relative;
+  float: left;
+  padding: 6px 12px;
+  margin-left: -1px;
+  line-height: 1.42857143;
+  color: #337ab7;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+:where(.tableSurface) .pagination > li:first-child > a,
+:where(.tableSurface) .pagination > li:first-child > span {
+  margin-left: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+:where(.tableSurface) .pagination > li:last-child > a,
+:where(.tableSurface) .pagination > li:last-child > span {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+:where(.tableSurface) .pagination > li > a:focus,
+:where(.tableSurface) .pagination > li > a:hover,
+:where(.tableSurface) .pagination > li > span:focus,
+:where(.tableSurface) .pagination > li > span:hover {
+  z-index: 3;
+  color: #23527c;
+  background-color: #eee;
+  border-color: #ddd;
+}
+:where(.tableSurface) .pagination > .active > a,
+:where(.tableSurface) .pagination > .active > a:focus,
+:where(.tableSurface) .pagination > .active > a:hover,
+:where(.tableSurface) .pagination > .active > span,
+:where(.tableSurface) .pagination > .active > span:focus,
+:where(.tableSurface) .pagination > .active > span:hover {
+  z-index: 2;
+  color: #fff;
+  cursor: default;
+  background-color: #337ab7;
+  border-color: #337ab7;
+}
+:where(.tableSurface) .pagination > .disabled > a,
+:where(.tableSurface) .pagination > .disabled > a:focus,
+:where(.tableSurface) .pagination > .disabled > a:hover,
+:where(.tableSurface) .pagination > .disabled > span,
+:where(.tableSurface) .pagination > .disabled > span:focus,
+:where(.tableSurface) .pagination > .disabled > span:hover {
+  color: #777;
+  cursor: not-allowed;
+  background-color: #fff;
+  border-color: #ddd;
+}
+:where(.tableSurface) .pagination-lg > li > a,
+:where(.tableSurface) .pagination-lg > li > span {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+}
+:where(.tableSurface) .pagination-lg > li:first-child > a,
+:where(.tableSurface) .pagination-lg > li:first-child > span {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+:where(.tableSurface) .pagination-lg > li:last-child > a,
+:where(.tableSurface) .pagination-lg > li:last-child > span {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+:where(.tableSurface) .pagination-sm > li > a,
+:where(.tableSurface) .pagination-sm > li > span {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+:where(.tableSurface) .pagination-sm > li:first-child > a,
+:where(.tableSurface) .pagination-sm > li:first-child > span {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+:where(.tableSurface) .pagination-sm > li:last-child > a,
+:where(.tableSurface) .pagination-sm > li:last-child > span {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+:where(.tableSurface) .label {
+  display: inline;
+  padding: 0.2em 0.6em 0.3em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25em;
+}
+:where(.tableSurface) a.label:focus,
+:where(.tableSurface) a.label:hover {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+:where(.tableSurface) .label:empty {
+  display: none;
+}
+:where(.tableSurface) .btn .label {
+  position: relative;
+  top: -1px;
+}
+:where(.tableSurface) .label-default {
+  background-color: #777;
+}
+:where(.tableSurface) .label-default[href]:focus,
+:where(.tableSurface) .label-default[href]:hover {
+  background-color: #5e5e5e;
+}
+:where(.tableSurface) .label-primary {
+  background-color: #337ab7;
+}
+:where(.tableSurface) .label-primary[href]:focus,
+:where(.tableSurface) .label-primary[href]:hover {
+  background-color: #286090;
+}
+:where(.tableSurface) .label-success {
+  background-color: #5cb85c;
+}
+:where(.tableSurface) .label-success[href]:focus,
+:where(.tableSurface) .label-success[href]:hover {
+  background-color: #449d44;
+}
+:where(.tableSurface) .label-info {
+  background-color: #5bc0de;
+}
+:where(.tableSurface) .label-info[href]:focus,
+:where(.tableSurface) .label-info[href]:hover {
+  background-color: #31b0d5;
+}
+:where(.tableSurface) .label-warning {
+  background-color: #f0ad4e;
+}
+:where(.tableSurface) .label-warning[href]:focus,
+:where(.tableSurface) .label-warning[href]:hover {
+  background-color: #ec971f;
+}
+:where(.tableSurface) .label-danger {
+  background-color: #d9534f;
+}
+:where(.tableSurface) .label-danger[href]:focus,
+:where(.tableSurface) .label-danger[href]:hover {
+  background-color: #c9302c;
+}
+:where(.tableSurface) .btn-group-vertical > .btn-group:after,
+:where(.tableSurface) .btn-group-vertical > .btn-group:before,
+:where(.tableSurface) .btn-toolbar:after,
+:where(.tableSurface) .btn-toolbar:before,
+:where(.tableSurface) .clearfix:after,
+:where(.tableSurface) .clearfix:before,
+:where(.tableSurface) .row:after,
+:where(.tableSurface) .row:before {
+  display: table;
+  content: ' ';
+}
+:where(.tableSurface) .btn-group-vertical > .btn-group:after,
+:where(.tableSurface) .btn-toolbar:after,
+:where(.tableSurface) .clearfix:after,
+:where(.tableSurface) .row:after {
+  clear: both;
+}
+:where(.tableSurface) .pull-right {
+  float: right !important;
+}
+:where(.tableSurface) .pull-left {
+  float: left !important;
+}
+:where(.tableSurface) .hidden {
+  display: none !important;
+}
+:where(.tableSurface) .m-r-5 {
+  margin-right: 5px !important;
+}
+:where(.tableSurface) .m-r-10 {
+  margin-right: 10px !important;
+}
+:where(.tableSurface) .m-r-15 {
+  margin-right: 15px !important;
+}
+:where(.tableSurface) .m-t-5 {
+  margin-top: 5px !important;
+}
+:where(.tableSurface) .m-t-0 {
+  margin-top: 0px !important;
+}
+:where(.tableSurface) .m-t-10 {
+  margin-top: 10px !important;
+}
+:where(.tableSurface) .m-t-15 {
+  margin-top: 15px !important;
+}
+:where(.tableSurface) .m-t-20 {
+  margin-top: 20px !important;
+}
+:where(.tableSurface) .m-t-30 {
+  margin-top: 30px !important;
+}
+:where(.tableSurface) .m-t-40 {
+  margin-top: 40px !important;
+}
+:where(.tableSurface) .m-b-0 {
+  margin-bottom: 0px !important;
+}
+:where(.tableSurface) .m-b-5 {
+  margin-bottom: 5px !important;
+}
+:where(.tableSurface) .m-b-10 {
+  margin-bottom: 10px !important;
+}
+:where(.tableSurface) .m-b-15 {
+  margin-bottom: 15px !important;
+}
+:where(.tableSurface) .m-b-20 {
+  margin-bottom: 20px !important;
+}
+:where(.tableSurface) .m-b-30 {
+  margin-bottom: 30px !important;
+}
+:where(.tableSurface) .font-13 {
+  font-size: 13px !important;
+}
+:where(.tableSurface) .table-box {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+:where(.tableSurface) .table-box .table-detail {
+  display: table-cell;
+  vertical-align: middle;
+}
+:where(.tableSurface) .row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+:where(.tableSurface) .col-sm-1,
+:where(.tableSurface) .col-sm-10,
+:where(.tableSurface) .col-sm-11,
+:where(.tableSurface) .col-sm-12,
+:where(.tableSurface) .col-sm-2,
+:where(.tableSurface) .col-sm-3,
+:where(.tableSurface) .col-sm-4,
+:where(.tableSurface) .col-sm-5,
+:where(.tableSurface) .col-sm-6,
+:where(.tableSurface) .col-sm-7,
+:where(.tableSurface) .col-sm-8,
+:where(.tableSurface) .col-sm-9 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+:where(.tableSurface) .dropdown-menu {
+  padding: 4px 0;
+  transition: all 300ms ease;
+  -moz-transition: all 300ms ease;
+  -webkit-transition: all 300ms ease;
+  -o-transition: all 300ms ease;
+  -ms-transition: all 300ms ease;
+  border: 0;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+:where(.tableSurface) .dropdown-menu > li > a {
+  padding: 6px 20px;
+}
+:where(.tableSurface) .dropdown-menu > .active > a,
+:where(.tableSurface) .dropdown-menu > .active > a:hover,
+:where(.tableSurface) .dropdown-menu > .active > a:focus {
+  background-color: #f3f3f3;
+  color: #36404a;
+}
+:where(.tableSurface) .dropup .dropdown-menu {
+  box-shadow: 0px -1px 5px 0 rgba(0, 0, 0, 0.26);
+}
+:where(.tableSurface) textarea.form-control {
+  min-height: 90px;
+}
+:where(.tableSurface) .form-control {
+  background-color: #ffffff;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  color: #565656;
+  padding: 7px 12px;
+  height: 38px;
+  max-width: 100%;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -webkit-transition: all 300ms linear;
+  -moz-transition: all 300ms linear;
+  -o-transition: all 300ms linear;
+  -ms-transition: all 300ms linear;
+  transition: all 300ms linear;
+}
+:where(.tableSurface) .form-control:focus {
+  background-color: #ffffff;
+  border: 1px solid #aaaaaa;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: 0 !important;
+  color: #333333;
+}
+:where(.tableSurface) .input-sm {
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+:where(.tableSurface) .label {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.3em 0.6em 0.3em;
+}
+:where(.tableSurface) .label-default {
+  background-color: #5fbeaa;
+}
+:where(.tableSurface) .label-primary {
+  background-color: #5d9cec;
+}
+:where(.tableSurface) .label-success {
+  background-color: #81c868;
+}
+:where(.tableSurface) .label-info {
+  background-color: #34d3eb;
+}
+:where(.tableSurface) .label-warning {
+  background-color: #ffbd4a;
+}
+:where(.tableSurface) .label-danger {
+  background-color: #f05050;
+}
+:where(.tableSurface) .label-inverse {
+  background-color: #4c5667;
+}
+:where(.tableSurface) .pagination > li:first-child > a,
+:where(.tableSurface) .pagination > li:first-child > span {
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+}
+:where(.tableSurface) .pagination > li:last-child > a,
+:where(.tableSurface) .pagination > li:last-child > span {
+  border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
+}
+:where(.tableSurface) .pagination > li > a,
+:where(.tableSurface) .pagination > li > span {
+  color: #636e7b;
+}
+:where(.tableSurface) .pagination > li > a:hover,
+:where(.tableSurface) .pagination > li > span:hover,
+:where(.tableSurface) .pagination > li > a:focus,
+:where(.tableSurface) .pagination > li > span:focus {
+  background-color: #e4e7ea;
+}
+:where(.tableSurface) .pagination-split li {
+  margin-left: 5px;
+  display: inline-block;
+  float: left;
+}
+:where(.tableSurface) .pagination-split li:first-child {
+  margin-left: 0;
+}
+:where(.tableSurface) .pagination-split li a {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+:where(.tableSurface) .pagination > .active > a,
+:where(.tableSurface) .pagination > .active > span,
+:where(.tableSurface) .pagination > .active > a:hover,
+:where(.tableSurface) .pagination > .active > span:hover,
+:where(.tableSurface) .pagination > .active > a:focus,
+:where(.tableSurface) .pagination > .active > span:focus {
+  background-color: #5fbeaa;
+  border-color: #5fbeaa;
+}
+:where(.tableSurface) .dropdown-menu-lg {
+  width: 300px;
+}
+:where(.tableSurface) #sidebar-menu .label {
+  margin-top: 2px;
+}
+:where(.tableSurface) .btn {
+  border-radius: 3px;
+  outline: none !important;
+}
+:where(.tableSurface) .btn-primary,
+:where(.tableSurface) .btn-success,
+:where(.tableSurface) .btn-default,
+:where(.tableSurface) .btn-info,
+:where(.tableSurface) .btn-warning,
+:where(.tableSurface) .btn-danger,
+:where(.tableSurface) .btn-inverse {
+  color: #ffffff !important;
+}
+:where(.tableSurface) .btn-default,
+:where(.tableSurface) .btn-default:hover,
+:where(.tableSurface) .btn-default:focus,
+:where(.tableSurface) .btn-default:active,
+:where(.tableSurface) .btn-default.active,
+:where(.tableSurface) .btn-default.focus,
+:where(.tableSurface) .btn-default:active,
+:where(.tableSurface) .btn-default:focus,
+:where(.tableSurface) .btn-default:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-default {
+  background-color: #5fbeaa !important;
+  border: 1px solid #5fbeaa !important;
+}
+:where(.tableSurface) .btn-white,
+:where(.tableSurface) .btn-white:hover,
+:where(.tableSurface) .btn-white:focus,
+:where(.tableSurface) .btn-white:active,
+:where(.tableSurface) .btn-white.active,
+:where(.tableSurface) .btn-white.focus,
+:where(.tableSurface) .btn-white:active,
+:where(.tableSurface) .btn-white:focus,
+:where(.tableSurface) .btn-white:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-white {
+  border: 1px solid #eaeaea !important;
+  background-color: #ffffff;
+  color: #4c5667;
+}
+:where(.tableSurface) .btn-white:hover,
+:where(.tableSurface) .btn-white:hover:hover,
+:where(.tableSurface) .btn-white:focus:hover,
+:where(.tableSurface) .btn-white:active:hover,
+:where(.tableSurface) .btn-white.active:hover,
+:where(.tableSurface) .btn-white.focus:hover,
+:where(.tableSurface) .btn-white:active:hover,
+:where(.tableSurface) .btn-white:focus:hover,
+:where(.tableSurface) .btn-white:hover:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-white:hover {
+  background-color: #f9f9f9;
+}
+:where(.tableSurface) .btn-white:focus,
+:where(.tableSurface) .btn-white:hover:focus,
+:where(.tableSurface) .btn-white:focus:focus,
+:where(.tableSurface) .btn-white:active:focus,
+:where(.tableSurface) .btn-white.active:focus,
+:where(.tableSurface) .btn-white.focus:focus,
+:where(.tableSurface) .btn-white:active:focus,
+:where(.tableSurface) .btn-white:focus:focus,
+:where(.tableSurface) .btn-white:hover:focus,
+:where(.tableSurface) .open > .dropdown-toggle.btn-white:focus {
+  background-color: #f9f9f9;
+}
+:where(.tableSurface) .btn-white:active,
+:where(.tableSurface) .btn-white:hover:active,
+:where(.tableSurface) .btn-white:focus:active,
+:where(.tableSurface) .btn-white:active:active,
+:where(.tableSurface) .btn-white.active:active,
+:where(.tableSurface) .btn-white.focus:active,
+:where(.tableSurface) .btn-white:active:active,
+:where(.tableSurface) .btn-white:focus:active,
+:where(.tableSurface) .btn-white:hover:active,
+:where(.tableSurface) .open > .dropdown-toggle.btn-white:active {
+  background-color: #f9f9f9;
+}
+:where(.tableSurface) .btn-primary,
+:where(.tableSurface) .btn-primary:hover,
+:where(.tableSurface) .btn-primary:focus,
+:where(.tableSurface) .btn-primary:active,
+:where(.tableSurface) .btn-primary.active,
+:where(.tableSurface) .btn-primary.focus,
+:where(.tableSurface) .btn-primary:active,
+:where(.tableSurface) .btn-primary:focus,
+:where(.tableSurface) .btn-primary:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-primary {
+  background-color: #5d9cec !important;
+  border: 1px solid #5d9cec !important;
+}
+:where(.tableSurface) .btn-success,
+:where(.tableSurface) .btn-success:hover,
+:where(.tableSurface) .btn-success:focus,
+:where(.tableSurface) .btn-success:active,
+:where(.tableSurface) .btn-success.active,
+:where(.tableSurface) .btn-success.focus,
+:where(.tableSurface) .btn-success:active,
+:where(.tableSurface) .btn-success:focus,
+:where(.tableSurface) .btn-success:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-success {
+  background-color: #81c868 !important;
+  border: 1px solid #81c868 !important;
+}
+:where(.tableSurface) .btn-info,
+:where(.tableSurface) .btn-info:hover,
+:where(.tableSurface) .btn-info:focus,
+:where(.tableSurface) .btn-info:active,
+:where(.tableSurface) .btn-info.active,
+:where(.tableSurface) .btn-info.focus,
+:where(.tableSurface) .btn-info:active,
+:where(.tableSurface) .btn-info:focus,
+:where(.tableSurface) .btn-info:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-info {
+  background-color: #34d3eb !important;
+  border: 1px solid #34d3eb !important;
+}
+:where(.tableSurface) .btn-warning,
+:where(.tableSurface) .btn-warning:hover,
+:where(.tableSurface) .btn-warning:focus,
+:where(.tableSurface) .btn-warning:active,
+:where(.tableSurface) .btn-warning.active,
+:where(.tableSurface) .btn-warning.focus,
+:where(.tableSurface) .btn-warning:active,
+:where(.tableSurface) .btn-warning:focus,
+:where(.tableSurface) .btn-warning:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-warning {
+  background-color: #ffbd4a !important;
+  border: 1px solid #ffbd4a !important;
+}
+:where(.tableSurface) .btn-danger,
+:where(.tableSurface) .btn-danger:active,
+:where(.tableSurface) .btn-danger:focus,
+:where(.tableSurface) .btn-danger:hover,
+:where(.tableSurface) .btn-danger.active,
+:where(.tableSurface) .btn-danger.focus,
+:where(.tableSurface) .btn-danger:active,
+:where(.tableSurface) .btn-danger:focus,
+:where(.tableSurface) .btn-danger:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-danger {
+  background-color: #f05050 !important;
+  border: 1px solid #f05050 !important;
+}
+:where(.tableSurface) .btn-inverse,
+:where(.tableSurface) .btn-inverse:hover,
+:where(.tableSurface) .btn-inverse:focus,
+:where(.tableSurface) .btn-inverse:active,
+:where(.tableSurface) .btn-inverse.active,
+:where(.tableSurface) .btn-inverse.focus,
+:where(.tableSurface) .btn-inverse:active,
+:where(.tableSurface) .btn-inverse:focus,
+:where(.tableSurface) .btn-inverse:hover,
+:where(.tableSurface) .open > .dropdown-toggle.btn-inverse {
+  background-color: #4c5667 !important;
+  border: 1px solid #4c5667 !important;
+  color: #ffffff;
+}
+:where(.tableSurface) .btn-group.open .dropdown-toggle {
+  box-shadow: none;
+}
+:where(.tableSurface) .table {
+  margin-bottom: 10px;
+}
+:where(.tableSurface) .table-striped > tbody > tr:nth-of-type(odd),
+:where(.tableSurface) .table-hover > tbody > tr:hover,
+:where(.tableSurface) .table > thead > tr > td.active,
+:where(.tableSurface) .table > tbody > tr > td.active,
+:where(.tableSurface) .table > tfoot > tr > td.active,
+:where(.tableSurface) .table > thead > tr > th.active,
+:where(.tableSurface) .table > tbody > tr > th.active,
+:where(.tableSurface) .table > tfoot > tr > th.active,
+:where(.tableSurface) .table > thead > tr.active > td,
+:where(.tableSurface) .table > tbody > tr.active > td,
+:where(.tableSurface) .table > tfoot > tr.active > td,
+:where(.tableSurface) .table > thead > tr.active > th,
+:where(.tableSurface) .table > tbody > tr.active > th,
+:where(.tableSurface) .table > tfoot > tr.active > th {
+  background-color: #f4f8fb !important;
+}
+:where(.tableSurface) .table > thead > tr > th,
+:where(.tableSurface) .table > tbody > tr > th,
+:where(.tableSurface) .table > tfoot > tr > th,
+:where(.tableSurface) .table > thead > tr > td,
+:where(.tableSurface) .table > tbody > tr > td,
+:where(.tableSurface) .table > tfoot > tr > td,
+:where(.tableSurface) .table > thead > tr > th,
+:where(.tableSurface) .table-bordered {
+  border-top: 1px solid #ebeff2;
+}
+:where(.tableSurface) .table-bordered > thead > tr > th,
+:where(.tableSurface) .table-bordered > tbody > tr > th,
+:where(.tableSurface) .table-bordered > tfoot > tr > th,
+:where(.tableSurface) .table-bordered > thead > tr > td,
+:where(.tableSurface) .table-bordered > tbody > tr > td,
+:where(.tableSurface) .table-bordered > tfoot > tr > td {
+  border: 1px solid #ebeff2;
+}
+:where(.tableSurface) .table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ebeff2;
+}
+:where(.tableSurface) .table-bordered {
+  border: 1px solid #ebeff2;
+}
+:where(.tableSurface.table-rep-plugin) .table-responsive {
+  border: none !important;
+}
+:where(.tableSurface.table-rep-plugin) tbody th {
+  font-size: 14px;
+  font-weight: normal;
+}
+:where(.tableSurface.table-rep-plugin) .checkbox-row {
+  padding-left: 40px;
+}
+:where(.tableSurface.table-rep-plugin) .checkbox-row label {
+  display: inline-block;
+  padding-left: 5px;
+  position: relative;
+}
+:where(.tableSurface.table-rep-plugin) .checkbox-row label::before {
+  -o-transition: 0.3s ease-in-out;
+  -webkit-transition: 0.3s ease-in-out;
+  background-color: #ffffff;
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  content: '';
+  display: inline-block;
+  height: 17px;
+  left: 0;
+  margin-left: -20px;
+  position: absolute;
+  transition: 0.3s ease-in-out;
+  width: 17px;
+  outline: none !important;
+}
+:where(.tableSurface.table-rep-plugin) .checkbox-row label::after {
+  color: #555555;
+  display: inline-block;
+  font-size: 11px;
+  height: 16px;
+  left: 0;
+  margin-left: -20px;
+  padding-left: 3px;
+  padding-top: 1px;
+  position: absolute;
+  top: -1px;
+  width: 16px;
+}
+:where(.tableSurface.table-rep-plugin) .checkbox-row input[type='checkbox'] {
+  cursor: pointer;
+  opacity: 0;
+  z-index: 1;
+  outline: none !important;
+}
+:where(.tableSurface.table-rep-plugin)
+  .checkbox-row
+  input[type='checkbox']:disabled
+  + label {
+  opacity: 0.65;
+}
+:where(.tableSurface.table-rep-plugin)
+  .checkbox-row
+  input[type='checkbox']:focus
+  + label::before {
+  outline-offset: -2px;
+  outline: none;
+}
+:where(.tableSurface.table-rep-plugin)
+  .checkbox-row
+  input[type='checkbox']:checked
+  + label::after {
+  content: '\f00c';
+  font-family: 'FontAwesome';
+}
+:where(.tableSurface.table-rep-plugin)
+  .checkbox-row
+  input[type='checkbox']:disabled
+  + label::before {
+  background-color: #eeeeee;
+  cursor: not-allowed;
+}
+:where(.tableSurface.table-rep-plugin)
+  .checkbox-row
+  input[type='checkbox']:checked
+  + label::before {
+  background-color: #5fbeaa;
+  border-color: #5fbeaa;
+}
+:where(.tableSurface.table-rep-plugin)
+  .checkbox-row
+  input[type='checkbox']:checked
+  + label::after {
+  color: #ffffff;
+}
+:where(.tableSurface) .fixed-table-container tbody .selected td {
+  background-color: #f4f8fb;
+}
+:where(.tableSurface) #datatable-editable .form-control {
+  background-color: #ffffff;
+  width: 100%;
+}
+:where(.tableSurface) div.dataTables_paginate ul.pagination {
+  margin-top: 30px;
+}
+:where(.tableSurface) div.dataTables_info {
+  padding-top: 38px;
+}
+:where(.tableSurface) .footable-odd {
+  background-color: #ffffff;
+}
+:where(.tableSurface) .footable-detail-show {
+  background-color: #ebeff2;
+}
+:where(.tableSurface) .footable-row-detail {
+  background-color: #f0f4f7;
+}
+:where(.tableSurface) .fixed-table-pagination .pagination-detail,
+:where(.tableSurface) .fixed-table-pagination div.pagination {
+  margin-top: 20px;
+}
+:where(.tableSurface) .fixed-table-container {
+  border: 1px solid #ebeff2 !important;
+}
+:where(.tableSurface) .bootstrap-table .table > thead > tr > th {
+  border-bottom: 2px solid #ebeff2;
+  background: #ebeff2;
+}
+:where(.tableSurface) .fixed-table-container thead th .th-inner {
+  padding: 9px 12px;
+}
+:where(.tableSurface) .bootstrap-table .table,
+:where(.tableSurface) .bootstrap-table .table > tbody > tr > td,
+:where(.tableSurface) .bootstrap-table .table > tbody > tr > th,
+:where(.tableSurface) .bootstrap-table .table > tfoot > tr > td,
+:where(.tableSurface) .bootstrap-table .table > tfoot > tr > th,
+:where(.tableSurface) .bootstrap-table .table > thead > tr > td {
+  padding: 8px 12px !important;
+}
+:where(.tableSurface) .table-actions-bar tr td {
+  vertical-align: middle !important;
+}
+:where(.tableSurface) .table-actions-bar .table-action-btn {
+  color: #98a6ad;
+  display: inline-block;
+  width: 28px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  font-size: 20px;
+}
+:where(.tableSurface) .table-actions-bar .table-action-btn:hover {
+  color: #5fbeaa;
+  border-color: #5fbeaa;
+}

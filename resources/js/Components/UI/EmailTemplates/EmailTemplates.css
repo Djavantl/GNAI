@@ -1,0 +1,22 @@
+.emailTemplates {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.emailTemplates section {
+  width: 100%;
+  padding-inline: 10px;
+}
+.emailTemplates h4 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+@media (min-width: 992px) {
+  .emailTemplates section {
+    width: 33.33333333%;
+  }
+}

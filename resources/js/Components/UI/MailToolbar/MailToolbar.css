@@ -1,0 +1,26 @@
+.mailToolbar {
+  margin-top: 20px;
+  margin-left: -5px;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.mailToolbar > * {
+  margin-left: 5px;
+}
+.mailToolbar__group {
+  display: inline-flex;
+}
+.mailToolbar__group .button {
+  border-radius: 0;
+  position: relative;
+}
+.mailToolbar__group .button + .button {
+  margin-left: -1px;
+}
+.mailToolbar__group .button:first-child {
+  border-radius: 3px 0 0 3px;
+}
+.mailToolbar__group .button:last-child {
+  border-radius: 0 3px 3px 0;
+}

@@ -1,0 +1,123 @@
+.mailList.panelCard {
+  margin-top: 20px;
+  display: flow-root;
+}
+.mailList__scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+.mailList .mailList__table {
+  margin: 0;
+}
+.mailList__table td {
+  vertical-align: middle !important;
+  position: relative;
+}
+.mailList__table .mailList__selection {
+  padding: 12px 20px;
+  min-width: 134px;
+  white-space: nowrap;
+}
+.mailList__table a {
+  color: #797979;
+  text-decoration: none;
+}
+.mailList__table a:hover,
+.mailList__table a:focus {
+  color: #797979;
+  text-decoration: none;
+}
+.mailList__table .is-unread a {
+  color: #444;
+  font-weight: 600;
+}
+.mailList__table .checkbox {
+  margin: 0 15px 0 0;
+  display: inline-block;
+  vertical-align: middle;
+  height: 17px;
+}
+.mailList__table .checkbox label {
+  min-height: 16px;
+}
+.mailList__star {
+  margin-right: 15px;
+  color: #98a6ad;
+}
+.mailList__marker {
+  margin-left: 5px;
+}
+.mailList__marker--warning {
+  color: #ffbd4a;
+}
+.mailList__marker--pink {
+  color: #fb6d9d;
+}
+.mailList__marker--success {
+  color: #81c868;
+}
+.mailList__marker--purple {
+  color: #7266ba;
+}
+.mailList__marker--info {
+  color: #34d3eb;
+}
+.mailList__marker--white {
+  color: white;
+}
+.mailList__table tr:hover .mailList__marker--white {
+  display: none;
+}
+.mailList__table .mailList__attachment {
+  width: 20px;
+}
+.mailList__table .mailList__date {
+  width: 100px;
+  padding-right: 20px;
+  text-align: right;
+}
+.mailList__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.mailList__pagination {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.mailList__pagination > span {
+  width: 58.33333333%;
+}
+.mailList__pageButtons {
+  display: inline-flex;
+}
+.mailList__pageButtons .button:first-child {
+  border-radius: 3px 0 0 3px;
+}
+.mailList__pageButtons .button:last-child {
+  border-radius: 0 3px 3px 0;
+  margin-left: -1px;
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .mailList__subject {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .mailList__table td {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767px) {
+  .mailList__scroll {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+  }
+}

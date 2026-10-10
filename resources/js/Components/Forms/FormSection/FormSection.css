@@ -1,0 +1,5 @@
+.formSection { margin-bottom: 20px; }
+.formSection__title { margin: 0 0 8px; color: #505458; font-family: var(--bold-font-ui, 'Source Sans Pro', sans-serif); font-size: 16px; font-weight: 600; line-height: 16px; letter-spacing: .04em; text-transform: uppercase; }
+.formSection__title b { font-weight: inherit; }
+.formSection__description { margin: 0 0 30px; color: #98a6ad; font-size: 13px; line-height: 1.6; }
+.formSection__description code { padding: 2px 4px; border-radius: 4px; background: #f4f8fb; color: #5d9cec; font: 90%/1.6 Menlo, Monaco, Consolas, 'Courier New', monospace; }

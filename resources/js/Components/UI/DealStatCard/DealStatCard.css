@@ -1,0 +1,34 @@
+.dealStatCard {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+.dealStatCard > div {
+  display: table-cell;
+  vertical-align: middle;
+}
+.dealStatCard__icon {
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+  margin-right: 20px;
+  border-radius: 50%;
+  color: #fff;
+  text-align: center;
+}
+.dealStatCard__icon i {
+  line-height: 50px;
+  font-size: 20px;
+}
+.dealStatCard__value h4 {
+  margin: 0 0 5px;
+  font: 500 18px/22px var(--bold-font-ui);
+}
+.dealStatCard__value h5 {
+  margin: 0;
+  color: var(--bold-color-legacy-muted);
+  font: 500 15px/16.5px var(--bold-font-ui);
+}
+.dealStatCard__chart {
+  text-align: right;
+}

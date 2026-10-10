@@ -1,0 +1,9 @@
+.wizardExample__row { margin-bottom: 15px; }
+.wizardExample__row::before, .wizardExample__row::after { display: table; content: ' '; }
+.wizardExample__row::after { clear: both; }
+.wizardExample__full { position: relative; min-height: 1px; padding: 0 10px; }
+.wizardExample__full > ul b { font-weight: 600; }
+.wizardExample__full > label { font-weight: 700; }
+label.wizardExample__full { font-weight: 700; }
+.wizardExample__nativeCheckbox { display: inline-block; margin: 4px 0 0; padding: 0; line-height: normal; }
+@media (min-width: 1200px) { .wizardExample__full { float: left; width: 100%; } }

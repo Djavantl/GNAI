@@ -1,0 +1,191 @@
+.progressBar {
+  height: 10px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #ebeff2;
+  box-shadow: none;
+}
+
+.progressBar__bar {
+  float: left;
+  width: 0;
+  height: 100%;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 12px;
+  text-align: center;
+  box-shadow: none;
+  transition: width 0.6s ease;
+}
+
+.progressBar--sm {
+  height: 5px;
+}
+
+.progressBar--sm .progressBar__bar {
+  font-size: 8px;
+  line-height: 5px;
+}
+
+.progressBar--md {
+  height: 15px;
+}
+
+.progressBar--md .progressBar__bar {
+  font-size: 10.8px;
+  line-height: 14.4px;
+}
+
+.progressBar--lg {
+  height: 20px;
+}
+
+.progressBar--lg .progressBar__bar {
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.progressBar__bar--custom {
+  background-color: #5fbeaa;
+}
+
+.progressBar__bar--primary {
+  background-color: #5d9cec;
+}
+
+.progressBar__bar--success {
+  background-color: #81c868;
+}
+
+.progressBar__bar--info {
+  background-color: #34d3eb;
+}
+
+.progressBar__bar--warning {
+  background-color: #ffbd4a;
+}
+
+.progressBar__bar--danger {
+  background-color: #f05050;
+}
+
+.progressBar__bar--inverse {
+  background-color: #4c5667;
+}
+
+.progressBar__bar--purple {
+  background-color: #7266ba;
+}
+
+.progressBar__bar--pink {
+  background-color: #fb6d9d;
+}
+
+.progressBar__bar--striped {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+}
+
+.progressBar__bar--active {
+  animation: progressBarStripes 2s linear infinite;
+}
+
+.progressBar__bar--animated {
+  animation-duration: 5s;
+  animation-name: animationProgress;
+  transition: 5s all;
+}
+
+.progressBar__bar--striped.progressBar__bar--active.progressBar__bar--animated {
+  animation-duration: 5s, 2s;
+  animation-name: animationProgress, progressBarStripes;
+  animation-timing-function: ease, linear;
+  animation-iteration-count: 1, infinite;
+}
+
+.progressBar--vertical,
+.progressBar--vertical-bottom {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 250px;
+  min-height: 250px;
+  margin-right: 20px;
+  margin-bottom: 0;
+}
+
+.progressBar--vertical .progressBar__bar,
+.progressBar--vertical-bottom .progressBar__bar {
+  width: 100%;
+  transition: height 0.6s ease;
+}
+
+.progressBar--vertical-bottom .progressBar__bar {
+  position: absolute;
+  bottom: 0;
+}
+
+.progressBar--vertical.progressBar--sm,
+.progressBar--vertical-bottom.progressBar--sm {
+  width: 5px;
+  height: 250px;
+}
+
+.progressBar--vertical.progressBar--sm .progressBar__bar,
+.progressBar--vertical-bottom.progressBar--sm .progressBar__bar {
+  font-size: 8px;
+  line-height: 5px;
+}
+
+.progressBar--vertical.progressBar--md,
+.progressBar--vertical-bottom.progressBar--md {
+  width: 15px;
+  height: 250px;
+}
+
+.progressBar--vertical.progressBar--md .progressBar__bar,
+.progressBar--vertical-bottom.progressBar--md .progressBar__bar {
+  font-size: 10.8px;
+  line-height: 14.4px;
+}
+
+.progressBar--vertical.progressBar--lg,
+.progressBar--vertical-bottom.progressBar--lg {
+  width: 20px;
+  height: 250px;
+}
+
+.progressBar--vertical.progressBar--lg .progressBar__bar,
+.progressBar--vertical-bottom.progressBar--lg .progressBar__bar {
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.progressBar__srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@keyframes progressBarStripes {
+  from {
+    background-position: 40px 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+
+@keyframes animationProgress {
+  from {
+    width: 0;
+  }
+}

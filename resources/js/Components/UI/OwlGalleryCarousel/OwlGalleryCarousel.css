@@ -1,0 +1,11 @@
+.owlGalleryCarousel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+.owlGalleryCarousel__image {
+  display: block;
+  width: 100%;
+  transform-style: preserve-3d;
+}

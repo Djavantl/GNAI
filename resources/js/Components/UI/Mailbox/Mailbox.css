@@ -1,0 +1,27 @@
+.mailbox {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.mailbox__sidebar,
+.mailbox__content {
+  padding-inline: 10px;
+  width: 100%;
+  min-width: 0;
+}
+@media (min-width: 992px) {
+  .mailbox__sidebar {
+    width: 33.33333333%;
+  }
+  .mailbox__content {
+    width: 66.66666667%;
+  }
+}
+@media (min-width: 1200px) {
+  .mailbox__sidebar {
+    width: 25%;
+  }
+  .mailbox__content {
+    width: 75%;
+  }
+}

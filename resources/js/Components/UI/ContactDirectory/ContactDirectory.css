@@ -1,0 +1,51 @@
+.contactDirectory__toolbar,
+.contactDirectory__grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.contactDirectory__toolbar > div,
+.contactDirectory__grid > div {
+  width: 100%;
+  padding-inline: 10px;
+  min-width: 0;
+}
+.contactDirectory__toolbar > div {
+  position: relative;
+}
+.contactDirectory__search {
+  margin-bottom: 30px;
+}
+.contactDirectory__search .button {
+  position: absolute;
+  top: 1px;
+  right: 16px;
+  background: transparent !important;
+  border: none !important;
+  font-size: 16px;
+  box-shadow: none !important;
+  color: #98a6ad !important;
+}
+.contactDirectory__toolbar > div > .button {
+  margin-bottom: 30px;
+}
+@media (min-width: 768px) {
+  .contactDirectory__toolbar > div:first-child {
+    width: 66.66666667%;
+  }
+  .contactDirectory__toolbar > div:last-child {
+    width: 33.33333333%;
+  }
+  .contactDirectory__grid > div {
+    width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  .contactDirectory__grid > div {
+    width: 33.33333333%;
+  }
+}
+
+.contactDirectory__toolbar .contactDirectory__addButton {
+  padding: 8px 16px;
+}

@@ -1,0 +1,122 @@
+.dashboardTwoTransactionsCard {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-clip: padding-box;
+  background-color: #ffffff;
+}
+
+.dashboardTwoTransactionsCard__title {
+  margin: 0 0 20px;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboardTwoTransactionsCard__title b {
+  font-weight: inherit;
+}
+
+.dashboardTwoTransactionsCard__body {
+  position: relative;
+}
+
+.dashboardTwoTransactionsCard__scrollRegion {
+  height: 380px;
+  max-height: 380px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dashboardTwoTransactionsCard__scrollRegion::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.dashboardTwoTransactionsCard__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboardTwoTransactionsCard__list li {
+  position: relative;
+  clear: both;
+  padding: 7px 0;
+  border-bottom: 1px solid #ebeff2;
+  color: #797979;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.dashboardTwoTransactionsCard__list li:last-child {
+  border-bottom: 0;
+}
+
+.dashboardTwoTransactionsCard__list i {
+  position: absolute;
+  top: 10px;
+  width: 20px;
+  font-size: 12px;
+}
+
+.dashboardTwoTransactionsCard__list i.text-success {
+  color: #81c868;
+}
+
+.dashboardTwoTransactionsCard__text {
+  display: inline-block;
+  overflow: hidden;
+  width: 115px;
+  padding-left: 25px;
+  color: #797979;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dashboardTwoTransactionsCard__list .tran-price {
+  margin-left: 30px;
+}
+
+.dashboardTwoTransactionsCard__list .tran-price.text-success {
+  color: #81c868;
+}
+
+.dashboardTwoTransactionsCard__list .tran-price.text-danger {
+  color: #f05050;
+}
+
+.dashboardTwoTransactionsCard__list .text-muted {
+  color: #98a6ad;
+}
+
+.dashboardTwoTransactionsCard__scrollbar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 380px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.dashboardTwoTransactionsCard__scrollbar--visible {
+  opacity: 1;
+}
+
+.dashboardTwoTransactionsCard__scrollbarThumb {
+  width: 6px;
+  margin-left: auto;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  background-color: #98a6ad;
+}

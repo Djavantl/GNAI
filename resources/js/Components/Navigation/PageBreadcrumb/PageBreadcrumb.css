@@ -1,0 +1,39 @@
+.pageBreadcrumb.breadcrumb {
+  margin: 0 0 15px;
+  padding: 10px 0 0;
+  list-style: none;
+  border-radius: 0;
+  background-color: transparent;
+  color: #777777;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.pageBreadcrumb.breadcrumb > li {
+  display: inline-block;
+}
+
+.pageBreadcrumb.breadcrumb > li + li {
+  margin-left: 3px;
+}
+
+.pageBreadcrumb.breadcrumb > li + li::before {
+  padding: 0 5px;
+  color: #cccccc;
+  content: "/\00a0";
+}
+
+.pageBreadcrumb.breadcrumb a {
+  color: #337ab7;
+  text-decoration: none;
+}
+
+.pageBreadcrumb.breadcrumb a:hover,
+.pageBreadcrumb.breadcrumb a:focus {
+  color: #23527c;
+  text-decoration: underline;
+}
+
+.pageBreadcrumb.breadcrumb > .active {
+  color: #777777;
+}

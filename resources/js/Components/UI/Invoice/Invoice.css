@@ -1,0 +1,88 @@
+.invoice .panelCard__body p {
+  margin: 0 0 10px;
+}
+.invoice hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 20px 0;
+}
+.invoice__top,
+.invoice__details {
+  display: flow-root;
+}
+.invoice__top h4:first-child {
+  float: left;
+}
+.invoice__top h4:last-child {
+  float: right;
+}
+.invoice__details {
+  margin-top: 30px;
+}
+.invoice__details address {
+  margin: 0 0 20px;
+  float: left;
+  font-style: normal;
+  line-height: 20px;
+}
+.invoice__details > div {
+  float: right;
+}
+.invoice__details p + p {
+  margin-top: 10px;
+}
+.invoice__spacer {
+  min-height: 50px;
+}
+.invoice__table {
+  margin-top: 30px;
+  overflow: auto;
+}
+.invoice__totals {
+  text-align: right;
+  display: flow-root;
+}
+.invoice__actions {
+  display: flow-root;
+  text-align: right;
+}
+@media (min-width: 992px) {
+  .invoice__totals {
+    width: calc(25% - 15px);
+    margin-left: calc(75% + 15px);
+  }
+}
+@media (max-width: 767px) {
+  .invoice__table {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+  }
+  .invoice__table th,
+  .invoice__table td {
+    white-space: nowrap;
+  }
+}
+@media print {
+  .invoice__actions {
+    display: none;
+  }
+}
+.invoice__top img {
+  vertical-align: middle;
+}
+.invoice__details {
+  margin-top: 0;
+  padding-top: 30px;
+}
+.invoice .invoice__details p {
+  margin: 0;
+}
+.invoice .invoice__details p + p {
+  margin-top: 10px;
+}
+.invoice .invoice__totals p {
+  margin: 0;
+}
+.invoice .invoice__totals p + p {
+  margin-top: 15px;
+}

@@ -1,0 +1,10 @@
+.errorState { color: var(--bold-color-legacy-text); text-align: center; font-family: var(--bold-font-body); font-size: 14px; line-height: 20px; }
+.errorState__code { color: #252932; font-size: 98px; font-weight: 700; line-height: 150px; }
+.errorState__code i { font-size: 78px; padding: 0 10px; }
+.errorState__primary { color: var(--bold-color-primary); }
+.errorState__pink { color: var(--bold-color-pink); }
+.errorState__info { color: var(--bold-color-info); }
+.errorState h2 { margin: 10px 0; color: var(--bold-color-heading); font-family: var(--bold-font-ui); font-size: 30px; font-weight: 500; line-height: 35px; }
+.errorState p { margin: 0 0 10px; color: var(--bold-color-legacy-muted); line-height: 1.6; }
+.errorState p a { color: #337ab7; }
+.errorState p a:hover, .errorState p a:focus { color: #23527c; }

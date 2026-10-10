@@ -1,0 +1,55 @@
+.contactActivityCard {
+  position: relative;
+}
+.contactActivityCard__avatar {
+  float: left;
+}
+.contactActivityCard__avatar img {
+  width: 80px;
+  height: 80px;
+}
+.contactActivityCard__info {
+  padding-left: 100px;
+  padding-bottom: 20px;
+}
+.contactActivityCard__info h4,
+.contactActivityCard__info p {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}
+.contactActivityCard__info h4,
+.contactActivityCard__activity > h4 {
+  font: 600 16px/16px var(--bold-font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.contactActivityCard__info h4 {
+  margin: 0 0 5px;
+}
+.contactActivityCard__position {
+  color: var(--bold-color-legacy-muted);
+}
+.contactActivityCard__info p i {
+  margin-right: 10px;
+}
+.contactActivityCard__info small {
+  font-size: 85%;
+}
+.contactActivityCard__buttons {
+  margin-top: 20px;
+}
+.contactActivityCard__buttons .contactActivityCard__spaced {
+  margin-left: 5px;
+}
+.contactActivityCard__activity {
+  padding: 20px;
+}
+.contactActivityCard__activity > h4 {
+  margin: 10px 0 20px;
+}
+.contactActivityCard__scroll {
+  padding-inline: 10px;
+}

@@ -1,0 +1,37 @@
+.crmToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.crmToolbar > div {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  padding-inline: 10px;
+}
+.crmToolbar .crmToolbar__add {
+  margin-bottom: 30px;
+  padding: 8px 16px;
+}
+.crmToolbar--opportunity .crmToolbar__add {
+  float: right;
+}
+@media (min-width: 768px) {
+  .crmToolbar--person .crmToolbar__search {
+    width: 66.66666667%;
+  }
+  .crmToolbar--person .crmToolbar__actions {
+    width: 33.33333333%;
+  }
+  .crmToolbar--lead .crmToolbar__search {
+    width: 58.33333333%;
+  }
+  .crmToolbar--lead .crmToolbar__actions {
+    width: 41.66666667%;
+  }
+}
+@media (min-width: 992px) {
+  .crmToolbar--opportunity > div {
+    width: 50%;
+  }
+}

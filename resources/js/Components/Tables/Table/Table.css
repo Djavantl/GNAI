@@ -1,0 +1,69 @@
+.boldTable {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+  border-spacing: 0;
+  border-collapse: collapse;
+  background: transparent;
+}
+.boldTable > thead > tr > th,
+.boldTable > tbody > tr > th,
+.boldTable > tfoot > tr > th,
+.boldTable > thead > tr > td,
+.boldTable > tbody > tr > td,
+.boldTable > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ebeff2;
+}
+.boldTable th {
+  text-align: left;
+  font-weight: 600;
+  color: #666;
+}
+.boldTable tbody {
+  color: #797979;
+}
+.boldTable > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ebeff2;
+}
+.boldTable > thead:first-child > tr:first-child > th,
+.boldTable > thead:first-child > tr:first-child > td {
+  border-top: 0;
+}
+.boldTable.table-bordered,
+.boldTable.table-bordered th,
+.boldTable.table-bordered td {
+  border: 1px solid #ebeff2;
+}
+.boldTable.table-striped > tbody > tr:nth-of-type(odd),
+.boldTable.table-hover > tbody > tr:hover,
+.boldTable tr.active > td,
+.boldTable td.active {
+  background: #f4f8fb !important;
+}
+.boldTable.table-condensed > thead > tr > th,
+.boldTable.table-condensed > tbody > tr > td {
+  padding: 5px;
+}
+.boldTable tr.success > td {
+  background: #dff0d8;
+}
+.boldTable tr.info > td {
+  background: #d9edf7;
+}
+.boldTable tr.warning > td {
+  background: #fcf8e3;
+}
+.boldTable tr.danger > td {
+  background: #f2dede;
+}
+.boldTable a {
+  color: #337ab7;
+}
+.boldTable a:hover {
+  color: #23527c;
+  text-decoration: underline;
+}

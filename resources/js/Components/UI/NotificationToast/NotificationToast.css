@@ -1,0 +1,156 @@
+.notificationToastLayer {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.notificationToastLayer--top-left {
+  top: 10px;
+  left: 10px;
+}
+
+.notificationToastLayer--top-right {
+  top: 10px;
+  right: 10px;
+}
+
+.notificationToastLayer--top-center {
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.notificationToastLayer--bottom-left {
+  bottom: 10px;
+  left: 10px;
+}
+
+.notificationToastLayer--bottom-right {
+  right: 10px;
+  bottom: 10px;
+}
+
+.notificationToastLayer--bottom-center {
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.notificationToastLayer--left-middle {
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+.notificationToastLayer--right-middle {
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.notificationToast {
+  position: relative;
+  min-width: 250px;
+  min-height: 52px;
+  margin: 5px;
+  color: #444444;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  animation: notificationDropdownOpen 0.3s ease-out;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.notificationToast__image {
+  position: absolute;
+  top: 50%;
+  left: 25px;
+  display: table;
+  width: auto;
+  height: auto;
+  font-size: 24px;
+  transform: translate(-50%, -50%);
+}
+
+.notificationToast__textWrapper {
+  display: inline-block;
+  clear: both;
+  margin: 10px 10px 10px 52px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.notificationToast__title {
+  margin-bottom: 5px;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 20px;
+}
+
+.notificationToast__text {
+  max-width: 360px;
+  font-size: 12px;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+.notificationToast__clearfix {
+  display: block;
+  clear: both;
+}
+
+.notificationToast__confirmButton {
+  margin-right: 4px;
+}
+
+.notificationToast--custom {
+  color: #fafafa;
+  background-color: #5fbeaa;
+  border: 1px solid #5fbeaa;
+}
+
+.notificationToast--info {
+  color: #fafafa;
+  background-color: #34d3eb;
+  border: 1px solid #29b6f6;
+}
+
+.notificationToast--success {
+  color: #fafafa;
+  background-color: #81c868;
+  border: 1px solid #33b86c;
+}
+
+.notificationToast--warning {
+  color: #fafafa;
+  background-color: #ffbd4a;
+  border: 1px solid #ffd740;
+}
+
+.notificationToast--error {
+  color: #fafafa;
+  background-color: #f05050;
+  border: 1px solid #ef5350;
+}
+
+.notificationToast--black {
+  color: #fafafa;
+  background-color: #4c5667;
+  border: 1px solid #212121;
+}
+
+.notificationToast--white {
+  background-color: #e6eaed;
+  border: 1px solid #dddddd;
+}
+
+@keyframes notificationDropdownOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

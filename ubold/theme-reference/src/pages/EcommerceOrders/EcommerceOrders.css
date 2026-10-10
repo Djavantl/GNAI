@@ -1,0 +1,23 @@
+.ecommerceOrders__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px -10px;
+}
+.ecommerceOrders__toolbar > div {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 10px;
+}
+@media (min-width: 768px) {
+  .ecommerceOrders__toolbar > div {
+    width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  .ecommerceOrders__search {
+    width: 66.66666667% !important;
+  }
+  .ecommerceOrders__sort {
+    width: 33.33333333% !important;
+  }
+}

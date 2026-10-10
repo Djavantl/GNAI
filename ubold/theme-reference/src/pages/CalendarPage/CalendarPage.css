@@ -1,0 +1,19 @@
+.calendarPage {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.calendarPage__categories,
+.calendarPage__calendar {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 10px;
+}
+@media (min-width: 992px) {
+  .calendarPage__categories {
+    width: 25%;
+  }
+  .calendarPage__calendar {
+    width: 75%;
+  }
+}

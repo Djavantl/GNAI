@@ -1,0 +1,14 @@
+@import url('/assets/gnai/plugins/jvectormap/jquery-jvectormap-2.0.2.css');
+
+.vectorMap {
+  width: 100%;
+}
+.vectorMap .jvectormap-zoomin,
+.vectorMap .jvectormap-zoomout {
+  width: 10px;
+  height: 10px;
+  line-height: 10px;
+}
+.vectorMap .jvectormap-zoomout {
+  top: 40px;
+}

@@ -1,0 +1,3 @@
+.inputAction { display: flex; align-items: center; }
+.inputAction .textInput { min-width: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.inputAction .button { flex: none; padding: 8px 12px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }

@@ -1,0 +1,122 @@
+.tableSurface {
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+.tableSurface .row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+.tableSurface [class*='col-sm-'] {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.tableSurface .table {
+  font-size: 14px;
+}
+.tableSurface .table th {
+  font-weight: 600;
+  font-family: inherit;
+}
+.tableSurface .table th,
+.tableSurface .table td {
+  line-height: 20px;
+}
+.tableSurface a {
+  color: #337ab7;
+}
+.tableSurface a:hover {
+  color: #23527c;
+}
+.tableSurface .pagination {
+  padding-left: 0;
+  list-style: none;
+}
+.tableSurface .form-control {
+  font-family: inherit;
+}
+.tableSurface .dropdown-menu {
+  list-style: none;
+}
+.tableSurface .table-responsive {
+  overflow-x: auto;
+}
+.tableSurface .co-name {
+  display: block;
+  font-size: 0.9em;
+  font-weight: 400;
+}
+.tableSurface div.dataTables_info {
+  padding-top: 38px;
+}
+.tableSurface div.dataTables_paginate ul.pagination {
+  margin-top: 30px;
+}
+.tableSurface .fixed-table-pagination .pagination-detail,
+.tableSurface .fixed-table-pagination div.pagination {
+  margin-top: 20px;
+}
+.tableSurface.table-rep-plugin .table-responsive {
+  border: 0 !important;
+}
+.tableSurface.table-rep-plugin tbody th {
+  font-size: 14px;
+  font-weight: 400;
+}
+.tableSurface .co-name {
+  display: inline;
+  font-size: inherit;
+  font-weight: inherit;
+}
+.tableSurface .form-control.input-sm {
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.tableSurface .table-bordered {
+  border: 1px solid #ebeff2;
+}
+.tableSurface .fixed-table-container thead th .th-inner {
+  padding: 9px 12px;
+}
+.tableSurface label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.tableSurface .dataTables_length label,
+.tableSurface .dataTables_filter label {
+  font-weight: 400;
+}
+.tableSurface .table-responsive {
+  border: 0;
+}
+.tableSurface .table.m-0 {
+  margin: 0;
+}
+.tableSurface .table-bordered > thead:first-child > tr:first-child > th {
+  border-top: 1px solid #ebeff2;
+}
+.tableSurface .table-responsive {
+  margin-bottom: 0;
+}
+/* Native search controls are reset in the legacy Bootstrap normalize rules. */
+.tableSurface input[type='search']::-webkit-search-cancel-button,
+.tableSurface input[type='search']::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+.tableSurface input[type='checkbox'],
+.tableSurface input[type='radio'] {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 4px 0 0;
+  line-height: normal;
+}
+
+/* Match the legacy pagination in its hover and keyboard-focus states. */
+.tableSurface .pagination > li > a:hover,
+.tableSurface .pagination > li > a:focus {
+  text-decoration: none;
+}

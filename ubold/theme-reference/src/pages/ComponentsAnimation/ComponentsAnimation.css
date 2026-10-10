@@ -1,0 +1,188 @@
+.componentsAnimationPage {
+  color: #797979;
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+
+.componentsAnimationPage__container {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.componentsAnimationPage__pageTitleRow,
+.componentsAnimationPage__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.componentsAnimationPage__pageTitleRow::before,
+.componentsAnimationPage__pageTitleRow::after,
+.componentsAnimationPage__row::before,
+.componentsAnimationPage__row::after {
+  display: table;
+  content: " ";
+}
+
+.componentsAnimationPage__pageTitleRow::after,
+.componentsAnimationPage__row::after {
+  clear: both;
+}
+
+.componentsAnimationPage__row--content {
+  min-height: 1000px;
+}
+
+.componentsAnimationPage__col {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.componentsAnimationPage__col--full,
+.componentsAnimationPage__col--control {
+  width: 100%;
+}
+
+.componentsAnimationPage__pageTitle {
+  margin: 7px 0 0;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.componentsAnimationPage .pageBreadcrumb.breadcrumb {
+  padding: 10px 15px 8px 0;
+  color: #797979;
+}
+
+.componentsAnimationPage__card {
+  margin-bottom: 20px;
+}
+
+.componentsAnimationPage__sectionTitle {
+  margin: 0 0 8px;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.componentsAnimationPage__sectionTitle b {
+  font-weight: 600;
+}
+
+.componentsAnimationPage__description {
+  margin: 0 0 30px;
+  color: #98a6ad;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.componentsAnimationPage__sandboxWrapper {
+  margin-bottom: 0;
+}
+
+.componentsAnimationPage #animationSandbox h1 {
+  margin: 10px 0;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 43px;
+}
+
+.componentsAnimationPage__form {
+  margin: 0 0 30px;
+}
+
+.componentsAnimationPage__inputGroup {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+}
+
+.componentsAnimationPage__select {
+  position: relative;
+  z-index: 2;
+  float: left;
+  display: table-cell;
+  width: 100%;
+  height: 38px;
+  margin-bottom: 0;
+  padding: 7px 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px 0 0 4px;
+  background-color: #ffffff;
+  background-image: none;
+  box-shadow: none;
+  color: #565656;
+  font-size: 14px;
+  line-height: 1.42857143;
+  transition: all 300ms linear;
+}
+
+.componentsAnimationPage__select:focus {
+  border-color: #aaaaaa;
+  box-shadow: none;
+  outline: 0 !important;
+  color: #333333;
+}
+
+.componentsAnimationPage__inputGroupButton {
+  position: relative;
+  display: table-cell;
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.componentsAnimationPage__button {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  min-width: 113px;
+  height: 38px;
+  margin-left: -1px;
+  margin-bottom: 0;
+  padding: 8px 12px;
+  border: 1px solid #5fbeaa;
+  border-radius: 0 3px 3px 0;
+  background-color: #5fbeaa;
+  background-image: none;
+  color: #ffffff;
+  font-family: var(--bold-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.componentsAnimationPage__button:hover,
+.componentsAnimationPage__button:focus {
+  border-color: #5fbeaa;
+  background-color: #5fbeaa;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.componentsAnimationPage__button:active {
+  background-image: none;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  outline: 0;
+}
+
+@media (min-width: 768px) {
+  .componentsAnimationPage__col--control {
+    width: 66.66666667%;
+    margin-left: 16.66666667%;
+  }
+}

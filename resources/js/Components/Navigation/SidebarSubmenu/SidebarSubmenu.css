@@ -1,0 +1,15 @@
+.sidebarSubmenu {
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 350ms ease;
+}
+
+.sidebarSubmenu--open {
+  pointer-events: auto;
+}
+
+.sidebarSubmenu--collapsed {
+  display: none !important;
+}

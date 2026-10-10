@@ -1,0 +1,9 @@
+/* Theme overrides load after the RWD plugin, as on the legacy page. */
+.tableSurface table.focus-on tbody tr.focused th,
+.tableSurface table.focus-on tbody tr.focused td {
+  background-color: var(--bold-color-custom, #5fbeaa);
+  color: #fff;
+}
+.tableSurface.table-rep-plugin .checkbox-row label {
+  font-weight: 400;
+}

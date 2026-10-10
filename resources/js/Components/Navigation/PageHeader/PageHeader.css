@@ -1,0 +1,32 @@
+.pageHeader {
+  margin-bottom: 0;
+}
+
+.pageHeader--breadcrumb .pageBreadcrumb.breadcrumb {
+  padding-right: 15px;
+  padding-bottom: 8px;
+}
+
+.pageHeader--banner {
+  margin: -25px -20px 22px;
+  padding: 25px 20px 0;
+  border-bottom: 1px solid #dee2e8;
+  background: #e3e7ec;
+}
+
+.pageHeader__title {
+  margin: 7px 0 0;
+  color: #505458;
+  font-family: var(--bold-font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.pageHeader__subtitle {
+  margin: 10px 0 23px;
+  color: #98a6ad;
+  font-family: var(--bold-font-body);
+  font-size: 14px;
+  line-height: 1.6;
+}
