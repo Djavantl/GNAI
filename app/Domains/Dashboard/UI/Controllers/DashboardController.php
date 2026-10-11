@@ -12,6 +12,6 @@ final class DashboardController
 {
     public function index(DashboardMetricsQuery $query): InertiaResponse
     {
-        return Inertia::render('Dashboard', $query->execute());
+        return Inertia::render('Dashboard/Overview/Index', $query->execute());
     }
 }

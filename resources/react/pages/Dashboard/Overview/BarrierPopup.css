@@ -1,0 +1,28 @@
+/* Ubold popover styling, scoped to the Leaflet positioning wrapper. */
+.barrierPopup .leaflet-popup-content-wrapper {
+  padding: 1px;
+  border: 0;
+  border-radius: 3px;
+  background: #fff;
+  color: #797979;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+}
+.barrierPopup .leaflet-popup-content {
+  margin: 0;
+  width: 240px !important;
+  font: 400 14px/1.42857143 var(--ui-font-body);
+  overflow-wrap: anywhere;
+}
+.barrierPopup__title {
+  margin: 0;
+  padding: 8px 30px 8px 14px;
+  border-bottom: 1px solid #ebebeb;
+  color: #5fbeaa;
+  font: 600 14px/1.5 var(--ui-font-ui);
+}
+.barrierPopup__content { padding: 9px 14px; }
+.barrierPopup .barrierPopup__category { margin: 0 0 10px; }
+.barrierPopup__actions { margin-top: 14px; }
+.barrierPopup .leaflet-popup-tip { background: #fff; box-shadow: 0 5px 10px rgba(0, 0, 0, .2); }
+.barrierPopup a.leaflet-popup-close-button { top: 7px; right: 5px; color: #98a6ad; font-size: 20px; }
+.barrierPopup a.leaflet-popup-close-button:hover { color: #505458; }

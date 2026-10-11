@@ -1,6 +1,21 @@
 import KnobChart from "@/components/UI/KnobChart/KnobChart";
 import "./RevenueSummaryCard.css";
 
+const knobOptions = {
+  width: 150,
+  height: 150,
+  lineCap: "round",
+  fgColor: "#fb6d9d",
+  skin: "tron",
+  angleOffset: 180,
+  readOnly: true,
+  thickness: 0.15,
+  draw(this: { xy: number; lineWidth: number; scale: number; radius: number }): void {
+    // Keep the rounded stroke inside the canvas, including its antialiased edge.
+    this.radius = this.xy - this.lineWidth / 2 - 2 * this.scale;
+  },
+};
+
 interface RevenueMetric {
   label: string;
   value: string;
@@ -31,16 +46,8 @@ export default function RevenueSummaryCard({
         <div className="revenueSummaryCard__chart" aria-hidden="true">
           <KnobChart
             value={progress}
-            options={{
-              width: 150,
-              height: 150,
-              lineCap: "round",
-              fgColor: "#fb6d9d",
-              skin: "tron",
-              angleOffset: 180,
-              readOnly: true,
-              thickness: 0.15,
-            }}
+            options={knobOptions}
+            animate
           />
         </div>
 

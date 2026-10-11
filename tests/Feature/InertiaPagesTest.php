@@ -51,6 +51,23 @@ final class InertiaPagesTest extends TestCase
         }
     }
 
+    public function test_dashboard_exposes_metrics_to_the_migrated_page(): void
+    {
+        $this->withoutVite();
+        $this->actingAs(User::factory()->create(['is_admin' => true]));
+
+        $this->get('/auth/dashboard')->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard/Overview/Index')
+            ->where('specializedEducationalSupport.totalStudents', 0)
+            ->where('specializedEducationalSupport.totalPeis', 0)
+            ->has('specializedEducationalSupport.pendenciesByPriority')
+            ->has('specializedEducationalSupport.sessionsByStatus')
+            ->where('inclusiveRadar.totalBarriers', 0)
+            ->has('inclusiveRadar.barrierStatusCounts', 0)
+            ->has('inclusiveRadar.mapBarriers', 0)
+        );
+    }
+
     public function test_inertia_partial_reload_returns_filtered_props_instead_of_html(): void
     {
         $this->withoutVite();

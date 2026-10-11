@@ -86,8 +86,8 @@ final readonly class InclusiveRadarDashboardQuery
      * @return Collection<int, array{
      *     id: int,
      *     name: string,
-     *     lat: float,
-     *     lng: float,
+     *     lat: float|null,
+     *     lng: float|null,
      *     status: string,
      *     status_label: string,
      *     blocks_map: bool,
@@ -110,8 +110,8 @@ final readonly class InclusiveRadarDashboardQuery
                 return [
                     'id' => $barrier->id,
                     'name' => $barrier->name,
-                    'lat' => (float) $barrier->latitude,
-                    'lng' => (float) $barrier->longitude,
+                    'lat' => $barrier->latitude !== null ? (float) $barrier->latitude : null,
+                    'lng' => $barrier->longitude !== null ? (float) $barrier->longitude : null,
                     'status' => $currentStatus->value,
                     'status_label' => $currentStatus->label(),
                     'blocks_map' => (bool) ($barrier->category?->blocks_map ?? false),
