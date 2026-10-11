@@ -15,6 +15,7 @@ interface TopBarPrimaryProps {
   smallMenu?: boolean;
   brand?: string;
   compactLogoSrc?: string;
+  expandedLogoText?: string;
   homeHref?: string;
   leadingContent?: ReactNode;
   user?: { name: string; photo_url: string };
@@ -26,7 +27,7 @@ interface TopBarPrimaryProps {
 
 }
 
-export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false, brand = 'Interface', compactLogoSrc, homeHref = 'index.html', leadingContent, user, profileItems, notificationItems, unreadCount, notificationsHref, settingsHref }: TopBarPrimaryProps): React.JSX.Element {
+export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false, brand = 'Interface', compactLogoSrc, expandedLogoText, homeHref = 'index.html', leadingContent, user, profileItems, notificationItems, unreadCount, notificationsHref, settingsHref }: TopBarPrimaryProps): React.JSX.Element {
   const { url } = usePage();
   const [notificationsOpen, setNotificationsOpen] = useState<boolean>(false);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
@@ -96,11 +97,11 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
   return (
     <>
       <header className={`topbar ${sidebarCollapsed ? 'topbar--collapsed' : ''} ${smallMenu ? 'topbar--small' : ''}`}>
-        <div className="topbar__left">
+        <div className={`topbar__left${expandedLogoText ? ' topbar__left--wordmark' : ''}`}>
           <div className="topbar__leftInner">
-            <Link href={homeHref} className="topbar__logo" aria-label={`Início - ${brand}`}>
+            <Link href={homeHref} className={`topbar__logo${expandedLogoText ? ' topbar__logo--wordmark' : ''}`} aria-label={`Início - ${brand}`}>
               {compactLogoSrc ? <img src={compactLogoSrc} className="topbar__compactLogo" alt="" /> : <i className="icon-magnet topbar__logoIcon" aria-hidden="true" />}
-              <span>{brand}</span>
+              <span>{expandedLogoText ?? brand}</span>
             </Link>
           </div>
         </div>

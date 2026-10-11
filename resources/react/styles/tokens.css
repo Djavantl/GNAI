@@ -22,6 +22,15 @@
   --ui-color-purple: #7266ba;
   --ui-color-warning: #ffbd4a;
 
+  --ui-sidebar-bg: #1d1c20;
+  --ui-sidebar-text: #ffffff;
+  --ui-sidebar-accent: #a78bfa;
+  --ui-sidebar-active-bg: #322b75;
+  --ui-sidebar-active-text: #ffffff;
+  --ui-sidebar-flyout-border: #322b75;
+
+  --ui-institution-hover-color: color-mix(in srgb, var(--ui-color-text) 80%, transparent);
+
   --ui-topbar-height: 60px;
   --ui-sidebar-width: 240px;
   --ui-sidebar-small-width: 180px;

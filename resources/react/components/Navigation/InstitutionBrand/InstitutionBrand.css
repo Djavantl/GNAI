@@ -12,7 +12,7 @@
   white-space: nowrap;
 }
 .topbar--collapsed .institutionBrand { max-width: calc(100vw - var(--ui-sidebar-collapsed-width) - 340px); }
-a.institutionBrand:hover, a.institutionBrand:focus { color: var(--ui-color-custom); }
+a.institutionBrand:hover, a.institutionBrand:focus { color: var(--ui-institution-hover-color); }
 @media (max-width: 767px) {
   .topbar .institutionBrand { max-width: calc(100vw - 200px); margin-left: 0; }
 }

@@ -25,7 +25,7 @@ export default function AppLayout({ children }: { children: ReactNode }): React.
   ];
 
   return <div className={`app-page gnaiApp${sidebar.collapsed ? ' app-page--sidebarCollapsed' : ''}`}>
-    <TopBarPrimary brand="Gnai" compactLogoSrc="/images/logo2.png" homeHref="/auth/dashboard" sidebarCollapsed={sidebar.collapsed}
+    <TopBarPrimary brand="Gnai" compactLogoSrc="/images/logo2.png" expandedLogoText="NAI" homeHref="/auth/dashboard" sidebarCollapsed={sidebar.collapsed}
       onToggleSidebar={sidebar.toggle} user={auth.user} profileItems={profileItems}
       notificationItems={topbar?.notifications ?? []} unreadCount={topbar?.unreadCount ?? 0}
       notificationsHref="/notifications" settingsHref="/auth/perfil"
