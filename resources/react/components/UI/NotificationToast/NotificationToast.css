@@ -4,6 +4,17 @@
   pointer-events: none;
 }
 
+.notificationToast__dismiss {
+  display: block;
+  margin-top: 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.notificationToast__dismiss:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
 .notificationToastLayer--top-left {
   top: 10px;
   left: 10px;

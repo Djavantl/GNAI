@@ -1,5 +1,7 @@
 .formSection { margin-bottom: 20px; }
-.formSection__title { margin: 0 0 8px; color: #505458; font-family: var(--ui-font-ui, 'Source Sans Pro', sans-serif); font-size: 16px; font-weight: 600; line-height: 16px; letter-spacing: .04em; text-transform: uppercase; }
-.formSection__title b { font-weight: inherit; }
+.formSection__title { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 2px solid var(--border-color); color: var(--ui-color-heading); font-family: var(--ui-font-ui, 'Source Sans Pro', sans-serif); font-size: 18px; font-weight: 600; line-height: 1.4; text-transform: uppercase; }
+.formSection__title i { flex-shrink: 0; }
+.formSection--inline { margin-bottom: 28px; min-width: 0; }
+.formSection--inline .formSection__title { margin: 0 0 20px; font-size: 18px; }
 .formSection__description { margin: 0 0 30px; color: #98a6ad; font-size: 13px; line-height: 1.6; }
 .formSection__description code { padding: 2px 4px; border-radius: 4px; background: #f4f8fb; color: #5d9cec; font: 90%/1.6 Menlo, Monaco, Consolas, 'Courier New', monospace; }

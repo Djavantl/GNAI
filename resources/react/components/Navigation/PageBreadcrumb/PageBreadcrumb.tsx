@@ -22,7 +22,7 @@ export default function PageBreadcrumb({ items }: PageBreadcrumbProps): React.JS
             ) : (
               <a
                 href={item.href}
-                onClick={(event: React.MouseEvent<HTMLAnchorElement>) => event.preventDefault()}
+                onClick={item.href === '#' ? (event) => event.preventDefault() : undefined}
               >
                 {item.label}
               </a>

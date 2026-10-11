@@ -1,24 +1,64 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type SelectHTMLAttributes } from "react";
 import { loadExternalScript } from "@/utils/loadExternalScript";
 import { loadExternalStylesheet } from "@/utils/loadExternalStylesheet";
-import type { SelectFieldGroup, SelectFieldRuntime } from "./SelectField.types";
+import type { SelectFieldCollection, SelectFieldGroup, SelectFieldOption, SelectFieldRuntime } from "./SelectField.types";
 import "@/components/Forms/TextInput/TextInput.css";
 import "./SelectField.css";
 export default function SelectField({
   id,
   name,
-  groups,
+  groups = [],
+  options,
   label,
-  defaultValue = "",
+  defaultValue,
+  enhanced = true,
+  placeholder = "Selecione",
+  ...props
 }: {
   id: string;
   name: string;
-  groups: SelectFieldGroup[];
+  groups?: SelectFieldGroup[];
+  options?: SelectFieldOption[];
   label: string;
-  defaultValue?: string;
-}): React.JSX.Element {
+  defaultValue?: SelectHTMLAttributes<HTMLSelectElement>['defaultValue'];
+  enhanced?: boolean;
+  placeholder?: string;
+} & Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'>): React.JSX.Element {
   const ref = useRef<HTMLSelectElement>(null);
+  const plugin = useRef<SelectFieldCollection | null>(null);
+  const nativeDisabled = useRef(props.disabled);
+  nativeDisabled.current = props.disabled;
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [nativeError, setNativeError] = useState('');
+  // Select2 owns its visible controls; keep them aligned with the native React select.
+  const synchronize = () => {
+    const element = ref.current;
+    const instance = plugin.current;
+    if (!element || !instance) return;
+    element.disabled = Boolean(nativeDisabled.current);
+    const disabled = element.matches(':disabled');
+    instance.select2("val", element.multiple
+      ? Array.from(element.selectedOptions, option => option.value) : element.value, false);
+    instance.select2("enable", !disabled);
+    const container = element.previousElementSibling;
+    const controls = [...(container?.querySelectorAll<HTMLElement>('.select2-focusser, .select2-input, .select2-choice') ?? [])];
+    const dropdown = instance.data('select2')?.dropdown[0];
+    controls.push(...(dropdown?.querySelectorAll<HTMLElement>('.select2-input') ?? []));
+    for (const control of controls) {
+      control.setAttribute('aria-label', element.getAttribute('aria-label') ?? '');
+      control.setAttribute('aria-disabled', String(disabled));
+      control.setAttribute('aria-required', String(element.required));
+      for (const attribute of ['aria-invalid', 'aria-describedby']) {
+        const value = element.getAttribute(attribute);
+        if (value) control.setAttribute(attribute, value);
+        else control.removeAttribute(attribute);
+      }
+    }
+  };
+  useLayoutEffect(synchronize);
   useEffect(() => {
+    if (!enhanced) return;
+    setLoadFailed(false);
     let disposed = false;
     let cleanup: (() => void) | undefined;
     const element = ref.current;
@@ -39,37 +79,65 @@ export default function SelectField({
         formatMatches: (count: number) =>
           `${count} resultado(s). Use as setas para navegar e Enter para selecionar.`,
       });
+      plugin.current = instance;
+      // jQuery's synthetic change does not reach React's native event delegation.
+      // Forward it once; native changes already have originalEvent.
+      instance.on('change.gnaiSelect', event => {
+        if (element.validity.valid) setNativeError('');
+        if (!event.originalEvent) element.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      const focus = () => { if (!element.matches(':disabled')) instance.select2('focus'); };
+      const invalid = (event: Event) => {
+        event.preventDefault();
+        setNativeError(element.validationMessage);
+        focus();
+      };
+      const labels = Array.from(element.labels ?? []);
+      labels.forEach(label => label.addEventListener('click', focus));
+      element.addEventListener('focus', focus);
+      element.addEventListener('invalid', invalid);
       cleanup = () => {
+        plugin.current = null;
+        labels.forEach(label => label.removeEventListener('click', focus));
+        element.removeEventListener('focus', focus);
+        element.removeEventListener('invalid', invalid);
+        instance.off('.gnaiSelect');
         instance.select2("destroy");
       };
+      synchronize();
     };
-    void initialize().catch(console.error);
+    void initialize().catch(() => {
+      if (!disposed) {
+        cleanup?.();
+        cleanup = undefined;
+        setLoadFailed(true);
+      }
+    });
     return () => {
       disposed = true;
       cleanup?.();
     };
-  }, []);
+  }, [enhanced, id, props.multiple]);
   return (
     <div className="selectField">
       <select
+        {...props}
         ref={ref}
         id={id}
         name={name}
         aria-label={label}
+        aria-invalid={nativeError ? true : props['aria-invalid']}
+        aria-describedby={[props['aria-describedby'], nativeError ? `${id}-validation` : undefined].filter(Boolean).join(' ') || undefined}
         className="textInput"
-        defaultValue={defaultValue}
+        defaultValue={props.value === undefined ? defaultValue ?? (props.multiple ? [] : "") : undefined}
       >
-        <option value="">Selecione</option>
-        {groups.map((group) => (
-          <optgroup label={group.label} key={group.label}>
-            {group.options.map((option) => (
-              <option value={option.value} key={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </optgroup>
+        <option value="">{placeholder}</option>
+        {(options ?? groups.flatMap(group => group.options)).map((option) => (
+          <option value={option.value} key={option.value}>{option.label}</option>
         ))}
       </select>
+      {nativeError ? <span id={`${id}-validation`} className="selectField__error" role="alert">{nativeError}</span> : null}
+      {loadFailed ? <span className="selectField__fallback" role="status">Não foi possível carregar a busca. Use a seleção acima.</span> : null}
     </div>
   );
 }

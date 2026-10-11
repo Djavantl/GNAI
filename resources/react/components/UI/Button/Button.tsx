@@ -6,6 +6,8 @@ export type ButtonTone =
   | 'default'
   | 'white'
   | 'primary'
+  | 'save'
+  | 'cancel'
   | 'dark-blue'
   | 'dark-red'
   | 'success'
@@ -42,6 +44,7 @@ interface ButtonCommonProps {
   outline?: boolean;
   block?: boolean;
   iconOnly?: boolean;
+  showIcon?: boolean;
   disabled?: boolean;
   leftIconClass?: string;
   rightIconClass?: string;
@@ -55,10 +58,13 @@ interface ButtonCommonProps {
   'aria-expanded'?: boolean;
   'aria-haspopup'?: 'menu';
   'aria-controls'?: string;
+  'aria-describedby'?: string;
 }
 
 type ButtonAsAnchorProps = ButtonCommonProps & {
   href: string;
+  target?: React.HTMLAttributeAnchorTarget;
+  rel?: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
@@ -81,17 +87,17 @@ function renderButtonInner({
   const labelContent = children ?? (label ? <span>{label}</span> : null);
   const labelIcon = labelIconClass ? (
     <span className={joinClassNames('button__label', labelRight ? 'button__label--right' : undefined)}>
-      <i className={labelIconClass} />
+      <i className={labelIconClass} aria-hidden="true" />
     </span>
   ) : null;
 
   return (
     <>
       {!labelRight ? labelIcon : null}
-      {leftIconClass ? <i className={joinClassNames(leftIconClass, label || children ? 'm-r-5' : undefined)} /> : null}
+      {leftIconClass ? <i className={joinClassNames(leftIconClass, label || children ? 'm-r-5' : undefined)} aria-hidden="true" /> : null}
       {labelContent}
       {labelRight ? labelIcon : null}
-      {rightIconClass ? <i className={joinClassNames(rightIconClass, label || children ? 'm-l-5' : undefined)} /> : null}
+      {rightIconClass ? <i className={joinClassNames(rightIconClass, label || children ? 'm-l-5' : undefined)} aria-hidden="true" /> : null}
     </>
   );
 }
@@ -107,8 +113,9 @@ export default function Button(props: ButtonProps): React.JSX.Element {
     outline = false,
     block = false,
     iconOnly = false,
+    showIcon = true,
     disabled = false,
-    leftIconClass,
+    leftIconClass = tone === 'save' ? 'fa fa-save' : tone === 'cancel' ? 'fa fa-times' : undefined,
     rightIconClass,
     labelIconClass,
     labelRight = false,
@@ -137,9 +144,9 @@ export default function Button(props: ButtonProps): React.JSX.Element {
   const content = renderButtonInner({
     label,
     children,
-    leftIconClass,
-    rightIconClass,
-    labelIconClass,
+    leftIconClass: showIcon ? leftIconClass : undefined,
+    rightIconClass: showIcon ? rightIconClass : undefined,
+    labelIconClass: showIcon ? labelIconClass : undefined,
     labelRight
   });
 
@@ -147,9 +154,12 @@ export default function Button(props: ButtonProps): React.JSX.Element {
     return (
       <a
         href={props.href}
+        target={props.target}
+        rel={props.rel}
         className={classNames}
         aria-disabled={disabled}
         aria-label={props['aria-label']}
+        aria-describedby={props['aria-describedby']}
         aria-expanded={props['aria-expanded']}
         aria-haspopup={props['aria-haspopup']}
         aria-controls={props['aria-controls']}
@@ -181,6 +191,7 @@ export default function Button(props: ButtonProps): React.JSX.Element {
       disabled={disabled}
       className={classNames}
       aria-label={props['aria-label']}
+      aria-describedby={props['aria-describedby']}
       aria-expanded={props['aria-expanded']}
       aria-haspopup={props['aria-haspopup']}
       aria-controls={props['aria-controls']}

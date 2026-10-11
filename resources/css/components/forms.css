@@ -348,12 +348,12 @@ form .row .row [class*="col-"] {
 }
 
 .custom-input{
-    border-color: #b6accf !important; /* roxo base */
+    border-color: var(--input-border-color) !important; /* roxo base */
     transition: border-color .2s ease, box-shadow .2s ease;
 }
 
 .custom-input:focus {
-    border-color: #7c3aed !important; /* roxo mais forte no foco */
+    border-color: var(--input-focus-border-color) !important; /* roxo mais forte no foco */
     box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
     outline: none;
 }

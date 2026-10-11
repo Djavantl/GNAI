@@ -6,7 +6,8 @@ import './SummernoteEditor.plugin.css';
 import './SummernoteEditor.css';
 
 export default function SummernoteEditor(props: SummernoteEditorProps): React.JSX.Element {
-  const id = useId();
+  const generatedId = useId();
+  const id = props.id ?? generatedId;
   const host = useRef<HTMLDivElement>(null);
   useSummernote(host, props);
   return <div id={id} ref={host} className={`summernoteEditor ${props.className ?? ''}`} style={props.style} />;

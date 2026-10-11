@@ -731,7 +731,7 @@
 
 .select2-results .select2-highlighted {
   color: #ffffff;
-  background-color: #5fbeaa;
+  background-color: var(--ui-color-gnai-primary);
 }
 
 .select2-drop-active {
@@ -778,7 +778,7 @@
 }
 
 .formAdvancedPage__select2Dropdown .select2-results .select2-highlighted {
-  background-color: #5fbeaa !important;
+  background-color: var(--ui-color-gnai-primary) !important;
   color: #ffffff;
 }
 

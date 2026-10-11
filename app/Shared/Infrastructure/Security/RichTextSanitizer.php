@@ -37,7 +37,7 @@ final class RichTextSanitizer
         return self::sanitize($value);
     }
 
-    public static function sanitize(string $html): string
+    public static function sanitize(string $html, bool $decodeEntities = true): string
     {
         $document = new DOMDocument('1.0', 'UTF-8');
 
@@ -62,7 +62,8 @@ final class RichTextSanitizer
             $output .= $document->saveHTML($child);
         }
 
-        return trim(html_entity_decode($output, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        // HTML consumers must keep escaped text escaped when inserting markup.
+        return trim($decodeEntities ? html_entity_decode($output, ENT_QUOTES | ENT_HTML5, 'UTF-8') : $output);
     }
 
     public static function toPlainText(string $html): string

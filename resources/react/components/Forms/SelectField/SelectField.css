@@ -1,5 +1,27 @@
+.selectField {
+  min-width: 0;
+}
 .selectField .select2-container {
   width: 100% !important;
+  height: auto;
+  min-height: 38px;
+  border: 1px solid var(--input-border, var(--ui-color-input-border));
+  border-radius: 4px;
+  background: #fff;
+  padding: 7px 12px;
+  transition: border-color 300ms linear;
+}
+.selectField .select2-container.select2-container-active,
+.selectField .select2-container.select2-dropdown-open,
+.selectField .select2-container:focus-within {
+  border-color: var(--input-focus-border, var(--ui-color-input-focus-border));
+}
+.selectField .select2-container.select2-container-disabled {
+  background: #eee;
+  cursor: not-allowed;
+}
+.selectField .select2-container :is(.select2-choice, .select2-input, .select2-focusser):focus-visible {
+  outline: 0;
 }
 .selectField .select2-container .select2-choice {
   background-image: none !important;
@@ -26,11 +48,52 @@
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
 }
 .selectFieldDropdown .select2-search input {
-  border: 1px solid #e3e3e3;
+  border: 1px solid #e3e3e3 !important;
   height: 30px;
   font: 14px/20px var(--ui-font-body);
+  border-radius: 4px;
+  transition: border-color 300ms linear;
+}
+.selectFieldDropdown .select2-search input:focus {
+  border-color: #e3e3e3 !important;
+  outline: 0;
+  box-shadow: none;
 }
 .selectFieldDropdown .select2-results .select2-highlighted {
   color: #fff;
-  background-color: #5fbeaa;
+  background-color: var(--ui-color-gnai-primary) !important;
+}
+.selectField .select2-container-multi {
+  padding: 0;
+}
+.selectField .select2-container-multi .select2-choices {
+  min-height: 36px;
+  border: 0 !important;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none !important;
+}
+.selectField .select2-container-multi .select2-search-choice {
+  margin: 5px 0 3px 5px;
+  padding: 4px 7px 4px 18px;
+  border-color: #e5e5e5;
+  background: #f5f5f5;
+  color: #555;
+  box-shadow: none;
+}
+.selectField .select2-container-multi .select2-search-field input {
+  padding: 7px 7px 7px 10px;
+  font-family: inherit;
+}
+.selectField__fallback {
+  display: block;
+  margin-top: 5px;
+  color: #666;
+  font-size: 12px;
+}
+.selectField__error {
+  display: block;
+  margin-top: 5px;
+  color: var(--ui-color-danger);
+  font-size: 12px;
 }

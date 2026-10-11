@@ -6,7 +6,7 @@
   height: 38px;
   margin: 0;
   padding: 7px 12px;
-  border: 1px solid var(--input-border, #e3e3e3);
+  border: 1px solid var(--input-border, var(--ui-color-input-border));
   border-radius: 4px;
   background: #fff;
   color: #565656;
@@ -18,5 +18,5 @@
 }
 .textInput:disabled, .textInput[readonly] { background-color: #eee; opacity: 1; }
 .textInput:disabled { cursor: not-allowed; }
-.textInput:focus { border-color: var(--input-focus-border, #aaa); background-color: #fff; color: #333; outline: 0; box-shadow: none; }
+.textInput:focus { border-color: var(--input-focus-border, var(--ui-color-input-focus-border)); background-color: #fff; color: #333; outline: 0; box-shadow: none; }
 .textInput::placeholder { color: #999; opacity: 1; }

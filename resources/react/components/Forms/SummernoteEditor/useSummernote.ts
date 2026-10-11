@@ -5,10 +5,16 @@ import { trackSummernoteDocumentEvents } from './SummernoteEditor.events';
 import { completeSummernoteLocale } from './SummernoteEditor.locale';
 import type { SummernoteCollection, SummernoteEditorProps, SummernoteRuntime } from './SummernoteEditor.types';
 
-export function useSummernote(host: RefObject<HTMLDivElement | null>, { defaultValue = '', mode = 'standard', height = 350, label = 'Editor de texto', onChange }: SummernoteEditorProps): void {
+export function useSummernote(host: RefObject<HTMLDivElement | null>, { defaultValue = '', mode = 'standard', height = 350, label = 'Editor de texto', onChange, id, disabled = false, invalid = false, describedBy, onLoadError, toolbar }: SummernoteEditorProps): void {
   const initialValue = useRef(defaultValue);
   const callback = useRef(onChange);
   callback.current = onChange;
+  const state = useRef({ disabled, invalid, describedBy });
+  state.current = { disabled, invalid, describedBy };
+  const failure = useRef(onLoadError);
+  failure.current = onLoadError;
+  const updateControls = useRef<(() => void) | undefined>(undefined);
+  useEffect(() => { updateControls.current?.(); }, [disabled, invalid, describedBy]);
   useEffect(() => {
     let cancelled = false;
     let editor: SummernoteCollection | undefined;
@@ -18,6 +24,7 @@ export function useSummernote(host: RefObject<HTMLDivElement | null>, { defaultV
     const root = host.current;
     let cleanupFullscreen: (() => void) | undefined;
     let cleanupDocumentEvents: (() => void) | undefined;
+    const labelListeners: Array<{ element: HTMLLabelElement; handler: () => void }> = [];
     async function initialize(): Promise<void> {
       // Reuse the existing jQuery/Bootstrap interaction runtime already used by FormPickers.
       for (const src of ['/assets/react/js/jquery.min.js', '/assets/react/js/bootstrap.min.js', '/assets/react/plugins/summernote/summernote.min.js', '/assets/react/plugins/summernote/summernote-pt-BR.js']) await loadExternalScript(src);
@@ -34,7 +41,7 @@ export function useSummernote(host: RefObject<HTMLDivElement | null>, { defaultV
       document.body.append(overlay);
       const oldAirNodes = new Set(Array.from(document.querySelectorAll('body > .note-air-layout')));
       editor = runtime(holder);
-      cleanupDocumentEvents = trackSummernoteDocumentEvents(runtime, () => editor!.summernote({ lang: 'pt-BR', height: mode === 'standard' ? height : undefined, airMode: mode === 'inline', focus: false, onChange: (html: string): void => callback.current?.(html) }));
+      cleanupDocumentEvents = trackSummernoteDocumentEvents(runtime, () => editor!.summernote({ lang: 'pt-BR', height: mode === 'standard' ? height : undefined, airMode: mode === 'inline', focus: false, ...(toolbar ? { toolbar } : {}), onChange: (html: string): void => { if (!cancelled && !state.current.disabled) callback.current?.(html); } }));
       document.querySelectorAll('body > .note-air-layout').forEach(node => { if (!oldAirNodes.has(node)) overlay!.append(node); });
       const containers = [root, overlay];
       for (const container of containers) {
@@ -65,11 +72,38 @@ export function useSummernote(host: RefObject<HTMLDivElement | null>, { defaultV
         });
       }
       root.querySelector<HTMLTextAreaElement>('.note-codable')?.setAttribute('aria-label', 'Código-fonte HTML');
+      const editable = root.querySelector<HTMLElement>('.note-editable');
+      if (editable && id && mode === 'standard') {
+        editable.id = `${root.id}-input`;
+        root.closest('.formField')?.querySelectorAll<HTMLLabelElement>('label').forEach(element => {
+          if (element.htmlFor !== editable.id) return;
+          const handler = () => { if (!state.current.disabled) editable.focus(); };
+          element.addEventListener('click', handler);
+          labelListeners.push({ element, handler });
+        });
+      }
+      updateControls.current = () => {
+        const { disabled: blocked, invalid: hasError, describedBy: description } = state.current;
+        root.inert = blocked;
+        overlay!.inert = blocked;
+        if (!editable) return;
+        editable.contentEditable = String(!blocked);
+        editable.setAttribute('aria-disabled', String(blocked));
+        editable.setAttribute('aria-invalid', String(hasError));
+        if (description) editable.setAttribute('aria-describedby', description);
+        else editable.removeAttribute('aria-describedby');
+      };
+      updateControls.current();
       cleanupFullscreen = bindSummernoteFullscreen(root);
     }
-    void initialize().catch((error: unknown) => console.error('Não foi possível carregar o Summernote.', error));
+    void initialize().catch((error: unknown) => {
+      console.error('Não foi possível carregar o Summernote.', error);
+      if (!cancelled) failure.current?.();
+    });
     return () => {
       cancelled = true;
+      updateControls.current = undefined;
+      labelListeners.forEach(({ element, handler }) => element.removeEventListener('click', handler));
       cleanupFullscreen?.();
       cleanupDocumentEvents?.();
       if (runtime) for (const container of [root, overlay]) {
@@ -80,5 +114,5 @@ export function useSummernote(host: RefObject<HTMLDivElement | null>, { defaultV
       holder?.remove();
       overlay?.remove();
     };
-  }, [host, mode, height, label]);
+  }, [host, mode, height, label, id, toolbar]);
 }

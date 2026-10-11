@@ -1,0 +1,15 @@
+.datePicker__control { display: flex; min-width: 0; }
+.datePicker__control .textInput { min-width: 0; border-radius: 4px 0 0 4px; }
+.datePicker__toggle { flex: 0 0 38px; border: 0; border-radius: 0 4px 4px 0; background: var(--ui-color-gnai-primary); color: var(--ui-color-surface); cursor: pointer; }
+.datePicker__toggle:hover:not(:disabled) { background: var(--ui-color-gnai-primary-hover); }
+.datePicker__toggle:focus-visible { outline: 2px solid var(--ui-color-gnai-primary); outline-offset: 3px; }
+.datePicker__toggle:disabled { cursor: not-allowed; opacity: .65; }
+.datePicker__error { display: block; margin-top: 8px; color: var(--ui-color-danger); }
+.datepicker.datePickerPopup { padding: 8px; border: 0; background: var(--ui-color-surface); color: var(--ui-color-legacy-text); box-shadow: 0 2px 5px var(--ui-color-shadow); font: 14px/1.42857143 var(--ui-font-body); }
+.datepicker.datePickerPopup table { border-collapse: collapse; }
+.datepicker.datePickerPopup th { color: var(--ui-color-heading); font-weight: 600; }
+.datepicker.datePickerPopup .table-condensed > :is(thead, tbody, tfoot) > tr > :is(th, td) { padding: 5px; }
+.datepicker.datePickerPopup table tr td.active,
+.datepicker.datePickerPopup table tr td.active:hover,
+.datepicker.datePickerPopup table tr td span.active,
+.datepicker.datePickerPopup table tr td span.active:hover { background: var(--ui-color-gnai-primary) !important; color: var(--ui-color-surface); box-shadow: none; text-shadow: none; }

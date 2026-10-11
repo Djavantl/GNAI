@@ -1,7 +1,7 @@
 .formField { margin-bottom: 15px; }
 .formField::before, .formField::after { display: table; content: ' '; }
 .formField::after { clear: both; }
-.formField__label { display: inline-block; max-width: 100%; margin-bottom: 5px; font-weight: 700; }
+.formField__label { display: inline-block; max-width: 100%; margin-bottom: 5px; font-weight: 700; color: var(--ui-color-form-label); }
 .formField__hint { color: #98a6ad; font-size: 13px; }
 .formField__required { color: var(--ui-color-danger, #f05050); }
 .formField__error { display: inline-block; color: var(--ui-color-danger, #f05050); font-weight: 700; }

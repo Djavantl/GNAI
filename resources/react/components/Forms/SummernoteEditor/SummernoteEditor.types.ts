@@ -7,6 +7,12 @@ export interface SummernoteEditorProps {
   height?: number;
   label?: string;
   onChange?: (html: string) => void;
+  id?: string;
+  disabled?: boolean;
+  invalid?: boolean;
+  describedBy?: string;
+  onLoadError?: () => void;
+  toolbar?: Array<[string, string[]]>;
   className?: string;
   style?: CSSProperties;
 }

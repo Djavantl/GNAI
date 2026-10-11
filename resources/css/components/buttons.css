@@ -12,8 +12,8 @@
     --btn-dark: #212529;
     --btn-warning: #ffc107;
     --btn-danger: #dc3545;
-    --btn-secondary: #c8c5c5;
-    --btn-success: #198754;
+    --btn-secondary: var(--button-secondary-bg);
+    --btn-success: var(--color-success);
     --btn-muted: #adb5bd;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .btn-action.new:hover {
-    background-color: #157347;
+    background-color: var(--color-success-hover);
 }
 
 .btn-action.primary {
@@ -104,11 +104,11 @@
 
 .btn-action.secondary {
     background-color: var(--btn-secondary);
-    color: #3c3b3b;
+    color: var(--button-secondary-text);
     font-weight: 600;
 }
 .btn-action.secondary:hover {
-    background-color: #b5b2b2;
+    background-color: var(--button-secondary-hover);
 }
 
 /* ===============================
@@ -134,7 +134,7 @@
     color: #fff;
 }
 .btn-action.success:hover {
-    background-color: #157347;
+    background-color: var(--color-success-hover);
 }
 
 /* ===============================

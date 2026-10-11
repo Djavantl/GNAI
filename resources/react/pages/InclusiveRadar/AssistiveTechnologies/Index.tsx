@@ -5,6 +5,7 @@ import Button from '@/components/UI/Button/Button';
 import Table from '@/components/Tables/Table/Table';
 import TableLabel from '@/components/UI/TableLabel/TableLabel';
 import TextInput from '@/components/Forms/TextInput/TextInput';
+import SelectField from '@/components/Forms/SelectField/SelectField';
 import FormField from '@/components/Forms/FormField/FormField';
 import InlineAlert from '@/components/UI/InlineAlert/InlineAlert';
 import './Index.css';
@@ -81,9 +82,10 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({ assistive
           <TextInput id="technology-name" name="name" value={filters.name} maxLength={255} placeholder="Filtrar por nome..." disabled={busy} onChange={event => change('name', event.target.value)} invalid={!!errors.name} aria-describedby={errors.name ? 'technology-name-error' : undefined} />
         </FormField>
         {selects.map(field => <FormField key={field.name} id={field.name} label={field.label} error={errors[field.name]}>
-          <select className="textInput" id={field.name} name={field.name} value={filters[field.name]} disabled={busy} onChange={event => change(field.name, event.target.value)} aria-invalid={!!errors[field.name]} aria-describedby={errors[field.name] ? `${field.name}-error` : undefined}>
-            <option value="">Todos</option><option value="1">{field.yes}</option><option value="0">{field.no}</option>
-          </select>
+          <SelectField id={field.name} name={field.name} label={field.label} placeholder="Todos"
+            options={[{ value: '1', label: field.yes }, { value: '0', label: field.no }]}
+            value={filters[field.name]} disabled={busy} onChange={event => change(field.name, event.target.value)}
+            aria-invalid={!!errors[field.name]} aria-describedby={errors[field.name] ? `${field.name}-error` : undefined} />
         </FormField>)}
         <div className="technologyIndex__actions"><Button type="submit" tone="primary" disabled={busy}>Filtrar</Button><Button disabled={busy} onClick={() => { if (timer.current) clearTimeout(timer.current); setFilters(emptyFilters); visit(emptyFilters); }}>Limpar</Button></div>
       </form>

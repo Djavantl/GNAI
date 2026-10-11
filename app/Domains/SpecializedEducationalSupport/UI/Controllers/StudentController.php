@@ -19,6 +19,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\Stude
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPdfQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Students\StudentPedagogicalRecordsQuery;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use App\Domains\SpecializedEducationalSupport\UI\Presenters\StudentPagePresenter;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -30,15 +31,20 @@ use Throwable;
 
 final class StudentController
 {
+    public function __construct(private readonly StudentPagePresenter $presenter) {}
+
     public function index(ListStudentsData $filters, ListStudentsQuery $query, StudentFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $user = $request->user();
         $teacherId = $user instanceof User ? $user->teacher_id : null;
         $students = $query->execute($filters, $teacherId);
+        $students->through(fn (Student $student): array => $this->presenter->student($student, $request));
 
         return Inertia::render(
             'SpecializedEducationalSupport/Students/Index',
-            compact('students') + $options->execute(),
+            compact('students') + $options->execute() + $this->presenter->shared($request) + [
+                'filters' => $request->only(['name', 'phone', 'email', 'status', 'course_id', 'deficiency_id', 'registration', 'per_page']),
+            ],
         );
     }
 
@@ -52,15 +58,17 @@ final class StudentController
 
         return Inertia::render(
             'SpecializedEducationalSupport/Students/Show',
-            compact('student', 'aeeEvaluations', 'pedagogicalRecords'),
+            ['student' => $this->presenter->student($student, $request)]
+                + compact('aeeEvaluations', 'pedagogicalRecords')
+                + $this->presenter->shared($request),
         );
     }
 
-    public function create(StudentFormQuery $form): InertiaResponse
+    public function create(StudentFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'SpecializedEducationalSupport/Students/Create',
-            $form->forCreation(),
+            $form->forCreation() + $this->presenter->shared($request),
         );
     }
 
@@ -76,11 +84,14 @@ final class StudentController
             ->with('success', 'Aluno cadastrado com sucesso.');
     }
 
-    public function edit(Student $student, StudentFormQuery $form): InertiaResponse
+    public function edit(Student $student, StudentFormQuery $form, Request $request): InertiaResponse
     {
+        $props = $form->forUpdate($student);
+        $props['student'] = $this->presenter->student($student, $request);
+
         return Inertia::render(
             'SpecializedEducationalSupport/Students/Edit',
-            $form->forUpdate($student),
+            $props + $this->presenter->shared($request),
         );
     }
 

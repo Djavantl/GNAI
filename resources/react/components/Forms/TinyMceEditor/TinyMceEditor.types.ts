@@ -14,6 +14,11 @@ export interface TinyMceEditorProps {
   onChange?: (html: string) => void;
   toolbar?: string;
   styleFormats?: TinyMceStyleFormat[];
+  id?: string;
+  disabled?: boolean;
+  invalid?: boolean;
+  describedBy?: string;
+  onLoadError?: () => void;
 }
 export interface TinyMceInstance {
   initialized?: boolean;
@@ -22,6 +27,8 @@ export interface TinyMceInstance {
   remove: () => void;
   getContainer: () => HTMLElement;
   iframeElement?: HTMLIFrameElement;
+  getBody: () => HTMLElement;
+  setMode: (mode: 'readonly' | 'design') => void;
 }
 export interface TinyMceRuntime {
   init: (options: Record<string, unknown>) => void;

@@ -100,7 +100,11 @@ export default function NotificationToast({ notification, onClose }: Notificatio
             </Button>
           </div>
         ) : (
-          <div className="notificationToast__text">{notification.text}</div>
+          <>
+            <div className="notificationToast__text">{notification.text}</div>
+            <button type="button" className="notificationToast__dismiss" aria-label="Fechar notificação"
+              onClick={(event) => { event.stopPropagation(); onClose(notification.id); }}>Fechar</button>
+          </>
         )}
       </div>
     </div>

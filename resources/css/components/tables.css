@@ -24,7 +24,7 @@
 
 /* Garantindo as cores das variáveis que você já tem */
 .text-purple-dark {
-    color: #303972 !important;
+    color: var(--text-purple-dark) !important;
 }
 
 .text-purple-light {

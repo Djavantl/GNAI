@@ -1,14 +1,29 @@
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import CardBox from '@/components/UI/CardBox/CardBox';
 import './FormSection.css';
 
-interface FormSectionProps { title: string; description?: ReactNode; children: ReactNode; }
-export default function FormSection({ title, description, children }: FormSectionProps): React.JSX.Element {
-  return <CardBox className="formSection">
-    <h4 className="formSection__title"><b>{title}</b></h4>
+interface FormSectionProps {
+  id?: string;
+  title: string;
+  description?: ReactNode;
+  children: ReactNode;
+  variant?: 'card' | 'inline';
+  iconClass?: string;
+}
+export default function FormSection({ id, title, description, children, variant = 'card', iconClass = 'fa fa-list-alt' }: FormSectionProps): React.JSX.Element {
+  const generatedId = useId();
+  const titleId = `${id ?? generatedId}-title`;
+  const Heading = variant === 'inline' ? 'h2' : 'h4';
+  const content = <>
+    <Heading id={titleId} className="formSection__title">
+      <i className={iconClass} aria-hidden="true" /><span>{title}</span>
+    </Heading>
     {description ? <p className="formSection__description">{description}</p> : null}
     {children}
-  </CardBox>;
+  </>;
+  return variant === 'inline'
+    ? <section id={id} aria-labelledby={titleId} className="formSection formSection--inline">{content}</section>
+    : <CardBox className="formSection">{content}</CardBox>;
 }
 
 export function FormDemoDescription(): React.JSX.Element {

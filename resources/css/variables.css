@@ -21,6 +21,7 @@
    ───────────────────────────────────────────── */
 :root {
     --color-success:         #198754;
+    --color-success-hover:   #157347;
     --color-success-light:   #d1e7dd;
     --color-success-text:    #0f5132;
 
@@ -53,6 +54,9 @@
     --color-gray-700:        #495057;
     --color-gray-800:        #343a40;
     --color-gray-900:        #212529;
+    --button-secondary-bg:   #c8c5c5;
+    --button-secondary-hover: #b5b2b2;
+    --button-secondary-text: #3c3b3b;
 }
 
 /* ─────────────────────────────────────────────
@@ -74,6 +78,7 @@
     --text-primary:          #212529;
     --text-secondary:        #6c757d;
     --text-muted:            #adb5bd;
+    --text-purple-dark:      #303972;
     --text-inverse:          #ffffff;
 
     --text-link:             var(--primary-color);
@@ -87,6 +92,8 @@
     --border-color:          #dee2e6;
     --border-color-strong:   #ced4da;
     --border-color-light:    rgba(0, 0, 0, 0.08);
+    --input-border-color:    #b6accf;
+    --input-focus-border-color: #7c3aed;
 }
 
 /* ─────────────────────────────────────────────

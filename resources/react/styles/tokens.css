@@ -1,12 +1,19 @@
+/* Color variables shared with Blade; this file imports no legacy layout styles. */
+@import '../../css/variables.css';
+
 :root {
   --ui-font-body: "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --ui-font-ui: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ui-font-gnai-heading: var(--font-family-heading, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif);
+  --ui-font-gnai-body: var(--font-family-base, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif);
 
   --ui-color-text: #36404a;
   --ui-color-text-muted: #828282;
   --ui-color-legacy-text: #797979;
   --ui-color-legacy-muted: #98a6ad;
   --ui-color-heading: #505458;
+  --ui-color-page-title: var(--text-purple-dark);
+  --ui-color-page-subtitle: rgba(33, 37, 41, 0.75);
   --ui-color-surface: #ffffff;
   --ui-color-surface-alt: #ebeff2;
   --ui-color-table-header: #f6f1ff;
@@ -16,6 +23,16 @@
 
   --ui-color-custom: #5fbeaa;
   --ui-color-primary: #5d9cec;
+  --ui-color-gnai-primary: var(--primary-color);
+  --ui-color-gnai-primary-hover: var(--color-primary-hover);
+  --ui-color-form-label: var(--text-purple-dark);
+  --ui-color-input-border: var(--input-border-color);
+  --ui-color-input-focus-border: var(--input-focus-border-color);
+  --ui-color-save: var(--color-success);
+  --ui-color-save-hover: var(--color-success-hover);
+  --ui-color-cancel: var(--button-secondary-bg);
+  --ui-color-cancel-hover: var(--button-secondary-hover);
+  --ui-color-cancel-text: var(--button-secondary-text);
   --ui-color-danger: #f05050;
   --ui-color-info: #34d3eb;
   --ui-color-success: #81c868;

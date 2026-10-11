@@ -1,5 +1,6 @@
 .pageHeader {
   margin-bottom: 0;
+  min-width: 0;
 }
 
 .pageHeader--breadcrumb .pageBreadcrumb.breadcrumb {
@@ -16,16 +17,17 @@
 
 .pageHeader__title {
   margin: 7px 0 0;
-  color: #505458;
+  color: var(--page-header-title-color, var(--ui-color-heading));
   font-family: var(--ui-font-ui);
   font-size: 20px;
   font-weight: 600;
   line-height: 22px;
+  overflow-wrap: anywhere;
 }
 
 .pageHeader__subtitle {
   margin: 10px 0 23px;
-  color: #98a6ad;
+  color: var(--page-header-subtitle-color, var(--ui-color-legacy-muted));
   font-family: var(--ui-font-body);
   font-size: 14px;
   line-height: 1.6;

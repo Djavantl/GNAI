@@ -24,6 +24,9 @@
   text-decoration: none;
 }
 
+.button > .m-r-5 { margin-inline-end: 5px; }
+.button > .m-l-5 { margin-inline-start: 5px; }
+
 .button:active,
 .button.button--active {
   background-image: none;
@@ -48,6 +51,35 @@
 .button--dark-red {
   --button-solid-color: var(--ui-color-dark-red);
   --button-solid-hover: var(--ui-color-dark-red-hover);
+}
+
+.button--save {
+  --button-solid-color: var(--ui-color-save);
+  --button-solid-hover: var(--ui-color-save-hover);
+}
+
+.button--cancel {
+  --button-solid-color: var(--ui-color-cancel);
+  --button-solid-hover: var(--ui-color-cancel-hover);
+}
+
+.button:is(.button--save, .button--cancel) {
+  background-color: var(--button-solid-color) !important;
+  border-color: var(--button-solid-color) !important;
+  color: var(--ui-color-surface) !important;
+  font-weight: 600;
+}
+
+.button.button--cancel { color: var(--ui-color-cancel-text) !important; }
+
+.button:is(.button--save, .button--cancel):is(:hover, :focus, :active) {
+  background-color: var(--button-solid-hover) !important;
+  border-color: var(--button-solid-hover) !important;
+}
+
+.button:is(.button--save, .button--cancel):focus-visible {
+  outline: 2px solid var(--ui-color-input-focus-border) !important;
+  outline-offset: 3px;
 }
 
 .button--dark-blue,

@@ -1,4 +1,5 @@
 .topbar {
+  --ui-institution-hover-color: color-mix(in srgb, var(--ui-color-surface) 80%, transparent);
   position: fixed;
   top: 0;
   right: 0;
@@ -22,13 +23,13 @@
 }
 
 .topbar__leftInner {
-  background: var(--ui-color-surface);
+  background: var(--ui-color-gnai-primary);
 }
 
 .topbar__logo {
   display: block;
   height: var(--ui-topbar-height);
-  color: var(--ui-color-text);
+  color: var(--ui-color-surface);
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -61,7 +62,7 @@
 
 .topbar__logoIcon,
 .topbar__logo .md {
-  color: var(--ui-color-custom);
+  color: var(--ui-color-surface);
 }
 
 .topbar__navBar {
@@ -69,7 +70,7 @@
   min-height: var(--ui-topbar-height);
   margin-bottom: 0;
   border: 0;
-  background-color: var(--ui-color-surface);
+  background-color: var(--ui-color-gnai-primary);
   box-shadow: 0 2px 3px -2px var(--ui-color-shadow);
 }
 
@@ -119,14 +120,14 @@
   padding: 0 15px;
   border: 0;
   background: transparent;
-  color: var(--ui-color-text);
+  color: var(--ui-color-surface);
   font-size: 21px;
   line-height: var(--ui-topbar-height);
   cursor: pointer;
 }
 
 .topbar__menuButton:hover {
-  color: #7a8c9a;
+  color: var(--ui-color-surface);
 }
 
 .topbar__search {
@@ -185,7 +186,7 @@
   position: relative;
   display: block;
   padding: 0 15px;
-  color: var(--ui-color-text);
+  color: var(--ui-color-surface);
   line-height: var(--ui-topbar-height);
   text-align: center;
 }
@@ -495,7 +496,8 @@
   }
 }
 
-.topbar__compactLogo { display: none; width: 36px; height: 36px; object-fit: contain; filter: brightness(0); opacity: .8; }
+.topbar__compactLogo { display: none; width: 36px; height: 36px; object-fit: contain; filter: brightness(0) invert(1); opacity: 1; }
+.topbar .institutionBrand { color: var(--ui-color-surface); }
 .topbar--collapsed .topbar__compactLogo { display: inline-block; }
 @media (max-width: 767px) {
   .topbar__compactLogo { display: inline-block; vertical-align: middle; }
