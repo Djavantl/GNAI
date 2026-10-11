@@ -63,6 +63,9 @@ final class ListAssistiveTechnologiesTest extends TestCase
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('InclusiveRadar/AssistiveTechnologies/Index')
+            ->where('filters.is_digital', '0')
+            ->where('filters.is_active', '0')
+            ->where('filters.available', '0')
             ->where('assistiveTechnologies.total', 1)
             ->where('assistiveTechnologies.data.0.id', $matching->id)
         );
@@ -88,6 +91,18 @@ final class ListAssistiveTechnologiesTest extends TestCase
             ->component('InclusiveRadar/AssistiveTechnologies/Index')
             ->has('assistiveTechnologies.data', 1)
         );
+    }
+
+    public function test_it_exposes_permissions_from_the_authenticated_user(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+        $this->actingAs($user)->get(self::ENDPOINT)->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('InclusiveRadar/AssistiveTechnologies/Index')
+                ->where('can.create', true)
+                ->where('can.show', true)
+                ->where('can.destroy', true)
+            );
     }
 
     private function technology(

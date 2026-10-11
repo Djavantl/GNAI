@@ -35,7 +35,15 @@ final class AssistiveTechnologyController
 
         return Inertia::render(
             'InclusiveRadar/AssistiveTechnologies/Index',
-            compact('assistiveTechnologies'),
+            [
+                'assistiveTechnologies' => $assistiveTechnologies,
+                'filters' => $request->only(['name', 'is_digital', 'is_active', 'available']),
+                'can' => [
+                    'create' => $request->user()?->can('assistive-technology.create') ?? false,
+                    'show' => $request->user()?->can('assistive-technology.show') ?? false,
+                    'destroy' => $request->user()?->can('assistive-technology.destroy') ?? false,
+                ],
+            ],
         );
     }
 

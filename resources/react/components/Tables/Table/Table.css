@@ -60,10 +60,10 @@
 .boldTable tr.danger > td {
   background: #f2dede;
 }
-.boldTable a {
+.boldTable a:not(.button) {
   color: #337ab7;
 }
-.boldTable a:hover {
+.boldTable a:not(.button):hover {
   color: #23527c;
   text-decoration: underline;
 }

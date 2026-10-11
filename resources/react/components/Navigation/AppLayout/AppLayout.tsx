@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import FlashNotifications from '@/components/UI/NotificationToast/FlashNotifications';
 import { usePage } from '@inertiajs/react';
 import TopBarPrimary from '@/components/Navigation/TopBarPrimary/TopBarPrimary';
 import SidebarPrimary from '@/components/Navigation/SidebarPrimary/SidebarPrimary';
@@ -41,6 +42,7 @@ export default function AppLayout({ children }: { children: ReactNode }): React.
       </div>
       <AppFooter>Gnai &copy; {new Date().getFullYear()} | Gestão NAIs</AppFooter>
     </div>
+    <FlashNotifications />
     <PageScrollbar />
   </div>;
 }

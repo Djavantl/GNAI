@@ -6,6 +6,8 @@ export type ButtonTone =
   | 'default'
   | 'white'
   | 'primary'
+  | 'dark-blue'
+  | 'dark-red'
   | 'success'
   | 'info'
   | 'warning'

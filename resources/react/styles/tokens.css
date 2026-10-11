@@ -9,6 +9,7 @@
   --ui-color-heading: #505458;
   --ui-color-surface: #ffffff;
   --ui-color-surface-alt: #ebeff2;
+  --ui-color-table-header: #f6f1ff;
   --ui-color-border-soft: #edf0f0;
   --ui-color-border-subtle: rgba(0, 0, 0, 0.1);
   --ui-color-shadow: rgba(0, 0, 0, 0.15);
@@ -20,6 +21,10 @@
   --ui-color-success: #81c868;
   --ui-color-pink: #fb6d9d;
   --ui-color-purple: #7266ba;
+  --ui-color-dark-blue: #2e5cb8;
+  --ui-color-dark-blue-hover: #244a96;
+  --ui-color-dark-red: #dc3545;
+  --ui-color-dark-red-hover: #b52a37;
   --ui-color-warning: #ffbd4a;
 
   --ui-sidebar-bg: #1d1c20;

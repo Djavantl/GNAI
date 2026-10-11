@@ -5,28 +5,34 @@ export default function Pagination({
   currentPage = 2,
   pageCount = 5,
   onSelect,
+  disabled = false,
 }: {
   large?: boolean;
   split?: boolean;
   currentPage?: number;
   pageCount?: number;
   onSelect?: (page: number) => void;
+  disabled?: boolean;
 }): React.JSX.Element {
-  const items = [
-    "prev",
-    ...Array.from({ length: pageCount }, (_, i) => String(i + 1)),
-    "next",
-  ];
+  const pages = Array.from(new Set([1, currentPage - 1, currentPage, currentPage + 1, pageCount]))
+    .filter(page => page >= 1 && page <= pageCount).sort((a, b) => a - b);
+  const visiblePages = pageCount <= 7 ? Array.from({ length: pageCount }, (_, i) => i + 1) : pages;
+  const items = ['prev', ...visiblePages.flatMap((page, index) =>
+    index > 0 && page - visiblePages[index - 1] > 1 ? [`gap-${page}`, String(page)] : [String(page)]
+  ), 'next'];
   return (
     <ul
       className={`paginationControl${split ? " paginationControl--split" : ""}${large ? " paginationControl--lg paginationControl--last" : ""}`}
       aria-label="Paginação"
     >
-      {items.map((item) => (
+      {items.map((item) => {
+        const gap = item.startsWith('gap-');
+        const unavailable = disabled || gap || (item === 'prev' && currentPage <= 1) || (item === 'next' && currentPage >= pageCount);
+        return (
         <li
           key={item}
           className={
-            item === "prev"
+            unavailable
               ? "disabled"
               : item === String(currentPage)
                 ? "active"
@@ -40,17 +46,18 @@ export default function Pagination({
                 ? "Página anterior"
                 : item === "next"
                   ? "Próxima página"
-                  : `Página ${item}`
+                  : gap ? "Mais páginas" : `Página ${item}`
             }
             aria-current={item === String(currentPage) ? "page" : undefined}
-            aria-disabled={item === "prev"}
+            aria-disabled={unavailable}
+            tabIndex={unavailable ? -1 : undefined}
             onClick={(event) => {
               event.preventDefault();
-              if (item !== "prev")
+              if (!unavailable)
                 onSelect?.(
                   item === "next"
                     ? Math.min(pageCount, currentPage + 1)
-                    : Number(item),
+                    : item === "prev" ? currentPage - 1 : Number(item),
                 );
             }}
           >
@@ -59,11 +66,12 @@ export default function Pagination({
             ) : item === "next" ? (
               <i className="fa fa-angle-right" aria-hidden="true" />
             ) : (
-              item
+              gap ? "…" : item
             )}
           </a>
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }
