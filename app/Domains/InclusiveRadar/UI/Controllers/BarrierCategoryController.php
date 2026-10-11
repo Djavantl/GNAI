@@ -15,31 +15,25 @@ use App\Domains\InclusiveRadar\Application\Queries\BarrierCategories\ShowBarrier
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class BarrierCategoryController
 {
-    public function index(ListBarrierCategoriesData $filters, ListBarrierCategoriesQuery $query, Request $request): View
+    public function index(ListBarrierCategoriesData $filters, ListBarrierCategoriesQuery $query, Request $request): InertiaResponse
     {
         $categories = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.barrier-categories.partials.table',
-                compact('categories'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.barrier-categories.index',
+        return Inertia::render(
+            'InclusiveRadar/BarrierCategories/Index',
             compact('categories'),
         );
     }
 
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('pages.inclusive-radar.barrier-categories.create');
+        return Inertia::render('InclusiveRadar/BarrierCategories/Create');
     }
 
     public function store(CreateBarrierCategoryData $data, CreateBarrierCategoryAction $action): RedirectResponse
@@ -51,20 +45,20 @@ final class BarrierCategoryController
             ->with('success', 'Categoria de barreira cadastrada com sucesso!');
     }
 
-    public function show(BarrierCategory $barrierCategory, ShowBarrierCategoryQuery $query): View
+    public function show(BarrierCategory $barrierCategory, ShowBarrierCategoryQuery $query): InertiaResponse
     {
         $barrierCategory = $query->execute($barrierCategory);
 
-        return view(
-            'pages.inclusive-radar.barrier-categories.show',
+        return Inertia::render(
+            'InclusiveRadar/BarrierCategories/Show',
             compact('barrierCategory'),
         );
     }
 
-    public function edit(BarrierCategory $barrierCategory): View
+    public function edit(BarrierCategory $barrierCategory): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.barrier-categories.edit',
+        return Inertia::render(
+            'InclusiveRadar/BarrierCategories/Edit',
             compact('barrierCategory'),
         );
     }

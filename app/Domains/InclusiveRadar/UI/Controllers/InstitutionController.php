@@ -15,31 +15,25 @@ use App\Domains\InclusiveRadar\Application\Queries\Institutions\ShowInstitutionQ
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class InstitutionController
 {
-    public function index(ListInstitutionsData $filters, ListInstitutionsQuery $query, Request $request): View
+    public function index(ListInstitutionsData $filters, ListInstitutionsQuery $query, Request $request): InertiaResponse
     {
         $institutions = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.institutions.partials.table',
-                compact('institutions'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.institutions.index',
+        return Inertia::render(
+            'InclusiveRadar/Institutions/Index',
             compact('institutions'),
         );
     }
 
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('pages.inclusive-radar.institutions.create');
+        return Inertia::render('InclusiveRadar/Institutions/Create');
     }
 
     /**
@@ -54,22 +48,22 @@ final class InstitutionController
             ->with('success', 'Instituição criada com sucesso!');
     }
 
-    public function show(Institution $institution, ShowInstitutionQuery $query): View
+    public function show(Institution $institution, ShowInstitutionQuery $query): InertiaResponse
     {
         $institution = $query->execute($institution);
 
-        return view(
-            'pages.inclusive-radar.institutions.show',
+        return Inertia::render(
+            'InclusiveRadar/Institutions/Show',
             compact('institution'),
         );
     }
 
-    public function edit(Institution $institution): View
+    public function edit(Institution $institution): InertiaResponse
     {
         $institution->load('locations');
 
-        return view(
-            'pages.inclusive-radar.institutions.edit',
+        return Inertia::render(
+            'InclusiveRadar/Institutions/Edit',
             compact('institution'),
         );
     }

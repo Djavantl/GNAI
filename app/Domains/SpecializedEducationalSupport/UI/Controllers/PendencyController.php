@@ -20,43 +20,37 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\Sho
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class PendencyController
 {
-    public function index(ListPendenciesData $filters, ListPendenciesQuery $query, PendencyFilterOptionsQuery $filterOptions, Request $request): View
+    public function index(ListPendenciesData $filters, ListPendenciesQuery $query, PendencyFilterOptionsQuery $filterOptions, Request $request): InertiaResponse
     {
         $pendencies = $query->execute($filters);
         $professionals = $filterOptions->professionals();
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.pendencies.partials.table',
-                compact('pendencies'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.pendencies.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Pendencies/Index',
             compact('pendencies', 'professionals'),
         );
     }
 
-    public function show(Pendency $pendency, ShowPendencyQuery $query): View
+    public function show(Pendency $pendency, ShowPendencyQuery $query): InertiaResponse
     {
         $pendency = $query->execute($pendency);
 
-        return view(
-            'pages.specialized-educational-support.pendencies.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Pendencies/Show',
             compact('pendency'),
         );
     }
 
-    public function create(PendencyFormQuery $form): View
+    public function create(PendencyFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.pendencies.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Pendencies/Create',
             $form->forCreation(),
         );
     }
@@ -77,10 +71,10 @@ final class PendencyController
             ->with('success', 'Pendência criada com sucesso.');
     }
 
-    public function edit(Pendency $pendency, PendencyFormQuery $form): View
+    public function edit(Pendency $pendency, PendencyFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.pendencies.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Pendencies/Edit',
             $form->forUpdate($pendency),
         );
     }
@@ -119,18 +113,11 @@ final class PendencyController
         ListMyPendenciesQuery $query,
         AuthenticatedUserResolver $authenticatedUser,
         Request $request,
-    ): View {
+    ): InertiaResponse {
         $pendencies = $query->execute($filters, $authenticatedUser->fromRequest($request));
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.pendencies.partials.table-my',
-                compact('pendencies'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.pendencies.my',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Pendencies/My',
             compact('pendencies'),
         );
     }

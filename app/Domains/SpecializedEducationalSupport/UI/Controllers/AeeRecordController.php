@@ -30,34 +30,29 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class AeeRecordController
 {
-    public function index(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function index(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $aeeRecords = $query->execute($filters, $this->user($request));
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.aee-records.partials.table', compact('aeeRecords'));
-        }
 
-        return view('pages.specialized-educational-support.aee-records.index', compact('aeeRecords') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/AeeRecords/Index', compact('aeeRecords') + $options->execute());
     }
 
-    public function myRecords(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function myRecords(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $aeeRecords = $query->execute($filters, $this->user($request), onlyOwn: true);
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.aee-records.partials.table', compact('aeeRecords'));
-        }
 
-        return view('pages.specialized-educational-support.aee-records.my-records', compact('aeeRecords') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/AeeRecords/MyRecords', compact('aeeRecords') + $options->execute());
     }
 
-    public function create(Session $session, AeeRecordFormQuery $form, Request $request): View
+    public function create(Session $session, AeeRecordFormQuery $form, Request $request): InertiaResponse
     {
-        return view('pages.specialized-educational-support.aee-records.create', $form->forCreation($session, $this->professionalId($request)));
+        return Inertia::render('SpecializedEducationalSupport/AeeRecords/Create', $form->forCreation($session, $this->professionalId($request)));
     }
 
     /** @throws Throwable */
@@ -68,17 +63,17 @@ final class AeeRecordController
         return redirect()->route('specialized-educational-support.aee-records.show', $aeeRecord)->with('success', 'Registro do atendimento AEE criado com sucesso.');
     }
 
-    public function show(AeeRecord $aeeRecord, ShowAeeRecordQuery $query, Request $request): View
+    public function show(AeeRecord $aeeRecord, ShowAeeRecordQuery $query, Request $request): InertiaResponse
     {
         $aeeRecord = $query->execute($aeeRecord, $this->user($request));
         $session = $aeeRecord->attendanceSession;
 
-        return view('pages.specialized-educational-support.aee-records.show', compact('aeeRecord', 'session'));
+        return Inertia::render('SpecializedEducationalSupport/AeeRecords/Show', compact('aeeRecord', 'session'));
     }
 
-    public function edit(AeeRecord $aeeRecord, AeeRecordFormQuery $form, Request $request): View
+    public function edit(AeeRecord $aeeRecord, AeeRecordFormQuery $form, Request $request): InertiaResponse
     {
-        return view('pages.specialized-educational-support.aee-records.edit', $form->forUpdate($aeeRecord, $this->professionalId($request)));
+        return Inertia::render('SpecializedEducationalSupport/AeeRecords/Edit', $form->forUpdate($aeeRecord, $this->professionalId($request)));
     }
 
     /** @throws Throwable */
@@ -109,31 +104,28 @@ final class AeeRecordController
         return $pdf->stream("registro-aee-{$session->session_date->format('d-m-Y')}-{$aeeRecord->id}.pdf");
     }
 
-    public function studentIndex(Student $student, ListAeeRecordsData $filters, ListStudentAeeEvaluationsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function studentIndex(Student $student, ListAeeRecordsData $filters, ListStudentAeeEvaluationsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $aeeEvaluations = $query->execute($student, $filters, $this->user($request));
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.students.aee-records.partials.table', compact('student', 'aeeEvaluations'));
-        }
 
-        return view('pages.specialized-educational-support.students.aee-records.index', compact('student', 'aeeEvaluations') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/Students/AeeRecords/Index', compact('student', 'aeeEvaluations') + $options->execute());
     }
 
-    public function studentShow(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): View
+    public function studentShow(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): InertiaResponse
     {
         $evaluation = $query->show($student, $evaluation, $this->user($request));
 
-        return view('pages.specialized-educational-support.students.aee-records.show', compact('student', 'evaluation'));
+        return Inertia::render('SpecializedEducationalSupport/Students/AeeRecords/Show', compact('student', 'evaluation'));
     }
 
-    public function studentEdit(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): View
+    public function studentEdit(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): InertiaResponse
     {
         $evaluation = $query->show($student, $evaluation, $this->user($request));
         if ((int) $evaluation->aeeRecord->attendanceSession->professional_id !== $this->professionalId($request)) {
             throw new AccessDeniedException('Apenas o profissional vinculado pode editar esta avaliação.');
         }
 
-        return view('pages.specialized-educational-support.students.aee-records.edit', compact('student', 'evaluation'));
+        return Inertia::render('SpecializedEducationalSupport/Students/AeeRecords/Edit', compact('student', 'evaluation'));
     }
 
     /** @throws Throwable */

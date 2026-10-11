@@ -30,7 +30,8 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class SessionController
@@ -43,7 +44,7 @@ final class SessionController
         ListSessionsQuery $query,
         WeeklyAgendaQuery $agendaQuery,
         Request $request,
-    ): View|string {
+    ): InertiaResponse {
         $sessions = $query->execute($filters);
         $students = Student::with('person')->orderBy('id')->get();
         $professionals = Professional::with('person')->orderBy('id')->get();
@@ -53,23 +54,16 @@ final class SessionController
             'specialized-educational-support.sessions.index',
         );
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.sessions.partials.table',
-                compact('sessions'),
-            )->render();
-        }
-
-        return view(
-            'pages.specialized-educational-support.sessions.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Sessions/Index',
             compact('sessions', 'students', 'professionals', 'agenda', 'weekNavigation'),
         );
     }
 
-    public function create(SessionFormQuery $form): View
+    public function create(SessionFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.sessions.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Sessions/Create',
             $form->forCreation(),
         );
     }
@@ -89,24 +83,24 @@ final class SessionController
             ->with('success', 'Agendamento criado com sucesso.');
     }
 
-    public function show(Session $session, ShowSessionQuery $query): View
+    public function show(Session $session, ShowSessionQuery $query): InertiaResponse
     {
         $session = $query->execute($session);
 
-        return view('pages.specialized-educational-support.sessions.show', compact('session'));
+        return Inertia::render('SpecializedEducationalSupport/Sessions/Show', compact('session'));
     }
 
     /**
      * @throws Throwable
      */
-    public function edit(Session $session, SessionFormQuery $form, Request $request): View
+    public function edit(Session $session, SessionFormQuery $form, Request $request): InertiaResponse
     {
         $userId = (int) $request->user()?->getAuthIdentifier();
         $session->ensureCreatedBy($userId, 'editá-la');
         $session->ensureIsScheduled();
 
-        return view(
-            'pages.specialized-educational-support.sessions.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Sessions/Edit',
             $form->forUpdate($session),
         );
     }
@@ -136,21 +130,14 @@ final class SessionController
         ListSessionsData $filters,
         ListStudentSessionsQuery $query,
         Request $request,
-    ): View|string {
+    ): InertiaResponse {
         $sessions = $query->execute($student, $filters);
         $professionals = Professional::with('person')
             ->orderBy('id')
             ->get(['id', 'person_id']);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.sessions.partials.table-student',
-                compact('sessions', 'student'),
-            )->render();
-        }
-
-        return view(
-            'pages.specialized-educational-support.sessions.student-index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Sessions/StudentIndex',
             compact('sessions', 'student', 'professionals'),
         );
     }
@@ -164,7 +151,7 @@ final class SessionController
         WeeklyAgendaQuery $agendaQuery,
         AuthenticatedUserResolver $authenticatedUser,
         Request $request,
-    ): View|string {
+    ): InertiaResponse {
         $user = $authenticatedUser->fromRequest($request);
 
         $sessions = $query->execute($filters, $user);
@@ -177,15 +164,8 @@ final class SessionController
             'specialized-educational-support.sessions.my-sessions',
         );
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.sessions.partials.my-table',
-                compact('sessions'),
-            )->render();
-        }
-
-        return view(
-            'pages.specialized-educational-support.sessions.my-sessions',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Sessions/MySessions',
             compact('sessions', 'students', 'agenda', 'weekNavigation'),
         );
     }

@@ -10,10 +10,11 @@ O projeto utiliza Laravel 12, PHP 8.2, MySQL 8, Vite e Docker Compose. Em
 desenvolvimento, o acesso ocorre pelo Nginx em container. Em producao, o Apache
 do servidor encaminha as requisicoes PHP ao PHP-FPM do container.
 
-A base React/TypeScript fica em `resources/react`, com componentes, telas de
-exemplo. Os assets ficam em `public/assets/react`. O catalogo
-local esta disponivel em `http://localhost/react/index.html`; as telas de negocio
-em Blade permanecem ativas durante a migracao. Consulte o [guia React](resources/react/README.md).
+O frontend React/TypeScript com Inertia fica em `resources/react`. Controllers
+de telas respondem com componentes React e props; os assets ficam em
+`public/assets/react`. As paginas de negocio possuem arquivos iniciais para a
+implementacao das interfaces. O catalogo local de componentes esta disponivel
+em `http://localhost/react/index.html`. Consulte o [guia React](resources/react/README.md).
 
 ## Requisitos
 

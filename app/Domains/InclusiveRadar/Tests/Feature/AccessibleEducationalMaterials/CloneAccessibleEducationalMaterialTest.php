@@ -15,6 +15,7 @@ use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialContr
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 final class CloneAccessibleEducationalMaterialTest extends TestCase
@@ -31,7 +32,7 @@ final class CloneAccessibleEducationalMaterialTest extends TestCase
             ->middleware('web');
     }
 
-    public function test_it_opens_creation_with_reusable_data_and_empty_unique_and_inspection_fields(): void
+    public function test_it_sends_reusable_source_data_and_form_options_to_react(): void
     {
         $user = User::factory()->create();
         $deficiencies = Deficiency::factory()->count(2)->create();
@@ -60,35 +61,18 @@ final class CloneAccessibleEducationalMaterialTest extends TestCase
             str_replace('{material}', (string) $material->id, self::ENDPOINT),
         );
 
-        $response->assertOk();
-        $response->assertViewIs('pages.inclusive-radar.accessible-educational-materials.create');
-        $response->assertSee('Clonar Material Pedagógico Acessível');
-        $response->assertSee('value="Livro tátil de geografia"', false);
-        $response->assertSee('Material adaptado em alto relevo');
-        $response->assertSee('value="3"', false);
-        $response->assertSee('value="unavailable"', false);
-
-        foreach ($deficiencies as $deficiency) {
-            self::assertMatchesRegularExpression(
-                '/id="def_'.$deficiency->id.'"[^>]*checked/',
-                $response->getContent(),
-            );
-        }
-
-        foreach ($features as $feature) {
-            self::assertMatchesRegularExpression(
-                '/id="feat_'.$feature->id.'"[^>]*checked/',
-                $response->getContent(),
-            );
-        }
-
-        self::assertDoesNotMatchRegularExpression(
-            '/name="asset_code"[^>]*value="MPA-ORIGINAL-01"/',
-            $response->getContent(),
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('InclusiveRadar/AccessibleEducationalMaterials/Create')
+            ->where('cloneSource.id', $material->id)
+            ->where('cloneSource.name', 'Livro tátil de geografia')
+            ->where('cloneSource.notes', 'Material adaptado em alto relevo')
+            ->where('cloneSource.quantity', 3)
+            ->where('cloneSource.status', 'unavailable')
+            ->has('cloneSource.deficiencies', 2)
+            ->has('cloneSource.accessibility_features', $features->count())
+            ->missing('cloneSource.inspections')
+            ->missing('cloneSource.inspection_evidences')
+            ->has('resourceStatuses')
         );
-        self::assertMatchesRegularExpression('/name="asset_code"[^>]*value=""/', $response->getContent());
-        self::assertMatchesRegularExpression('/name="inspection\[date\]"[^>]*value=""/', $response->getContent());
-        $response->assertDontSee('Cadastro inicial do material');
-        $response->assertDontSee('foto-original-material.jpg');
     }
 }

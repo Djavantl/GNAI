@@ -19,7 +19,8 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class StudentCourseController
@@ -30,37 +31,30 @@ final class StudentCourseController
         ListStudentCoursesQuery $query,
         StudentCourseFilterCoursesQuery $filterCourses,
         Request $request,
-    ): View {
+    ): InertiaResponse {
         $studentCourses = $query->execute($student, $filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.student-courses.partials.table',
-                compact('student', 'studentCourses'),
-            );
-        }
-
-        return view('pages.specialized-educational-support.student-courses.index', [
+        return Inertia::render('SpecializedEducationalSupport/StudentCourses/Index', [
             'student' => $student->loadMissing('person'),
             'studentCourses' => $studentCourses,
             'courses' => $filterCourses->execute($student),
         ]);
     }
 
-    public function show(StudentCourse $studentCourse, ShowStudentCourseQuery $query): View
+    public function show(StudentCourse $studentCourse, ShowStudentCourseQuery $query): InertiaResponse
     {
         $studentCourse = $query->execute($studentCourse);
 
-        return view(
-            'pages.specialized-educational-support.student-courses.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentCourses/Show',
             compact('studentCourse'),
         );
     }
 
-    public function create(Student $student, StudentCourseFormQuery $form): View
+    public function create(Student $student, StudentCourseFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-courses.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentCourses/Create',
             $form->forCreation($student),
         );
     }
@@ -80,10 +74,10 @@ final class StudentCourseController
             ->with('success', 'Matrícula realizada com sucesso.');
     }
 
-    public function edit(StudentCourse $studentCourse, StudentCourseFormQuery $form): View
+    public function edit(StudentCourse $studentCourse, StudentCourseFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-courses.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentCourses/Edit',
             $form->forUpdate($studentCourse),
         );
     }

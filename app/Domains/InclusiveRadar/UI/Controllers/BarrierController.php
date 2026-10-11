@@ -22,26 +22,23 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class BarrierController
 {
-    public function index(ListBarriersData $filters, ListBarriersQuery $query, Request $request): View
+    public function index(ListBarriersData $filters, ListBarriersQuery $query, Request $request): InertiaResponse
     {
         $barriers = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view('pages.inclusive-radar.barriers.partials.table', compact('barriers'));
-        }
-
-        return view('pages.inclusive-radar.barriers.index', compact('barriers'));
+        return Inertia::render('InclusiveRadar/Barriers/Index', compact('barriers'));
     }
 
-    public function create(Request $request, BarrierFormQuery $form): View
+    public function create(Request $request, BarrierFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.barriers.create',
+        return Inertia::render(
+            'InclusiveRadar/Barriers/Create',
             $form->forCreation(
                 selectedInstitutionId: $request->old('institution_id')
                     ? (int) $request->old('institution_id')
@@ -65,17 +62,17 @@ final class BarrierController
             ->with('success', 'Barreira identificada com sucesso!');
     }
 
-    public function show(Barrier $barrier, ShowBarrierQuery $query): View
+    public function show(Barrier $barrier, ShowBarrierQuery $query): InertiaResponse
     {
         $barrier = $query->execute($barrier);
 
-        return view('pages.inclusive-radar.barriers.show', compact('barrier'));
+        return Inertia::render('InclusiveRadar/Barriers/Show', compact('barrier'));
     }
 
-    public function edit(Barrier $barrier, Request $request, BarrierFormQuery $form): View
+    public function edit(Barrier $barrier, Request $request, BarrierFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.barriers.edit',
+        return Inertia::render(
+            'InclusiveRadar/Barriers/Edit',
             $form->forUpdate(
                 barrier: $barrier,
                 selectedInstitutionId: $request->old('institution_id')
@@ -113,11 +110,11 @@ final class BarrierController
             ->with('success', 'Barreira removida com sucesso!');
     }
 
-    public function showInspection(Barrier $barrier, Inspection $inspection, ShowBarrierInspectionQuery $query): View
+    public function showInspection(Barrier $barrier, Inspection $inspection, ShowBarrierInspectionQuery $query): InertiaResponse
     {
         $inspection = $query->execute($barrier, $inspection);
 
-        return view('pages.inclusive-radar.barriers.inspections.show', [
+        return Inertia::render('InclusiveRadar/Barriers/Inspections/Show', [
             'barrier' => $barrier,
             'inspection' => $inspection,
         ]);

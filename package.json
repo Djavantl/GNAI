@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "check": "tsc --noEmit && node scripts/check-react.mjs",
+        "check": "tsc --noEmit",
         "build": "npm run check && vite build"
     },
     "devDependencies": {
@@ -18,7 +18,6 @@
     },
     "dependencies": {
         "@inertiajs/react": "^3.9.1",
-        "bootstrap": "^5.3.3",
         "react": "^19.3.0",
         "react-dom": "^19.3.0"
     }

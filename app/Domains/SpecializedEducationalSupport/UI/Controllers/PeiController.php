@@ -32,7 +32,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class PeiController
@@ -45,22 +46,15 @@ final class PeiController
         ListAllPeisQuery $query,
         PeiFilterOptionsQuery $filterOptions,
         Request $request,
-    ): View|string {
+    ): InertiaResponse {
         $user = $request->user();
         $peis = $query->execute($filters, $user instanceof User ? $user : null);
 
         $students = $filterOptions->students();
         $semesters = $filterOptions->semesters();
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.peis.partials.table-all',
-                compact('peis')
-            )->render();
-        }
-
-        return view(
-            'pages.specialized-educational-support.peis.all',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Peis/All',
             compact('peis', 'students', 'semesters')
         );
     }
@@ -74,26 +68,19 @@ final class PeiController
         ListStudentPeisQuery $query,
         PeiFilterOptionsQuery $filterOptions,
         Request $request,
-    ): View|string {
+    ): InertiaResponse {
         $user = $request->user();
         $peis = $query->execute($student, $filters, $user instanceof User ? $user : null);
         $semesters = $filterOptions->semesters();
         $disciplines = $filterOptions->disciplines();
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.peis.partials.table',
-                compact('peis')
-            )->render();
-        }
-
-        return view(
-            'pages.specialized-educational-support.peis.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Peis/Index',
             compact('peis', 'student', 'semesters', 'disciplines')
         );
     }
 
-    public function show(Pei $pei, ShowPeiQuery $query): View
+    public function show(Pei $pei, ShowPeiQuery $query): InertiaResponse
     {
         $pei = $query->execute($pei);
 
@@ -105,7 +92,7 @@ final class PeiController
             ->latest()
             ->paginate(5);
 
-        return view('pages.specialized-educational-support.peis.show', compact(
+        return Inertia::render('SpecializedEducationalSupport/Peis/Show', compact(
             'pei', 'student', 'studentContext', 'peiDisciplines'
         ));
     }
@@ -113,10 +100,10 @@ final class PeiController
     /**
      * @throws InvalidStudent
      */
-    public function create(Student $student, PeiFormQuery $form): View
+    public function create(Student $student, PeiFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.peis.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Peis/Create',
             $form->forCreation($student),
         );
     }
@@ -240,21 +227,21 @@ final class PeiController
         return $pdf->stream("PEI_COMPLETO_{$studentName}_v{$pei->version}.pdf");
     }
 
-    public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline): View
+    public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline): InertiaResponse
     {
         $peiDiscipline->load(['teacher.person', 'discipline', 'creator']);
         $student = $pei->student->load('person');
 
-        return view('pages.specialized-educational-support.peis.disciplines.show', compact('pei', 'peiDiscipline', 'student'));
+        return Inertia::render('SpecializedEducationalSupport/Peis/Disciplines/Show', compact('pei', 'peiDiscipline', 'student'));
     }
 
     /**
      * @throws InvalidStudent
      */
-    public function createDiscipline(Pei $pei, PeiDisciplineFormQuery $form): View
+    public function createDiscipline(Pei $pei, PeiDisciplineFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.peis.disciplines.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Peis/Disciplines/Create',
             $form->forCreation($pei),
         );
     }
@@ -282,9 +269,9 @@ final class PeiController
         PeiDisciplineFormQuery $form,
         AuthenticatedUserResolver $authenticatedUser,
         Request $request,
-    ): View {
-        return view(
-            'pages.specialized-educational-support.peis.disciplines.edit',
+    ): InertiaResponse {
+        return Inertia::render(
+            'SpecializedEducationalSupport/Peis/Disciplines/Edit',
             $form->forUpdate($pei, $peiDiscipline, $authenticatedUser->fromRequest($request)),
         );
     }

@@ -161,7 +161,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 1G
 
 volumes:
   dbdata:

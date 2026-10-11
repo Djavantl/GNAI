@@ -21,32 +21,26 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class WaitlistController
 {
-    public function index(ListWaitlistsData $filters, ListWaitlistsQuery $query, Request $request): View
+    public function index(ListWaitlistsData $filters, ListWaitlistsQuery $query, Request $request): InertiaResponse
     {
         $waitlists = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.waitlists.partials.table',
-                compact('waitlists'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.waitlists.index',
+        return Inertia::render(
+            'InclusiveRadar/Waitlists/Index',
             compact('waitlists'),
         );
     }
 
-    public function create(WaitlistFormQuery $form, Request $request): View
+    public function create(WaitlistFormQuery $form, Request $request): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.waitlists.create',
+        return Inertia::render(
+            'InclusiveRadar/Waitlists/Create',
             $form->forCreation(
                 authUser: $request->user(),
             ),
@@ -68,12 +62,12 @@ final class WaitlistController
             ->with('success', 'Solicitação de fila criada com sucesso!');
     }
 
-    public function show(Waitlist $waitlist, ShowWaitlistQuery $query, Request $request): View
+    public function show(Waitlist $waitlist, ShowWaitlistQuery $query, Request $request): InertiaResponse
     {
         $waitlist = $query->execute($waitlist);
 
-        return view(
-            'pages.inclusive-radar.waitlists.show',
+        return Inertia::render(
+            'InclusiveRadar/Waitlists/Show',
             [
                 'waitlist' => $waitlist,
                 'authUser' => $request->user(),
@@ -84,10 +78,10 @@ final class WaitlistController
         );
     }
 
-    public function edit(Waitlist $waitlist, WaitlistFormQuery $form, Request $request): View
+    public function edit(Waitlist $waitlist, WaitlistFormQuery $form, Request $request): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.waitlists.edit',
+        return Inertia::render(
+            'InclusiveRadar/Waitlists/Edit',
             $form->forUpdate(
                 waitlist: $waitlist,
                 authUser: $request->user(),

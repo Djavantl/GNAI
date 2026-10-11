@@ -3,6 +3,7 @@
 use App\Domains\Auth\UI\Middleware\EnsureUserIsAdmin;
 use App\Shared\Application\Exceptions\AccessDeniedException;
 use App\Shared\Domain\Exceptions\BusinessRuleException;
+use App\Shared\Infrastructure\Http\Middleware\HandleInertiaRequests;
 use App\Shared\Infrastructure\Http\Middleware\SanitizeRichTextInput;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -12,6 +13,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -30,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $middleware->web(append: [
+            HandleInertiaRequests::class,
             SanitizeRichTextInput::class,
         ]);
 
@@ -60,7 +64,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => $e->getMessage()], 403);
             }
 
-            return response()->view('errors.403', [], 403);
+            return Inertia::render('Errors/Error', ['status' => 403])
+                ->toResponse($request)->setStatusCode(403);
         });
 
         // Validação
@@ -100,4 +105,19 @@ return Application::configure(basePath: dirname(__DIR__))
                 : redirect()->back()->with('error', $msg);
         });
 
+        $exceptions->respond(function (Response $response, Throwable $exception, Request $request): Response {
+            $status = $response->getStatusCode();
+
+            if (! $request->expectsJson() && in_array($status, [403, 404, 419, 503], true)) {
+                return Inertia::render('Errors/Error', ['status' => $status])
+                    ->toResponse($request)->setStatusCode($status);
+            }
+
+            if (! $request->expectsJson() && $status === 500 && ! config('app.debug')) {
+                return Inertia::render('Errors/Error', ['status' => $status])
+                    ->toResponse($request)->setStatusCode($status);
+            }
+
+            return $response;
+        });
     })->create();

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\AccessibleEducationalMaterials;
 
-use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
-use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
+use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 final class ListAccessibleEducationalMaterialsTest extends TestCase
@@ -65,17 +66,15 @@ final class ListAccessibleEducationalMaterialsTest extends TestCase
         );
 
         $response->assertOk();
-        $response->assertViewIs(
-            'pages.inclusive-radar.accessible-educational-materials.index',
-        );
-        $response->assertViewHas(
-            'materials',
-            static fn ($materials): bool => $materials->total() === 1
-                && $materials->first()->is($matching),
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('InclusiveRadar/AccessibleEducationalMaterials/Index')
+            ->where('materials.total', 1)
+            ->where('materials.data.0.id', $matching->id)
         );
     }
 
-    public function test_it_returns_only_the_table_for_an_ajax_request(): void
+    public function test_it_returns_the_inertia_page_for_an_ajax_request(): void
     {
         $this->material(
             name: 'Livro Braille',
@@ -91,10 +90,11 @@ final class ListAccessibleEducationalMaterialsTest extends TestCase
         );
 
         $response->assertOk();
-        $response->assertViewIs(
-            'pages.inclusive-radar.accessible-educational-materials.partials.table',
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('InclusiveRadar/AccessibleEducationalMaterials/Index')
+            ->has('materials.data', 1)
         );
-        $response->assertViewHas('materials');
     }
 
     public function test_it_filters_materials_by_accessibility_feature(): void
@@ -134,15 +134,14 @@ final class ListAccessibleEducationalMaterialsTest extends TestCase
         );
 
         $response->assertOk();
-        $response->assertViewHas(
-            'materials',
-            static fn ($materials): bool => $materials->total() === 1
-                && $materials->first()->is($matching),
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('InclusiveRadar/AccessibleEducationalMaterials/Index')
+            ->where('materials.total', 1)
+            ->where('materials.data.0.id', $matching->id)
         );
-        $response->assertViewHas(
-            'accessibilityFeatureOptions',
-            static fn (array $options): bool => ($options[(string) $matchingFeature->id] ?? null) === 'Audiodescrição'
-                && ($options[(string) $otherFeature->id] ?? null) === 'Libras',
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where("accessibilityFeatureOptions.{$matchingFeature->id}", 'Audiodescrição')
+            ->where("accessibilityFeatureOptions.{$otherFeature->id}", 'Libras')
         );
     }
 

@@ -22,32 +22,26 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class LoanController
 {
-    public function index(ListLoansData $filters, ListLoansQuery $query, Request $request): View
+    public function index(ListLoansData $filters, ListLoansQuery $query, Request $request): InertiaResponse
     {
         $loans = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.loans.partials.table',
-                compact('loans'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.loans.index',
+        return Inertia::render(
+            'InclusiveRadar/Loans/Index',
             compact('loans'),
         );
     }
 
-    public function create(Request $request, LoanFormQuery $form): View
+    public function create(Request $request, LoanFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.loans.create',
+        return Inertia::render(
+            'InclusiveRadar/Loans/Create',
             $form->forCreation(
                 authUser: $request->user(),
                 selectedStudentId: $request->integer('student_id') ?: null,
@@ -73,12 +67,12 @@ final class LoanController
             ->with('success', 'Empréstimo realizado com sucesso!');
     }
 
-    public function show(Loan $loan, ShowLoanQuery $query, Request $request): View
+    public function show(Loan $loan, ShowLoanQuery $query, Request $request): InertiaResponse
     {
         $loan = $query->execute($loan);
 
-        return view(
-            'pages.inclusive-radar.loans.show',
+        return Inertia::render(
+            'InclusiveRadar/Loans/Show',
             [
                 'loan' => $loan,
                 'statusLabel' => $loan->statusLabel(),
@@ -89,10 +83,10 @@ final class LoanController
         );
     }
 
-    public function edit(Loan $loan, LoanFormQuery $form, Request $request): View
+    public function edit(Loan $loan, LoanFormQuery $form, Request $request): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.loans.edit',
+        return Inertia::render(
+            'InclusiveRadar/Loans/Edit',
             $form->forUpdate(
                 loan: $loan,
                 authUser: $request->user(),

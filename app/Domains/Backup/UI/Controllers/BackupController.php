@@ -22,7 +22,8 @@ use App\Domains\Backup\Domain\Exceptions\InvalidBackupRestoreConfirmation;
 use App\Domains\Backup\Domain\Models\Backup;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
@@ -34,17 +35,13 @@ final class BackupController
         ListBackupUsersQuery $usersQuery,
         SyncBackupsAction $syncBackups,
         Request $request,
-    ): View {
+    ): InertiaResponse {
         $syncBackups->execute();
 
         $backups = $backupsQuery->execute($filters);
         $users = $usersQuery->execute();
 
-        if ($request->ajax()) {
-            return view('pages.backup.partials.table', compact('backups'));
-        }
-
-        return view('pages.backup.index', compact('backups', 'users'));
+        return Inertia::render('Backup/Index', compact('backups', 'users'));
     }
 
     /**
@@ -59,11 +56,11 @@ final class BackupController
             ->with('success', 'Backup realizado com sucesso!');
     }
 
-    public function show(Backup $backup, ShowBackupQuery $query): View
+    public function show(Backup $backup, ShowBackupQuery $query): InertiaResponse
     {
         $backup = $query->execute($backup);
 
-        return view('pages.backup.show', compact('backup'));
+        return Inertia::render('Backup/Show', compact('backup'));
     }
 
     public function download(Backup $backup, DownloadBackupQuery $query): RedirectResponse|StreamedResponse
@@ -85,7 +82,7 @@ final class BackupController
         $data = UploadBackupData::validateAndCreate($request->all());
 
         if (! $data->backupFile->isValid()) {
-            return redirect()->back()->with('error', 'Erro no upload do PHP: ' . $data->backupFile->getErrorMessage());
+            return redirect()->back()->with('error', 'Erro no upload do PHP: '.$data->backupFile->getErrorMessage());
         }
 
         $action->execute($data);
@@ -115,8 +112,7 @@ final class BackupController
         RestoreBackupAction $action,
         BackupRestoreConfirmationPolicy $confirmationPolicy,
         Request $request,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $validated = $request->validate([
             'password' => ['required', 'string'],
         ], [

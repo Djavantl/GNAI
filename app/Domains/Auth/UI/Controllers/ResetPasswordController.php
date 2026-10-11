@@ -9,13 +9,14 @@ use App\Domains\Auth\Application\Data\Passwords\ResetPasswordData;
 use App\Domains\Auth\Domain\Exceptions\InvalidPasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 final class ResetPasswordController
 {
-    public function showForm(Request $request, string $token): View
+    public function showForm(Request $request, string $token): InertiaResponse
     {
-        return view('auth.reset-password', [
+        return Inertia::render('Auth/ResetPassword', [
             'token' => $token,
             'email' => $request->string('email')->toString(),
         ]);

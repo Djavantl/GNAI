@@ -16,30 +16,24 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidAccessibilityFeature;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 final class AccessibilityFeatureController
 {
-    public function index(ListAccessibilityFeaturesData $filters, ListAccessibilityFeaturesQuery $query, Request $request): View
+    public function index(ListAccessibilityFeaturesData $filters, ListAccessibilityFeaturesQuery $query, Request $request): InertiaResponse
     {
         $features = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.accessibility-features.partials.table',
-                compact('features'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.accessibility-features.index',
+        return Inertia::render(
+            'InclusiveRadar/AccessibilityFeatures/Index',
             compact('features'),
         );
     }
 
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('pages.inclusive-radar.accessibility-features.create');
+        return Inertia::render('InclusiveRadar/AccessibilityFeatures/Create');
     }
 
     /**
@@ -54,20 +48,20 @@ final class AccessibilityFeatureController
             ->with('success', 'Recurso de acessibilidade criado com sucesso!');
     }
 
-    public function show(AccessibilityFeature $accessibilityFeature, ShowAccessibilityFeatureQuery $query): View
+    public function show(AccessibilityFeature $accessibilityFeature, ShowAccessibilityFeatureQuery $query): InertiaResponse
     {
         $accessibilityFeature = $query->execute($accessibilityFeature);
 
-        return view(
-            'pages.inclusive-radar.accessibility-features.show',
+        return Inertia::render(
+            'InclusiveRadar/AccessibilityFeatures/Show',
             ['feature' => $accessibilityFeature],
         );
     }
 
-    public function edit(AccessibilityFeature $accessibilityFeature): View
+    public function edit(AccessibilityFeature $accessibilityFeature): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.accessibility-features.edit',
+        return Inertia::render(
+            'InclusiveRadar/AccessibilityFeatures/Edit',
             compact('accessibilityFeature'),
         );
     }
@@ -75,7 +69,7 @@ final class AccessibilityFeatureController
     /**
      * @throws InvalidAccessibilityFeature
      */
-    public function update(UpdateAccessibilityFeatureData $data, AccessibilityFeature $accessibilityFeature, UpdateAccessibilityFeatureAction $action,): RedirectResponse
+    public function update(UpdateAccessibilityFeatureData $data, AccessibilityFeature $accessibilityFeature, UpdateAccessibilityFeatureAction $action): RedirectResponse
     {
         $action->execute($accessibilityFeature, $data);
 

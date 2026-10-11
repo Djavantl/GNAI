@@ -22,42 +22,36 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Teachers\Teach
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class TeacherController
 {
-    public function index(ListTeachersData $filters, ListTeachersQuery $query, Request $request): View
+    public function index(ListTeachersData $filters, ListTeachersQuery $query, Request $request): InertiaResponse
     {
         $teachers = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.teachers.partials.table',
-                compact('teachers'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.teachers.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Teachers/Index',
             compact('teachers'),
         );
     }
 
-    public function show(Teacher $teacher, ShowTeacherQuery $query): View
+    public function show(Teacher $teacher, ShowTeacherQuery $query): InertiaResponse
     {
         $teacher = $query->execute($teacher);
 
-        return view(
-            'pages.specialized-educational-support.teachers.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Teachers/Show',
             compact('teacher'),
         );
     }
 
-    public function create(TeacherFormQuery $form): View
+    public function create(TeacherFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.teachers.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Teachers/Create',
             $form->forCreation(),
         );
     }
@@ -74,10 +68,10 @@ final class TeacherController
             ->with('success', 'Professor cadastrado com sucesso.');
     }
 
-    public function edit(Teacher $teacher, TeacherFormQuery $form): View
+    public function edit(Teacher $teacher, TeacherFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.teachers.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Teachers/Edit',
             $form->forUpdate($teacher),
         );
     }
@@ -106,10 +100,10 @@ final class TeacherController
             ->with('success', 'Professor removido com sucesso.');
     }
 
-    public function permissions(TeacherPermissionsFormQuery $query): View
+    public function permissions(TeacherPermissionsFormQuery $query): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.teachers.global-permissions',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Teachers/GlobalPermissions',
             $query->execute(),
         );
     }
@@ -128,10 +122,10 @@ final class TeacherController
             ->with('success', 'Permissões globais de professores atualizadas!');
     }
 
-    public function disciplines(Teacher $teacher, TeacherDisciplinesFormQuery $query): View
+    public function disciplines(Teacher $teacher, TeacherDisciplinesFormQuery $query): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.teachers.disciplines',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Teachers/Disciplines',
             $query->execute($teacher),
         );
     }

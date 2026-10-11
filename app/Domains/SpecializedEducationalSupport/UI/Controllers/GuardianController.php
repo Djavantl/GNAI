@@ -17,45 +17,39 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Guardian;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class GuardianController
 {
-    public function index(Student $student, ListGuardiansData $filters, ListGuardiansQuery $query, GuardianFormQuery $form, Request $request): View
+    public function index(Student $student, ListGuardiansData $filters, ListGuardiansQuery $query, GuardianFormQuery $form, Request $request): InertiaResponse
     {
         $student->loadMissing('person');
         $guardians = $query->execute($student, $filters);
         $relationships = $form->relationshipOptions();
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.guardians.partials.table',
-                compact('student', 'guardians'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.guardians.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Guardians/Index',
             compact('student', 'guardians', 'relationships'),
         );
     }
 
-    public function show(Guardian $guardian, ShowGuardianQuery $query): View
+    public function show(Guardian $guardian, ShowGuardianQuery $query): InertiaResponse
     {
         $guardian = $query->execute($guardian);
         $student = $guardian->student;
 
-        return view(
-            'pages.specialized-educational-support.guardians.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Guardians/Show',
             compact('guardian', 'student'),
         );
     }
 
-    public function create(Student $student, GuardianFormQuery $form): View
+    public function create(Student $student, GuardianFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.guardians.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Guardians/Create',
             $form->forCreation($student),
         );
     }
@@ -72,10 +66,10 @@ final class GuardianController
             ->with('success', 'Responsável vinculado com sucesso.');
     }
 
-    public function edit(Student $student, Guardian $guardian, GuardianFormQuery $form): View
+    public function edit(Student $student, Guardian $guardian, GuardianFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.guardians.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Guardians/Edit',
             $form->forUpdate($student, $guardian),
         );
     }

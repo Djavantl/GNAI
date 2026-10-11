@@ -16,41 +16,35 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Semesters\Show
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class SemesterController
 {
-    public function index(ListSemestersData $filters, ListSemestersQuery $query, Request $request): View
+    public function index(ListSemestersData $filters, ListSemestersQuery $query, Request $request): InertiaResponse
     {
         $semesters = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.semesters.partials.table',
-                compact('semesters'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.semesters.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Semesters/Index',
             compact('semesters'),
         );
     }
 
-    public function show(Semester $semester, ShowSemesterQuery $query): View
+    public function show(Semester $semester, ShowSemesterQuery $query): InertiaResponse
     {
         $semester = $query->execute($semester);
 
-        return view(
-            'pages.specialized-educational-support.semesters.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Semesters/Show',
             compact('semester'),
         );
     }
 
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('pages.specialized-educational-support.semesters.create');
+        return Inertia::render('SpecializedEducationalSupport/Semesters/Create');
     }
 
     /**
@@ -65,10 +59,10 @@ final class SemesterController
             ->with('success', 'Semestre criado com sucesso.');
     }
 
-    public function edit(Semester $semester): View
+    public function edit(Semester $semester): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.semesters.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Semesters/Edit',
             compact('semester'),
         );
     }

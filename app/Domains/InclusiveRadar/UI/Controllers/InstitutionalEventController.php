@@ -20,33 +20,27 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 final class InstitutionalEventController
 {
-    public function index(ListInstitutionalEventsData $filters, ListInstitutionalEventsQuery $query, Request $request): View
+    public function index(ListInstitutionalEventsData $filters, ListInstitutionalEventsQuery $query, Request $request): InertiaResponse
     {
         $events = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.institutional-events.partials.table',
-                compact('events'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.institutional-events.index',
+        return Inertia::render(
+            'InclusiveRadar/InstitutionalEvents/Index',
             compact('events'),
         );
     }
 
-    public function create(Request $request): View
+    public function create(Request $request): InertiaResponse
     {
         $backRoute = $request->query('back')
             ?? route('inclusive-radar.institutional-events.index');
 
-        return view('pages.inclusive-radar.institutional-events.create', compact('backRoute'));
+        return Inertia::render('InclusiveRadar/InstitutionalEvents/Create', compact('backRoute'));
     }
 
     /**
@@ -61,18 +55,18 @@ final class InstitutionalEventController
             ->with('success', 'Evento criado com sucesso!');
     }
 
-    public function show(Request $request, InstitutionalEvent $event, ShowInstitutionalEventQuery $query): View
+    public function show(Request $request, InstitutionalEvent $event, ShowInstitutionalEventQuery $query): InertiaResponse
     {
         $event = $query->execute($event);
         $backRoute = $request->query('back')
             ?? route('inclusive-radar.institutional-events.index');
 
-        return view('pages.inclusive-radar.institutional-events.show', compact('event', 'backRoute'));
+        return Inertia::render('InclusiveRadar/InstitutionalEvents/Show', compact('event', 'backRoute'));
     }
 
-    public function edit(InstitutionalEvent $event): View
+    public function edit(InstitutionalEvent $event): InertiaResponse
     {
-        return view('pages.inclusive-radar.institutional-events.edit', compact('event'));
+        return Inertia::render('InclusiveRadar/InstitutionalEvents/Edit', compact('event'));
     }
 
     /**

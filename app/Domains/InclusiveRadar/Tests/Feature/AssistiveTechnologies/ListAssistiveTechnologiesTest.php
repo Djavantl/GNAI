@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Tests\Feature\AssistiveTechnologies;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
-use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 final class ListAssistiveTechnologiesTest extends TestCase
@@ -59,17 +60,15 @@ final class ListAssistiveTechnologiesTest extends TestCase
         );
 
         $response->assertOk();
-        $response->assertViewIs(
-            'pages.inclusive-radar.assistive-technologies.index',
-        );
-        $response->assertViewHas(
-            'assistiveTechnologies',
-            static fn ($technologies): bool => $technologies->total() === 1
-                && $technologies->first()->is($matching),
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('InclusiveRadar/AssistiveTechnologies/Index')
+            ->where('assistiveTechnologies.total', 1)
+            ->where('assistiveTechnologies.data.0.id', $matching->id)
         );
     }
 
-    public function test_it_returns_only_the_table_for_an_ajax_request(): void
+    public function test_it_returns_the_inertia_page_for_an_ajax_request(): void
     {
         $this->technology(
             name: 'Linha Braille',
@@ -84,10 +83,11 @@ final class ListAssistiveTechnologiesTest extends TestCase
         );
 
         $response->assertOk();
-        $response->assertViewIs(
-            'pages.inclusive-radar.assistive-technologies.partials.table',
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('InclusiveRadar/AssistiveTechnologies/Index')
+            ->has('assistiveTechnologies.data', 1)
         );
-        $response->assertViewHas('assistiveTechnologies');
     }
 
     private function technology(

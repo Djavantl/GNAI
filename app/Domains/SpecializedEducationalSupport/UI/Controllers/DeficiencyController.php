@@ -16,7 +16,8 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Deficiencies\S
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class DeficiencyController
@@ -25,35 +26,28 @@ final class DeficiencyController
         ListDeficienciesData $filters,
         ListDeficienciesQuery $query,
         Request $request,
-    ): View {
+    ): InertiaResponse {
         $deficiencies = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.deficiencies.partials.table',
-                compact('deficiencies'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.deficiencies.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Deficiencies/Index',
             compact('deficiencies'),
         );
     }
 
-    public function show(Deficiency $deficiency, ShowDeficiencyQuery $query): View
+    public function show(Deficiency $deficiency, ShowDeficiencyQuery $query): InertiaResponse
     {
         $deficiency = $query->execute($deficiency);
 
-        return view(
-            'pages.specialized-educational-support.deficiencies.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Deficiencies/Show',
             compact('deficiency'),
         );
     }
 
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('pages.specialized-educational-support.deficiencies.create');
+        return Inertia::render('SpecializedEducationalSupport/Deficiencies/Create');
     }
 
     public function store(
@@ -67,10 +61,10 @@ final class DeficiencyController
             ->with('success', 'Deficiência criada com sucesso!');
     }
 
-    public function edit(Deficiency $deficiency): View
+    public function edit(Deficiency $deficiency): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.deficiencies.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Deficiencies/Edit',
             compact('deficiency'),
         );
     }

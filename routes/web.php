@@ -2,12 +2,13 @@
 
 use App\Domains\Notifications\UI\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::middleware('web')->group(function () {
     // Catálogo local para apoiar a migração das telas para React.
     if (app()->environment('local', 'testing')) {
         Route::redirect('/react', '/react/index.html');
-        Route::view('/react/{page}', 'react')
+        Route::get('/react/{page}', fn () => Inertia::render('Catalog/Catalog'))
             ->where('page', '[A-Za-z0-9_-]+\\.html')
             ->name('react.catalog');
     }
@@ -44,5 +45,5 @@ Route::middleware('web')->group(function () {
             ->name('notifications.readAll');
     });
 
-    Route::get('/about-us', fn () => view('pages.about-us'))->name('about-us');
+    Route::get('/about-us', fn () => Inertia::render('AboutUs/AboutUs'))->name('about-us');
 });

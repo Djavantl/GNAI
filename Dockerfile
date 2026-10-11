@@ -56,7 +56,6 @@ COPY resources ./resources
 COPY public ./public
 COPY vite.config.js ./
 COPY tsconfig.json ./
-COPY scripts ./scripts
 
 RUN npm run build
 

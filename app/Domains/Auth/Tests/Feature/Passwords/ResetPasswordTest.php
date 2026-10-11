@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 final class ResetPasswordTest extends TestCase
@@ -25,9 +26,11 @@ final class ResetPasswordTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertViewIs('auth.reset-password')
-            ->assertViewHas('token', 'valid-token')
-            ->assertViewHas('email', 'user@example.com');
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Auth/ResetPassword')
+                ->where('token', 'valid-token')
+                ->where('email', 'user@example.com')
+            );
     }
 
     public function test_it_resets_user_password_with_valid_token(): void

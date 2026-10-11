@@ -15,41 +15,35 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Disciplines\Sh
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Discipline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class DisciplineController
 {
-    public function index(ListDisciplinesData $filters, ListDisciplinesQuery $query, Request $request): View
+    public function index(ListDisciplinesData $filters, ListDisciplinesQuery $query, Request $request): InertiaResponse
     {
         $disciplines = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.disciplines.partials.table',
-                compact('disciplines'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.disciplines.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Disciplines/Index',
             compact('disciplines'),
         );
     }
 
-    public function show(Discipline $discipline, ShowDisciplineQuery $query): View
+    public function show(Discipline $discipline, ShowDisciplineQuery $query): InertiaResponse
     {
         $discipline = $query->execute($discipline);
 
-        return view(
-            'pages.specialized-educational-support.disciplines.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Disciplines/Show',
             compact('discipline'),
         );
     }
 
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('pages.specialized-educational-support.disciplines.create');
+        return Inertia::render('SpecializedEducationalSupport/Disciplines/Create');
     }
 
     public function store(CreateDisciplineData $data, CreateDisciplineAction $action): RedirectResponse
@@ -61,10 +55,10 @@ final class DisciplineController
             ->with('success', 'Disciplina cadastrada com sucesso.');
     }
 
-    public function edit(Discipline $discipline): View
+    public function edit(Discipline $discipline): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.disciplines.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Disciplines/Edit',
             compact('discipline'),
         );
     }

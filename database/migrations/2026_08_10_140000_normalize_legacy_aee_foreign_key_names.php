@@ -66,6 +66,11 @@ return new class extends Migration
         string $currentName,
         string $referencedTable,
     ): void {
+        // Constraint renaming below uses MySQL metadata and ALTER TABLE syntax.
+        if (! in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)) {
+            return;
+        }
+
         if ($this->foreignKeyExists($table, $legacyName)) {
             DB::statement("ALTER TABLE `{$table}` DROP FOREIGN KEY `{$legacyName}`");
         }

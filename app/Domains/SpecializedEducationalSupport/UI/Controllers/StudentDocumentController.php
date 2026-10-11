@@ -17,27 +17,21 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDocument;
 use App\Domains\SpecializedEducationalSupport\Infrastructure\Storage\StudentDocumentStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 final class StudentDocumentController
 {
-    public function index(Student $student, ListStudentDocumentsData $filters, ListStudentDocumentsQuery $query, StudentDocumentFormQuery $form, Request $request): View
+    public function index(Student $student, ListStudentDocumentsData $filters, ListStudentDocumentsQuery $query, StudentDocumentFormQuery $form, Request $request): InertiaResponse
     {
         $student->loadMissing('person');
         $documents = $query->execute($student, $filters);
         $options = $form->forIndex($student);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.student-documents.partials.table',
-                compact('documents', 'student'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.student-documents.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentDocuments/Index',
             compact('documents', 'student') + $options,
         );
     }
@@ -47,10 +41,10 @@ final class StudentDocumentController
         return $storage->inline($studentDocument);
     }
 
-    public function create(Student $student, StudentDocumentFormQuery $form): View
+    public function create(Student $student, StudentDocumentFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-documents.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentDocuments/Create',
             $form->forCreation($student),
         );
     }
@@ -71,10 +65,10 @@ final class StudentDocumentController
             ->with('success', 'Documento enviado com sucesso.');
     }
 
-    public function edit(StudentDocument $studentDocument, StudentDocumentFormQuery $form): View
+    public function edit(StudentDocument $studentDocument, StudentDocumentFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-documents.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentDocuments/Edit',
             $form->forUpdate($studentDocument),
         );
     }

@@ -24,57 +24,51 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class StudentContextController
 {
-    public function index(ListStudentContextsData $filters, Student $student, ListStudentContextsQuery $query, StudentContextFilterOptionsQuery $filterOptions, Request $request): View
+    public function index(ListStudentContextsData $filters, Student $student, ListStudentContextsQuery $query, StudentContextFilterOptionsQuery $filterOptions, Request $request): InertiaResponse
     {
         $contexts = $query->execute($student, $filters);
         $student->loadMissing('person');
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.student-context.partials.table',
-                compact('contexts', 'student'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.student-context.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentContext/Index',
             compact('contexts', 'student') + $filterOptions->execute(),
         );
     }
 
-    public function show(StudentContext $studentContext, ShowStudentContextQuery $query): View
+    public function show(StudentContext $studentContext, ShowStudentContextQuery $query): InertiaResponse
     {
         $studentContext = $query->execute($studentContext);
         $student = $studentContext->student;
         $deficiencies = $student->deficiencies;
 
-        return view(
-            'pages.specialized-educational-support.student-context.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentContext/Show',
             compact('studentContext', 'student', 'deficiencies'),
         );
     }
 
-    public function showCurrent(Student $student, CurrentStudentContextQuery $query): View
+    public function showCurrent(Student $student, CurrentStudentContextQuery $query): InertiaResponse
     {
         $studentContext = $query->execute($student);
         $student = $studentContext->student;
         $deficiencies = $student->deficiencies;
 
-        return view(
-            'pages.specialized-educational-support.student-context.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentContext/Show',
             compact('studentContext', 'student', 'deficiencies'),
         );
     }
 
-    public function create(Student $student, StudentContextFormQuery $form): View
+    public function create(Student $student, StudentContextFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-context.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentContext/Create',
             $form->forCreation($student),
         );
     }
@@ -91,10 +85,10 @@ final class StudentContextController
             ->with('success', 'Contexto do aluno cadastrado com sucesso.');
     }
 
-    public function edit(StudentContext $studentContext, StudentContextFormQuery $form, Request $request): View
+    public function edit(StudentContext $studentContext, StudentContextFormQuery $form, Request $request): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-context.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentContext/Edit',
             $form->forUpdate($studentContext, $this->professionalId($request)),
         );
     }
@@ -115,10 +109,10 @@ final class StudentContextController
             ->with('success', 'Contexto salvo com sucesso.');
     }
 
-    public function makeNewVersion(Student $student, StudentContextFormQuery $form): View
+    public function makeNewVersion(Student $student, StudentContextFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-context.version',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentContext/Version',
             $form->forNewVersion($student),
         );
     }

@@ -1,0 +1,10 @@
+.pageScaffold {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.pageScaffold h1 {
+  margin: 0 0 24px;
+  font-family: var(--ui-font-ui);
+  font-size: 24px;
+}

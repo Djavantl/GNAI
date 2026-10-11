@@ -17,31 +17,25 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLocation;
 use App\Domains\InclusiveRadar\Domain\Models\Location;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 final class LocationController
 {
-    public function index(ListLocationsData $filters, ListLocationsQuery $query, Request $request): View
+    public function index(ListLocationsData $filters, ListLocationsQuery $query, Request $request): InertiaResponse
     {
         $locations = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.locations.partials.table',
-                compact('locations'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.locations.index',
+        return Inertia::render(
+            'InclusiveRadar/Locations/Index',
             compact('locations'),
         );
     }
 
-    public function create(LocationFormQuery $form, Request $request): View
+    public function create(LocationFormQuery $form, Request $request): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.locations.create',
+        return Inertia::render(
+            'InclusiveRadar/Locations/Create',
             $form->execute(
                 selectedInstitutionId: $this->selectedInstitutionId($request),
             ),
@@ -60,17 +54,17 @@ final class LocationController
             ->with('success', 'Ponto de referência criado com sucesso!');
     }
 
-    public function show(Location $location, ShowLocationQuery $query): View
+    public function show(Location $location, ShowLocationQuery $query): InertiaResponse
     {
         $location = $query->execute($location);
 
-        return view('pages.inclusive-radar.locations.show', compact('location'));
+        return Inertia::render('InclusiveRadar/Locations/Show', compact('location'));
     }
 
-    public function edit(Location $location, LocationFormQuery $form, Request $request): View
+    public function edit(Location $location, LocationFormQuery $form, Request $request): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.locations.edit',
+        return Inertia::render(
+            'InclusiveRadar/Locations/Edit',
             $form->execute(
                 location: $location,
                 selectedInstitutionId: $this->selectedInstitutionId($request),

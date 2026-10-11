@@ -13,7 +13,8 @@ use App\Domains\Notifications\Application\Queries\ListRecentNotificationsQuery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 final class NotificationController
 {
@@ -21,10 +22,10 @@ final class NotificationController
         ListNotificationsQuery $query,
         AuthenticatedUserResolver $authenticatedUser,
         Request $request,
-    ): View {
+    ): InertiaResponse {
         $notifications = $query->execute($authenticatedUser->fromRequest($request));
 
-        return view('pages.notifications.index', compact('notifications'));
+        return Inertia::render('Notifications/Index', compact('notifications'));
     }
 
     public function markAllAsRead(

@@ -24,31 +24,25 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class StudentController
 {
-    public function index(ListStudentsData $filters, ListStudentsQuery $query, StudentFilterOptionsQuery $options, Request $request): View
+    public function index(ListStudentsData $filters, ListStudentsQuery $query, StudentFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $user = $request->user();
         $teacherId = $user instanceof User ? $user->teacher_id : null;
         $students = $query->execute($filters, $teacherId);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.students.partials.table',
-                compact('students'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.students.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Students/Index',
             compact('students') + $options->execute(),
         );
     }
 
-    public function show(Student $student, ShowStudentQuery $showStudent, StudentAeeEvaluationsQuery $aeeEvaluationsQuery, StudentPedagogicalRecordsQuery $pedagogicalRecordsQuery, Request $request): View
+    public function show(Student $student, ShowStudentQuery $showStudent, StudentAeeEvaluationsQuery $aeeEvaluationsQuery, StudentPedagogicalRecordsQuery $pedagogicalRecordsQuery, Request $request): InertiaResponse
     {
         $user = $request->user();
         $authenticatedUser = $user instanceof User ? $user : null;
@@ -56,16 +50,16 @@ final class StudentController
         $aeeEvaluations = $aeeEvaluationsQuery->execute($student, $authenticatedUser);
         $pedagogicalRecords = $pedagogicalRecordsQuery->execute($student, $authenticatedUser);
 
-        return view(
-            'pages.specialized-educational-support.students.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Students/Show',
             compact('student', 'aeeEvaluations', 'pedagogicalRecords'),
         );
     }
 
-    public function create(StudentFormQuery $form): View
+    public function create(StudentFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.students.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Students/Create',
             $form->forCreation(),
         );
     }
@@ -82,10 +76,10 @@ final class StudentController
             ->with('success', 'Aluno cadastrado com sucesso.');
     }
 
-    public function edit(Student $student, StudentFormQuery $form): View
+    public function edit(Student $student, StudentFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.students.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Students/Edit',
             $form->forUpdate($student),
         );
     }

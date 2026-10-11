@@ -11,7 +11,8 @@ use App\Domains\Auth\Application\Resolvers\AuthenticatedUserResolver;
 use App\Domains\Auth\Domain\Exceptions\InvalidProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class ProfileController
@@ -20,10 +21,10 @@ final class ProfileController
         EditProfileQuery $query,
         AuthenticatedUserResolver $authenticatedUser,
         Request $request,
-    ): View|RedirectResponse {
+    ): InertiaResponse|RedirectResponse {
         try {
-            return view(
-                'pages.profile.edit',
+            return Inertia::render(
+                'Profile/Edit',
                 $query->execute($authenticatedUser->fromRequest($request)),
             );
         } catch (InvalidProfile $exception) {

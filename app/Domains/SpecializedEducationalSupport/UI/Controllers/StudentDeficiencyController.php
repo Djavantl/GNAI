@@ -18,7 +18,8 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDeficiency;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class StudentDeficiencyController
@@ -29,17 +30,10 @@ final class StudentDeficiencyController
         ListStudentDeficienciesQuery $query,
         StudentDeficiencyFilterOptionsQuery $filterOptions,
         Request $request,
-    ): View {
+    ): InertiaResponse {
         $deficiencies = $query->execute($student, $filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.student-deficiencies.partials.table',
-                compact('student', 'deficiencies'),
-            );
-        }
-
-        return view('pages.specialized-educational-support.student-deficiencies.index', [
+        return Inertia::render('SpecializedEducationalSupport/StudentDeficiencies/Index', [
             'student' => $student->loadMissing('person'),
             'deficiencies' => $deficiencies,
             'filterDeficiencies' => $filterOptions->execute($student),
@@ -50,21 +44,21 @@ final class StudentDeficiencyController
         Student $student,
         StudentDeficiency $student_deficiency,
         ShowStudentDeficiencyQuery $query,
-    ): View {
+    ): InertiaResponse {
         abort_if((int) $student_deficiency->student_id !== (int) $student->getKey(), 404);
 
         $deficiency = $query->execute($student_deficiency);
 
-        return view(
-            'pages.specialized-educational-support.student-deficiencies.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentDeficiencies/Show',
             compact('deficiency', 'student'),
         );
     }
 
-    public function create(Student $student, StudentDeficiencyFormQuery $form): View
+    public function create(Student $student, StudentDeficiencyFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.student-deficiencies.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentDeficiencies/Create',
             $form->forCreation($student),
         );
     }
@@ -88,11 +82,11 @@ final class StudentDeficiencyController
         Student $student,
         StudentDeficiency $student_deficiency,
         StudentDeficiencyFormQuery $form,
-    ): View {
+    ): InertiaResponse {
         abort_if((int) $student_deficiency->student_id !== (int) $student->getKey(), 404);
 
-        return view(
-            'pages.specialized-educational-support.student-deficiencies.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/StudentDeficiencies/Edit',
             $form->forUpdate($student, $student_deficiency),
         );
     }

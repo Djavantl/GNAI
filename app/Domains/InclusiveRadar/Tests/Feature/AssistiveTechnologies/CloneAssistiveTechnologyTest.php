@@ -14,6 +14,7 @@ use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Deficiency;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 final class CloneAssistiveTechnologyTest extends TestCase
@@ -30,7 +31,7 @@ final class CloneAssistiveTechnologyTest extends TestCase
             ->middleware('web');
     }
 
-    public function test_it_opens_creation_with_reusable_data_and_empty_unique_and_inspection_fields(): void
+    public function test_it_sends_reusable_source_data_and_form_options_to_react(): void
     {
         $user = User::factory()->create();
         $deficiencies = Deficiency::factory()->count(2)->create();
@@ -57,28 +58,17 @@ final class CloneAssistiveTechnologyTest extends TestCase
             str_replace('{assistiveTechnology}', (string) $technology->id, self::ENDPOINT),
         );
 
-        $response->assertOk();
-        $response->assertViewIs('pages.inclusive-radar.assistive-technologies.create');
-        $response->assertSee('Clonar Tecnologia Assistiva');
-        $response->assertSee('value="Cadeira de rodas motorizada"', false);
-        $response->assertSee('Modelo para uso institucional');
-        $response->assertSee('value="4"', false);
-        $response->assertSee('value="unavailable"', false);
-
-        foreach ($deficiencies as $deficiency) {
-            self::assertMatchesRegularExpression(
-                '/id="def_'.$deficiency->id.'"[^>]*checked/',
-                $response->getContent(),
-            );
-        }
-
-        self::assertDoesNotMatchRegularExpression(
-            '/name="asset_code"[^>]*value="TA-ORIGINAL-01"/',
-            $response->getContent(),
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('InclusiveRadar/AssistiveTechnologies/Create')
+            ->where('cloneSource.id', $technology->id)
+            ->where('cloneSource.name', 'Cadeira de rodas motorizada')
+            ->where('cloneSource.notes', 'Modelo para uso institucional')
+            ->where('cloneSource.quantity', 4)
+            ->where('cloneSource.status', 'unavailable')
+            ->has('cloneSource.deficiencies', 2)
+            ->missing('cloneSource.inspections')
+            ->missing('cloneSource.inspection_evidences')
+            ->has('resourceStatuses')
         );
-        self::assertMatchesRegularExpression('/name="asset_code"[^>]*value=""/', $response->getContent());
-        self::assertMatchesRegularExpression('/name="inspection\[date\]"[^>]*value=""/', $response->getContent());
-        $response->assertDontSee('Cadastro inicial da tecnologia');
-        $response->assertDontSee('foto-original-tecnologia.jpg');
     }
 }

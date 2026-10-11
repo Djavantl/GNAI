@@ -23,40 +23,34 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class AssistiveTechnologyController
 {
-    public function index(ListAssistiveTechnologiesData $filters, ListAssistiveTechnologiesQuery $query, Request $request): View
+    public function index(ListAssistiveTechnologiesData $filters, ListAssistiveTechnologiesQuery $query, Request $request): InertiaResponse
     {
         $assistiveTechnologies = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.assistive-technologies.partials.table',
-                compact('assistiveTechnologies'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.assistive-technologies.index',
+        return Inertia::render(
+            'InclusiveRadar/AssistiveTechnologies/Index',
             compact('assistiveTechnologies'),
         );
     }
 
-    public function create(AssistiveTechnologyFormQuery $form): View
+    public function create(AssistiveTechnologyFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.assistive-technologies.create',
+        return Inertia::render(
+            'InclusiveRadar/AssistiveTechnologies/Create',
             $form->forCreation(),
         );
     }
 
-    public function clone(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): View
+    public function clone(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.assistive-technologies.create',
+        return Inertia::render(
+            'InclusiveRadar/AssistiveTechnologies/Create',
             $form->forCloning($assistiveTechnology),
         );
     }
@@ -79,12 +73,12 @@ final class AssistiveTechnologyController
             ->with('success', 'Tecnologia assistiva criada com sucesso!');
     }
 
-    public function show(AssistiveTechnology $assistiveTechnology, ShowAssistiveTechnologyQuery $query): View
+    public function show(AssistiveTechnology $assistiveTechnology, ShowAssistiveTechnologyQuery $query): InertiaResponse
     {
         $technology = $query->execute($assistiveTechnology);
 
-        return view(
-            'pages.inclusive-radar.assistive-technologies.show',
+        return Inertia::render(
+            'InclusiveRadar/AssistiveTechnologies/Show',
             [
                 'assistiveTechnology' => $technology,
                 'deficiencies' => $technology->deficiencies,
@@ -112,10 +106,10 @@ final class AssistiveTechnologyController
             ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
     }
 
-    public function edit(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): View
+    public function edit(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.assistive-technologies.edit',
+        return Inertia::render(
+            'InclusiveRadar/AssistiveTechnologies/Edit',
             $form->forUpdate($assistiveTechnology),
         );
     }
@@ -146,15 +140,15 @@ final class AssistiveTechnologyController
         return $pdf->stream("TA_{$technology->name}.pdf");
     }
 
-    public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection, ShowAssistiveTechnologyInspectionQuery $query): View
+    public function showInspection(AssistiveTechnology $assistiveTechnology, Inspection $inspection, ShowAssistiveTechnologyInspectionQuery $query): InertiaResponse
     {
         $scopedInspection = $query->execute(
             technology: $assistiveTechnology,
             inspection: $inspection,
         );
 
-        return view(
-            'pages.inclusive-radar.assistive-technologies.inspections.show',
+        return Inertia::render(
+            'InclusiveRadar/AssistiveTechnologies/Inspections/Show',
             [
                 'assistiveTechnology' => $assistiveTechnology,
                 'inspection' => $scopedInspection,

@@ -8,13 +8,14 @@ use App\Domains\Auth\Application\Actions\Passwords\SendPasswordResetLinkAction;
 use App\Domains\Auth\Application\Data\Passwords\SendPasswordResetLinkData;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Password;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 final class ForgotPasswordController
 {
-    public function showForm(): View
+    public function showForm(): InertiaResponse
     {
-        return view('auth.forgot-password');
+        return Inertia::render('Auth/ForgotPassword');
     }
 
     public function sendLink(SendPasswordResetLinkData $data, SendPasswordResetLinkAction $action): RedirectResponse

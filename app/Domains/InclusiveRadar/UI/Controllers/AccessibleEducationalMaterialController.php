@@ -24,24 +24,18 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class AccessibleEducationalMaterialController
 {
-    public function index(ListAccessibleEducationalMaterialsData $filters, ListAccessibleEducationalMaterialsQuery $query, Request $request): View
+    public function index(ListAccessibleEducationalMaterialsData $filters, ListAccessibleEducationalMaterialsQuery $query, Request $request): InertiaResponse
     {
         $materials = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.inclusive-radar.accessible-educational-materials.partials.table',
-                compact('materials'),
-            );
-        }
-
-        return view(
-            'pages.inclusive-radar.accessible-educational-materials.index',
+        return Inertia::render(
+            'InclusiveRadar/AccessibleEducationalMaterials/Index',
             [
                 'materials' => $materials,
                 'accessibilityFeatureOptions' => $this->accessibilityFeatureOptions(),
@@ -49,18 +43,18 @@ final class AccessibleEducationalMaterialController
         );
     }
 
-    public function create(AccessibleEducationalMaterialFormQuery $form): View
+    public function create(AccessibleEducationalMaterialFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.accessible-educational-materials.create',
+        return Inertia::render(
+            'InclusiveRadar/AccessibleEducationalMaterials/Create',
             $form->forCreation(),
         );
     }
 
-    public function clone(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form): View
+    public function clone(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.accessible-educational-materials.create',
+        return Inertia::render(
+            'InclusiveRadar/AccessibleEducationalMaterials/Create',
             $form->forCloning($material),
         );
     }
@@ -83,11 +77,11 @@ final class AccessibleEducationalMaterialController
             ->with('success', 'Material criado com sucesso!');
     }
 
-    public function show(AccessibleEducationalMaterial $material, ShowAccessibleEducationalMaterialQuery $query): View
+    public function show(AccessibleEducationalMaterial $material, ShowAccessibleEducationalMaterialQuery $query): InertiaResponse
     {
         $material = $query->execute($material);
 
-        return view('pages.inclusive-radar.accessible-educational-materials.show', [
+        return Inertia::render('InclusiveRadar/AccessibleEducationalMaterials/Show', [
             'material' => $material,
             'deficiencies' => $material->deficiencies,
             'features' => $material->accessibilityFeatures,
@@ -95,10 +89,10 @@ final class AccessibleEducationalMaterialController
         ]);
     }
 
-    public function edit(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form): View
+    public function edit(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.inclusive-radar.accessible-educational-materials.edit',
+        return Inertia::render(
+            'InclusiveRadar/AccessibleEducationalMaterials/Edit',
             $form->forUpdate($material),
         );
     }
@@ -148,14 +142,14 @@ final class AccessibleEducationalMaterialController
         return $pdf->stream("MPA_{$material->name}.pdf");
     }
 
-    public function showInspection(AccessibleEducationalMaterial $material, Inspection $inspection, ShowAccessibleEducationalMaterialInspectionQuery $query): View
+    public function showInspection(AccessibleEducationalMaterial $material, Inspection $inspection, ShowAccessibleEducationalMaterialInspectionQuery $query): InertiaResponse
     {
         $scopedInspection = $query->execute(
             material: $material,
             inspection: $inspection,
         );
 
-        return view('pages.inclusive-radar.accessible-educational-materials.inspections.show', [
+        return Inertia::render('InclusiveRadar/AccessibleEducationalMaterials/Inspections/Show', [
             'material' => $material,
             'inspection' => $scopedInspection,
         ]);

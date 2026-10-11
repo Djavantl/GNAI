@@ -25,45 +25,37 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class PedagogicalRecordController
 {
-    public function index(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function index(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $pedagogicalRecords = $query->execute($filters, $this->user($request));
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.pedagogical-records.partials.table', compact('pedagogicalRecords'));
-        }
 
-        return view('pages.specialized-educational-support.pedagogical-records.index', compact('pedagogicalRecords') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Index', compact('pedagogicalRecords') + $options->execute());
     }
 
-    public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $pedagogicalRecords = $query->execute($filters, $this->user($request), onlyOwn: true);
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.pedagogical-records.partials.table', compact('pedagogicalRecords'));
-        }
 
-        return view('pages.specialized-educational-support.pedagogical-records.my-records', compact('pedagogicalRecords') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/MyRecords', compact('pedagogicalRecords') + $options->execute());
     }
 
-    public function studentIndex(Student $student, ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): View
+    public function studentIndex(Student $student, ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $student->loadMissing('person');
         $pedagogicalRecords = $query->execute($filters, $this->user($request), student: $student);
-        if ($request->ajax()) {
-            return view('pages.specialized-educational-support.students.pedagogical-records.partials.table', compact('student', 'pedagogicalRecords'));
-        }
 
-        return view('pages.specialized-educational-support.students.pedagogical-records.index', compact('student', 'pedagogicalRecords') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/Students/PedagogicalRecords/Index', compact('student', 'pedagogicalRecords') + $options->execute());
     }
 
-    public function create(Session $session, PedagogicalRecordFormQuery $form, Request $request): View
+    public function create(Session $session, PedagogicalRecordFormQuery $form, Request $request): InertiaResponse
     {
-        return view('pages.specialized-educational-support.pedagogical-records.create', $form->forCreation($session, $this->professionalId($request)));
+        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Create', $form->forCreation($session, $this->professionalId($request)));
     }
 
     /** @throws Throwable */
@@ -74,16 +66,16 @@ final class PedagogicalRecordController
         return redirect()->route('specialized-educational-support.pedagogical-records.show', $record)->with('success', 'Atendimento pedagógico criado com sucesso.');
     }
 
-    public function show(PedagogicalRecord $pedagogicalRecord, ShowPedagogicalRecordQuery $query, Request $request): View
+    public function show(PedagogicalRecord $pedagogicalRecord, ShowPedagogicalRecordQuery $query, Request $request): InertiaResponse
     {
         $pedagogicalRecord = $query->execute($pedagogicalRecord, $this->user($request));
 
-        return view('pages.specialized-educational-support.pedagogical-records.show', compact('pedagogicalRecord'));
+        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Show', compact('pedagogicalRecord'));
     }
 
-    public function edit(PedagogicalRecord $pedagogicalRecord, PedagogicalRecordFormQuery $form, Request $request): View
+    public function edit(PedagogicalRecord $pedagogicalRecord, PedagogicalRecordFormQuery $form, Request $request): InertiaResponse
     {
-        return view('pages.specialized-educational-support.pedagogical-records.edit', $form->forUpdate($pedagogicalRecord, $this->professionalId($request)));
+        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Edit', $form->forUpdate($pedagogicalRecord, $this->professionalId($request)));
     }
 
     /** @throws Throwable */

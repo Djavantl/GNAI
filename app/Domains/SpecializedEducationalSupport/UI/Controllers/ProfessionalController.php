@@ -17,42 +17,36 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class ProfessionalController
 {
-    public function index(ListProfessionalsData $filters, ListProfessionalsQuery $query, ProfessionalFormQuery $form, Request $request): View
+    public function index(ListProfessionalsData $filters, ListProfessionalsQuery $query, ProfessionalFormQuery $form, Request $request): InertiaResponse
     {
         $professionals = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.professionals.partials.table',
-                compact('professionals'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.professionals.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Professionals/Index',
             ['professionals' => $professionals, ...$form->forIndex()],
         );
     }
 
-    public function show(Professional $professional, ShowProfessionalQuery $query): View
+    public function show(Professional $professional, ShowProfessionalQuery $query): InertiaResponse
     {
         $professional = $query->execute($professional);
 
-        return view(
-            'pages.specialized-educational-support.professionals.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Professionals/Show',
             compact('professional'),
         );
     }
 
-    public function create(ProfessionalFormQuery $form): View
+    public function create(ProfessionalFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.professionals.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Professionals/Create',
             $form->forCreation(),
         );
     }
@@ -70,10 +64,10 @@ final class ProfessionalController
             ->with('success', 'Profissional cadastrado com sucesso. O link para definição da senha foi enviado por e-mail.');
     }
 
-    public function edit(Professional $professional, ProfessionalFormQuery $form): View
+    public function edit(Professional $professional, ProfessionalFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.professionals.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Professionals/Edit',
             $form->forUpdate($professional),
         );
     }

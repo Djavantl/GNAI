@@ -16,42 +16,36 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Courses\ShowCo
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class CourseController
 {
-    public function index(ListCoursesData $filters, ListCoursesQuery $query, Request $request): View
+    public function index(ListCoursesData $filters, ListCoursesQuery $query, Request $request): InertiaResponse
     {
         $courses = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.courses.partials.table',
-                compact('courses'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.courses.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Courses/Index',
             compact('courses'),
         );
     }
 
-    public function show(Course $course, ShowCourseQuery $query): View
+    public function show(Course $course, ShowCourseQuery $query): InertiaResponse
     {
         $course = $query->execute($course);
 
-        return view(
-            'pages.specialized-educational-support.courses.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Courses/Show',
             compact('course'),
         );
     }
 
-    public function create(CourseFormQuery $form): View
+    public function create(CourseFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.courses.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Courses/Create',
             $form->forCreation(),
         );
     }
@@ -68,10 +62,10 @@ final class CourseController
             ->with('success', 'Curso cadastrado com sucesso.');
     }
 
-    public function edit(Course $course, CourseFormQuery $form): View
+    public function edit(Course $course, CourseFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.courses.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Courses/Edit',
             $form->forUpdate($course),
         );
     }

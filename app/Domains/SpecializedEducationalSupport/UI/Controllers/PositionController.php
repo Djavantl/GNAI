@@ -17,42 +17,36 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Positions\Show
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Position;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 final class PositionController
 {
-    public function index(ListPositionsData $filters, ListPositionsQuery $query, Request $request): View
+    public function index(ListPositionsData $filters, ListPositionsQuery $query, Request $request): InertiaResponse
     {
         $positions = $query->execute($filters);
 
-        if ($request->ajax()) {
-            return view(
-                'pages.specialized-educational-support.positions.partials.table',
-                compact('positions'),
-            );
-        }
-
-        return view(
-            'pages.specialized-educational-support.positions.index',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Positions/Index',
             compact('positions'),
         );
     }
 
-    public function show(Position $position, ShowPositionQuery $query): View
+    public function show(Position $position, ShowPositionQuery $query): InertiaResponse
     {
         $position = $query->execute($position);
 
-        return view(
-            'pages.specialized-educational-support.positions.show',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Positions/Show',
             compact('position'),
         );
     }
 
-    public function create(PositionFormQuery $form): View
+    public function create(PositionFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.positions.create',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Positions/Create',
             $form->forCreation(),
         );
     }
@@ -69,10 +63,10 @@ final class PositionController
             ->with('success', 'Cargo criado com sucesso!');
     }
 
-    public function edit(Position $position, PositionFormQuery $form): View
+    public function edit(Position $position, PositionFormQuery $form): InertiaResponse
     {
-        return view(
-            'pages.specialized-educational-support.positions.edit',
+        return Inertia::render(
+            'SpecializedEducationalSupport/Positions/Edit',
             $form->forUpdate($position),
         );
     }

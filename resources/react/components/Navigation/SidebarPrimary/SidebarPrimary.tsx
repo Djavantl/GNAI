@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { router } from '@inertiajs/react';
 import './SidebarPrimary.css';
 import './SidebarPrimary.small.css';
 import SidebarUser from '@/components/Navigation/SidebarUser/SidebarUser';
@@ -192,8 +193,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
     startAppPageTransition();
 
     window.setTimeout(() => {
-      window.history.pushState({}, '', nextPath);
-      window.dispatchEvent(new PopStateEvent('popstate'));
+      router.visit(nextPath);
     }, 180);
   }
 

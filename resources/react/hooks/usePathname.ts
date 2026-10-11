@@ -1,13 +1,5 @@
-import { useEffect, useState } from 'react';
+import { usePage } from '@inertiajs/react';
 
 export function usePathname(): string {
-  const [pathname, setPathname] = useState<string>(() => window.location.pathname);
-
-  useEffect(() => {
-    const handleNavigationChange = (): void => setPathname(window.location.pathname);
-    window.addEventListener('popstate', handleNavigationChange);
-    return () => window.removeEventListener('popstate', handleNavigationChange);
-  }, []);
-
-  return pathname;
+  return new URL(usePage().url, window.location.origin).pathname;
 }

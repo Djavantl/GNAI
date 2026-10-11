@@ -14,4 +14,6 @@ Esta pasta contém a base React/TypeScript do sistema Laravel.
 - Interface em pt-BR. Dados do catálogo são demonstrativos.
 - Valide com `npm run check` e `npm run build` na raiz, ou pelo serviço Docker `node`.
 - Verifique desktop, mobile e interações afetadas no catálogo `/react/index.html`.
-- As telas Blade ainda estão ativas. Migre os fluxos conforme o escopo solicitado.
+- Controllers de telas retornam Inertia e páginas em `resources/react/pages`; não crie respostas HTML parciais.
+- Páginas Inertia usam `pages/Dominio/Recurso/Acao.tsx` e o identificador `Dominio/Recurso/Acao`.
+- Os templates antigos de telas ficam preservados apenas como referência; não são uma alternativa de renderização.

@@ -16,14 +16,14 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentCourse;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDeficiency;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDocument;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 final class AppServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        Paginator::useBootstrapFive();
+        Inertia::setRootView('inertia');
         Relation::enforceMorphMap([
             'student' => Student::class,
             'person' => Person::class,

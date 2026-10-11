@@ -12,13 +12,14 @@ use App\Domains\Auth\Domain\Exceptions\InvalidCredentials;
 use App\Domains\Auth\Domain\Exceptions\UserWithoutAccess;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 final class LoginController
 {
-    public function showLoginForm(): View
+    public function showLoginForm(): InertiaResponse
     {
-        return view('auth.login');
+        return Inertia::render('Auth/Login');
     }
 
     public function login(LoginData $data, AuthenticateUserAction $action): RedirectResponse
