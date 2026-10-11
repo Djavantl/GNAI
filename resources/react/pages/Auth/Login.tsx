@@ -1,5 +1,8 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import AuthLayout from '@/components/Navigation/AuthLayout/AuthLayout';
+import LoginForm from '@/components/Forms/LoginForm/LoginForm';
 
 export default function AuthLoginPage(): React.JSX.Element {
-  return <PageScaffold title="Entrar" />;
+  return <AuthLayout title="Entrar" heading={<>Bem-vindo ao <strong>Gnai</strong></>}>
+    <LoginForm />
+  </AuthLayout>;
 }

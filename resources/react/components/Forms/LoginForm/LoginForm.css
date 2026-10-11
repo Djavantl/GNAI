@@ -1,0 +1,7 @@
+.loginForm { margin-top: 20px; }
+.loginForm__group { margin-bottom: 15px; }
+.loginForm__submit { margin-top: 40px; margin-bottom: 15px; }
+.loginForm__submitButton { text-transform: uppercase; }
+.loginForm__forgot { margin-top: 30px; }
+.loginForm__forgot a { color: var(--ui-color-legacy-text); }
+.loginForm__forgot i { margin-right: 5px; }

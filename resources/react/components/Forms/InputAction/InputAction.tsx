@@ -1,13 +1,13 @@
-import type { InputHTMLAttributes } from 'react';
-import TextInput from '@/components/Forms/TextInput/TextInput';
+import TextInput, { type TextInputProps } from '@/components/Forms/TextInput/TextInput';
 import Button from '@/components/UI/Button/Button';
 import './InputAction.css';
 
-export default function InputAction({ label, ...inputProps }: InputHTMLAttributes<HTMLInputElement> & {
+export default function InputAction({ label, buttonDisabled = false, ...inputProps }: TextInputProps & {
   label: string;
+  buttonDisabled?: boolean;
 }): React.JSX.Element {
   return <div className="inputAction">
     <TextInput {...inputProps} />
-    <Button type="submit" tone="pink" width="sm" label={label} />
+    <Button type="submit" tone="pink" width="sm" label={label} disabled={buttonDisabled} />
   </div>;
 }
