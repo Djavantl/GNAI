@@ -1,0 +1,78 @@
+.owlTextCarousel {
+  position: relative;
+  overflow: hidden;
+  padding: 5.5% 4.5%;
+  border: none;
+  border-radius: 4px;
+  background-position: 0 0;
+  background-size: cover;
+  color: #797979;
+  text-align: center;
+}
+
+.owlTextCarousel--white {
+  color: #ffffff;
+}
+
+.owlTextCarousel__overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+}
+
+.owlTextCarousel__body {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+
+.owlTextCarousel__title {
+  margin: 10px 0 10px;
+  font-family: var(--ui-font-ui);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 30px;
+}
+
+.owlTextCarousel__titleLink {
+  font-weight: 600;
+}
+
+.owlTextCarousel__titleLink--custom {
+  color: #5fbeaa;
+}
+
+.owlTextCarousel__titleLink--primary {
+  color: #5d9cec;
+}
+
+.owlTextCarousel__titleLink--pink {
+  color: #fb6d9d;
+}
+
+.owlTextCarousel__titleLink--white {
+  color: #ffffff;
+}
+
+.owlTextCarousel .owlTextCarousel__date {
+  margin: 0;
+  font-size: 85%;
+  line-height: 1.6;
+}
+
+.owlTextCarousel .owlTextCarousel__text {
+  margin: 30px 0 0;
+  line-height: 1.6;
+}
+
+.owlTextCarousel__button {
+  margin-top: 40px;
+}
+
+/* Un-themed legacy text carousels have no visible dot controls. Keep the
+   engine's pagination enabled so its navigation/loop calculations stay intact. */
+.owlTextCarousel
+  .owlCarouselRuntime:not(.owlCarouselRuntime--themed)
+  .owl-dots {
+  display: none;
+}

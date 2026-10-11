@@ -1,0 +1,146 @@
+.dashboardTwoRevenueCard {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-color: #ffffff;
+  background-clip: padding-box;
+}
+
+.dashboardTwoRevenueCard__title {
+  margin: 0 0 8px;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboardTwoRevenueCard__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.dashboardTwoRevenueCard__row::before,
+.dashboardTwoRevenueCard__row::after {
+  display: table;
+  content: " ";
+}
+
+.dashboardTwoRevenueCard__row::after {
+  clear: both;
+}
+
+.dashboardTwoRevenueCard__chartColumn,
+.dashboardTwoRevenueCard__progressColumn {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.dashboardTwoRevenueCard__progressColumn {
+  margin-top: 0;
+}
+
+.dashboardTwoRevenueCard__plot {
+  position: relative;
+  height: 300px;
+}
+
+.dashboardTwoRevenueCard__plot svg {
+  overflow: visible;
+}
+
+.dashboardTwoRevenueCard__progressLabel {
+  margin: 0 0 10px;
+  color: #797979;
+  font-family: var(--ui-font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22.4px;
+}
+
+.dashboardTwoRevenueCard__progressLabel span {
+  font-weight: 600;
+}
+
+.dashboardTwoRevenueCard__progressLabel .text-primary {
+  color: #5d9cec;
+}
+
+.dashboardTwoRevenueCard__progressLabel .text-pink {
+  color: #fb6d9d;
+}
+
+.dashboardTwoRevenueCard__progressLabel .text-info {
+  color: #34d3eb;
+}
+
+.dashboardTwoRevenueCard__progressLabel .text-warning {
+  color: #ffbd4a;
+}
+
+.dashboardTwoRevenueCard__progressLabel .text-success {
+  color: #81c868;
+}
+
+.dashboardTwoRevenueCard__progressTrack {
+  overflow: hidden;
+  height: 10px;
+  margin-bottom: 30px;
+  border-radius: 4px;
+  background-color: #ebeff2;
+}
+
+.dashboardTwoRevenueCard__progressBar {
+  height: 100%;
+  -webkit-animation: animationProgress 5s;
+  animation: animationProgress 5s;
+}
+
+@-webkit-keyframes animationProgress {
+  from {
+    width: 0;
+  }
+}
+
+@keyframes animationProgress {
+  from {
+    width: 0;
+  }
+}
+
+.progress-bar-primary {
+  background-color: #5d9cec;
+}
+
+.progress-bar-pink {
+  background-color: #fb6d9d;
+}
+
+.progress-bar-info {
+  background-color: #34d3eb;
+}
+
+.progress-bar-warning {
+  background-color: #ffbd4a;
+}
+
+.progress-bar-success {
+  background-color: #81c868;
+}
+
+@media (min-width: 992px) {
+  .dashboardTwoRevenueCard__chartColumn {
+    float: left;
+    width: 66.66666667%;
+  }
+
+  .dashboardTwoRevenueCard__progressColumn {
+    float: left;
+    width: 33.33333333%;
+  }
+}

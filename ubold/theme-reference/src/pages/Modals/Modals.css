@@ -1,9 +1,0 @@
-.modalsPage { color: #797979; }
-.modalsPage__titleRow { margin-bottom: 20px; }
-.modalsPage__title { margin: 7px 0 0; color: #505458; font: 600 20px/22px var(--bold-font-ui); }
-.modalsPage__card { margin-bottom: 20px; }
-.modalsPage .header-title { margin: 0 0 10px; color: #505458; font: 600 16px/22px var(--bold-font-ui); }
-.modalsPage__description { margin: 0 0 30px; font-size: 13px; }
-.modalsPage .button-list { margin-left: -8px; margin-bottom: -12px; }
-.modalsPage .button-list .button { margin-bottom: 12px; margin-left: 8px; }
-@media (max-width: 767px) { .modalsPage__titleRow { margin-bottom: 15px; } }

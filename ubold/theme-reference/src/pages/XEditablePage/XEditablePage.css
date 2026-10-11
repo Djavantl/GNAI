@@ -1,9 +1,0 @@
-.xEditablePage__columns { margin: 0 -10px; }
-.xEditablePage__columns::after, .xEditablePage__row::after { content: ''; display: table; clear: both; }
-.xEditablePage__column { padding: 0 10px; min-height: 1px; }
-.xEditablePage__title { margin: 0 0 30px; color: #505458; font: 600 16px/16px var(--bold-font-ui); letter-spacing: .04em; text-transform: uppercase; }
-.xEditablePage__row { margin: 0 -10px 15px; }
-.xEditablePage__row > label { display: inline-block; padding: 0 10px; margin-bottom: 5px; font-weight: 700; }
-.xEditablePage__value { min-height: 1px; padding: 0 10px; }
-@media(min-width:768px) { .xEditablePage__row > label { float: left; width: 41.66666667%; padding-top: 7px; margin-bottom: 0; text-align: right; } .xEditablePage__value { float: left; width: 58.33333333%; } }
-@media(min-width:1200px) { .xEditablePage__column { float: left; width: 50%; } }

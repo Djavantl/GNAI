@@ -1,0 +1,30 @@
+.faqList {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.faqList__column {
+  width: 100%;
+  padding-inline: 10px;
+}
+.faqList__inner {
+  padding: 0 20px 20px;
+}
+.faqList__item {
+  padding: 24px 0;
+  border-bottom: 1px solid #ebeff2;
+}
+.faqList__item h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 0;
+}
+.faqList__item p {
+  color: var(--ui-color-legacy-muted);
+  margin-bottom: 0;
+}
+@media (min-width: 992px) {
+  .faqList__column {
+    width: 50%;
+  }
+}

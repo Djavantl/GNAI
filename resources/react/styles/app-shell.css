@@ -1,0 +1,37 @@
+.app-page {
+  min-height: 100vh;
+}
+
+.app-content-placeholder {
+  margin-left: var(--ui-sidebar-width);
+  overflow: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+.app-content-placeholder__inner {
+  margin-top: var(--ui-topbar-height);
+  margin-bottom: 60px;
+  min-height: calc(100vh - var(--ui-topbar-height) - 60px);
+  padding: 20px 20px 15px;
+}
+
+.app-page--sidebarCollapsed .app-content-placeholder {
+  margin-left: var(--ui-sidebar-collapsed-width);
+}
+
+@media (max-width: 767px) {
+  .app-page--sidebarCollapsed .sidebarPrimary {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .app-page--sidebarCollapsed .app-content-placeholder,
+  .app-content-placeholder {
+    margin-left: 0;
+  }
+
+  .app-content-placeholder__inner {
+    padding: 20px 15px 15px;
+  }
+}

@@ -1,9 +1,0 @@
-.pagesStarter { color: var(--bold-color-legacy-text); font-size: 14px; line-height: 20px; }
-.pagesStarter h4 { margin: 7px 0 0; color: var(--bold-color-heading); font-family: var(--bold-font-ui); font-size: 20px; line-height: 22px; font-weight: 600; }
-.pagesStarter .pageBreadcrumb { margin-bottom: 15px; padding: 10px 0 8px; }
-.pages__errorWrapper { width: 420px; margin: 5% auto; position: relative; }
-.pages__errorContainer { display: flow-root; }
-@media (max-width: 767px) {
-  .pagesStarter, .pages__errorContainer { margin-inline: 5px; }
-  .pages__errorWrapper { width: 90%; }
-}

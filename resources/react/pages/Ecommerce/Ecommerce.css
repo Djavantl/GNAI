@@ -1,0 +1,43 @@
+.ecommercePage {
+  color: var(--ui-color-legacy-text);
+  font: 14px/1.42857143 var(--ui-font-body);
+}
+:where(.ecommercePage) h4,
+:where(.ecommercePage) h5 {
+  margin: 10px 0;
+  color: var(--ui-color-heading);
+  font-family: var(--ui-font-ui);
+  font-weight: 500;
+}
+:where(.ecommercePage) h4 {
+  font-size: 18px;
+  line-height: 22px;
+}
+:where(.ecommercePage) h5 {
+  font-size: 15px;
+  line-height: 16.5px;
+}
+:where(.ecommercePage) p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+:where(.ecommercePage) b {
+  font-weight: 600;
+}
+:where(.ecommercePage) a {
+  color: #337ab7;
+  text-decoration: none;
+}
+:where(.ecommercePage) a:hover,
+:where(.ecommercePage) a:focus {
+  color: #23527c;
+  text-decoration: none;
+}
+:where(.ecommercePage) .card-box {
+  margin-bottom: 20px;
+}
+@media (max-width: 767px) {
+  .ecommercePage {
+    margin-inline: 5px;
+  }
+}

@@ -1,0 +1,38 @@
+.productOrdersTable__scroll {
+  min-height: 0.01%;
+  overflow-x: auto;
+}
+.productOrdersTable td {
+  vertical-align: middle !important;
+}
+.productOrdersTable .imageDisplay {
+  display: inline;
+  max-width: none;
+}
+.productOrdersTable .productOrdersTable__seller,
+.productOrdersTable .productOrdersTable__seller:hover,
+.productOrdersTable .productOrdersTable__seller:focus {
+  color: var(--ui-color-legacy-text);
+}
+.productOrdersTable a:hover,
+.productOrdersTable a:focus {
+  text-decoration: none;
+}
+.productOrdersTable__action {
+  min-width: 80px;
+}
+@media (max-width: 767px) {
+  .productOrdersTable__scroll {
+    width: 100%;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    overflow-y: hidden;
+  }
+  .productOrdersTable th,
+  .productOrdersTable td {
+    white-space: nowrap;
+  }
+  .productOrdersTable {
+    margin-bottom: 0;
+  }
+}

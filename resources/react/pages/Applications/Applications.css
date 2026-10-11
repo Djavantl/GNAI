@@ -1,0 +1,61 @@
+.applicationsPage {
+  color: var(--ui-color-legacy-text);
+  font: 14px/1.42857143 var(--ui-font-body);
+}
+:where(.applicationsPage) h2,
+:where(.applicationsPage) h3,
+:where(.applicationsPage) h4,
+:where(.applicationsPage) h6 {
+  color: var(--ui-color-heading);
+  font-family: var(--ui-font-ui);
+  font-weight: 500;
+  margin: 10px 0;
+}
+:where(.applicationsPage) h2 {
+  font-size: 30px;
+  line-height: 36px;
+}
+:where(.applicationsPage) h3 {
+  font-size: 24px;
+  line-height: 30px;
+}
+:where(.applicationsPage) h4 {
+  font-size: 18px;
+  line-height: 22px;
+}
+:where(.applicationsPage) h6 {
+  font-size: 12px;
+  line-height: 1.1;
+}
+:where(.applicationsPage) p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+:where(.applicationsPage) b {
+  font-weight: 600;
+}
+:where(.applicationsPage) a {
+  color: #337ab7;
+}
+:where(.applicationsPage) a:hover,
+:where(.applicationsPage) a:focus {
+  color: #23527c;
+}
+.applicationsPage h4.applicationsPage__title {
+  margin: 7px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+.applicationsPage .pageBreadcrumb {
+  margin-bottom: 15px;
+  padding: 10px 0 8px;
+}
+:where(.applicationsPage) .card-box {
+  margin-bottom: 20px;
+}
+@media (max-width: 767px) {
+  .applicationsPage {
+    margin-inline: 5px;
+  }
+}

@@ -1,0 +1,57 @@
+/* Geometry and states from jquery.steps.css and the interface wizard theme. */
+.formWizard {
+  --wizard-accent: var(--ui-color-custom, #5fbeaa);
+  --wizard-completed: #7a8c9a;
+  --wizard-error: #ff3111;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  color: #797979;
+  font-family: var(--ui-font-body, 'Noto Sans', sans-serif);
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+.formWizard, .formWizard * { box-sizing: border-box; }
+.formWizard a { outline: none; text-decoration: none; }
+.formWizard ul { list-style: none; padding: 0; margin: 0; }
+.formWizard ul > li { display: block; padding: 0; }
+.formWizard::before, .formWizard::after,
+.formWizard__steps::before, .formWizard__steps::after,
+.formWizard__content::before, .formWizard__content::after,
+.formWizard__actions::before, .formWizard__actions::after { display: table; content: ' '; }
+.formWizard::after, .formWizard__steps::after, .formWizard__content::after, .formWizard__actions::after { clear: both; }
+.formWizard__steps { position: relative; display: block; width: 100%; }
+.formWizard__steps > ul > li { float: left; width: calc(100% / var(--wizard-step-count, 4)); }
+.formWizard__steps a { display: block; margin: 0 .5em .5em; padding: 1em; border-radius: 2px; }
+.formWizard__steps .disabled a { border: 1px solid #eaeaea; background: #fff; color: #333; cursor: default; }
+.formWizard__steps .disabled a:is(:hover, :active) { background: #f9f9f9; }
+.formWizard__steps .current a { background: var(--wizard-accent); color: #fff; cursor: default; }
+.formWizard__steps .done a { background: var(--wizard-completed); color: #fff; }
+.formWizard__steps .error { font-size: 12px; font-weight: 500; }
+.formWizard__steps .error:not(.current) a { background: var(--wizard-error); color: #fff; }
+.formWizard__number { display: inline-block; width: 30px; margin-right: 10px; border-radius: 50%; background: rgba(255,255,255,.3); font-size: 1.429em; line-height: 30px; text-align: center; }
+.formWizard__content { position: relative; display: block; width: auto; min-height: 240px; margin: .5em; padding: 20px; overflow: hidden; border-radius: 2px; background: #fff; }
+.formWizard__panel { position: absolute; float: left; width: 95%; height: 95%; padding: 0; }
+.formWizard__panel label { display: inline-block; margin-top: 10px; margin-bottom: .5em; }
+.formWizard .formWizard__panel .textInput { border-color: #e3e3e3; }
+.formWizard .formWizard__panel .textInput[aria-invalid=true] { border-color: #fbc2c4; background: #fbe3e4; color: #8a1f11; font-size: 12px; font-weight: 500; }
+.formWizard__panel .formField__error { margin-left: 0; color: var(--ui-color-danger, #f05050); font-size: 12px; font-weight: 500; }
+.formWizard__panel ul > li { display: block; line-height: 30px; }
+.formWizard__actions { position: relative; display: block; width: 100%; text-align: right; }
+.formWizard__actions > ul { display: inline-block; text-align: right; }
+.formWizard__actions > ul > li { float: left; margin: 0 .5em; }
+.formWizard__actions a { display: block; padding: .5em 1em; border-radius: 2px; background: var(--wizard-accent); color: #fff; }
+.formWizard__actions .disabled a { border: 1px solid #eaeaea; background: #fff; color: #333; cursor: default; }
+.formWizard__actions .disabled a:is(:hover, :active) { background: #f9f9f9; }
+.formWizard--vertical > .formWizard__steps { display: inline; float: left; width: 30%; }
+.formWizard--vertical > .formWizard__steps > ul > li { float: none; width: 100%; }
+.formWizard--vertical > .formWizard__content { display: inline; float: left; width: 65%; margin: 0 2.5% .5em; }
+.formWizard--vertical > .formWizard__actions { display: inline; float: right; width: 95%; margin: 0 2.5%; }
+.formWizard--vertical > .formWizard__actions > ul > li { margin: 0 0 0 1em; }
+@media (max-width: 767px) {
+  .formWizard__steps > ul > li { width: 100%; }
+  .formWizard__content { padding: 0; }
+  .formWizard__panel { float: none; position: relative; width: 100%; height: 100%; }
+  .formWizard--vertical > .formWizard__steps { display: inline; float: none; width: 100%; }
+  .formWizard--vertical > .formWizard__content { display: inline; float: none; width: 100%; margin: 0; }
+}

@@ -1,0 +1,12 @@
+@import url("/assets/react/plugins/jquery-circliful/css/jquery.circliful.css");
+
+.circliful-chart {
+  margin: 0px auto;
+}
+.circle-text,
+.circle-info,
+.circle-text-half,
+.circle-info-half {
+  font-size: 12px;
+  font-weight: 600;
+}

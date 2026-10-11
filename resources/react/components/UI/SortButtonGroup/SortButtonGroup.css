@@ -1,0 +1,50 @@
+.sortButtonGroup {
+  margin: 0;
+  font: 500 14px/1.1 var(--ui-font-body);
+  color: var(--ui-color-legacy-text);
+}
+.sortButtonGroup > span,
+.sortButtonGroup__buttons {
+  vertical-align: middle;
+}
+.sortButtonGroup__buttons {
+  display: inline-block;
+  position: relative;
+}
+.sortButtonGroup__button {
+  float: left;
+  display: inline-block;
+  position: relative;
+  padding: 8px 16px;
+  border: 1px solid #eaeaea;
+  border-radius: 3px;
+  background: #fff;
+  color: #4c5667;
+  cursor: pointer;
+  font: 400 14px/20px var(--ui-font-body);
+  text-align: center;
+  white-space: nowrap;
+}
+.sortButtonGroup__button:not(:first-child) {
+  margin-left: -1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.sortButtonGroup__button:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.sortButtonGroup__button.is-active,
+.sortButtonGroup__button:active {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.sortButtonGroup__button input {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
+}
+.sortButtonGroup__button:hover,
+.sortButtonGroup__button:focus,
+.sortButtonGroup__button:active {
+  background: #f9f9f9;
+}

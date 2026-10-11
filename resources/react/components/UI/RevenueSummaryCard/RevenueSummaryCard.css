@@ -1,0 +1,81 @@
+.revenueSummaryCard {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-color: #ffffff;
+  background-clip: padding-box;
+}
+
+.revenueSummaryCard__title {
+  margin: 0 0 30px;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.revenueSummaryCard__content {
+  text-align: center;
+}
+
+.revenueSummaryCard__chart {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 0;
+}
+
+.revenueSummaryCard__caption {
+  margin: 25px 0 10px;
+  color: #98a6ad;
+  font-family: var(--ui-font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16.5px;
+}
+
+.revenueSummaryCard__amount {
+  margin: 10px 0;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 35px;
+}
+
+.revenueSummaryCard__metrics {
+  margin-top: 15px;
+  margin-left: -5px;
+  margin-bottom: 10px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.revenueSummaryCard__metrics li {
+  display: inline-block;
+  width: 31.5%;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.revenueSummaryCard__metricLabel {
+  margin: 20px 0 10px;
+  color: #98a6ad;
+  font-family: var(--ui-font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16.5px;
+}
+
+.revenueSummaryCard__metricValue {
+  margin: 0;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 22px;
+}

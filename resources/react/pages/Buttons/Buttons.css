@@ -1,0 +1,395 @@
+.buttonsPage {
+  color: #797979;
+}
+
+.buttonsPage__container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.buttonsPage__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.buttonsPage__row::before,
+.buttonsPage__row::after {
+  display: table;
+  content: " ";
+}
+
+.buttonsPage__row::after {
+  clear: both;
+}
+
+.buttonsPage__col {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.buttonsPage__col--full {
+  width: 100%;
+}
+
+.buttonsPage__pageTitleRow {
+  margin-bottom: 20px;
+}
+
+.buttonsPage__pageTitle {
+  margin-top: 7px;
+  margin-bottom: 0;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.buttonsPage__card {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-clip: padding-box;
+  background-color: #ffffff;
+}
+
+.buttonsPage__section:last-child {
+  margin-bottom: 0;
+}
+
+.buttonsPage__sectionTitle {
+  margin: 0 0 8px;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.buttonsPage__sectionTitle b {
+  font-weight: inherit;
+}
+
+.buttonsPage__sectionDescription {
+  margin: 0 0 30px;
+  color: #98a6ad;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.buttonsPage code {
+  padding: 2px 4px;
+  background-color: #f4f8fb;
+  color: #5d9cec;
+  border-radius: 4px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 90%;
+}
+
+.button-list {
+  margin-bottom: -12px;
+  margin-left: -8px;
+  font-size: 0;
+}
+
+.button-list .button {
+  margin-bottom: 12px;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.button-list .button.button--lg {
+  font-size: 18px;
+  line-height: 1.3333333;
+}
+
+.button-list .button.button--sm,
+.button-list .button.button--xs {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.buttonsPage__blockButtons .button + .button {
+  margin-top: 5px;
+}
+
+.buttonsPage .m-r-5 {
+  margin-right: 5px;
+}
+
+.buttonsPage .m-l-5 {
+  margin-left: 5px;
+}
+
+.buttonsPage .m-b-20 {
+  margin-bottom: 20px;
+}
+
+.buttonsPage__lineBreak {
+  width: 100%;
+  height: 0;
+}
+
+.buttonsPage .btn-group,
+.buttonsPage .btn-group-vertical {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.buttonsPage .btn-group > .button,
+.buttonsPage .btn-group > .buttonsPage__dropdown,
+.buttonsPage .btn-group-vertical > .button,
+.buttonsPage .btn-group-vertical > .buttonsPage__dropdown {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.buttonsPage .btn-group > .button + .button,
+.buttonsPage .btn-group > .button + .buttonsPage__dropdown,
+.buttonsPage .btn-group > .buttonsPage__dropdown + .button,
+.buttonsPage .btn-group > .buttonsPage__dropdown + .buttonsPage__dropdown {
+  margin-left: -1px;
+}
+
+.buttonsPage .btn-group > .button:not(:first-child):not(:last-child),
+.buttonsPage .btn-group > .buttonsPage__dropdown:not(:first-child):not(:last-child) > .button {
+  border-radius: 0;
+}
+
+.buttonsPage .btn-group > .button:first-child:not(:last-child),
+.buttonsPage .btn-group > .buttonsPage__dropdown:first-child:not(:last-child) > .button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.buttonsPage .btn-group > .button:last-child:not(:first-child),
+.buttonsPage .btn-group > .buttonsPage__dropdown:last-child:not(:first-child) > .button:last-child,
+.buttonsPage .btn-group > .buttonsPage__dropdownToggle:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.buttonsPage__dropdown > .buttonsPage__dropdownToggle--split {
+  width: 26px;
+  min-width: 26px;
+  padding: 6px 8px;
+  border-top-right-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.buttonsPage__dropdown > .buttonsPage__dropdownToggle:not(.buttonsPage__dropdownToggle--split):first-child {
+  border-radius: 3px !important;
+}
+
+.buttonsPage .btn-group-justified {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+}
+
+.buttonsPage .btn-group-justified > .button {
+  display: table-cell;
+  float: none;
+  width: 1%;
+}
+
+.buttonsPage .btn-group-vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.buttonsPage .btn-group-vertical > .button,
+.buttonsPage .btn-group-vertical > .buttonsPage__dropdown,
+.buttonsPage .btn-group-vertical > .buttonsPage__dropdown > .button {
+  width: 100%;
+}
+
+.buttonsPage .btn-group-vertical > .button + .button,
+.buttonsPage .btn-group-vertical > .button + .buttonsPage__dropdown,
+.buttonsPage .btn-group-vertical > .buttonsPage__dropdown + .button,
+.buttonsPage .btn-group-vertical > .buttonsPage__dropdown + .buttonsPage__dropdown {
+  margin-top: -1px;
+  margin-left: 0;
+}
+
+.buttonsPage__dropdown {
+  position: relative;
+}
+
+.buttonsPage__groupBreak {
+  display: block;
+}
+
+.buttonsPage .button .caret,
+.buttonsPage .caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.buttonsPage .dropup .caret {
+  border-top: 0;
+  border-bottom: 4px dashed;
+}
+
+.buttonsPage__dropdownToggle {
+  white-space: nowrap;
+}
+
+.buttonsPage__dropdownToggle--split {
+  padding: 6px 8px;
+}
+
+.buttonsPage .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  min-width: 160px;
+  margin: 2px 0 0;
+  padding: 5px 0;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  text-align: left;
+}
+
+.buttonsPage .dropup .dropdown-menu {
+  top: auto;
+  bottom: 100%;
+  margin: 0 0 2px;
+}
+
+.buttonsPage .dropdown-menu--open {
+  display: block;
+}
+
+.buttonsPage .dropdown-menu li {
+  display: block;
+}
+
+.buttonsPage .dropdown-menu a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  color: #333333;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  white-space: nowrap;
+}
+
+.buttonsPage .dropdown-menu a:hover {
+  background: #f5f5f5;
+}
+
+.buttonsPage .dropdown-menu .divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+
+.buttonsPage .fileupload {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 12px;
+  margin-left: 8px;
+}
+
+.buttonsPage .fileupload .upload {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.buttonsPage__demoList {
+  margin-bottom: -12px;
+  margin-left: -8px;
+  font-size: 0;
+}
+
+.buttonsPage__demoList > .buttonsPage__dropdown,
+.buttonsPage__demoList > .btn-group,
+.buttonsPage__demoList > .fileupload {
+  margin-bottom: 12px;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.buttonsPage__iconDemo > .button:not(.button--iconOnly) {
+  padding: 6px 9px;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.buttonsPage__iconDemo > .button:not(.button--iconOnly) .m-r-5 {
+  margin-right: 4px;
+}
+
+.buttonsPage__iconDemo > .button:not(.button--iconOnly) .m-l-5 {
+  margin-left: 4px;
+}
+
+.buttonsPage__sizeButton--lg {
+  min-width: 144px;
+}
+
+.buttonsPage__sizeButton--md {
+  min-width: 124px;
+}
+
+.buttonsPage__sizeButton--sm {
+  min-width: 94px;
+}
+
+.buttonsPage__sizeButton--xs {
+  min-width: 115px;
+}
+
+@media (min-width: 768px) {
+  .buttonsPage__col--quarter {
+    float: left;
+    width: 25%;
+  }
+}
+
+@media (min-width: 992px) {
+  .buttonsPage__col--half {
+    float: left;
+    width: 50%;
+  }
+
+  .buttonsPage__col--third {
+    float: left;
+    width: 33.33333333%;
+  }
+}
+
+@media (max-width: 991px) {
+  .buttonsPage__col--half + .buttonsPage__col--half,
+  .buttonsPage__col--third + .buttonsPage__col--third {
+    margin-top: 20px;
+  }
+}

@@ -1,0 +1,333 @@
+.dashboardThree__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.dashboardThree__row::before,
+.dashboardThree__row::after {
+  display: table;
+  content: " ";
+}
+
+.dashboardThree__row::after {
+  clear: both;
+}
+
+.dashboardThree__col {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.dashboardThree__col--full {
+  width: 100%;
+}
+
+@media (min-width: 1200px) {
+  .dashboardThree__col--third {
+    float: left;
+    width: 33.33333333%;
+  }
+}
+
+.dashboardThreeMetricCard,
+.dashboardThreeSparklineCard {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-color: #ffffff;
+  background-clip: padding-box;
+}
+
+.dashboardThreeMetricCard__table {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+
+.dashboardThreeMetricCard__cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.dashboardThreeMetricCard__cell--chart {
+  white-space: nowrap;
+}
+
+.dashboardThreeMetricCard__iconbox {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  margin-right: 20px;
+  border-radius: 50%;
+  background-clip: padding-box;
+  color: #ffffff;
+  text-align: center;
+}
+
+.dashboardThreeMetricCard__iconbox i {
+  font-size: 20px;
+  line-height: 50px;
+}
+
+.dashboardThreeMetricCard__value {
+  margin: 0 0 5px;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.dashboardThreeMetricCard__value b {
+  font-weight: 600;
+}
+
+.dashboardThreeMetricCard__title {
+  margin: 0;
+  color: #98a6ad;
+  font-family: var(--ui-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22.4px;
+}
+
+.dashboardThreeSparklineCard__title {
+  margin: 0 0 30px;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboardThreeSparklineCard__content {
+  text-align: center;
+}
+
+.dashboardThreeSparklineCard__chart {
+  min-height: 165px;
+}
+
+.dashboardThreeSparklineCard__chart canvas {
+  display: inline-block !important;
+}
+
+.dashboardThreeSparklineCard__metrics {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.dashboardThreeSparklineCard__metrics li {
+  display: inline-block;
+  width: 31.5%;
+  padding: 0;
+}
+
+.dashboardThreeSparklineCard__metricLabel {
+  margin: 20px 0 10px;
+  color: #98a6ad;
+  font-family: var(--ui-font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16.5px;
+}
+
+.dashboardThreeSparklineCard__metricValue {
+  margin: 10px 0 0;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.dashboardThreeProjectsPortlet {
+  background: #ffffff;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-clip: padding-box;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.35s ease, transform 0.35s ease, max-height 0.35s ease, margin-bottom 0.35s ease;
+  max-height: 1200px;
+}
+
+.dashboardThreeProjectsPortlet__heading {
+  padding: 12px 20px;
+  border-radius: 3px 3px 0 0;
+  background-clip: padding-box;
+}
+
+.dashboardThreeProjectsPortlet__title {
+  float: left;
+  margin: 0;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 30px;
+  letter-spacing: 0.03em;
+}
+
+.dashboardThreeProjectsPortlet__widgets {
+  float: right;
+  display: inline-block;
+  padding-left: 15px;
+  font-size: 15px;
+  line-height: 30px;
+  text-align: right;
+}
+
+.dashboardThreeProjectsPortlet__widgets button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #999999;
+  cursor: pointer;
+  font: inherit;
+  line-height: inherit;
+}
+
+.dashboardThreeProjectsPortlet__widgets .divider {
+  margin: 0 5px;
+}
+
+.dashboardThreeProjectsPortlet__widgets .collapsed .ion-minus-round:before {
+  content: "\f217" !important;
+}
+
+.dashboardThreeProjectsPortlet__body {
+  padding: 15px;
+  background: #ffffff;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.dashboardThreeProjectsPortlet__collapse {
+  overflow: hidden;
+  transition: height 0.35s ease;
+}
+
+.dashboardThreeProjectsPortlet--removing {
+  opacity: 0;
+  transform: scale(0.98);
+  max-height: 0;
+  margin-bottom: 0;
+}
+
+.dashboardThreeProjectsPortlet__table {
+  width: 100%;
+  margin-bottom: 10px;
+  border-collapse: collapse;
+}
+
+.dashboardThreeProjectsPortlet__table > thead > tr > th,
+.dashboardThreeProjectsPortlet__table > tbody > tr > td {
+  padding: 8px;
+  color: #797979;
+  font-family: var(--ui-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  vertical-align: top;
+}
+
+.dashboardThreeProjectsPortlet__table > thead > tr > th {
+  border-top: 0;
+  border-bottom: 2px solid #ebeff2;
+  color: #666666;
+  font-family: var(--ui-font-body);
+  font-weight: 600;
+  line-height: 20px;
+  text-align: left;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.dashboardThreeProjectsPortlet__table > tbody > tr > td {
+  border-top: 1px solid #ebeff2;
+  vertical-align: middle;
+}
+
+.dashboardThreeProjectsPortlet__table .label {
+  font-family: var(--ui-font-body);
+}
+
+.dashboardThreeProjectsPortlet__disabled {
+  background: rgba(243, 242, 241, 0.5);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.loader-1 {
+  animation: dashboardThreeLoaderRotate 1000ms linear infinite;
+  clip: rect(0, 30px, 30px, 15px);
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -15px;
+  margin-left: -15px;
+}
+
+.loader-1::after {
+  animation: dashboardThreeLoaderClip 1000ms ease-in-out infinite;
+  border-radius: 50%;
+  clip: rect(0, 30px, 30px, 15px);
+  content: '';
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  box-shadow: inset #999 0 0 0 17px;
+}
+
+@keyframes dashboardThreeLoaderRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(220deg);
+  }
+}
+
+@keyframes dashboardThreeLoaderClip {
+  0% {
+    box-shadow: inset #999 0 0 0 17px;
+    transform: rotate(-140deg);
+  }
+
+  50% {
+    box-shadow: inset #999 0 0 0 2px;
+  }
+
+  100% {
+    box-shadow: inset #999 0 0 0 17px;
+    transform: rotate(140deg);
+  }
+}
+
+.bg-info {
+  background-color: #34d3eb;
+}
+
+.bg-custom {
+  background-color: #5fbeaa;
+}
+
+.bg-danger {
+  background-color: #f05050;
+}

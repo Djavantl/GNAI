@@ -1,0 +1,40 @@
+.ecommerceDashboard__stats,
+.ecommerceDashboard__tables {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.ecommerceDashboard__stats > div,
+.ecommerceDashboard__tables > div {
+  width: 100%;
+  min-width: 0;
+  padding-inline: 10px;
+}
+.ecommerceDashboard__viewAll {
+  float: right;
+}
+.ecommerceDashboard .ecommerceDashboard__title {
+  margin: 0 0 8px;
+  color: var(--ui-color-legacy-text);
+  font: 600 16px/16px var(--ui-font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ecommerceDashboard .ecommerceDashboard__description {
+  color: var(--ui-color-legacy-muted);
+  font-size: 13px;
+  margin-bottom: 30px;
+}
+@media (min-width: 768px) {
+  .ecommerceDashboard__stats > div {
+    width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  .ecommerceDashboard__stats > div {
+    width: 25%;
+  }
+  .ecommerceDashboard__tables > div {
+    width: 50%;
+  }
+}

@@ -1,0 +1,59 @@
+.salesAnalyticsCard {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-color: #ffffff;
+  background-clip: padding-box;
+}
+
+.salesAnalyticsCard__title {
+  margin: 0 0 8px;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.salesAnalyticsCard__legend {
+  margin: 0 0 9.5px;
+  padding-left: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.salesAnalyticsCard__legendItem {
+  display: inline-block;
+  margin: 0 10px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+.salesAnalyticsCard__legendLabel {
+  margin: 10px 0;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.salesAnalyticsCard__legendIcon {
+  display: inline-block;
+  margin-right: 5px;
+  color: inherit;
+  font-size: 10px;
+  vertical-align: 1px;
+}
+
+.salesAnalyticsCard__plot {
+  position: relative;
+  height: 303px;
+}
+
+.salesAnalyticsCard__plot svg {
+  overflow: visible;
+}

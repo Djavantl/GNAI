@@ -1,0 +1,60 @@
+.totalSalesCard {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-color: #ffffff;
+  background-clip: padding-box;
+}
+
+.totalSalesCard__title {
+  margin: 0 0 8px;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.totalSalesCard__legend {
+  margin: 0 0 9px;
+  padding-left: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.totalSalesCard__legendItem {
+  display: inline-block;
+  margin: 0 10px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+.totalSalesCard__legendLabel {
+  margin: 10px 0;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 16.5px;
+}
+
+.totalSalesCard__legendIcon {
+  display: inline-block;
+  margin-right: 5px;
+  color: inherit;
+  font-size: 10px;
+  vertical-align: 1px;
+}
+
+.totalSalesCard__plot {
+  position: relative;
+  height: 300px;
+  margin-top: 0;
+}
+
+.totalSalesCard__plot svg {
+  overflow: visible;
+}

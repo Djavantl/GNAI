@@ -1,0 +1,195 @@
+.chartsPage {
+  color: #797979;
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+.chartsPage__title {
+  margin: 7px 0 0;
+  font: 600 20px/22px var(--ui-font-ui);
+  color: #505458;
+}
+.chartsPage > .pageBreadcrumb {
+  margin-bottom: 15px;
+  padding: 10px 0 8px;
+}
+.chartsPage .row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10px;
+}
+.chartsPage [class*="col-"] {
+  width: 100%;
+  padding: 0 10px;
+  min-width: 0;
+}
+.chartsPage .card-box {
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background: white;
+  margin-bottom: 20px;
+}
+.chartsPage .header-title {
+  margin: 0 0 8px;
+  font: 600 16px/16px var(--ui-font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #505458;
+}
+.chartsPage b {
+  font-weight: 600;
+}
+.chartsPage p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+.chartsPage h5 {
+  font: 600 15px/16.5px var(--ui-font-ui);
+  color: #505458;
+  margin: 10px 0;
+}
+.chartsPage .text-muted {
+  color: #98a6ad;
+}
+.chartsPage .font-13 {
+  font-size: 13px;
+}
+.chartsPage .text-center {
+  text-align: center;
+}
+.chartsPage .list-inline {
+  padding: 0;
+  margin: 0 0 10px -5px;
+  list-style: none;
+}
+.chartsPage .list-inline > li {
+  display: inline-block;
+  padding: 0 5px;
+}
+.chartsPage .chart-detail-list li {
+  margin: 0 10px;
+}
+.chartsPage .chart-detail-list li h5 {
+  font-weight: 600;
+}
+.chartsPage .table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.chartsPage .table td,
+.chartsPage .table th {
+  padding: 8px;
+  border-top: 1px solid #ebeff2;
+  text-align: left;
+  vertical-align: top;
+}
+.chartsPage .table th {
+  font-weight: 600;
+  border-bottom: 2px solid #ebeff2;
+  border-top: 0;
+  vertical-align: bottom;
+}
+.chartsPage code {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 90%;
+  color: #5d9cec;
+  background: #f4f8fb;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.chartsPage pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font:
+    13px/1.42857143 Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+  word-break: break-all;
+  word-wrap: break-word;
+  color: #333;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  white-space: pre-wrap;
+}
+.chartsPage .m-r-5 {
+  margin-right: 5px;
+}
+.chartsPage .m-t-0 {
+  margin-top: 0;
+}
+.chartsPage .m-t-10 {
+  margin-top: 10px;
+}
+.chartsPage .m-t-20 {
+  margin-top: 20px;
+}
+.chartsPage .m-t-30 {
+  margin-top: 30px;
+}
+.chartsPage .m-t-40 {
+  margin-top: 40px;
+}
+.chartsPage .m-b-0 {
+  margin-bottom: 0;
+}
+.chartsPage .m-b-15 {
+  margin-bottom: 15px;
+}
+.chartsPage .m-b-20 {
+  margin-bottom: 20px;
+}
+.chartsPage .m-b-30 {
+  margin-bottom: 30px;
+}
+@media (min-width: 768px) {
+  .chartsPage .col-sm-6 {
+    width: 50%;
+  }
+}
+@media (min-width: 992px) {
+  .chartsPage .col-md-3 {
+    width: 25%;
+  }
+  .chartsPage .col-md-4 {
+    width: 33.33333333%;
+  }
+  .chartsPage .col-md-6 {
+    width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  .chartsPage .col-lg-3 {
+    width: 25%;
+  }
+  .chartsPage .col-lg-4 {
+    width: 33.33333333%;
+  }
+  .chartsPage .col-lg-6 {
+    width: 50%;
+  }
+  .chartsPage .col-lg-12 {
+    width: 100%;
+  }
+}
+@media (max-width: 767px) {
+  .chartsPage {
+    margin-inline: 5px;
+  }
+  .chartsPage .table-responsive {
+    overflow-x: auto;
+  }
+}
+.chartsPage .p-20 {
+  padding: 20px;
+}
+.chartsPage code {
+  line-height: inherit;
+}
+
+.chartsPage .row > div:empty {
+  display: none;
+}

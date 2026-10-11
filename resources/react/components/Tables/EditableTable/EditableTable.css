@@ -1,0 +1,79 @@
+@import '@/components/UI/ImageLightbox/ImageLightbox.plugin.css';
+.editableTable .actions a {
+  padding: 5px;
+}
+.editableTable .fa-trash-o,
+.editableTable .fa-times {
+  color: #f05050;
+}
+.editableTable .fa-pencil {
+  color: #29b6f6;
+}
+.editableTable .fa-save {
+  color: #33b86c;
+}
+.editableTable__dialog {
+  background: transparent;
+  margin: 40px auto;
+  max-width: 600px;
+  padding: 0;
+  position: relative;
+  text-align: left;
+}
+.editableTable__panel {
+  padding: 20px;
+  border: 2px solid #f3f3f3;
+  border-radius: 4px;
+  background: white;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.editableTable__panel header {
+  padding: 10px 15px;
+}
+.editableTable__panel h2 {
+  font: 600 16px/1.1 var(--ui-font-ui);
+  margin: 0;
+  color: #797979;
+}
+.editableTable__body {
+  padding: 15px;
+}
+.editableTable__body p {
+  margin: 0 0 10px;
+}
+.editableTable__panel footer {
+  text-align: right;
+  padding: 10px 15px;
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.editableTable__panel {
+  padding: 0;
+  border: 0;
+}
+.editableTable__panel header {
+  background: #34d3eb;
+  border-radius: 4px 4px 0 0;
+  padding: 10px 20px;
+}
+.editableTable__panel h2 {
+  font-size: 15px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.editableTable__body {
+  padding: 20px 20px 0;
+}
+.editableTable__body p {
+  margin: 0;
+}
+.editableTable__panel footer {
+  border: 0;
+  padding: 20px;
+}
+.editableTable__panel h2 {line-height:35px}
+.editableTable__panel {overflow:hidden}
+.editableTable__body p {color:#797979;line-height:1.6}

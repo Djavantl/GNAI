@@ -1,0 +1,43 @@
+@import url("/assets/react/plugins/radial/radial.css");
+.radialChart {
+  position: relative;
+  display: inline-block;
+}
+.radialChart__tooltip {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  border-radius: 1px;
+  background: #000;
+  color: white;
+  font:
+    12px/1.42857143 "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 150ms linear,
+    visibility 150ms linear;
+  white-space: nowrap;
+  z-index: 1070;
+}
+.radialChart__tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: #000;
+  border-bottom: 0;
+}
+
+.radialChart__tooltip--visible {
+  opacity: 0.9;
+  visibility: visible;
+}

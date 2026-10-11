@@ -1,0 +1,29 @@
+:root {
+  --ui-font-body: "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ui-font-ui: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --ui-color-text: #36404a;
+  --ui-color-text-muted: #828282;
+  --ui-color-legacy-text: #797979;
+  --ui-color-legacy-muted: #98a6ad;
+  --ui-color-heading: #505458;
+  --ui-color-surface: #ffffff;
+  --ui-color-surface-alt: #ebeff2;
+  --ui-color-border-soft: #edf0f0;
+  --ui-color-border-subtle: rgba(0, 0, 0, 0.1);
+  --ui-color-shadow: rgba(0, 0, 0, 0.15);
+
+  --ui-color-custom: #5fbeaa;
+  --ui-color-primary: #5d9cec;
+  --ui-color-danger: #f05050;
+  --ui-color-info: #34d3eb;
+  --ui-color-success: #81c868;
+  --ui-color-pink: #fb6d9d;
+  --ui-color-purple: #7266ba;
+  --ui-color-warning: #ffbd4a;
+
+  --ui-topbar-height: 60px;
+  --ui-sidebar-width: 240px;
+  --ui-sidebar-small-width: 180px;
+  --ui-sidebar-collapsed-width: 70px;
+}

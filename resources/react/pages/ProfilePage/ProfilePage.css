@@ -1,0 +1,111 @@
+.profilePage__banner {
+  margin: -20px -25px 0;
+  padding: 100px 0;
+  text-align: center;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+.profilePage__banner img {
+  border-radius: 50%;
+}
+.profilePage__banner h4 {
+  margin-bottom: 5px;
+}
+.profilePage__banner p {
+  color: var(--ui-color-legacy-muted);
+}
+.profilePage__columns {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -10px;
+}
+.profilePage__sidebar,
+.profilePage__content {
+  width: 100%;
+  padding-inline: 10px;
+}
+.profilePage__first {
+  margin-top: 20px;
+}
+.profilePage .profilePage__heading {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.profilePage__padding {
+  padding: 20px;
+}
+.profilePage__detail {
+  margin-bottom: 20px;
+}
+.profilePage__detail:last-child {
+  margin-bottom: 0;
+}
+.profilePage__detail p {
+  color: var(--ui-color-legacy-muted);
+  font-size: 16px;
+}
+.profilePage__skill {
+  margin-bottom: 15px;
+}
+.profilePage__skill:last-child {
+  margin-bottom: 0;
+}
+.profilePage__skill h5 span {
+  float: right;
+}
+.profilePage__skill .progressBar {
+  margin-bottom: 18px;
+}
+.profilePage .profilePage__heading--office {
+  margin-bottom: 20px;
+}
+.profilePage__map {
+  border: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.profilePage__office {
+  float: left;
+  padding: 0 20px 0 50px;
+  position: relative;
+}
+.profilePage__office::before {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  content: "\f041";
+  font: 35px FontAwesome;
+}
+.profilePage__office a {
+  color: #797979;
+}
+.profilePage__clear {
+  clear: both;
+}
+@media (min-width: 992px) {
+  .profilePage__sidebar {
+    width: 33.33333333%;
+  }
+  .profilePage__content {
+    width: 66.66666667%;
+  }
+}
+@media (max-width: 991px) {
+  .profilePage__columns {
+    display: block;
+  }
+}
+
+.profilePage__skill .progressBar__bar.is-hidden {
+  visibility: hidden;
+  animation-name: none;
+  transition: none;
+}
+.profilePage__skill .progressBar__bar.bounce-in {
+  visibility: visible;
+}

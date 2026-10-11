@@ -1,0 +1,50 @@
+.contactCard {
+  position: relative;
+}
+.contactCard__avatar {
+  float: left;
+}
+.contactCard__avatar img {
+  width: 80px;
+  height: 80px;
+}
+.contactCard__info {
+  padding-left: 100px;
+  padding-bottom: 20px;
+}
+.contactCard__info h4,
+.contactCard__info p {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}
+.contactCard__info h4 {
+  margin: 0 0 5px;
+  font: 600 16px/16px var(--ui-font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.contactCard__position {
+  color: #98a6ad;
+}
+.contactCard__company {
+  color: #797979;
+}
+.contactCard__company i {
+  margin-right: 10px;
+}
+.contactCard__company small {
+  font-size: 85%;
+}
+.contactCard__actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: none;
+}
+.contactCard:hover .contactCard__actions,
+.contactCard:focus-within .contactCard__actions {
+  display: block;
+}

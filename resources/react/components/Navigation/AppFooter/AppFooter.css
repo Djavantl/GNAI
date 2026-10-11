@@ -1,0 +1,13 @@
+.appFooter {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: #58666e;
+  font-family: var(--ui-font-body);
+  font-size: 14px;
+  line-height: 20px;
+  padding: 20px 30px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  text-align: left !important;
+}

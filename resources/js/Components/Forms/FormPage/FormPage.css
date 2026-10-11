@@ -1,4 +1,0 @@
-.formPage { color: #797979; font-family: var(--bold-font-body, 'Noto Sans', sans-serif); font-size: 14px; line-height: 1.42857143; }
-.formPage__title { margin: 7px 0 0; color: #505458; font-family: var(--bold-font-ui, 'Source Sans Pro', sans-serif); font-size: 20px; font-weight: 600; line-height: 22px; }
-.formPage .pageBreadcrumb { margin-bottom: 15px; padding: 10px 0 8px; }
-@media (max-width: 767px) { .formPage { margin-inline: 5px; } }

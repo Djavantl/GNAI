@@ -1,0 +1,81 @@
+.statWidgetCard {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, 0.05);
+  border-radius: 5px;
+  background-color: #ffffff;
+  background-clip: padding-box;
+}
+
+.statWidgetCard__icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  text-align: center;
+}
+
+.statWidgetCard__icon i {
+  font-size: 32px;
+  line-height: 80px;
+}
+
+.statWidgetCard__icon i.text-info {
+  color: #34d3eb;
+}
+
+.statWidgetCard__icon i.text-pink {
+  color: #fb6d9d;
+}
+
+.statWidgetCard__icon i.text-purple {
+  color: #7266ba;
+}
+
+.statWidgetCard__icon i.text-success {
+  color: #81c868;
+}
+
+.statWidgetCard__icon--info {
+  border: 1px solid #34d3eb;
+  background-color: rgba(52, 211, 235, 0.2);
+}
+
+.statWidgetCard__icon--pink {
+  border: 1px solid #fb6d9d;
+  background-color: rgba(251, 109, 157, 0.2);
+}
+
+.statWidgetCard__icon--purple {
+  border: 1px solid #7266ba;
+  background-color: rgba(114, 102, 186, 0.2);
+}
+
+.statWidgetCard__icon--success {
+  border: 1px solid #81c868;
+  background-color: rgba(129, 200, 104, 0.2);
+}
+
+.statWidgetCard__content {
+  text-align: right;
+}
+
+.statWidgetCard__value {
+  margin: 10px 0;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 30px;
+}
+
+.statWidgetCard__value b {
+  font-weight: 600;
+}
+
+.statWidgetCard__title {
+  margin: 0 0 10px;
+  color: #98a6ad;
+  font-family: var(--ui-font-body);
+  font-size: 14px;
+  line-height: 1.6;
+}

@@ -1,0 +1,84 @@
+.statusPage {
+  display: flow-root;
+  position: relative;
+  min-height: 100vh;
+  color: var(--ui-color-legacy-text);
+  font: 14px/1.42857143 var(--ui-font-body);
+  text-align: center;
+}
+.statusPage__background {
+  position: absolute;
+  inset: 0;
+  background: url("/assets/react/images/agsquare.png");
+}
+.statusPage__container {
+  position: relative;
+  margin-inline: auto;
+  padding-inline: 15px;
+}
+.statusPage__wrapper {
+  margin: 10% 0;
+}
+.statusPage h1,
+.statusPage h4 {
+  font-family: var(--ui-font-ui);
+  font-weight: 500;
+  margin: 10px 0;
+}
+.statusPage h1 {
+  font-size: 36px;
+  line-height: 43px;
+}
+.statusPage h1.statusPage__icon {
+  font-size: 88px;
+  margin-bottom: 50px;
+  color: var(--ui-color-custom);
+}
+.statusPage h1.statusPage__title {
+  font-weight: 600;
+}
+.statusPage__title {
+  color: var(--ui-color-heading);
+}
+.statusPage--maintenance .statusPage__title {
+  text-transform: uppercase;
+}
+.statusPage--maintenance .statusPage__title span:nth-child(1) {
+  color: var(--ui-color-primary);
+}
+.statusPage--maintenance .statusPage__title span:nth-child(2) {
+  color: var(--ui-color-pink);
+}
+.statusPage--maintenance .statusPage__title span:nth-child(3) {
+  color: var(--ui-color-info);
+}
+.statusPage h4 {
+  color: var(--ui-color-legacy-muted);
+  font-size: 18px;
+  line-height: 22px;
+}
+.statusPage p {
+  margin: 30px 0 10px;
+  color: var(--ui-color-legacy-muted);
+  font-size: 15px;
+  line-height: 24px;
+  font-style: italic;
+}
+.statusPage__countdown {
+  margin-top: 80px;
+}
+@media (min-width: 768px) {
+  .statusPage--maintenance .statusPage__container {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .statusPage--maintenance .statusPage__container {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .statusPage--maintenance .statusPage__container {
+    width: 1170px;
+  }
+}

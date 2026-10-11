@@ -1,0 +1,97 @@
+.carouselsPage {
+  color: #797979;
+  font-size: 14px;
+  line-height: 1.42857143;
+}
+
+.carouselsPage__pageTitleRow {
+  margin-bottom: 23px;
+}
+
+.carouselsPage__pageTitle {
+  margin: 7px 0 0;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.carouselsPage__card {
+  margin-bottom: 20px;
+}
+
+.carouselsPage__row {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.carouselsPage__row::before,
+.carouselsPage__row::after {
+  display: table;
+  content: " ";
+}
+
+.carouselsPage__row::after {
+  clear: both;
+}
+
+.carouselsPage__col {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.carouselsPage__col--full {
+  width: 100%;
+}
+
+.carouselsPage__sectionTitle {
+  margin: 0 0 8px;
+  color: #505458;
+  font-family: var(--ui-font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.carouselsPage__sectionTitle b {
+  font-weight: inherit;
+}
+
+.carouselsPage p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+
+.carouselsPage .carouselsPage__description {
+  margin: 0 0 30px;
+  color: #98a6ad;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.carouselsPage code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: #f4f8fb;
+  color: #5d9cec;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 90%;
+}
+
+@media (min-width: 992px) {
+  .carouselsPage__col--half {
+    float: left;
+    width: 50%;
+  }
+}
+
+@media (max-width: 991px) {
+  .carouselsPage__col--half + .carouselsPage__col--half {
+    margin-top: 20px;
+  }
+}

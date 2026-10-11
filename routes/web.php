@@ -4,6 +4,14 @@ use App\Domains\Notifications\UI\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function () {
+    // Catálogo local para apoiar a migração das telas para React.
+    if (app()->environment('local', 'testing')) {
+        Route::redirect('/react', '/react/index.html');
+        Route::view('/react/{page}', 'react')
+            ->where('page', '[A-Za-z0-9_-]+\\.html')
+            ->name('react.catalog');
+    }
+
     Route::redirect('/', '/about-us');
 
     Route::prefix('inclusive-radar')

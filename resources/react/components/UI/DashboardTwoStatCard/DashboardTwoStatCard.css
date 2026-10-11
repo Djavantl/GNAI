@@ -1,0 +1,50 @@
+.dashboardTwoStatCard {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 30px 20px 30px 30px;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.dashboardTwoStatCard i {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: 30px 40px;
+  background: rgba(244, 248, 251, 0.6);
+  font-size: 48px;
+  line-height: 60px;
+}
+
+.dashboardTwoStatCard i.text-primary {
+  color: #5d9cec;
+}
+
+.dashboardTwoStatCard i.text-pink {
+  color: #fb6d9d;
+}
+
+.dashboardTwoStatCard i.text-info {
+  color: #34d3eb;
+}
+
+.dashboardTwoStatCard i.text-custom {
+  color: #5fbeaa;
+}
+
+.dashboardTwoStatCard__value {
+  margin: 0;
+  color: #797979 !important;
+  font-family: var(--ui-font-ui);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 35px;
+}
+
+.dashboardTwoStatCard__title {
+  margin-top: 5px;
+  color: #98a6ad;
+  font-size: 14px;
+  line-height: 1.42857143;
+}

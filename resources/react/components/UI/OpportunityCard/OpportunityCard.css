@@ -1,0 +1,52 @@
+.opportunityCard.card-box {
+  margin-bottom: 10px;
+}
+.opportunityCard--last.card-box {
+  margin-bottom: 20px;
+}
+.opportunityCard__row {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+.opportunityCard__row > div {
+  display: table-cell;
+  vertical-align: middle;
+}
+.opportunityCard__row .opportunityCard__selection {
+  width: 30px;
+}
+.opportunityCard__selection .checkbox {
+  margin-right: 15px;
+}
+.opportunityCard__member {
+  padding-right: 10px;
+}
+.opportunityCard__member h4 {
+  margin: 0 0 10px;
+  font: 500 16px/22px var(--ui-font-ui);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.opportunityCard__member p {
+  display: block;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.opportunityCard__row p {
+  margin-bottom: 5px;
+  color: var(--ui-color-legacy-text);
+}
+.opportunityCard__row p:last-child {
+  margin-bottom: 0;
+}
+.opportunityCard__row p span {
+  color: var(--ui-color-legacy-muted);
+}
+.opportunityCard__status {
+  width: 20%;
+  text-align: center;
+}

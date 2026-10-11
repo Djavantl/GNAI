@@ -1,0 +1,21 @@
+.chartLegend {
+  text-align: center;
+}
+.chartLegend ul {
+  padding-left: 0;
+  margin: 0 0 10px -5px;
+  list-style: none;
+}
+.chartLegend li {
+  display: inline-block;
+  padding-inline: 5px;
+  margin: 0 10px;
+}
+.chartLegend h5 {
+  margin: 10px 0;
+  font: 500 15px/16.5px var(--ui-font-ui);
+  color: var(--ui-color-heading);
+}
+.chartLegend i {
+  margin-right: 5px;
+}
