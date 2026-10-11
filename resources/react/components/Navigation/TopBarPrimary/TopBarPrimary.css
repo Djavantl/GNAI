@@ -494,3 +494,9 @@
     float: right !important;
   }
 }
+
+.topbar__compactLogo { display: none; width: 36px; height: 36px; object-fit: contain; filter: brightness(0); opacity: .8; }
+.topbar--collapsed .topbar__compactLogo { display: inline-block; }
+@media (max-width: 767px) {
+  .topbar__compactLogo { display: inline-block; vertical-align: middle; }
+}

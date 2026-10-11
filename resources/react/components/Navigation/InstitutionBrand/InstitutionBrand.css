@@ -1,0 +1,18 @@
+.institutionBrand {
+  float: left;
+  display: block;
+  max-width: calc(100vw - var(--ui-sidebar-width) - 340px);
+  margin-left: 10px;
+  overflow: hidden;
+  color: var(--ui-color-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: var(--ui-topbar-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.topbar--collapsed .institutionBrand { max-width: calc(100vw - var(--ui-sidebar-collapsed-width) - 340px); }
+a.institutionBrand:hover, a.institutionBrand:focus { color: var(--ui-color-custom); }
+@media (max-width: 767px) {
+  .topbar .institutionBrand { max-width: calc(100vw - 200px); margin-left: 0; }
+}

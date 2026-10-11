@@ -1,3 +1,6 @@
+import { Link, usePage } from '@inertiajs/react';
+import type { ReactNode } from 'react';
+import type { NotificationItem, ProfileLink } from './TopBarPrimary.data';
 import { useEffect, useRef, useState } from 'react';
 import './TopBarPrimary.css';
 import { initWaves } from '@/utils/initWaves';
@@ -10,9 +13,21 @@ interface TopBarPrimaryProps {
   sidebarCollapsed: boolean;
   onToggleSidebar: () => void;
   smallMenu?: boolean;
+  brand?: string;
+  compactLogoSrc?: string;
+  homeHref?: string;
+  leadingContent?: ReactNode;
+  user?: { name: string; photo_url: string };
+  profileItems?: ProfileLink[];
+  notificationItems?: NotificationItem[];
+  unreadCount?: number;
+  notificationsHref?: string;
+  settingsHref?: string;
+
 }
 
-export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false }: TopBarPrimaryProps): React.JSX.Element {
+export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false, brand = 'Interface', compactLogoSrc, homeHref = 'index.html', leadingContent, user, profileItems, notificationItems, unreadCount, notificationsHref, settingsHref }: TopBarPrimaryProps): React.JSX.Element {
+  const { url } = usePage();
   const [notificationsOpen, setNotificationsOpen] = useState<boolean>(false);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(false);
@@ -35,12 +50,27 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
       }
     }
 
+    function handleEscape(event: KeyboardEvent): void {
+      if (event.key === 'Escape') {
+        setNotificationsOpen(false);
+        setProfileOpen(false);
+        setRightSidebarOpen(false);
+      }
+    }
+    document.addEventListener('keydown', handleEscape);
     document.addEventListener('mousedown', handleDocumentClick);
 
     return () => {
       document.removeEventListener('mousedown', handleDocumentClick);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, []);
+
+  useEffect(() => {
+    setNotificationsOpen(false);
+    setProfileOpen(false);
+    setRightSidebarOpen(false);
+  }, [url]);
 
   function toggleNotifications(event: React.MouseEvent<HTMLAnchorElement>): void {
     event.preventDefault();
@@ -68,10 +98,10 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
       <header className={`topbar ${sidebarCollapsed ? 'topbar--collapsed' : ''} ${smallMenu ? 'topbar--small' : ''}`}>
         <div className="topbar__left">
           <div className="topbar__leftInner">
-            <a href="index.html" className="topbar__logo" aria-label="Início">
-              <i className="icon-magnet topbar__logoIcon" aria-hidden="true" />
-              <span>Interface</span>
-            </a>
+            <Link href={homeHref} className="topbar__logo" aria-label={`Início - ${brand}`}>
+              {compactLogoSrc ? <img src={compactLogoSrc} className="topbar__compactLogo" alt="" /> : <i className="icon-magnet topbar__logoIcon" aria-hidden="true" />}
+              <span>{brand}</span>
+            </Link>
           </div>
         </div>
 
@@ -82,6 +112,8 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
                 type="button"
                 className="topbar__menuButton"
                 aria-label="Abrir menu lateral"
+                aria-expanded={!sidebarCollapsed}
+                aria-controls="sidebar-menu"
                 onClick={onToggleSidebar}
               >
                 <i className="ion-navicon" aria-hidden="true" />
@@ -89,15 +121,18 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
               <span className="clearfix" />
             </div>
 
-            <form className="topbar__search navbar-left pull-left hidden-xs" role="search">
+            {leadingContent ?? <form className="topbar__search navbar-left pull-left hidden-xs" role="search">
               <input type="text" placeholder="Pesquisar..." aria-label="Pesquisar" />
               <a href="/" onClick={preventNavigation} aria-hidden="true">
                 <i className="fa fa-search" />
               </a>
-            </form>
+            </form>}
 
             <ul className="topbar__navList nav navbar-nav navbar-right pull-right">
               <TopBarNotificationsDropdown
+                items={notificationItems}
+                unreadCount={unreadCount}
+                allHref={notificationsHref}
                 ref={notificationsRef}
                 isOpen={notificationsOpen}
                 onToggle={toggleNotifications}
@@ -117,17 +152,21 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
               </li>
 
               <li className="topbar__navItem hidden-xs">
-              <a
+              {settingsHref ? <Link href={settingsHref} className="topbar__navLink waves-effect" aria-label="Configurações da conta">
+                <i className="icon-settings" aria-hidden="true" />
+              </Link> : <a
                 href="/"
                 className="topbar__navLink waves-effect"
                 onClick={toggleRightSidebar}
                 aria-label="Abrir painel de configurações"
               >
                 <i className="icon-settings" aria-hidden="true" />
-              </a>
+              </a>}
               </li>
 
               <TopBarProfileDropdown
+                user={user}
+                links={profileItems}
                 ref={profileRef}
                 isOpen={profileOpen}
                 onToggle={toggleProfile}
@@ -138,7 +177,7 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
         </div>
       </header>
 
-      <RightSidebar isOpen={rightSidebarOpen} />
+      {!settingsHref ? <RightSidebar isOpen={rightSidebarOpen} /> : null}
     </>
   );
 }

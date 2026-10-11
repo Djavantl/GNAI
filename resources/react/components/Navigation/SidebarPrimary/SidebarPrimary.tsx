@@ -4,7 +4,7 @@ import './SidebarPrimary.css';
 import './SidebarPrimary.small.css';
 import SidebarUser from '@/components/Navigation/SidebarUser/SidebarUser';
 import type { SidebarUserDetails } from '@/components/Navigation/SidebarUser/SidebarUser.types';
-import type { SidebarItem } from './SidebarPrimary.types';
+import type { SidebarEntry, SidebarItem } from './SidebarPrimary.types';
 import { useSidebarBranches } from './useSidebarBranches';
 import { sidebarEntries } from './SidebarPrimary.data';
 import { hasActiveDescendant, isSectionTitle } from './SidebarPrimary.helpers';
@@ -15,18 +15,20 @@ import { startAppPageTransition } from '@/utils/appPageTransition';
 
 interface SidebarPrimaryProps {
   collapsed: boolean;
+  entries?: SidebarEntry[];
   currentItemKey?: string;
   smallMenu?: boolean;
   user?: SidebarUserDetails;
 }
 
-export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = false, user }: SidebarPrimaryProps): React.JSX.Element {
-  const { openKeyList, toggleItem } = useSidebarBranches(sidebarEntries, currentItemKey);
+export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = false, user, entries = sidebarEntries }: SidebarPrimaryProps): React.JSX.Element {
+  const { openKeyList, toggleItem } = useSidebarBranches(entries, currentItemKey);
   const [scrollbarVisible, setScrollbarVisible] = useState<boolean>(false);
   const [thumbHeight, setThumbHeight] = useState<number>(0);
   const [thumbTop, setThumbTop] = useState<number>(0);
   const [hoveredCollapsedItem, setHoveredCollapsedItem] = useState<SidebarItem | null>(null);
   const [hoveredCollapsedItemTop, setHoveredCollapsedItemTop] = useState<number>(0);
+  const [collapsedFlyoutTop, setCollapsedFlyoutTop] = useState<number>(0);
   const [hoveredCollapsedItemHeight, setHoveredCollapsedItemHeight] = useState<number>(0);
   const [hoveredCollapsedFlyoutWidth, setHoveredCollapsedFlyoutWidth] = useState<number>(190);
   const sidebarRef = useRef<HTMLElement | null>(null);
@@ -56,6 +58,11 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
     function updateWidth(): void {
       const nextWidth = Math.max(190, element.getBoundingClientRect().width);
       setHoveredCollapsedFlyoutWidth(nextWidth);
+      const availableHeight = sidebarRef.current?.clientHeight ?? window.innerHeight;
+      const height = element.getBoundingClientRect().height;
+      setCollapsedFlyoutTop(hoveredCollapsedItemTop + height > availableHeight
+        ? Math.max(0, hoveredCollapsedItemTop - hoveredCollapsedItemHeight - height)
+        : hoveredCollapsedItemTop);
     }
 
     updateWidth();
@@ -69,11 +76,13 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
     });
 
     observer.observe(element);
+    window.addEventListener('resize', updateWidth);
 
     return () => {
       observer.disconnect();
+      window.removeEventListener('resize', updateWidth);
     };
-  }, [collapsed, hoveredCollapsedItem]);
+  }, [collapsed, hoveredCollapsedItem, hoveredCollapsedItemTop, hoveredCollapsedItemHeight]);
 
   useEffect(() => {
     const element = innerRef.current;
@@ -224,6 +233,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
 
     setHoveredCollapsedItem(item);
     setHoveredCollapsedItemTop(itemRect.top - sidebarRect.top + itemRect.height);
+    setCollapsedFlyoutTop(itemRect.top - sidebarRect.top + itemRect.height);
     setHoveredCollapsedItemHeight(itemRect.height);
   }
 
@@ -240,7 +250,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
         {user && !collapsed ? <SidebarUser user={user} /> : null}
         <div id="sidebar-menu" className="sidebarPrimary__menu">
           <SidebarMenu
-            entries={sidebarEntries}
+            entries={entries}
             collapsed={collapsed}
             openKeyList={openKeyList}
             activeCollapsedFlyoutKey={hoveredCollapsedItem?.key}
@@ -273,7 +283,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
         <SidebarCollapsedFlyout
           item={hoveredCollapsedItem}
           currentItemKey={currentItemKey}
-          top={hoveredCollapsedItemTop}
+          top={collapsedFlyoutTop}
           openKeyList={openKeyList}
           bodyRef={collapsedFlyoutRef}
           onItemClick={handleItemClick}

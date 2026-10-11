@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { forwardRef } from 'react';
 import type { ProfileLink } from './TopBarPrimary.data';
 import { profileLinks } from './TopBarPrimary.data';
@@ -5,6 +6,8 @@ import { joinClassNames } from '@/utils/joinClassNames';
 
 interface TopBarProfileDropdownProps {
   isOpen: boolean;
+  links?: ProfileLink[];
+  user?: { name: string; photo_url: string };
   onToggle: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   preventNavigation: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 }
@@ -13,7 +16,9 @@ const TopBarProfileDropdown = forwardRef<HTMLLIElement, TopBarProfileDropdownPro
   {
     isOpen,
     onToggle,
-    preventNavigation
+    preventNavigation,
+    links = profileLinks,
+    user
   }: TopBarProfileDropdownProps,
   ref
 ): React.JSX.Element {
@@ -23,19 +28,24 @@ const TopBarProfileDropdown = forwardRef<HTMLLIElement, TopBarProfileDropdownPro
         href="/"
         className="topbar__navLink topbar__profile dropdown-toggle profile waves-effect"
         onClick={onToggle}
+        aria-label={user ? `Menu do usuário: ${user.name}` : "Menu do usuário"}
         aria-expanded={isOpen}
         aria-haspopup="menu"
       >
-        <img src="/assets/react/images/users/avatar-1.jpg" alt="user-img" className="topbar__avatar img-circle" />
+        <img src={user?.photo_url ?? "/assets/react/images/users/avatar-1.jpg"} alt={user ? `Foto de ${user.name}` : "Usuário"} className="topbar__avatar img-circle" />
       </a>
 
       <ul className="topbarDropdown topbarDropdown--profile dropdown-menu" role="menu">
-        {profileLinks.map((link: ProfileLink) => (
+        {links.map((link: ProfileLink) => (
           <li key={link.label}>
-            <a href="/" onClick={preventNavigation} className="topbarDropdown__profileLink">
+            {link.href ? <Link href={link.href} method={link.method ?? 'get'} as={link.method === 'post' ? 'button' : 'a'}
+              role="menuitem" className="topbarDropdown__profileLink">
               <i className={`${link.iconClass} topbarDropdown__profileIcon m-r-5`} aria-hidden="true" />
               {link.label}
-            </a>
+            </Link> : <a href="/" onClick={preventNavigation} className="topbarDropdown__profileLink">
+              <i className={`${link.iconClass} topbarDropdown__profileIcon m-r-5`} aria-hidden="true" />
+              {link.label}
+            </a>}
           </li>
         ))}
       </ul>

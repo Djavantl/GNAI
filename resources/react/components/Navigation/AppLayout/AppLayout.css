@@ -1,0 +1,11 @@
+.gnaiApp .pageScaffold { min-height: 0; padding: 0; }
+.gnaiApp .topbarDropdown__profileLink { width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; font: inherit; }
+.gnaiApp .topbarDropdown__profileLink:hover, .gnaiApp .topbarDropdown__profileLink:focus { background: #f5f5f5; }
+.gnaiApp .sidebarPrimary__menu > ul > li > a { display: flex; align-items: center; }
+.gnaiApp .sidebarPrimary__menu > ul > li > a > i { flex-shrink: 0; }
+.gnaiApp__overlay { display: none; }
+@media (max-width: 767px) {
+  .gnaiApp__overlay { display: block; position: fixed; inset: var(--ui-topbar-height) 0 0; z-index: 1; border: 0; background: rgba(0, 0, 0, .2); }
+}
+
+.gnaiApp .sidebarPrimary__collapsedFlyoutBody { max-height: calc(100dvh - var(--ui-topbar-height) - 12px); overflow-y: auto; }

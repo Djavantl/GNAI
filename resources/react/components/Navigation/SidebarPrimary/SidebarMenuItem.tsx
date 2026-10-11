@@ -51,6 +51,7 @@ export default function SidebarMenuItem({
       <a
         href={item.href ?? '#'}
         className={joinClassNames((depth === 0 || item.waves) && 'waves-effect waves-light', isActive && depth === 0 && 'active', isOpen && 'subdrop')}
+        aria-current={isActive && !hasChildren ? 'page' : undefined}
         aria-label={collapsed && depth === 0 ? item.label : undefined}
         aria-expanded={hasChildren ? (collapsed ? Boolean(isCollapsedFlyoutActive) : isOpen) : undefined}
         aria-controls={hasChildren ? `sidebar-${collapsed ? 'flyout' : 'submenu'}-${item.key}` : undefined}

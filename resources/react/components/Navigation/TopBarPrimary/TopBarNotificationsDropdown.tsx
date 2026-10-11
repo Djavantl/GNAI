@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import Badge from '@/components/UI/Badge/Badge';
 import Label from '@/components/UI/Label/Label';
@@ -7,6 +8,9 @@ import { joinClassNames } from '@/utils/joinClassNames';
 
 interface TopBarNotificationsDropdownProps {
   isOpen: boolean;
+  items?: NotificationItem[];
+  unreadCount?: number;
+  allHref?: string;
   onToggle: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   preventNavigation: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   className?: string;
@@ -17,7 +21,10 @@ const TopBarNotificationsDropdown = forwardRef<HTMLLIElement, TopBarNotification
     isOpen,
     onToggle,
     preventNavigation,
-    className = ''
+    className = '',
+    items = notifications,
+    unreadCount = 3,
+    allHref
   }: TopBarNotificationsDropdownProps,
   ref
 ): React.JSX.Element {
@@ -109,20 +116,21 @@ const TopBarNotificationsDropdown = forwardRef<HTMLLIElement, TopBarNotification
         href="/"
         className="topbar__navLink dropdown-toggle waves-effect"
         onClick={onToggle}
+        aria-label={`Notificações: ${unreadCount} não lidas`}
         aria-expanded={isOpen}
         aria-haspopup="menu"
       >
         <i className="icon-bell" aria-hidden="true" />
       </a>
 
-      <Badge className="topbar__badge" variant="danger" size="xs" shape="circle" ariaHidden>
-        3
-      </Badge>
+      {unreadCount > 0 ? <Badge className="topbar__badge" variant="danger" size="xs" shape="circle" ariaHidden>
+        {unreadCount > 99 ? '99+' : unreadCount}
+      </Badge> : null}
 
       <ul className="topbarDropdown topbarDropdown--large dropdown-menu dropdown-menu-lg" role="menu">
         <li className="topbarDropdown__title">
           <Label className="topbarDropdown__label" variant="default">
-            Novo 3
+            Novas {unreadCount}
           </Label>
           Notificações
         </li>
@@ -132,11 +140,16 @@ const TopBarNotificationsDropdown = forwardRef<HTMLLIElement, TopBarNotification
             ref={scrollRef}
             className="topbarDropdown__list topbarDropdown__list--notifications list-group notification-list"
           >
-            {notifications.map((notification: NotificationItem, index: number) => (
+            {items.length === 0 ? <p className="topbarDropdown__listItem">Nenhuma notificação nova.</p> : null}
+            {items.map((notification: NotificationItem, index: number) => (
               <a
                 key={`${notification.title}-${notification.iconClass}-${index}`}
-                href="/"
-                onClick={preventNavigation}
+                href={notification.href ?? '/'}
+                onClick={notification.href ? (event) => {
+                  if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+                  event.preventDefault();
+                  router.visit(notification.href!);
+                } : preventNavigation}
                 className="topbarDropdown__listItem list-group-item"
               >
                 <div className="topbarDropdown__media">
@@ -170,7 +183,11 @@ const TopBarNotificationsDropdown = forwardRef<HTMLLIElement, TopBarNotification
         </li>
 
         <li>
-          <a href="/" onClick={preventNavigation} className="topbarDropdown__footer list-group-item text-right">
+          <a href={allHref ?? '/'} onClick={allHref ? (event) => {
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            router.visit(allHref);
+          } : preventNavigation} className="topbarDropdown__footer list-group-item text-right">
             <small>Ver todas as notificações</small>
           </a>
         </li>
