@@ -1,0 +1,12 @@
+.toggleControl { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 44px; }
+.toggleControl__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.toggleControl__label { margin: 0; color: var(--ui-color-form-label); font-size: 14px; font-weight: 600; cursor: pointer; }
+.toggleControl__description { color: var(--ui-color-text-muted); font-size: 12px; line-height: 1.4; }
+.toggleControl__switch { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.toggleControl__switch .switchery:focus-visible { outline: 2px solid var(--ui-color-input-focus-border); outline-offset: 3px; }
+.toggleControl__state { min-width: 68px; color: var(--ui-color-text-muted); font-size: 12px; transition: color .2s ease; }
+.toggleControl__state--active { color: var(--ui-color-gnai-primary); }
+@media (prefers-reduced-motion: reduce) {
+  .toggleControl__switch .switchery, .toggleControl__switch .switchery > small, .toggleControl__state { transition-duration: .01ms !important; }
+}
+@media (max-width: 420px) { .toggleControl { align-items: flex-start; flex-direction: column; gap: 10px; } }

@@ -66,7 +66,7 @@ Procure primeiro em `resources/react/components/`; os caminhos abaixo são relat
 
 | Necessidade | Componentes existentes |
 | --- | --- |
-| Formulários | `Forms/FormField`, `TextInput`, `TextArea`, `SelectField`, `ChoiceControl`, `MaskedInput`, `FileUploadButton`, `FileDropzone`, `FormSection`, `FormPage` (todos sob `Forms/`) |
+| Formulários | `Forms/FormLayout`, `FormGrid`, `FormField`, `TextInput`, `TextArea`, `SelectField`, `ChoiceControl`, `ChoiceGroup`, `ToggleControl`, `MaskedInput`, `FileUploadButton`, `FileDropzone`, `EvidenceUpload`, `FormSection`, `FormPage` (todos sob `Forms/`) |
 | Ações, agrupamento e feedback | `UI/Button`, `UI/CardBox`, `UI/Panel`, `UI/Modal`, `UI/InlineAlert`, `UI/NotificationToast`, `UI/AppLoader`, `UI/ErrorState` |
 | Tabelas e navegação | `Tables/Table`, `Tables/DataTable`, `Navigation/Pagination`, `Navigation/PageBreadcrumb`, `Navigation/PageTitle` (cabeçalho de negócio), `Navigation/PageHeader` (referência Ubold) |
 | Estrutura compartilhada | `Navigation/AuthLayout`, `Navigation/AccountLayout`, `Navigation/TopBarPrimary`, `Navigation/SidebarPrimary`, `Navigation/AppFooter` |

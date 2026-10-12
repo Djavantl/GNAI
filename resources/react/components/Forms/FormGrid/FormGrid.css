@@ -1,0 +1,10 @@
+.formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; }
+.formGrid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.formGrid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.formGrid__wide { grid-column: 1 / -1; min-width: 0; }
+.formStack { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+@media (max-width: 900px) { .formGrid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) {
+  .formGrid, .formGrid--3, .formGrid--4 { grid-template-columns: minmax(0, 1fr); }
+  .formGrid__wide { grid-column: auto; }
+}

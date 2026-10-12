@@ -1,0 +1,33 @@
+.technologyShow { min-width: 0; padding-bottom: 24px; color: var(--ui-color-text); }
+.technologyShow__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.technologyShow__panel .formSection:last-child { margin-bottom: 0; }
+.technologyShow__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; margin: 0; }
+.technologyShow__detail { min-width: 0; }
+.technologyShow__detail--wide { grid-column: 1 / -1; }
+.technologyShow__detail dt { margin-bottom: 8px; color: var(--ui-color-form-label); font-size: 14px; font-weight: 600; }
+.technologyShow__detail dd { min-width: 0; margin: 0; color: var(--ui-color-legacy-text); font-size: 14px; overflow-wrap: anywhere; }
+.technologyShow__rich { max-width: 100%; overflow-wrap: anywhere; line-height: 1.6; }
+.technologyShow__rich > :first-child { margin-top: 0; }
+.technologyShow__rich > :last-child { margin-bottom: 0; }
+.technologyShow__rich img, .technologyShow__rich table { max-width: 100%; }
+.technologyShow__tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.technologyShow__tags li { padding: 3px 8px; border-radius: 3px; background: var(--ui-color-table-header); }
+.technologyShow__history { display: grid; gap: 12px; max-height: 450px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+.technologyShow__history li { min-width: 0; }
+.technologyShow__inspection { display: block; padding: 16px; border: 1px solid var(--ui-color-border-soft); border-radius: 4px; color: inherit; }
+.technologyShow__inspection:hover, .technologyShow__inspection:focus-within { border-color: var(--ui-color-purple); }
+.technologyShow__inspectionHeading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 600; }
+.technologyShow__inspectionFacts { display: flex; flex-wrap: wrap; gap: 12px 30px; margin: 14px 0; }
+.technologyShow__inspectionFacts dt { color: var(--ui-color-legacy-text); font-size: 13px; font-weight: 700; }
+.technologyShow__inspectionFacts dd { margin: 3px 0 0; }
+.technologyShow__inspectionLink { color: var(--ui-color-purple); font-weight: 600; }
+.technologyShow__empty { margin: 0; padding: 30px; border: 1px dashed var(--ui-color-border-soft); text-align: center; }
+.technologyShow .formActions { justify-content: space-between; }
+.technologyShow :is(button, a):focus-visible { outline: 2px solid var(--ui-color-purple); outline-offset: 3px; }
+@media (max-width: 900px) { .technologyShow__grid { grid-template-columns: 1fr; } .technologyShow__detail--wide { grid-column: auto; } }
+@media (max-width: 600px) {
+  .technologyShow__panel.card-box { padding: 16px; }
+  .technologyShow__actions { justify-content: flex-start; }
+  .technologyShow__grid { gap: 20px; }
+  .technologyShow .formActions { align-items: flex-start; flex-direction: column; }
+}

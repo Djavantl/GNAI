@@ -38,7 +38,7 @@ A página compõe o cabeçalho e as ações e recebe as props reais do controlle
 1. Use o layout compartilhado existente. `main.tsx` atribui `AppLayout` às páginas de negócio; ele monta topbar, sidebar e footer para usuários autenticados. Não duplique essa estrutura dentro do formulário.
 2. Defina o título do documento com `Head` do Inertia e componha o cabeçalho visual com `Navigation/PageTitle`. Ele recebe `title`, `subtitle` e `actions`, usa `h1` por padrão e oferece quebra responsiva. A referência visual é o título maior e roxo do antigo Blade de criar aluno. `Navigation/PageHeader` continua disponível nos exemplos Ubold, mas não é o padrão oficial desses cabeçalhos de negócio.
 3. Use `Navigation/PageBreadcrumb` dentro de uma navegação com nome acessível. Passe a cadeia de navegação real; o último item é apresentado como atual. Links permanecem azuis, com hover/foco azul escuro, conforme seu CSS compartilhado.
-4. Mantenha um `<form>` semântico, com `onSubmit`, prevenção do submit nativo e indicação de processamento. Dentro dele, reúna os campos em um único `UI/CardBox`.
+4. Use `Forms/FormLayout` como o `<form>` semântico, com `onSubmit`, prevenção do submit nativo e indicação de processamento. Ele centraliza reset de `fieldset`, espaçamento base de campos, última seção e foco das ações. Dentro dele, reúna os campos em um único `UI/CardBox`.
 5. Divida o conteúdo com `Forms/FormSection`, usando `variant="inline"`, título pertinente e `iconClass` adequado. A variante padrão `card` cria outro card: não a use inadvertidamente para cada seção de um formulário que deve ter um só card.
 6. Coloque `Forms/FormActions` depois do card, ainda dentro do `<form>`, para salvar/cancelar à direita e apresentar o status de envio. Preserve a navegação de Cancelar. Quando houver uma ação também no cabeçalho, sincronize sua desabilitação com o processamento, como no exemplo.
 
@@ -52,14 +52,19 @@ Os caminhos desta tabela são relativos a `resources/react/components/`.
 | --- | --- |
 | Título, subtítulo e ações no topo | `Navigation/PageTitle/PageTitle.tsx`; passe as ações por `actions` |
 | Breadcrumbs | `Navigation/PageBreadcrumb/PageBreadcrumb.tsx`; passe `items` com labels e destinos reais |
+| Estrutura semântica e visual comum | `Forms/FormLayout/FormLayout.tsx`; recebe os atributos nativos de `<form>` e encaminha `ref` |
+| Grades e pilhas recorrentes | `Forms/FormGrid/FormGrid.tsx`; use `FormGrid`, `FormGridWide` e `FormStack` sem recriar a mesma grade no CSS do domínio |
 | Card do formulário | `UI/CardBox/CardBox.tsx` |
 | Seções dentro do mesmo card | `Forms/FormSection/FormSection.tsx`; `variant="inline"`, `id`, `title`, `iconClass` |
 | Label, obrigatório, dica e erro | `Forms/FormField/FormField.tsx`; associe o controle ao mesmo `id` |
 | Texto e atributos nativos | `Forms/TextInput/TextInput.tsx`; valores controlados e `invalid` |
 | Texto simples com várias linhas | `Forms/TextArea/TextArea.tsx`, quando o contrato não requer texto rico |
 | Seleção | `Forms/SelectField/SelectField.tsx`; `options`, `value`, `onChange`, `label`, `id`, `name` |
+| Grupos de checkbox/radio | `Forms/ChoiceGroup/ChoiceGroup.tsx` envolvendo controles `ChoiceControl` e recebendo o estado inválido |
+| Alternância booleana | `Forms/ToggleControl/ToggleControl.tsx`; adaptador React do Switchery local, com estado controlado, tamanho e limpeza |
 | Data de calendário | `Forms/DatePicker/DatePicker.tsx`, quando aplicável ao formato de data esperado |
 | Foto de pessoa | `Forms/PersonPhotoUpload/PersonPhotoUpload.tsx`, quando o cadastro precisar dessa informação |
+| Evidências anexadas | `Forms/EvidenceUpload/EvidenceUpload.tsx`; seleção múltipla, limites, prévia, lista e remoção controladas pelo formulário |
 | Texto rico | `Forms/SummernoteEditor/SummernoteEditor.tsx`, quando houver requisito de editor |
 | Ações finais e andamento | `Forms/FormActions/FormActions.tsx`; `children` e `status` |
 | Botões e links de ação | `UI/Button/Button.tsx`; variantes `save`/`cancel`, ícones e `disabled` |
@@ -85,7 +90,7 @@ As fontes e cores compartilhadas estão em `resources/react/styles/tokens.css`, 
 
 `--ui-color-primary` e `--ui-color-custom` ainda representam cores do tema em outros componentes. Não use esses nomes como se já fossem os tokens oficiais roxos do Gnai, nem consolide toda a paleta durante uma migração de formulário.
 
-Organize campos relacionados em grids que aproveitem a largura disponível e reduzam colunas em telas menores. Campos longos, como o endereço com editor, ocupam a linha completa. Preserve padding, bordas, foco e espaçamentos compartilhados; não copie dimensões locais de alunos como uma regra global.
+Organize campos relacionados com `FormGrid`, usando `FormGridWide` para campos longos e `FormStack` para controles empilhados. Mantenha CSS no domínio somente para composições particulares, como a foto ao lado dos dados pessoais. Preserve padding, bordas, foco e espaçamentos compartilhados; não copie dimensões locais de alunos como regra global.
 
 Botões devem ter ícone pertinente e texto, salvo pedido explícito diferente. `Button` admite `leftIconClass` e outras posições de ícone, `showIcon={false}` para a exceção solicitada e `iconOnly` com `aria-label` para ações só com ícone. Ações ficam à direita, exceto quando o usuário definir outra posição. Não suponha que todas as variantes do tema já tenham as cores do Gnai.
 

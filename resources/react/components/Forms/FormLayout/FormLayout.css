@@ -1,0 +1,4 @@
+.formLayout fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.formLayout .formField { min-width: 0; margin-bottom: 0; }
+.formLayout .formSection:last-child { margin-bottom: 0; }
+.formLayout .formActions .button:focus-visible { outline-color: var(--ui-color-input-focus-border) !important; }

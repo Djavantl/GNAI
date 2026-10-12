@@ -1,0 +1,7 @@
+.evidenceUpload__files { display: grid; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.evidenceUpload__files li { display: grid; grid-template-columns: 42px minmax(0, 1fr) 24px; align-items: center; gap: 10px; padding: 7px 10px; border: 1px solid var(--ui-color-border-soft); border-radius: 4px; }
+.evidenceUpload__files img { width: 42px; height: 42px; border-radius: 4px; object-fit: cover; }
+.evidenceUpload__fileIcon { color: var(--ui-color-text-muted); font-size: 22px; text-align: center; }
+.evidenceUpload__files span { min-width: 0; overflow-wrap: anywhere; }
+.evidenceUpload__files button { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: var(--ui-color-danger); color: var(--ui-color-surface); font-size: 18px; line-height: 1; cursor: pointer; }
+.evidenceUpload__files button:focus-visible { outline: 2px solid var(--ui-color-input-focus-border); outline-offset: 3px; }

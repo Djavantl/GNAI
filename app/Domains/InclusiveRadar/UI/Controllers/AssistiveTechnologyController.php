@@ -19,6 +19,7 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,19 +48,23 @@ final class AssistiveTechnologyController
         );
     }
 
-    public function create(AssistiveTechnologyFormQuery $form): InertiaResponse
+    public function create(AssistiveTechnologyFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'InclusiveRadar/AssistiveTechnologies/Create',
-            $form->forCreation(),
+            $form->forCreation() + [
+                'can' => ['submit' => $request->user()?->can('assistive-technology.store') ?? false],
+            ],
         );
     }
 
-    public function clone(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): InertiaResponse
+    public function clone(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'InclusiveRadar/AssistiveTechnologies/Create',
-            $form->forCloning($assistiveTechnology),
+            $form->forCloning($assistiveTechnology) + [
+                'can' => ['submit' => $request->user()?->can('assistive-technology.store') ?? false],
+            ],
         );
     }
 
@@ -81,7 +86,7 @@ final class AssistiveTechnologyController
             ->with('success', 'Tecnologia assistiva criada com sucesso!');
     }
 
-    public function show(AssistiveTechnology $assistiveTechnology, ShowAssistiveTechnologyQuery $query): InertiaResponse
+    public function show(AssistiveTechnology $assistiveTechnology, ShowAssistiveTechnologyQuery $query, Request $request): InertiaResponse
     {
         $technology = $query->execute($assistiveTechnology);
 
@@ -91,6 +96,27 @@ final class AssistiveTechnologyController
                 'assistiveTechnology' => $technology,
                 'deficiencies' => $technology->deficiencies,
                 'inspections' => $technology->inspections,
+                'display' => [
+                    'notesHtml' => RichTextSanitizer::sanitize((string) ($technology->notes ?: '---')),
+                    'statusLabel' => $technology->status?->label() ?? '---',
+                    'inspectionDetails' => $technology->inspections->map(fn ($inspection) => [
+                        'id' => $inspection->id,
+                        'date' => $inspection->inspection_date?->format('d/m/Y') ?? '---',
+                        'type' => $inspection->type?->label() ?? '---',
+                        'state' => $inspection->state?->label() ?? '---',
+                        'descriptionHtml' => $inspection->description
+                            ? RichTextSanitizer::sanitize((string) $inspection->description)
+                            : null,
+                        'evidenceCount' => $inspection->evidences->count(),
+                    ])->all(),
+                ],
+                'can' => [
+                    'clone' => $request->user()?->can('assistive-technology.create') ?? false,
+                    'edit' => $request->user()?->can('assistive-technology.edit') ?? false,
+                    'inspection' => $request->user()?->can('assistive-technology.inspection.show') ?? false,
+                    'pdf' => $request->user()?->can('assistive-technology.pdf') ?? false,
+                    'destroy' => $request->user()?->can('assistive-technology.destroy') ?? false,
+                ],
             ],
         );
     }
@@ -114,11 +140,13 @@ final class AssistiveTechnologyController
             ->with('success', 'Tecnologia assistiva atualizada com sucesso!');
     }
 
-    public function edit(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form): InertiaResponse
+    public function edit(AssistiveTechnology $assistiveTechnology, AssistiveTechnologyFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'InclusiveRadar/AssistiveTechnologies/Edit',
-            $form->forUpdate($assistiveTechnology),
+            $form->forUpdate($assistiveTechnology) + [
+                'can' => ['submit' => $request->user()?->can('assistive-technology.update') ?? false],
+            ],
         );
     }
 

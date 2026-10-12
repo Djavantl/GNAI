@@ -5,7 +5,6 @@
 .technologyIndex__header p { margin: 0; }
 .technologyIndex__card { background: var(--ui-color-surface); border: 1px solid var(--ui-color-border-soft); border-radius: 4px; padding: 20px; }
 .technologyIndex__filters { display: grid; grid-template-columns: minmax(180px, 2fr) repeat(3, minmax(125px, 1fr)) auto; gap: 16px; align-items: end; }
-.technologyIndex__filters .formField { margin: 0; }
 .technologyIndex__actions { display: flex; align-items: center; gap: 12px; }
 .technologyIndex__progress { font-size: 13px; margin: 20px 0 12px; }
 .technologyIndex__scroll { width: 100%; min-width: 0; overflow-x: auto; }
