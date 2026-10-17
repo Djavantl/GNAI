@@ -1,0 +1,20 @@
+.tableActions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.tableActions .button.button--sm {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 1;
+}

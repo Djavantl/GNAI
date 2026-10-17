@@ -103,6 +103,16 @@
   color: #ffffff !important;
 }
 
+.button--list-action,
+.button--list-action:hover,
+.button--list-action:focus,
+.button--list-action:active {
+  border-color: var(--ui-color-list-action) !important;
+  border-radius: 3px;
+  background-color: var(--ui-color-list-action) !important;
+  color: var(--ui-color-surface) !important;
+}
+
 .button--success,
 .button--success:hover,
 .button--success:focus,

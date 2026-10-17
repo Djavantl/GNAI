@@ -4,7 +4,7 @@ Estas são as diretrizes permanentes para o Gnai, sistema de acessibilidade e in
 
 ## Documentação e convenções de IA
 
-Consulte as convenções relevantes em `docs/ai-conventions/` antes de implementar ou modificar telas. **Ao criar, refatorar ou migrar telas de formulários React, leia [a convenção de formulários](docs/ai-conventions/frontend/form-pages.md) antes de iniciar a implementação.** Ela documenta o padrão atual de alunos, separando regras gerais, componentes condicionais e particularidades do exemplo.
+Consulte as convenções relevantes em `docs/ai-conventions/` antes de implementar ou modificar telas. **Ao criar, refatorar ou migrar telas de formulários React, leia [a convenção de formulários](docs/ai-conventions/frontend/form-pages.md) antes de iniciar a implementação.** Ela documenta o padrão atual de alunos, separando regras gerais, componentes condicionais e particularidades do exemplo. Para listagens React, siga [a convenção de listagens](docs/ai-conventions/frontend/list-pages.md), baseada nos componentes compartilhados de `Tables/TableList`.
 
 Novas convenções devem ser adicionadas a `docs/ai-conventions/` e indexadas aqui quando existirem. Atualize o documento correspondente quando uma mudança autorizada alterar o padrão oficial; não crie uma convenção por formulário nem documentos vazios para usos futuros. Preserve também as instruções específicas do diretório em que estiver trabalhando.
 
@@ -67,7 +67,7 @@ Procure primeiro em `resources/react/components/`; os caminhos abaixo são relat
 | Necessidade | Componentes existentes |
 | --- | --- |
 | Formulários | `Forms/FormLayout`, `FormGrid`, `FormField`, `TextInput`, `TextArea`, `SelectField`, `ChoiceControl`, `ChoiceGroup`, `ToggleControl`, `MaskedInput`, `FileUploadButton`, `FileDropzone`, `EvidenceUpload`, `FormSection`, `FormPage` (todos sob `Forms/`) |
-| Ações, agrupamento e feedback | `UI/Button`, `UI/CardBox`, `UI/Panel`, `UI/Modal`, `UI/InlineAlert`, `UI/NotificationToast`, `UI/AppLoader`, `UI/ErrorState` |
+| Ações, agrupamento e feedback | `UI/Button`, `UI/CardBox`, `UI/Panel`, `UI/Modal`, `UI/ConfirmActionModal`, `UI/InlineAlert`, `UI/NotificationToast`, `UI/AppLoader`, `UI/ErrorState` |
 | Tabelas e navegação | `Tables/Table`, `Tables/DataTable`, `Navigation/Pagination`, `Navigation/PageBreadcrumb`, `Navigation/PageTitle` (cabeçalho de negócio), `Navigation/PageHeader` (referência Ubold) |
 | Estrutura compartilhada | `Navigation/AuthLayout`, `Navigation/AccountLayout`, `Navigation/TopBarPrimary`, `Navigation/SidebarPrimary`, `Navigation/AppFooter` |
 

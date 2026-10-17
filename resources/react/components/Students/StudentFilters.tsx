@@ -1,17 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { router } from "@inertiajs/react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import SelectField from "@/components/Forms/SelectField/SelectField";
-import Button from "@/components/UI/Button/Button";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
+import {
+    TableListClearButton,
+    TableListFilterActions,
+} from "@/components/Tables/TableList/TableList";
+import useAutoListFilters, {
+    compactListFilters,
+} from "@/hooks/useAutoListFilters";
 import { studentsBase } from "./Students.utils";
 import type {
     StudentFilters as Filters,
     StudentIndexProps,
 } from "./Students.types";
 import { useStudentRequest } from "./useStudentRequest";
+import "./StudentFilters.css";
 
 export function filterValues(filters: Partial<Filters>): Filters {
     return Object.fromEntries(
@@ -27,6 +34,11 @@ export function filterValues(filters: Partial<Filters>): Filters {
         ].map((key) => [key, String(filters[key as keyof Filters] ?? "")]),
     ) as Filters;
 }
+
+function filterClassName(name: string): string {
+    return `studentsPage__filter studentsPage__filter--${name.replace("_", "-")}`;
+}
+
 export default function StudentFilters({
     filters,
     courses,
@@ -36,28 +48,26 @@ export default function StudentFilters({
     StudentIndexProps,
     "filters" | "courses" | "deficiencies" | "studentStatuses"
 >): React.JSX.Element {
-    const [values, setValues] = useState(() => filterValues(filters));
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const cancel = useRef<(() => void) | undefined>(undefined);
     const request = useStudentRequest();
-    useEffect(() => {
-        setValues(filterValues(filters));
-    }, [filters]);
+    const initialValues = useMemo(() => filterValues(filters), [filters]);
+    const emptyValues = useMemo(() => filterValues({}), []);
+    const { values, update, clear, submit } = useAutoListFilters({
+        initialValues,
+        emptyValues,
+        onSearch: search,
+    });
     useEffect(
         () => () => {
-            clearTimeout(timer.current);
             cancel.current?.();
         },
         [],
     );
     function search(next: Filters) {
-        clearTimeout(timer.current);
         cancel.current?.();
-        const data = Object.fromEntries(
-            Object.entries(next).filter(([, value]) => value !== ""),
-        );
+        const data = compactListFilters(next);
         router.get(studentsBase, data, {
             ...request.options,
             preserveState: true,
@@ -77,19 +87,13 @@ export default function StudentFilters({
             },
         });
     }
-    function update(key: keyof Filters, value: string) {
-        const next = { ...values, [key]: value };
-        setValues(next);
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => search(next), 500);
-    }
     return (
         <FormLayout
             aria-label="Filtrar alunos"
             aria-busy={processing}
             onSubmit={(event) => {
                 event.preventDefault();
-                search(values);
+                submit();
             }}
         >
             {request.error ? (
@@ -110,6 +114,7 @@ export default function StudentFilters({
                         id={`filter-${name}`}
                         label={label}
                         error={errors[name]}
+                        className={filterClassName(name)}
                     >
                         <TextInput
                             id={`filter-${name}`}
@@ -170,6 +175,7 @@ export default function StudentFilters({
                         id={`filter-${name}`}
                         label={label}
                         error={errors[name]}
+                        className={filterClassName(name)}
                     >
                         <SelectField
                             id={`filter-${name}`}
@@ -191,24 +197,11 @@ export default function StudentFilters({
                     </FormField>
                 ))}
             </div>
-            <div className="studentsPage__actions">
-                <Button type="submit" tone="primary" disabled={processing}>
-                    Filtrar
-                </Button>
-                <Button
-                    type="button"
-                    onClick={() => {
-                        const empty = filterValues({});
-                        setValues(empty);
-                        search(empty);
-                    }}
-                >
-                    Limpar filtros
-                </Button>
-                <span role="status">
-                    {processing ? "Carregando alunos..." : ""}
-                </span>
-            </div>
+            <TableListFilterActions
+                status={processing ? "Carregando alunos..." : undefined}
+            >
+                <TableListClearButton disabled={processing} onClick={clear} />
+            </TableListFilterActions>
         </FormLayout>
     );
 }

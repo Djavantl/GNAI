@@ -1,10 +1,8 @@
 import type { ReactNode } from "react";
-import { Head } from "@inertiajs/react";
-import PageBreadcrumb, {
-    type PageBreadcrumbItem,
+import BusinessPage from "@/components/Navigation/BusinessPage/BusinessPage";
+import type {
+    PageBreadcrumbItem,
 } from "@/components/Navigation/PageBreadcrumb/PageBreadcrumb";
-import PageTitle from "@/components/Navigation/PageTitle/PageTitle";
-import FlashNotifications from "@/components/UI/FlashNotifications/FlashNotifications";
 
 const base = "/inclusive-radar/assistive-technologies";
 
@@ -14,34 +12,44 @@ export default function AssistiveTechnologyPage({
     current,
     technology,
     actions,
+    className = "technologyFormPage",
     children,
 }: {
     title: string;
     subtitle: string;
-    current: string;
+    current?: string;
     technology?: { id: number; name: string };
     actions?: ReactNode;
+    className?: string;
     children: ReactNode;
 }): React.JSX.Element {
     const items: PageBreadcrumbItem[] = [
         { label: "Home", href: "/auth/dashboard" },
-        { label: "Tecnologias Assistivas", href: base },
+        {
+            label: "Tecnologias Assistivas",
+            href: current ? base : undefined,
+        },
     ];
-    if (technology)
+    if (technology) {
         items.push({
             label: technology.name,
             href: `${base}/${technology.id}`,
         });
-    items.push({ label: current, href: undefined });
+    }
+
+    if (current) {
+        items.push({ label: current, href: undefined });
+    }
+
     return (
-        <main className="technologyFormPage">
-            <Head title={`${title} - Gnai`} />
-            <nav aria-label="Localização">
-                <PageBreadcrumb items={items} />
-            </nav>
-            <PageTitle title={title} subtitle={subtitle} actions={actions} />
-            <FlashNotifications />
+        <BusinessPage
+            title={title}
+            subtitle={subtitle}
+            breadcrumbItems={items}
+            actions={actions}
+            className={className}
+        >
             {children}
-        </main>
+        </BusinessPage>
     );
 }

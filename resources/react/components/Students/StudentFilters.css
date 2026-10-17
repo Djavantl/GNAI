@@ -1,0 +1,22 @@
+.studentsPage__filters {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.studentsPage__filter--name { grid-column: span 5; }
+.studentsPage__filter--phone { grid-column: span 3; }
+.studentsPage__filter--email { grid-column: span 4; }
+.studentsPage__filter--status { grid-column: span 3; }
+.studentsPage__filter--course-id { grid-column: span 4; }
+.studentsPage__filter--deficiency-id { grid-column: span 5; }
+
+@media (max-width: 900px) {
+  .studentsPage__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .studentsPage__filter { grid-column: auto; }
+}
+
+@media (max-width: 600px) {
+  .studentsPage__filters { grid-template-columns: minmax(0, 1fr); }
+}

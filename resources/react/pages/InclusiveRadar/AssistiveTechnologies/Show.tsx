@@ -7,6 +7,7 @@ import FormSection from "@/components/Forms/FormSection/FormSection";
 import PageBreadcrumb from "@/components/Navigation/PageBreadcrumb/PageBreadcrumb";
 import PageTitle from "@/components/Navigation/PageTitle/PageTitle";
 import FlashNotifications from "@/components/UI/FlashNotifications/FlashNotifications";
+import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
@@ -68,17 +69,15 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
     can,
 }: Props): React.JSX.Element {
     const [deleting, setDeleting] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [failure, setFailure] = useState("");
     const itemUrl = `${base}/${technology.id}`;
 
     function remove(): void {
-        if (
-            deleting ||
-            !window.confirm(
-                `Excluir Tecnologia Assistiva\n\nA tecnologia ${technology.name} será removida do sistema.\n\nConfirmar exclusão?`,
-            )
-        )
+        if (deleting) {
             return;
+        }
+
         setDeleting(true);
         setFailure("");
         router.delete(itemUrl, {
@@ -98,6 +97,7 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                 );
                 return false;
             },
+            onSuccess: () => setDeleteModalOpen(false),
             onFinish: () => setDeleting(false),
         });
     }
@@ -147,11 +147,11 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                 }
             />
             <FlashNotifications />
-            {failure && (
+            {failure && !deleteModalOpen ? (
                 <div role="alert">
                     <InlineAlert variant="danger">{failure}</InlineAlert>
                 </div>
-            )}
+            ) : null}
             <CardBox className="technologyShow__panel">
                 <FormSection
                     id="technology-identification"
@@ -267,9 +267,12 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                             tone="dark-red"
                             leftIconClass="fa fa-trash-o"
                             disabled={deleting}
-                            onClick={remove}
+                            onClick={() => {
+                                setFailure("");
+                                setDeleteModalOpen(true);
+                            }}
                         >
-                            {deleting ? "Excluindo…" : "Excluir"}
+                            Excluir
                         </Button>
                     )}
                     <Button href={base} tone="cancel" disabled={deleting}>
@@ -277,6 +280,25 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                     </Button>
                 </div>
             </FormActions>
+            <ConfirmActionModal
+                open={deleteModalOpen}
+                title="Excluir Tecnologia Assistiva"
+                message={
+                    <>
+                        Excluir a tecnologia <strong>{technology.name}</strong>?
+                    </>
+                }
+                error={failure || undefined}
+                processing={deleting}
+                confirmLabel="Confirmar exclusão"
+                processingLabel="Excluindo tecnologia..."
+                confirmTone="dark-red"
+                onClose={() => {
+                    setFailure("");
+                    setDeleteModalOpen(false);
+                }}
+                onConfirm={remove}
+            />
         </main>
     );
 }

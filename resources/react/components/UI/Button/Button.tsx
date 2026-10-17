@@ -6,6 +6,7 @@ export type ButtonTone =
   | 'default'
   | 'white'
   | 'primary'
+  | 'list-action'
   | 'save'
   | 'cancel'
   | 'dark-blue'

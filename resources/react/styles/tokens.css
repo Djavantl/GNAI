@@ -19,10 +19,12 @@
   --ui-color-table-header: #f6f1ff;
   --ui-color-border-soft: #edf0f0;
   --ui-color-border-subtle: rgba(0, 0, 0, 0.1);
+  --ui-color-list-card-border: #ced4da;
   --ui-color-shadow: rgba(0, 0, 0, 0.15);
 
   --ui-color-custom: #5fbeaa;
   --ui-color-primary: #5d9cec;
+  --ui-color-list-action: #1b84e7;
   --ui-color-gnai-primary: var(--primary-color);
   --ui-color-gnai-primary-hover: var(--color-primary-hover);
   --ui-color-form-label: var(--text-purple-dark);

@@ -1,14 +1,29 @@
-import { Head, Link, router, usePage } from "@inertiajs/react";
-import { useEffect, useRef, useState } from "react";
-import Pagination from "@/components/Navigation/Pagination/Pagination";
+import { router, usePage } from "@inertiajs/react";
+import { useMemo, useRef, useState } from "react";
 import Button from "@/components/UI/Button/Button";
-import Table from "@/components/Tables/Table/Table";
+import TableActions from "@/components/Tables/TableActions/TableActions";
+import {
+    TableListCard,
+    TableListClearButton,
+    TableListCreateButton,
+    TableListEmpty,
+    TableListFilterActions,
+    TableListFooter,
+    TableListProgress,
+    TableListScroll,
+    TableListTable,
+} from "@/components/Tables/TableList/TableList";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import SelectField from "@/components/Forms/SelectField/SelectField";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
+import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
+import useAutoListFilters, {
+    compactListFilters,
+} from "@/hooks/useAutoListFilters";
+import AssistiveTechnologyPage from "./AssistiveTechnologyPage";
 import "./Index.css";
 
 type Filters = {
@@ -63,38 +78,38 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
     can,
 }: Props): React.JSX.Element {
     const { errors } = usePage().props;
-    const [filters, setFilters] = useState<Filters>({
-        ...emptyFilters,
-        ...initialFilters,
-    });
     const [busy, setBusy] = useState(false);
     const [failure, setFailure] = useState("");
+    const [technologyToDelete, setTechnologyToDelete] =
+        useState<Technology | null>(null);
     const pending = useRef(false);
-    const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-    useEffect(() => {
-        setFilters({ ...emptyFilters, ...initialFilters });
-    }, [initialFilters]);
-    useEffect(
-        () => () => {
-            if (timer.current) clearTimeout(timer.current);
-        },
-        [],
+    const initialValues = useMemo(
+        () => ({ ...emptyFilters, ...initialFilters }),
+        [initialFilters],
     );
+    const {
+        values: filters,
+        update: updateFilter,
+        clear: clearFilters,
+        submit: submitFilters,
+        cancelScheduled,
+    } = useAutoListFilters({
+        initialValues,
+        emptyValues: emptyFilters,
+        onSearch: visit,
+    });
 
     function visit(values: Filters, url = base): void {
-        if (pending.current) return;
+        if (pending.current) {
+            return;
+        }
+
         pending.current = true;
         setBusy(true);
         setFailure("");
         router.get(
             url,
-            url === base
-                ? Object.fromEntries(
-                      Object.entries(values).filter(
-                          ([, value]) => value !== "",
-                      ),
-                  )
-                : {},
+            url === base ? compactListFilters(values) : {},
             {
                 preserveState: true,
                 preserveScroll: true,
@@ -121,25 +136,16 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
             },
         );
     }
-    function change(name: keyof Filters, value: string): void {
-        const next = { ...filters, [name]: value };
-        setFilters(next);
-        if (timer.current) clearTimeout(timer.current);
-        timer.current = setTimeout(() => visit(next), 500);
-    }
-    function remove(technology: Technology): void {
-        if (
-            pending.current ||
-            !window.confirm(
-                `Excluir Tecnologia Assistiva\n\nA tecnologia ${technology.name} será removida do sistema.\n\nConfirmar exclusão?`,
-            )
-        )
+    function remove(): void {
+        if (pending.current || !technologyToDelete) {
             return;
-        if (timer.current) clearTimeout(timer.current);
+        }
+
+        cancelScheduled();
         pending.current = true;
         setBusy(true);
         setFailure("");
-        router.delete(`${base}/${technology.id}`, {
+        router.delete(`${base}/${technologyToDelete.id}`, {
             preserveScroll: true,
             onError: () =>
                 setFailure(
@@ -157,6 +163,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                 );
                 return false;
             },
+            onSuccess: () => setTechnologyToDelete(null),
             onFinish: () => {
                 pending.current = false;
                 setBusy(false);
@@ -165,29 +172,20 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
     }
 
     return (
-        <main className="technologyIndex">
-            <Head title="Tecnologias Assistivas" />
-            <nav aria-label="Navegação estrutural">
-                <Link href="/auth/dashboard">Início</Link>
-                <span aria-hidden="true"> / </span>
-                <span aria-current="page">Tecnologias Assistivas</span>
-            </nav>
-            <header className="technologyIndex__header">
-                <div>
-                    <h1>Tecnologias Assistivas</h1>
-                    <p>
-                        Gerenciamento de periféricos, softwares e equipamentos
-                        de acessibilidade.
-                    </p>
-                </div>
-                {can.create && (
-                    <Button href={`${base}/create`} tone="primary">
-                        Adicionar Tecnologia Assistiva
-                    </Button>
-                )}
-            </header>
-            <section
-                className="technologyIndex__card"
+        <AssistiveTechnologyPage
+            className="technologyIndex"
+            title="Tecnologias Assistivas"
+            subtitle="Gerenciamento de periféricos, softwares e equipamentos de acessibilidade."
+            actions={
+                can.create ? (
+                    <TableListCreateButton
+                        href={`${base}/create`}
+                        ariaLabel="Cadastrar tecnologia assistiva"
+                    />
+                ) : undefined
+            }
+        >
+            <TableListCard
                 aria-label="Listagem de tecnologias assistivas"
                 aria-busy={busy}
             >
@@ -195,8 +193,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                     className="technologyIndex__filters"
                     onSubmit={(event) => {
                         event.preventDefault();
-                        if (timer.current) clearTimeout(timer.current);
-                        visit(filters);
+                        submitFilters();
                     }}
                 >
                     <FormField
@@ -212,7 +209,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                             placeholder="Filtrar por nome..."
                             disabled={busy}
                             onChange={(event) =>
-                                change("name", event.target.value)
+                                updateFilter("name", event.target.value)
                             }
                             invalid={!!errors.name}
                             aria-describedby={
@@ -241,7 +238,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                 value={filters[field.name]}
                                 disabled={busy}
                                 onChange={(event) =>
-                                    change(field.name, event.target.value)
+                                    updateFilter(field.name, event.target.value)
                                 }
                                 aria-invalid={!!errors[field.name]}
                                 aria-describedby={
@@ -252,56 +249,32 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                             />
                         </FormField>
                     ))}
-                    <div className="technologyIndex__actions">
-                        <Button type="submit" tone="primary" disabled={busy}>
-                            Filtrar
-                        </Button>
-                        <Button
+                    <TableListFilterActions>
+                        <TableListClearButton
                             disabled={busy}
-                            onClick={() => {
-                                if (timer.current) clearTimeout(timer.current);
-                                setFilters(emptyFilters);
-                                visit(emptyFilters);
-                            }}
-                        >
-                            Limpar
-                        </Button>
-                    </div>
+                            onClick={clearFilters}
+                        />
+                    </TableListFilterActions>
                 </FormLayout>
-                <div role="status" className="technologyIndex__progress">
+                <TableListProgress>
                     {busy
                         ? "Processando…"
                         : `${records.total} tecnologia(s) encontrada(s)`}
-                </div>
-                {failure && (
+                </TableListProgress>
+                {failure && !technologyToDelete ? (
                     <div role="alert">
                         <InlineAlert variant="danger">{failure}</InlineAlert>
                     </div>
-                )}
-                <div
-                    className="technologyIndex__scroll"
-                    tabIndex={0}
-                    role="region"
-                    aria-label="Tabela de tecnologias assistivas"
-                >
-                    <Table
-                        bordered
-                        condensed
-                        className="technologyIndex__table"
-                    >
+                ) : null}
+                <TableListScroll aria-label="Tabela de tecnologias assistivas">
+                    <TableListTable className="technologyIndex__table">
                         <thead>
                             <tr>
-                                {[
-                                    "Nome",
-                                    "Natureza",
-                                    "Estoque",
-                                    "Status",
-                                    "Ações",
-                                ].map((label) => (
-                                    <th key={label} scope="col">
-                                        {label}
-                                    </th>
-                                ))}
+                                <th scope="col">Nome</th>
+                                <th scope="col">Natureza</th>
+                                <th scope="col">Estoque</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -340,7 +313,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                             </TableLabel>
                                         </td>
                                         <td>
-                                            <div className="technologyIndex__actions">
+                                            <TableActions>
                                                 {can.show && (
                                                     <Button
                                                         href={`${base}/${technology.id}`}
@@ -359,53 +332,68 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                                         leftIconClass="fa fa-trash-o"
                                                         disabled={busy}
                                                         aria-label={`Excluir ${technology.name}`}
-                                                        onClick={() =>
-                                                            remove(technology)
-                                                        }
+                                                        onClick={() => {
+                                                            setFailure("");
+                                                            setTechnologyToDelete(
+                                                                technology,
+                                                            );
+                                                        }}
                                                     />
                                                 )}
                                                 {!can.show && !can.destroy && (
                                                     <span>Nenhuma ação</span>
                                                 )}
-                                            </div>
+                                            </TableActions>
                                         </td>
                                     </tr>
                                 );
                             })}
                             {!records.data.length && (
                                 <tr>
-                                    <td
-                                        colSpan={5}
-                                        className="technologyIndex__empty"
-                                    >
+                                    <TableListEmpty colSpan={5}>
                                         Nenhuma tecnologia cadastrada.
-                                    </td>
+                                    </TableListEmpty>
                                 </tr>
                             )}
                         </tbody>
-                    </Table>
-                </div>
-                <footer className="technologyIndex__pagination">
-                    <span>
-                        {records.from ?? 0}–{records.to ?? 0} de {records.total}
-                    </span>
-                    <nav aria-label="Páginas da listagem">
-                        <Pagination
-                            currentPage={records.current_page}
-                            pageCount={records.last_page}
-                            disabled={busy}
-                            onSelect={(page) => {
-                                if (timer.current) clearTimeout(timer.current);
-                                const params = new URLSearchParams(
-                                    window.location.search,
-                                );
-                                params.set("page", String(page));
-                                visit(filters, `${base}?${params.toString()}`);
-                            }}
-                        />
-                    </nav>
-                </footer>
-            </section>
-        </main>
+                    </TableListTable>
+                </TableListScroll>
+                <TableListFooter
+                    summary={`${records.from ?? 0}–${records.to ?? 0} de ${records.total}`}
+                    currentPage={records.current_page}
+                    pageCount={records.last_page}
+                    disabled={busy}
+                    paginationLabel="Páginas da listagem"
+                    onSelect={(page) => {
+                        cancelScheduled();
+                        const params = new URLSearchParams(
+                            window.location.search,
+                        );
+                        params.set("page", String(page));
+                        visit(filters, `${base}?${params.toString()}`);
+                    }}
+                />
+            </TableListCard>
+            <ConfirmActionModal
+                open={technologyToDelete !== null}
+                title="Excluir Tecnologia Assistiva"
+                message={
+                    <>
+                        Excluir a tecnologia{" "}
+                        <strong>{technologyToDelete?.name}</strong>?
+                    </>
+                }
+                error={failure || undefined}
+                processing={busy}
+                confirmLabel="Confirmar exclusão"
+                processingLabel="Excluindo tecnologia..."
+                confirmTone="dark-red"
+                onClose={() => {
+                    setFailure("");
+                    setTechnologyToDelete(null);
+                }}
+                onConfirm={remove}
+            />
+        </AssistiveTechnologyPage>
     );
 }

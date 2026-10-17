@@ -1,4 +1,3 @@
-.studentsPage { min-width: 0; color: var(--ui-color-text); padding-bottom: 24px; }
 .studentsPage h2 { font: 600 1.25rem/1.4 var(--ui-font-ui); margin: 0 0 20px; }
 .studentsPage h3 { font-size: 1.05rem; }
 .studentsPage__header--banner { --page-title-color: var(--ui-color-surface); --page-subtitle-color: var(--ui-color-surface); padding: 26px; border-radius: 6px; color: var(--ui-color-surface); background: linear-gradient(var(--ui-color-shadow), var(--ui-color-shadow)), url('/images/page-header3.png') repeat top left; }
@@ -16,16 +15,14 @@
 .studentForm__personalFields .studentsPage__grid:last-child { margin-bottom: 0; }
 .studentForm__personalFields .studentsPage__grid:not(:last-child) { margin-bottom: 28px; }
 .studentsPage__wide { grid-column: 1 / -1; }
-.studentsPage__filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
-.studentsPage__table { overflow-x: auto; max-width: 100%; }
+.studentsPage__table { max-width: 100%; overflow-x: auto; }
 .studentsPage__table th { white-space: nowrap; }
 .studentsPage__table td { vertical-align: middle; overflow-wrap: anywhere; }
+.studentsPage__empty { padding: 24px 12px; color: var(--ui-color-text-muted); text-align: center; }
 .studentsPage__identity { display: flex; gap: 12px; align-items: center; min-width: 160px; }
-.studentsPage__avatar { width: 44px; height: 44px; object-fit: cover; border-radius: 50%; flex-shrink: 0; }
+.studentsPage__avatar { width: 32px; height: 32px; object-fit: cover; border-radius: 50%; flex-shrink: 0; }
 .studentsPage__photo { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; }
 .studentsPage__profile { text-align: center; padding: 20px; }
-.studentsPage__pagination { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-.studentsPage__empty { text-align: center; padding: 24px 12px; color: var(--ui-color-text-muted); }
 .studentsPage__data { margin: 0; }
 .studentsPage__data dt { font-weight: 600; margin-bottom: 5px; }
 .studentsPage__data dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -33,11 +30,7 @@
 .studentsPage__related p { margin: 4px 0; }
 .studentsPage__hint { color: var(--ui-color-text-muted); display: block; margin-top: 8px; }
 .studentsPage__status { margin: 10px 0; }
-.studentsPage .button:focus-visible, .studentsPage a:focus-visible,
-.studentDeleteDialog .button:focus-visible { outline: 2px solid var(--ui-color-text) !important; outline-offset: 3px; }
 .studentsPage .fileUploadButton:focus-within { outline: 2px solid var(--ui-color-text); outline-offset: 3px; }
-.studentsPage__progress { margin-top: 12px; }
-@media (max-width: 900px) { .studentsPage__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 900px) { .studentForm__personal { grid-template-columns: minmax(0, 1fr); } }
 @container (max-width: 640px) {
   .studentForm__personalFields .studentsPage__grid--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -46,8 +39,7 @@
   .studentForm__personalFields .studentsPage__grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 600px) {
-  .studentsPage__grid, .studentsPage__filters { grid-template-columns: minmax(0, 1fr); }
+  .studentsPage__grid { grid-template-columns: minmax(0, 1fr); }
   .studentsPage__header--banner { padding: 20px; }
-  .studentsPage__pagination { align-items: flex-start; flex-direction: column; }
   .studentsPage .card-box { padding: 16px; }
 }

@@ -2,10 +2,12 @@
 
 Esta pasta contém a base React/TypeScript do sistema Laravel.
 
-Antes de criar, refatorar, migrar ou modificar telas de formulários, consulte [a convenção de formulários React](../../docs/ai-conventions/frontend/form-pages.md), indexada no `AGENTS.md` da raiz. Use o formulário atual de alunos como referência estrutural e visual, preservando os contratos do cadastro trabalhado. Atualize a convenção quando uma mudança autorizada alterar o padrão compartilhado.
+Antes de criar, refatorar, migrar ou modificar telas de formulários, consulte [a convenção de formulários React](../../docs/ai-conventions/frontend/form-pages.md), indexada no `AGENTS.md` da raiz. Para listagens, consulte [a convenção de listagens React](../../docs/ai-conventions/frontend/list-pages.md). Use as referências integradas sem alterar os contratos do domínio trabalhado e atualize a convenção correspondente quando uma mudança autorizada alterar o padrão compartilhado.
 
 - Preserve estilos, tokens, responsividade e comportamento dos componentes existentes, observando a identidade Gnai e os limites documentados no `AGENTS.md` da raiz; aparência demonstrativa não define a marca do produto.
 - Use `components/{UI,Forms,Navigation,Tables}/PascalCase/PascalCase.tsx` e `pages/PascalCase/`.
+- Em TSX, expanda componentes, props, condicionais e callbacks complexos em múltiplas linhas, com indentação consistente. Evite concentrar estruturas JSX inteiras na mesma linha.
+- Confirmações destrutivas em React usam `UI/ConfirmActionModal`, baseado no custombox Ubold compartilhado, com cabeçalho grafite e conteúdo centralizado. Não use `window.confirm` nem recrie a estrutura do modal dentro da funcionalidade.
 - CSS, dados, hooks locais e tipos específicos ficam junto de seu proprietário.
 - Imports entre pastas usam `@/`; imports locais usam `./`.
 - Componentes não dependem de páginas ou app. Hooks compartilhados não dependem de UI.
