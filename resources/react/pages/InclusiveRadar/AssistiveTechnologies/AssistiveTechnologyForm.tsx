@@ -55,14 +55,12 @@ export default function AssistiveTechnologyForm({
     technology,
     cloneSource,
     activeLoans = 0,
-    onProcessingChange,
 }: {
     mode: "create" | "edit";
     options: TechnologyFormOptions;
     technology?: TechnologyRecord;
     cloneSource?: TechnologyRecord | null;
     activeLoans?: number;
-    onProcessingChange?: (value: boolean) => void;
 }): React.JSX.Element {
     const source = technology ?? cloneSource;
     const isClone = mode === "create" && !!cloneSource;
@@ -94,8 +92,6 @@ export default function AssistiveTechnologyForm({
         Object.entries(items).map(([value, label]) => ({ value, label }));
     const describedBy = (name: string, id: string) =>
         errors[name] ? `${id}-error` : undefined;
-    const setProcessing = (value: boolean): void => onProcessingChange?.(value);
-
     return (
         <FormLayout
             ref={formElement}
@@ -118,7 +114,6 @@ export default function AssistiveTechnologyForm({
                     return;
                 busy.current = true;
                 setRequestError("");
-                setProcessing(true);
                 form.transform((data) =>
                     mode === "edit" ? { ...data, _method: "put" } : data,
                 );
@@ -151,7 +146,6 @@ export default function AssistiveTechnologyForm({
                         },
                         onFinish: () => {
                             busy.current = false;
-                            setProcessing(false);
                         },
                     },
                 );
@@ -625,22 +619,25 @@ export default function AssistiveTechnologyForm({
                 <Button
                     href={cancelUrl}
                     tone="cancel"
+                    iconOnly
+                    aria-label="Cancelar e voltar"
                     disabled={form.processing}
-                >
-                    Cancelar
-                </Button>
+                />
                 {options.can.submit ? (
                     <Button
                         type="submit"
                         tone="save"
+                        leftIconClass="fa fa-check"
+                        iconOnly
+                        aria-label={
+                            form.processing
+                                ? "Salvando tecnologia assistiva"
+                                : mode === "create"
+                                  ? "Cadastrar tecnologia assistiva"
+                                  : "Salvar tecnologia assistiva"
+                        }
                         disabled={form.processing || editorFailed}
-                    >
-                        {form.processing
-                            ? "Salvando..."
-                            : mode === "create"
-                              ? "Cadastrar"
-                              : "Salvar"}
-                    </Button>
+                    />
                 ) : null}
             </FormActions>
         </FormLayout>

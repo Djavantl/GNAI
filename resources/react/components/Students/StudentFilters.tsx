@@ -8,6 +8,7 @@ import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
 import {
     TableListClearButton,
     TableListFilterActions,
+    TableListMoreFilters,
 } from "@/components/Tables/TableList/TableList";
 import useAutoListFilters, {
     compactListFilters,
@@ -59,6 +60,103 @@ export default function StudentFilters({
         emptyValues,
         onSearch: search,
     });
+    const textFilterFields = [
+        ["name", "Nome do aluno"],
+        ["phone", "Telefone"],
+        ["email", "E-mail"],
+    ] as const;
+    const selectFilterFields = [
+        {
+            name: "status",
+            label: "Status",
+            options: Object.entries(studentStatuses).map(([value, label]) => ({
+                value,
+                label,
+            })),
+        },
+        {
+            name: "course_id",
+            label: "Curso",
+            options: [
+                { value: "0", label: "Sem curso" },
+                ...courses.map((item) => ({
+                    value: String(item.id),
+                    label: item.name,
+                })),
+            ],
+        },
+        {
+            name: "deficiency_id",
+            label: "Perfil de atendimento",
+            options: [
+                {
+                    value: "0",
+                    label: "Sem perfil de atendimento",
+                },
+                ...deficiencies.map((item) => ({
+                    value: String(item.id),
+                    label: item.name,
+                })),
+            ],
+        },
+    ] as const;
+
+    function renderTextFilter(
+        [name, label]: (typeof textFilterFields)[number],
+    ): React.JSX.Element {
+        return (
+            <FormField
+                key={name}
+                id={`filter-${name}`}
+                label={label}
+                error={errors[name]}
+                className={filterClassName(name)}
+            >
+                <TextInput
+                    id={`filter-${name}`}
+                    name={name}
+                    value={values[name]}
+                    placeholder={`${label}...`}
+                    maxLength={name === "phone" ? 15 : 255}
+                    invalid={!!errors[name]}
+                    aria-describedby={
+                        errors[name] ? `filter-${name}-error` : undefined
+                    }
+                    onChange={(event) => update(name, event.target.value)}
+                />
+            </FormField>
+        );
+    }
+
+    function renderSelectFilter({
+        name,
+        label,
+        options,
+    }: (typeof selectFilterFields)[number]): React.JSX.Element {
+        return (
+            <FormField
+                key={name}
+                id={`filter-${name}`}
+                label={label}
+                error={errors[name]}
+                className={filterClassName(name)}
+            >
+                <SelectField
+                    id={`filter-${name}`}
+                    name={name}
+                    label={label}
+                    value={values[name]}
+                    placeholder={`${label} (Todos)`}
+                    options={[...options]}
+                    aria-invalid={!!errors[name]}
+                    aria-describedby={
+                        errors[name] ? `filter-${name}-error` : undefined
+                    }
+                    onChange={(event) => update(name, event.target.value)}
+                />
+            </FormField>
+        );
+    }
     useEffect(
         () => () => {
             cancel.current?.();
@@ -89,6 +187,7 @@ export default function StudentFilters({
     }
     return (
         <FormLayout
+            className="studentsPage__filterForm"
             aria-label="Filtrar alunos"
             aria-busy={processing}
             onSubmit={(event) => {
@@ -102,101 +201,19 @@ export default function StudentFilters({
                 </div>
             ) : null}
             <div className="studentsPage__filters">
-                {(
-                    [
-                        ["name", "Nome do aluno"],
-                        ["phone", "Telefone"],
-                        ["email", "E-mail"],
-                    ] as const
-                ).map(([name, label]) => (
-                    <FormField
-                        key={name}
-                        id={`filter-${name}`}
-                        label={label}
-                        error={errors[name]}
-                        className={filterClassName(name)}
-                    >
-                        <TextInput
-                            id={`filter-${name}`}
-                            name={name}
-                            value={values[name]}
-                            placeholder={`${label}...`}
-                            maxLength={name === "phone" ? 15 : 255}
-                            invalid={!!errors[name]}
-                            aria-describedby={
-                                errors[name]
-                                    ? `filter-${name}-error`
-                                    : undefined
-                            }
-                            onChange={(event) =>
-                                update(name, event.target.value)
-                            }
-                        />
-                    </FormField>
-                ))}
-                {(
-                    [
-                        {
-                            name: "status",
-                            label: "Status",
-                            options: Object.entries(studentStatuses).map(
-                                ([value, label]) => ({ value, label }),
-                            ),
-                        },
-                        {
-                            name: "course_id",
-                            label: "Curso",
-                            options: [
-                                { value: "0", label: "Sem curso" },
-                                ...courses.map((item) => ({
-                                    value: String(item.id),
-                                    label: item.name,
-                                })),
-                            ],
-                        },
-                        {
-                            name: "deficiency_id",
-                            label: "Perfil de atendimento",
-                            options: [
-                                {
-                                    value: "0",
-                                    label: "Sem perfil de atendimento",
-                                },
-                                ...deficiencies.map((item) => ({
-                                    value: String(item.id),
-                                    label: item.name,
-                                })),
-                            ],
-                        },
-                    ] as const
-                ).map(({ name, label, options }) => (
-                    <FormField
-                        key={name}
-                        id={`filter-${name}`}
-                        label={label}
-                        error={errors[name]}
-                        className={filterClassName(name)}
-                    >
-                        <SelectField
-                            id={`filter-${name}`}
-                            name={name}
-                            label={label}
-                            value={values[name]}
-                            placeholder={`${label} (Todos)`}
-                            options={[...options]}
-                            aria-invalid={!!errors[name]}
-                            aria-describedby={
-                                errors[name]
-                                    ? `filter-${name}-error`
-                                    : undefined
-                            }
-                            onChange={(event) =>
-                                update(name, event.target.value)
-                            }
-                        />
-                    </FormField>
-                ))}
+                {textFilterFields.slice(0, 1).map(renderTextFilter)}
+                {selectFilterFields.slice(0, 2).map(renderSelectFilter)}
             </div>
+            <TableListMoreFilters
+                active={Boolean(
+                    values.phone || values.email || values.deficiency_id,
+                )}
+            >
+                <div className="studentsPage__filters">
+                    {textFilterFields.slice(1).map(renderTextFilter)}
+                    {selectFilterFields.slice(2).map(renderSelectFilter)}
+                </div>
+            </TableListMoreFilters>
             <TableListFilterActions
                 status={processing ? "Carregando alunos..." : undefined}
             >

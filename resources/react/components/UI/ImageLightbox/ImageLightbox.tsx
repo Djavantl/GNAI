@@ -1,13 +1,18 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { loadExternalScript } from "@/utils/loadExternalScript";
-import type { LightboxRuntime } from "./ImageLightbox.types";
+import type {
+  LightboxPopupContext,
+  LightboxRuntime,
+} from "./ImageLightbox.types";
 import "./ImageLightbox.plugin.css";
 export default function ImageLightbox({
   children,
   className,
+  deduplicateByHref = false,
 }: {
   children: ReactNode;
   className?: string;
+  deduplicateByHref?: boolean;
 }): React.JSX.Element {
   const host = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -31,6 +36,23 @@ export default function ImageLightbox({
           '<button title="Fechar (Esc)" type="button" class="mfp-close">×</button>',
         tLoading: "Carregando...",
         image: { tError: "Não foi possível carregar a imagem." },
+        callbacks: {
+          beforeOpen(this: LightboxPopupContext): void {
+            if (!deduplicateByHref) return;
+            const selectedHref = this.st.el?.[0]?.getAttribute("href");
+            const uniqueHrefs = new Set<string>();
+            this.items = this.items.filter((item) => {
+              const href = item.getAttribute("href");
+              if (!href || uniqueHrefs.has(href)) return false;
+              uniqueHrefs.add(href);
+              return true;
+            });
+            const selectedIndex = this.items.findIndex(
+              (item) => item.getAttribute("href") === selectedHref,
+            );
+            this.index = Math.max(0, selectedIndex);
+          },
+        },
         gallery: {
           enabled: true,
           navigateByImgClick: true,
@@ -56,7 +78,7 @@ export default function ImageLightbox({
       disposed = true;
       cleanup?.();
     };
-  }, []);
+  }, [deduplicateByHref]);
   return (
     <div ref={host} className={className}>
       {children}

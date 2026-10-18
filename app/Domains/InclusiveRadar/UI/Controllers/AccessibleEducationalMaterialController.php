@@ -19,7 +19,9 @@ use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibilityFeature;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\InspectionEvidence;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,23 +41,40 @@ final class AccessibleEducationalMaterialController
             [
                 'materials' => $materials,
                 'accessibilityFeatureOptions' => $this->accessibilityFeatureOptions(),
+                'filters' => $request->only([
+                    'name',
+                    'is_digital',
+                    'accessibility_feature_id',
+                    'is_active',
+                    'available',
+                    'per_page',
+                ]),
+                'can' => [
+                    'create' => $request->user()?->can('material.create') ?? false,
+                    'show' => $request->user()?->can('material.show') ?? false,
+                    'destroy' => $request->user()?->can('material.destroy') ?? false,
+                ],
             ],
         );
     }
 
-    public function create(AccessibleEducationalMaterialFormQuery $form): InertiaResponse
+    public function create(AccessibleEducationalMaterialFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'InclusiveRadar/AccessibleEducationalMaterials/Create',
-            $form->forCreation(),
+            $form->forCreation() + [
+                'can' => ['submit' => $request->user()?->can('material.store') ?? false],
+            ],
         );
     }
 
-    public function clone(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form): InertiaResponse
+    public function clone(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'InclusiveRadar/AccessibleEducationalMaterials/Create',
-            $form->forCloning($material),
+            $form->forCloning($material) + [
+                'can' => ['submit' => $request->user()?->can('material.store') ?? false],
+            ],
         );
     }
 
@@ -77,7 +96,7 @@ final class AccessibleEducationalMaterialController
             ->with('success', 'Material criado com sucesso!');
     }
 
-    public function show(AccessibleEducationalMaterial $material, ShowAccessibleEducationalMaterialQuery $query): InertiaResponse
+    public function show(AccessibleEducationalMaterial $material, ShowAccessibleEducationalMaterialQuery $query, Request $request): InertiaResponse
     {
         $material = $query->execute($material);
 
@@ -85,15 +104,37 @@ final class AccessibleEducationalMaterialController
             'material' => $material,
             'deficiencies' => $material->deficiencies,
             'features' => $material->accessibilityFeatures,
-            'inspections' => $material->inspections,
+            'display' => [
+                'notesHtml' => RichTextSanitizer::sanitize((string) ($material->notes ?: '---')),
+                'statusLabel' => $material->status?->label() ?? '---',
+                'inspectionDetails' => $material->inspections->map(fn ($inspection) => [
+                    'id' => $inspection->id,
+                    'date' => $inspection->inspection_date?->format('d/m/Y') ?? '---',
+                    'type' => $inspection->type?->label() ?? '---',
+                    'state' => $inspection->state?->label() ?? '---',
+                    'descriptionHtml' => $inspection->description
+                        ? RichTextSanitizer::sanitize((string) $inspection->description)
+                        : null,
+                    'evidenceCount' => $inspection->evidences->count(),
+                ])->all(),
+            ],
+            'can' => [
+                'clone' => $request->user()?->can('material.create') ?? false,
+                'edit' => $request->user()?->can('material.edit') ?? false,
+                'inspection' => $request->user()?->can('material.inspection.show') ?? false,
+                'pdf' => $request->user()?->can('material.pdf') ?? false,
+                'destroy' => $request->user()?->can('material.destroy') ?? false,
+            ],
         ]);
     }
 
-    public function edit(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form): InertiaResponse
+    public function edit(AccessibleEducationalMaterial $material, AccessibleEducationalMaterialFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'InclusiveRadar/AccessibleEducationalMaterials/Edit',
-            $form->forUpdate($material),
+            $form->forUpdate($material) + [
+                'can' => ['submit' => $request->user()?->can('material.update') ?? false],
+            ],
         );
     }
 
@@ -150,8 +191,24 @@ final class AccessibleEducationalMaterialController
         );
 
         return Inertia::render('InclusiveRadar/AccessibleEducationalMaterials/Inspections/Show', [
-            'material' => $material,
-            'inspection' => $scopedInspection,
+            'material' => $material->only(['id', 'name']),
+            'inspection' => [
+                'date' => $scopedInspection->inspection_date?->format('d/m/Y') ?? '---',
+                'stateLabel' => $scopedInspection->state?->label() ?? '---',
+                'typeLabel' => $scopedInspection->type?->label() ?? '---',
+                'descriptionHtml' => RichTextSanitizer::sanitize(
+                    (string) ($scopedInspection->description ?: 'Nenhum parecer técnico registrado.'),
+                ),
+                'evidences' => $scopedInspection->evidences->map(
+                    static fn (InspectionEvidence $evidence): array => [
+                        'id' => $evidence->id,
+                        'name' => $evidence->displayName(),
+                        'url' => '/storage/'.ltrim((string) $evidence->path, '/'),
+                        'isImage' => $evidence->isImage(),
+                        'iconClass' => $evidence->iconClass(),
+                    ],
+                )->all(),
+            ],
         ]);
     }
 

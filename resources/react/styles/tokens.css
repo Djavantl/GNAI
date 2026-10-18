@@ -19,7 +19,7 @@
   --ui-color-table-header: #f6f1ff;
   --ui-color-border-soft: #edf0f0;
   --ui-color-border-subtle: rgba(0, 0, 0, 0.1);
-  --ui-color-list-card-border: #ced4da;
+  --ui-color-card-border: #ced4da;
   --ui-color-shadow: rgba(0, 0, 0, 0.15);
 
   --ui-color-custom: #5fbeaa;
@@ -45,6 +45,11 @@
   --ui-color-dark-red: #dc3545;
   --ui-color-dark-red-hover: #b52a37;
   --ui-color-warning: #ffbd4a;
+
+  --ui-list-control-height: 30px;
+  --ui-list-control-padding-block: 4px;
+  --ui-list-control-padding-inline: 10px;
+  --ui-list-control-font-size: 13px;
 
   --ui-sidebar-bg: #1d1c20;
   --ui-sidebar-text: #ffffff;

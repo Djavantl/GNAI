@@ -4,9 +4,9 @@ import TableActions from '@/components/Tables/TableActions/TableActions';
 import {
   TableListEmpty,
   TableListFooter,
-  TableListProgress,
   TableListScroll,
   TableListTable,
+  type TableListColumn,
 } from '@/components/Tables/TableList/TableList';
 import Button from '@/components/UI/Button/Button';
 import TableLabel from '@/components/UI/TableLabel/TableLabel';
@@ -14,7 +14,27 @@ import InlineAlert from '@/components/UI/InlineAlert/InlineAlert';
 import type { StudentIndexProps } from './Students.types';
 import { dateLabel, studentsBase, studentUrl } from './Students.utils';
 import { useStudentRequest } from './useStudentRequest';
-import './StudentList.css';
+
+const studentColumns: TableListColumn[] = [
+  {
+    id: 'name',
+    label: 'Nome',
+    width: '30%',
+    minWidth: 120,
+    fixed: 'start',
+  },
+  { id: 'phone', label: 'Telefone', width: '15%', minWidth: 72 },
+  { id: 'email', label: 'E-mail', width: '25%', minWidth: 100 },
+  { id: 'status', label: 'Status', width: '10%', minWidth: 72 },
+  { id: 'entry', label: 'Ingresso', width: '10%', minWidth: 72 },
+  {
+    id: 'actions',
+    label: 'Ações',
+    width: '10%',
+    minWidth: 76,
+    fixed: 'end',
+  },
+];
 
 export default function StudentList({
   students,
@@ -43,73 +63,64 @@ export default function StudentList({
           <InlineAlert variant="danger">{request.error}</InlineAlert>
         </div>
       ) : null}
-      <TableListProgress>
-        {processing
-          ? 'Carregando página...'
-          : `${students.total} aluno(s) encontrado(s)`}
-      </TableListProgress>
       <TableListScroll aria-label="Tabela de alunos">
-        <TableListTable className="studentsPage__indexTable">
-          <thead>
-            <tr>
-              <th scope="col">Nome</th>
-              <th scope="col">Telefone</th>
-              <th scope="col">E-mail</th>
-              <th scope="col">Status</th>
-              <th scope="col">Ingresso</th>
-              <th scope="col">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {students.data.length ? (
-              students.data.map((student) => (
-                <tr key={student.id}>
-                  <td>
-                    <div className="studentsPage__identity">
-                      <img
-                        src={student.person.photo_url}
-                        alt={`Foto de ${student.person.name}`}
-                        className="studentsPage__avatar"
+        <TableListTable
+          className="studentsPage__indexTable"
+          columns={studentColumns}
+          summary={
+            processing
+              ? 'Carregando página...'
+              : `${students.from ?? 0}–${students.to ?? 0} de ${students.total} registros`
+          }
+        >
+          {students.data.length ? (
+            students.data.map((student) => (
+              <tr key={student.id}>
+                <td>
+                  <div className="studentsPage__identity">
+                    <img
+                      src={student.person.photo_url}
+                      alt={`Foto de ${student.person.name}`}
+                      className="studentsPage__avatar"
+                    />
+                    <strong>{student.person.name}</strong>
+                  </div>
+                </td>
+                <td>{student.person.phone || 'Não informado'}</td>
+                <td>{student.person.email || 'Não informado'}</td>
+                <td>
+                  <TableLabel
+                    tone={statusColors[student.status] ?? 'inverse'}
+                  >
+                    {studentStatuses[student.status] ?? student.status}
+                  </TableLabel>
+                </td>
+                <td>{dateLabel(student.entry_date)}</td>
+                <td>
+                  {permissions['student.view'] ? (
+                    <TableActions>
+                      <Button
+                        href={studentUrl(student.id)}
+                        size="sm"
+                        tone="dark-blue"
+                        iconOnly
+                        leftIconClass="fa fa-eye"
+                        aria-label={`Ver ficha de ${student.person.name}`}
                       />
-                      <strong>{student.person.name}</strong>
-                    </div>
-                  </td>
-                  <td>{student.person.phone || 'Não informado'}</td>
-                  <td>{student.person.email || 'Não informado'}</td>
-                  <td>
-                    <TableLabel
-                      tone={statusColors[student.status] ?? 'inverse'}
-                    >
-                      {studentStatuses[student.status] ?? student.status}
-                    </TableLabel>
-                  </td>
-                  <td>{dateLabel(student.entry_date)}</td>
-                  <td>
-                    {permissions['student.view'] ? (
-                      <TableActions>
-                        <Button
-                          href={studentUrl(student.id)}
-                          size="sm"
-                          tone="dark-blue"
-                          iconOnly
-                          leftIconClass="fa fa-eye"
-                          aria-label={`Ver ficha de ${student.person.name}`}
-                        />
-                      </TableActions>
-                    ) : (
-                      'Nenhuma ação'
-                    )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <TableListEmpty colSpan={6}>
-                  Nenhum aluno encontrado.
-                </TableListEmpty>
+                    </TableActions>
+                  ) : (
+                    'Nenhuma ação'
+                  )}
+                </td>
               </tr>
-            )}
-          </tbody>
+            ))
+          ) : (
+            <tr>
+              <TableListEmpty colSpan={6}>
+                Nenhum aluno encontrado.
+              </TableListEmpty>
+            </tr>
+          )}
         </TableListTable>
       </TableListScroll>
       <TableListFooter

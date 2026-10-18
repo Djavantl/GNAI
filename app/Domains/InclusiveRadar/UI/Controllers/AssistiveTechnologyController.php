@@ -18,6 +18,7 @@ use App\Domains\InclusiveRadar\Application\Queries\AssistiveTechnologies\ShowAss
 use App\Domains\InclusiveRadar\Domain\Exceptions\AssetCodeAlreadyInUse;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\InspectionEvidence;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -186,8 +187,24 @@ final class AssistiveTechnologyController
         return Inertia::render(
             'InclusiveRadar/AssistiveTechnologies/Inspections/Show',
             [
-                'assistiveTechnology' => $assistiveTechnology,
-                'inspection' => $scopedInspection,
+                'assistiveTechnology' => $assistiveTechnology->only(['id', 'name']),
+                'inspection' => [
+                    'date' => $scopedInspection->inspection_date?->format('d/m/Y') ?? '---',
+                    'stateLabel' => $scopedInspection->state?->label() ?? '---',
+                    'typeLabel' => $scopedInspection->type?->label() ?? '---',
+                    'descriptionHtml' => RichTextSanitizer::sanitize(
+                        (string) ($scopedInspection->description ?: 'Nenhum parecer técnico registrado.'),
+                    ),
+                    'evidences' => $scopedInspection->evidences->map(
+                        static fn (InspectionEvidence $evidence): array => [
+                            'id' => $evidence->id,
+                            'name' => $evidence->displayName(),
+                            'url' => '/storage/'.ltrim((string) $evidence->path, '/'),
+                            'isImage' => $evidence->isImage(),
+                            'iconClass' => $evidence->iconClass(),
+                        ],
+                    )->all(),
+                ],
             ],
         );
     }

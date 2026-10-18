@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "@inertiajs/react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
@@ -30,12 +30,11 @@ type FormData = {
     photo: File | null;
     remove_photo: boolean;
 };
-type Props = StudentFormOptions & {
-    onProcessingChange?: (processing: boolean) => void;
-} & ({ mode: "create"; student?: never } | { mode: "edit"; student: Student });
+type Props = StudentFormOptions &
+    ({ mode: "create"; student?: never } | { mode: "edit"; student: Student });
 
 export default function StudentForm(props: Props): React.JSX.Element {
-    const { student, genders, studentStatuses, onProcessingChange } = props;
+    const { student, genders, studentStatuses } = props;
     const person = student?.person;
     const form = useForm<FormData>({
         name: person?.name ?? "",
@@ -56,9 +55,6 @@ export default function StudentForm(props: Props): React.JSX.Element {
     const [photoValidating, setPhotoValidating] = useState(false);
     const element = useRef<HTMLFormElement>(null);
     const request = useStudentRequest();
-    useEffect(() => {
-        onProcessingChange?.(form.processing);
-    }, [form.processing, onProcessingChange]);
     const cancelUrl = student ? studentUrl(student.id) : studentsBase;
     const input = (
         name: "name" | "document" | "email" | "phone" | "registration",
@@ -387,19 +383,22 @@ export default function StudentForm(props: Props): React.JSX.Element {
                 <Button
                     href={cancelUrl}
                     tone="cancel"
+                    iconOnly
+                    aria-label="Cancelar e voltar"
                     disabled={form.processing}
-                >
-                    Cancelar
-                </Button>
+                />
                 <Button
                     type="submit"
                     tone="save"
+                    leftIconClass="fa fa-check"
+                    iconOnly
+                    aria-label={
+                        form.processing ? "Salvando aluno" : "Salvar aluno"
+                    }
                     disabled={
                         form.processing || editorFailed || photoValidating
                     }
-                >
-                    {form.processing ? "Salvando..." : "Salvar"}
-                </Button>
+                />
             </FormActions>
         </FormLayout>
     );

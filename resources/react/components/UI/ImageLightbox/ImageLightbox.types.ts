@@ -4,6 +4,13 @@ export interface LightboxItem {
   off: (event: string) => LightboxItem;
   removeData: (key: string) => LightboxItem;
 }
+export interface LightboxPopupContext {
+  index: number;
+  items: HTMLElement[];
+  st: {
+    el?: LightboxItem;
+  };
+}
 export interface LightboxRuntime {
   (items: HTMLElement[] | Element): LightboxItem;
   magnificPopup: {

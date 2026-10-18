@@ -1,176 +1,83 @@
-import { useEffect } from 'react';
-import { appPageTransitionReadyEvent, appPageTransitionStartEvent } from '@/utils/appPageTransition';
+import { router } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
 import './AppLoader.css';
 
-const loaderFadeDelayMs = 300;
-const overlayFadeDelayMs = 600;
-const overlayFadeMs = 600;
-const loaderScrollLockClass = 'app-loader-scroll-lock';
-const initialLoaderId = 'initial-app-loader';
-const routeLoaderId = 'route-app-loader';
+const fadeDurationMs = 180;
+const scrollLockClass = 'app-loader-scroll-lock';
 
-declare global {
-  interface Window {
-    __initialAppLoader?: {
-      markContentReady: () => void;
-      complete: () => void;
-    };
-  }
-}
+type LoaderPhase = 'hidden' | 'visible' | 'closing';
 
-function createLoaderElement(id: string = initialLoaderId): HTMLDivElement {
-  const overlay = document.createElement('div');
-  overlay.id = id;
-  overlay.className = 'animationload initial-app-loader';
-  overlay.setAttribute('aria-hidden', 'true');
+export default function AppLoader(): React.JSX.Element | null {
+  const [phase, setPhase] = useState<LoaderPhase>('hidden');
+  const activeVisitId = useRef<string | null>(null);
+  const closeTimer = useRef<number | null>(null);
 
-  const loader = document.createElement('div');
-  loader.className = 'loader';
-  overlay.appendChild(loader);
-  document.body.prepend(overlay);
-
-  return overlay;
-}
-
-function addScrollLock(): void {
-  document.documentElement.classList.add(loaderScrollLockClass);
-  document.body.classList.add(loaderScrollLockClass);
-}
-
-function removeScrollLock(): void {
-  if (document.getElementById(initialLoaderId) || document.getElementById(routeLoaderId)) return;
-  document.documentElement.classList.remove(loaderScrollLockClass);
-  document.body.classList.remove(loaderScrollLockClass);
-}
-
-export default function AppLoader(): null {
   useEffect(() => {
-    let routeOverlay: HTMLDivElement | null = null;
-    let routeStartedAt = 0;
-    let routeReady = false;
-    let routeClosing = false;
-    let routeScrollLocked = false;
-    let initialScrollLocked = false;
-    let fallbackInitialOverlay: HTMLDivElement | null = null;
-    const routeTimers: number[] = [];
-    const initialTimers: number[] = [];
-
-    function clearTimers(timers: number[]): void {
-      while (timers.length > 0) {
-        const timer = timers.pop();
-
-        if (timer !== undefined) {
-          window.clearTimeout(timer);
-        }
-      }
-    }
-
-    function completeRouteLoader(): void {
-      const shouldRemoveScrollLock = routeScrollLocked;
-      routeOverlay?.remove();
-      routeOverlay = null;
-      routeReady = false;
-      routeClosing = false;
-      routeScrollLocked = false;
-      clearTimers(routeTimers);
-
-      if (shouldRemoveScrollLock) {
-        removeScrollLock();
-      }
-    }
-
-    function closeRouteLoaderWhenReady(): void {
-      if (!routeOverlay || !routeReady || routeClosing) {
+    function clearCloseTimer(): void {
+      if (closeTimer.current === null) {
         return;
       }
 
-      routeClosing = true;
-      const closingOverlay = routeOverlay;
-      void document.fonts.ready.then(() => {
-        if (routeOverlay !== closingOverlay) return;
-        const elapsed = performance.now() - routeStartedAt;
-        const fadeDelay = Math.max(0, overlayFadeDelayMs - elapsed);
-
-        routeTimers.push(window.setTimeout(() => {
-          closingOverlay.classList.add('appLoader--hidden');
-          routeTimers.push(window.setTimeout(completeRouteLoader, overlayFadeMs));
-        }, fadeDelay));
-      });
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
     }
 
-    function startRouteLoader(): void {
-      completeRouteLoader();
-
-      routeOverlay = createLoaderElement(routeLoaderId);
-      routeStartedAt = performance.now();
-      routeReady = false;
-      routeClosing = false;
-      addScrollLock();
-      routeScrollLocked = true;
-      routeOverlay.classList.add('appLoader', 'appLoader--route');
-
-      const loader = routeOverlay.querySelector('.loader');
-      routeTimers.push(window.setTimeout(() => {
-        loader?.classList.add('appLoader__loader--hidden');
-      }, loaderFadeDelayMs));
+    function unlockPage(): void {
+      document.documentElement.classList.remove(scrollLockClass);
+      document.body.classList.remove(scrollLockClass);
     }
 
-    function markRouteReady(): void {
-      routeReady = true;
-      closeRouteLoaderWhenReady();
-    }
+    const stopStartListener = router.on('start', (event) => {
+      const { visit } = event.detail;
+      const changesPage =
+        visit.method !== 'get' ||
+        visit.url.pathname !== window.location.pathname;
 
-    if (window.__initialAppLoader) {
-      window.__initialAppLoader.markContentReady();
-    } else {
-      const overlay = createLoaderElement(initialLoaderId);
-      fallbackInitialOverlay = overlay;
-      const loader = overlay.querySelector('.loader');
-
-      addScrollLock();
-      initialScrollLocked = true;
-      overlay.classList.add('appLoader');
-      const startedAt = performance.now();
-
-      function completeInitialLoader(): void {
-        overlay.remove();
-        fallbackInitialOverlay = null;
-        if (initialScrollLocked) {
-          removeScrollLock();
-          initialScrollLocked = false;
-        }
+      if (visit.prefetch || visit.async || !changesPage) {
+        return;
       }
 
-      initialTimers.push(window.setTimeout(() => {
-        loader?.classList.add('appLoader__loader--hidden');
-      }, loaderFadeDelayMs));
+      clearCloseTimer();
+      activeVisitId.current = visit.id;
+      document.documentElement.classList.add(scrollLockClass);
+      document.body.classList.add(scrollLockClass);
+      setPhase('visible');
+    });
 
-      void document.fonts.ready.then(() => {
-        if (!initialScrollLocked) return;
-        const fadeDelay = Math.max(0, overlayFadeDelayMs - (performance.now() - startedAt));
-        initialTimers.push(window.setTimeout(() => {
-          overlay.classList.add('appLoader--hidden');
-          initialTimers.push(window.setTimeout(completeInitialLoader, overlayFadeMs));
-        }, fadeDelay));
-      });
-    }
+    const stopFinishListener = router.on('finish', (event) => {
+      if (event.detail.visit.id !== activeVisitId.current) {
+        return;
+      }
 
-    window.addEventListener(appPageTransitionStartEvent, startRouteLoader);
-    window.addEventListener(appPageTransitionReadyEvent, markRouteReady);
+      activeVisitId.current = null;
+      setPhase('closing');
+      closeTimer.current = window.setTimeout(() => {
+        setPhase('hidden');
+        unlockPage();
+        closeTimer.current = null;
+      }, fadeDurationMs);
+    });
 
     return () => {
-      window.removeEventListener(appPageTransitionStartEvent, startRouteLoader);
-      window.removeEventListener(appPageTransitionReadyEvent, markRouteReady);
-      clearTimers(initialTimers);
-      completeRouteLoader();
-
-      if (initialScrollLocked) {
-        fallbackInitialOverlay?.remove();
-        removeScrollLock();
-        initialScrollLocked = false;
-      }
+      stopStartListener();
+      stopFinishListener();
+      clearCloseTimer();
+      unlockPage();
     };
   }, []);
 
-  return null;
+  if (phase === 'hidden') {
+    return null;
+  }
+
+  return (
+    <div
+      className={`animationload appLoader${phase === 'closing' ? ' appLoader--hidden' : ''}`}
+      role="status"
+      aria-live="polite"
+      aria-label="Carregando página"
+    >
+      <div className="loader" aria-hidden="true" />
+    </div>
+  );
 }

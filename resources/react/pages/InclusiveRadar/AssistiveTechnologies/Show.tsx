@@ -6,12 +6,12 @@ import FormActions from "@/components/Forms/FormActions/FormActions";
 import FormSection from "@/components/Forms/FormSection/FormSection";
 import PageBreadcrumb from "@/components/Navigation/PageBreadcrumb/PageBreadcrumb";
 import PageTitle from "@/components/Navigation/PageTitle/PageTitle";
-import FlashNotifications from "@/components/UI/FlashNotifications/FlashNotifications";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import InspectionHistory, { type InspectionDetail } from "./InspectionHistory";
+import InspectionHistoryTable from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable";
+import type { InspectionHistoryItem } from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable.types";
 import "./Show.css";
 
 type Technology = {
@@ -31,7 +31,7 @@ type Props = {
     display: {
         notesHtml: string;
         statusLabel: string;
-        inspectionDetails: InspectionDetail[];
+        inspectionDetails: InspectionHistoryItem[];
     };
     can: {
         clone: boolean;
@@ -117,36 +117,7 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
             <PageTitle
                 title="Detalhes da Tecnologia Assistiva"
                 subtitle="Visualize as informações cadastrais, a disponibilidade e o histórico de vistorias do recurso."
-                actions={
-                    <div
-                        className="technologyShow__actions"
-                        aria-label="Ações principais"
-                    >
-                        {can.clone && (
-                            <Button
-                                href={`${itemUrl}/clone`}
-                                tone="primary"
-                                leftIconClass="fa fa-copy"
-                            >
-                                Clonar
-                            </Button>
-                        )}
-                        {can.edit && (
-                            <Button
-                                href={`${itemUrl}/edit`}
-                                tone="warning"
-                                leftIconClass="fa fa-edit"
-                            >
-                                Editar
-                            </Button>
-                        )}
-                        <Button href={base} tone="cancel">
-                            Voltar
-                        </Button>
-                    </div>
-                }
             />
-            <FlashNotifications />
             {failure && !deleteModalOpen ? (
                 <div role="alert">
                     <InlineAlert variant="danger">{failure}</InlineAlert>
@@ -240,45 +211,64 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                     </dl>
                 </FormSection>
                 {can.inspection && (
-                    <InspectionHistory
-                        technologyId={technology.id}
+                    <InspectionHistoryTable
+                        id="technology-inspections"
+                        baseUrl={itemUrl}
                         inspections={display.inspectionDetails}
                     />
                 )}
             </CardBox>
-            <FormActions>
-                {can.pdf ? (
+            <FormActions
+                secondary={can.pdf ? (
                     <Button
                         href={`${itemUrl}/pdf`}
                         target="_blank"
                         rel="noopener noreferrer"
                         tone="dark-red"
-                        labelIconClass="fa fa-file-pdf-o"
-                        aria-label="Exportar em PDF"
-                    >
-                        Exportar em PDF
-                    </Button>
-                ) : (
-                    <span />
-                )}
-                <div className="technologyShow__actions">
-                    {can.destroy && (
-                        <Button
-                            tone="dark-red"
-                            leftIconClass="fa fa-trash-o"
-                            disabled={deleting}
-                            onClick={() => {
-                                setFailure("");
-                                setDeleteModalOpen(true);
-                            }}
-                        >
-                            Excluir
-                        </Button>
-                    )}
-                    <Button href={base} tone="cancel" disabled={deleting}>
-                        Voltar
-                    </Button>
-                </div>
+                        leftIconClass="fa fa-file-pdf-o"
+                        iconOnly
+                        aria-label="Exportar tecnologia assistiva em PDF"
+                    />
+                ) : undefined}
+            >
+                <Button
+                    href={base}
+                    tone="cancel"
+                    iconOnly
+                    aria-label="Voltar para tecnologias assistivas"
+                    disabled={deleting}
+                />
+                {can.clone ? (
+                    <Button
+                        href={`${itemUrl}/clone`}
+                        tone="primary"
+                        leftIconClass="fa fa-copy"
+                        iconOnly
+                        aria-label="Clonar tecnologia assistiva"
+                    />
+                ) : null}
+                {can.edit ? (
+                    <Button
+                        href={`${itemUrl}/edit`}
+                        tone="warning"
+                        leftIconClass="fa fa-pencil"
+                        iconOnly
+                        aria-label="Editar tecnologia assistiva"
+                    />
+                ) : null}
+                {can.destroy ? (
+                    <Button
+                        tone="dark-red"
+                        leftIconClass="fa fa-trash-o"
+                        iconOnly
+                        aria-label="Excluir tecnologia assistiva"
+                        disabled={deleting}
+                        onClick={() => {
+                            setFailure("");
+                            setDeleteModalOpen(true);
+                        }}
+                    />
+                ) : null}
             </FormActions>
             <ConfirmActionModal
                 open={deleteModalOpen}

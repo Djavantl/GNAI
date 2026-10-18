@@ -1,9 +1,12 @@
 import type { HTMLAttributes, ReactNode, TdHTMLAttributes } from 'react';
 import Pagination from '@/components/Navigation/Pagination/Pagination';
-import Table, { type TableProps } from '@/components/Tables/Table/Table';
 import Button from '@/components/UI/Button/Button';
 import { joinClassNames } from '@/utils/joinClassNames';
 import './TableList.css';
+
+export { default as TableListTable } from './TableListTable';
+export { default as TableListMoreFilters } from './TableListMoreFilters';
+export type { TableListColumn } from './TableList.types';
 
 export function TableListCard({
   className,
@@ -72,22 +75,6 @@ export function TableListClearButton({
   );
 }
 
-export function TableListProgress({
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement>): React.JSX.Element {
-  return (
-    <div
-      role="status"
-      className={joinClassNames('tableListProgress', className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
 export function TableListScroll({
   className,
   children,
@@ -95,29 +82,12 @@ export function TableListScroll({
 }: HTMLAttributes<HTMLDivElement>): React.JSX.Element {
   return (
     <div
-      tabIndex={0}
       role="region"
       className={joinClassNames('tableListScroll', className)}
       {...props}
     >
       {children}
     </div>
-  );
-}
-
-export function TableListTable({
-  className,
-  children,
-  ...props
-}: TableProps): React.JSX.Element {
-  return (
-    <Table
-      condensed
-      className={joinClassNames('tableListTable', className)}
-      {...props}
-    >
-      {children}
-    </Table>
   );
 }
 

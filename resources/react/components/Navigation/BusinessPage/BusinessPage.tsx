@@ -4,7 +4,6 @@ import PageBreadcrumb, {
   type PageBreadcrumbItem,
 } from '@/components/Navigation/PageBreadcrumb/PageBreadcrumb';
 import PageTitle from '@/components/Navigation/PageTitle/PageTitle';
-import FlashNotifications from '@/components/UI/FlashNotifications/FlashNotifications';
 import InlineAlert from '@/components/UI/InlineAlert/InlineAlert';
 import { joinClassNames } from '@/utils/joinClassNames';
 import './BusinessPage.css';
@@ -40,7 +39,6 @@ export default function BusinessPage({
         actions={actions}
         className={pageTitleClassName}
       />
-      <FlashNotifications />
       {error ? (
         <div role="alert">
           <InlineAlert variant="danger">{error}</InlineAlert>

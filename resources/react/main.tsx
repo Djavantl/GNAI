@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import AppLayout from '@/components/Navigation/AppLayout/AppLayout';
+import AppLoader from '@/components/UI/AppLoader/AppLoader';
 import type { ComponentType, ReactNode } from 'react';
 import './styles/reset.css';
 import './styles/tokens.css';
@@ -22,6 +23,11 @@ void createInertiaApp({
     return page;
   },
   setup({ el, App, props }) {
-    createRoot(el).render(<App {...props} />);
+    createRoot(el).render(
+      <>
+        <AppLoader />
+        <App {...props} />
+      </>,
+    );
   },
 });

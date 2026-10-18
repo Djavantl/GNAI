@@ -1,4 +1,5 @@
 import './Button.css';
+import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 import { joinClassNames } from '@/utils/joinClassNames';
 
@@ -153,7 +154,7 @@ export default function Button(props: ButtonProps): React.JSX.Element {
 
   if ('href' in props && props.href !== undefined) {
     return (
-      <a
+      <Link
         href={props.href}
         target={props.target}
         rel={props.rel}
@@ -182,7 +183,7 @@ export default function Button(props: ButtonProps): React.JSX.Element {
         onPointerLeave={() => setPressed(false)}
       >
         {content}
-      </a>
+      </Link>
     );
   }
 

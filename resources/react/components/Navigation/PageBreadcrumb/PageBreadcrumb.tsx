@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import './PageBreadcrumb.css';
 
 export interface PageBreadcrumbItem {
@@ -20,12 +21,12 @@ export default function PageBreadcrumb({ items }: PageBreadcrumbProps): React.JS
             {isActive || !item.href ? (
               item.label
             ) : (
-              <a
+              <Link
                 href={item.href}
                 onClick={item.href === '#' ? (event) => event.preventDefault() : undefined}
               >
                 {item.label}
-              </a>
+              </Link>
             )}
           </li>
         );

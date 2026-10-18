@@ -11,7 +11,6 @@ import { hasActiveDescendant, isSectionTitle } from './SidebarPrimary.helpers';
 import SidebarMenu from './SidebarMenu';
 import SidebarCollapsedFlyout from './SidebarCollapsedFlyout';
 import SidebarScrollbar from './SidebarScrollbar';
-import { startAppPageTransition } from '@/utils/appPageTransition';
 
 interface SidebarPrimaryProps {
   collapsed: boolean;
@@ -186,9 +185,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
     const targetUrl = new URL(event.currentTarget.href);
 
     if (targetUrl.origin !== window.location.origin) {
-      window.setTimeout(() => {
-        window.location.href = targetUrl.href;
-      }, 180);
+      window.location.href = targetUrl.href;
       return;
     }
 
@@ -199,11 +196,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
       return;
     }
 
-    startAppPageTransition();
-
-    window.setTimeout(() => {
-      router.visit(nextPath);
-    }, 180);
+    router.visit(nextPath);
   }
 
   function clearCollapsedFlyoutHideTimer(): void {

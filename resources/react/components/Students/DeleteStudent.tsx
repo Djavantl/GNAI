@@ -8,9 +8,11 @@ import { useStudentRequest } from './useStudentRequest';
 export default function DeleteStudent({
   id,
   name,
+  iconOnly = false,
 }: {
   id: number;
   name: string;
+  iconOnly?: boolean;
 }): React.JSX.Element {
   const [open, setOpen] = useState(false);
   const form = useForm({});
@@ -40,9 +42,12 @@ export default function DeleteStudent({
     <>
       <Button
         tone="dark-red"
+        leftIconClass="fa fa-trash-o"
+        iconOnly={iconOnly}
+        aria-label={iconOnly ? "Excluir aluno" : undefined}
         onClick={() => setOpen(true)}
       >
-        Excluir aluno
+        {iconOnly ? null : "Excluir aluno"}
       </Button>
       <ConfirmActionModal
         open={open}

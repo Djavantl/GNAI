@@ -4,6 +4,11 @@
 .studentsPage__actions, .studentsPage__sectionActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .studentsPage__sectionActions { justify-content: flex-end; border-top: 1px solid var(--ui-color-border-soft); margin-top: 20px; padding-top: 16px; }
 .studentsPage__section { margin: 20px 0; scroll-margin-top: calc(var(--ui-topbar-height) + 20px); }
+.studentsPage__section:has(+ .formActions) { margin-bottom: 0; }
+.studentsPage__section:has(+ .formActions) .card-box {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
 .studentsPage__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .studentsPage__grid--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .studentsPage__grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -21,9 +26,14 @@
 .studentsPage__empty { padding: 24px 12px; color: var(--ui-color-text-muted); text-align: center; }
 .studentsPage__identity { display: flex; gap: 12px; align-items: center; min-width: 160px; }
 .studentsPage__avatar { width: 32px; height: 32px; object-fit: cover; border-radius: 50%; flex-shrink: 0; }
+.studentsPage__identity strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .studentsPage__photo { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; }
 .studentsPage__profile { text-align: center; padding: 20px; }
 .studentsPage__data { margin: 0; }
+.studentsPage__data dt,
+.studentsPage__data dd {
+  font-size: 14px;
+}
 .studentsPage__data dt { font-weight: 600; margin-bottom: 5px; }
 .studentsPage__data dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .studentsPage__related { border-bottom: 1px solid var(--ui-color-border-soft); padding: 12px 0; }

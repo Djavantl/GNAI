@@ -1,16 +1,97 @@
 .formActions {
+  min-height: 60px;
+  margin-top: -1px;
+}
+
+.formActions__bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  min-height: 60px;
+  padding: 12px clamp(24px, 4vw, 64px);
+  border: 1px solid var(--ui-color-card-border);
+  border-radius: 0 0 5px 5px;
+  background: var(--ui-color-surface);
+  box-shadow: 0 -2px 6px color-mix(in srgb, var(--ui-color-shadow) 45%, transparent);
+}
+
+.formActions__bar--fixed {
+  position: fixed;
+  z-index: 20;
+  right: 20px;
+  bottom: 0;
+  left: calc(var(--ui-sidebar-width) + 20px);
+}
+
+.app-page--sidebarCollapsed .formActions__bar--fixed {
+  left: calc(var(--ui-sidebar-collapsed-width) + 20px);
+}
+
+.card-box:has(+ .formActions) {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.formActions__leading {
   display: flex;
-  justify-content: flex-end;
+  min-width: 0;
+  align-items: center;
+  justify-self: start;
+  gap: 16px;
+}
+
+.formActions__secondary,
+.formActions__primary {
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-  padding-top: 20px;
 }
+
+.formActions__primary {
+  justify-content: center;
+}
+
 .formActions__status {
-  margin-inline-end: auto;
+  min-width: 0;
   color: var(--ui-color-text-muted);
 }
-.formActions__status:empty { display: none; }
+
+@media (max-width: 767px) {
+  .formActions__bar--fixed,
+  .app-page--sidebarCollapsed .formActions__bar--fixed {
+    right: 15px;
+    left: 15px;
+  }
+}
+
 @media (max-width: 600px) {
-  .formActions__status { flex-basis: 100%; }
+  .formActions:has(.formActions__leading:not(:empty)) {
+    min-height: 108px;
+  }
+
+  .formActions__bar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding-inline: 20px;
+  }
+
+  .formActions__leading {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .formActions__primary {
+    grid-row: 2;
+  }
+
+  .formActions__balance {
+    display: none;
+  }
+
+  .formActions__status {
+    margin-inline: auto;
+  }
 }

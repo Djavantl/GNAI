@@ -10,7 +10,7 @@ Os caminhos abaixo são referências da implementação atual, não uma obrigaç
 
 | Responsabilidade | Arquivo de referência |
 | --- | --- |
-| Página de cadastro, título e Cancelar no topo | [Create.tsx](../../../resources/react/pages/SpecializedEducationalSupport/Students/Create.tsx) |
+| Página de cadastro e título | [Create.tsx](../../../resources/react/pages/SpecializedEducationalSupport/Students/Create.tsx) |
 | Página de edição, registro existente e identidade do formulário | [Edit.tsx](../../../resources/react/pages/SpecializedEducationalSupport/Students/Edit.tsx) |
 | Composição da página, breadcrumbs, cabeçalho e feedback | [StudentPage.tsx](../../../resources/react/components/Students/StudentPage.tsx) |
 | Dados, campos, seções, submissão, upload e processamento | [StudentForm.tsx](../../../resources/react/components/Students/StudentForm.tsx) |
@@ -19,7 +19,7 @@ Os caminhos abaixo são referências da implementação atual, não uma obrigaç
 | Falhas de conexão e de resposta HTTP | `resources/react/components/Students/useStudentRequest.ts` |
 | Resolução Inertia e layout compartilhado | `resources/react/main.tsx` e `resources/react/components/Navigation/AppLayout/AppLayout.tsx` |
 
-A página compõe o cabeçalho e as ações e recebe as props reais do controller. O componente de formulário controla os dados, erros, envio e estados locais. Componentes compartilhados encapsulam controles, estilos e plugins. No exemplo, `onProcessingChange` comunica o processamento do formulário à página para desabilitar também o Cancelar do topo.
+A página compõe o cabeçalho e recebe as props reais do controller. O componente de formulário controla os dados, erros, envio e estados locais. Componentes compartilhados encapsulam controles, estilos e plugins. As ações principais ficam no rodapé sticky do formulário, sem repetição no cabeçalho.
 
 `StudentPage`, `StudentForm`, seus helpers e suas classes CSS pertencem a alunos. Em outro cadastro, componha os componentes compartilhados adequados; não importe componentes de alunos apenas para obter seu visual, nem faça componentes dependerem de páginas.
 
@@ -27,7 +27,7 @@ A página compõe o cabeçalho e as ações e recebe as props reais do controlle
 
 | Classe | O que significa | Exemplos |
 | --- | --- | --- |
-| Obrigatório | Padrão estrutural, visual ou de integração para novas telas de formulário, salvo instrução explícita diferente | Cabeçalho compartilhado, card único, ações à direita, labels e erros associados, componentes existentes, contratos do backend |
+| Obrigatório | Padrão estrutural, visual ou de integração para novas telas de formulário, salvo instrução explícita diferente | Cabeçalho compartilhado, card único, rodapé sticky de ações, labels e erros associados, componentes existentes, contratos do backend |
 | Condicional | Aplica-se somente quando a funcionalidade existe no cadastro | Foto de pessoa, calendário, editor de texto rico, máscaras, progresso de upload, método de atualização |
 | Particularidade do exemplo | Referência de uma solução local, sem obrigatoriedade para outros cadastros | Campos de alunos, duas seções específicas, foto à esquerda, rotas de alunos, status apenas na edição |
 
@@ -40,7 +40,7 @@ A página compõe o cabeçalho e as ações e recebe as props reais do controlle
 3. Use `Navigation/PageBreadcrumb` dentro de uma navegação com nome acessível. Passe a cadeia de navegação real; o último item é apresentado como atual. Links permanecem azuis, com hover/foco azul escuro, conforme seu CSS compartilhado.
 4. Use `Forms/FormLayout` como o `<form>` semântico, com `onSubmit`, prevenção do submit nativo e indicação de processamento. Ele centraliza reset de `fieldset`, espaçamento base de campos, última seção e foco das ações. Dentro dele, reúna os campos em um único `UI/CardBox`.
 5. Divida o conteúdo com `Forms/FormSection`, usando `variant="inline"`, título pertinente e `iconClass` adequado. A variante padrão `card` cria outro card: não a use inadvertidamente para cada seção de um formulário que deve ter um só card.
-6. Coloque `Forms/FormActions` depois do card, ainda dentro do `<form>`, para salvar/cancelar à direita e apresentar o status de envio. Preserve a navegação de Cancelar. Quando houver uma ação também no cabeçalho, sincronize sua desabilitação com o processamento, como no exemplo.
+6. Coloque `Forms/FormActions` imediatamente depois do card, ainda dentro do `<form>`. Ele forma uma unidade contínua com o card, cria o rodapé sticky centralizado, apresenta o status de envio e reúne as ações principais sem repeti-las no cabeçalho. Preserve a navegação de Cancelar e bloqueie as ações durante o processamento.
 
 As seções atuais têm título em maiúsculas, ícone decorativo e divisor cinza claro de 2 px abaixo do título. O conteúdo e o início da linha ficam alinhados no padding do card. Não reproduza esse cabeçalho com markup e CSS próprios por tela.
 
@@ -54,7 +54,7 @@ Os caminhos desta tabela são relativos a `resources/react/components/`.
 | Breadcrumbs | `Navigation/PageBreadcrumb/PageBreadcrumb.tsx`; passe `items` com labels e destinos reais |
 | Estrutura semântica e visual comum | `Forms/FormLayout/FormLayout.tsx`; recebe os atributos nativos de `<form>` e encaminha `ref` |
 | Grades e pilhas recorrentes | `Forms/FormGrid/FormGrid.tsx`; use `FormGrid`, `FormGridWide` e `FormStack` sem recriar a mesma grade no CSS do domínio |
-| Card do formulário | `UI/CardBox/CardBox.tsx` |
+| Card do formulário | `UI/CardBox/CardBox.tsx`, com contorno compartilhado por `--ui-color-card-border` |
 | Seções dentro do mesmo card | `Forms/FormSection/FormSection.tsx`; `variant="inline"`, `id`, `title`, `iconClass` |
 | Label, obrigatório, dica e erro | `Forms/FormField/FormField.tsx`; associe o controle ao mesmo `id` |
 | Texto e atributos nativos | `Forms/TextInput/TextInput.tsx`; valores controlados e `invalid` |
@@ -66,7 +66,7 @@ Os caminhos desta tabela são relativos a `resources/react/components/`.
 | Foto de pessoa | `Forms/PersonPhotoUpload/PersonPhotoUpload.tsx`, quando o cadastro precisar dessa informação |
 | Evidências anexadas | `Forms/EvidenceUpload/EvidenceUpload.tsx`; seleção múltipla, limites, prévia, lista e remoção controladas pelo formulário |
 | Texto rico | `Forms/SummernoteEditor/SummernoteEditor.tsx`, quando houver requisito de editor |
-| Ações finais e andamento | `Forms/FormActions/FormActions.tsx`; `children` e `status` |
+| Ações finais e andamento | `Forms/FormActions/FormActions.tsx`; `children` para ações principais, `secondary` para ações de menor ênfase e `status` |
 | Botões e links de ação | `UI/Button/Button.tsx`; variantes `save`/`cancel`, ícones e `disabled` |
 | Falha geral ou resumo de validação | `UI/InlineAlert/InlineAlert.tsx`, dentro de uma região de anúncio apropriada |
 
@@ -86,13 +86,13 @@ As fontes e cores compartilhadas estão em `resources/react/styles/tokens.css`, 
 | Calendário | Botão e seleção roxos, com os tokens Gnai e estilos do `DatePicker` |
 | Summernote | Toolbar neutra e estados ativos roxos, definidos no componente |
 | Erros de campo | `FormField`, estado inválido do controle e tokens de erro; erro não pode depender somente de cor |
-| Salvar e cancelar | `Button` com `tone="save"`/`tone="cancel"`; verde e cinza do Blade via aliases de cores e ícones automáticos |
+| Salvar e cancelar | `Button` com `tone="save"`/`tone="cancel"`, `iconOnly` e `aria-label`; confirmação verde com ícone de check e cancelamento cinza com X |
 
 `--ui-color-primary` e `--ui-color-custom` ainda representam cores do tema em outros componentes. Não use esses nomes como se já fossem os tokens oficiais roxos do Gnai, nem consolide toda a paleta durante uma migração de formulário.
 
 Organize campos relacionados com `FormGrid`, usando `FormGridWide` para campos longos e `FormStack` para controles empilhados. Mantenha CSS no domínio somente para composições particulares, como a foto ao lado dos dados pessoais. Preserve padding, bordas, foco e espaçamentos compartilhados; não copie dimensões locais de alunos como regra global.
 
-Botões devem ter ícone pertinente e texto, salvo pedido explícito diferente. `Button` admite `leftIconClass` e outras posições de ícone, `showIcon={false}` para a exceção solicitada e `iconOnly` com `aria-label` para ações só com ícone. Ações ficam à direita, exceto quando o usuário definir outra posição. Não suponha que todas as variantes do tema já tenham as cores do Gnai.
+Botões devem ter ícone pertinente e texto, salvo nos rodapés sticky de criar, editar e visualizar, onde as ações principais usam somente ícones com `iconOnly` e `aria-label`. Cancelar/voltar usa X cinza; salvar usa check verde. `Button` também admite `leftIconClass`, outras posições de ícone e `showIcon={false}`. Não suponha que todas as variantes do tema já tenham as cores do Gnai.
 
 ### Labels, validação e acessibilidade
 
@@ -121,7 +121,7 @@ O nome e o ID acima pertencem ao exemplo; adapte-os ao cadastro. Use hierarquia 
 - Apresente `form.errors` junto dos campos. `form.setError` registra também falhas locais de controles, e `form.clearErrors` limpa os erros pertinentes quando o usuário corrige ou remove o valor, conforme o comportamento existente.
 - Configure `form.transform` somente para diferenças reais de payload. Criação e edição podem ter contratos distintos: não envie automaticamente todos os campos do estado nos dois casos.
 - Use o método e o endpoint previstos nas rotas. O exemplo combina `form.post`, `forceFormData: true`, `preserveScroll: true` e `_method: 'put'` na edição porque contém upload. Multipart e method spoofing são condicionais; não obrigue formulários sem arquivos a adotá-los por cópia.
-- Durante o envio, sinalize `aria-busy`, bloqueie campos e ações apropriados e impeça submits duplicados. Alunos usam `fieldset disabled`, props `disabled` dos adaptadores e uma trava em `useRef`, liberada em `onFinish`. O Cancelar do topo recebe `form.processing` por callback. Não confie apenas no `fieldset` para widgets com elementos gerados fora dele.
+- Durante o envio, sinalize `aria-busy`, bloqueie campos e ações apropriados e impeça submits duplicados. Alunos usam `fieldset disabled`, props `disabled` dos adaptadores e uma trava em `useRef`, liberada em `onFinish`. O Cancelar do rodapé recebe o estado de processamento. Não confie apenas no `fieldset` para widgets com elementos gerados fora dele.
 - Mantenha mensagens como “Salvando...” e status compreensíveis. `FormActions.status` anuncia o andamento; `form.progress` é usado quando houver upload. Falhas devem permitir corrigir e tentar novamente.
 
 As falhas de conexão e de resposta HTTP são apresentadas por `useStudentRequest` e `InlineAlert` na referência. Esse hook é do domínio de alunos: não o copie nem o importe indiscriminadamente em outros cadastros. Reutilize o transporte de feedback adequado e, se houver necessidade real de compartilhamento, trate-a no escopo autorizado.
@@ -166,7 +166,7 @@ Plugins usam os assets locais de `public/assets/react/`, com adaptadores que car
 - A foto ocupa uma coluna estreita à esquerda, e os seis campos pessoais ficam à direita: nome/e-mail na primeira linha e CPF/nascimento/gênero/telefone na seguinte, quando houver largura. O endereço ocupa toda a linha abaixo das duas colunas.
 - A composição e os respiros especiais dessa área estão em `Students.css`, com media queries e container queries. As medidas da coluna, distâncias e quantidade de campos não são uma grade obrigatória para outros formulários, especialmente os que não têm foto.
 - O status aparece apenas na edição. `StudentForm` não envia `status` nem `remove_photo` na criação. Os defaults de gênero/status vêm das props preparadas para cada operação.
-- `Create` cancela para a listagem; `Edit` cancela para o prontuário. Ambas mantêm Cancelar no cabeçalho e no final do formulário. Preserve o destino e as ações do cadastro de origem em vez de impor essas rotas a outros módulos.
+- `Create` cancela para a listagem; `Edit` cancela para o prontuário. Ambas mantêm Cancelar somente no rodapé sticky do formulário. Preserve o destino e as ações do cadastro de origem em vez de impor essas rotas a outros módulos.
 - A edição usa `key={student.id}` para reinicializar o formulário/editor quando o registro muda. Não espere que `SummernoteEditor.defaultValue` acompanhe cada alteração de props como um campo controlado.
 
 ## Integração com o backend e feedback
@@ -187,7 +187,7 @@ A referência cria por POST em `/specialized-educational-support/students/store`
 
 Preserve nomes de campos, enums, formato das datas, arquivos e flags aceitos pelo backend. Não substitua validações, permissões, queries/actions ou regras de negócio por condições visuais. Os erros de validação chegam por Inertia em `form.errors`; os redirects e flash devem seguir os contratos existentes. Não acrescente capabilities ao usuário compartilhado nem invente permissões que o servidor não fornece.
 
-**Atenção ao consumo de flash na referência atual:** `AppLayout` monta `UI/NotificationToast/FlashNotifications.tsx`, enquanto `StudentPage` monta outro consumidor em `UI/FlashNotifications/FlashNotifications.tsx`. Essa sobreposição pode gerar notificações duplicadas e não deve ser reproduzida como padrão. Ao compor um novo formulário, confira o consumidor já montado e use uma única apresentação de resultado. A existência de ambos no exemplo é uma particularidade a considerar, não motivo para criar outro toast ou refatorar o layout fora do escopo.
+**Consumo de flash:** `AppLayout` monta uma única instância global de `UI/FlashNotifications/FlashNotifications.tsx` para as telas autenticadas. Páginas, wrappers de domínio e `BusinessPage` não devem montar outro consumidor das mesmas mensagens. A autenticação continua usando `UI/AuthFeedback/AuthFeedback.tsx`, pois suas páginas não recebem `AppLayout`.
 
 ## Processo de criação ou migração
 

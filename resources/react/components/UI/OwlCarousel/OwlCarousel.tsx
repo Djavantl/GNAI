@@ -36,7 +36,12 @@ export default function OwlCarousel({
       if (cancelled || !host.current) return;
       carousel = document.createElement('div');
       carousel.className = `owl-carousel${theme ? ' owl-theme' : ''}`;
-      carousel.innerHTML = markup;
+      const template = document.createElement('template');
+      template.innerHTML = markup;
+      template.content
+        .querySelectorAll('link[rel="preload"][as="image"]')
+        .forEach((preload) => preload.remove());
+      carousel.append(template.content);
       host.current.append(carousel);
       const runtime = (
         window as unknown as { jQuery: (element: Element) => OwlCollection }

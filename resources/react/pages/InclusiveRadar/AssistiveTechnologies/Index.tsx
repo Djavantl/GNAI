@@ -9,9 +9,10 @@ import {
     TableListEmpty,
     TableListFilterActions,
     TableListFooter,
-    TableListProgress,
+    TableListMoreFilters,
     TableListScroll,
     TableListTable,
+    type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import TextInput from "@/components/Forms/TextInput/TextInput";
@@ -71,6 +72,25 @@ const selects = [
         no: "Indisponível",
     },
 ] as const;
+const technologyColumns: TableListColumn[] = [
+    {
+        id: "name",
+        label: "Nome",
+        width: "35%",
+        minWidth: 120,
+        fixed: "start",
+    },
+    { id: "nature", label: "Natureza", width: "15%", minWidth: 72 },
+    { id: "stock", label: "Estoque", width: "15%", minWidth: 72 },
+    { id: "status", label: "Status", width: "15%", minWidth: 72 },
+    {
+        id: "actions",
+        label: "Ações",
+        width: "20%",
+        minWidth: 92,
+        fixed: "end",
+    },
+];
 
 export default function InclusiveRadarAssistiveTechnologiesIndexPage({
     assistiveTechnologies: records,
@@ -190,65 +210,107 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                 aria-busy={busy}
             >
                 <FormLayout
-                    className="technologyIndex__filters"
+                    className="technologyIndex__filterForm"
                     onSubmit={(event) => {
                         event.preventDefault();
                         submitFilters();
                     }}
                 >
-                    <FormField
-                        id="technology-name"
-                        label="Nome"
-                        error={errors.name}
-                    >
-                        <TextInput
-                            id="technology-name"
-                            name="name"
-                            value={filters.name}
-                            maxLength={255}
-                            placeholder="Filtrar por nome..."
-                            disabled={busy}
-                            onChange={(event) =>
-                                updateFilter("name", event.target.value)
-                            }
-                            invalid={!!errors.name}
-                            aria-describedby={
-                                errors.name
-                                    ? "technology-name-error"
-                                    : undefined
-                            }
-                        />
-                    </FormField>
-                    {selects.map((field) => (
+                    <div className="technologyIndex__filters">
                         <FormField
-                            key={field.name}
-                            id={field.name}
-                            label={field.label}
-                            error={errors[field.name]}
+                            id="technology-name"
+                            label="Nome"
+                            error={errors.name}
                         >
-                            <SelectField
-                                id={field.name}
-                                name={field.name}
-                                label={field.label}
-                                placeholder="Todos"
-                                options={[
-                                    { value: "1", label: field.yes },
-                                    { value: "0", label: field.no },
-                                ]}
-                                value={filters[field.name]}
+                            <TextInput
+                                id="technology-name"
+                                name="name"
+                                value={filters.name}
+                                maxLength={255}
+                                placeholder="Filtrar por nome..."
                                 disabled={busy}
                                 onChange={(event) =>
-                                    updateFilter(field.name, event.target.value)
+                                    updateFilter("name", event.target.value)
                                 }
-                                aria-invalid={!!errors[field.name]}
+                                invalid={!!errors.name}
                                 aria-describedby={
-                                    errors[field.name]
-                                        ? `${field.name}-error`
+                                    errors.name
+                                        ? "technology-name-error"
                                         : undefined
                                 }
                             />
                         </FormField>
-                    ))}
+                        {selects.slice(0, 2).map((field) => (
+                            <FormField
+                                key={field.name}
+                                id={field.name}
+                                label={field.label}
+                                error={errors[field.name]}
+                            >
+                                <SelectField
+                                    id={field.name}
+                                    name={field.name}
+                                    label={field.label}
+                                    placeholder="Todos"
+                                    options={[
+                                        { value: "1", label: field.yes },
+                                        { value: "0", label: field.no },
+                                    ]}
+                                    value={filters[field.name]}
+                                    disabled={busy}
+                                    onChange={(event) =>
+                                        updateFilter(
+                                            field.name,
+                                            event.target.value,
+                                        )
+                                    }
+                                    aria-invalid={!!errors[field.name]}
+                                    aria-describedby={
+                                        errors[field.name]
+                                            ? `${field.name}-error`
+                                            : undefined
+                                    }
+                                />
+                            </FormField>
+                        ))}
+                    </div>
+                    <TableListMoreFilters active={Boolean(filters.available)}>
+                        <div className="technologyIndex__additionalFilters">
+                            {selects.slice(2).map((field) => (
+                                <FormField
+                                    key={field.name}
+                                    id={field.name}
+                                    label={field.label}
+                                    error={errors[field.name]}
+                                >
+                                    <SelectField
+                                        id={field.name}
+                                        name={field.name}
+                                        label={field.label}
+                                        placeholder="Todos"
+                                        options={[
+                                            { value: "1", label: field.yes },
+                                            { value: "0", label: field.no },
+                                        ]}
+                                        value={filters[field.name]}
+                                        disabled={busy}
+                                        onChange={(event) =>
+                                            updateFilter(
+                                                field.name,
+                                                event.target.value,
+                                            )
+                                        }
+                                        aria-invalid={!!errors[field.name]}
+                                        aria-describedby={
+                                            errors[field.name]
+                                                ? `${field.name}-error`
+                                                : undefined
+                                        }
+                                    />
+                                </FormField>
+                            ))}
+                        </div>
+                    </TableListMoreFilters>
                     <TableListFilterActions>
                         <TableListClearButton
                             disabled={busy}
@@ -256,106 +318,98 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                         />
                     </TableListFilterActions>
                 </FormLayout>
-                <TableListProgress>
-                    {busy
-                        ? "Processando…"
-                        : `${records.total} tecnologia(s) encontrada(s)`}
-                </TableListProgress>
                 {failure && !technologyToDelete ? (
                     <div role="alert">
                         <InlineAlert variant="danger">{failure}</InlineAlert>
                     </div>
                 ) : null}
                 <TableListScroll aria-label="Tabela de tecnologias assistivas">
-                    <TableListTable className="technologyIndex__table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nome</th>
-                                <th scope="col">Natureza</th>
-                                <th scope="col">Estoque</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {records.data.map((technology) => {
-                                const exhausted =
-                                    !technology.is_digital &&
-                                    (technology.quantity_available ?? 0) <= 0;
-                                return (
-                                    <tr key={technology.id}>
-                                        <td>{technology.name}</td>
-                                        <td>
-                                            {technology.is_digital
-                                                ? "Digital"
-                                                : "Físico"}
-                                        </td>
-                                        <td>
-                                            {technology.is_digital
-                                                ? "Ilimitado"
-                                                : `${technology.quantity_available ?? 0} / ${technology.quantity ?? 0}`}
-                                        </td>
-                                        <td>
-                                            <TableLabel
-                                                tone={
-                                                    exhausted
-                                                        ? "danger"
-                                                        : technology.is_active
-                                                          ? "success"
-                                                          : "inverse"
-                                                }
-                                            >
-                                                {exhausted
-                                                    ? "Esgotado"
+                    <TableListTable
+                        className="technologyIndex__table"
+                        columns={technologyColumns}
+                        summary={
+                            busy
+                                ? "Processando…"
+                                : `${records.from ?? 0}–${records.to ?? 0} de ${records.total} registros`
+                        }
+                    >
+                        {records.data.map((technology) => {
+                            const exhausted =
+                                !technology.is_digital &&
+                                (technology.quantity_available ?? 0) <= 0;
+                            return (
+                                <tr key={technology.id}>
+                                    <td>{technology.name}</td>
+                                    <td>
+                                        {technology.is_digital
+                                            ? "Digital"
+                                            : "Físico"}
+                                    </td>
+                                    <td>
+                                        {technology.is_digital
+                                            ? "Ilimitado"
+                                            : `${technology.quantity_available ?? 0} / ${technology.quantity ?? 0}`}
+                                    </td>
+                                    <td>
+                                        <TableLabel
+                                            tone={
+                                                exhausted
+                                                    ? "danger"
                                                     : technology.is_active
-                                                      ? "Ativo"
-                                                      : "Inativo"}
-                                            </TableLabel>
-                                        </td>
-                                        <td>
-                                            <TableActions>
-                                                {can.show && (
-                                                    <Button
-                                                        href={`${base}/${technology.id}`}
-                                                        size="sm"
-                                                        tone="dark-blue"
-                                                        iconOnly
-                                                        leftIconClass="fa fa-eye"
-                                                        aria-label={`Ver ${technology.name}`}
-                                                    />
-                                                )}
-                                                {can.destroy && (
-                                                    <Button
-                                                        size="sm"
-                                                        tone="dark-red"
-                                                        iconOnly
-                                                        leftIconClass="fa fa-trash-o"
-                                                        disabled={busy}
-                                                        aria-label={`Excluir ${technology.name}`}
-                                                        onClick={() => {
-                                                            setFailure("");
-                                                            setTechnologyToDelete(
-                                                                technology,
-                                                            );
-                                                        }}
-                                                    />
-                                                )}
-                                                {!can.show && !can.destroy && (
-                                                    <span>Nenhuma ação</span>
-                                                )}
-                                            </TableActions>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                            {!records.data.length && (
-                                <tr>
-                                    <TableListEmpty colSpan={5}>
-                                        Nenhuma tecnologia cadastrada.
-                                    </TableListEmpty>
+                                                      ? "success"
+                                                      : "inverse"
+                                            }
+                                        >
+                                            {exhausted
+                                                ? "Esgotado"
+                                                : technology.is_active
+                                                  ? "Ativo"
+                                                  : "Inativo"}
+                                        </TableLabel>
+                                    </td>
+                                    <td>
+                                        <TableActions>
+                                            {can.show && (
+                                                <Button
+                                                    href={`${base}/${technology.id}`}
+                                                    size="sm"
+                                                    tone="dark-blue"
+                                                    iconOnly
+                                                    leftIconClass="fa fa-eye"
+                                                    aria-label={`Ver ${technology.name}`}
+                                                />
+                                            )}
+                                            {can.destroy && (
+                                                <Button
+                                                    size="sm"
+                                                    tone="dark-red"
+                                                    iconOnly
+                                                    leftIconClass="fa fa-trash-o"
+                                                    disabled={busy}
+                                                    aria-label={`Excluir ${technology.name}`}
+                                                    onClick={() => {
+                                                        setFailure("");
+                                                        setTechnologyToDelete(
+                                                            technology,
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                            {!can.show && !can.destroy && (
+                                                <span>Nenhuma ação</span>
+                                            )}
+                                        </TableActions>
+                                    </td>
                                 </tr>
-                            )}
-                        </tbody>
+                            );
+                        })}
+                        {!records.data.length && (
+                            <tr>
+                                <TableListEmpty colSpan={5}>
+                                    Nenhuma tecnologia cadastrada.
+                                </TableListEmpty>
+                            </tr>
+                        )}
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter

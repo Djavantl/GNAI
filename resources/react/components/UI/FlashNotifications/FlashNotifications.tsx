@@ -1,23 +1,69 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { usePage } from '@inertiajs/react';
-import NotificationToastLayer from '@/components/UI/NotificationToast/NotificationToastLayer';
-import type { NotificationToastItem, NotificationToastTone } from '@/components/UI/NotificationToast/NotificationToast';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import type {
+    NotificationToastItem,
+    NotificationToastTone,
+} from "@/components/UI/NotificationToast/NotificationToast";
+import NotificationToastLayer from "@/components/UI/NotificationToast/NotificationToastLayer";
 
-type Flash = Partial<Record<'success' | 'error' | 'warning' | 'status', string | null>>;
+type FlashKey = "success" | "error" | "warning" | "status";
+type Flash = Partial<Record<FlashKey, string | null>>;
 
-/** Mount once in the page composition until the application adopts a shared consumer. */
+const tones: Record<FlashKey, NotificationToastTone> = {
+    success: "success",
+    error: "error",
+    warning: "warning",
+    status: "info",
+};
+
+const titles: Record<FlashKey, string> = {
+    success: "Sucesso",
+    error: "Não foi possível concluir",
+    warning: "Atenção",
+    status: "Informação",
+};
+
+/** Global authenticated-layout consumer for server flash messages. */
 export default function FlashNotifications(): React.JSX.Element {
-  const { flash } = usePage<{ flash?: Flash }>().props;
-  const [notifications, setNotifications] = useState<NotificationToastItem[]>([]);
-  const sequence = useRef(0);
-  useEffect(() => {
-    const tones: Record<keyof Flash, NotificationToastTone> = { success: 'success', error: 'error', warning: 'warning', status: 'info' };
-    const titles = { success: 'Sucesso', error: 'Não foi possível concluir', warning: 'Atenção', status: 'Informação' };
-    setNotifications((Object.keys(tones) as Array<keyof Flash>).flatMap(key => flash?.[key] ? [{
-      id: ++sequence.current, tone: tones[key], title: titles[key], text: flash[key]!,
-      position: 'bottom-right' as const, autoHideDelay: key === 'success' ? 5000 : undefined, clickToHide: false,
-    }] : []));
-  }, [flash]);
-  const close = useCallback((id: number) => setNotifications(items => items.filter(item => item.id !== id)), []);
-  return <NotificationToastLayer notifications={notifications} onClose={close} />;
+    const { flash } = usePage<{ flash?: Flash }>().props;
+    const [notifications, setNotifications] = useState<
+        NotificationToastItem[]
+    >([]);
+    const sequence = useRef(0);
+
+    useEffect(() => {
+        setNotifications(
+            (Object.keys(tones) as FlashKey[]).flatMap((key) => {
+                const text = flash?.[key];
+
+                return text
+                    ? [
+                          {
+                              id: ++sequence.current,
+                              tone: tones[key],
+                              title: titles[key],
+                              text,
+                              position: "bottom-right" as const,
+                              autoHideDelay:
+                                  key === "success" ? 5000 : undefined,
+                              clickToHide: false,
+                          },
+                      ]
+                    : [];
+            }),
+        );
+    }, [flash]);
+
+    const close = useCallback((id: number) => {
+        setNotifications((items) =>
+            items.filter((item) => item.id !== id),
+        );
+    }, []);
+
+    return (
+        <NotificationToastLayer
+            notifications={notifications}
+            onClose={close}
+        />
+    );
 }
