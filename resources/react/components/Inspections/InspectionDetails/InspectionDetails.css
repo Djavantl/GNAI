@@ -1,0 +1,116 @@
+.inspectionDetails {
+    min-width: 0;
+    padding-bottom: 24px;
+}
+
+.inspectionDetails__date {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.inspectionDetails__date > span:first-child {
+    color: var(--ui-color-page-subtitle);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.inspectionDetails__date .tableLabel {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.inspectionDetails__panel .formSection:last-child {
+    margin-bottom: 0;
+}
+
+.inspectionDetails__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 32px;
+    margin: 0;
+}
+
+.inspectionDetails__detail {
+    min-width: 0;
+}
+
+.inspectionDetails__detail--wide {
+    grid-column: 1 / -1;
+}
+
+.inspectionDetails__detail dt {
+    margin-bottom: 8px;
+    color: var(--ui-color-form-label);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.inspectionDetails__detail dd {
+    margin: 0;
+    color: var(--ui-color-legacy-text);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.inspectionDetails__rich {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+}
+
+.inspectionDetails__rich > :first-child {
+    margin-top: 0;
+}
+
+.inspectionDetails__rich > :last-child {
+    margin-bottom: 0;
+}
+
+.inspectionDetails__rich img,
+.inspectionDetails__rich table {
+    max-width: 100%;
+}
+
+.inspectionDetails__empty {
+    display: flex;
+    min-height: 180px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    padding: 30px;
+    border: 1px dashed var(--ui-color-border-soft);
+    border-radius: 4px;
+    color: var(--ui-color-page-subtitle);
+    text-align: center;
+}
+
+.inspectionDetails__empty i {
+    font-size: 2rem;
+}
+
+.inspectionDetails__empty p {
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .inspectionDetails__date {
+        align-items: flex-start;
+    }
+
+    .inspectionDetails__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .inspectionDetails__detail--wide {
+        grid-column: auto;
+    }
+
+    .inspectionDetails__panel.card-box {
+        padding: 16px;
+    }
+}

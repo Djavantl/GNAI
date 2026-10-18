@@ -1,0 +1,14 @@
+.inspectionHistoryTable__description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inspectionHistoryTable__description > * {
+  display: inline;
+  margin: 0;
+}
+
+.inspectionHistoryTable__description br {
+  display: none;
+}

@@ -1,0 +1,31 @@
+.materialFilters {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) repeat(2, minmax(180px, 1fr));
+    align-items: end;
+    gap: 16px;
+}
+
+.materialFilters__additional {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.materialFilterForm > .tableListFilterActions {
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+@media (max-width: 1200px) {
+    .materialFilters,
+    .materialFilters__additional {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .materialFilters,
+    .materialFilters__additional {
+        grid-template-columns: 1fr;
+    }
+}
