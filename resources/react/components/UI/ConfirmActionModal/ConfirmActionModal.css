@@ -17,6 +17,11 @@
   text-align: center;
 }
 
+.confirmActionModal__details {
+  margin: 16px auto 0;
+  text-align: left;
+}
+
 .confirmActionModal__error {
   margin-top: 16px;
   text-align: left;

@@ -2,7 +2,13 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import TextInput from '@/components/Forms/TextInput/TextInput';
 import { loadExternalScript } from '@/utils/loadExternalScript';
 import { loadExternalStylesheet } from '@/utils/loadExternalStylesheet';
-import { displayDate, backendDate, maskDate, dateCaret } from './DatePicker.utils';
+import {
+  backendDate,
+  dateCaret,
+  displayDate,
+  isValidDatePrefix,
+  maskDate,
+} from './DatePicker.utils';
 import './DatePicker.css';
 
 interface DatePickerProps {
@@ -24,11 +30,22 @@ interface DatePickerCollection {
 }
 
 /** Adapter for the same Bootstrap Datepicker used by the FormPickers catalog. */
-export default function DatePicker({ id, name, label, value, onChange, required = false, disabled = false, invalid = false, describedBy }: DatePickerProps): React.JSX.Element {
+export default function DatePicker({
+  id,
+  name,
+  label,
+  value,
+  onChange,
+  required = false,
+  disabled = false,
+  invalid = false,
+  describedBy,
+}: DatePickerProps): React.JSX.Element {
   const input = useRef<HTMLInputElement>(null);
   const instance = useRef<DatePickerCollection | undefined>(undefined);
   const [display, setDisplay] = useState(() => displayDate(value));
   const [loadFailed, setLoadFailed] = useState(false);
+  const [invalidEntry, setInvalidEntry] = useState(false);
   const callback = useRef(onChange);
   callback.current = onChange;
   const blocked = useRef(disabled);
@@ -38,7 +55,17 @@ export default function DatePicker({ id, name, label, value, onChange, required 
 
   function editDate(rawValue: string, caret: number): void {
     const formatted = maskDate(rawValue);
-    pendingCaret.current = dateCaret(formatted, rawValue.slice(0, caret).replace(/\D/g, '').length);
+    if (!isValidDatePrefix(formatted)) {
+      setInvalidEntry(true);
+      callback.current('');
+      return;
+    }
+
+    setInvalidEntry(false);
+    pendingCaret.current = dateCaret(
+      formatted,
+      rawValue.slice(0, caret).replace(/\D/g, '').length,
+    );
     setDisplay(formatted);
     callback.current(backendDate(formatted));
   }
@@ -74,6 +101,7 @@ export default function DatePicker({ id, name, label, value, onChange, required 
       picker.on('changeDate.gnaiDatePicker clearDate.gnaiDatePicker', () => {
         if (cancelled || syncing.current || blocked.current) return;
         const selected = input.current?.value ?? '';
+        setInvalidEntry(false);
         setDisplay(selected);
         callback.current(backendDate(selected));
       });
@@ -88,12 +116,21 @@ export default function DatePicker({ id, name, label, value, onChange, required 
     };
   }, []);
 
-  const description = [describedBy, loadFailed ? `${id}-picker-error` : undefined].filter(Boolean).join(' ') || undefined;
+  const description = [
+    describedBy,
+    invalidEntry ? `${id}-date-error` : undefined,
+    loadFailed ? `${id}-picker-error` : undefined,
+  ].filter(Boolean).join(' ') || undefined;
   return <div className="datePicker">
     <div className="datePicker__control">
       <TextInput ref={input} id={id} name={name} value={display} required={required} disabled={disabled}
-        invalid={invalid} placeholder="DD/MM/AAAA" inputMode="numeric" autoComplete="off" aria-describedby={description}
-        onChange={event => editDate(event.target.value, event.target.selectionStart ?? event.target.value.length)}
+        invalid={invalid || invalidEntry} placeholder="DD/MM/AAAA" inputMode="numeric" autoComplete="off" aria-describedby={description}
+        onChange={event =>
+          editDate(
+            event.target.value,
+            event.target.selectionStart ?? event.target.value.length,
+          )
+        }
         onKeyDown={event => {
           const control = event.currentTarget;
           const start = control.selectionStart ?? 0;
@@ -112,6 +149,7 @@ export default function DatePicker({ id, name, label, value, onChange, required 
         <i className="icon-calender" aria-hidden="true" />
       </button>
     </div>
+    {invalidEntry ? <span id={`${id}-date-error`} role="alert" className="datePicker__error">Informe uma data real no formato DD/MM/AAAA.</span> : null}
     {loadFailed ? <span id={`${id}-picker-error`} role="alert" className="datePicker__error">Não foi possível carregar o calendário. Digite a data no formato DD/MM/AAAA.</span> : null}
   </div>;
 }

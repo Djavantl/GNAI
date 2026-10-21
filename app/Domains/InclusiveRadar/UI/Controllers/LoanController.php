@@ -34,7 +34,15 @@ final class LoanController
 
         return Inertia::render(
             'InclusiveRadar/Loans/Index',
-            compact('loans'),
+            [
+                'loans' => $loans->through(fn (Loan $loan): array => $this->loanPayload($loan)),
+                'filters' => $request->only(['item', 'student', 'professional', 'status', 'per_page']),
+                'can' => [
+                    'create' => $request->user()?->can('loan.create') ?? false,
+                    'show' => $request->user()?->can('loan.show') ?? false,
+                    'destroy' => $request->user()?->can('loan.destroy') ?? false,
+                ],
+            ],
         );
     }
 
@@ -48,7 +56,9 @@ final class LoanController
                 selectedProfessionalId: $request->integer('professional_id') ?: null,
                 selectedItemId: $request->integer('item_id') ?: null,
                 selectedItemType: $request->query('item_type'),
-            ),
+            ) + [
+                'can' => ['submit' => $request->user()?->can('loan.store') ?? false],
+            ],
         );
     }
 
@@ -74,11 +84,13 @@ final class LoanController
         return Inertia::render(
             'InclusiveRadar/Loans/Show',
             [
-                'loan' => $loan,
-                'statusLabel' => $loan->statusLabel(),
-                'statusColor' => $loan->statusColor(),
-                'isOverdue' => $loan->isOverdue(),
-                'authUser' => $request->user(),
+                'loan' => $this->loanPayload($loan),
+                'can' => [
+                    'edit' => $request->user()?->can('loan.edit') ?? false,
+                    'return' => $request->user()?->can('loan.return') ?? false,
+                    'destroy' => $request->user()?->can('loan.destroy') ?? false,
+                    'pdf' => $request->user()?->can('loan.pdf') ?? false,
+                ],
             ],
         );
     }
@@ -90,7 +102,10 @@ final class LoanController
             $form->forUpdate(
                 loan: $loan,
                 authUser: $request->user(),
-            ),
+            ) + [
+                'display' => $this->loanPayload($loan),
+                'can' => ['submit' => $request->user()?->can('loan.update') ?? false],
+            ],
         );
     }
 
@@ -153,5 +168,53 @@ final class LoanController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Loan_{$loan->id}.pdf");
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function loanPayload(Loan $loan): array
+    {
+        $loan->loadMissing([
+            'loanable',
+            'student:id,person_id,registration',
+            'student.person:id,name',
+            'professional:id,person_id,registration',
+            'professional.person:id,name',
+            'user:id,name',
+        ]);
+
+        return [
+            'id' => $loan->id,
+            'loanable_id' => $loan->loanable_id,
+            'loanable_type' => $loan->loanable_type,
+            'loanable_type_label' => $loan->loanableType()->label(),
+            'loanable_icon' => $loan->loanableType()->icon(),
+            'loanable' => [
+                'name' => $loan->loanable?->name ?? 'Item removido',
+                'asset_code' => $loan->loanable?->asset_code,
+            ],
+            'student' => $loan->student ? [
+                'name' => $loan->student->person?->name ?? 'Sem nome',
+                'registration' => $loan->student->registration,
+            ] : null,
+            'professional' => $loan->professional ? [
+                'name' => $loan->professional->person?->name ?? 'Sem nome',
+                'registration' => $loan->professional->registration,
+            ] : null,
+            'user' => ['name' => $loan->user?->name ?? '---'],
+            'loan_date' => $loan->loan_date?->format('Y-m-d\TH:i'),
+            'loan_date_label' => $loan->loan_date?->format('d/m/Y H:i') ?? '---',
+            'due_date' => $loan->due_date?->format('Y-m-d'),
+            'due_date_label' => $loan->due_date?->format('d/m/Y') ?? '---',
+            'return_date_label' => $loan->return_date?->format('d/m/Y H:i'),
+            'status' => $loan->status?->value,
+            'status_label' => $loan->statusLabel(),
+            'status_color' => $loan->statusColor(),
+            'observation' => $loan->observation,
+            'is_active' => $loan->isActive(),
+            'is_returned' => $loan->isReturned(),
+            'is_overdue' => $loan->isOverdue(),
+        ];
     }
 }

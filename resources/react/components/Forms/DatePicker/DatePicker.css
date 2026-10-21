@@ -13,3 +13,5 @@
 .datepicker.datePickerPopup table tr td.active:hover,
 .datepicker.datePickerPopup table tr td span.active,
 .datepicker.datePickerPopup table tr td span.active:hover { background: var(--ui-color-gnai-primary) !important; color: var(--ui-color-surface); box-shadow: none; text-shadow: none; }
+.datepicker.datePickerPopup table tr td.today,
+.datepicker.datePickerPopup table tr td.today:hover { background: var(--ui-color-gnai-primary) !important; color: var(--ui-color-surface) !important; box-shadow: none; text-shadow: none; }

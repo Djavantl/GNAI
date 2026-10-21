@@ -1,0 +1,22 @@
+.detailField {
+    min-width: 0;
+}
+
+.detailField--wide {
+    grid-column: 1 / -1;
+}
+
+.detailField dt {
+    margin-bottom: 8px;
+    color: var(--ui-color-form-label);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.detailField dd {
+    min-width: 0;
+    margin: 0;
+    color: var(--ui-color-legacy-text);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}

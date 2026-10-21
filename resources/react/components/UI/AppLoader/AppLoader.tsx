@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
+import type { ActiveVisit, PendingVisit } from '@inertiajs/core';
 import './AppLoader.css';
 
 const fadeDurationMs = 180;
@@ -9,7 +10,7 @@ type LoaderPhase = 'hidden' | 'visible' | 'closing';
 
 export default function AppLoader(): React.JSX.Element | null {
   const [phase, setPhase] = useState<LoaderPhase>('hidden');
-  const activeVisitId = useRef<string | null>(null);
+  const activeVisits = useRef(new Set<PendingVisit>());
   const closeTimer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -27,6 +28,17 @@ export default function AppLoader(): React.JSX.Element | null {
       document.body.classList.remove(scrollLockClass);
     }
 
+    function closeLoader(): void {
+      activeVisits.current.clear();
+      setPhase('closing');
+      clearCloseTimer();
+      closeTimer.current = window.setTimeout(() => {
+        setPhase('hidden');
+        unlockPage();
+        closeTimer.current = null;
+      }, fadeDurationMs);
+    }
+
     const stopStartListener = router.on('start', (event) => {
       const { visit } = event.detail;
       const changesPage =
@@ -38,30 +50,36 @@ export default function AppLoader(): React.JSX.Element | null {
       }
 
       clearCloseTimer();
-      activeVisitId.current = visit.id;
+      activeVisits.current.add(visit);
       document.documentElement.classList.add(scrollLockClass);
       document.body.classList.add(scrollLockClass);
       setPhase('visible');
     });
 
     const stopFinishListener = router.on('finish', (event) => {
-      if (event.detail.visit.id !== activeVisitId.current) {
+      const visit = event.detail.visit as ActiveVisit;
+
+      if (!activeVisits.current.delete(visit)) {
         return;
       }
 
-      activeVisitId.current = null;
-      setPhase('closing');
-      closeTimer.current = window.setTimeout(() => {
-        setPhase('hidden');
-        unlockPage();
-        closeTimer.current = null;
-      }, fadeDurationMs);
+      if (activeVisits.current.size === 0) {
+        closeLoader();
+      }
+    });
+
+    const stopCancelListener = router.on('cancel', () => {
+      if (activeVisits.current.size > 0) {
+        closeLoader();
+      }
     });
 
     return () => {
       stopStartListener();
       stopFinishListener();
+      stopCancelListener();
       clearCloseTimer();
+      activeVisits.current.clear();
       unlockPage();
     };
   }, []);

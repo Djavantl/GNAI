@@ -137,7 +137,9 @@ O componente sincroniza seleção e desabilitação com os controles gerados pel
 
 ### Datas e máscaras
 
-Quando o campo representar uma data compatível, use `DatePicker` com `id`, `name`, `label`, `value` e `onChange`. Ele exibe e mascara `DD/MM/AAAA`, recebe/emite datas completas em `AAAA-MM-DD` e permite que entradas incompletas cheguem à validação existente, sem criar uma regra de calendário diferente. Associe o erro por `invalid` e `describedBy`. A falha no calendário mantém a digitação disponível e apresenta feedback.
+Quando o campo representar uma data compatível, use `DatePicker` com `id`, `name`, `label`, `value` e `onChange`. Ele exibe e mascara `DD/MM/AAAA`, filtra caracteres não numéricos, rejeita dias/meses fora da faixa e datas inexistentes (incluindo anos bissextos), e recebe/emite datas completas válidas em `AAAA-MM-DD`. Entradas incompletas continuam chegando à validação existente; o componente não aplica limites de idade nem regras de negócio. Associe o erro por `invalid` e `describedBy`. A falha no calendário mantém a digitação disponível e apresenta feedback.
+
+Para horário, reutilize `ClockPicker` ou `TimePicker`, conforme o controle visual exigido pelo Ubold. Ambos filtram letras e rejeitam horários fora da faixa configurada; `ClockPicker` usa `HH:mm` de 24 horas, enquanto `TimePicker` respeita `showMeridian`. Mantenha essas máscaras e faixas nos componentes compartilhados, não nas telas.
 
 O Date Picker não é um controle de hora ou de intervalo. Não aplique datas de nascimento, limites de idade ou relacionamento entre datas a outro cadastro por cópia do exemplo.
 

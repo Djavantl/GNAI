@@ -12,6 +12,7 @@ interface ConfirmActionModalProps {
   open: boolean;
   title: string;
   message: ReactNode;
+  details?: ReactNode;
   error?: ReactNode;
   processing?: boolean;
   confirmLabel?: string;
@@ -74,6 +75,7 @@ export default function ConfirmActionModal({
   open,
   title,
   message,
+  details,
   error,
   processing = false,
   confirmLabel = 'Confirmar',
@@ -163,6 +165,11 @@ export default function ConfirmActionModal({
         <p className="confirmActionModal__message">
           {message}
         </p>
+        {details ? (
+          <div className="confirmActionModal__details">
+            {details}
+          </div>
+        ) : null}
         {error ? (
           <div role="alert" className="confirmActionModal__error">
             <InlineAlert variant="danger">

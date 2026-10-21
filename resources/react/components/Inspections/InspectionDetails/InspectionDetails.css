@@ -34,28 +34,6 @@
     margin: 0;
 }
 
-.inspectionDetails__detail {
-    min-width: 0;
-}
-
-.inspectionDetails__detail--wide {
-    grid-column: 1 / -1;
-}
-
-.inspectionDetails__detail dt {
-    margin-bottom: 8px;
-    color: var(--ui-color-form-label);
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.inspectionDetails__detail dd {
-    margin: 0;
-    color: var(--ui-color-legacy-text);
-    font-size: 14px;
-    overflow-wrap: anywhere;
-}
-
 .inspectionDetails__rich {
     max-width: 100%;
     overflow-wrap: anywhere;
@@ -106,7 +84,7 @@
         grid-template-columns: 1fr;
     }
 
-    .inspectionDetails__detail--wide {
+    .inspectionDetails__grid .detailField--wide {
         grid-column: auto;
     }
 

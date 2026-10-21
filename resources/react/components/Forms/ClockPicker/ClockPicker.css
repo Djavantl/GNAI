@@ -1,0 +1,94 @@
+@font-face {
+    font-family: "Glyphicons Halflings";
+    src: url("/assets/react/fonts/glyphicons-halflings-regular.woff2") format("woff2"),
+        url("/assets/react/fonts/glyphicons-halflings-regular.woff") format("woff"),
+        url("/assets/react/fonts/glyphicons-halflings-regular.ttf") format("truetype");
+}
+
+.clockPicker .input-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+}
+
+.clockPicker .input-group .form-control {
+    min-width: 0;
+    flex: 1 1 0;
+    width: 0;
+    height: 38px;
+}
+
+.clockPicker .input-group-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 38px;
+    white-space: nowrap;
+    height: 38px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 0 4px 4px 0;
+    background: var(--ui-color-gnai-primary);
+    color: var(--ui-color-surface);
+    cursor: pointer;
+}
+
+.clockPicker .glyphicon {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: "Glyphicons Halflings";
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.clockPicker .glyphicon-time::before {
+    content: "\e023";
+}
+
+.clockPicker .input-group .form-control {
+    border-radius: 4px 0 0 4px;
+}
+
+.clockPicker__error {
+    display: block;
+    margin-top: 2px;
+    color: var(--ui-color-danger, #f05050);
+    font-size: 12px;
+}
+
+.clockpicker-popover.popover {
+    border: 0;
+    border-radius: 3px;
+    color: #797979;
+    font-family: var(--ui-font-body);
+    font-size: 14px;
+    line-height: 1.42857143;
+    text-align: start;
+}
+
+.clockpicker-popover.popover .popover-title {
+    background: transparent;
+    color: var(--ui-color-gnai-primary);
+    font-weight: 600;
+}
+
+.clockpicker-popover .text-primary {
+    color: var(--ui-color-gnai-primary);
+}
+
+.clockpicker-popover .btn {
+    border-radius: 3px;
+    font-family: var(--ui-font-body);
+}
+
+.clockpicker-popover .btn-default {
+    border: 1px solid var(--ui-color-gnai-primary) !important;
+    background: var(--ui-color-gnai-primary) !important;
+    color: #fff !important;
+}

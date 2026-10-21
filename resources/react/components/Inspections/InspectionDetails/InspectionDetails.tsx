@@ -4,6 +4,7 @@ import InspectionEvidenceCarousel from "@/components/Inspections/InspectionEvide
 import BusinessPage from "@/components/Navigation/BusinessPage/BusinessPage";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
+import DetailField from "@/components/UI/DetailField/DetailField";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import type {
@@ -12,25 +13,6 @@ import type {
     InspectionDetailsSubject,
 } from "./InspectionDetails.types";
 import "./InspectionDetails.css";
-
-function Detail({
-    label,
-    children,
-    wide = false,
-}: {
-    label: string;
-    children: React.ReactNode;
-    wide?: boolean;
-}): React.JSX.Element {
-    return (
-        <div
-            className={`inspectionDetails__detail${wide ? " inspectionDetails__detail--wide" : ""}`}
-        >
-            <dt>{label}:</dt>
-            <dd>{children}</dd>
-        </div>
-    );
-}
 
 export default function InspectionDetails({
     collection,
@@ -67,13 +49,13 @@ export default function InspectionDetails({
                     iconClass="fa fa-search"
                 >
                     <dl className="inspectionDetails__grid">
-                        <Detail label="Estado de Conservação">
+                        <DetailField label="Estado de Conservação">
                             {inspection.stateLabel}
-                        </Detail>
-                        <Detail label="Tipo de Inspeção">
+                        </DetailField>
+                        <DetailField label="Tipo de Inspeção">
                             {inspection.typeLabel}
-                        </Detail>
-                        <Detail label="Parecer Técnico / Descrição" wide>
+                        </DetailField>
+                        <DetailField label="Parecer Técnico / Descrição" wide>
                             <ExpandableContent>
                                 <div
                                     className="inspectionDetails__rich"
@@ -82,7 +64,7 @@ export default function InspectionDetails({
                                     }}
                                 />
                             </ExpandableContent>
-                        </Detail>
+                        </DetailField>
                     </dl>
                 </FormSection>
                 <FormSection

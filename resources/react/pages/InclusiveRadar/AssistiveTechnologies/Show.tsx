@@ -9,6 +9,7 @@ import PageTitle from "@/components/Navigation/PageTitle/PageTitle";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
 import { notify } from "@/components/UI/NotificationToast/notify";
+import DetailField from "@/components/UI/DetailField/DetailField";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import InspectionHistoryTable from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable";
 import type { InspectionHistoryItem } from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable.types";
@@ -42,25 +43,6 @@ type Props = {
     };
 };
 const base = "/inclusive-radar/assistive-technologies";
-
-function Detail({
-    label,
-    children,
-    wide = false,
-}: {
-    label: string;
-    children: React.ReactNode;
-    wide?: boolean;
-}): React.JSX.Element {
-    return (
-        <div
-            className={`technologyShow__detail${wide ? " technologyShow__detail--wide" : ""}`}
-        >
-            <dt>{label}:</dt>
-            <dd>{children}</dd>
-        </div>
-    );
-}
 
 export default function InclusiveRadarAssistiveTechnologiesShowPage({
     assistiveTechnology: technology,
@@ -132,18 +114,18 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                     iconClass="fa fa-wheelchair"
                 >
                     <dl className="technologyShow__grid">
-                        <Detail label="Tipo da Tecnologia">
+                        <DetailField label="Tipo da Tecnologia">
                             {technology.name}
-                        </Detail>
-                        <Detail label="Natureza do Recurso">
+                        </DetailField>
+                        <DetailField label="Natureza do Recurso">
                             {technology.is_digital
                                 ? "Recurso Digital"
                                 : "Recurso Físico"}
-                        </Detail>
-                        <Detail label="Patrimônio / Tombamento">
+                        </DetailField>
+                        <DetailField label="Patrimônio / Tombamento">
                             {technology.asset_code || "Não se aplica"}
-                        </Detail>
-                        <Detail label="Descrição Detalhada" wide>
+                        </DetailField>
+                        <DetailField label="Descrição Detalhada" wide>
                             <ExpandableContent>
                                 <div
                                     className="technologyShow__rich"
@@ -152,7 +134,7 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                                     }}
                                 />
                             </ExpandableContent>
-                        </Detail>
+                        </DetailField>
                     </dl>
                 </FormSection>
                 <FormSection
@@ -162,13 +144,13 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                     iconClass="fa fa-cogs"
                 >
                     <dl className="technologyShow__grid">
-                        <Detail label="Quantidade Total">
+                        <DetailField label="Quantidade Total">
                             {technology.quantity ?? "---"}
-                        </Detail>
-                        <Detail label="Quantidade Disponível">
+                        </DetailField>
+                        <DetailField label="Quantidade Disponível">
                             {technology.quantity_available ?? "---"}
-                        </Detail>
-                        <Detail label="Status do Recurso">
+                        </DetailField>
+                        <DetailField label="Status do Recurso">
                             <TableLabel
                                 tone={
                                     technology.status === "available"
@@ -183,11 +165,11 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                             >
                                 {display.statusLabel}
                             </TableLabel>
-                        </Detail>
-                        <Detail label="Permite Empréstimos">
+                        </DetailField>
+                        <DetailField label="Permite Empréstimos">
                             {technology.is_loanable ? "Sim" : "Não"}
-                        </Detail>
-                        <Detail label="Status no Sistema">
+                        </DetailField>
+                        <DetailField label="Status no Sistema">
                             <TableLabel
                                 tone={
                                     technology.is_active ? "success" : "inverse"
@@ -195,8 +177,8 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                             >
                                 {technology.is_active ? "Ativo" : "Inativo"}
                             </TableLabel>
-                        </Detail>
-                        <Detail label="Público Alvo" wide>
+                        </DetailField>
+                        <DetailField label="Público Alvo" wide>
                             {deficiencies.length ? (
                                 <ul className="technologyShow__tags">
                                     {deficiencies.map((deficiency) => (
@@ -208,7 +190,7 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                             ) : (
                                 "Nenhum público-alvo definido."
                             )}
-                        </Detail>
+                        </DetailField>
                     </dl>
                 </FormSection>
                 {can.inspection && (

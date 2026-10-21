@@ -7,6 +7,7 @@ import PageTitle from "@/components/Navigation/PageTitle/PageTitle";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
+import DetailField from "@/components/UI/DetailField/DetailField";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
 import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
@@ -45,25 +46,6 @@ type Props = {
 };
 
 const base = "/inclusive-radar/accessible-educational-materials";
-
-function Detail({
-    label,
-    children,
-    wide = false,
-}: {
-    label: string;
-    children: React.ReactNode;
-    wide?: boolean;
-}): React.JSX.Element {
-    return (
-        <div
-            className={`materialShow__detail${wide ? " materialShow__detail--wide" : ""}`}
-        >
-            <dt>{label}:</dt>
-            <dd>{children}</dd>
-        </div>
-    );
-}
 
 function Tags({
     items,
@@ -164,16 +146,16 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                     iconClass="fa fa-book"
                 >
                     <dl className="materialShow__grid">
-                        <Detail label="Título do Material">
+                        <DetailField label="Título do Material">
                             {material.name}
-                        </Detail>
-                        <Detail label="Natureza do Recurso">
+                        </DetailField>
+                        <DetailField label="Natureza do Recurso">
                             {material.is_digital ? "Recurso Digital" : "Recurso Físico"}
-                        </Detail>
-                        <Detail label="Patrimônio / Tombamento">
+                        </DetailField>
+                        <DetailField label="Patrimônio / Tombamento">
                             {material.asset_code || "Não se aplica"}
-                        </Detail>
-                        <Detail label="Descrição Detalhada" wide>
+                        </DetailField>
+                        <DetailField label="Descrição Detalhada" wide>
                             <ExpandableContent>
                                 <div
                                     className="materialShow__rich"
@@ -182,13 +164,13 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                                     }}
                                 />
                             </ExpandableContent>
-                        </Detail>
-                        <Detail label="Recursos de Acessibilidade" wide>
+                        </DetailField>
+                        <DetailField label="Recursos de Acessibilidade" wide>
                             <Tags
                                 items={features}
                                 emptyMessage="Nenhum recurso definido."
                             />
-                        </Detail>
+                        </DetailField>
                     </dl>
                 </FormSection>
                 <FormSection
@@ -198,31 +180,31 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                     iconClass="fa fa-cogs"
                 >
                     <dl className="materialShow__grid">
-                        <Detail label="Quantidade Total">
+                        <DetailField label="Quantidade Total">
                             {material.quantity ?? "---"}
-                        </Detail>
-                        <Detail label="Quantidade Disponível">
+                        </DetailField>
+                        <DetailField label="Quantidade Disponível">
                             {material.quantity_available ?? "---"}
-                        </Detail>
-                        <Detail label="Status do Recurso">
+                        </DetailField>
+                        <DetailField label="Status do Recurso">
                             <TableLabel tone={statusTone}>
                                 {display.statusLabel}
                             </TableLabel>
-                        </Detail>
-                        <Detail label="Permite Empréstimos">
+                        </DetailField>
+                        <DetailField label="Permite Empréstimos">
                             {material.is_loanable ? "Sim" : "Não"}
-                        </Detail>
-                        <Detail label="Status no Sistema">
+                        </DetailField>
+                        <DetailField label="Status no Sistema">
                             <TableLabel tone={material.is_active ? "success" : "inverse"}>
                                 {material.is_active ? "Ativo" : "Inativo"}
                             </TableLabel>
-                        </Detail>
-                        <Detail label="Público Alvo" wide>
+                        </DetailField>
+                        <DetailField label="Público Alvo" wide>
                             <Tags
                                 items={deficiencies}
                                 emptyMessage="Nenhum público-alvo definido."
                             />
-                        </Detail>
+                        </DetailField>
                     </dl>
                 </FormSection>
                 {can.inspection ? (

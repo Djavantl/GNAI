@@ -15,29 +15,6 @@
     margin: 0;
 }
 
-.materialShow__detail {
-    min-width: 0;
-}
-
-.materialShow__detail--wide {
-    grid-column: 1 / -1;
-}
-
-.materialShow__detail dt {
-    margin-bottom: 8px;
-    color: var(--ui-color-form-label);
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.materialShow__detail dd {
-    min-width: 0;
-    margin: 0;
-    color: var(--ui-color-legacy-text);
-    font-size: 14px;
-    overflow-wrap: anywhere;
-}
-
 .materialShow__rich {
     max-width: 100%;
     overflow-wrap: anywhere;
@@ -82,7 +59,7 @@
         grid-template-columns: 1fr;
     }
 
-    .materialShow__detail--wide {
+    .materialShow__grid .detailField--wide {
         grid-column: auto;
     }
 }

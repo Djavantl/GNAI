@@ -27,6 +27,13 @@
   content: '\e023';
 }
 
+.timePicker__error {
+  display: block;
+  margin-top: 2px;
+  color: var(--ui-color-danger, #f05050);
+  font-size: 12px;
+}
+
 .timePicker .glyphicon-calendar::before {
   content: '\e109';
 }
