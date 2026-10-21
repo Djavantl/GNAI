@@ -1,5 +1,6 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import InstitutionForm from "./InstitutionForm";
+import type { InstitutionRecord } from "./Institution.types";
 
-export default function InclusiveRadarInstitutionsEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Instituições" />;
+export default function InclusiveRadarInstitutionsEditPage({ institution, canSubmit }: { institution: InstitutionRecord; canSubmit: boolean }): React.JSX.Element {
+    return <InstitutionForm institution={institution} canSubmit={canSubmit} />;
 }

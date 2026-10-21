@@ -17,6 +17,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Barriers\ShowBarrierInspectio
 use App\Domains\InclusiveRadar\Application\Queries\Barriers\ShowBarrierQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -32,7 +33,20 @@ final class BarrierController
     {
         $barriers = $query->execute($filters);
 
-        return Inertia::render('InclusiveRadar/Barriers/Index', compact('barriers'));
+        return Inertia::render('InclusiveRadar/Barriers/Index', [
+            'barriers' => $barriers,
+            'filters' => [
+                'name' => $filters->name ?? '',
+                'category' => $filters->category ?? '',
+                'priority' => $filters->priority ?? '',
+                'status' => $filters->status ?? '',
+            ],
+            'can' => [
+                'create' => $request->user()?->can('barrier.create') ?? false,
+                'show' => $request->user()?->can('barrier.show') ?? false,
+                'destroy' => $request->user()?->can('barrier.destroy') ?? false,
+            ],
+        ]);
     }
 
     public function create(Request $request, BarrierFormQuery $form): InertiaResponse
@@ -43,7 +57,7 @@ final class BarrierController
                 selectedInstitutionId: $request->old('institution_id')
                     ? (int) $request->old('institution_id')
                     : null,
-            ),
+            ) + ['canSubmit' => $request->user()?->can('barrier.store') ?? false],
         );
     }
 
@@ -62,11 +76,25 @@ final class BarrierController
             ->with('success', 'Barreira identificada com sucesso!');
     }
 
-    public function show(Barrier $barrier, ShowBarrierQuery $query): InertiaResponse
+    public function show(Barrier $barrier, ShowBarrierQuery $query, Request $request): InertiaResponse
     {
         $barrier = $query->execute($barrier);
 
-        return Inertia::render('InclusiveRadar/Barriers/Show', compact('barrier'));
+        return Inertia::render('InclusiveRadar/Barriers/Show', [
+            'barrier' => $barrier,
+            'display' => [
+                'descriptionHtml' => RichTextSanitizer::sanitize($barrier->description ?: 'Sem descrição detalhada.'),
+                'locationDetailsHtml' => $barrier->location_specific_details
+                    ? RichTextSanitizer::sanitize($barrier->location_specific_details)
+                    : null,
+            ],
+            'can' => [
+                'edit' => $request->user()?->can('barrier.edit') ?? false,
+                'destroy' => $request->user()?->can('barrier.destroy') ?? false,
+                'pdf' => $request->user()?->can('barrier.pdf') ?? false,
+                'inspectionShow' => $request->user()?->can('barrier.inspection.show') ?? false,
+            ],
+        ]);
     }
 
     public function edit(Barrier $barrier, Request $request, BarrierFormQuery $form): InertiaResponse
@@ -78,7 +106,7 @@ final class BarrierController
                 selectedInstitutionId: $request->old('institution_id')
                     ? (int) $request->old('institution_id')
                     : null,
-            ),
+            ) + ['canSubmit' => $request->user()?->can('barrier.update') ?? false],
         );
     }
 
@@ -115,8 +143,9 @@ final class BarrierController
         $inspection = $query->execute($barrier, $inspection);
 
         return Inertia::render('InclusiveRadar/Barriers/Inspections/Show', [
-            'barrier' => $barrier,
+            'barrier' => $barrier->loadMissing(['category']),
             'inspection' => $inspection,
+            'descriptionHtml' => RichTextSanitizer::sanitize($inspection->description ?: 'Nenhum parecer técnico registrado.'),
         ]);
     }
 

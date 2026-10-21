@@ -15,6 +15,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Locations\LocationFormQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Locations\ShowLocationQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLocation;
 use App\Domains\InclusiveRadar\Domain\Models\Location;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,7 +29,19 @@ final class LocationController
 
         return Inertia::render(
             'InclusiveRadar/Locations/Index',
-            compact('locations'),
+            [
+                'locations' => $locations,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'institution_name' => $filters->institutionName ?? '',
+                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('location.create') ?? false,
+                    'show' => $request->user()?->can('location.show') ?? false,
+                    'destroy' => $request->user()?->can('location.destroy') ?? false,
+                ],
+            ],
         );
     }
 
@@ -36,9 +49,9 @@ final class LocationController
     {
         return Inertia::render(
             'InclusiveRadar/Locations/Create',
-            $form->execute(
-                selectedInstitutionId: $this->selectedInstitutionId($request),
-            ),
+            $form->execute(selectedInstitutionId: $this->selectedInstitutionId($request)) + [
+                'canSubmit' => $request->user()?->can('location.store') ?? false,
+            ],
         );
     }
 
@@ -54,11 +67,20 @@ final class LocationController
             ->with('success', 'Ponto de referência criado com sucesso!');
     }
 
-    public function show(Location $location, ShowLocationQuery $query): InertiaResponse
+    public function show(Location $location, ShowLocationQuery $query, Request $request): InertiaResponse
     {
         $location = $query->execute($location);
 
-        return Inertia::render('InclusiveRadar/Locations/Show', compact('location'));
+        return Inertia::render('InclusiveRadar/Locations/Show', [
+            'location' => $location,
+            'display' => [
+                'descriptionHtml' => RichTextSanitizer::sanitize($location->description ?: '— Não informada —'),
+            ],
+            'can' => [
+                'edit' => $request->user()?->can('location.edit') ?? false,
+                'destroy' => $request->user()?->can('location.destroy') ?? false,
+            ],
+        ]);
     }
 
     public function edit(Location $location, LocationFormQuery $form, Request $request): InertiaResponse
@@ -68,7 +90,10 @@ final class LocationController
             $form->execute(
                 location: $location,
                 selectedInstitutionId: $this->selectedInstitutionId($request),
-            ) + ['location' => $location],
+            ) + [
+                'location' => $location,
+                'canSubmit' => $request->user()?->can('location.update') ?? false,
+            ],
         );
     }
 

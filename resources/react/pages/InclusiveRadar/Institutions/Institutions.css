@@ -1,0 +1,10 @@
+.institutionIndex__filters { display: grid; grid-template-columns: minmax(180px, 1.3fr) minmax(180px, 1.3fr) minmax(140px, .8fr) auto; align-items: end; gap: 16px; }
+.institutionForm__rangeField { display: flex; align-items: center; gap: 14px; }
+.institutionForm__rangeField input { flex: 1; min-width: 0; accent-color: var(--ui-color-gnai-primary); }
+.institutionForm__rangeField output { display: inline-flex; min-width: 42px; min-height: 36px; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 4px; background: var(--ui-color-gnai-primary); color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+.institutionShow__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; margin: 0; }
+.institutionShow__grid .detailField--wide { grid-column: 1 / -1; }
+.institutionShow__map { min-height: 320px; }
+@media (max-width: 900px) { .institutionIndex__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .institutionShow__grid { grid-template-columns: minmax(0, 1fr); } .institutionShow__grid .detailField--wide { grid-column: auto; } }
+@media (max-width: 560px) { .institutionIndex__filters { grid-template-columns: minmax(0, 1fr); gap: 8px; } }

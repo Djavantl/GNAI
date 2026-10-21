@@ -29,34 +29,80 @@ final readonly class BarrierFormQuery
 
     public function forUpdate(Barrier $barrier, ?int $selectedInstitutionId = null): array
     {
-        $data = $this->baseData();
+        $data = $this->baseData($barrier);
 
         return $data + [
             'barrier' => $barrier->loadMissing(['deficiencies', 'inspections.evidences', 'location', 'institution', 'category', 'registeredBy']),
             'selectedInstitution' => $selectedInstitutionId !== null
                 ? $data['institutions']->firstWhere('id', $selectedInstitutionId)
-                : ($barrier->institution ?? null),
+                : $data['institutions']->firstWhere('id', $barrier->institution_id),
         ];
     }
 
-    private function baseData(): array
+    private function baseData(?Barrier $barrier = null): array
     {
         $institutions = Institution::query()
-            ->with(['locations' => fn ($query) => $query->where('is_active', true)])
-            ->where('is_active', true)
+            ->with(['locations' => function ($query) use ($barrier): void {
+                $query->where('is_active', true);
+                if ($barrier?->location_id !== null) {
+                    $query->orWhere('id', $barrier->location_id);
+                }
+            }])
+            ->where(function ($query) use ($barrier): void {
+                $query->where('is_active', true);
+                if ($barrier?->institution_id !== null) {
+                    $query->orWhere('id', $barrier->institution_id);
+                }
+            })
             ->orderBy('name')
             ->get();
 
+        $categories = BarrierCategory::query()
+            ->where(function ($query) use ($barrier): void {
+                $query->where('is_active', true);
+                if ($barrier?->barrier_category_id !== null) {
+                    $query->orWhere('id', $barrier->barrier_category_id);
+                }
+            })
+            ->orderBy('name')
+            ->get();
+
+        $deficiencies = Deficiency::query()
+            ->where(function ($query) use ($barrier): void {
+                $query->where('is_active', true);
+                if ($barrier !== null) {
+                    $query->orWhereIn('id', $barrier->deficiencies()->pluck('deficiencies.id'));
+                }
+            })
+            ->orderBy('name')
+            ->get();
+
+        $institutionData = $institutions->map(fn (Institution $institution): array => [
+            'id' => $institution->id,
+            'name' => $institution->name,
+            'latitude' => (float) $institution->latitude,
+            'longitude' => (float) $institution->longitude,
+            'default_zoom' => $institution->default_zoom ?? Institution::DEFAULT_ZOOM,
+            'locations' => $institution->locations->map(fn ($location): array => [
+                'id' => $location->id,
+                'name' => $location->name,
+                'label' => $location->name,
+                'latitude' => (float) $location->latitude,
+                'longitude' => (float) $location->longitude,
+            ])->values(),
+        ])->values();
+
         return [
-            'institutions' => $institutions,
-            'categories' => BarrierCategory::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(),
-            'deficiencies' => Deficiency::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(),
+            'institutions' => $institutionData,
+            'categories' => $categories->map(fn (BarrierCategory $category): array => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'blocks_map' => $category->blocks_map,
+            ])->values(),
+            'deficiencies' => $deficiencies->map(fn (Deficiency $deficiency): array => [
+                'id' => $deficiency->id,
+                'name' => $deficiency->name,
+            ])->values(),
             'students' => Student::query()
                 ->select(['id', 'person_id'])
                 ->whereHas('person')
@@ -71,9 +117,12 @@ final readonly class BarrierFormQuery
                 ->get()
                 ->mapWithKeys(fn (Professional $professional) => [$professional->id => $professional->person?->name])
                 ->sort(),
-            'priorities' => collect(Priority::options()),
+            'priorities' => collect(Priority::options())
+                ->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])
+                ->values(),
             'barrierStatuses' => collect(BarrierStatus::cases())
-                ->mapWithKeys(fn (BarrierStatus $status) => [$status->value => $status->label()]),
+                ->map(fn (BarrierStatus $status): array => ['value' => $status->value, 'label' => $status->label()])
+                ->values(),
         ];
     }
 }

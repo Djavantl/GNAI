@@ -1,0 +1,7 @@
+.locationShow__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; margin: 0; }
+.locationShow__description { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 700px) { .locationShow__grid { grid-template-columns: minmax(0, 1fr); } }
+
+.locationIndex__filters { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(180px, 1.2fr) minmax(140px, .8fr) auto; align-items: end; gap: 16px; }
+@media (max-width: 900px) { .locationIndex__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .locationIndex__filters { grid-template-columns: minmax(0, 1fr); gap: 8px; } }

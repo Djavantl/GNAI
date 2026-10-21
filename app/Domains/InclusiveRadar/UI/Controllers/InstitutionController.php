@@ -27,13 +27,27 @@ final class InstitutionController
 
         return Inertia::render(
             'InclusiveRadar/Institutions/Index',
-            compact('institutions'),
+            [
+                'institutions' => $institutions,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'location' => $filters->location ?? '',
+                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('institution.create') ?? false,
+                    'show' => $request->user()?->can('institution.show') ?? false,
+                    'destroy' => $request->user()?->can('institution.destroy') ?? false,
+                ],
+            ],
         );
     }
 
-    public function create(): InertiaResponse
+    public function create(Request $request): InertiaResponse
     {
-        return Inertia::render('InclusiveRadar/Institutions/Create');
+        return Inertia::render('InclusiveRadar/Institutions/Create', [
+            'canSubmit' => $request->user()?->can('institution.store') ?? false,
+        ]);
     }
 
     /**
@@ -48,23 +62,32 @@ final class InstitutionController
             ->with('success', 'Instituição criada com sucesso!');
     }
 
-    public function show(Institution $institution, ShowInstitutionQuery $query): InertiaResponse
+    public function show(Institution $institution, ShowInstitutionQuery $query, Request $request): InertiaResponse
     {
         $institution = $query->execute($institution);
 
         return Inertia::render(
             'InclusiveRadar/Institutions/Show',
-            compact('institution'),
+            [
+                'institution' => $institution,
+                'can' => [
+                    'edit' => $request->user()?->can('institution.edit') ?? false,
+                    'destroy' => $request->user()?->can('institution.destroy') ?? false,
+                ],
+            ],
         );
     }
 
-    public function edit(Institution $institution): InertiaResponse
+    public function edit(Institution $institution, Request $request): InertiaResponse
     {
         $institution->load('locations');
 
         return Inertia::render(
             'InclusiveRadar/Institutions/Edit',
-            compact('institution'),
+            [
+                'institution' => $institution,
+                'canSubmit' => $request->user()?->can('institution.update') ?? false,
+            ],
         );
     }
 

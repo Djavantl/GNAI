@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import FileUploadButton from "@/components/Forms/FileUploadButton/FileUploadButton";
 import FormField from "@/components/Forms/FormField/FormField";
+import Button from "@/components/UI/Button/Button";
 import "./EvidenceUpload.css";
 
 const defaultAccept =
@@ -31,13 +32,17 @@ function EvidenceFile({
                 />
             )}
             <span>{file.name}</span>
-            <button
-                type="button"
+            <Button
+                tone="danger"
+                size="xs"
+                rounded
+                iconOnly
+                leftIconClass="fa fa-times"
                 aria-label={`Remover ${file.name}`}
+                title={`Remover ${file.name}`}
+                className="evidenceUpload__remove"
                 onClick={onRemove}
-            >
-                ×
-            </button>
+            />
         </li>
     );
 }
@@ -92,6 +97,7 @@ export default function EvidenceUpload({
             label="Evidências"
             error={message}
             hint={`Até ${maxFiles} arquivos. Imagens, PDF, documentos, planilhas, textos e apresentações; máximo de ${maxFileSizeMb} MB por arquivo.`}
+            hintLabel="Informações sobre evidências"
         >
             <FileUploadButton
                 id={id}

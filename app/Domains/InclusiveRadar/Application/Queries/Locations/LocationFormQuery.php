@@ -15,7 +15,14 @@ final class LocationFormQuery
     public function execute(?Location $location = null, ?int $selectedInstitutionId = null): array
     {
         $institutions = Institution::query()
-            ->where('is_active', true)
+            ->with(['locations:id,institution_id,name,type,latitude,longitude'])
+            ->where(function ($query) use ($location): void {
+                $query->where('is_active', true);
+
+                if ($location !== null) {
+                    $query->orWhere('id', $location->institution_id);
+                }
+            })
             ->orderBy('name')
             ->get();
 
@@ -28,14 +35,23 @@ final class LocationFormQuery
         }
 
         return [
-            'institutions' => $institutions->pluck('name', 'id'),
-            'institutionsData' => $institutions->mapWithKeys(fn (Institution $institution): array => [
-                $institution->id => [
-                    'latitude' => $institution->latitude,
-                    'longitude' => $institution->longitude,
-                    'default_zoom' => $institution->default_zoom ?? Institution::DEFAULT_ZOOM,
-                ],
-            ]),
+            'institutions' => $institutions->map(fn (Institution $institution): array => [
+                'value' => (string) $institution->id,
+                'label' => $institution->name,
+            ])->values(),
+            'institutionsData' => $institutions->map(fn (Institution $institution): array => [
+                'id' => $institution->id,
+                'name' => $institution->name,
+                'latitude' => (float) $institution->latitude,
+                'longitude' => (float) $institution->longitude,
+                'default_zoom' => $institution->default_zoom ?? Institution::DEFAULT_ZOOM,
+                'locations' => $institution->locations->map(fn ($location): array => [
+                    'id' => $location->id,
+                    'latitude' => $location->latitude,
+                    'longitude' => $location->longitude,
+                    'label' => trim($location->name.' ('.($location->type ?: 'Sem tipo').')'),
+                ])->values(),
+            ])->values(),
             'selectedInstitution' => $selectedInstitution,
         ];
     }
