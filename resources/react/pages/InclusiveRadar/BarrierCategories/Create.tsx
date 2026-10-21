@@ -1,5 +1,9 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import BarrierCategoryForm from "./BarrierCategoryForm";
 
-export default function InclusiveRadarBarrierCategoriesCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Categorias de barreiras" />;
+export default function InclusiveRadarBarrierCategoriesCreatePage({
+    can,
+}: {
+    can: { store: boolean };
+}): React.JSX.Element {
+    return <BarrierCategoryForm canSubmit={can.store} />;
 }

@@ -13,6 +13,7 @@ use App\Domains\InclusiveRadar\Application\Data\BarrierCategories\UpdateBarrierC
 use App\Domains\InclusiveRadar\Application\Queries\BarrierCategories\ListBarrierCategoriesQuery;
 use App\Domains\InclusiveRadar\Application\Queries\BarrierCategories\ShowBarrierCategoryQuery;
 use App\Domains\InclusiveRadar\Domain\Models\BarrierCategory;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,13 +28,26 @@ final class BarrierCategoryController
 
         return Inertia::render(
             'InclusiveRadar/BarrierCategories/Index',
-            compact('categories'),
+            [
+                'categories' => $categories,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'is_active' => $filters->isActive === null ? '' : ($filters->isActive ? '1' : '0'),
+                ],
+                'can' => [
+                    'create' => $request->user()->can('barrier-category.create'),
+                    'show' => $request->user()->can('barrier-category.show'),
+                    'destroy' => $request->user()->can('barrier-category.destroy'),
+                ],
+            ],
         );
     }
 
-    public function create(): InertiaResponse
+    public function create(Request $request): InertiaResponse
     {
-        return Inertia::render('InclusiveRadar/BarrierCategories/Create');
+        return Inertia::render('InclusiveRadar/BarrierCategories/Create', [
+            'can' => ['store' => $request->user()->can('barrier-category.store')],
+        ]);
     }
 
     public function store(CreateBarrierCategoryData $data, CreateBarrierCategoryAction $action): RedirectResponse
@@ -45,21 +59,33 @@ final class BarrierCategoryController
             ->with('success', 'Categoria de barreira cadastrada com sucesso!');
     }
 
-    public function show(BarrierCategory $barrierCategory, ShowBarrierCategoryQuery $query): InertiaResponse
+    public function show(BarrierCategory $barrierCategory, ShowBarrierCategoryQuery $query, Request $request): InertiaResponse
     {
         $barrierCategory = $query->execute($barrierCategory);
 
         return Inertia::render(
             'InclusiveRadar/BarrierCategories/Show',
-            compact('barrierCategory'),
+            [
+                'barrierCategory' => $barrierCategory,
+                'display' => [
+                    'descriptionHtml' => RichTextSanitizer::sanitize($barrierCategory->description ?: '— Não informada —'),
+                ],
+                'can' => [
+                    'edit' => $request->user()->can('barrier-category.edit'),
+                    'destroy' => $request->user()->can('barrier-category.destroy'),
+                ],
+            ],
         );
     }
 
-    public function edit(BarrierCategory $barrierCategory): InertiaResponse
+    public function edit(BarrierCategory $barrierCategory, Request $request): InertiaResponse
     {
         return Inertia::render(
             'InclusiveRadar/BarrierCategories/Edit',
-            compact('barrierCategory'),
+            [
+                'barrierCategory' => $barrierCategory,
+                'can' => ['update' => $request->user()->can('barrier-category.update')],
+            ],
         );
     }
 

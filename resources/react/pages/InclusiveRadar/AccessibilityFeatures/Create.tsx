@@ -1,5 +1,9 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import AccessibilityFeatureForm from "./AccessibilityFeatureForm";
 
-export default function InclusiveRadarAccessibilityFeaturesCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Recursos de acessibilidade" />;
+export default function InclusiveRadarAccessibilityFeaturesCreatePage({
+    can,
+}: {
+    can: { store: boolean };
+}): React.JSX.Element {
+    return <AccessibilityFeatureForm canSubmit={can.store} />;
 }

@@ -39,9 +39,34 @@ final class BackupController
         $syncBackups->execute();
 
         $backups = $backupsQuery->execute($filters);
-        $users = $usersQuery->execute();
+        $backups->getCollection()->each(
+            fn (Backup $backup) => $backup->setAttribute(
+                'created_at_label',
+                $backup->created_at?->format('d/m/Y H:i') ?? '—',
+            ),
+        );
+        $users = $usersQuery->execute()
+            ->map(fn ($user): array => ['id' => $user->id, 'name' => $user->name])
+            ->values();
 
-        return Inertia::render('Backup/Index', compact('backups', 'users'));
+        return Inertia::render('Backup/Index', [
+            'backups' => $backups,
+            'users' => $users,
+            'filters' => [
+                'name' => $filters->name ?? '',
+                'status' => $filters->status?->value ?? '',
+                'user_id' => $filters->userId === null ? '' : (string) $filters->userId,
+            ],
+            'backupDirectory' => config('backup.backup.name'),
+            'can' => [
+                'store' => $request->user()->can('backup.store'),
+                'upload' => $request->user()->can('backup.upload'),
+                'show' => $request->user()->can('backup.show'),
+                'download' => $request->user()->can('backup.download'),
+                'restore' => $request->user()->can('backup.restore'),
+                'destroy' => $request->user()->can('backup.destroy'),
+            ],
+        ]);
     }
 
     /**
@@ -56,11 +81,18 @@ final class BackupController
             ->with('success', 'Backup realizado com sucesso!');
     }
 
-    public function show(Backup $backup, ShowBackupQuery $query): InertiaResponse
+    public function show(Backup $backup, ShowBackupQuery $query, Request $request): InertiaResponse
     {
         $backup = $query->execute($backup);
+        $backup->setAttribute('created_at_label', $backup->created_at?->format('d/m/Y H:i') ?? '—');
 
-        return Inertia::render('Backup/Show', compact('backup'));
+        return Inertia::render('Backup/Show', [
+            'backup' => $backup,
+            'can' => [
+                'download' => $request->user()->can('backup.download'),
+                'destroy' => $request->user()->can('backup.destroy'),
+            ],
+        ]);
     }
 
     public function download(Backup $backup, DownloadBackupQuery $query): RedirectResponse|StreamedResponse

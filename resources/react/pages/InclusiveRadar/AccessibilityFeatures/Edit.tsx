@@ -1,5 +1,17 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import AccessibilityFeatureForm from "./AccessibilityFeatureForm";
+import type { AccessibilityFeatureRecord } from "./AccessibilityFeature.types";
 
-export default function InclusiveRadarAccessibilityFeaturesEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Recursos de acessibilidade" />;
+export default function InclusiveRadarAccessibilityFeaturesEditPage({
+    accessibilityFeature,
+    can,
+}: {
+    accessibilityFeature: AccessibilityFeatureRecord;
+    can: { update: boolean };
+}): React.JSX.Element {
+    return (
+        <AccessibilityFeatureForm
+            feature={accessibilityFeature}
+            canSubmit={can.update}
+        />
+    );
 }

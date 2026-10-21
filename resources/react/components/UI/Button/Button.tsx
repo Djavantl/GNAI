@@ -68,6 +68,7 @@ type ButtonAsAnchorProps = ButtonCommonProps & {
   href: string;
   target?: React.HTMLAttributeAnchorTarget;
   rel?: string;
+  download?: boolean | string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
@@ -160,6 +161,40 @@ export default function Button(props: ButtonProps): React.JSX.Element {
   });
 
   if ('href' in props && props.href !== undefined) {
+    if (props.download !== undefined) {
+      return (
+        <a
+          href={props.href}
+          target={props.target}
+          rel={props.rel}
+          download={props.download}
+          title={title}
+          className={classNames}
+          aria-disabled={disabled}
+          aria-label={props['aria-label']}
+          aria-describedby={props['aria-describedby']}
+          aria-expanded={props['aria-expanded']}
+          aria-haspopup={props['aria-haspopup']}
+          aria-controls={props['aria-controls']}
+          onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+            if (disabled) {
+              event.preventDefault();
+              return;
+            }
+            props.onClick?.(event);
+          }}
+          onPointerDown={() => {
+            if (!disabled) setPressed(true);
+          }}
+          onPointerUp={() => setPressed(false)}
+          onPointerCancel={() => setPressed(false)}
+          onPointerLeave={() => setPressed(false)}
+        >
+          {content}
+        </a>
+      );
+    }
+
     return (
       <Link
         href={props.href}

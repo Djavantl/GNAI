@@ -1,5 +1,12 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import BarrierCategoryForm from "./BarrierCategoryForm";
+import type { BarrierCategoryRecord } from "./BarrierCategory.types";
 
-export default function InclusiveRadarBarrierCategoriesEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Categorias de barreiras" />;
+export default function InclusiveRadarBarrierCategoriesEditPage({
+    barrierCategory,
+    can,
+}: {
+    barrierCategory: BarrierCategoryRecord;
+    can: { update: boolean };
+}): React.JSX.Element {
+    return <BarrierCategoryForm category={barrierCategory} canSubmit={can.update} />;
 }
