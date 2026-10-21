@@ -1,0 +1,76 @@
+.waitlistIndex__filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.waitlistIndex__statusFilter {
+    width: min(100%, 320px);
+}
+
+.waitlistIndex__table td:first-child a,
+.waitlistShow__grid a {
+    color: var(--ui-color-legacy-text);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.waitlistIndex__table td:first-child a:hover,
+.waitlistShow__grid a:hover {
+    text-decoration: underline;
+}
+
+.waitlistForm__card,
+.waitlistShow__card {
+    min-width: 0;
+}
+
+.waitlistForm__wide {
+    grid-column: 1 / -1;
+}
+
+.waitlistForm__details,
+.waitlistShow__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0;
+}
+
+.waitlistForm__hint {
+    margin: 12px 0 0;
+    color: var(--ui-color-gnai-primary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.waitlistShow__richText {
+    overflow-wrap: anywhere;
+}
+
+.waitlistShow__richText :first-child {
+    margin-top: 0;
+}
+
+.waitlistShow__richText :last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+    .waitlistIndex__filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .waitlistIndex__filters,
+    .waitlistForm__details,
+    .waitlistShow__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .waitlistForm__wide {
+        grid-column: auto;
+    }
+}

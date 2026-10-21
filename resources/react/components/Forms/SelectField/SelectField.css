@@ -59,6 +59,51 @@
   border: 1px solid #e3e3e3 !important;
   padding-top: 5px;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+  animation: selectFieldDropdownEnter 250ms ease both;
+}
+.selectFieldDropdown.select2-drop-above.select2-drop-active {
+  transform-origin: bottom;
+}
+@keyframes selectFieldDropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+.selectFieldDropdown.select2-drop-above.select2-drop-active {
+  animation-name: selectFieldDropdownEnterAbove;
+}
+.selectFieldDropdown.selectFieldDropdown--closing {
+  animation-name: selectFieldDropdownExit;
+}
+.selectFieldDropdown.select2-drop-above.selectFieldDropdown--closing {
+  animation-name: selectFieldDropdownExitAbove;
+}
+@keyframes selectFieldDropdownEnterAbove {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scaleY(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+@keyframes selectFieldDropdownExit {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.96);
+  }
+}
+@keyframes selectFieldDropdownExitAbove {
+  to {
+    opacity: 0;
+    transform: translateY(6px) scaleY(0.96);
+  }
 }
 .selectFieldDropdown .select2-search input {
   border: 1px solid #e3e3e3 !important;
@@ -111,4 +156,10 @@
   font-size: 12px;
   font-weight: 400;
   line-height: 1.42857143;
+}
+@media (prefers-reduced-motion: reduce) {
+  .selectFieldDropdown.select2-drop-active,
+  .selectFieldDropdown.selectFieldDropdown--closing {
+    animation-duration: 0.01ms;
+  }
 }

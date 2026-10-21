@@ -1,0 +1,48 @@
+.institutionalEventIndex__filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 260px) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.institutionalEventForm__wide {
+    grid-column: 1 / -1;
+}
+
+.institutionalEventForm__card,
+.institutionalEventShow__card {
+    min-width: 0;
+}
+
+.institutionalEventShow__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0;
+}
+
+.institutionalEventShow__richText {
+    overflow-wrap: anywhere;
+}
+
+.institutionalEventShow__richText :first-child {
+    margin-top: 0;
+}
+
+.institutionalEventShow__richText :last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+    .institutionalEventIndex__filters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .institutionalEventForm__wide {
+        grid-column: auto;
+    }
+
+    .institutionalEventShow__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

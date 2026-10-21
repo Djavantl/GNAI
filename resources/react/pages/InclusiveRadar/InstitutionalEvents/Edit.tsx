@@ -1,5 +1,18 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import InstitutionalEventForm from "./InstitutionalEventForm";
+import type { InstitutionalEventRecord } from "./InstitutionalEvent.types";
 
-export default function InclusiveRadarInstitutionalEventsEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Eventos institucionais" />;
+export default function InclusiveRadarInstitutionalEventsEditPage({
+    event,
+    can,
+}: {
+    event: InstitutionalEventRecord;
+    can: { submit: boolean };
+}): React.JSX.Element {
+    return (
+        <InstitutionalEventForm
+            key={event.id}
+            event={event}
+            canSubmit={can.submit}
+        />
+    );
 }

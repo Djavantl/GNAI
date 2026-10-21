@@ -16,6 +16,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Waitlists\ShowWaitlistQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Waitlists\WaitlistFormQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Waitlists\WaitlistPdfQuery;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -29,11 +30,21 @@ final class WaitlistController
 {
     public function index(ListWaitlistsData $filters, ListWaitlistsQuery $query, Request $request): InertiaResponse
     {
-        $waitlists = $query->execute($filters);
+        $waitlists = $query->execute($filters)->through(
+            fn (Waitlist $waitlist): array => $this->waitlistPayload($waitlist),
+        );
 
         return Inertia::render(
             'InclusiveRadar/Waitlists/Index',
-            compact('waitlists'),
+            [
+                'waitlists' => $waitlists,
+                'filters' => $request->only(['item', 'student', 'professional', 'status', 'start_date', 'end_date', 'per_page']),
+                'can' => [
+                    'create' => $request->user()?->can('waitlist.create') ?? false,
+                    'show' => $request->user()?->can('waitlist.show') ?? false,
+                    'destroy' => $request->user()?->can('waitlist.destroy') ?? false,
+                ],
+            ],
         );
     }
 
@@ -43,7 +54,9 @@ final class WaitlistController
             'InclusiveRadar/Waitlists/Create',
             $form->forCreation(
                 authUser: $request->user(),
-            ),
+            ) + [
+                'can' => ['submit' => $request->user()?->can('waitlist.store') ?? false],
+            ],
         );
     }
 
@@ -69,23 +82,33 @@ final class WaitlistController
         return Inertia::render(
             'InclusiveRadar/Waitlists/Show',
             [
-                'waitlist' => $waitlist,
-                'authUser' => $request->user(),
+                'waitlist' => $this->waitlistPayload($waitlist, includeObservationHtml: true),
                 'statusLabel' => $waitlist->status->label(),
                 'statusColor' => $waitlist->status->color(),
                 'canCancel' => $waitlist->status->canCancel(),
+                'can' => [
+                    'edit' => $request->user()?->can('waitlist.edit') ?? false,
+                    'cancel' => $request->user()?->can('waitlist.cancel') ?? false,
+                    'destroy' => $request->user()?->can('waitlist.destroy') ?? false,
+                    'pdf' => $request->user()?->can('waitlist.pdf') ?? false,
+                ],
             ],
         );
     }
 
     public function edit(Waitlist $waitlist, WaitlistFormQuery $form, Request $request): InertiaResponse
     {
+        $props = $form->forUpdate(
+            waitlist: $waitlist,
+            authUser: $request->user(),
+        );
+        $props['waitlist'] = $this->waitlistPayload($waitlist);
+
         return Inertia::render(
             'InclusiveRadar/Waitlists/Edit',
-            $form->forUpdate(
-                waitlist: $waitlist,
-                authUser: $request->user(),
-            ),
+            $props + [
+                'can' => ['submit' => $request->user()?->can('waitlist.update') ?? false],
+            ],
         );
     }
 
@@ -148,5 +171,50 @@ final class WaitlistController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Fila_Espera_{$waitlist->id}.pdf");
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function waitlistPayload(Waitlist $waitlist, bool $includeObservationHtml = false): array
+    {
+        $waitlist->loadMissing([
+            'waitlistable',
+            'student:id,person_id,registration',
+            'student.person:id,name',
+            'professional:id,person_id',
+            'professional.person:id,name',
+            'user:id,name',
+        ]);
+
+        $payload = [
+            'id' => $waitlist->id,
+            'student_id' => $waitlist->student_id,
+            'professional_id' => $waitlist->professional_id,
+            'waitlistable_id' => $waitlist->waitlistable_id,
+            'waitlistable_type' => $waitlist->waitlistable_type,
+            'item_name' => $waitlist->waitlistable?->name ?? $waitlist->waitlistable?->title ?? 'Item removido',
+            'asset_code' => $waitlist->waitlistable?->asset_code,
+            'student' => $waitlist->student ? [
+                'name' => $waitlist->student->person?->name ?? 'Sem nome',
+                'registration' => $waitlist->student->registration,
+            ] : null,
+            'professional' => $waitlist->professional ? [
+                'name' => $waitlist->professional->person?->name ?? 'Sem nome',
+            ] : null,
+            'user' => $waitlist->user?->name ?? '—',
+            'requested_at' => $waitlist->requested_at?->format('Y-m-d\TH:i:s'),
+            'requested_at_label' => $waitlist->requested_at?->format('d/m/Y H:i') ?? '—',
+            'status' => $waitlist->status->value,
+            'status_label' => $waitlist->status->label(),
+            'status_color' => $waitlist->status->color(),
+            'observation' => $waitlist->observation,
+        ];
+
+        if ($includeObservationHtml) {
+            $payload['observation_html'] = RichTextSanitizer::sanitize($waitlist->observation ?? '');
+        }
+
+        return $payload;
     }
 }

@@ -28,6 +28,8 @@ export interface ClockPickerProps {
     label: string;
     defaultValue?: string;
     required?: boolean;
+    invalid?: boolean;
+    describedBy?: string;
     onChange?: (value: string) => void;
 }
 
@@ -36,6 +38,8 @@ export default function ClockPicker({
     label,
     defaultValue,
     required = false,
+    invalid = false,
+    describedBy,
     onChange,
 }: ClockPickerProps): React.JSX.Element {
     const input = useRef<HTMLInputElement>(null);
@@ -149,8 +153,8 @@ export default function ClockPicker({
                     required={required}
                     inputMode="numeric"
                     autoComplete="off"
-                    invalid={invalidEntry}
-                    aria-describedby={description}
+                    invalid={invalid || invalidEntry}
+                    aria-describedby={[describedBy, description].filter(Boolean).join(" ") || undefined}
                     onChange={(event) =>
                         applyTime(
                             event.currentTarget.value,

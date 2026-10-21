@@ -231,7 +231,7 @@
   color: var(--ui-color-text);
 }
 
-.tableListColumnsMenu > summary {
+.tableListColumnsMenu__trigger {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -255,17 +255,14 @@
 @media (prefers-reduced-motion: reduce) {
   .tableListMoreFilters__chevron,
   .tableListMoreFilters__collapse,
-  .tableListMoreFilters__content {
+  .tableListMoreFilters__content,
+  .tableListColumnsMenu__caret,
+  .tableListColumnsMenu__collapse {
     transition: none;
   }
 }
 
-.tableListColumnsMenu > summary::-webkit-details-marker {
-  display: none;
-}
-
-.tableListColumnsMenu[open] > summary,
-.tableListColumnsMenu > summary:focus-visible {
+.tableListColumnsMenu__trigger:focus-visible {
   border-color: var(--ui-color-input-focus-border);
   outline: 0;
 }
@@ -278,16 +275,38 @@
   transition: transform 160ms ease;
 }
 
-.tableListColumnsMenu[open] .tableListColumnsMenu__caret {
+.tableListColumnsMenu--open .tableListColumnsMenu__caret {
   transform: rotate(180deg);
 }
 
-.tableListColumnsMenu__options {
+.tableListColumnsMenu__collapse {
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
   z-index: 20;
   display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    grid-template-rows 250ms ease,
+    opacity 180ms ease,
+    visibility 0s linear 250ms;
+}
+
+.tableListColumnsMenu--open .tableListColumnsMenu__collapse {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  opacity: 1;
+  transition:
+    grid-template-rows 250ms ease,
+    opacity 180ms ease;
+}
+
+.tableListColumnsMenu__options {
+  display: grid;
+  min-height: 0;
   min-width: 210px;
   margin: 0;
   padding: 6px;

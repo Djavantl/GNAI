@@ -1,5 +1,11 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import InstitutionalEventForm from "./InstitutionalEventForm";
 
-export default function InclusiveRadarInstitutionalEventsCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Eventos institucionais" />;
+export default function InclusiveRadarInstitutionalEventsCreatePage({
+    backRoute,
+    can,
+}: {
+    backRoute: string;
+    can: { submit: boolean };
+}): React.JSX.Element {
+    return <InstitutionalEventForm backRoute={backRoute} canSubmit={can.submit} />;
 }

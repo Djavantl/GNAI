@@ -16,6 +16,7 @@ use App\Domains\InclusiveRadar\Application\Queries\InstitutionalEvents\ShowInsti
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitutionalEvent;
 use App\Domains\InclusiveRadar\Domain\Models\InstitutionalEvent;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,11 +28,21 @@ final class InstitutionalEventController
 {
     public function index(ListInstitutionalEventsData $filters, ListInstitutionalEventsQuery $query, Request $request): InertiaResponse
     {
-        $events = $query->execute($filters);
+        $events = $query->execute($filters)->through(
+            fn (InstitutionalEvent $event): array => $this->eventPayload($event),
+        );
 
         return Inertia::render(
             'InclusiveRadar/InstitutionalEvents/Index',
-            compact('events'),
+            [
+                'events' => $events,
+                'filters' => $request->only(['title', 'is_active', 'per_page']),
+                'can' => [
+                    'create' => $request->user()?->can('institutional-event.create') ?? false,
+                    'show' => $request->user()?->can('institutional-event.show') ?? false,
+                    'destroy' => $request->user()?->can('institutional-event.destroy') ?? false,
+                ],
+            ],
         );
     }
 
@@ -40,7 +51,10 @@ final class InstitutionalEventController
         $backRoute = $request->query('back')
             ?? route('inclusive-radar.institutional-events.index');
 
-        return Inertia::render('InclusiveRadar/InstitutionalEvents/Create', compact('backRoute'));
+        return Inertia::render('InclusiveRadar/InstitutionalEvents/Create', [
+            'backRoute' => $backRoute,
+            'can' => ['submit' => $request->user()?->can('institutional-event.store') ?? false],
+        ]);
     }
 
     /**
@@ -57,16 +71,27 @@ final class InstitutionalEventController
 
     public function show(Request $request, InstitutionalEvent $event, ShowInstitutionalEventQuery $query): InertiaResponse
     {
-        $event = $query->execute($event);
+        $event = $this->eventPayload($query->execute($event), includeDescriptionHtml: true);
         $backRoute = $request->query('back')
             ?? route('inclusive-radar.institutional-events.index');
 
-        return Inertia::render('InclusiveRadar/InstitutionalEvents/Show', compact('event', 'backRoute'));
+        return Inertia::render('InclusiveRadar/InstitutionalEvents/Show', [
+            'event' => $event,
+            'backRoute' => $backRoute,
+            'can' => [
+                'edit' => $request->user()?->can('institutional-event.edit') ?? false,
+                'destroy' => $request->user()?->can('institutional-event.destroy') ?? false,
+                'pdf' => $request->user()?->can('institutional-event.pdf') ?? false,
+            ],
+        ]);
     }
 
-    public function edit(InstitutionalEvent $event): InertiaResponse
+    public function edit(InstitutionalEvent $event, Request $request): InertiaResponse
     {
-        return Inertia::render('InclusiveRadar/InstitutionalEvents/Edit', compact('event'));
+        return Inertia::render('InclusiveRadar/InstitutionalEvents/Edit', [
+            'event' => $this->eventPayload($event),
+            'can' => ['submit' => $request->user()?->can('institutional-event.update') ?? false],
+        ]);
     }
 
     /**
@@ -106,5 +131,33 @@ final class InstitutionalEventController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Evento_{$event->id}.pdf");
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function eventPayload(InstitutionalEvent $event, bool $includeDescriptionHtml = false): array
+    {
+        $payload = [
+            'id' => $event->id,
+            'title' => $event->title,
+            'description' => $event->description,
+            'start_date' => $event->start_date?->format('Y-m-d'),
+            'end_date' => $event->end_date?->format('Y-m-d'),
+            'start_date_label' => $event->start_date?->format('d/m/Y') ?? '—',
+            'end_date_label' => $event->end_date?->format('d/m/Y') ?? '—',
+            'start_time' => $event->start_time?->format('H:i'),
+            'end_time' => $event->end_time?->format('H:i'),
+            'location' => $event->location,
+            'organizer' => $event->organizer,
+            'audience' => $event->audience,
+            'is_active' => $event->is_active,
+        ];
+
+        if ($includeDescriptionHtml) {
+            $payload['description_html'] = RichTextSanitizer::sanitize($event->description ?? '');
+        }
+
+        return $payload;
     }
 }

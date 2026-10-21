@@ -64,6 +64,7 @@ export default function SelectField({
     setLoadFailed(false);
     let disposed = false;
     let cleanup: (() => void) | undefined;
+    let dropdownCloseTimer: number | undefined;
     const element = ref.current;
     const initialize = async (): Promise<void> => {
       await loadExternalStylesheet("/assets/react/plugins/select2/select2.css");
@@ -83,6 +84,25 @@ export default function SelectField({
           `${count} resultado(s). Use as setas para navegar e Enter para selecionar.`,
       });
       plugin.current = instance;
+      const dropdownElement = instance.data("select2")?.dropdown[0];
+      const animateDropdownClose = (): void => {
+        if (!dropdownElement) return;
+        window.clearTimeout(dropdownCloseTimer);
+        dropdownElement.style.display = "block";
+        dropdownElement.classList.remove("selectFieldDropdown--closing");
+        void dropdownElement.offsetHeight;
+        dropdownElement.classList.add("selectFieldDropdown--closing");
+        dropdownCloseTimer = window.setTimeout(() => {
+          dropdownElement.style.display = "none";
+          dropdownElement.classList.remove("selectFieldDropdown--closing");
+        }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 250);
+      };
+      const cancelDropdownClose = (): void => {
+        window.clearTimeout(dropdownCloseTimer);
+        dropdownElement?.classList.remove("selectFieldDropdown--closing");
+      };
+      instance.on("select2-close.gnaiSelect", animateDropdownClose);
+      instance.on("select2-opening.gnaiSelect", cancelDropdownClose);
       // jQuery's synthetic change does not reach React's native event delegation.
       // Forward it once; native changes already have originalEvent.
       instance.on('change.gnaiSelect', event => {
@@ -100,6 +120,7 @@ export default function SelectField({
       element.addEventListener('focus', focus);
       element.addEventListener('invalid', invalid);
       cleanup = () => {
+        window.clearTimeout(dropdownCloseTimer);
         plugin.current = null;
         labels.forEach(label => label.removeEventListener('click', focus));
         element.removeEventListener('focus', focus);
