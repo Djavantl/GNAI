@@ -10,9 +10,11 @@ import FormSection from "@/components/Forms/FormSection/FormSection";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
+import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import { notify } from "@/components/UI/NotificationToast/notify";
 import type { AccessibilityFeatureRecord } from "./AccessibilityFeature.types";
 import AccessibilityFeaturePage from "./AccessibilityFeaturePage";
+import "./AccessibilityFeatureForm.css";
 
 const base = "/inclusive-radar/accessibility-features";
 
@@ -76,7 +78,7 @@ export default function AccessibilityFeatureForm({
                 <CardBox>
                     <FormSection
                         id="accessibility-feature-identification"
-                        title="Identificação do Recurso"
+                        title="Dados do Recurso"
                         variant="inline"
                         iconClass="fa fa-universal-access"
                     >
@@ -126,24 +128,24 @@ export default function AccessibilityFeatureForm({
                                     />
                                 </FormField>
                             </FormGridWide>
+                            <div className="accessibilityFeatureForm__active">
+                                <ToggleControl
+                                    id="accessibility-feature-active"
+                                    name="is_active"
+                                    size="small"
+                                    label="Recurso Ativo"
+                                    labelAddon={(
+                                        <InfoTooltip
+                                            label="Informações sobre o status do recurso"
+                                            text="Define se este recurso estará disponível para seleção no sistema."
+                                        />
+                                    )}
+                                    checked={form.data.is_active}
+                                    disabled={form.processing}
+                                    onChange={(checked) => form.setData("is_active", checked)}
+                                />
+                            </div>
                         </FormGrid>
-                    </FormSection>
-                    <FormSection
-                        id="accessibility-feature-status"
-                        title="Configurações de Status"
-                        variant="inline"
-                        iconClass="fa fa-toggle-on"
-                    >
-                        <ToggleControl
-                            id="accessibility-feature-active"
-                            name="is_active"
-                            size="small"
-                            label="Recurso Ativo"
-                            description="Define se este recurso estará disponível para seleção no sistema"
-                            checked={form.data.is_active}
-                            disabled={form.processing}
-                            onChange={(checked) => form.setData("is_active", checked)}
-                        />
                     </FormSection>
                 </CardBox>
                 <FormActions

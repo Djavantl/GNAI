@@ -1,10 +1,21 @@
 .errorState { color: var(--ui-color-legacy-text); text-align: center; font-family: var(--ui-font-body); font-size: 14px; line-height: 20px; }
 .errorState__code { color: #252932; font-size: 98px; font-weight: 700; line-height: 150px; }
 .errorState__code i { font-size: 78px; padding: 0 10px; }
-.errorState__primary { color: var(--ui-color-primary); }
+.errorState__primary { color: var(--ui-color-gnai-primary); }
 .errorState__pink { color: var(--ui-color-pink); }
 .errorState__info { color: var(--ui-color-info); }
 .errorState h2 { margin: 10px 0; color: var(--ui-color-heading); font-family: var(--ui-font-ui); font-size: 30px; font-weight: 500; line-height: 35px; }
 .errorState p { margin: 0 0 10px; color: var(--ui-color-legacy-muted); line-height: 1.6; }
-.errorState p a { color: #337ab7; }
-.errorState p a:hover, .errorState p a:focus { color: #23527c; }
+.errorState .errorState__home.button--default,
+.errorState .errorState__home.button--default:hover,
+.errorState .errorState__home.button--default:focus,
+.errorState .errorState__home.button--default:active {
+  border-color: var(--ui-color-gnai-primary) !important;
+  background-color: var(--ui-color-gnai-primary) !important;
+}
+.errorState .errorState__home.button--default:hover,
+.errorState .errorState__home.button--default:focus,
+.errorState .errorState__home.button--default:active {
+  border-color: var(--ui-color-gnai-primary-hover) !important;
+  background-color: var(--ui-color-gnai-primary-hover) !important;
+}

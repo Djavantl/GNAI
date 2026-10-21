@@ -14,6 +14,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import ClockPicker from "@/components/Forms/ClockPicker/ClockPicker";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
+import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import type {
     LoanFormProps,
     LoanableItem,
@@ -450,6 +451,7 @@ export default function LoanForm({
                                     id="loan-due-date"
                                     label="Previsão de Devolução"
                                     hint="Defina o prazo limite para a entrega do item."
+                                    hintLabel="Ajuda sobre a previsão de devolução"
                                     error={errors.due_date}
                                     requiredIndicator
                                 >

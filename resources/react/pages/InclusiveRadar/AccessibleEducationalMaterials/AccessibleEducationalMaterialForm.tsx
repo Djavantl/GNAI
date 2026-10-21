@@ -16,6 +16,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import SummernoteEditor from "@/components/Forms/SummernoteEditor/SummernoteEditor";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
+import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
@@ -572,7 +573,11 @@ export default function AccessibleEducationalMaterialForm({
                                     checked={form.data.is_loanable}
                                     disabled={form.processing}
                                     label="Permitir Empréstimos"
-                                    description="Marque se este material pode ser emprestado"
+                                    labelAddon={(
+                                        <InfoTooltip
+                                            text="Marque se este material pode ser emprestado."
+                                        />
+                                    )}
                                     onChange={(checked) =>
                                         form.setData("is_loanable", checked)
                                     }
@@ -614,7 +619,11 @@ export default function AccessibleEducationalMaterialForm({
                                     checked={form.data.is_active}
                                     disabled={form.processing}
                                     label="Ativar no Sistema"
-                                    description="Disponível para visualização e empréstimos"
+                                    labelAddon={(
+                                        <InfoTooltip
+                                            text="Disponível para visualização e empréstimos."
+                                        />
+                                    )}
                                     onChange={(checked) =>
                                         form.setData("is_active", checked)
                                     }

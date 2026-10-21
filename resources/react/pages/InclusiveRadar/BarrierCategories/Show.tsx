@@ -80,13 +80,6 @@ export default function InclusiveRadarBarrierCategoriesShowPage({
                             </DetailField>
                         ) : null}
                     </dl>
-                </FormSection>
-                <FormSection
-                    id="barrier-category-show-status"
-                    title="Status e Visibilidade"
-                    variant="inline"
-                    iconClass="fa fa-cogs"
-                >
                     <dl className="barrierCategoryShow__grid">
                         <DetailField label="Ativo no Sistema">
                             <TableLabel tone={category.is_active ? "success" : "inverse"}>

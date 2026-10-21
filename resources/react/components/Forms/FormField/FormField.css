@@ -1,9 +1,10 @@
 .formField { margin-bottom: 15px; }
+.formField__labelRow { display: flex; align-items: center; gap: 6px; }
 .formField::before, .formField::after { display: table; content: ' '; }
 .formField::after { clear: both; }
-.formField__label { display: inline-block; max-width: 100%; margin-bottom: 5px; font-weight: 700; color: var(--ui-color-form-label); }
+.formField__label { display: inline-block; max-width: 100%; margin-bottom: 5px; color: var(--ui-color-form-label); font-size: var(--ui-font-size-form-label); font-weight: 700; }
 .formField__hint { color: #98a6ad; font-size: 13px; }
-.formField__required { color: var(--ui-color-danger, #f05050); }
+.formField__required { color: var(--ui-color-danger, #f05050); font-style: italic; }
 .formField__error {
   display: block;
   margin-top: 2px;

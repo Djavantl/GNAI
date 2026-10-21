@@ -20,6 +20,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import SummernoteEditor from "@/components/Forms/SummernoteEditor/SummernoteEditor";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
+import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import type {
     TechnologyFormOptions,
     TechnologyRecord,
@@ -405,6 +406,7 @@ export default function AssistiveTechnologyForm({
                                             ? "Descreva o estado do item ou detalhes da vistoria inicial."
                                             : "Descreva o motivo da mudança de estado ou detalhes da nova vistoria."
                                     }
+                                    hintLabel="Ajuda sobre o parecer técnico"
                                 >
                                     <SummernoteEditor
                                         id="technology-inspection-description"
@@ -493,7 +495,11 @@ export default function AssistiveTechnologyForm({
                                     checked={form.data.is_loanable}
                                     disabled={form.processing}
                                     label="Permitir Empréstimos"
-                                    description="Marque se este recurso pode ser emprestado"
+                                    labelAddon={(
+                                        <InfoTooltip
+                                            text="Marque se este recurso pode ser emprestado."
+                                        />
+                                    )}
                                     onChange={(checked) =>
                                         form.setData("is_loanable", checked)
                                     }
@@ -535,7 +541,11 @@ export default function AssistiveTechnologyForm({
                                     checked={form.data.is_active}
                                     disabled={form.processing}
                                     label="Ativar no Sistema"
-                                    description="Disponível para visualização e empréstimos"
+                                    labelAddon={(
+                                        <InfoTooltip
+                                            text="Disponível para visualização e empréstimos."
+                                        />
+                                    )}
                                     onChange={(checked) =>
                                         form.setData("is_active", checked)
                                     }

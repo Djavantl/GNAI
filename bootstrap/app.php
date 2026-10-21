@@ -64,7 +64,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => $e->getMessage()], 403);
             }
 
-            return Inertia::render('Errors/Error', ['status' => 403])
+            return Inertia::render('Errors/Error', [
+                'status' => 403,
+                'homeHref' => route($request->user() ? 'dashboard' : 'login'),
+            ])
                 ->toResponse($request)->setStatusCode(403);
         });
 
@@ -109,12 +112,18 @@ return Application::configure(basePath: dirname(__DIR__))
             $status = $response->getStatusCode();
 
             if (! $request->expectsJson() && in_array($status, [403, 404, 419, 503], true)) {
-                return Inertia::render('Errors/Error', ['status' => $status])
+                return Inertia::render('Errors/Error', [
+                    'status' => $status,
+                    'homeHref' => route($request->user() ? 'dashboard' : 'login'),
+                ])
                     ->toResponse($request)->setStatusCode($status);
             }
 
             if (! $request->expectsJson() && $status === 500 && ! config('app.debug')) {
-                return Inertia::render('Errors/Error', ['status' => $status])
+                return Inertia::render('Errors/Error', [
+                    'status' => $status,
+                    'homeHref' => route($request->user() ? 'dashboard' : 'login'),
+                ])
                     ->toResponse($request)->setStatusCode($status);
             }
 

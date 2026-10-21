@@ -57,8 +57,8 @@ export default function BackupShowPage({
         >
             <CardBox aria-busy={deleting}>
                 <FormSection
-                    id="backup-file-identification"
-                    title="Identificação do Arquivo Físico"
+                    id="backup-information"
+                    title="Informações do Backup"
                     variant="inline"
                     iconClass="fa fa-file-archive-o"
                 >
@@ -69,15 +69,6 @@ export default function BackupShowPage({
                         <DetailField label="Caminho no Servidor" wide>
                             <code>{backup.file_path}</code>
                         </DetailField>
-                    </dl>
-                </FormSection>
-                <FormSection
-                    id="backup-display-metadata"
-                    title="Metadados para Exibição"
-                    variant="inline"
-                    iconClass="fa fa-info-circle"
-                >
-                    <dl className="backupShow__grid">
                         <DetailField label="Nome de Exibição (Alias)" wide>
                             {backup.file_name}
                         </DetailField>
@@ -90,15 +81,6 @@ export default function BackupShowPage({
                         <DetailField label="Responsável">
                             {backup.user?.name ?? "Sistema"}
                         </DetailField>
-                    </dl>
-                </FormSection>
-                <FormSection
-                    id="backup-governance"
-                    title="Status e Governança"
-                    variant="inline"
-                    iconClass="fa fa-shield"
-                >
-                    <dl className="backupShow__grid">
                         <DetailField label="Status do Backup">
                             <BackupStatusLabel status={backup.status} />
                         </DetailField>

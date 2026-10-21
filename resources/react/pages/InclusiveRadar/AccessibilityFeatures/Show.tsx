@@ -61,7 +61,7 @@ export default function InclusiveRadarAccessibilityFeaturesShowPage({
             <CardBox aria-busy={deleting}>
                 <FormSection
                     id="accessibility-feature-show-identification"
-                    title="Identificação do Recurso"
+                    title="Dados do Recurso"
                     variant="inline"
                     iconClass="fa fa-universal-access"
                 >
@@ -74,15 +74,6 @@ export default function InclusiveRadarAccessibilityFeaturesShowPage({
                                 <div dangerouslySetInnerHTML={{ __html: display.descriptionHtml }} />
                             </ExpandableContent>
                         </DetailField>
-                    </dl>
-                </FormSection>
-                <FormSection
-                    id="accessibility-feature-show-status"
-                    title="Configurações de Status"
-                    variant="inline"
-                    iconClass="fa fa-toggle-on"
-                >
-                    <dl className="accessibilityFeatureShow__grid">
                         <DetailField label="Recurso Ativo">
                             <TableLabel tone={feature.is_active ? "success" : "inverse"}>
                                 {feature.is_active ? "Ativo" : "Inativo"}

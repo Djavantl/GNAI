@@ -1,18 +1,21 @@
-import { Link } from '@inertiajs/react';
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import { Head } from '@inertiajs/react';
+import AccountLayout from '@/components/Navigation/AccountLayout/AccountLayout';
+import ErrorState from '@/components/UI/ErrorState/ErrorState';
+import type { ErrorCode } from '@/components/UI/ErrorState/ErrorState.types';
 
-const messages: Record<number, string> = {
-  403: 'Acesso negado',
-  404: 'Página não encontrada',
-  419: 'Sessão expirada',
-  500: 'Erro interno no servidor',
-  503: 'Serviço indisponível',
-};
+const supportedStatuses: ErrorCode[] = ['400', '403', '404', '419', '500', '503'];
 
-export default function Error({ status }: { status: number }): React.JSX.Element {
+export default function Error({ status, homeHref }: { status: number; homeHref: string }): React.JSX.Element {
+  const code: ErrorCode = supportedStatuses.includes(String(status) as ErrorCode)
+    ? String(status) as ErrorCode
+    : '500';
+
   return (
-    <PageScaffold title={`${status} — ${messages[status] ?? 'Não foi possível abrir esta página'}`}>
-      <Link href="/">Voltar ao início</Link>
-    </PageScaffold>
+    <>
+      <Head title={`${status} — Erro | Gnai`} />
+      <AccountLayout>
+        <ErrorState code={code} homeHref={homeHref} homeLabel="Voltar" />
+      </AccountLayout>
+    </>
   );
 }

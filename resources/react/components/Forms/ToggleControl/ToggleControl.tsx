@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { loadExternalScript } from "@/utils/loadExternalScript";
 import { loadExternalStylesheet } from "@/utils/loadExternalStylesheet";
 import "./ToggleControl.css";
@@ -20,6 +20,7 @@ interface ToggleControlProps {
     id: string;
     name?: string;
     label: string;
+    labelAddon?: ReactNode;
     description?: string;
     checked: boolean;
     disabled?: boolean;
@@ -31,6 +32,7 @@ export default function ToggleControl({
     id,
     name,
     label,
+    labelAddon,
     description,
     checked,
     disabled = false,
@@ -143,13 +145,16 @@ export default function ToggleControl({
     return (
         <div className="toggleControl">
             <div className="toggleControl__text">
-                <label
-                    id={`${id}-label`}
-                    htmlFor={id}
-                    className="toggleControl__label"
-                >
-                    {label}
-                </label>
+                <div className="toggleControl__labelRow">
+                    <label
+                        id={`${id}-label`}
+                        htmlFor={id}
+                        className="toggleControl__label"
+                    >
+                        {label}
+                    </label>
+                    {labelAddon}
+                </div>
                 {description ? (
                     <span
                         id={descriptionId}

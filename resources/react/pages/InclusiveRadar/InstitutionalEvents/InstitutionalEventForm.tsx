@@ -11,6 +11,7 @@ import ClockPicker from "@/components/Forms/ClockPicker/ClockPicker";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
+import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import type {
     InstitutionalEventFormData,
     InstitutionalEventRecord,
@@ -252,7 +253,9 @@ export default function InstitutionalEventForm({
                             name="is_active"
                             size="small"
                             label="Ativo"
-                            description="Será exibido na agenda institucional"
+                            labelAddon={(
+                                <InfoTooltip text="Será exibido na agenda institucional." />
+                            )}
                             checked={form.data.is_active}
                             onChange={(checked) => form.setData("is_active", checked)}
                         />

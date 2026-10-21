@@ -17,7 +17,10 @@ void createInertiaApp({
     const load = pages[`./pages/${name}.tsx`];
     if (!load) throw new Error(`Página React não encontrada: ${name}`);
     const page = (await load()).default;
-    if (!name.startsWith('Catalog/') && !['Auth/Login', 'Auth/ForgotPassword', 'Auth/ResetPassword'].includes(name)) {
+    if (
+      !name.startsWith('Catalog/') &&
+      !['Auth/Login', 'Auth/ForgotPassword', 'Auth/ResetPassword', 'Errors/Error'].includes(name)
+    ) {
       page.layout ??= (children) => <AppLayout>{children}</AppLayout>;
     }
     return page;

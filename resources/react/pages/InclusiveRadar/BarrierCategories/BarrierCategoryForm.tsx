@@ -10,6 +10,7 @@ import FormSection from "@/components/Forms/FormSection/FormSection";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
+import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import { notify } from "@/components/UI/NotificationToast/notify";
 import type { BarrierCategoryRecord } from "./BarrierCategory.types";
 import BarrierCategoryPage from "./BarrierCategoryPage";
@@ -123,13 +124,6 @@ export default function BarrierCategoryForm({
                                 </FormField>
                             </FormGridWide>
                         </FormGrid>
-                    </FormSection>
-                    <FormSection
-                        id="barrier-category-settings"
-                        title="Status e Visibilidade"
-                        variant="inline"
-                        iconClass="fa fa-cogs"
-                    >
                         <FormGrid columns={2}>
                             <FormStack>
                                 <ToggleControl
@@ -137,7 +131,9 @@ export default function BarrierCategoryForm({
                                     name="is_active"
                                     size="small"
                                     label="Ativar no Sistema"
-                                    description="Indica se esta categoria estará disponível para seleção no cadastro de novas barreiras"
+                                    labelAddon={(
+                                        <InfoTooltip text="Indica se esta categoria estará disponível para seleção no cadastro de novas barreiras." />
+                                    )}
                                     checked={form.data.is_active}
                                     disabled={form.processing}
                                     onChange={(checked) => form.setData("is_active", checked)}
@@ -149,7 +145,9 @@ export default function BarrierCategoryForm({
                                     name="blocks_map"
                                     size="small"
                                     label="Bloquear Mapa"
-                                    description="Oculta o mapa no cadastro de novas barreiras quando esta categoria for selecionada"
+                                    labelAddon={(
+                                        <InfoTooltip text="Oculta o mapa no cadastro de novas barreiras quando esta categoria for selecionada." />
+                                    )}
                                     checked={form.data.blocks_map}
                                     disabled={form.processing}
                                     onChange={(checked) => form.setData("blocks_map", checked)}

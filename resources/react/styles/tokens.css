@@ -29,6 +29,7 @@
   --ui-color-gnai-primary: var(--primary-color);
   --ui-color-gnai-primary-hover: var(--color-primary-hover);
   --ui-color-form-label: var(--text-purple-dark);
+  --ui-font-size-form-label: 16px;
   --ui-color-input-border: var(--input-border-color);
   --ui-color-input-focus-border: var(--input-focus-border-color);
   --ui-color-save: var(--ui-color-gnai-primary);
