@@ -69,13 +69,22 @@ final class PedagogicalRecordController
     public function show(PedagogicalRecord $pedagogicalRecord, ShowPedagogicalRecordQuery $query, Request $request): InertiaResponse
     {
         $pedagogicalRecord = $query->execute($pedagogicalRecord, $this->user($request));
+        $returnStudentId = $request->integer('student_id');
 
-        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Show', compact('pedagogicalRecord'));
+        return Inertia::render(
+            'SpecializedEducationalSupport/PedagogicalRecords/Show',
+            compact('pedagogicalRecord', 'returnStudentId'),
+        );
     }
 
     public function edit(PedagogicalRecord $pedagogicalRecord, PedagogicalRecordFormQuery $form, Request $request): InertiaResponse
     {
-        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Edit', $form->forUpdate($pedagogicalRecord, $this->professionalId($request)));
+        return Inertia::render(
+            'SpecializedEducationalSupport/PedagogicalRecords/Edit',
+            $form->forUpdate($pedagogicalRecord, $this->professionalId($request)) + [
+                'returnStudentId' => $request->integer('student_id'),
+            ],
+        );
     }
 
     /** @throws Throwable */
@@ -90,6 +99,16 @@ final class PedagogicalRecordController
     public function destroy(PedagogicalRecord $pedagogicalRecord, DeletePedagogicalRecordAction $action, Request $request): RedirectResponse
     {
         $sessionId = $action->execute($pedagogicalRecord, $this->professionalId($request));
+
+        if ($request->integer('student_id') > 0) {
+            return redirect()->route(
+                'specialized-educational-support.students.show',
+                [
+                    'student' => $request->integer('student_id'),
+                    'tab' => 'pedagogical-attendance',
+                ],
+            )->with('success', 'Atendimento pedagógico removido com sucesso.');
+        }
 
         return redirect()->route('specialized-educational-support.sessions.show', $sessionId)->with('success', 'Atendimento pedagógico removido com sucesso.');
     }

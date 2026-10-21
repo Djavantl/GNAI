@@ -4,7 +4,14 @@
 .formField__label { display: inline-block; max-width: 100%; margin-bottom: 5px; font-weight: 700; color: var(--ui-color-form-label); }
 .formField__hint { color: #98a6ad; font-size: 13px; }
 .formField__required { color: var(--ui-color-danger, #f05050); }
-.formField__error { display: inline-block; color: var(--ui-color-danger, #f05050); font-weight: 700; }
+.formField__error {
+  display: block;
+  margin-top: 2px;
+  color: var(--ui-color-danger, #f05050);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.42857143;
+}
 .formField--horizontal > .formField__label, .formField--horizontal > .formField__control { position: relative; min-height: 1px; padding: 0 10px; }
 @media (min-width: 1200px) {
   .formField--horizontal > .formField__label { float: left; width: 16.66666667%; }

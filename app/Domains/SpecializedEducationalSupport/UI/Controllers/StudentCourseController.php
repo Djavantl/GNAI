@@ -70,7 +70,10 @@ final class StudentCourseController
         $action->execute($student, $data);
 
         return redirect()
-            ->route('specialized-educational-support.student-courses.history', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'academic-data',
+            ])
             ->with('success', 'Matrícula realizada com sucesso.');
     }
 
@@ -93,7 +96,10 @@ final class StudentCourseController
         $studentCourse = $action->execute($studentCourse, $data);
 
         return redirect()
-            ->route('specialized-educational-support.student-courses.show', $studentCourse)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $studentCourse->student_id,
+                'tab' => 'academic-data',
+            ])
             ->with('success', 'Dados da matrícula atualizados.');
     }
 
@@ -107,7 +113,10 @@ final class StudentCourseController
         $action->execute($studentCourse);
 
         return redirect()
-            ->route('specialized-educational-support.student-courses.history', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'academic-data',
+            ])
             ->with('success', 'Registro de histórico removido.');
     }
 
@@ -121,7 +130,10 @@ final class StudentCourseController
         $studentCourse = $action->execute($studentCourse);
 
         return redirect()
-            ->route('specialized-educational-support.student-courses.show', $studentCourse)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $studentCourse->student_id,
+                'tab' => 'academic-data',
+            ])
             ->with('success', 'Curso definido como atual com sucesso.');
     }
 }

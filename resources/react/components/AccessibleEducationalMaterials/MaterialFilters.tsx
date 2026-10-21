@@ -135,6 +135,12 @@ export default function MaterialFilters({
                         }
                     />
                 </FormField>
+                <TableListFilterActions>
+                    <TableListClearButton
+                        disabled={processing}
+                        onClick={onClear}
+                    />
+                </TableListFilterActions>
             </div>
             <TableListMoreFilters
                 active={Boolean(values.is_active || values.available)}
@@ -190,14 +196,6 @@ export default function MaterialFilters({
                     </FormField>
                 </div>
             </TableListMoreFilters>
-            <TableListFilterActions
-                status={processing ? 'Carregando materiais...' : undefined}
-            >
-                <TableListClearButton
-                    disabled={processing}
-                    onClick={onClear}
-                />
-            </TableListFilterActions>
         </FormLayout>
     );
 }

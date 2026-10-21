@@ -1,5 +1,5 @@
 import { Head, router } from "@inertiajs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import FormActions from "@/components/Forms/FormActions/FormActions";
@@ -8,7 +8,7 @@ import PageBreadcrumb from "@/components/Navigation/PageBreadcrumb/PageBreadcrum
 import PageTitle from "@/components/Navigation/PageTitle/PageTitle";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
-import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
+import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import InspectionHistoryTable from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable";
 import type { InspectionHistoryItem } from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable.types";
@@ -73,6 +73,16 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
     const [failure, setFailure] = useState("");
     const itemUrl = `${base}/${technology.id}`;
 
+    useEffect(() => {
+        if (!failure) return;
+
+        notify({
+            tone: "error",
+            title: "Não foi possível concluir",
+            text: failure,
+        });
+    }, [failure]);
+
     function remove(): void {
         if (deleting) {
             return;
@@ -81,10 +91,6 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
         setDeleting(true);
         setFailure("");
         router.delete(itemUrl, {
-            onError: () =>
-                setFailure(
-                    "Não foi possível excluir a tecnologia. Tente novamente.",
-                ),
             onHttpException: () => {
                 setFailure(
                     "Não foi possível concluir a exclusão. Tente novamente.",
@@ -118,11 +124,6 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                 title="Detalhes da Tecnologia Assistiva"
                 subtitle="Visualize as informações cadastrais, a disponibilidade e o histórico de vistorias do recurso."
             />
-            {failure && !deleteModalOpen ? (
-                <div role="alert">
-                    <InlineAlert variant="danger">{failure}</InlineAlert>
-                </div>
-            ) : null}
             <CardBox className="technologyShow__panel">
                 <FormSection
                     id="technology-identification"
@@ -226,7 +227,8 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                         rel="noopener noreferrer"
                         tone="dark-red"
                         leftIconClass="fa fa-file-pdf-o"
-                        iconOnly
+                        label="PDF"
+                        title="Exportar tecnologia assistiva em PDF"
                         aria-label="Exportar tecnologia assistiva em PDF"
                     />
                 ) : undefined}
@@ -234,7 +236,8 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                 <Button
                     href={base}
                     tone="cancel"
-                    iconOnly
+                    label="Voltar"
+                    title="Voltar para tecnologias assistivas"
                     aria-label="Voltar para tecnologias assistivas"
                     disabled={deleting}
                 />
@@ -243,7 +246,8 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                         href={`${itemUrl}/clone`}
                         tone="primary"
                         leftIconClass="fa fa-copy"
-                        iconOnly
+                        label="Clonar"
+                        title="Clonar tecnologia assistiva"
                         aria-label="Clonar tecnologia assistiva"
                     />
                 ) : null}
@@ -252,7 +256,8 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                         href={`${itemUrl}/edit`}
                         tone="warning"
                         leftIconClass="fa fa-pencil"
-                        iconOnly
+                        label="Editar"
+                        title="Editar tecnologia assistiva"
                         aria-label="Editar tecnologia assistiva"
                     />
                 ) : null}
@@ -260,7 +265,8 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                     <Button
                         tone="dark-red"
                         leftIconClass="fa fa-trash-o"
-                        iconOnly
+                        label="Excluir"
+                        title="Excluir tecnologia assistiva"
                         aria-label="Excluir tecnologia assistiva"
                         disabled={deleting}
                         onClick={() => {
@@ -278,7 +284,6 @@ export default function InclusiveRadarAssistiveTechnologiesShowPage({
                         Excluir a tecnologia <strong>{technology.name}</strong>?
                     </>
                 }
-                error={failure || undefined}
                 processing={deleting}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo tecnologia..."

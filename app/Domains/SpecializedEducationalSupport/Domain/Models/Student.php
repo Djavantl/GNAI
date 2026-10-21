@@ -121,7 +121,7 @@ final class Student extends Model
             'deficiency_id',
         )
             ->using(StudentDeficiency::class)
-            ->withPivot(['severity', 'notes'])
+            ->withPivot(['id', 'severity', 'notes'])
             ->withTimestamps();
     }
 

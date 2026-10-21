@@ -7,6 +7,7 @@ namespace App\Shared\Infrastructure\Http\Middleware;
 use App\Shared\Infrastructure\Navigation\AppNavigation;
 use App\Shared\Infrastructure\Navigation\AppTopbar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Middleware;
 
 final class HandleInertiaRequests extends Middleware
@@ -27,6 +28,7 @@ final class HandleInertiaRequests extends Middleware
             'topbar' => fn () => app(AppTopbar::class)->forRequest($request),
             'impersonating' => fn () => $request->session()->has('impersonator_id'),
             'flash' => fn () => [
+                'response_id' => (string) Str::uuid(),
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
                 'warning' => $request->session()->get('warning'),

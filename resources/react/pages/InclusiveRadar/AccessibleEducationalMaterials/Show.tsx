@@ -1,5 +1,5 @@
 import { Head, router } from "@inertiajs/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormActions from "@/components/Forms/FormActions/FormActions";
 import FormSection from "@/components/Forms/FormSection/FormSection";
 import PageBreadcrumb from "@/components/Navigation/PageBreadcrumb/PageBreadcrumb";
@@ -8,7 +8,7 @@ import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
-import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
+import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import InspectionHistoryTable from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable";
 import type { InspectionHistoryItem } from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable.types";
@@ -93,6 +93,16 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
     const [failure, setFailure] = useState("");
     const itemUrl = `${base}/${material.id}`;
 
+    useEffect(() => {
+        if (!failure) return;
+
+        notify({
+            tone: "error",
+            title: "Não foi possível concluir",
+            text: failure,
+        });
+    }, [failure]);
+
     function remove(): void {
         if (deleting) {
             return;
@@ -101,10 +111,6 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
         setDeleting(true);
         setFailure("");
         router.delete(itemUrl, {
-            onError: () =>
-                setFailure(
-                    "Não foi possível excluir o material. Tente novamente.",
-                ),
             onHttpException: () => {
                 setFailure(
                     "Não foi possível concluir a exclusão. Tente novamente.",
@@ -150,11 +156,6 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                 title="Detalhes do Material Pedagógico Acessível"
                 subtitle="Visualize as informações cadastrais, a disponibilidade e o histórico de vistorias do material."
             />
-            {failure && !deleteModalOpen ? (
-                <div role="alert">
-                    <InlineAlert variant="danger">{failure}</InlineAlert>
-                </div>
-            ) : null}
             <CardBox className="materialShow__panel">
                 <FormSection
                     id="material-identification"
@@ -240,7 +241,8 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                         rel="noopener noreferrer"
                         tone="dark-red"
                         leftIconClass="fa fa-file-pdf-o"
-                        iconOnly
+                        label="PDF"
+                        title="Exportar material em PDF"
                         aria-label="Exportar material em PDF"
                     />
                 ) : undefined}
@@ -248,7 +250,8 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                 <Button
                     href={base}
                     tone="cancel"
-                    iconOnly
+                    label="Voltar"
+                    title="Voltar para materiais pedagógicos acessíveis"
                     aria-label="Voltar para materiais pedagógicos acessíveis"
                     disabled={deleting}
                 />
@@ -257,7 +260,8 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                         href={`${itemUrl}/clone`}
                         tone="primary"
                         leftIconClass="fa fa-copy"
-                        iconOnly
+                        label="Clonar"
+                        title="Clonar material"
                         aria-label="Clonar material"
                     />
                 ) : null}
@@ -266,7 +270,8 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                         href={`${itemUrl}/edit`}
                         tone="warning"
                         leftIconClass="fa fa-pencil"
-                        iconOnly
+                        label="Editar"
+                        title="Editar material"
                         aria-label="Editar material"
                     />
                 ) : null}
@@ -274,7 +279,8 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                     <Button
                         tone="dark-red"
                         leftIconClass="fa fa-trash-o"
-                        iconOnly
+                        label="Excluir"
+                        title="Excluir material"
                         aria-label="Excluir material"
                         disabled={deleting}
                         onClick={() => {
@@ -292,7 +298,6 @@ export default function InclusiveRadarAccessibleEducationalMaterialsShowPage({
                         Excluir o material <strong>{material.name}</strong>?
                     </>
                 }
-                error={failure || undefined}
                 processing={deleting}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo material..."

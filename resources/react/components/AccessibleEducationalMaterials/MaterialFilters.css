@@ -1,6 +1,6 @@
 .materialFilters {
     display: grid;
-    grid-template-columns: minmax(220px, 2fr) repeat(2, minmax(180px, 1fr));
+    grid-template-columns: minmax(220px, 2fr) repeat(2, minmax(180px, 1fr)) auto;
     align-items: end;
     gap: 16px;
 }
@@ -9,11 +9,6 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(180px, 1fr));
     gap: 16px;
-}
-
-.materialFilterForm > .tableListFilterActions {
-    justify-content: flex-end;
-    margin-top: 16px;
 }
 
 @media (max-width: 1200px) {

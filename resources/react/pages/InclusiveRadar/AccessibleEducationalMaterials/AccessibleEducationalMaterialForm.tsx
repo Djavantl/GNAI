@@ -19,6 +19,7 @@ import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
+import { notify } from "@/components/UI/NotificationToast/notify";
 import type {
     MaterialFormOptions,
     MaterialRecord,
@@ -127,7 +128,6 @@ export default function AccessibleEducationalMaterialForm({
     const cloning = mode === "create" && !!cloneSource;
     const formElement = useRef<HTMLFormElement>(null);
     const busy = useRef(false);
-    const [requestError, setRequestError] = useState("");
     const [editorFailed, setEditorFailed] = useState(false);
     const form = useForm<FormData>({
         name: source?.name ?? "",
@@ -179,7 +179,6 @@ export default function AccessibleEducationalMaterialForm({
                 }
 
                 busy.current = true;
-                setRequestError("");
                 form.transform((data) =>
                     mode === "edit" ? { ...data, _method: "put" } : data,
                 );
@@ -199,15 +198,19 @@ export default function AccessibleEducationalMaterialForm({
                                     ?.focus(),
                             ),
                         onHttpException: () => {
-                            setRequestError(
-                                "Não foi possível concluir a operação. Tente novamente.",
-                            );
+                            notify({
+                                tone: "error",
+                                title: "Não foi possível concluir",
+                                text: "Não foi possível concluir a operação. Tente novamente.",
+                            });
                             return false;
                         },
                         onNetworkError: () => {
-                            setRequestError(
-                                "Falha de conexão. Confira sua conexão e tente novamente.",
-                            );
+                            notify({
+                                tone: "error",
+                                title: "Falha de conexão",
+                                text: "Confira sua conexão e tente novamente.",
+                            });
                             return false;
                         },
                         onFinish: () => {
@@ -218,20 +221,6 @@ export default function AccessibleEducationalMaterialForm({
             }}
         >
             <CardBox>
-                {requestError ? (
-                    <div role="alert">
-                        <InlineAlert variant="danger">
-                            {requestError}
-                        </InlineAlert>
-                    </div>
-                ) : null}
-                {Object.keys(form.errors).length ? (
-                    <div role="alert">
-                        <InlineAlert variant="danger">
-                            Confira os campos indicados antes de salvar.
-                        </InlineAlert>
-                    </div>
-                ) : null}
                 <fieldset disabled={form.processing}>
                     <FormSection
                         id="material-identification-form"
@@ -661,7 +650,8 @@ export default function AccessibleEducationalMaterialForm({
                 <Button
                     href={cancelUrl}
                     tone="cancel"
-                    iconOnly
+                    label="Cancelar"
+                    title="Cancelar e voltar"
                     aria-label="Cancelar e voltar"
                     disabled={form.processing}
                 />
@@ -670,7 +660,8 @@ export default function AccessibleEducationalMaterialForm({
                         type="submit"
                         tone="save"
                         leftIconClass="fa fa-check"
-                        iconOnly
+                        label="Salvar"
+                        title="Salvar material pedagógico acessível"
                         aria-label={
                             form.processing
                                 ? "Salvando material pedagógico acessível"

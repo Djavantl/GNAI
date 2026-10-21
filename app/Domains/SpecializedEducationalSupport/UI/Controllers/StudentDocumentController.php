@@ -61,7 +61,10 @@ final class StudentDocumentController
         );
 
         return redirect()
-            ->route('specialized-educational-support.student-documents.index', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'documents',
+            ])
             ->with('success', 'Documento enviado com sucesso.');
     }
 
@@ -81,10 +84,10 @@ final class StudentDocumentController
         $studentDocument = $action->execute($studentDocument, $data);
 
         return redirect()
-            ->route(
-                'specialized-educational-support.student-documents.index',
-                $studentDocument->student_id,
-            )
+            ->route('specialized-educational-support.students.show', [
+                'student' => $studentDocument->student_id,
+                'tab' => 'documents',
+            ])
             ->with('success', 'Documento atualizado com sucesso.');
     }
 
@@ -97,7 +100,10 @@ final class StudentDocumentController
         $action->execute($studentDocument);
 
         return redirect()
-            ->route('specialized-educational-support.student-documents.index', $studentId)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $studentId,
+                'tab' => 'documents',
+            ])
             ->with('success', 'Documento removido com sucesso.');
     }
 

@@ -16,12 +16,19 @@ final class StudentAeeEvaluationsQuery
     /**
      * @return Collection<int, AeeStudentEvaluation>
      */
-    public function execute(Student $student, ?User $user): Collection
+    public function execute(
+        Student $student,
+        ?User $user,
+        ?int $limit = 5,
+    ): Collection
     {
-        return $this->query($student, $user)
-            ->orderByDesc('id')
-            ->limit(5)
-            ->get();
+        $query = $this->query($student, $user)->orderByDesc('id');
+
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
     }
 
     /**

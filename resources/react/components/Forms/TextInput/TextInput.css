@@ -19,4 +19,10 @@
 .textInput:disabled, .textInput[readonly] { background-color: #eee; opacity: 1; }
 .textInput:disabled { cursor: not-allowed; }
 .textInput:focus { border-color: var(--input-focus-border, var(--ui-color-input-focus-border)); background-color: #fff; color: #333; outline: 0; box-shadow: none; }
+.textInput[aria-invalid="true"],
+.textInput[aria-invalid="true"]:focus {
+  border-color: var(--ui-color-danger) !important;
+  background-color: #fff;
+  color: #333;
+}
 .textInput::placeholder { color: #999; opacity: 1; }

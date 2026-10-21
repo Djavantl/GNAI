@@ -11,14 +11,29 @@ export type { TableListColumn } from './TableList.types';
 export function TableListCard({
   className,
   children,
+  loading = false,
+  loadingLabel = 'Atualizando listagem',
   ...props
-}: HTMLAttributes<HTMLElement>): React.JSX.Element {
+}: HTMLAttributes<HTMLElement> & {
+  loading?: boolean;
+  loadingLabel?: string;
+}): React.JSX.Element {
   return (
     <section
       className={joinClassNames('tableListCard', className)}
       {...props}
+      aria-busy={loading || props['aria-busy']}
     >
       {children}
+      {loading ? (
+        <div
+          className="tableListCard__loading panel-disabled"
+          role="status"
+          aria-label={loadingLabel}
+        >
+          <span className="tableListCard__loader loader-1" aria-hidden="true" />
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -44,19 +59,12 @@ export function TableListCreateButton({
 
 export function TableListFilterActions({
   children,
-  status,
 }: {
   children: ReactNode;
-  status?: ReactNode;
 }): React.JSX.Element {
   return (
     <div className="tableListFilterActions">
       {children}
-      {status ? (
-        <span role="status">
-          {status}
-        </span>
-      ) : null}
     </div>
   );
 }
@@ -69,9 +77,18 @@ export function TableListClearButton({
   onClick: () => void;
 }): React.JSX.Element {
   return (
-    <Button type="button" disabled={disabled} onClick={onClick}>
-      Limpar filtros
-    </Button>
+    <Button
+      type="button"
+      tone="cancel"
+      size="sm"
+      iconOnly
+      leftIconClass="fa fa-eraser"
+      title="Limpar filtros"
+      aria-label="Limpar filtros"
+      className="tableListClearButton"
+      disabled={disabled}
+      onClick={onClick}
+    />
   );
 }
 
@@ -129,6 +146,18 @@ export function TableListFooter({
           onSelect={onSelect}
         />
       </nav>
+    </footer>
+  );
+}
+
+export function TableListSummary({
+  children,
+}: {
+  children: ReactNode;
+}): React.JSX.Element {
+  return (
+    <footer className="tableListFooter">
+      <span>{children}</span>
     </footer>
   );
 }

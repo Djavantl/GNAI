@@ -1,5 +1,5 @@
 import { router, usePage } from "@inertiajs/react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Button from "@/components/UI/Button/Button";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
@@ -20,7 +20,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
+import { notify } from "@/components/UI/NotificationToast/notify";
 import useAutoListFilters, {
     compactListFilters,
 } from "@/hooks/useAutoListFilters";
@@ -99,6 +99,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
 }: Props): React.JSX.Element {
     const { errors } = usePage().props;
     const [busy, setBusy] = useState(false);
+    const [listLoading, setListLoading] = useState(false);
     const [failure, setFailure] = useState("");
     const [technologyToDelete, setTechnologyToDelete] =
         useState<Technology | null>(null);
@@ -119,6 +120,16 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
         onSearch: visit,
     });
 
+    useEffect(() => {
+        if (!failure) return;
+
+        notify({
+            tone: "error",
+            title: "Não foi possível concluir",
+            text: failure,
+        });
+    }, [failure]);
+
     function visit(values: Filters, url = base): void {
         if (pending.current) {
             return;
@@ -126,6 +137,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
 
         pending.current = true;
         setBusy(true);
+        setListLoading(true);
         setFailure("");
         router.get(
             url,
@@ -133,10 +145,6 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
             {
                 preserveState: true,
                 preserveScroll: true,
-                onError: () =>
-                    setFailure(
-                        "Não foi possível filtrar as tecnologias. Confira os campos e tente novamente.",
-                    ),
                 onHttpException: () => {
                     setFailure(
                         "Não foi possível concluir a operação. Tente novamente.",
@@ -152,6 +160,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                 onFinish: () => {
                     pending.current = false;
                     setBusy(false);
+                    setListLoading(false);
                 },
             },
         );
@@ -167,10 +176,6 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
         setFailure("");
         router.delete(`${base}/${technologyToDelete.id}`, {
             preserveScroll: true,
-            onError: () =>
-                setFailure(
-                    "Não foi possível excluir a tecnologia. Tente novamente.",
-                ),
             onHttpException: () => {
                 setFailure(
                     "Não foi possível concluir a operação. Tente novamente.",
@@ -208,6 +213,8 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
             <TableListCard
                 aria-label="Listagem de tecnologias assistivas"
                 aria-busy={busy}
+                loading={listLoading}
+                loadingLabel="Atualizando tecnologias assistivas"
             >
                 <FormLayout
                     className="technologyIndex__filterForm"
@@ -273,6 +280,12 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                 />
                             </FormField>
                         ))}
+                        <TableListFilterActions>
+                            <TableListClearButton
+                                disabled={busy}
+                                onClick={clearFilters}
+                            />
+                        </TableListFilterActions>
                     </div>
                     <TableListMoreFilters active={Boolean(filters.available)}>
                         <div className="technologyIndex__additionalFilters">
@@ -311,27 +324,12 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                             ))}
                         </div>
                     </TableListMoreFilters>
-                    <TableListFilterActions>
-                        <TableListClearButton
-                            disabled={busy}
-                            onClick={clearFilters}
-                        />
-                    </TableListFilterActions>
                 </FormLayout>
-                {failure && !technologyToDelete ? (
-                    <div role="alert">
-                        <InlineAlert variant="danger">{failure}</InlineAlert>
-                    </div>
-                ) : null}
                 <TableListScroll aria-label="Tabela de tecnologias assistivas">
                     <TableListTable
                         className="technologyIndex__table"
                         columns={technologyColumns}
-                        summary={
-                            busy
-                                ? "Processando…"
-                                : `${records.from ?? 0}–${records.to ?? 0} de ${records.total} registros`
-                        }
+                        summary={`${records.from ?? 0}–${records.to ?? 0} de ${records.total} registros`}
                     >
                         {records.data.map((technology) => {
                             const exhausted =
@@ -376,7 +374,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                                     tone="dark-blue"
                                                     iconOnly
                                                     leftIconClass="fa fa-eye"
-                                                    aria-label={`Ver ${technology.name}`}
+                                                    aria-label={`Visualizar ${technology.name}`}
                                                 />
                                             )}
                                             {can.destroy && (
@@ -437,7 +435,6 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                         <strong>{technologyToDelete?.name}</strong>?
                     </>
                 }
-                error={failure || undefined}
                 processing={busy}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo tecnologia..."

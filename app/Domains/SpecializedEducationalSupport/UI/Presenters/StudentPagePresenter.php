@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\UI\Presenters;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\ContextEvaluationType;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\DeficiencySeverity;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
@@ -18,10 +19,15 @@ final class StudentPagePresenter
     {
         $abilities = [
             'student.view', 'student.create', 'student.update', 'student.delete',
-            'student-course.view', 'student-deficiency.view', 'guardian.view',
-            'student-context.view', 'pei.view', 'student-document.view',
-            'aee-record.view', 'aee-record.view-all', 'aee-record.view-own',
+            'student-course.view', 'student-course.create', 'student-course.update', 'student-course.delete',
+            'student-deficiency.view', 'student-deficiency.create', 'student-deficiency.update', 'student-deficiency.delete',
+            'guardian.view', 'guardian.create', 'guardian.update', 'guardian.delete',
+            'student-context.view', 'student-context.create', 'student-context.update', 'student-context.delete',
+            'pei.view', 'pei.create', 'pei.update', 'pei.delete',
+            'student-document.view', 'student-document.create', 'student-document.update', 'student-document.delete',
+            'aee-record.view', 'aee-record.view-all', 'aee-record.view-own', 'aee-record.update', 'aee-record.delete',
             'pedagogical-record.view', 'pedagogical-record.view-all', 'pedagogical-record.view-own',
+            'pedagogical-record.update', 'pedagogical-record.delete',
         ];
 
         return [
@@ -47,6 +53,7 @@ final class StudentPagePresenter
         foreach ([
             'guardians' => 'guardian.view',
             'documents' => 'student-document.view',
+            'contexts' => 'student-context.view',
             'current_context' => 'student-context.view',
             'deficiencies' => 'student-deficiency.view',
             'peis' => 'pei.view',
@@ -65,8 +72,25 @@ final class StudentPagePresenter
         }
         if (isset($data['documents'])) {
             $data['documents'] = $student->documents->map(fn ($document): array => [
-                ...$document->toArray(), 'type_label' => $document->type->label(),
+                ...$document->toArray(),
+                'type_label' => $document->type->label(),
+                'semester_label' => $document->semester?->label,
             ])->all();
+        }
+        if (isset($data['contexts'])) {
+            $data['contexts'] = $student->contexts->map(function ($context): array {
+                $evaluationType = ContextEvaluationType::tryFrom(
+                    (string) $context->evaluation_type,
+                );
+
+                return [
+                    ...$context->toArray(),
+                    'semester_label' => $context->semester?->label,
+                    'evaluation_type_label' => $evaluationType?->label()
+                        ?? (string) $context->evaluation_type,
+                    'can_manage' => $context->canBeManagedByCurrentUser(),
+                ];
+            })->all();
         }
         if (isset($data['current_context'])) {
             $data['current_context']['semester_label'] = $student->currentContext->semester?->label;
@@ -74,7 +98,9 @@ final class StudentPagePresenter
         if (isset($data['deficiencies'])) {
             $data['deficiencies'] = $student->deficiencies->map(fn ($deficiency): array => [
                 ...$deficiency->toArray(),
+                'student_deficiency_id' => (int) $deficiency->pivot->getKey(),
                 'severity_label' => DeficiencySeverity::tryFrom($deficiency->pivot->severity ?? '')?->label(),
+                'severity_color' => DeficiencySeverity::tryFrom($deficiency->pivot->severity ?? '')?->color(),
             ])->all();
         }
         if (isset($data['peis'])) {

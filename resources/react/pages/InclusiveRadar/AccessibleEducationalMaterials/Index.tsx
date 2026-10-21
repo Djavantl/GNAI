@@ -1,5 +1,5 @@
 import { router, usePage } from '@inertiajs/react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import MaterialFilters from '@/components/AccessibleEducationalMaterials/MaterialFilters';
 import MaterialList from '@/components/AccessibleEducationalMaterials/MaterialList';
 import {
@@ -15,7 +15,7 @@ import {
     TableListCreateButton,
 } from '@/components/Tables/TableList/TableList';
 import ConfirmActionModal from '@/components/UI/ConfirmActionModal/ConfirmActionModal';
-import InlineAlert from '@/components/UI/InlineAlert/InlineAlert';
+import { notify } from '@/components/UI/NotificationToast/notify';
 import useAutoListFilters, {
     compactListFilters,
 } from '@/hooks/useAutoListFilters';
@@ -28,6 +28,7 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
 }: MaterialIndexProps): React.JSX.Element {
     const { errors } = usePage().props;
     const [busy, setBusy] = useState(false);
+    const [listLoading, setListLoading] = useState(false);
     const [failure, setFailure] = useState('');
     const [materialToDelete, setMaterialToDelete] =
         useState<AccessibleEducationalMaterial | null>(null);
@@ -48,6 +49,16 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
         onSearch: visit,
     });
 
+    useEffect(() => {
+        if (!failure) return;
+
+        notify({
+            tone: 'error',
+            title: 'Não foi possível concluir',
+            text: failure,
+        });
+    }, [failure]);
+
     function visit(values: Filters, url = materialsBase): void {
         if (pending.current) {
             return;
@@ -55,6 +66,7 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
 
         pending.current = true;
         setBusy(true);
+        setListLoading(true);
         setFailure('');
         router.get(
             url,
@@ -62,10 +74,6 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
             {
                 preserveState: true,
                 preserveScroll: true,
-                onError: () =>
-                    setFailure(
-                        'Não foi possível filtrar os materiais. Confira os campos e tente novamente.',
-                    ),
                 onHttpException: () => {
                     setFailure(
                         'Não foi possível concluir a operação. Tente novamente.',
@@ -81,6 +89,7 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
                 onFinish: () => {
                     pending.current = false;
                     setBusy(false);
+                    setListLoading(false);
                 },
             },
         );
@@ -97,10 +106,6 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
         setFailure('');
         router.delete(`${materialsBase}/${materialToDelete.id}`, {
             preserveScroll: true,
-            onError: () =>
-                setFailure(
-                    'Não foi possível excluir o material. Tente novamente.',
-                ),
             onHttpException: () => {
                 setFailure(
                     'Não foi possível concluir a exclusão. Tente novamente.',
@@ -149,6 +154,8 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
             <TableListCard
                 aria-label="Listagem de materiais pedagógicos acessíveis"
                 aria-busy={busy}
+                loading={listLoading}
+                loadingLabel="Atualizando materiais pedagógicos acessíveis"
             >
                 <MaterialFilters
                     values={filters}
@@ -159,13 +166,6 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
                     onClear={clearFilters}
                     onSubmit={submitFilters}
                 />
-                {failure && !materialToDelete ? (
-                    <div role="alert">
-                        <InlineAlert variant="danger">
-                            {failure}
-                        </InlineAlert>
-                    </div>
-                ) : null}
                 <MaterialList
                     materials={materials}
                     permissions={can}
@@ -186,7 +186,6 @@ export default function InclusiveRadarAccessibleEducationalMaterialsIndexPage({
                         <strong>{materialToDelete?.name}</strong>?
                     </>
                 }
-                error={failure || undefined}
                 processing={busy}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo material..."

@@ -1,167 +1,202 @@
 .notificationToastLayer {
   position: fixed;
   z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(390px, calc(100vw - 32px));
   pointer-events: none;
 }
 
-.notificationToast__dismiss {
-  display: block;
-  margin-top: 8px;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  text-decoration: underline;
-  cursor: pointer;
-}
-.notificationToast__dismiss:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-
-.notificationToastLayer--top-left {
-  top: 10px;
-  left: 10px;
-}
-
-.notificationToastLayer--top-right {
-  top: 10px;
-  right: 10px;
-}
-
-.notificationToastLayer--top-center {
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.notificationToastLayer--bottom-left {
-  bottom: 10px;
-  left: 10px;
-}
-
-.notificationToastLayer--bottom-right {
-  right: 10px;
-  bottom: 10px;
-}
-
-.notificationToastLayer--bottom-center {
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.notificationToastLayer--left-middle {
-  top: 50%;
-  left: 10px;
-  transform: translateY(-50%);
-}
-
-.notificationToastLayer--right-middle {
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-}
+.notificationToastLayer--top-left { top: calc(var(--ui-topbar-height, 60px) + 16px); left: 16px; }
+.notificationToastLayer--top-right { top: calc(var(--ui-topbar-height, 60px) + 16px); right: 16px; }
+.notificationToastLayer--top-center { top: calc(var(--ui-topbar-height, 60px) + 16px); left: 50%; transform: translateX(-50%); }
+.notificationToastLayer--bottom-left { bottom: 16px; left: 16px; }
+.notificationToastLayer--bottom-right { right: 16px; bottom: 16px; }
+.notificationToastLayer--bottom-center { bottom: 16px; left: 50%; transform: translateX(-50%); }
+.notificationToastLayer--left-middle { top: 50%; left: 16px; transform: translateY(-50%); }
+.notificationToastLayer--right-middle { top: 50%; right: 16px; transform: translateY(-50%); }
 
 .notificationToast {
+  --notification-toast-accent: var(--ui-color-custom);
+  --notification-toast-background: #e1f3ef;
+  --notification-toast-text: #285e52;
+  --notification-toast-duration: 5000ms;
+
   position: relative;
-  min-width: 250px;
-  min-height: 52px;
-  margin: 5px;
-  color: #444444;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  min-height: 76px;
+  overflow: hidden;
+  color: var(--notification-toast-text);
+  background: var(--notification-toast-background);
+  border: 1px solid var(--notification-toast-accent);
+  border-left-width: 5px;
   border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-  animation: notificationDropdownOpen 0.3s ease-out;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  animation: notificationToastSlideIn 360ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
   pointer-events: auto;
-  cursor: pointer;
+}
+
+.notificationToast--clickable { cursor: pointer; }
+
+.notificationToast--closing {
+  animation: notificationToastSlideOut 320ms ease-in both;
+  pointer-events: none;
 }
 
 .notificationToast__image {
-  position: absolute;
-  top: 50%;
-  left: 25px;
-  display: table;
-  width: auto;
-  height: auto;
-  font-size: 24px;
-  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0 18px 12px;
+  color: var(--notification-toast-accent);
+  font-size: 23px;
 }
 
 .notificationToast__textWrapper {
-  display: inline-block;
-  clear: both;
-  margin: 10px 10px 10px 52px;
+  min-width: 0;
+  padding: 14px 42px 18px 4px;
   text-align: left;
-  vertical-align: top;
 }
 
 .notificationToast__title {
-  margin-bottom: 5px;
+  margin-bottom: 3px;
+  color: inherit;
   font-size: 15px;
-  font-weight: bold;
-  line-height: 20px;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .notificationToast__text {
-  max-width: 360px;
-  font-size: 12px;
-  font-weight: normal;
-  vertical-align: middle;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
 }
 
-.notificationToast__clearfix {
-  display: block;
-  clear: both;
+.notificationToast__dismiss {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: inherit;
+  font-size: 23px;
+  line-height: 1;
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  opacity: 0.58;
+  cursor: pointer;
+  transition: background-color 160ms ease, opacity 160ms ease;
 }
 
-.notificationToast__confirmButton {
-  margin-right: 4px;
+.notificationToast__dismiss:hover { background: rgba(0, 0, 0, 0.06); opacity: 1; }
+
+.notificationToast__dismiss:focus-visible {
+  outline: 2px solid var(--notification-toast-accent);
+  outline-offset: 1px;
+  opacity: 1;
 }
+
+.notificationToast__progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.notificationToast__progressBar {
+  width: 100%;
+  height: 100%;
+  background: var(--notification-toast-accent);
+  transform-origin: left center;
+  animation: notificationToastProgress var(--notification-toast-duration) linear forwards;
+}
+
+.notificationToast--paused .notificationToast__progressBar { animation-play-state: paused; }
+.notificationToast__clearfix { display: block; clear: both; }
+.notificationToast__confirmButton { margin-top: 8px; margin-right: 4px; }
 
 .notificationToast--custom {
-  color: #fafafa;
-  background-color: #5fbeaa;
-  border: 1px solid #5fbeaa;
+  --notification-toast-accent: var(--ui-color-custom);
+  --notification-toast-background: #e1f3ef;
+  --notification-toast-text: #285e52;
 }
 
 .notificationToast--info {
-  color: #fafafa;
-  background-color: #34d3eb;
-  border: 1px solid #29b6f6;
+  --notification-toast-accent: var(--color-info);
+  --notification-toast-background: var(--color-info-light);
+  --notification-toast-text: var(--color-info-text);
 }
 
 .notificationToast--success {
-  color: #fafafa;
-  background-color: #81c868;
-  border: 1px solid #33b86c;
+  --notification-toast-accent: var(--color-success);
+  --notification-toast-background: var(--color-success-light);
+  --notification-toast-text: var(--color-success-text);
 }
 
 .notificationToast--warning {
-  color: #fafafa;
-  background-color: #ffbd4a;
-  border: 1px solid #ffd740;
+  --notification-toast-accent: var(--ui-color-gnai-primary);
+  --notification-toast-background: color-mix(in srgb, var(--ui-color-gnai-primary) 12%, white);
+  --notification-toast-text: var(--ui-color-gnai-primary);
 }
 
 .notificationToast--error {
-  color: #fafafa;
-  background-color: #f05050;
-  border: 1px solid #ef5350;
+  --notification-toast-accent: var(--color-danger);
+  --notification-toast-background: var(--color-danger-light);
+  --notification-toast-text: var(--color-danger-text);
 }
 
 .notificationToast--black {
-  color: #fafafa;
-  background-color: #4c5667;
-  border: 1px solid #212121;
+  --notification-toast-accent: #212121;
+  --notification-toast-background: #4c5667;
+  --notification-toast-text: #fafafa;
 }
 
 .notificationToast--white {
-  background-color: #e6eaed;
-  border: 1px solid #dddddd;
+  --notification-toast-accent: #aeb8c0;
+  --notification-toast-background: #f7f9fa;
+  --notification-toast-text: #36404a;
 }
 
-@keyframes notificationDropdownOpen {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
+@keyframes notificationToastSlideIn {
+  from { opacity: 0; transform: translateX(calc(100% + 24px)); }
+  to { opacity: 1; transform: translateX(0); }
+}
 
-  100% {
-    transform: scale(1);
+@keyframes notificationToastSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(calc(100% + 24px)); }
+}
+
+@keyframes notificationToastProgress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+@media (max-width: 575.98px) {
+  .notificationToastLayer { width: calc(100vw - 24px); }
+
+  .notificationToastLayer--top-left,
+  .notificationToastLayer--top-right,
+  .notificationToastLayer--top-center {
+    top: calc(var(--ui-topbar-height, 60px) + 12px);
+    right: 12px;
+    left: 12px;
+    transform: none;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notificationToast { animation-duration: 1ms; }
+  .notificationToast__progressBar { animation-timing-function: steps(1, end); }
 }

@@ -28,7 +28,11 @@ export default function PersonPhotoUpload({
     <label htmlFor={inputId} className="personPhotoUpload__label">{label}</label>
     <div className="personPhotoUpload__wrapper" style={{ width: size, height: size }}>
       <button ref={selectButton} type="button" disabled={disabled}
-        className={joinClassNames('personPhotoUpload__preview', dragging ? 'personPhotoUpload__preview--dragging' : undefined)}
+        className={joinClassNames(
+          'personPhotoUpload__preview',
+          dragging ? 'personPhotoUpload__preview--dragging' : undefined,
+          error ? 'personPhotoUpload__preview--invalid' : undefined,
+        )}
         aria-label={`Selecionar ${photoLabel}`} aria-describedby={description} aria-invalid={!!error}
         onClick={() => input.current?.click()}
         onDragEnter={event => {

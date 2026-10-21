@@ -4,7 +4,6 @@ import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import SelectField from "@/components/Forms/SelectField/SelectField";
-import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
 import {
     TableListClearButton,
     TableListFilterActions,
@@ -45,10 +44,13 @@ export default function StudentFilters({
     courses,
     deficiencies,
     studentStatuses,
+    onProcessingChange,
 }: Pick<
     StudentIndexProps,
     "filters" | "courses" | "deficiencies" | "studentStatuses"
->): React.JSX.Element {
+> & {
+    onProcessingChange?: (processing: boolean) => void;
+}): React.JSX.Element {
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const cancel = useRef<(() => void) | undefined>(undefined);
@@ -176,11 +178,13 @@ export default function StudentFilters({
             },
             onStart: () => {
                 setProcessing(true);
+                onProcessingChange?.(true);
                 setErrors({});
             },
             onError: setErrors,
             onFinish: () => {
                 setProcessing(false);
+                onProcessingChange?.(false);
                 cancel.current = undefined;
             },
         });
@@ -195,14 +199,15 @@ export default function StudentFilters({
                 submit();
             }}
         >
-            {request.error ? (
-                <div role="alert">
-                    <InlineAlert variant="danger">{request.error}</InlineAlert>
-                </div>
-            ) : null}
-            <div className="studentsPage__filters">
+            <div className="studentsPage__filters studentsPage__filters--primary">
                 {textFilterFields.slice(0, 1).map(renderTextFilter)}
                 {selectFilterFields.slice(0, 2).map(renderSelectFilter)}
+                <TableListFilterActions>
+                    <TableListClearButton
+                        disabled={processing}
+                        onClick={clear}
+                    />
+                </TableListFilterActions>
             </div>
             <TableListMoreFilters
                 active={Boolean(
@@ -214,11 +219,6 @@ export default function StudentFilters({
                     {selectFilterFields.slice(2).map(renderSelectFilter)}
                 </div>
             </TableListMoreFilters>
-            <TableListFilterActions
-                status={processing ? "Carregando alunos..." : undefined}
-            >
-                <TableListClearButton disabled={processing} onClick={clear} />
-            </TableListFilterActions>
         </FormLayout>
     );
 }

@@ -1,5 +1,6 @@
 .loginForm { margin-top: 20px; }
 .loginForm__group { margin-bottom: 15px; }
+.loginForm__error { margin: 2px 0 0; color: var(--ui-color-danger); font-size: 12px; font-weight: 400; line-height: 1.42857143; }
 .loginForm__submit { margin-top: 40px; margin-bottom: 15px; }
 .loginForm__submitButton { text-transform: uppercase; }
 .loginForm__forgot { margin-top: 30px; }

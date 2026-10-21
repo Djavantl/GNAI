@@ -1,8 +1,58 @@
 .tableListCard {
+  position: relative;
   padding: 20px;
   border: 1px solid var(--ui-color-card-border);
   border-radius: 4px;
   background: var(--ui-color-surface);
+}
+
+.tableListCard__loading.panel-disabled {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  border-radius: 4px;
+  background: rgba(243, 242, 241, 0.5);
+}
+
+.tableListCard__loader.loader-1 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  animation: tableListLoaderRotate 1000ms linear infinite;
+  clip: rect(0, 30px, 30px, 15px);
+}
+
+.tableListCard__loader.loader-1::after {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: inset #999999 0 0 0 17px;
+  animation: tableListLoaderClip 1000ms ease-in-out infinite;
+  clip: rect(0, 30px, 30px, 15px);
+  content: '';
+}
+
+@keyframes tableListLoaderRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(220deg); }
+}
+
+@keyframes tableListLoaderClip {
+  0% {
+    box-shadow: inset #999999 0 0 0 17px;
+    transform: rotate(-140deg);
+  }
+
+  50% { box-shadow: inset #999999 0 0 0 2px; }
+
+  100% {
+    box-shadow: inset #999999 0 0 0 17px;
+    transform: rotate(140deg);
+  }
 }
 
 .tableListCard :is(input, select).textInput {
@@ -45,8 +95,15 @@
 .tableListFilterActions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.tableListClearButton.button {
+  width: var(--ui-list-control-height);
+  height: var(--ui-list-control-height);
+  padding: 0;
 }
 
 .tableListMoreFilters {
@@ -290,13 +347,14 @@
   max-width: 100%;
   margin-bottom: 0;
   table-layout: fixed;
-  font-size: 13px;
+  font-size: 15.5px;
 }
 
 .tableListTable.table-condensed > thead > tr > th {
   position: relative;
   padding: 16px 12px;
-  background: var(--ui-color-table-header);
+  background: var(--ui-color-gnai-primary);
+  color: var(--ui-color-surface);
   vertical-align: middle;
   white-space: nowrap;
 }
@@ -307,6 +365,19 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.tableListTable.table-condensed > thead > tr > th:last-child,
+.tableListTable.table-condensed > tbody > tr > td:last-child {
+  text-align: right;
+}
+
+.tableListTable.table-condensed > thead > tr > th:last-child {
+  padding-right: 17px;
+}
+
+.tableListTable.table-condensed > tbody > tr > td:last-child {
+  padding-right: 15px;
 }
 
 .tableListTable__heading {
@@ -334,7 +405,7 @@
   bottom: 18%;
   left: 50%;
   width: 1px;
-  background: var(--ui-color-text-muted);
+  background: var(--ui-color-surface);
   content: '';
   opacity: 0;
   transition: opacity 120ms ease;

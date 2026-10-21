@@ -55,6 +55,7 @@ interface ButtonCommonProps {
   waves?: boolean;
   wavesLight?: boolean;
   className?: string;
+  title?: string;
   children?: React.ReactNode;
   'aria-label'?: string;
   'aria-expanded'?: boolean;
@@ -142,6 +143,12 @@ export default function Button(props: ButtonProps): React.JSX.Element {
     waves && wavesLight ? 'waves-light' : undefined,
     className
   );
+  const title = props.title
+    ?? props['aria-label']
+    ?? label
+    ?? (typeof children === 'string' || typeof children === 'number'
+      ? String(children)
+      : undefined);
 
   const content = renderButtonInner({
     label,
@@ -158,6 +165,7 @@ export default function Button(props: ButtonProps): React.JSX.Element {
         href={props.href}
         target={props.target}
         rel={props.rel}
+        title={title}
         className={classNames}
         aria-disabled={disabled}
         aria-label={props['aria-label']}
@@ -191,6 +199,7 @@ export default function Button(props: ButtonProps): React.JSX.Element {
     <button
       type={props.type ?? 'button'}
       disabled={disabled}
+      title={title}
       className={classNames}
       aria-label={props['aria-label']}
       aria-describedby={props['aria-describedby']}

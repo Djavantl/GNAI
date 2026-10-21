@@ -56,11 +56,7 @@ export default function MaterialList({
                 <TableListTable
                     className="materialList"
                     columns={materialColumns}
-                    summary={
-                        processing
-                            ? 'Processando…'
-                            : `${materials.from ?? 0}–${materials.to ?? 0} de ${materials.total} registros`
-                    }
+                    summary={`${materials.from ?? 0}–${materials.to ?? 0} de ${materials.total} registros`}
                 >
                     {materials.data.map((material) => {
                         const exhausted =
@@ -104,7 +100,7 @@ export default function MaterialList({
                                                 tone="dark-blue"
                                                 iconOnly
                                                 leftIconClass="fa fa-eye"
-                                                aria-label={`Ver ${material.name}`}
+                                                aria-label={`Visualizar ${material.name}`}
                                             />
                                         ) : null}
                                         {permissions.destroy ? (

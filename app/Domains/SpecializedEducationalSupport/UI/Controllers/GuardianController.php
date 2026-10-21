@@ -59,10 +59,13 @@ final class GuardianController
      */
     public function store(CreateGuardianData $data, Student $student, CreateGuardianAction $action): RedirectResponse
     {
-        $guardian = $action->execute($student, $data);
+        $action->execute($student, $data);
 
         return redirect()
-            ->route('specialized-educational-support.guardians.show', $guardian)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'guardians',
+            ])
             ->with('success', 'Responsável vinculado com sucesso.');
     }
 
@@ -79,10 +82,13 @@ final class GuardianController
      */
     public function update(UpdateGuardianData $data, Student $student, Guardian $guardian, UpdateGuardianAction $action): RedirectResponse
     {
-        $guardian = $action->execute($student, $guardian, $data);
+        $action->execute($student, $guardian, $data);
 
         return redirect()
-            ->route('specialized-educational-support.guardians.show', $guardian)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'guardians',
+            ])
             ->with('success', 'Dados do responsável atualizados com sucesso.');
     }
 
@@ -94,7 +100,10 @@ final class GuardianController
         $action->execute($student, $guardian);
 
         return redirect()
-            ->route('specialized-educational-support.guardians.index', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'guardians',
+            ])
             ->with('success', 'Responsável removido.');
     }
 }

@@ -1,6 +1,9 @@
 .summernoteEditor, .summernoteOverlay { font: 14px/1.42857143 var(--ui-font-body, 'Noto Sans', sans-serif); color: #797979; }
 .summernoteEditor, .summernoteOverlay { --summernote-accent: var(--ui-color-gnai-primary); }
 .summernoteEditor .note-editor { border: 1px solid #eee; position: relative; }
+.summernoteEditor--invalid .note-editor {
+  border-color: var(--ui-color-danger) !important;
+}
 .summernoteEditor .note-editor .note-toolbar { background: #f4f8fb; border-bottom: 1px solid #eee; margin: 0; }
 .summernoteEditor .note-toolbar { padding: 5px 0 10px 5px; }
 .summernoteEditor .note-editor .note-statusbar { background: #fff; }

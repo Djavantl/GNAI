@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type SelectHTMLAttributes } from "react";
 import { loadExternalScript } from "@/utils/loadExternalScript";
 import { loadExternalStylesheet } from "@/utils/loadExternalStylesheet";
+import { joinClassNames } from "@/utils/joinClassNames";
 import type { SelectFieldCollection, SelectFieldGroup, SelectFieldOption, SelectFieldRuntime } from "./SelectField.types";
 import "@/components/Forms/TextInput/TextInput.css";
 import "./SelectField.css";
@@ -30,6 +31,8 @@ export default function SelectField({
   nativeDisabled.current = props.disabled;
   const [loadFailed, setLoadFailed] = useState(false);
   const [nativeError, setNativeError] = useState('');
+  const invalid =
+    props['aria-invalid'] === true || props['aria-invalid'] === 'true';
   // Select2 owns its visible controls; keep them aligned with the native React select.
   const synchronize = () => {
     const element = ref.current;
@@ -119,7 +122,12 @@ export default function SelectField({
     };
   }, [enhanced, id, props.multiple]);
   return (
-    <div className="selectField">
+    <div
+      className={joinClassNames(
+        "selectField",
+        invalid || nativeError ? "selectField--invalid" : undefined,
+      )}
+    >
       <select
         {...props}
         ref={ref}

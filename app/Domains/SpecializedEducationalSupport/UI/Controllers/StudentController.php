@@ -53,13 +53,38 @@ final class StudentController
         $user = $request->user();
         $authenticatedUser = $user instanceof User ? $user : null;
         $student = $showStudent->execute($student);
-        $aeeEvaluations = $aeeEvaluationsQuery->execute($student, $authenticatedUser);
-        $pedagogicalRecords = $pedagogicalRecordsQuery->execute($student, $authenticatedUser);
+        $aeeEvaluations = $aeeEvaluationsQuery->execute(
+            $student,
+            $authenticatedUser,
+            limit: null,
+        );
+        $pedagogicalRecords = $pedagogicalRecordsQuery->execute(
+            $student,
+            $authenticatedUser,
+            limit: null,
+        );
+        $professionalId = $authenticatedUser?->professional_id;
+        $aeeEvaluations->each(static function ($evaluation) use ($professionalId): void {
+            $session = $evaluation->aeeRecord?->attendanceSession;
+            $evaluation->setAttribute(
+                'can_manage',
+                $professionalId !== null
+                    && (int) $session?->professional_id === (int) $professionalId,
+            );
+        });
+        $pedagogicalRecords->each(static function ($record) use ($professionalId): void {
+            $record->setAttribute(
+                'can_manage',
+                $professionalId !== null
+                    && (int) $record->attendanceSession?->professional_id === (int) $professionalId,
+            );
+        });
+        $activeTab = $request->string('tab')->toString();
 
         return Inertia::render(
             'SpecializedEducationalSupport/Students/Show',
             ['student' => $this->presenter->student($student, $request)]
-                + compact('aeeEvaluations', 'pedagogicalRecords')
+                + compact('aeeEvaluations', 'pedagogicalRecords', 'activeTab')
                 + $this->presenter->shared($request),
         );
     }

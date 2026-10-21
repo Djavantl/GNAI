@@ -81,7 +81,10 @@ final class StudentContextController
         $action->execute($student, $data, $this->professionalId($request));
 
         return redirect()
-            ->route('specialized-educational-support.student-context.index', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'current-context',
+            ])
             ->with('success', 'Contexto do aluno cadastrado com sucesso.');
     }
 
@@ -105,7 +108,10 @@ final class StudentContextController
         );
 
         return redirect()
-            ->route('specialized-educational-support.student-context.show', $studentContext)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $studentContext->student_id,
+                'tab' => 'current-context',
+            ])
             ->with('success', 'Contexto salvo com sucesso.');
     }
 
@@ -129,7 +135,10 @@ final class StudentContextController
         );
 
         return redirect()
-            ->route('specialized-educational-support.student-context.show', $newContext)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $newContext->student_id,
+                'tab' => 'current-context',
+            ])
             ->with('success', 'Nova versão criada e definida como atual.');
     }
 
@@ -144,7 +153,10 @@ final class StudentContextController
         );
 
         return redirect()
-            ->route('specialized-educational-support.student-context.show', $newContext)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $newContext->student_id,
+                'tab' => 'current-context',
+            ])
             ->with('success', 'Contexto restaurado e definido como atual.');
     }
 
@@ -159,7 +171,10 @@ final class StudentContextController
         );
 
         return redirect()
-            ->route('specialized-educational-support.student-context.index', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'current-context',
+            ])
             ->with('success', 'Contexto do aluno removido com sucesso.');
     }
 

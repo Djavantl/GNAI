@@ -133,7 +133,10 @@ final class AeeRecordController
     {
         $action->execute($student, $evaluation, $data, $this->professionalId($request));
 
-        return redirect()->route('specialized-educational-support.students.aee-records.show', [$student, $evaluation])->with('success', 'Avaliação do aluno atualizada com sucesso.');
+        return redirect()->route(
+            'specialized-educational-support.students.show',
+            ['student' => $student, 'tab' => 'aee-attendance'],
+        )->with('success', 'Avaliação do aluno atualizada com sucesso.');
     }
 
     /** @throws Throwable */
@@ -141,7 +144,10 @@ final class AeeRecordController
     {
         $action->execute($student, $evaluation, $this->professionalId($request));
 
-        return redirect()->route('specialized-educational-support.students.aee-records.index', $student)->with('success', 'Avaliação do aluno removida com sucesso.');
+        return redirect()->route(
+            'specialized-educational-support.students.show',
+            ['student' => $student, 'tab' => 'aee-attendance'],
+        )->with('success', 'Avaliação do aluno removida com sucesso.');
     }
 
     public function studentPdf(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): Response

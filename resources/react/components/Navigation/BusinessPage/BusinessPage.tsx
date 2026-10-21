@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Head } from '@inertiajs/react';
 import PageBreadcrumb, {
   type PageBreadcrumbItem,
 } from '@/components/Navigation/PageBreadcrumb/PageBreadcrumb';
 import PageTitle from '@/components/Navigation/PageTitle/PageTitle';
-import InlineAlert from '@/components/UI/InlineAlert/InlineAlert';
+import { notify } from '@/components/UI/NotificationToast/notify';
 import { joinClassNames } from '@/utils/joinClassNames';
 import './BusinessPage.css';
 
@@ -27,6 +27,16 @@ export default function BusinessPage({
   error?: string | null;
   children: ReactNode;
 }): React.JSX.Element {
+  useEffect(() => {
+    if (!error) return;
+
+    notify({
+      tone: 'error',
+      title: 'Não foi possível concluir',
+      text: error,
+    });
+  }, [error]);
+
   return (
     <main className={joinClassNames('businessPage', className)}>
       <Head title={`${title} - Gnai`} />
@@ -39,11 +49,6 @@ export default function BusinessPage({
         actions={actions}
         className={pageTitleClassName}
       />
-      {error ? (
-        <div role="alert">
-          <InlineAlert variant="danger">{error}</InlineAlert>
-        </div>
-      ) : null}
       {children}
     </main>
   );

@@ -74,7 +74,10 @@ final class StudentDeficiencyController
         $action->execute($student, $data);
 
         return redirect()
-            ->route('specialized-educational-support.student-deficiencies.index', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'support-profiles',
+            ])
             ->with('success', 'Deficiência vinculada com sucesso.');
     }
 
@@ -105,7 +108,10 @@ final class StudentDeficiencyController
         $action->execute($student_deficiency, $data);
 
         return redirect()
-            ->route('specialized-educational-support.student-deficiencies.index', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'support-profiles',
+            ])
             ->with('success', 'Informações da deficiência atualizadas.');
     }
 
@@ -122,7 +128,10 @@ final class StudentDeficiencyController
         $action->execute($student_deficiency);
 
         return redirect()
-            ->route('specialized-educational-support.student-deficiencies.index', $student)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'support-profiles',
+            ])
             ->with('success', 'Vínculo removido com sucesso.');
     }
 }

@@ -10,7 +10,7 @@ import {
 } from '@/components/Tables/TableList/TableList';
 import Button from '@/components/UI/Button/Button';
 import TableLabel from '@/components/UI/TableLabel/TableLabel';
-import InlineAlert from '@/components/UI/InlineAlert/InlineAlert';
+import DeleteStudent from './DeleteStudent';
 import type { StudentIndexProps } from './Students.types';
 import { dateLabel, studentsBase, studentUrl } from './Students.utils';
 import { useStudentRequest } from './useStudentRequest';
@@ -19,7 +19,7 @@ const studentColumns: TableListColumn[] = [
   {
     id: 'name',
     label: 'Nome',
-    width: '30%',
+    width: '25%',
     minWidth: 120,
     fixed: 'start',
   },
@@ -30,8 +30,8 @@ const studentColumns: TableListColumn[] = [
   {
     id: 'actions',
     label: 'Ações',
-    width: '10%',
-    minWidth: 76,
+    width: '15%',
+    minWidth: 104,
     fixed: 'end',
   },
 ];
@@ -42,9 +42,14 @@ export default function StudentList({
   permissions,
   studentStatuses,
   statusColors,
-}: StudentIndexProps): React.JSX.Element {
+  onProcessingChange,
+}: StudentIndexProps & {
+  onProcessingChange?: (processing: boolean) => void;
+}): React.JSX.Element {
   const [processing, setProcessing] = useState(false);
   const request = useStudentRequest();
+  const canView = permissions['student.view'];
+  const canDelete = permissions['student.delete'];
 
   function pageHref(page: number) {
     const query = new URLSearchParams(
@@ -58,20 +63,11 @@ export default function StudentList({
 
   return (
     <div aria-busy={processing}>
-      {request.error ? (
-        <div role="alert">
-          <InlineAlert variant="danger">{request.error}</InlineAlert>
-        </div>
-      ) : null}
       <TableListScroll aria-label="Tabela de alunos">
         <TableListTable
           className="studentsPage__indexTable"
           columns={studentColumns}
-          summary={
-            processing
-              ? 'Carregando página...'
-              : `${students.from ?? 0}–${students.to ?? 0} de ${students.total} registros`
-          }
+          summary={`${students.from ?? 0}–${students.to ?? 0} de ${students.total} registros`}
         >
           {students.data.length ? (
             students.data.map((student) => (
@@ -97,16 +93,25 @@ export default function StudentList({
                 </td>
                 <td>{dateLabel(student.entry_date)}</td>
                 <td>
-                  {permissions['student.view'] ? (
+                  {canView || canDelete ? (
                     <TableActions>
-                      <Button
-                        href={studentUrl(student.id)}
-                        size="sm"
-                        tone="dark-blue"
-                        iconOnly
-                        leftIconClass="fa fa-eye"
-                        aria-label={`Ver ficha de ${student.person.name}`}
-                      />
+                      {canView ? (
+                        <Button
+                          href={studentUrl(student.id)}
+                          size="sm"
+                          tone="dark-blue"
+                          iconOnly
+                          leftIconClass="fa fa-eye"
+                          aria-label={`Visualizar aluno ${student.person.name}`}
+                        />
+                      ) : null}
+                      {canDelete ? (
+                        <DeleteStudent
+                          id={student.id}
+                          name={student.person.name}
+                          iconOnly
+                        />
+                      ) : null}
                     </TableActions>
                   ) : (
                     'Nenhuma ação'
@@ -141,8 +146,14 @@ export default function StudentList({
               ...request.options,
               preserveState: true,
               preserveScroll: true,
-              onStart: () => setProcessing(true),
-              onFinish: () => setProcessing(false),
+              onStart: () => {
+                setProcessing(true);
+                onProcessingChange?.(true);
+              },
+              onFinish: () => {
+                setProcessing(false);
+                onProcessingChange?.(false);
+              },
             },
           );
         }}

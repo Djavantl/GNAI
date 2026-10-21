@@ -113,7 +113,8 @@ export default function InspectionDetails({
                 <Button
                     href={subject.href}
                     tone="cancel"
-                    iconOnly
+                    label="Voltar"
+                    title={`Voltar para ${subject.name}`}
                     aria-label={`Voltar para ${subject.name}`}
                 />
             </FormActions>

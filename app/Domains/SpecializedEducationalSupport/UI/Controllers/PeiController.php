@@ -117,10 +117,13 @@ final class PeiController
         AuthenticatedUserResolver $authenticatedUser,
         Request $request,
     ): RedirectResponse {
-        $pei = $action->execute($student, $authenticatedUser->fromRequest($request));
+        $action->execute($student, $authenticatedUser->fromRequest($request));
 
         return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'peis',
+            ])
             ->with('success', 'PEI gerado com sucesso.');
     }
 
@@ -136,7 +139,10 @@ final class PeiController
         $studentId = $action->execute($pei, $authenticatedUser->fromRequest($request));
 
         return redirect()
-            ->route('specialized-educational-support.pei.index', $studentId)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $studentId,
+                'tab' => 'peis',
+            ])
             ->with('success', 'PEI removido com sucesso.');
     }
 
@@ -152,7 +158,10 @@ final class PeiController
         $pei = $action->execute($pei, $authenticatedUser->fromRequest($request));
 
         return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $pei->student_id,
+                'tab' => 'peis',
+            ])
             ->with('success', 'PEI finalizado com sucesso.');
     }
 
@@ -165,10 +174,13 @@ final class PeiController
         AuthenticatedUserResolver $authenticatedUser,
         Request $request,
     ): RedirectResponse {
-        $pei = $action->execute($student, $authenticatedUser->fromRequest($request));
+        $action->execute($student, $authenticatedUser->fromRequest($request));
 
         return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'peis',
+            ])
             ->with('success', 'Nova versão criada com sucesso.');
     }
 

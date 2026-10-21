@@ -50,6 +50,7 @@ function ConfirmActionModalFooter({
         tone="cancel"
         iconOnly
         leftIconClass="fa fa-times"
+        title={cancelLabel}
         aria-label={cancelLabel}
         disabled={processing}
         onClick={closeModal ?? onClose}
@@ -60,6 +61,7 @@ function ConfirmActionModalFooter({
         leftIconClass={
           processing ? 'fa fa-spinner fa-spin' : 'fa fa-check'
         }
+        title={processing ? processingLabel : confirmLabel}
         aria-label={processing ? processingLabel : confirmLabel}
         disabled={processing}
         onClick={onConfirm}

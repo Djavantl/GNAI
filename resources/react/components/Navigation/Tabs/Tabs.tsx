@@ -1,4 +1,11 @@
-import { useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
 import './Tabs.css';
 
 export interface TabItem {
@@ -21,25 +28,81 @@ export default function Tabs({ items, initialActiveId, variant = 'standard' }: T
   const activeIndex = Math.max(0, items.findIndex((item: TabItem) => item.id === activeId));
   const isVertical = variant === 'vertical' || variant === 'vertical-reverse';
   const hasMobileIcons = items.some((item: TabItem) => item.icon);
+  const tabsId = useId();
+  const previousInitialActiveId = useRef(initialActiveId);
+
+  useEffect(() => {
+    const initialActiveIdChanged = previousInitialActiveId.current
+      !== initialActiveId;
+    previousInitialActiveId.current = initialActiveId;
+
+    if (
+      initialActiveIdChanged
+      && initialActiveId
+      && initialActiveId !== activeId
+      && items.some((item) => item.id === initialActiveId)
+    ) {
+      setActiveId(initialActiveId);
+      return;
+    }
+
+    if (items.length && !items.some((item) => item.id === activeId)) {
+      setActiveId(items[0].id);
+    }
+  }, [activeId, initialActiveId, items]);
 
   function selectTab(id: string): void {
     setActiveId(id);
+  }
+
+  function handleKeyDown(
+    event: KeyboardEvent<HTMLButtonElement>,
+    currentIndex: number,
+  ): void {
+    const previousKey = isVertical ? 'ArrowUp' : 'ArrowLeft';
+    const nextKey = isVertical ? 'ArrowDown' : 'ArrowRight';
+    let nextIndex: number | undefined;
+
+    if (event.key === previousKey) {
+      nextIndex = (currentIndex - 1 + items.length) % items.length;
+    } else if (event.key === nextKey) {
+      nextIndex = (currentIndex + 1) % items.length;
+    } else if (event.key === 'Home') {
+      nextIndex = 0;
+    } else if (event.key === 'End') {
+      nextIndex = items.length - 1;
+    }
+
+    if (nextIndex === undefined) return;
+
+    event.preventDefault();
+    selectTab(items[nextIndex].id);
+    const nextTab = event.currentTarget
+      .closest('[role="tablist"]')
+      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+      .item(nextIndex);
+    nextTab?.focus();
   }
 
   const navigation = (
     <ul
       className={`tabs__nav ${isVertical ? 'tabs__nav--vertical' : ''} ${variant === 'material' ? 'tabs__nav--material' : ''} ${variant === 'bootstrap' ? 'tabs__nav--bootstrap' : ''} ${variant === 'justified' ? 'tabs__nav--justified' : ''} ${variant === 'pills' ? 'tabs__nav--pills' : ''} ${variant === 'standard' || variant === 'material' ? 'tabs__nav--animated' : ''} ${hasMobileIcons ? 'tabs__nav--mobileIcons' : ''}`}
       role="tablist"
+      aria-orientation={isVertical ? 'vertical' : 'horizontal'}
     >
-      {items.map((item: TabItem) => (
+      {items.map((item: TabItem, index) => (
         <li key={item.id} className={activeId === item.id ? 'tabs__item--active' : ''} role="presentation">
           <button
             type="button"
             className="tabs__button"
             role="tab"
+            id={`${tabsId}-${item.id}-tab`}
             aria-label={item.accessibleLabel}
             aria-selected={activeId === item.id}
+            aria-controls={`${tabsId}-${item.id}-panel`}
+            tabIndex={activeId === item.id ? 0 : -1}
             onClick={() => selectTab(item.id)}
+            onKeyDown={(event) => handleKeyDown(event, index)}
           >
             <span className="tabs__label">{item.label}</span>
             {item.icon ? <i className={`tabs__icon ${item.icon}`} aria-hidden="true" /> : null}
@@ -63,7 +126,15 @@ export default function Tabs({ items, initialActiveId, variant = 'standard' }: T
     return (
       <div className="tabs__verticalEnv">
         {variant === 'vertical' ? navigation : null}
-        <div className="tabs__content tabs__content--vertical" role="tabpanel">{activeItem?.content}</div>
+        <div
+          id={`${tabsId}-${activeItem?.id}-panel`}
+          className="tabs__content tabs__content--vertical"
+          role="tabpanel"
+          aria-labelledby={`${tabsId}-${activeItem?.id}-tab`}
+          tabIndex={0}
+        >
+          {activeItem?.content}
+        </div>
         {variant === 'vertical-reverse' ? navigation : null}
       </div>
     );
@@ -72,7 +143,15 @@ export default function Tabs({ items, initialActiveId, variant = 'standard' }: T
   return (
     <div className="tabs">
       {navigation}
-      <div className="tabs__content" role="tabpanel">{activeItem?.content}</div>
+      <div
+        id={`${tabsId}-${activeItem?.id}-panel`}
+        className="tabs__content"
+        role="tabpanel"
+        aria-labelledby={`${tabsId}-${activeItem?.id}-tab`}
+        tabIndex={0}
+      >
+        {activeItem?.content}
+      </div>
     </div>
   );
 }

@@ -21,9 +21,10 @@
 .personPhotoUpload__help small { display: block; }
 .personPhotoUpload__divider { width: 100%; height: .08rem; background: var(--color-gray-200); margin: 1.6rem 0 .6rem; }
 .personPhotoUpload__preview--dragging { border-color: var(--ui-color-gnai-primary); background: var(--ui-color-table-header); }
+.personPhotoUpload__preview--invalid { border-color: var(--ui-color-danger); }
 .personPhotoUpload :is(.personPhotoUpload__preview, .personPhotoUpload__remove):focus-visible {
   outline: 2px solid var(--ui-color-input-focus-border); outline-offset: 3px;
 }
 .personPhotoUpload button:disabled { cursor: not-allowed; opacity: .65; }
-.personPhotoUpload__error { color: var(--ui-color-danger); font-weight: 700; margin: .5rem 0 0; }
+.personPhotoUpload__error { color: var(--ui-color-danger); font-size: 12px; font-weight: 400; line-height: 1.42857143; margin: .5rem 0 0; }
 .personPhotoUpload__dragStatus { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

@@ -38,7 +38,7 @@ A página compõe o cabeçalho e recebe as props reais do controller. O componen
 1. Use o layout compartilhado existente. `main.tsx` atribui `AppLayout` às páginas de negócio; ele monta topbar, sidebar e footer para usuários autenticados. Não duplique essa estrutura dentro do formulário.
 2. Defina o título do documento com `Head` do Inertia e componha o cabeçalho visual com `Navigation/PageTitle`. Ele recebe `title`, `subtitle` e `actions`, usa `h1` por padrão e oferece quebra responsiva. A referência visual é o título maior e roxo do antigo Blade de criar aluno. `Navigation/PageHeader` continua disponível nos exemplos Ubold, mas não é o padrão oficial desses cabeçalhos de negócio.
 3. Use `Navigation/PageBreadcrumb` dentro de uma navegação com nome acessível. Passe a cadeia de navegação real; o último item é apresentado como atual. Links permanecem azuis, com hover/foco azul escuro, conforme seu CSS compartilhado.
-4. Use `Forms/FormLayout` como o `<form>` semântico, com `onSubmit`, prevenção do submit nativo e indicação de processamento. Ele centraliza reset de `fieldset`, espaçamento base de campos, última seção e foco das ações. Dentro dele, reúna os campos em um único `UI/CardBox`.
+4. Use `Forms/FormLayout` como o `<form>` semântico, com `onSubmit`, prevenção do submit nativo e indicação de processamento. Ele aplica `noValidate` para impedir os balões nativos do navegador: a requisição deve chegar ao backend e os erros retornados pelo Laravel/Inertia devem aparecer junto de todos os campos correspondentes. O componente também centraliza reset de `fieldset`, espaçamento base de campos, última seção e foco das ações. Dentro dele, reúna os campos em um único `UI/CardBox`.
 5. Divida o conteúdo com `Forms/FormSection`, usando `variant="inline"`, título pertinente e `iconClass` adequado. A variante padrão `card` cria outro card: não a use inadvertidamente para cada seção de um formulário que deve ter um só card.
 6. Coloque `Forms/FormActions` imediatamente depois do card, ainda dentro do `<form>`. Ele forma uma unidade contínua com o card, cria o rodapé sticky centralizado, apresenta o status de envio e reúne as ações principais sem repeti-las no cabeçalho. Preserve a navegação de Cancelar e bloqueie as ações durante o processamento.
 
@@ -68,7 +68,7 @@ Os caminhos desta tabela são relativos a `resources/react/components/`.
 | Texto rico | `Forms/SummernoteEditor/SummernoteEditor.tsx`, quando houver requisito de editor |
 | Ações finais e andamento | `Forms/FormActions/FormActions.tsx`; `children` para ações principais, `secondary` para ações de menor ênfase e `status` |
 | Botões e links de ação | `UI/Button/Button.tsx`; variantes `save`/`cancel`, ícones e `disabled` |
-| Falha geral ou resumo de validação | `UI/InlineAlert/InlineAlert.tsx`, dentro de uma região de anúncio apropriada |
+| Feedback geral da operação | Toast global de `UI/FlashNotifications`; use flash do backend ou `UI/NotificationToast/notify` para falhas do cliente, sem criar card/alerta na página |
 
 Use imports diretos com `@/` entre pastas e `./` para arquivos locais. Leia os tipos reais antes de compor o controle. Estenda o componente existente quando houver uma necessidade comprovada; não crie um clone, uma biblioteca de formulário ou outro adaptador de plugin por página.
 
@@ -85,18 +85,18 @@ As fontes e cores compartilhadas estão em `resources/react/styles/tokens.css`, 
 | Select2 | Controle com borda/foco dos inputs; painel e busca com bordas cinza; opções destacadas em `--ui-color-gnai-primary` |
 | Calendário | Botão e seleção roxos, com os tokens Gnai e estilos do `DatePicker` |
 | Summernote | Toolbar neutra e estados ativos roxos, definidos no componente |
-| Erros de campo | `FormField`, estado inválido do controle e tokens de erro; erro não pode depender somente de cor |
-| Salvar e cancelar | `Button` com `tone="save"`/`tone="cancel"`, `iconOnly` e `aria-label`; confirmação verde com ícone de check e cancelamento cinza com X |
+| Erros de campo | `FormField`, controle com borda vermelha e mensagem logo abaixo em 12 px, peso 400 e vermelho do tema uBold; erro não pode depender somente de cor |
+| Salvar e cancelar | `Button` com `tone="save"`/`tone="cancel"`, ícone, texto visível, `title` e `aria-label`; confirmação no roxo institucional do Gnai com ícone de check e cancelamento cinza com X |
 
 `--ui-color-primary` e `--ui-color-custom` ainda representam cores do tema em outros componentes. Não use esses nomes como se já fossem os tokens oficiais roxos do Gnai, nem consolide toda a paleta durante uma migração de formulário.
 
 Organize campos relacionados com `FormGrid`, usando `FormGridWide` para campos longos e `FormStack` para controles empilhados. Mantenha CSS no domínio somente para composições particulares, como a foto ao lado dos dados pessoais. Preserve padding, bordas, foco e espaçamentos compartilhados; não copie dimensões locais de alunos como regra global.
 
-Botões devem ter ícone pertinente e texto, salvo nos rodapés sticky de criar, editar e visualizar, onde as ações principais usam somente ícones com `iconOnly` e `aria-label`. Cancelar/voltar usa X cinza; salvar usa check verde. `Button` também admite `leftIconClass`, outras posições de ícone e `showIcon={false}`. Não suponha que todas as variantes do tema já tenham as cores do Gnai.
+Botões devem ter ícone pertinente e texto, inclusive nos rodapés sticky de criar, editar e visualizar. Todo botão tem `title`; o componente compartilhado o infere de `aria-label`, `label` ou texto simples, enquanto conteúdos complexos devem informá-lo explicitamente. Use rótulos curtos conforme o contexto: `Salvar` e `Cancelar` em formulários; `Voltar`, `Editar`, `Excluir`, `Clonar` e `PDF` nas visualizações quando essas ações existirem. Ações somente com ícone também precisam de `aria-label`, pois `title` não substitui o nome acessível. Cancelar/voltar usa X cinza; salvar usa check no roxo institucional do Gnai. `Button` também admite `iconOnly` para exceções autorizadas, `leftIconClass`, outras posições de ícone e `showIcon={false}`. Não suponha que todas as variantes do tema já tenham as cores do Gnai.
 
 ### Labels, validação e acessibilidade
 
-`FormField` gera o label e os IDs `${id}-hint`/`${id}-error`, mas não injeta esses atributos automaticamente no filho. Passe o mesmo `id` ao controle, indique o estado inválido e ligue o erro/dica por `aria-describedby` ou pela prop equivalente do componente. `requiredIndicator` apresenta o marcador visual; `required` no controle é uma decisão separada, conforme o contrato real.
+`FormField` gera o label e os IDs `${id}-hint`/`${id}-error`, mas não injeta esses atributos automaticamente no filho. Passe o mesmo `id` ao controle, indique o estado inválido e ligue o erro/dica por `aria-describedby` ou pela prop equivalente do componente. `requiredIndicator` apresenta o marcador visual. O atributo `required` pode permanecer no controle como informação semântica e de acessibilidade, conforme o contrato real, mas `FormLayout` desativa a validação visual nativa com `noValidate`; não bloqueie a submissão no cliente nem substitua as mensagens específicas retornadas pelo backend por `validationMessage` do navegador.
 
 Trecho do padrão usado em `StudentForm`, em um contexto com `form` inicializado por `useForm`:
 
@@ -112,19 +112,20 @@ import TextInput from '@/components/Forms/TextInput/TextInput';
 </FormField>
 ```
 
-O nome e o ID acima pertencem ao exemplo; adapte-os ao cadastro. Use hierarquia de headings, navegação nomeada, alternativas para imagens e foco visível. Erros específicos permanecem junto aos campos; um resumo geral pode complementar, sem substituí-los. No exemplo, o resumo fica em `role="alert"` e o primeiro controle inválido recebe tentativa de foco após a resposta de validação.
+O nome e o ID acima pertencem ao exemplo; adapte-os ao cadastro. Use hierarquia de headings, navegação nomeada, alternativas para imagens e foco visível. Erros de validação permanecem junto aos respectivos campos: não monte card ou `InlineAlert` como “Confira os campos indicados”. O consumidor global apresenta um único toast de erro vermelho orientando a conferir o formulário, e não um aviso roxo. O controle inválido recebe borda vermelha, a mensagem usa tipografia normal e discreta imediatamente abaixo, e o primeiro controle inválido recebe tentativa de foco após a resposta do backend.
 
 ### Estado e submissão
 
 - Use `useForm` de `@inertiajs/react`, como na referência, com um tipo de dados próprio do cadastro. Inicialize campos vazios, valores padrão recebidos do backend e dados existentes de edição de maneira explícita. Não invente defaults de enums ou dados de negócio.
 - Atualize valores com `form.setData`; use a versão funcional para mudanças relacionadas, como arquivo e indicador de remoção. Não esconda o valor enviado em estado interno desconectado do formulário.
-- Apresente `form.errors` junto dos campos. `form.setError` registra também falhas locais de controles, e `form.clearErrors` limpa os erros pertinentes quando o usuário corrige ou remove o valor, conforme o comportamento existente.
+- Apresente `form.errors` somente junto dos respectivos campos. `form.setError` registra também falhas locais de controles, e `form.clearErrors` limpa os erros pertinentes quando o usuário corrige ou remove o valor, conforme o comportamento existente. O conjunto de erros aciona apenas um toast geral pelo consumidor compartilhado; não o transforme em alerta ou card dentro do formulário.
+- Deixe o backend validar os campos obrigatórios e retornar o conjunto de erros pela integração Inertia. Não use a validação nativa do HTML como barreira de submissão; cada mensagem recebida deve ser apresentada pelo `FormField` ou pelo componente de controle equivalente, logo abaixo do campo e associada por `aria-describedby`.
 - Configure `form.transform` somente para diferenças reais de payload. Criação e edição podem ter contratos distintos: não envie automaticamente todos os campos do estado nos dois casos.
 - Use o método e o endpoint previstos nas rotas. O exemplo combina `form.post`, `forceFormData: true`, `preserveScroll: true` e `_method: 'put'` na edição porque contém upload. Multipart e method spoofing são condicionais; não obrigue formulários sem arquivos a adotá-los por cópia.
 - Durante o envio, sinalize `aria-busy`, bloqueie campos e ações apropriados e impeça submits duplicados. Alunos usam `fieldset disabled`, props `disabled` dos adaptadores e uma trava em `useRef`, liberada em `onFinish`. O Cancelar do rodapé recebe o estado de processamento. Não confie apenas no `fieldset` para widgets com elementos gerados fora dele.
 - Mantenha mensagens como “Salvando...” e status compreensíveis. `FormActions.status` anuncia o andamento; `form.progress` é usado quando houver upload. Falhas devem permitir corrigir e tentar novamente.
 
-As falhas de conexão e de resposta HTTP são apresentadas por `useStudentRequest` e `InlineAlert` na referência. Esse hook é do domínio de alunos: não o copie nem o importe indiscriminadamente em outros cadastros. Reutilize o transporte de feedback adequado e, se houver necessidade real de compartilhamento, trate-a no escopo autorizado.
+As falhas de conexão e de resposta HTTP são apresentadas por `useStudentRequest` no toast global, por meio de `UI/NotificationToast/notify`. Esse hook é do domínio de alunos: não o copie nem o importe indiscriminadamente em outros cadastros. Reutilize o transporte de feedback compartilhado e, se houver necessidade real de outra abstração, trate-a no escopo autorizado.
 
 ## Padrões condicionais
 
@@ -187,7 +188,7 @@ A referência cria por POST em `/specialized-educational-support/students/store`
 
 Preserve nomes de campos, enums, formato das datas, arquivos e flags aceitos pelo backend. Não substitua validações, permissões, queries/actions ou regras de negócio por condições visuais. Os erros de validação chegam por Inertia em `form.errors`; os redirects e flash devem seguir os contratos existentes. Não acrescente capabilities ao usuário compartilhado nem invente permissões que o servidor não fornece.
 
-**Consumo de flash:** `AppLayout` monta uma única instância global de `UI/FlashNotifications/FlashNotifications.tsx` para as telas autenticadas. Páginas, wrappers de domínio e `BusinessPage` não devem montar outro consumidor das mesmas mensagens. A autenticação continua usando `UI/AuthFeedback/AuthFeedback.tsx`, pois suas páginas não recebem `AppLayout`.
+**Consumo de feedback:** `AppLayout` monta uma única instância de `UI/FlashNotifications/FlashNotifications.tsx` para as telas autenticadas, e `AccountLayout` faz o mesmo na autenticação. O consumidor converte flash do backend, erros de validação Inertia e mensagens emitidas por `UI/NotificationToast/notify` em toast. Páginas, wrappers de domínio e `BusinessPage` não devem montar outro consumidor das mesmas mensagens. A fila compartilhada preserva avisos emitidos durante transições entre layouts, enquanto `flash.response_id`, gerado pelo middleware, impede que a mesma resposta seja consumida novamente por uma renderização, remontagem ou restauração do histórico do Inertia.
 
 ## Processo de criação ou migração
 

@@ -1,14 +1,4 @@
-.studentsPage h2 { font: 600 1.25rem/1.4 var(--ui-font-ui); margin: 0 0 20px; }
-.studentsPage h3 { font-size: 1.05rem; }
 .studentsPage__header--banner { --page-title-color: var(--ui-color-surface); --page-subtitle-color: var(--ui-color-surface); padding: 26px; border-radius: 6px; color: var(--ui-color-surface); background: linear-gradient(var(--ui-color-shadow), var(--ui-color-shadow)), url('/images/page-header3.png') repeat top left; }
-.studentsPage__actions, .studentsPage__sectionActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.studentsPage__sectionActions { justify-content: flex-end; border-top: 1px solid var(--ui-color-border-soft); margin-top: 20px; padding-top: 16px; }
-.studentsPage__section { margin: 20px 0; scroll-margin-top: calc(var(--ui-topbar-height) + 20px); }
-.studentsPage__section:has(+ .formActions) { margin-bottom: 0; }
-.studentsPage__section:has(+ .formActions) .card-box {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
 .studentsPage__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .studentsPage__grid--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .studentsPage__grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -20,28 +10,50 @@
 .studentForm__personalFields .studentsPage__grid:last-child { margin-bottom: 0; }
 .studentForm__personalFields .studentsPage__grid:not(:last-child) { margin-bottom: 28px; }
 .studentsPage__wide { grid-column: 1 / -1; }
-.studentsPage__table { max-width: 100%; overflow-x: auto; }
-.studentsPage__table th { white-space: nowrap; }
-.studentsPage__table td { vertical-align: middle; overflow-wrap: anywhere; }
-.studentsPage__empty { padding: 24px 12px; color: var(--ui-color-text-muted); text-align: center; }
 .studentsPage__identity { display: flex; gap: 12px; align-items: center; min-width: 160px; }
 .studentsPage__avatar { width: 32px; height: 32px; object-fit: cover; border-radius: 50%; flex-shrink: 0; }
 .studentsPage__identity strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.studentsPage__photo { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; }
-.studentsPage__profile { text-align: center; padding: 20px; }
-.studentsPage__data { margin: 0; }
-.studentsPage__data dt,
-.studentsPage__data dd {
-  font-size: 14px;
-}
-.studentsPage__data dt { font-weight: 600; margin-bottom: 5px; }
-.studentsPage__data dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-.studentsPage__related { border-bottom: 1px solid var(--ui-color-border-soft); padding: 12px 0; }
-.studentsPage__related p { margin: 4px 0; }
+.studentsPage__indexTable .studentsPage__identity { min-width: 0; max-width: 100%; }
+.studentsPage__indexTable .studentsPage__identity strong { flex: 1 1 auto; }
+.studentsPage__summaryCard { margin: 20px 0; }
+.studentsPage__summaryCard .formSection { margin-bottom: 0; }
+.studentsPage__summary { display: grid; grid-template-columns: 92px minmax(0, 1fr); align-items: center; gap: 24px; }
+.studentsPage__summaryPhoto { width: 92px; height: 92px; border: 3px solid var(--ui-color-surface-alt); border-radius: 50%; object-fit: cover; }
+.studentsPage__summaryBody { min-width: 0; }
+.studentsPage__summaryName { margin: 0 0 16px; color: var(--ui-color-heading); font: 600 1.25rem/1.35 var(--ui-font-ui); overflow-wrap: anywhere; }
+.studentsPage__summaryDetails,
+.studentsPage__detailGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 32px; margin: 0; }
+.studentsPage__summaryDetails { grid-template-columns: repeat(2, minmax(140px, 260px)); gap: 16px 32px; }
+.studentsPage__detail { min-width: 0; }
+.studentsPage__detail--wide { grid-column: 1 / -1; }
+.studentsPage__detail dt { margin: 0 0 6px; color: var(--ui-color-form-label); font-size: 14px; font-weight: 600; }
+.studentsPage__detail dd { margin: 0; color: var(--ui-color-legacy-text); font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-wrap; }
+.studentsPage__recordTabs { margin: 0; }
+.studentsPage__recordTabs .tabs__verticalEnv { min-width: 0; margin: 0; overflow: hidden; border: 1px solid var(--ui-color-card-border); border-radius: 4px 4px 0 0; background: var(--ui-color-surface-alt); box-shadow: 0 1px 1px var(--ui-color-shadow); }
+.studentsPage__recordTabs .tabs__nav { flex: 0 0 clamp(190px, 23%, 250px); background: var(--ui-color-surface-alt); }
+.studentsPage__recordTabs .tabs__button { min-height: 52px; height: auto; padding: 12px 18px; color: var(--ui-color-heading); font-size: 13px; line-height: 1.35; text-align: left; }
+.studentsPage__recordTabs .tabs__button:hover,
+.studentsPage__recordTabs .tabs__item--active .tabs__button { color: var(--ui-color-gnai-primary); }
+.studentsPage__recordTabs .tabs__item--active .tabs__button { background: var(--ui-color-surface); }
+.studentsPage__recordTabs .tabs__button:focus-visible { z-index: 1; outline: 2px solid var(--ui-color-gnai-primary); outline-offset: -3px; }
+.studentsPage__recordTabs .tabs__content { min-width: 0; min-height: 390px; padding: 28px 30px; box-shadow: none; }
+.studentsPage__recordTabs .tabs__content:focus-visible { outline: 2px solid var(--ui-color-gnai-primary); outline-offset: -4px; }
+.studentsPage__recordTabs .formSection { margin-bottom: 0; }
+.studentsPage__subheading { margin: 28px 0 14px; color: var(--ui-color-heading); font: 600 1rem/1.4 var(--ui-font-ui); }
+.studentsPage__recordList { min-width: 0; }
+.studentsPage__recordListActions { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+.studentsPage__recordList .tableListCard { min-width: 0; }
+.studentsPage__tableSecondary { display: block; min-width: 0; margin-top: 4px; color: var(--ui-color-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.studentsPage__richText { color: var(--ui-color-legacy-text); }
+.studentsPage__richText > :first-child { margin-top: 0; }
+.studentsPage__richText > :last-child { margin-bottom: 0; }
 .studentsPage__hint { color: var(--ui-color-text-muted); display: block; margin-top: 8px; }
 .studentsPage__status { margin: 10px 0; }
 .studentsPage .fileUploadButton:focus-within { outline: 2px solid var(--ui-color-text); outline-offset: 3px; }
-@media (max-width: 900px) { .studentForm__personal { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 900px) {
+  .studentForm__personal { grid-template-columns: minmax(0, 1fr); }
+  .studentsPage__detailGrid { grid-template-columns: minmax(0, 1fr); }
+}
 @container (max-width: 640px) {
   .studentForm__personalFields .studentsPage__grid--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -52,4 +64,14 @@
   .studentsPage__grid { grid-template-columns: minmax(0, 1fr); }
   .studentsPage__header--banner { padding: 20px; }
   .studentsPage .card-box { padding: 16px; }
+  .studentsPage__summary { grid-template-columns: 72px minmax(0, 1fr); gap: 16px; }
+  .studentsPage__summaryPhoto { width: 72px; height: 72px; }
+  .studentsPage__summaryDetails { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 767px) {
+  .studentsPage__recordTabs .tabs__verticalEnv { display: block; overflow: visible; }
+  .studentsPage__recordTabs .tabs__nav { display: flex; overflow-x: auto; background: var(--ui-color-surface-alt); }
+  .studentsPage__recordTabs .tabs__nav > li { flex: 0 0 auto; }
+  .studentsPage__recordTabs .tabs__button { min-width: 150px; text-align: center; }
+  .studentsPage__recordTabs .tabs__content { min-height: 0; padding: 20px; }
 }

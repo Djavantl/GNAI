@@ -10,7 +10,6 @@ import FormSection from "@/components/Forms/FormSection/FormSection";
 import FormActions from "@/components/Forms/FormActions/FormActions";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
-import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
 import PersonPhotoUpload from "@/components/Forms/PersonPhotoUpload/PersonPhotoUpload";
 import { cpfMask, phoneMask, studentsBase, studentUrl } from "./Students.utils";
 import type { Student, StudentFormOptions } from "./Students.types";
@@ -215,20 +214,6 @@ export default function StudentForm(props: Props): React.JSX.Element {
             }}
         >
             <CardBox>
-                {request.error ? (
-                    <div role="alert">
-                        <InlineAlert variant="danger">
-                            {request.error}
-                        </InlineAlert>
-                    </div>
-                ) : null}
-                {Object.keys(form.errors).length ? (
-                    <div role="alert">
-                        <InlineAlert variant="danger">
-                            Confira os campos indicados antes de salvar.
-                        </InlineAlert>
-                    </div>
-                ) : null}
                 <fieldset disabled={form.processing}>
                     <FormSection
                         id="student-personal"
@@ -383,7 +368,8 @@ export default function StudentForm(props: Props): React.JSX.Element {
                 <Button
                     href={cancelUrl}
                     tone="cancel"
-                    iconOnly
+                    label="Cancelar"
+                    title="Cancelar e voltar"
                     aria-label="Cancelar e voltar"
                     disabled={form.processing}
                 />
@@ -391,7 +377,8 @@ export default function StudentForm(props: Props): React.JSX.Element {
                     type="submit"
                     tone="save"
                     leftIconClass="fa fa-check"
-                    iconOnly
+                    label="Salvar"
+                    title="Salvar aluno"
                     aria-label={
                         form.processing ? "Salvando aluno" : "Salvar aluno"
                     }

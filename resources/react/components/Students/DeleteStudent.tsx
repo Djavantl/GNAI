@@ -18,6 +18,7 @@ export default function DeleteStudent({
   const form = useForm({});
   const busy = useRef(false);
   const request = useStudentRequest();
+  const deleteLabel = `Excluir aluno ${name}`;
 
   function close(): void {
     setOpen(false);
@@ -42,12 +43,15 @@ export default function DeleteStudent({
     <>
       <Button
         tone="dark-red"
+        size={iconOnly ? 'sm' : undefined}
         leftIconClass="fa fa-trash-o"
         iconOnly={iconOnly}
-        aria-label={iconOnly ? "Excluir aluno" : undefined}
+        disabled={form.processing}
+        title={deleteLabel}
+        aria-label={deleteLabel}
         onClick={() => setOpen(true)}
       >
-        {iconOnly ? null : "Excluir aluno"}
+        {iconOnly ? null : 'Excluir'}
       </Button>
       <ConfirmActionModal
         open={open}
@@ -57,7 +61,6 @@ export default function DeleteStudent({
             Excluir o aluno <strong>{name}</strong>?
           </>
         }
-        error={request.error}
         processing={form.processing}
         confirmLabel="Confirmar exclusão"
         processingLabel="Excluindo aluno..."

@@ -41,15 +41,15 @@
 .paginationControl > li > a:focus {
   z-index: 3;
   background-color: #e4e7ea;
-  color: var(--ui-color-purple);
+  color: var(--ui-color-gnai-primary);
 }
 
 .paginationControl > .active > a,
 .paginationControl > .active > a:hover,
 .paginationControl > .active > a:focus {
   z-index: 2;
-  border-color: var(--ui-color-purple);
-  background-color: var(--ui-color-purple);
+  border-color: var(--ui-color-gnai-primary);
+  background-color: var(--ui-color-gnai-primary);
   color: #ffffff;
   cursor: default;
 }
