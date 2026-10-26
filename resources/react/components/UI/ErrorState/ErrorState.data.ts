@@ -31,4 +31,4 @@ export const errorDescriptions: Record<ErrorCode, ErrorDescription> = {
   },
 };
 
-export const errorStateCopy = { home: 'Voltar ao início' };
+export const errorStateCopy = { label: 'Erro', home: 'Voltar ao início' };

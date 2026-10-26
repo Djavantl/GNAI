@@ -11,7 +11,7 @@ export interface TableListColumn {
 }
 
 export interface TableListTableProps
-  extends Omit<TableProps, 'children' | 'width'> {
+  extends Omit<TableProps, 'children' | 'width' | 'summary'> {
   columns: TableListColumn[];
   summary: ReactNode;
   children: ReactNode;

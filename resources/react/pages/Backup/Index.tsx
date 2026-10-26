@@ -74,7 +74,11 @@ export default function BackupIndexPage({
     const [action, setAction] = useState<BackupAction | null>(null);
     const [selectedBackup, setSelectedBackup] = useState<BackupRecord | null>(null);
     const restoreForm = useForm({ password: "" });
-    const initialValues = useMemo(() => ({ ...emptyFilters, ...initialFilters }), [initialFilters]);
+    const initialValues = useMemo<BackupFilters>(() => ({
+        name: initialFilters.name ?? "",
+        status: initialFilters.status ?? "",
+        user_id: initialFilters.user_id ?? "",
+    }), [initialFilters]);
     const {
         values: filterValues,
         update: updateFilter,

@@ -9,6 +9,7 @@ import FormSection from "@/components/Forms/FormSection/FormSection";
 import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
+import DetailField from "@/components/UI/DetailField/DetailField";
 import WaitlistPage from "./WaitlistPage";
 import WaitlistResourceDetails from "./WaitlistResourceDetails";
 import type {

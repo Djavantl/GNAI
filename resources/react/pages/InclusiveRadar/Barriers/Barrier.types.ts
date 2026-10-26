@@ -1,7 +1,7 @@
 import type { GeoMapReference } from "@/components/InclusiveRadar/GeoMap/GeoMap";
 
 export type BarrierOption = { value: string; label: string };
-export type BarrierInstitution = GeoMapReference & {
+export type BarrierInstitution = Omit<GeoMapReference, "locations"> & {
     locations: { id: number; name: string; label: string; latitude: number; longitude: number }[];
 };
 export type BarrierCategory = { id: number; name: string; blocks_map: boolean };

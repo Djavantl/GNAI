@@ -19,6 +19,7 @@ export interface BackupPaginator {
 }
 
 export interface BackupFilters {
+    [key: string]: string;
     name: string;
     status: string;
     user_id: string;

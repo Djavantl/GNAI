@@ -55,18 +55,19 @@ export default function ToggleControl({
         let switchElement: HTMLElement | null = null;
         const input = inputRef.current;
         if (!input) return;
+        const element = input;
 
-        const synchronize = (): void => onChangeRef.current(input.checked);
+        const synchronize = (): void => onChangeRef.current(element.checked);
         const handleKeyDown = (event: KeyboardEvent): void => {
             if (
                 (event.key === " " || event.key === "Enter") &&
-                !input.disabled
+                !element.disabled
             ) {
                 event.preventDefault();
                 switchElement?.click();
             }
         };
-        input.addEventListener("change", synchronize);
+        element.addEventListener("change", synchronize);
         async function initialize(): Promise<void> {
             await loadExternalStylesheet(
                 "/assets/react/plugins/switchery/switchery.css",
@@ -79,9 +80,9 @@ export default function ToggleControl({
                 window as Window & { Switchery?: SwitcheryConstructor }
             ).Switchery;
             if (!Switchery) return;
-            input.checked = checkedRef.current;
-            input.disabled = disabledRef.current;
-            switchery = new Switchery(input, {
+            element.checked = checkedRef.current;
+            element.disabled = disabledRef.current;
+            switchery = new Switchery(element, {
                 color:
                     getComputedStyle(document.documentElement)
                         .getPropertyValue("--ui-color-gnai-primary")
@@ -112,12 +113,12 @@ export default function ToggleControl({
         void initialize();
         return () => {
             cancelled = true;
-            input.removeEventListener("change", synchronize);
+            element.removeEventListener("change", synchronize);
             switchElement?.removeEventListener("keydown", handleKeyDown);
             switchery?.destroy();
             switchElement?.remove();
-            input.style.removeProperty("display");
-            input.removeAttribute("data-switchery");
+            element.style.removeProperty("display");
+            element.removeAttribute("data-switchery");
             instanceRef.current = null;
         };
     }, [descriptionId, id, size]);

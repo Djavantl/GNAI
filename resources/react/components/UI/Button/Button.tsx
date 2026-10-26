@@ -208,13 +208,13 @@ export default function Button(props: ButtonProps): React.JSX.Element {
         aria-expanded={props['aria-expanded']}
         aria-haspopup={props['aria-haspopup']}
         aria-controls={props['aria-controls']}
-        onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+        onClick={(event) => {
           if (disabled) {
             event.preventDefault();
             return;
           }
 
-          props.onClick?.(event);
+          props.onClick?.(event as React.MouseEvent<HTMLAnchorElement>);
         }}
         onPointerDown={() => {
           if (!disabled) {
