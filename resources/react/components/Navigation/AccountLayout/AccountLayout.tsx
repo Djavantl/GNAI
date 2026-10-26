@@ -3,11 +3,23 @@ import FlashNotifications from '@/components/UI/FlashNotifications/FlashNotifica
 import { initWaves } from '@/utils/initWaves';
 import './AccountLayout.css';
 
-export default function AccountLayout({ children, wide = false }: {
+export default function AccountLayout({ children, wide = false, illustration }: {
   children: ReactNode;
   wide?: boolean;
+  illustration?: ReactNode;
 }): React.JSX.Element {
   useEffect(() => { initWaves(); }, []);
+  if (illustration) {
+    return <>
+      <main className="accountLayout accountLayout--split" aria-label="Páginas">
+        <div className="accountLayout__splitPanel">
+          <aside className="accountLayout__splitBrand">{illustration}</aside>
+          <section className="accountLayout__splitContent">{children}</section>
+        </div>
+      </main>
+      <FlashNotifications />
+    </>;
+  }
   return <>
     <main className="accountLayout" aria-label="Páginas">
       <div className="accountLayout__background" aria-hidden="true" />
