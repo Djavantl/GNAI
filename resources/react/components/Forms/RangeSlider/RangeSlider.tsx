@@ -11,6 +11,7 @@ interface IonSliderInstance {
     destroy: () => void;
     plugin_count?: number;
     current_plugin?: number;
+    result?: { from: number };
 }
 
 interface IonCollection {
@@ -44,6 +45,8 @@ export interface RangeSliderProps {
 
 /**
  * Adaptador controlado do Ion.RangeSlider do Ubold, com as cores do Gnai.
+ * Como no Ubold, o plugin controla o arraste e o valor só é entregue ao
+ * soltar, clicar ou usar as setas; valores externos não interrompem o gesto.
  * A trilha recebe foco e responde às setas, expondo `role="slider"`.
  */
 export default function RangeSlider({
@@ -65,6 +68,7 @@ export default function RangeSlider({
     const input = useRef<HTMLInputElement>(null);
     const instance = useRef<IonSliderInstance | null>(null);
     const callback = useRef(onChange);
+    const interacting = useRef(false);
     const current = useRef({ value, disabled, label, describedBy, invalid });
     callback.current = onChange;
     current.current = { value, disabled, label, describedBy, invalid };
@@ -113,6 +117,9 @@ export default function RangeSlider({
                 disable: current.current.disabled,
                 onChange: (data: IonSliderData) => {
                     root.current?.querySelector(".irs-line")?.setAttribute("aria-valuenow", String(data.from));
+                },
+                onFinish: (data: IonSliderData) => {
+                    interacting.current = false;
                     if (data.from !== current.current.value) callback.current(data.from);
                 },
             });
@@ -130,12 +137,24 @@ export default function RangeSlider({
     }, [min, max, step, grid]);
 
     useEffect(() => {
+        const finish = (): void => {
+            interacting.current = false;
+        };
+        window.addEventListener("pointerup", finish);
+        window.addEventListener("pointercancel", finish);
+
+        return () => {
+            window.removeEventListener("pointerup", finish);
+            window.removeEventListener("pointercancel", finish);
+        };
+    }, []);
+
+    useEffect(() => {
         const slider = instance.current;
-        if (!slider) return;
+        if (!slider || interacting.current) return;
         const track = root.current?.querySelector(".irs-line");
         const hadFocus = !!track && track === document.activeElement;
-        const shown = Number(track?.getAttribute("aria-valuenow"));
-        if (shown !== value || track?.getAttribute("aria-disabled") !== String(disabled)) {
+        if (slider.result?.from !== value || track?.getAttribute("aria-disabled") !== String(disabled)) {
             slider.update({ from: value, disable: disabled });
             if (hadFocus) root.current?.querySelector<HTMLElement>(".irs-line")?.focus();
         }
@@ -145,6 +164,9 @@ export default function RangeSlider({
     return (
         <div
             ref={root}
+            onPointerDownCapture={() => {
+                interacting.current = true;
+            }}
             className={joinClassNames(
                 "rangeSlider",
                 invalid ? "rangeSlider--invalid" : undefined,
