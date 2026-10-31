@@ -36,8 +36,8 @@ export default function PersonPhotoUpload({
   }
   // Celular: câmera nativa pelo input com `capture`. Computador: webcam em janela (exige HTTPS ou localhost).
   function openCamera() {
-    if (window.matchMedia?.('(pointer: coarse)').matches) { cameraInput.current?.click(); return; }
-    if (window.isSecureContext && navigator.mediaDevices?.getUserMedia) { setCameraOpen(true); return; }
+    if (window.matchMedia('(pointer: coarse)').matches) { cameraInput.current?.click(); return; }
+    if (window.isSecureContext && typeof navigator.mediaDevices?.getUserMedia === 'function') { setCameraOpen(true); return; }
     onError('A câmera não está disponível neste navegador ou conexão (é necessário HTTPS). Selecione uma imagem.');
   }
 

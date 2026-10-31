@@ -28,6 +28,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
   const [hoveredCollapsedItem, setHoveredCollapsedItem] = useState<SidebarItem | null>(null);
   const [hoveredCollapsedItemTop, setHoveredCollapsedItemTop] = useState<number>(0);
   const [collapsedFlyoutTop, setCollapsedFlyoutTop] = useState<number>(0);
+  const [collapsedFlyoutAbove, setCollapsedFlyoutAbove] = useState<boolean>(false);
   const [hoveredCollapsedItemHeight, setHoveredCollapsedItemHeight] = useState<number>(0);
   const [hoveredCollapsedFlyoutWidth, setHoveredCollapsedFlyoutWidth] = useState<number>(190);
   const sidebarRef = useRef<HTMLElement | null>(null);
@@ -55,13 +56,16 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
     const element = collapsedFlyoutRef.current;
 
     function updateWidth(): void {
+      // Largura exata (sem arredondar): a linha projetada não pode passar da borda do flyout.
       const nextWidth = Math.max(190, element.getBoundingClientRect().width);
       setHoveredCollapsedFlyoutWidth(nextWidth);
       const availableHeight = sidebarRef.current?.clientHeight ?? window.innerHeight;
-      const height = element.getBoundingClientRect().height;
-      setCollapsedFlyoutTop(hoveredCollapsedItemTop + height > availableHeight
-        ? Math.max(0, hoveredCollapsedItemTop - hoveredCollapsedItemHeight - height)
-        : hoveredCollapsedItemTop);
+      const height = Math.round(element.getBoundingClientRect().height);
+      const rowTop = hoveredCollapsedItemTop - hoveredCollapsedItemHeight;
+      const above = hoveredCollapsedItemTop + height > availableHeight;
+      setCollapsedFlyoutAbove(above);
+      // Acima da linha, o flyout a sobrepõe em 1 px (como abaixo), sem fresta entre os dois.
+      setCollapsedFlyoutTop(above ? Math.max(0, rowTop - height + 1) : hoveredCollapsedItemTop);
     }
 
     updateWidth();
@@ -224,10 +228,15 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
     const itemRect = element.getBoundingClientRect();
     const sidebarRect = sidebarElement.getBoundingClientRect();
 
+    // Posições inteiras: frações de pixel deixavam uma fresta entre a linha e o flyout.
+    const itemBottom = Math.round(itemRect.bottom - sidebarRect.top);
+    const itemHeight = Math.round(itemRect.height);
+
     setHoveredCollapsedItem(item);
-    setHoveredCollapsedItemTop(itemRect.top - sidebarRect.top + itemRect.height);
-    setCollapsedFlyoutTop(itemRect.top - sidebarRect.top + itemRect.height);
-    setHoveredCollapsedItemHeight(itemRect.height);
+    setHoveredCollapsedItemTop(itemBottom);
+    setCollapsedFlyoutTop(itemBottom);
+    setCollapsedFlyoutAbove(false);
+    setHoveredCollapsedItemHeight(itemHeight);
   }
 
   function queueCollapsedFlyoutHide(): void {
@@ -277,6 +286,7 @@ export default function SidebarPrimary({ collapsed, currentItemKey, smallMenu = 
           item={hoveredCollapsedItem}
           currentItemKey={currentItemKey}
           top={collapsedFlyoutTop}
+          above={collapsedFlyoutAbove}
           openKeyList={openKeyList}
           bodyRef={collapsedFlyoutRef}
           onItemClick={handleItemClick}

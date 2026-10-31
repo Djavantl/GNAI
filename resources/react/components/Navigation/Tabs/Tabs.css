@@ -2,11 +2,11 @@
 .tabs__nav { display: flex; margin: 0; padding: 0; list-style: none; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.05); }
 .tabs__nav > li { flex: 1; min-width: 0; }
 .tabs__button { position: relative; width: 100%; height: 50px; padding: 0 20px; border: 0; background: transparent; color: #505461; cursor: pointer; font: 600 14px/50px var(--ui-font-ui); letter-spacing: .03em; text-transform: uppercase; transition: color .28s ease; }
-.tabs__button:hover, .tabs__item--active .tabs__button { color: #5fbeaa; }
-.tabs__item--active .tabs__button::after { position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: #5fbeaa; content: ''; }
+.tabs__button:hover, .tabs__item--active .tabs__button { color: var(--ui-color-gnai-primary); }
+.tabs__item--active .tabs__button::after { position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: var(--ui-color-gnai-primary); content: ''; }
 .tabs__nav--animated .tabs__item--active .tabs__button::after { display: none; }
 .tabs__nav--animated { position: relative; }
-.tabs__indicator { position: absolute; bottom: 0; height: 2px; background: #5fbeaa; pointer-events: none; transition: right .28s cubic-bezier(.4, 0, .2, 1), left .38s cubic-bezier(.4, 0, .2, 1) .06s; will-change: left, right; }
+.tabs__indicator { position: absolute; bottom: 0; height: 2px; background: var(--ui-color-gnai-primary); pointer-events: none; transition: right .28s cubic-bezier(.4, 0, .2, 1), left .38s cubic-bezier(.4, 0, .2, 1) .06s; will-change: left, right; }
 .tabs__nav--material .tabs__indicator { top: 0; bottom: auto; }
 .tabs__nav--material .tabs__item--active .tabs__button::after { top: 0; bottom: auto; }
 .tabs__nav--material { box-shadow: 0 1px 1px rgba(0,0,0,.05); }
@@ -32,7 +32,7 @@
 .tabs__nav--pills { justify-content: flex-end; gap: 2px; margin-bottom: 30px; background: transparent; box-shadow: none; }
 .tabs__nav--pills > li { flex: 0 0 auto; }
 .tabs__nav--pills .tabs__button { height: 36px; padding: 0 15px; border-radius: 4px; color: #505461; font: 400 14px/36px var(--ui-font-body); letter-spacing: normal; text-transform: none; }
-.tabs__nav--pills .tabs__item--active .tabs__button { background: #5fbeaa; color: #fff; }
+.tabs__nav--pills .tabs__item--active .tabs__button { background: var(--ui-color-gnai-primary); color: #fff; }
 .tabs__nav--pills .tabs__item--active .tabs__button::after { display: none; }
 .tabs__pillPanel { margin-bottom: 20px; border-radius: 4px; background: #fff; box-shadow: 0 1px 1px rgba(0,0,0,.05); }
 .tabs__pillPanelHeading { padding: 10px 20px; border-bottom: 1px solid #edf0f0; background: #f4f8fb; }

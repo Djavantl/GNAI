@@ -107,9 +107,19 @@
   width: max-content;
   max-width: 320px;
   border: 2px solid var(--ui-sidebar-flyout-border);
+  /* Sem borda no topo e sobreposto 1 px: a lista continua a linha escura, sem fresta. */
+  border-top: 0;
   margin-top: -1px;
   padding-top: 5px;
-  background: var(--ui-sidebar-bg);
+  background: var(--ui-sidebar-flyout-bg);
+}
+
+/* Aberto acima da linha: a borda some do lado que encosta nela. */
+.sidebarPrimary__collapsedFlyout--above .sidebarPrimary__collapsedFlyoutBody {
+  border-top: 2px solid var(--ui-sidebar-flyout-border);
+  border-bottom: 0;
+  margin-top: 0;
+  padding-bottom: 5px;
 }
 
 .sidebarPrimary__collapsedFlyoutMenu,
@@ -128,8 +138,8 @@
   display: block;
   min-width: 186px;
   padding: 10px 20px 10px 15px;
-  background: var(--ui-sidebar-bg);
-  color: var(--ui-sidebar-text);
+  background: var(--ui-sidebar-flyout-bg);
+  color: var(--ui-sidebar-flyout-text);
   box-shadow: none;
   font-size: 14px;
   font-weight: 400;
@@ -138,12 +148,15 @@
   z-index: 6;
 }
 
-.sidebarPrimary__collapsedFlyoutMenu a:hover {
-  color: var(--ui-sidebar-accent);
+.sidebarPrimary__collapsedFlyoutMenu a:hover,
+.sidebarPrimary__collapsedFlyoutMenu a:focus-visible {
+  background: var(--ui-sidebar-flyout-hover-bg);
+  color: var(--ui-sidebar-flyout-accent);
 }
 
 .sidebarPrimary__collapsedFlyoutMenu li.active > a {
-  color: var(--ui-sidebar-accent);
+  color: var(--ui-sidebar-flyout-accent);
+  font-weight: 600;
 }
 
 .sidebarPrimary__collapsedNestedMenu {
@@ -157,7 +170,7 @@
   border: 2px solid var(--ui-sidebar-flyout-border);
   margin-top: -36px;
   padding-top: 5px;
-  background: var(--ui-sidebar-bg);
+  background: var(--ui-sidebar-flyout-bg);
   z-index: 9999;
 }
 
@@ -209,11 +222,16 @@
   margin-top: 2px;
 }
 
-.sidebarPrimary__menu .subdrop,
-.sidebarPrimary__collapsedFlyoutMenu .subdrop {
+.sidebarPrimary__menu .subdrop {
   background: var(--ui-sidebar-active-bg) !important;
   border-left: 3px solid var(--ui-sidebar-accent);
   color: var(--ui-sidebar-active-text) !important;
+}
+
+.sidebarPrimary__collapsedFlyoutMenu .subdrop {
+  background: var(--ui-sidebar-flyout-hover-bg) !important;
+  border-left: 3px solid var(--ui-sidebar-flyout-accent);
+  color: var(--ui-sidebar-flyout-accent) !important;
 }
 
 .sidebarPrimary__menu > ul > li > a {
@@ -317,6 +335,15 @@
 .sidebarPrimary--collapsed .sidebarPrimary__menu ul > li {
   position: relative;
   white-space: nowrap;
+}
+
+/*
+ * A linha em foco fica acima da barra de rolagem própria (z-index 3), que
+ * cortava a emenda entre a coluna recolhida e a projeção/flyout.
+ */
+.sidebarPrimary--collapsed .sidebarPrimary__menu ul > li:hover > a,
+.sidebarPrimary--collapsed .sidebarPrimary__menu ul > li.sidebarPrimary__item--collapsedFlyoutActive > a {
+  z-index: 4;
 }
 
 .sidebarPrimary--collapsed .sidebarPrimary__menu ul > li:hover > a {

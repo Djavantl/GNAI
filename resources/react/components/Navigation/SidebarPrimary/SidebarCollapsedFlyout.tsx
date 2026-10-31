@@ -7,6 +7,8 @@ interface SidebarCollapsedFlyoutProps {
   currentItemKey?: string;
   openKeyList: string[];
   top: number;
+  /** Aberto acima da linha do item, quando não cabe abaixo. */
+  above?: boolean;
   bodyRef?: React.Ref<HTMLDivElement>;
   onItemClick: (event: React.MouseEvent<HTMLAnchorElement>, item: SidebarItem) => void;
   onMouseEnter: () => void;
@@ -52,6 +54,7 @@ export default function SidebarCollapsedFlyout({
   currentItemKey,
   openKeyList,
   top,
+  above = false,
   bodyRef,
   onItemClick,
   onMouseEnter,
@@ -64,7 +67,7 @@ export default function SidebarCollapsedFlyout({
   return (
     <div
       id={`sidebar-flyout-${item.key}`}
-      className={joinClassNames('sidebarPrimary__collapsedFlyout', item.children.some((entry) => Boolean(entry.children?.length)) && 'sidebarPrimary__collapsedFlyout--nested')}
+      className={joinClassNames('sidebarPrimary__collapsedFlyout', item.children.some((entry) => Boolean(entry.children?.length)) && 'sidebarPrimary__collapsedFlyout--nested', above && 'sidebarPrimary__collapsedFlyout--above')}
       style={{ top: `${top}px` }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

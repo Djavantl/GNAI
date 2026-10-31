@@ -61,6 +61,11 @@
   --ui-sidebar-active-bg: #322b75;
   --ui-sidebar-active-text: #ffffff;
   --ui-sidebar-flyout-border: #322b75;
+  /* Lista que abre ao passar o ponteiro com o menu recolhido: fundo claro, como no Ubold. */
+  --ui-sidebar-flyout-bg: #ffffff;
+  --ui-sidebar-flyout-text: #75798b;
+  --ui-sidebar-flyout-accent: var(--ui-color-gnai-primary);
+  --ui-sidebar-flyout-hover-bg: #f4f8fb;
 
   --ui-institution-hover-color: color-mix(in srgb, var(--ui-color-text) 80%, transparent);
 
