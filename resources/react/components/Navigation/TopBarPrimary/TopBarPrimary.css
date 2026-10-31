@@ -404,6 +404,10 @@
   color: var(--ui-color-primary);
 }
 
+.text-gnai {
+  color: var(--ui-color-gnai-primary);
+}
+
 .text-danger {
   color: var(--ui-color-danger);
 }

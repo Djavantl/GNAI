@@ -2,7 +2,7 @@
 
 Esta convenção documenta o padrão já implementado no cadastro e na edição de alunos. Consulte-a antes de criar, refatorar ou migrar formulários React, junto do `AGENTS.md` da raiz e de `resources/react/AGENTS.md`. Instruções explícitas do usuário prevalecem; uma experiência visual local não redefine automaticamente o padrão compartilhado.
 
-**Na migração, o Blade antigo é referência de dados, comportamentos e regras existentes; o formulário React de alunos é referência para a nova estrutura e identidade visual.** Quando os visuais divergirem, siga o React padronizado e preserve as funcionalidades, permissões e contratos do formulário de origem.
+**Na migração, o Blade antigo (removido do repositório; consulte o histórico do git) é referência de dados, comportamentos e regras existentes; o formulário React de alunos é referência para a nova estrutura e identidade visual.** Quando os visuais divergirem, siga o React padronizado e preserve as funcionalidades, permissões e contratos do formulário de origem.
 
 ## Referência principal e responsabilidades
 

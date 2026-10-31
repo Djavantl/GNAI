@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Website\Application\Data;
 
-use App\Domains\Inclusion\Domain\Enums\InstitutionalEventType;
+use App\Domains\Inclusion\Domain\Enums\PublicationType;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
@@ -23,7 +23,7 @@ final class ListPublicPublicationsData extends Data
     {
         return [
             'q' => ['nullable', 'string', 'max:120'],
-            'type' => ['nullable', Rule::enum(InstitutionalEventType::class)],
+            'type' => ['nullable', Rule::enum(PublicationType::class)],
             'category' => ['nullable', 'string', 'max:100'],
         ];
     }

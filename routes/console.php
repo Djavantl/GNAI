@@ -18,12 +18,3 @@ Schedule::command('loans:check-overdue')
     ->onFailure(function () {
         Log::error('Falha ao processar verificação de empréstimos em atraso.');
     });
-
-// Roda lembretes de eventos institucionais (1 dia antes + iniciando agora)
-Schedule::command('inclusive-radar:send-event-reminders')
-    ->everyMinute()
-    ->timezone('America/Bahia')
-    ->withoutOverlapping(10)
-    ->onFailure(function () {
-        Log::error('Falha ao enviar lembretes de eventos institucionais.');
-    });

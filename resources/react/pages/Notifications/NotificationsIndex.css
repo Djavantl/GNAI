@@ -2,3 +2,5 @@
 .notificationIndex__row--unread .notificationIndex__title { font-weight: 700; color: var(--ui-color-gnai-primary); }
 .notificationIndex__clock { margin-right: 5px; color: var(--ui-color-text-muted); }
 .notificationIndex__emptyIcon { display: block; margin-bottom: 10px; font-size: 2em; }
+/* Ícone da seção da sidebar à qual a notificação leva, como no topo. */
+.notificationIndex__icon { width: 24px; margin: 0 10px 0 4px; color: var(--ui-color-gnai-primary); font-size: 20px; text-align: center; vertical-align: middle; }

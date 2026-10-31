@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Database\Seeders\Inclusion\DemoLoanWaitlistSeeder;
-use Database\Seeders\Inclusion\InstitutionalEventSeeder;
+use Database\Seeders\Inclusion\PublicationSeeder;
 use Database\Seeders\Inclusion\InstitutionSeeder;
 use Database\Seeders\Inclusion\LocationSeeder;
 use Database\Seeders\Inclusion\BarrierSeeder;
@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             AssistiveTechnologySeeder::class,
             BarrierSeeder::class,
-            InstitutionalEventSeeder::class,
+            PublicationSeeder::class,
             DemoLoanWaitlistSeeder::class,
             AeeRecordSeeder::class,
             PedagogicalRecordSeeder::class,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Website\Application\Queries;
 
-use App\Domains\Inclusion\Domain\Models\InstitutionalEvent;
+use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Enums\ProfessionalStatus;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Website\UI\Presenters\WebsitePresenter;
@@ -24,7 +24,7 @@ final readonly class WebsiteContentQuery
      */
     public function execute(): array
     {
-        $events = InstitutionalEvent::query()
+        $events = Publication::query()
             ->publiclyVisible()
             ->where('has_schedule', true)
             ->whereNotNull('start_date')
@@ -34,7 +34,7 @@ final readonly class WebsiteContentQuery
             ->limit(self::MAX_ITEMS)
             ->get();
 
-        $publications = InstitutionalEvent::query()
+        $publications = Publication::query()
             ->publiclyVisible()
             ->orderByDesc('is_featured')
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
@@ -44,8 +44,8 @@ final readonly class WebsiteContentQuery
 
         return [
             'team' => array_slice($this->team(), 0, self::MAX_ITEMS),
-            'events' => $events->map(fn (InstitutionalEvent $event): array => $this->presenter->publicationCard($event))->all(),
-            'publications' => $publications->map(fn (InstitutionalEvent $event): array => $this->presenter->publicationCard($event))->all(),
+            'events' => $events->map(fn (Publication $event): array => $this->presenter->publicationCard($event))->all(),
+            'publications' => $publications->map(fn (Publication $event): array => $this->presenter->publicationCard($event))->all(),
         ];
     }
 

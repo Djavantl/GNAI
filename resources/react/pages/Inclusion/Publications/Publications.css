@@ -1,0 +1,231 @@
+.publicationIndex__filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, 220px) minmax(160px, 220px) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.publicationForm__wide {
+    grid-column: 1 / -1;
+}
+
+.publicationForm__card,
+.publicationShow__card {
+    min-width: 0;
+}
+
+.publicationShow__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0;
+}
+
+.publicationShow__richText {
+    overflow-wrap: anywhere;
+}
+
+.publicationShow__richText :first-child {
+    margin-top: 0;
+}
+
+.publicationShow__richText :last-child {
+    margin-bottom: 0;
+}
+
+.publicationForm fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.publicationForm__tabAlert,
+.publicationGallery__error {
+    color: var(--ui-color-danger);
+    font-weight: 600;
+}
+
+.publicationGallery__error {
+    margin: 0 0 8px;
+    font-size: 12px;
+}
+
+.publicationForm__slug {
+    display: flex;
+    align-items: stretch;
+}
+
+.publicationForm__slugPrefix {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid var(--ui-color-input-border);
+    border-right: 0;
+    border-radius: 4px 0 0 4px;
+    background: var(--ui-color-surface-alt, #f5f6f8);
+    color: var(--ui-color-text-muted);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.publicationForm__slug .textInput {
+    border-radius: 0 4px 4px 0;
+}
+
+.publicationGallery__hint {
+    margin: 0 0 12px;
+    color: var(--ui-color-text-muted);
+    font-size: 13px;
+}
+
+.publicationGallery {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.publicationGallery__item {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 14px;
+    padding: 10px;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 6px;
+}
+
+.publicationGallery__item img,
+.publicationGallery__placeholder {
+    flex: 0 0 auto;
+    width: 96px;
+    height: 72px;
+    border-radius: 4px;
+    background: var(--ui-color-surface-alt, #f5f6f8);
+    object-fit: cover;
+}
+
+.publicationGallery__item--removed img {
+    opacity: 0.4;
+}
+
+.publicationGallery__fields {
+    flex: 1;
+    min-width: 0;
+}
+
+.publicationGallery__status {
+    display: block;
+    margin-top: 4px;
+    overflow: hidden;
+    color: var(--ui-color-text-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.publicationIndex__featured,
+.publicationIndex__schedule {
+    display: block;
+    color: var(--ui-color-text-muted);
+    font-size: 12px;
+}
+
+.publicationIndex__featured i {
+    color: var(--ui-color-warning);
+}
+
+.publicationShow__people {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.publicationShow__people li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.publicationShow__people img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.publicationShow__people small {
+    display: block;
+    color: var(--ui-color-text-muted);
+}
+
+.publicationShow__cover {
+    margin: 0;
+}
+
+.publicationShow__cover img {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 6px;
+}
+
+.publicationShow__cover figcaption {
+    margin-top: 6px;
+    color: var(--ui-color-text-muted);
+    font-size: 13px;
+}
+
+.publicationShow__gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.publicationShow__gallery img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+@media (max-width: 1000px) {
+    .publicationIndex__filters {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .publicationIndex__filters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .publicationForm__wide {
+        grid-column: auto;
+    }
+
+    .publicationShow__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .publicationGallery__item {
+        flex-wrap: wrap;
+    }
+
+    .publicationForm__slugPrefix {
+        display: none;
+    }
+
+    .publicationForm__slug .textInput {
+        border-radius: 4px;
+    }
+}

@@ -42,7 +42,7 @@ final class AppNavigationTest extends TestCase
                 self::assertSame([
                     'dashboard', 'notifications',
                     'students', 'professionals', 'teachers', 'pei', 'sessions', 'aee-records', 'pedagogical-records', 'pendencies',
-                    'items', 'loans', 'waitlists', 'barriers', 'institutional-events',
+                    'items', 'loans', 'waitlists', 'barriers', 'publications',
                     'website', 'reports', 'backups', 'audit', 'settings', 'about',
                 ], $items->keys()->all());
                 $registrations = collect(collect($entries)->firstWhere('key', 'registrations')['children'] ?? [])->keyBy('key');

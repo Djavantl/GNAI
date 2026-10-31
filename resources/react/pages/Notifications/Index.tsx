@@ -17,6 +17,8 @@ import "./NotificationsIndex.css";
 type NotificationRecord = {
     id: string;
     title: string;
+    /** Ícone da seção da sidebar à qual a notificação leva. */
+    icon_class: string;
     message: string;
     url: string | null;
     is_unread: boolean;
@@ -109,6 +111,10 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                             >
                                 <td title={notification.title}>
                                     <span className="notificationIndex__title">
+                                        <i
+                                            className={`${notification.icon_class} notificationIndex__icon`}
+                                            aria-hidden="true"
+                                        />
                                         {notification.title}
                                     </span>
                                 </td>

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Website\UI\Controllers;
 
-use App\Domains\Inclusion\Domain\Enums\InstitutionalEventType;
-use App\Domains\Inclusion\Domain\Models\InstitutionalEvent;
+use App\Domains\Inclusion\Domain\Enums\PublicationType;
+use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Website\Application\Data\ListPublicPublicationsData;
 use App\Domains\Website\Application\Queries\PublicPublicationsQuery;
 use App\Domains\Website\Application\Queries\WebsiteContentQuery;
@@ -60,14 +60,14 @@ final readonly class PublicWebsiteController
         $site = $this->presenter->site(WebsiteSetting::current());
         $types = [];
 
-        foreach (InstitutionalEventType::options() as $value => $label) {
+        foreach (PublicationType::options() as $value => $label) {
             $types[] = ['value' => $value, 'label' => $label];
         }
 
         return Inertia::render('Website/Public/Publications', [
             'site' => $site,
             'publications' => $query->execute($filters)->through(
-                fn (InstitutionalEvent $event): array => $this->presenter->publicationCard($event),
+                fn (Publication $event): array => $this->presenter->publicationCard($event),
             ),
             'filters' => $request->only(['q', 'type', 'category']),
             'types' => $types,
@@ -81,7 +81,7 @@ final readonly class PublicWebsiteController
 
     public function publication(string $slug): InertiaResponse
     {
-        $event = InstitutionalEvent::query()
+        $event = Publication::query()
             ->publiclyVisible()
             ->where('slug', $slug)
             ->with(['author', 'media', 'speakers.person', 'speakers.position'])
@@ -89,14 +89,14 @@ final readonly class PublicWebsiteController
         $site = $this->presenter->site(WebsiteSetting::current());
         $publication = $this->presenter->publicationDetail($event);
 
-        $related = InstitutionalEvent::query()
+        $related = Publication::query()
             ->publiclyVisible()
             ->whereKeyNot($event->getKey())
             ->where('type', $event->type)
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->limit(3)
             ->get()
-            ->map(fn (InstitutionalEvent $item): array => $this->presenter->publicationCard($item))
+            ->map(fn (Publication $item): array => $this->presenter->publicationCard($item))
             ->all();
 
         return Inertia::render('Website/Public/PublicationShow', [

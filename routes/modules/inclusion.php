@@ -8,7 +8,7 @@ use App\Domains\Inclusion\UI\Controllers\CourseController;
 use App\Domains\Inclusion\UI\Controllers\DeficiencyController;
 use App\Domains\Inclusion\UI\Controllers\DisciplineController;
 use App\Domains\Inclusion\UI\Controllers\GuardianController;
-use App\Domains\Inclusion\UI\Controllers\InstitutionalEventController;
+use App\Domains\Inclusion\UI\Controllers\PublicationController;
 use App\Domains\Inclusion\UI\Controllers\InstitutionController;
 use App\Domains\Inclusion\UI\Controllers\ItemController;
 use App\Domains\Inclusion\UI\Controllers\LoanController;
@@ -175,30 +175,35 @@ Route::prefix('inclusive-radar')->name('inclusive-radar.')->group(function (): v
         Route::get('/barriers/{barrier}/pdf', [BarrierController::class, 'generatePdf'])
             ->name('barriers.pdf')->middleware('can:barrier.pdf');
 
-        // ------------------- AGENDA INSTITUCIONAL -------------------
-        Route::get('/institutional-events', [InstitutionalEventController::class, 'index'])
-            ->name('institutional-events.index')->middleware('can:institutional-event.index');
+        // ------------------- PUBLICAÇÕES -------------------
+        // Endereços da antiga agenda institucional, usados em links já enviados.
+        Route::permanentRedirect('/institutional-events', '/inclusive-radar/publications');
+        Route::get('/institutional-events/{path}', fn (string $path) => redirect("/inclusive-radar/publications/{$path}", 301))
+            ->where('path', '.*');
 
-        Route::get('/institutional-events/create', [InstitutionalEventController::class, 'create'])
-            ->name('institutional-events.create')->middleware('can:institutional-event.create');
+        Route::get('/publications', [PublicationController::class, 'index'])
+            ->name('publications.index')->middleware('can:publication.index');
 
-        Route::post('/institutional-events/store', [InstitutionalEventController::class, 'store'])
-            ->name('institutional-events.store')->middleware('can:institutional-event.store');
+        Route::get('/publications/create', [PublicationController::class, 'create'])
+            ->name('publications.create')->middleware('can:publication.create');
 
-        Route::get('/institutional-events/{event}', [InstitutionalEventController::class, 'show'])
-            ->name('institutional-events.show')->middleware('can:institutional-event.show');
+        Route::post('/publications/store', [PublicationController::class, 'store'])
+            ->name('publications.store')->middleware('can:publication.store');
 
-        Route::get('/institutional-events/{event}/edit', [InstitutionalEventController::class, 'edit'])
-            ->name('institutional-events.edit')->middleware('can:institutional-event.edit');
+        Route::get('/publications/{publication}', [PublicationController::class, 'show'])
+            ->name('publications.show')->middleware('can:publication.show');
 
-        Route::put('/institutional-events/{event}', [InstitutionalEventController::class, 'update'])
-            ->name('institutional-events.update')->middleware('can:institutional-event.update');
+        Route::get('/publications/{publication}/edit', [PublicationController::class, 'edit'])
+            ->name('publications.edit')->middleware('can:publication.edit');
 
-        Route::delete('/institutional-events/{event}', [InstitutionalEventController::class, 'destroy'])
-            ->name('institutional-events.destroy')->middleware('can:institutional-event.destroy');
+        Route::put('/publications/{publication}', [PublicationController::class, 'update'])
+            ->name('publications.update')->middleware('can:publication.update');
 
-        Route::get('/institutional-events/{event}/pdf', [InstitutionalEventController::class, 'generatePdf'])
-            ->name('institutional-events.pdf')->middleware('can:institutional-event.pdf');
+        Route::delete('/publications/{publication}', [PublicationController::class, 'destroy'])
+            ->name('publications.destroy')->middleware('can:publication.destroy');
+
+        Route::get('/publications/{publication}/pdf', [PublicationController::class, 'generatePdf'])
+            ->name('publications.pdf')->middleware('can:publication.pdf');
 
         // ------------------- EMPRÉSTIMOS -------------------
         Route::get('/loans', [LoanController::class, 'index'])

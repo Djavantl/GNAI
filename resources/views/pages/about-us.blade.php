@@ -202,7 +202,7 @@
                 </div>
                 <div class="feature-card" data-cat="radar">
                     <div class="feature-icon green"><i class="bi bi-calendar-day"></i></div>
-                    <div><div class="feature-name">Agenda Institucional</div><div class="feature-desc">Eventos e atividades planejadas da instituição.</div></div>
+                    <div><div class="feature-name">Publicações</div><div class="feature-desc">Notícias, eventos, comunicados, artigos e registros da instituição.</div></div>
                 </div>
                 <div class="feature-card" data-cat="radar">
                     <div class="feature-icon pink"><i class="bi bi-search"></i></div>
@@ -269,7 +269,7 @@
                         <li><i class="bi bi-check2"></i> Vistorias e evidências</li>
                         <li><i class="bi bi-check2"></i> Empréstimos de recursos</li>
                         <li><i class="bi bi-check2"></i> Fila de espera</li>
-                        <li><i class="bi bi-check2"></i> Agenda institucional</li>
+                        <li><i class="bi bi-check2"></i> Publicações</li>
                     </ul>
                 </div>
             </div>

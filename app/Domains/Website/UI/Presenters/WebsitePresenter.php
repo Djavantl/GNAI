@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Website\UI\Presenters;
 
-use App\Domains\Inclusion\Domain\Enums\InstitutionalEventType;
-use App\Domains\Inclusion\Domain\Models\InstitutionalEvent;
-use App\Domains\Inclusion\Domain\Models\InstitutionalEventMedia;
+use App\Domains\Inclusion\Domain\Enums\PublicationType;
+use App\Domains\Inclusion\Domain\Models\Publication;
+use App\Domains\Inclusion\Domain\Models\PublicationMedia;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
@@ -64,9 +64,9 @@ final class WebsitePresenter
     /**
      * @return array<string, mixed>
      */
-    public function publicationCard(InstitutionalEvent $event): array
+    public function publicationCard(Publication $event): array
     {
-        $type = $event->type instanceof InstitutionalEventType ? $event->type : InstitutionalEventType::EVENT;
+        $type = $event->type instanceof PublicationType ? $event->type : PublicationType::EVENT;
         $date = $event->published_at ?? $event->created_at;
 
         return [
@@ -93,7 +93,7 @@ final class WebsitePresenter
     /**
      * @return array<string, mixed>
      */
-    public function publicationDetail(InstitutionalEvent $event): array
+    public function publicationDetail(Publication $event): array
     {
         return [
             ...$this->publicationCard($event),
@@ -106,7 +106,7 @@ final class WebsitePresenter
             'seo_title' => $event->seo_title ?: $event->title,
             'seo_description' => $event->seo_description ?: ($event->summary ?? null),
             'gallery' => $event->media
-                ->map(fn (InstitutionalEventMedia $media): array => [
+                ->map(fn (PublicationMedia $media): array => [
                     'id' => $media->id,
                     'url' => $media->url(),
                     'alt' => $media->alt_text,
@@ -136,7 +136,7 @@ final class WebsitePresenter
     /**
      * @return array<string, mixed>|null
      */
-    private function schedule(InstitutionalEvent $event): ?array
+    private function schedule(Publication $event): ?array
     {
         $status = $event->scheduleStatus();
 

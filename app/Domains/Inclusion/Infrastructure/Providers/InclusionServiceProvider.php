@@ -17,7 +17,7 @@ use App\Domains\Inclusion\Domain\Models\Guardian;
 use App\Domains\Inclusion\Domain\Models\Inspection;
 use App\Domains\Inclusion\Domain\Models\InspectionEvidence;
 use App\Domains\Inclusion\Domain\Models\Institution;
-use App\Domains\Inclusion\Domain\Models\InstitutionalEvent;
+use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Loan;
 use App\Domains\Inclusion\Domain\Models\Location;
@@ -40,12 +40,11 @@ use App\Domains\Inclusion\Domain\Models\TeacherCourseDiscipline;
 use App\Domains\Inclusion\Domain\Models\TeacherGlobalPermission;
 use App\Domains\Inclusion\Domain\Models\Waitlist;
 use App\Domains\Inclusion\UI\Console\Commands\CheckOverdueLoans;
-use App\Domains\Inclusion\UI\Console\Commands\SendInstitutionalEventReminders;
 use Illuminate\Support\ServiceProvider;
 
 /**
  * Provider do domínio de inclusão (atendimento educacional especializado e
- * radar inclusivo): comandos agendados e models auditáveis.
+ * radar inclusivo): comando de empréstimos em atraso e models auditáveis.
  */
 final class InclusionServiceProvider extends ServiceProvider
 {
@@ -53,7 +52,6 @@ final class InclusionServiceProvider extends ServiceProvider
     {
         $this->commands([
             CheckOverdueLoans::class,
-            SendInstitutionalEventReminders::class,
         ]);
 
         $this->app->make(AuditableEntities::class)->register(
@@ -69,7 +67,7 @@ final class InclusionServiceProvider extends ServiceProvider
             Inspection::class,
             InspectionEvidence::class,
             Institution::class,
-            InstitutionalEvent::class,
+            Publication::class,
             Item::class,
             Loan::class,
             Location::class,
