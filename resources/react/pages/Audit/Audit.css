@@ -33,6 +33,8 @@
     display: grid;
     gap: 16px;
     min-width: 0;
+    /* O corpo do modal centraliza o texto; o detalhe e o log técnico são lidos alinhados à esquerda. */
+    text-align: left;
 }
 
 .auditRecord__meta {
@@ -151,7 +153,9 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 12px;
     line-height: 1.5;
+    text-align: left;
     white-space: pre;
+    tab-size: 2;
 }
 
 .auditRecord__footer {
