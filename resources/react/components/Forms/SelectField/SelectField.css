@@ -204,3 +204,4 @@
     animation-duration: 0.01ms;
   }
 }
+.selectFieldDropdown .select2-no-results .selectField__create { display: block; cursor: pointer; color: var(--ui-color-gnai-primary); font-weight: 600; }

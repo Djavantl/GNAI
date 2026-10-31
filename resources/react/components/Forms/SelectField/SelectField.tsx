@@ -41,6 +41,7 @@ export default function SelectField({
   enhanced = true,
   iconOnly = false,
   placeholder = "Selecione",
+  onCreateOption,
   ...props
 }: {
   id: string;
@@ -53,9 +54,18 @@ export default function SelectField({
   /** Mostra as opções e o valor escolhido pelos ícones (`iconClass`), em grade e sem busca. */
   iconOnly?: boolean;
   placeholder?: string;
+  /**
+   * Permite usar um texto digitado na busca quando nenhuma opção corresponde:
+   * Enter ou clique na mensagem entrega o texto, e o formulário decide como
+   * representá-lo (por exemplo, incluindo uma opção com esse rótulo).
+   */
+  onCreateOption?: (text: string) => void;
 } & Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'>): React.JSX.Element {
   const ref = useRef<HTMLSelectElement>(null);
   const plugin = useRef<SelectFieldCollection | null>(null);
+  const createOption = useRef(onCreateOption);
+  createOption.current = onCreateOption;
+  const allowCreate = Boolean(onCreateOption);
   const nativeDisabled = useRef(props.disabled);
   nativeDisabled.current = props.disabled;
   const [loadFailed, setLoadFailed] = useState(false);
@@ -113,8 +123,10 @@ export default function SelectField({
           formatResultCssClass: (data: Select2OptionData) =>
             optionIcon(data) ? "selectField__iconResult" : "selectField__textResult",
         } : {}),
-        searchInputPlaceholder: "Pesquisar...",
-        formatNoMatches: () => "Nenhum resultado encontrado",
+        searchInputPlaceholder: allowCreate ? "Pesquisar ou digitar..." : "Pesquisar...",
+        formatNoMatches: (term: string) => allowCreate && term.trim()
+          ? `<span class="selectField__create">Nenhum resultado. Pressione Enter para usar “${escapeHtml(term.trim())}”.</span>`
+          : "Nenhum resultado encontrado",
         formatSearching: () => "Pesquisando...",
         formatMatches: (count: number) =>
           `${count} resultado(s). Use as setas para navegar e Enter para selecionar.`,
@@ -137,6 +149,30 @@ export default function SelectField({
         window.clearTimeout(dropdownCloseTimer);
         dropdownElement?.classList.remove("selectFieldDropdown--closing");
       };
+      // Select2 3.5 não aceita valores livres em <select>; o texto é entregue ao formulário.
+      const searchInput = dropdownElement?.querySelector<HTMLInputElement>(".select2-input");
+      const useTypedText = (): boolean => {
+        const term = searchInput?.value.trim() ?? "";
+        if (!allowCreate || !term || !dropdownElement?.querySelector(".select2-no-results")) return false;
+        createOption.current?.(term);
+        instance.select2("close");
+        return true;
+      };
+      const createOnEnter = (event: KeyboardEvent): void => {
+        if (event.key === "Enter" && useTypedText()) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      };
+      const createOnClick = (event: MouseEvent): void => {
+        if ((event.target as HTMLElement | null)?.closest(".select2-no-results") && useTypedText()) {
+          event.preventDefault();
+        }
+      };
+      if (allowCreate) {
+        searchInput?.addEventListener("keydown", createOnEnter, true);
+        dropdownElement?.addEventListener("mousedown", createOnClick);
+      }
       instance.on("select2-close.gnaiSelect", animateDropdownClose);
       instance.on("select2-opening.gnaiSelect", cancelDropdownClose);
       // jQuery's synthetic change does not reach React's native event delegation.
@@ -157,6 +193,8 @@ export default function SelectField({
       element.addEventListener('invalid', invalid);
       cleanup = () => {
         window.clearTimeout(dropdownCloseTimer);
+        searchInput?.removeEventListener("keydown", createOnEnter, true);
+        dropdownElement?.removeEventListener("mousedown", createOnClick);
         plugin.current = null;
         labels.forEach(label => label.removeEventListener('click', focus));
         element.removeEventListener('focus', focus);
@@ -177,7 +215,7 @@ export default function SelectField({
       disposed = true;
       cleanup?.();
     };
-  }, [enhanced, iconOnly, id, props.multiple]);
+  }, [enhanced, iconOnly, id, props.multiple, allowCreate]);
   return (
     <div
       className={joinClassNames(
