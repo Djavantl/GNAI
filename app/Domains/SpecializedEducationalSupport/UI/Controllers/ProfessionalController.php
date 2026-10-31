@@ -58,13 +58,25 @@ final class ProfessionalController
         );
     }
 
-    public function show(Professional $professional, ShowProfessionalQuery $query): InertiaResponse
+    public function show(Professional $professional, ShowProfessionalQuery $query, Request $request): InertiaResponse
     {
         $professional = $query->execute($professional);
+        $professional->person?->append('photo_url');
 
         return Inertia::render(
             'SpecializedEducationalSupport/Professionals/Show',
-            compact('professional'),
+            [
+                'professional' => $professional,
+                'display' => [
+                    'statusLabel' => $professional->status?->label(),
+                    'statusColor' => $professional->status?->color(),
+                    'serviceTime' => $professional->entry_date?->diffForHumans(null, true),
+                ],
+                'can' => [
+                    'update' => $request->user()?->can('professional.update') ?? false,
+                    'delete' => $request->user()?->can('professional.delete') ?? false,
+                ],
+            ],
         );
     }
 

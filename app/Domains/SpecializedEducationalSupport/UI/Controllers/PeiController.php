@@ -27,6 +27,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PeiDiscipline;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use App\Domains\SpecializedEducationalSupport\UI\Presenters\PeiPagePresenter;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -100,21 +101,16 @@ final class PeiController
         );
     }
 
-    public function show(Pei $pei, ShowPeiQuery $query): InertiaResponse
-    {
-        $pei = $query->execute($pei);
-
-        $student = $pei->student;
-        $studentContext = $pei->studentContext;
-
-        $peiDisciplines = $pei->peiDisciplines()
-            ->with(['discipline', 'teacher.person', 'creator'])
-            ->latest()
-            ->paginate(5);
-
-        return Inertia::render('SpecializedEducationalSupport/Peis/Show', compact(
-            'pei', 'student', 'studentContext', 'peiDisciplines'
-        ));
+    public function show(
+        Pei $pei,
+        ShowPeiQuery $query,
+        PeiPagePresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
+        return Inertia::render(
+            'SpecializedEducationalSupport/Peis/Show',
+            $presenter->show($query->execute($pei), $request),
+        );
     }
 
     /**
@@ -259,12 +255,16 @@ final class PeiController
         return $pdf->stream("PEI_COMPLETO_{$studentName}_v{$pei->version}.pdf");
     }
 
-    public function showDiscipline(Pei $pei, PeiDiscipline $peiDiscipline): InertiaResponse
-    {
-        $peiDiscipline->load(['teacher.person', 'discipline', 'creator']);
-        $student = $pei->student->load('person');
-
-        return Inertia::render('SpecializedEducationalSupport/Peis/Disciplines/Show', compact('pei', 'peiDiscipline', 'student'));
+    public function showDiscipline(
+        Pei $pei,
+        PeiDiscipline $peiDiscipline,
+        PeiPagePresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
+        return Inertia::render(
+            'SpecializedEducationalSupport/Peis/Disciplines/Show',
+            $presenter->discipline($pei, $peiDiscipline, $request),
+        );
     }
 
     /**
@@ -295,7 +295,10 @@ final class PeiController
         $action->execute($pei, $authenticatedUser->fromRequest($request), $data);
 
         return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
+            ->route('specialized-educational-support.pei.show', [
+                'pei' => $pei,
+                'tab' => 'disciplines',
+            ])
             ->with('success', 'Adaptação de disciplina adicionada com sucesso.');
     }
 
@@ -326,7 +329,10 @@ final class PeiController
         $action->execute($peiDiscipline, $authenticatedUser->fromRequest($request), $data);
 
         return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
+            ->route('specialized-educational-support.pei.show', [
+                'pei' => $pei,
+                'tab' => 'disciplines',
+            ])
             ->with('success', 'Adaptação de disciplina atualizada com sucesso.');
     }
 
@@ -343,7 +349,10 @@ final class PeiController
         $action->execute($peiDiscipline, $authenticatedUser->fromRequest($request));
 
         return redirect()
-            ->route('specialized-educational-support.pei.show', $pei)
+            ->route('specialized-educational-support.pei.show', [
+                'pei' => $pei,
+                'tab' => 'disciplines',
+            ])
             ->with('success', 'Adaptação removida com sucesso.');
     }
 

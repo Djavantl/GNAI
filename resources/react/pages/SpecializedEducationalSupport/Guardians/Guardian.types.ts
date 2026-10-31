@@ -49,3 +49,14 @@ export interface GuardianIndexProps {
     filters: Partial<GuardianFilters>;
     can: { create: boolean; view: boolean; delete: boolean };
 }
+
+export interface GuardianShowProps {
+    guardian: GuardianRecord;
+    student: GuardianStudent;
+    display: {
+        relationshipLabel: string | null;
+        genderLabel: string | null;
+        age: number | null;
+    };
+    can: { update: boolean; delete: boolean };
+}

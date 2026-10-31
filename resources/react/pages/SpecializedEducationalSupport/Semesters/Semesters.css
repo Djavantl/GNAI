@@ -45,3 +45,15 @@
         gap: 8px;
     }
 }
+
+.semesterShow__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 20px 24px;
+    margin: 0;
+}
+
+.semesterShow__label {
+    color: var(--ui-color-form-label);
+    text-transform: uppercase;
+}

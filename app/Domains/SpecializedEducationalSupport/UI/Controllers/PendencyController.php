@@ -20,6 +20,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\Sho
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\SpecializedEducationalSupport\UI\Presenters\PendencyShowPresenter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -57,13 +58,17 @@ final class PendencyController
         );
     }
 
-    public function show(Pendency $pendency, ShowPendencyQuery $query): InertiaResponse
-    {
+    public function show(
+        Pendency $pendency,
+        ShowPendencyQuery $query,
+        PendencyShowPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         $pendency = $query->execute($pendency);
 
         return Inertia::render(
             'SpecializedEducationalSupport/Pendencies/Show',
-            compact('pendency'),
+            $presenter->present($pendency, $request),
         );
     }
 

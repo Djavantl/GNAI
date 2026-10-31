@@ -10,6 +10,7 @@ export default function StudentContextPage({
     studentName,
     contextId,
     index = false,
+    view = false,
     actions,
     children,
 }: {
@@ -19,6 +20,7 @@ export default function StudentContextPage({
     studentName: string;
     contextId?: number;
     index?: boolean;
+    view?: boolean;
     actions?: ReactNode;
     children: ReactNode;
 }): React.JSX.Element {
@@ -29,6 +31,14 @@ export default function StudentContextPage({
             { label: "Alunos", href: studentsBase },
             { label: studentName, href: studentUrl(studentId) },
             { label: "Contextos" },
+        ]
+        : contextId && view
+        ? [
+            { label: "Home", href: "/auth/dashboard" },
+            { label: "Alunos", href: studentsBase },
+            { label: studentName, href: studentUrl(studentId) },
+            { label: "Contextos", href: contextsUrl },
+            { label: `Contexto #${contextId}` },
         ]
         : contextId
         ? [

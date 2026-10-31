@@ -67,15 +67,26 @@ final class StudentDeficiencyController
         Student $student,
         StudentDeficiency $student_deficiency,
         ShowStudentDeficiencyQuery $query,
+        Request $request,
     ): InertiaResponse {
         abort_if((int) $student_deficiency->student_id !== (int) $student->getKey(), 404);
 
         $deficiency = $query->execute($student_deficiency);
+        $severity = DeficiencySeverity::tryFrom((string) $deficiency->severity);
+        $user = $request->user();
 
-        return Inertia::render(
-            'SpecializedEducationalSupport/StudentDeficiencies/Show',
-            compact('deficiency', 'student'),
-        );
+        return Inertia::render('SpecializedEducationalSupport/StudentDeficiencies/Show', [
+            'deficiency' => [
+                ...$deficiency->toArray(),
+                'severity_label' => $severity?->label(),
+                'severity_color' => $severity?->color(),
+            ],
+            'student' => $student->loadMissing('person'),
+            'can' => [
+                'update' => $user?->can('student-deficiency.update') ?? false,
+                'delete' => $user?->can('student-deficiency.delete') ?? false,
+            ],
+        ]);
     }
 
     public function create(Student $student, StudentDeficiencyFormQuery $form): InertiaResponse

@@ -37,3 +37,18 @@ export interface TeacherIndexProps {
     filters: Partial<TeacherFilters>;
     can: { create: boolean; view: boolean; update: boolean; delete: boolean };
 }
+
+export interface TeacherCourseDiscipline {
+    id: number;
+    course: { id: number; name: string } | null;
+    discipline: { id: number; name: string } | null;
+}
+
+export interface TeacherShowProps {
+    teacher: TeacherRecord & {
+        course_disciplines: TeacherCourseDiscipline[];
+    };
+    display: { createdAt: string | null };
+    impersonationUserId: number | null;
+    can: { update: boolean; delete: boolean };
+}

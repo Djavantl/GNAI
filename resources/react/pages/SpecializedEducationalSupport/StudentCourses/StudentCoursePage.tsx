@@ -10,6 +10,7 @@ export default function StudentCoursePage({
     studentName,
     studentCourse,
     index = false,
+    current = "Editar",
     actions,
     children,
 }: {
@@ -19,6 +20,7 @@ export default function StudentCoursePage({
     studentName: string;
     studentCourse?: { id: number; courseName: string };
     index?: boolean;
+    current?: string | null;
     actions?: ReactNode;
     children: ReactNode;
 }): React.JSX.Element {
@@ -33,10 +35,14 @@ export default function StudentCoursePage({
     ];
 
     if (!index && studentCourse) {
-        breadcrumbItems.push(
-            { label: studentCourse.courseName, href: `${aeeBase}/student-courses/${studentCourse.id}` },
-            { label: "Editar" },
-        );
+        breadcrumbItems.push({
+            label: studentCourse.courseName,
+            href: current ? `${aeeBase}/student-courses/${studentCourse.id}` : undefined,
+        });
+
+        if (current) {
+            breadcrumbItems.push({ label: current });
+        }
     } else if (!index) {
         breadcrumbItems.push({ label: "Cadastrar" });
     }

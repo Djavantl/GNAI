@@ -1,0 +1,14 @@
+.pendencyShow__content { min-width: 0; padding-bottom: 24px; }
+.pendencyShow__panel .formSection--inline:last-child { margin-bottom: 0; }
+.pendencyShow__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 32px; margin: 0; }
+.pendencyShow__grid--data > .detailField:first-child { grid-column: span 2; }
+.pendencyShow__text { display: block; white-space: pre-line; line-height: 1.6; }
+@media (max-width: 900px) {
+  .pendencyShow__grid { grid-template-columns: 1fr; }
+  .pendencyShow__grid--data > .detailField:first-child,
+  .pendencyShow__grid .detailField--wide { grid-column: auto; }
+}
+@media (max-width: 600px) {
+  .pendencyShow__panel.card-box { padding: 16px; }
+  .pendencyShow__grid { gap: 20px; }
+}

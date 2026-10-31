@@ -27,6 +27,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\UI\Presenters\SessionListPresenter;
+use App\Domains\SpecializedEducationalSupport\UI\Presenters\SessionShowPresenter;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -98,11 +99,18 @@ final class SessionController
             ->with('success', 'Agendamento criado com sucesso.');
     }
 
-    public function show(Session $session, ShowSessionQuery $query): InertiaResponse
-    {
+    public function show(
+        Session $session,
+        ShowSessionQuery $query,
+        SessionShowPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         $session = $query->execute($session);
 
-        return Inertia::render('SpecializedEducationalSupport/Sessions/Show', compact('session'));
+        return Inertia::render(
+            'SpecializedEducationalSupport/Sessions/Show',
+            $presenter->present($session, $request),
+        );
     }
 
     /**

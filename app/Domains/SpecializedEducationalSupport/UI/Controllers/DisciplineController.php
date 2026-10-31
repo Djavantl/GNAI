@@ -42,13 +42,19 @@ final class DisciplineController
         );
     }
 
-    public function show(Discipline $discipline, ShowDisciplineQuery $query): InertiaResponse
+    public function show(Discipline $discipline, ShowDisciplineQuery $query, Request $request): InertiaResponse
     {
         $discipline = $query->execute($discipline);
 
         return Inertia::render(
             'SpecializedEducationalSupport/Disciplines/Show',
-            compact('discipline'),
+            [
+                'discipline' => $discipline,
+                'can' => [
+                    'update' => $request->user()?->can('discipline.update') ?? false,
+                    'delete' => $request->user()?->can('discipline.delete') ?? false,
+                ],
+            ],
         );
     }
 

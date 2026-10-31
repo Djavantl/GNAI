@@ -86,3 +86,26 @@ export type StudentContextFilters = {
     evaluation_type: string;
     is_current: string;
 };
+
+export interface StudentContextDetails extends StudentContextRecord {
+    version: number;
+    is_current: boolean;
+    evaluation_type: string;
+    created_at: string | null;
+    updated_at: string | null;
+    semester: { label: string | null } | null;
+    evaluator: { person: { name: string } | null } | null;
+}
+
+export interface StudentContextShowProps {
+    studentContext: StudentContextDetails;
+    student: StudentContextStudent;
+    studentProfile: StudentContextProfile;
+    studentContextOptions: StudentContextOptions;
+    evaluationTypeLabel: string;
+    can: {
+        update: boolean;
+        restore: boolean;
+        delete: boolean;
+    };
+}

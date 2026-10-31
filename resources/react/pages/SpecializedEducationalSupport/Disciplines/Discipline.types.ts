@@ -5,6 +5,10 @@ export interface DisciplineRecord {
     is_active: boolean;
 }
 
+export type DisciplineDetailRecord = DisciplineRecord & {
+    courses?: Array<{ id: number; name: string }>;
+};
+
 export type DisciplinePaginator = {
     data: DisciplineRecord[];
     current_page: number;

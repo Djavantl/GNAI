@@ -73,8 +73,9 @@ final class AeeRecordController
     {
         $aeeRecord = $query->execute($aeeRecord, $this->user($request));
         $session = $aeeRecord->attendanceSession;
+        $can = $this->managementAbilities($request, (int) $session->professional_id);
 
-        return Inertia::render('SpecializedEducationalSupport/AeeRecords/Show', compact('aeeRecord', 'session'));
+        return Inertia::render('SpecializedEducationalSupport/AeeRecords/Show', compact('aeeRecord', 'session', 'can'));
     }
 
     public function edit(AeeRecord $aeeRecord, AeeRecordFormQuery $form, Request $request): InertiaResponse
@@ -140,8 +141,9 @@ final class AeeRecordController
     public function studentShow(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): InertiaResponse
     {
         $evaluation = $query->show($student, $evaluation, $this->user($request));
+        $can = $this->managementAbilities($request, (int) $evaluation->aeeRecord->attendanceSession->professional_id);
 
-        return Inertia::render('SpecializedEducationalSupport/Students/AeeRecords/Show', compact('student', 'evaluation'));
+        return Inertia::render('SpecializedEducationalSupport/Students/AeeRecords/Show', compact('student', 'evaluation', 'can'));
     }
 
     public function studentEdit(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): InertiaResponse
@@ -219,6 +221,23 @@ final class AeeRecordController
                 'view_all' => $user->can('aee-record.view-all'),
                 'view_own' => $user->can('aee-record.view-own'),
             ],
+        ];
+    }
+
+    /**
+     * Reproduz as condições do legado: permissão da ação e autoria do
+     * profissional vinculado ao agendamento.
+     *
+     * @return array{update: bool, delete: bool}
+     */
+    private function managementAbilities(Request $request, int $sessionProfessionalId): array
+    {
+        $user = $this->user($request);
+        $isOwner = $user->professional_id !== null && (int) $user->professional_id === $sessionProfessionalId;
+
+        return [
+            'update' => $isOwner && $user->can('aee-record.update'),
+            'delete' => $isOwner && $user->can('aee-record.delete'),
         ];
     }
 

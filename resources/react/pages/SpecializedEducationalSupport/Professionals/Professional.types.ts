@@ -62,3 +62,15 @@ export interface ProfessionalIndexProps {
     filters: Partial<ProfessionalFilters>;
     can: { create: boolean; view: boolean; delete: boolean };
 }
+
+export interface ProfessionalShowProps {
+    professional: ProfessionalRecord & {
+        position: { id: number; name: string } | null;
+    };
+    display: {
+        statusLabel: string | null;
+        statusColor: string | null;
+        serviceTime: string | null;
+    };
+    can: { update: boolean; delete: boolean };
+}

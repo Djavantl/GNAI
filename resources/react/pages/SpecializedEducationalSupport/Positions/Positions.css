@@ -82,3 +82,37 @@
         gap: 8px;
     }
 }
+
+.positionShow__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0;
+}
+
+.positionShow__text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+    .positionShow__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.positionShow__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.positionShow__tags li {
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: var(--ui-color-table-header);
+    overflow-wrap: anywhere;
+}

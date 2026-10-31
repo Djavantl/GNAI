@@ -56,13 +56,25 @@ final class TeacherController
         );
     }
 
-    public function show(Teacher $teacher, ShowTeacherQuery $query): InertiaResponse
+    public function show(Teacher $teacher, ShowTeacherQuery $query, Request $request): InertiaResponse
     {
         $teacher = $query->execute($teacher);
+        $teacher->person?->append('photo_url');
+        $isAdmin = $request->user()?->isAdmin() ?? false;
 
         return Inertia::render(
             'SpecializedEducationalSupport/Teachers/Show',
-            compact('teacher'),
+            [
+                'teacher' => $teacher,
+                'display' => [
+                    'createdAt' => $teacher->created_at?->format('d/m/Y'),
+                ],
+                'impersonationUserId' => $isAdmin ? $teacher->user()->value('id') : null,
+                'can' => [
+                    'update' => $request->user()?->can('teacher.update') ?? false,
+                    'delete' => $request->user()?->can('teacher.delete') ?? false,
+                ],
+            ],
         );
     }
 

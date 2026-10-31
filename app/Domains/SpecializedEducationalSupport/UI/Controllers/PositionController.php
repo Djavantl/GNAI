@@ -46,13 +46,19 @@ final class PositionController
         );
     }
 
-    public function show(Position $position, ShowPositionQuery $query): InertiaResponse
+    public function show(Position $position, ShowPositionQuery $query, Request $request): InertiaResponse
     {
         $position = $query->execute($position);
 
         return Inertia::render(
             'SpecializedEducationalSupport/Positions/Show',
-            compact('position'),
+            [
+                'position' => $position,
+                'can' => [
+                    'update' => $request->user()?->can('position.update') ?? false,
+                    'delete' => $request->user()?->can('position.delete') ?? false,
+                ],
+            ],
         );
     }
 

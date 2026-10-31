@@ -34,14 +34,18 @@ export default function StudentDeficiencyPage({
         { label: student.person.name, href: studentUrl(student.id) },
         {
             label: "Perfis de Atendimento",
-            href: current ? studentRecordUrl(student.id, "support-profiles") : undefined,
+            href: current || studentDeficiency
+                ? studentRecordUrl(student.id, "support-profiles")
+                : undefined,
         },
     ];
 
     if (studentDeficiency?.deficiency) {
         breadcrumbItems.push({
             label: studentDeficiency.deficiency.name,
-            href: `${studentsBase}/${student.id}/deficiencies/${studentDeficiency.id}`,
+            href: current
+                ? `${studentsBase}/${student.id}/deficiencies/${studentDeficiency.id}`
+                : undefined,
         });
     }
 

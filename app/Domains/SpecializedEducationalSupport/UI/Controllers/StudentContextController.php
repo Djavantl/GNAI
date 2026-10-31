@@ -66,28 +66,14 @@ final class StudentContextController
         ]);
     }
 
-    public function show(StudentContext $studentContext, ShowStudentContextQuery $query): InertiaResponse
+    public function show(StudentContext $studentContext, ShowStudentContextQuery $query, StudentContextFormQuery $form, Request $request): InertiaResponse
     {
-        $studentContext = $query->execute($studentContext);
-        $student = $studentContext->student;
-        $deficiencies = $student->deficiencies;
-
-        return Inertia::render(
-            'SpecializedEducationalSupport/StudentContext/Show',
-            compact('studentContext', 'student', 'deficiencies'),
-        );
+        return $this->renderShow($query->execute($studentContext), $form, $request);
     }
 
-    public function showCurrent(Student $student, CurrentStudentContextQuery $query): InertiaResponse
+    public function showCurrent(Student $student, CurrentStudentContextQuery $query, StudentContextFormQuery $form, Request $request): InertiaResponse
     {
-        $studentContext = $query->execute($student);
-        $student = $studentContext->student;
-        $deficiencies = $student->deficiencies;
-
-        return Inertia::render(
-            'SpecializedEducationalSupport/StudentContext/Show',
-            compact('studentContext', 'student', 'deficiencies'),
-        );
+        return $this->renderShow($query->execute($student), $form, $request);
     }
 
     public function create(Student $student, StudentContextFormQuery $form): InertiaResponse
@@ -215,6 +201,29 @@ final class StudentContextController
             ->setPaper('a4', 'portrait')
             ->setOption(['enable_php' => true])
             ->stream("Contexto_{$student->person->name}.pdf");
+    }
+
+    private function renderShow(StudentContext $studentContext, StudentContextFormQuery $form, Request $request): InertiaResponse
+    {
+        $student = $studentContext->student;
+        $user = $request->user();
+        $canUpdate = $user?->can('student-context.update') ?? false;
+        $canManage = $studentContext->canBeManagedByCurrentUser();
+
+        return Inertia::render('SpecializedEducationalSupport/StudentContext/Show', [
+            'studentContext' => $studentContext,
+            'student' => $student,
+            'deficiencies' => $student->deficiencies,
+            ...$form->forDisplay($student),
+            'evaluationTypeLabel' => ContextEvaluationType::tryFrom((string) $studentContext->evaluation_type)?->label()
+                ?? (string) $studentContext->evaluation_type,
+            // Same conditions the legacy Blade evaluated for each action.
+            'can' => [
+                'update' => $studentContext->is_current && $canUpdate && $canManage,
+                'restore' => ! $studentContext->is_current && $canUpdate,
+                'delete' => $canManage && ($user?->can('student-context.delete') ?? false),
+            ],
+        ]);
     }
 
     private function professionalId(Request $request): ?int
