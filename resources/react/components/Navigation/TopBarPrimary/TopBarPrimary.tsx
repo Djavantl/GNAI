@@ -18,6 +18,8 @@ interface TopBarPrimaryProps {
   expandedLogoText?: string;
   homeHref?: string;
   leadingContent?: ReactNode;
+  /** Itens extras no início da lista de ações à direita (cada um deve ser um `<li>`). */
+  actionsContent?: ReactNode;
   user?: { name: string; photo_url: string };
   profileItems?: ProfileLink[];
   notificationItems?: NotificationItem[];
@@ -27,7 +29,7 @@ interface TopBarPrimaryProps {
 
 }
 
-export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false, brand = 'Interface', compactLogoSrc, expandedLogoText, homeHref = 'index.html', leadingContent, user, profileItems, notificationItems, unreadCount, notificationsHref, settingsHref }: TopBarPrimaryProps): React.JSX.Element {
+export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false, brand = 'Interface', compactLogoSrc, expandedLogoText, homeHref = 'index.html', leadingContent, actionsContent, user, profileItems, notificationItems, unreadCount, notificationsHref, settingsHref }: TopBarPrimaryProps): React.JSX.Element {
   const { url } = usePage();
   const [notificationsOpen, setNotificationsOpen] = useState<boolean>(false);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
@@ -130,6 +132,7 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
             </form>}
 
             <ul className="topbar__navList nav navbar-nav navbar-right pull-right">
+              {actionsContent}
               <TopBarNotificationsDropdown
                 items={notificationItems}
                 unreadCount={unreadCount}

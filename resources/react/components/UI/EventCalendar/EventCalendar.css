@@ -27,11 +27,14 @@
 :where(.eventCalendar) .fc-widget-content {
   border: 1px solid #ebeff2;
 }
+/* Só padding vertical: o eixo de horas recebe largura via JS e precisa
+   manter o mesmo padding horizontal no cabeçalho e no corpo. */
 :where(.eventCalendar).fc th.fc-widget-header {
   background: #ebeff2;
   font-size: 14px;
   line-height: 20px;
-  padding: 10px 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   text-transform: uppercase;
 }
 :where(.eventCalendar) .fc-button {
@@ -64,6 +67,13 @@
   margin: 5px 7px;
   padding: 5px 5px;
   text-align: center;
+}
+
+/* Na grade de horários o plugin fixa top e bottom: a margem vertical recua o
+   card por igual nas duas pontas, sem deslocá-lo do horário. */
+:where(.eventCalendar) .fc-time-grid-event.fc-event {
+  margin: 4px 2px;
+  padding: 2px 4px;
 }
 
 :where(.eventCalendar) .fc-basic-view td.fc-week-number span {
@@ -114,4 +124,209 @@
 :where(.eventCalendar) th {
   color: #666;
   font-weight: 600;
+}
+
+.eventCalendar__error {
+  margin: 16px 0 0;
+  color: var(--ui-color-danger);
+  text-align: center;
+}
+
+:where(.eventCalendar--sessions) .fc-widget-header,
+:where(.eventCalendar--sessions) .fc-widget-content {
+  border-color: var(--ui-color-card-border);
+}
+
+:where(.eventCalendar--sessions).fc th.fc-widget-header {
+  background: var(--ui-color-surface-alt);
+  color: var(--ui-color-heading);
+}
+
+:where(.eventCalendar--sessions) .fc-day {
+  cursor: pointer;
+  transition: background-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+:where(.eventCalendar--sessions) .fc-day:hover {
+  background: color-mix(in srgb, var(--ui-color-gnai-primary) 7%, var(--ui-color-surface));
+}
+
+:where(.eventCalendar--sessions) .fc-day:focus-visible {
+  position: relative;
+  z-index: 2;
+  outline: 2px solid var(--ui-color-gnai-primary);
+  outline-offset: -3px;
+}
+
+:where(.eventCalendar--sessions).fc-unthemed .fc-today {
+  background: color-mix(in srgb, var(--ui-color-gnai-primary) 6%, var(--ui-color-surface));
+}
+
+:where(.eventCalendar--sessions) .fc-day--selected {
+  background: color-mix(in srgb, var(--ui-color-gnai-primary) 13%, var(--ui-color-surface));
+  box-shadow: inset 0 0 0 2px var(--ui-color-gnai-primary);
+}
+
+:where(.eventCalendar--sessions) .fc-day-header--selectable {
+  cursor: pointer;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+:where(.eventCalendar--sessions).fc th.fc-day-header--selectable:hover {
+  background: color-mix(in srgb, var(--ui-color-gnai-primary) 10%, var(--ui-color-surface-alt));
+}
+
+:where(.eventCalendar--sessions) .fc-day-header--selectable:focus-visible {
+  outline: 2px solid var(--ui-color-gnai-primary);
+  outline-offset: -3px;
+}
+
+:where(.eventCalendar--sessions).fc th.fc-day-header--selected {
+  background: color-mix(in srgb, var(--ui-color-gnai-primary) 16%, var(--ui-color-surface-alt));
+  box-shadow: inset 0 -3px 0 var(--ui-color-gnai-primary);
+  color: var(--ui-color-gnai-primary);
+}
+
+:where(.eventCalendar--sessions) .fc-other-month {
+  background: color-mix(in srgb, var(--ui-color-surface-alt) 55%, var(--ui-color-surface));
+  color: var(--ui-color-text-muted);
+  opacity: 0.62;
+}
+
+:where(.eventCalendar--sessions) .fc-event {
+  cursor: pointer;
+}
+
+:where(.eventCalendar--sessions) .fc-event:focus-visible {
+  outline: 2px solid var(--ui-color-heading);
+  outline-offset: 1px;
+}
+
+:where(.eventCalendar--sessions) .bg-warning {
+  background-color: var(--ui-color-warning) !important;
+  color: var(--ui-color-text);
+}
+
+:where(.eventCalendar--sessions) .bg-success {
+  background-color: var(--ui-color-success) !important;
+}
+
+:where(.eventCalendar--sessions) .bg-danger {
+  background-color: var(--ui-color-danger) !important;
+}
+
+:where(.eventCalendar--sessions) .fc-more-cell {
+  text-align: center;
+}
+
+:where(.eventCalendar--sessions) a.fc-more {
+  display: inline-block;
+  margin: 1px auto;
+  color: var(--ui-color-gnai-primary);
+  font-weight: 700;
+}
+
+/* Toda a área de dias abre a agenda do dia, não só o fundo da célula. */
+:where(.eventCalendar--sessions) .fc-body {
+  cursor: pointer;
+}
+
+:where(.eventCalendar--sessions) .fc-body .fc-axis {
+  cursor: default;
+}
+
+:where(.eventCalendar--sessions) .fc-view {
+  margin-top: 0;
+}
+
+:where(.eventCalendar--sessions) .fc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--ui-color-card-border);
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--ui-color-surface-alt);
+}
+
+:where(.eventCalendar--sessions) .fc-toolbar .fc-left,
+:where(.eventCalendar--sessions) .fc-toolbar .fc-right,
+:where(.eventCalendar--sessions) .fc-toolbar .fc-center {
+  display: flex;
+  align-items: center;
+  float: none;
+}
+
+:where(.eventCalendar--sessions) .fc-toolbar .fc-left { order: 1; }
+:where(.eventCalendar--sessions) .fc-toolbar .fc-center { order: 2; }
+:where(.eventCalendar--sessions) .fc-toolbar .fc-right { order: 3; }
+:where(.eventCalendar--sessions) .fc-toolbar .fc-clear { display: none; }
+
+:where(.eventCalendar--sessions) .fc-toolbar h2 {
+  color: var(--ui-color-heading);
+}
+
+:where(.eventCalendar--sessions) .fc-button.fc-state-default {
+  height: auto;
+  padding: 5px 12px;
+  border: 1px solid var(--ui-color-card-border);
+  background: var(--ui-color-surface);
+  background-image: none;
+  box-shadow: none;
+  color: var(--ui-color-heading);
+  text-shadow: none;
+}
+
+:where(.eventCalendar--sessions) .fc-button.fc-state-hover {
+  background: color-mix(in srgb, var(--ui-color-gnai-primary) 8%, var(--ui-color-surface));
+}
+
+:where(.eventCalendar--sessions) .fc-button.fc-state-active,
+:where(.eventCalendar--sessions) .fc-button.fc-state-down {
+  z-index: 1;
+  border-color: var(--ui-color-gnai-primary);
+  background: var(--ui-color-gnai-primary);
+  box-shadow: none;
+  color: #fff;
+}
+
+:where(.eventCalendar--sessions) .fc-button.fc-state-active.fc-state-hover {
+  background: var(--ui-color-gnai-primary-hover);
+}
+
+:where(.eventCalendar--sessions) .fc-button.fc-state-disabled {
+  opacity: 0.55;
+}
+
+:where(.eventCalendar--sessions) .fc-button:focus-visible {
+  z-index: 2;
+  outline: 2px solid var(--ui-color-gnai-primary);
+  outline-offset: 1px;
+}
+
+:where(.eventCalendar--sessions) .fc-time-grid-event .fc-content {
+  overflow: hidden;
+}
+
+:where(.eventCalendar--sessions) .fc-time-grid-event .fc-title {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  :where(.eventCalendar--sessions) .fc-toolbar {
+    justify-content: center;
+  }
+
+  :where(.eventCalendar--sessions) .fc-toolbar h2 {
+    font-size: 15px;
+  }
+}
+
+:where(.eventCalendar--sessions) .fc-day-number {
+  color: var(--ui-color-heading);
+  font-weight: 700;
 }

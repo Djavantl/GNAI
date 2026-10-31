@@ -2,6 +2,7 @@ import { router } from "@inertiajs/react";
 import { useState } from "react";
 import FormActions from "@/components/Forms/FormActions/FormActions";
 import FormSection from "@/components/Forms/FormSection/FormSection";
+import ImpersonationAction from "@/components/Navigation/ImpersonationAction/ImpersonationAction";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
@@ -74,17 +75,6 @@ export default function InclusionTeachersShowPage({
         router.delete(
             itemUrl,
             requestOptions("Não foi possível excluir o professor. Tente novamente."),
-        );
-    }
-
-    function impersonate(): void {
-        if (busy || impersonationUserId === null) return;
-
-        setProcessing("impersonate");
-        router.post(
-            `/auth/impersonate/${impersonationUserId}`,
-            {},
-            requestOptions("Não foi possível entrar como este professor. Tente novamente."),
         );
     }
 
@@ -205,14 +195,13 @@ export default function InclusionTeachersShowPage({
             </CardBox>
             <FormActions
                 secondary={impersonationUserId !== null ? (
-                    <Button
-                        tone="primary"
-                        leftIconClass="fa fa-sign-in"
-                        label="Entrar como"
-                        title={`Entrar no sistema como ${person.name}`}
-                        aria-label={`Entrar no sistema como ${person.name}`}
+                    <ImpersonationAction
+                        userId={impersonationUserId}
+                        name={person.name}
                         disabled={busy}
-                        onClick={() => setModal("impersonate")}
+                        onProcessingChange={(value) =>
+                            setProcessing(value ? "impersonate" : null)
+                        }
                     />
                 ) : undefined}
             >
@@ -274,23 +263,6 @@ export default function InclusionTeachersShowPage({
                     if (!busy) setModal(null);
                 }}
                 onConfirm={remove}
-            />
-            <ConfirmActionModal
-                open={modal === "impersonate"}
-                title="Entrar como"
-                message={
-                    <>
-                        Tem certeza que deseja entrar como <strong>{person.name}</strong>?
-                    </>
-                }
-                processing={processing === "impersonate"}
-                confirmLabel="Confirmar acesso"
-                processingLabel="Entrando..."
-                confirmTone="primary"
-                onClose={() => {
-                    if (!busy) setModal(null);
-                }}
-                onConfirm={impersonate}
             />
         </TeacherPage>
     );

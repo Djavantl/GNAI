@@ -6,5 +6,6 @@ export interface AppLayoutProps {
   navigation: { entries: SidebarEntry[]; currentItemKey: string | null };
   topbar: { institutionName: string; notifications: NotificationItem[]; unreadCount: number } | null;
   impersonating: boolean;
+  impersonationReadOnly: boolean;
   [key: string]: unknown;
 }

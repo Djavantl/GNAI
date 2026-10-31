@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import BusinessPage from "@/components/Navigation/BusinessPage/BusinessPage";
 import AppLayout from "@/components/Navigation/AppLayout/AppLayout";
-import "@/components/Navigation/Tabs/Tabs.css";
+import PageTabs from "@/components/Navigation/PageTabs/PageTabs";
 import "./Settings.css";
 
 export const settingsBase = "/settings";
@@ -33,8 +33,7 @@ export default function SettingsPage({
     children: ReactNode;
 }): React.JSX.Element {
     const { component } = usePage();
-    const activeIndex = Math.max(0, categories.findIndex((item) => item.component === component));
-    const current = categories[activeIndex];
+    const current = categories.find((item) => item.component === component) ?? categories[0];
     const category = current.key;
 
     return (
@@ -48,40 +47,11 @@ export default function SettingsPage({
             ]}
             className="settingsPage"
         >
-            <nav
-                className="settingsPage__categories"
-                aria-label="Categorias de configuração"
-            >
-                <ul className="tabs__nav--animated">
-                    {categories.map((item) => (
-                        <li key={item.key}>
-                            <Link
-                                href={item.href}
-                                preserveScroll
-                                className={
-                                    item.key === category
-                                        ? "settingsPage__category settingsPage__category--active"
-                                        : "settingsPage__category"
-                                }
-                                aria-current={
-                                    item.key === category ? "page" : undefined
-                                }
-                            >
-                                <i className={item.iconClass} aria-hidden="true" />
-                                <span>{item.label}</span>
-                            </Link>
-                        </li>
-                    ))}
-                    <li
-                        className="tabs__indicator"
-                        style={{
-                            left: `${(activeIndex / categories.length) * 100}%`,
-                            right: `${((categories.length - activeIndex - 1) / categories.length) * 100}%`,
-                        }}
-                        aria-hidden="true"
-                    />
-                </ul>
-            </nav>
+            <PageTabs
+                items={categories}
+                activeKey={category}
+                ariaLabel="Categorias de configuração"
+            />
             {children}
         </BusinessPage>
     );

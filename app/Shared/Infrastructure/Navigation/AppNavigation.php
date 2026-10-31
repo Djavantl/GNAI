@@ -180,7 +180,7 @@ final class AppNavigation
             }
 
             $route = match ($key) {
-                'sessions' => $user->is_admin ? $route : 'specialized-educational-support.sessions.my-sessions',
+                'sessions' => $user->can('session.view-all') ? $route : 'specialized-educational-support.sessions.my-sessions',
                 'aee-records' => $user->can('aee-record.view-all') ? $route : 'specialized-educational-support.aee-records.my-records',
                 'pedagogical-records' => $user->can('pedagogical-record.view-all') ? $route : 'specialized-educational-support.pedagogical-records.my-records',
                 default => $route,

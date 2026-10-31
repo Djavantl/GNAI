@@ -1,19 +1,16 @@
-import { useState } from "react";
-import ChoiceControl from "@/components/Forms/ChoiceControl/ChoiceControl";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
     TableListEmpty,
     TableListFooter,
     TableListScroll,
     TableListTable,
-    useTableListAction,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
-import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import { dateLabel } from "@/components/Students/Students.utils";
-import { sessionShowUrl, sessionsBase } from "./SessionForm.utils";
+import SessionDeleteAction from "./SessionDeleteAction";
+import { sessionShowUrl } from "./SessionForm.utils";
 import type { SessionListPaginator, SessionListRow } from "./SessionList.types";
 
 function buildColumns(
@@ -57,130 +54,91 @@ export default function SessionTable({
     emptyMessage?: string;
     onPage: (page: number) => void;
 }): React.JSX.Element {
-    const removal = useTableListAction<SessionListRow>({
-        failureText: "Não foi possível excluir o agendamento. Tente novamente.",
-    });
-    const [sendNotification, setSendNotification] = useState(false);
     const columns = buildColumns(showStudents, showProfessional);
 
-    function openDelete(session: SessionListRow): void {
-        setSendNotification(false);
-        removal.open(session);
-    }
-
     return (
-        <>
-            <TableListScroll aria-label="Tabela de agendamentos">
-                <TableListTable
-                    className="sessionsPage__table"
-                    columns={columns}
-                    page={sessions}
-                >
-                    {sessions.data.length ? sessions.data.map((session) => (
-                        <tr key={session.id}>
-                            <td>
-                                <span className="sessionsPage__date">
-                                    <strong>{dateLabel(session.session_date)}</strong>
-                                    {showTime && session.start_time ? (
-                                        <small>{session.start_time}</small>
+        <SessionDeleteAction>
+            {({ open, processing }) => (
+                <>
+                    <TableListScroll aria-label="Tabela de agendamentos">
+                        <TableListTable
+                            className="sessionsPage__table"
+                            columns={columns}
+                            page={sessions}
+                        >
+                            {sessions.data.length ? sessions.data.map((session) => (
+                                <tr key={session.id}>
+                                    <td>
+                                        <span className="sessionsPage__date">
+                                            <strong>{dateLabel(session.session_date)}</strong>
+                                            {showTime && session.start_time ? (
+                                                <small>{session.start_time}</small>
+                                            ) : null}
+                                        </span>
+                                    </td>
+                                    {showStudents ? (
+                                        <td>
+                                            {session.student_names.length ? (
+                                                session.student_names.join(", ")
+                                            ) : (
+                                                <span className="sessionsPage__muted">Sem alunos</span>
+                                            )}
+                                        </td>
                                     ) : null}
-                                </span>
-                            </td>
-                            {showStudents ? (
-                                <td>
-                                    {session.student_names.length ? (
-                                        session.student_names.join(", ")
-                                    ) : (
-                                        <span className="sessionsPage__muted">Sem alunos</span>
-                                    )}
-                                </td>
-                            ) : null}
-                            {showProfessional ? <td>{session.professional_name}</td> : null}
-                            <td>{session.type_label}</td>
-                            <td>
-                                <TableLabel tone={session.status_color}>
-                                    {session.status_label}
-                                </TableLabel>
-                            </td>
-                            <td>
-                                {canView || session.can_delete ? (
-                                    <TableActions>
-                                        {canView ? (
-                                            <Button
-                                                href={sessionShowUrl(session.id)}
-                                                size="sm"
-                                                tone="dark-blue"
-                                                iconOnly
-                                                leftIconClass="fa fa-eye"
-                                                aria-label={`Visualizar ${sessionDescription(session)}`}
-                                            />
-                                        ) : null}
-                                        {session.can_delete ? (
-                                            <Button
-                                                tone="dark-red"
-                                                size="sm"
-                                                iconOnly
-                                                leftIconClass="fa fa-trash-o"
-                                                aria-label={`Excluir ${sessionDescription(session)}`}
-                                                disabled={removal.processing}
-                                                onClick={() => openDelete(session)}
-                                            />
-                                        ) : null}
-                                    </TableActions>
-                                ) : (
-                                    <span>—</span>
-                                )}
-                            </td>
-                        </tr>
-                    )) : (
-                        <tr>
-                            <TableListEmpty colSpan={columns.length}>
-                                {emptyMessage}
-                            </TableListEmpty>
-                        </tr>
-                    )}
-                </TableListTable>
-            </TableListScroll>
-            <TableListFooter
-                page={sessions}
-                disabled={loading}
-                paginationLabel="Paginação de agendamentos"
-                onSelect={onPage}
-            />
-            <ConfirmActionModal
-                open={removal.target !== null}
-                title="Excluir Agendamento"
-                message="Mover este agendamento para a lixeira?"
-                details={removal.target?.is_scheduled ? (
-                    <div className="sessionsPage__deleteDetails">
-                        <ChoiceControl
-                            type="checkbox"
-                            tone="purple"
-                            id="session-delete-send-notification"
-                            name="send_notification"
-                            label="Enviar e-mail de aviso aos participantes"
-                            checked={sendNotification}
-                            disabled={removal.processing}
-                            onChange={setSendNotification}
-                        />
-                    </div>
-                ) : undefined}
-                processing={removal.processing}
-                confirmLabel="Confirmar exclusão"
-                processingLabel="Excluindo agendamento..."
-                confirmTone="dark-red"
-                onClose={removal.close}
-                onConfirm={() => {
-                    if (!removal.target) return;
-                    removal.submit(
-                        "delete",
-                        `${sessionsBase}/${removal.target.id}`,
-                        removal.target.is_scheduled
-                            ? { send_notification: sendNotification ? 1 : 0 }
-                            : {},
-                    );
-                }}
-            />
-        </>
+                                    {showProfessional ? <td>{session.professional_name}</td> : null}
+                                    <td>{session.type_label}</td>
+                                    <td>
+                                        <TableLabel tone={session.status_color}>
+                                            {session.status_label}
+                                        </TableLabel>
+                                    </td>
+                                    <td>
+                                        {canView || session.can_delete ? (
+                                            <TableActions>
+                                                {canView ? (
+                                                    <Button
+                                                        href={sessionShowUrl(session.id)}
+                                                        size="sm"
+                                                        tone="dark-blue"
+                                                        iconOnly
+                                                        leftIconClass="fa fa-eye"
+                                                        aria-label={`Visualizar ${sessionDescription(session)}`}
+                                                    />
+                                                ) : null}
+                                                {session.can_delete ? (
+                                                    <Button
+                                                        tone="dark-red"
+                                                        size="sm"
+                                                        iconOnly
+                                                        leftIconClass="fa fa-trash-o"
+                                                        aria-label={`Excluir ${sessionDescription(session)}`}
+                                                        disabled={processing}
+                                                        onClick={() => open(session)}
+                                                    />
+                                                ) : null}
+                                            </TableActions>
+                                        ) : (
+                                            <span>—</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <TableListEmpty colSpan={columns.length}>
+                                        {emptyMessage}
+                                    </TableListEmpty>
+                                </tr>
+                            )}
+                        </TableListTable>
+                    </TableListScroll>
+                    <TableListFooter
+                        page={sessions}
+                        disabled={loading}
+                        paginationLabel="Paginação de agendamentos"
+                        onSelect={onPage}
+                    />
+                </>
+            )}
+        </SessionDeleteAction>
     );
 }

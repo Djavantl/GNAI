@@ -72,6 +72,12 @@ final class ProfessionalController
                     'statusColor' => $professional->status?->color(),
                     'serviceTime' => $professional->entry_date?->diffForHumans(null, true),
                 ],
+                'impersonationUserId' => $this->canManageAdministrators($request)
+                    ? $professional->user()
+                        ->where('is_super_admin', false)
+                        ->whereKeyNot($request->user()->getKey())
+                        ->value('id')
+                    : null,
                 'can' => [
                     'update' => $request->user()?->can('professional.update') ?? false,
                     'delete' => $request->user()?->can('professional.delete') ?? false,

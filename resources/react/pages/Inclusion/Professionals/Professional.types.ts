@@ -76,5 +76,6 @@ export interface ProfessionalShowProps {
         statusColor: string | null;
         serviceTime: string | null;
     };
+    impersonationUserId: number | null;
     can: { update: boolean; delete: boolean };
 }

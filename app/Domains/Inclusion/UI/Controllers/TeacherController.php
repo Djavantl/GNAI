@@ -60,7 +60,7 @@ final class TeacherController
     {
         $teacher = $query->execute($teacher);
         $teacher->person?->append('photo_url');
-        $isAdmin = $request->user()?->isAdmin() ?? false;
+        $isSuperAdmin = $request->user()?->isSuperAdmin() ?? false;
 
         return Inertia::render(
             'Inclusion/Teachers/Show',
@@ -69,7 +69,9 @@ final class TeacherController
                 'display' => [
                     'createdAt' => $teacher->created_at?->format('d/m/Y'),
                 ],
-                'impersonationUserId' => $isAdmin ? $teacher->user()->value('id') : null,
+                'impersonationUserId' => $isSuperAdmin
+                    ? $teacher->user()->where('is_super_admin', false)->value('id')
+                    : null,
                 'can' => [
                     'update' => $request->user()?->can('teacher.update') ?? false,
                     'delete' => $request->user()?->can('teacher.delete') ?? false,

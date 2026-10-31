@@ -6,14 +6,21 @@ namespace App\Domains\Inclusion\Application\Queries\Sessions;
 
 use App\Domains\Inclusion\Application\Data\Sessions\ListSessionsData;
 use App\Domains\Inclusion\Domain\Models\Session;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final class ListSessionsQuery
 {
     public function execute(ListSessionsData $filters): LengthAwarePaginator
     {
+        $referenceDate = Carbon::parse($filters->week ?? now()->toDateString());
+
         return Session::query()
             ->with(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord'])
+            ->whereBetween('session_date', [
+                $referenceDate->copy()->startOfMonth()->startOfDay(),
+                $referenceDate->copy()->endOfMonth()->endOfDay(),
+            ])
             ->when($filters->student !== null, function ($query) use ($filters): void {
                 $query->whereHas('students', fn ($studentQuery) => $studentQuery->where('students.id', $filters->student));
             })

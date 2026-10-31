@@ -8,24 +8,29 @@ use App\Shared\Application\Exceptions\AccessDeniedException;
 
 final class InvalidImpersonation extends AccessDeniedException
 {
-    public static function impersonatorMustBeAdmin(): self
+    public static function impersonatorMustBeSuperAdmin(): self
     {
-        return new self('Apenas administradores podem impersonar usuários.');
+        return new self('Apenas o administrador superior do Gnai pode entrar como outro usuário.');
     }
 
-    public static function cannotImpersonateAdmin(): self
+    public static function cannotImpersonateSuperAdmin(): self
     {
-        return new self('Não é possível impersonar outro administrador.');
+        return new self('Não é possível entrar como outro administrador superior.');
+    }
+
+    public static function targetWithoutAccess(): self
+    {
+        return new self('Este usuário não tem acesso ao sistema.');
     }
 
     public static function cannotImpersonateSelf(): self
     {
-        return new self('Não é possível impersonar você mesmo.');
+        return new self('Não é possível entrar como você mesmo.');
     }
 
     public static function notActive(): self
     {
-        return new self('Você não está em uma impersonação.');
+        return new self('Você não está navegando como outro usuário.');
     }
 
     public static function invalidImpersonator(): self

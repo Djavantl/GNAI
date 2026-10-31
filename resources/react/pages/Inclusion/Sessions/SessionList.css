@@ -1,6 +1,5 @@
 .sessionsPage .formSection--inline { margin-bottom: 0; }
 .sessionsPage .formSection--inline > .formSection__description { margin-bottom: 20px; }
-.sessionsPage__agendaCard { margin-bottom: 24px; }
 
 .sessionsPage__filters {
     display: grid;
@@ -16,129 +15,179 @@
 .sessionsPage__muted { color: var(--ui-color-text-muted); }
 .sessionsPage__deleteDetails { margin-top: 12px; text-align: left; }
 
-.sessionsPage__agendaToolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 16px;
-    border: 1px solid var(--ui-color-card-border);
-    border-radius: 4px;
-    background: var(--ui-color-surface-alt);
+.sessionsPage__workspace > .formSection--inline {
+    margin-bottom: 24px;
 }
-.sessionsPage__agendaToolbar > form { flex: 1 1 520px; min-width: 0; }
-.sessionsPage__agendaFilters {
+
+.sessionsPage__sharedFilters {
     display: grid;
-    grid-template-columns: minmax(150px, 1fr) repeat(auto-fit, minmax(170px, 1fr));
+    grid-template-columns: minmax(150px, .9fr) repeat(4, minmax(150px, 1fr)) auto;
     align-items: end;
-    gap: 16px;
+    gap: 14px;
 }
-.sessionsPage__agendaFilters > .tableListFilterActions { justify-self: start; }
-.sessionsPage__weekNav { display: flex; flex-wrap: wrap; gap: 8px; }
 
-.sessionsPage__agendaSummary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 24px;
-    margin: 16px 0;
-    padding: 12px 16px;
-    border: 1px solid var(--ui-color-card-border);
+.sessionsPage__sharedFilters--compact {
+    grid-template-columns: minmax(150px, .9fr) repeat(3, minmax(150px, 1fr)) auto;
+}
+
+.sessionsPage__sharedFilters > .tableListFilterActions {
+    padding-bottom: 1px;
+}
+
+.sessionsPage__calendarViewport {
+    width: 100%;
+    min-width: 0;
+    margin-top: 20px;
+    overflow: visible;
     border-radius: 4px;
 }
 
-.sessionsPage__agendaDays {
+.modalLayer--custombox .sessionsPage__dayModal.modalLayer__content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+    text-align: left;
+}
+
+.modalLayer--custombox .sessionsPage__dayModal .modalLayer__header,
+.modalLayer--custombox .sessionsPage__dayModal .modalLayer__footer {
+    flex: 0 0 auto;
+}
+
+.sessionsPage__dayModalBody {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100vh - 190px);
+    overflow-y: auto;
+    text-align: left;
+}
+
+.sessionsPage__dayModalSessions {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
     margin: 0;
     padding: 0;
     list-style: none;
 }
-.sessionsPage__day {
+
+.sessionsPage__dayModalSession {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--ui-color-card-border);
+    border-left: 4px solid var(--ui-color-gnai-primary);
+    border-radius: 7px;
+    background: var(--ui-color-surface);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--ui-color-text) 12%, transparent);
+}
+
+.sessionsPage__dayModalSessionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.sessionsPage__dayModalSessionHeader > div {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    overflow: hidden;
-    border: 1px solid var(--ui-color-card-border);
-    border-radius: 8px;
-    background: var(--ui-color-surface);
 }
-.sessionsPage__dayHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 12px 14px;
-    background: var(--ui-color-gnai-primary);
-    color: #fff;
-}
-.sessionsPage__dayTitle {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    color: inherit;
-    font-size: 15px;
+
+.sessionsPage__dayModalTime {
+    color: var(--ui-color-heading);
+    font-size: 16px;
     font-weight: 700;
-    line-height: 1.2;
 }
-.sessionsPage__dayTitle small { margin-top: 2px; font-size: 13px; font-weight: 400; opacity: .85; }
-.sessionsPage__dayCount {
-    min-width: 30px;
-    padding: 3px 9px;
-    border: 1px solid currentColor;
-    border-radius: 999px;
-    font-weight: 700;
-    text-align: center;
+
+.sessionsPage__dayModalType {
+    color: var(--ui-color-text-muted);
+    font-size: 12px;
 }
-.sessionsPage__daySessions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 360px;
+
+.sessionsPage__dayModalDetails {
+    display: grid;
+    gap: 9px;
     margin: 0;
-    padding: 8px;
-    overflow-y: auto;
-    list-style: none;
 }
-.sessionsPage__agendaSession {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 10px;
-    border: 1px solid var(--ui-color-border-subtle);
-    border-left: 4px solid var(--ui-color-gnai-primary);
-    border-radius: 6px;
-    background: var(--ui-color-surface);
-    font-size: 13.5px;
+
+.sessionsPage__dayModalDetails div {
+    min-width: 0;
 }
-.sessionsPage__agendaSession p { margin: 0; overflow-wrap: anywhere; }
-.sessionsPage__agendaSessionHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.sessionsPage__record { font-weight: 700; }
-.sessionsPage__record--done i { color: var(--ui-color-success); }
-.sessionsPage__record--missing i { color: var(--ui-color-warning); }
-.sessionsPage__agendaSessionActions { display: flex; justify-content: flex-end; margin-top: 4px; }
-.sessionsPage__dayEmpty {
+
+.sessionsPage__dayModalDetails dt {
+    color: var(--ui-color-form-label);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.sessionsPage__dayModalDetails dd {
+    margin: 2px 0 0;
+    overflow-wrap: anywhere;
+    color: var(--ui-color-text);
+}
+
+.sessionsPage__dayModalDetails dd i {
+    margin-right: 6px;
+}
+
+.sessionsPage__dayModalDetails .is-complete i {
+    color: var(--ui-color-success);
+}
+
+.sessionsPage__dayModalDetails .is-pending i {
+    color: var(--ui-color-warning);
+}
+
+.sessionsPage__dayModalSession .tableActions {
+    justify-content: flex-end;
+    margin-top: auto;
+}
+
+.sessionsPage__dayModalEmpty {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    margin: 0;
-    padding: 24px 12px;
+    padding: 42px 20px;
     color: var(--ui-color-text-muted);
     text-align: center;
 }
-.sessionsPage__dayEmpty i { font-size: 24px; }
 
-@media (max-width: 1400px) {
-    .sessionsPage__agendaDays { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sessionsPage__dayModalEmpty i {
+    margin-bottom: 12px;
+    color: var(--ui-color-gnai-primary);
+    font-size: 38px;
 }
+
+.sessionsPage__dayModalEmpty h5 {
+    margin: 0 0 6px;
+    color: var(--ui-color-heading);
+    font-size: 17px;
+}
+
+.sessionsPage__dayModalEmpty p {
+    margin: 0;
+}
+
 @media (max-width: 900px) {
-    .sessionsPage__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sessionsPage__filters,
+    .sessionsPage__sharedFilters,
+    .sessionsPage__sharedFilters--compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
 }
 @media (max-width: 600px) {
     .sessionsPage__filters,
-    .sessionsPage__agendaFilters,
-    .sessionsPage__agendaDays { grid-template-columns: minmax(0, 1fr); }
-    .sessionsPage__daySessions { max-height: 300px; }
+    .sessionsPage__sharedFilters,
+    .sessionsPage__sharedFilters--compact { grid-template-columns: minmax(0, 1fr); }
+
+    .sessionsPage__dayModalSessions { grid-template-columns: minmax(0, 1fr); }
+
+    .sessionsPage__dayModalBody {
+        padding: 14px;
+    }
 }

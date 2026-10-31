@@ -16,19 +16,18 @@ use App\Domains\Inclusion\Application\Data\Sessions\CreateSessionData;
 use App\Domains\Inclusion\Application\Data\Sessions\ListSessionsData;
 use App\Domains\Inclusion\Application\Data\Sessions\SessionAvailabilityData;
 use App\Domains\Inclusion\Application\Data\Sessions\UpdateSessionData;
+use App\Domains\Inclusion\Application\Queries\Sessions\CalendarAgendaQuery;
 use App\Domains\Inclusion\Application\Queries\Sessions\ListMySessionsQuery;
 use App\Domains\Inclusion\Application\Queries\Sessions\ListSessionsQuery;
 use App\Domains\Inclusion\Application\Queries\Sessions\ListStudentSessionsQuery;
 use App\Domains\Inclusion\Application\Queries\Sessions\SessionAvailabilityQuery;
 use App\Domains\Inclusion\Application\Queries\Sessions\SessionFormQuery;
 use App\Domains\Inclusion\Application\Queries\Sessions\ShowSessionQuery;
-use App\Domains\Inclusion\Application\Queries\Sessions\WeeklyAgendaQuery;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Inclusion\Domain\Models\Session;
 use App\Domains\Inclusion\Domain\Models\Student;
 use App\Domains\Inclusion\UI\Presenters\SessionListPresenter;
 use App\Domains\Inclusion\UI\Presenters\SessionShowPresenter;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,24 +43,20 @@ final class SessionController
     public function index(
         ListSessionsData $filters,
         ListSessionsQuery $query,
-        WeeklyAgendaQuery $agendaQuery,
+        CalendarAgendaQuery $calendarQuery,
         SessionListPresenter $presenter,
         Request $request,
     ): InertiaResponse {
         $sessions = $query->execute($filters);
         $students = Student::with('person')->orderBy('id')->get();
         $professionals = Professional::with('person')->orderBy('id')->get();
-        $agenda = $agendaQuery->execute($filters);
-        $weekNavigation = $this->buildWeekNavigation(
-            $request,
-            'specialized-educational-support.sessions.index',
-        );
+        $calendar = $calendarQuery->execute($filters);
         $user = $request->user();
 
         return Inertia::render('Inclusion/Sessions/Index', [
             'sessions' => $presenter->sessions($sessions, $request),
-            'agenda' => $presenter->agenda($agenda, $request),
-            'weekNavigation' => $weekNavigation,
+            'calendar' => $presenter->calendar($calendar, $request),
+            'view' => $request->string('view')->toString() === 'list' ? 'list' : 'calendar',
             'filters' => $presenter->filters($filters),
             'options' => [
                 'students' => $presenter->peopleOptions($students, 'Aluno'),
@@ -184,7 +179,7 @@ final class SessionController
     public function mySessions(
         ListSessionsData $filters,
         ListMySessionsQuery $query,
-        WeeklyAgendaQuery $agendaQuery,
+        CalendarAgendaQuery $calendarQuery,
         AuthenticatedUserResolver $authenticatedUser,
         SessionListPresenter $presenter,
         Request $request,
@@ -195,16 +190,12 @@ final class SessionController
         $students = Student::with('person')->orderBy('id')->get(['id', 'person_id']);
         $professionalId = $user->professional?->id;
         abort_unless($professionalId !== null, 403, 'Acesso permitido apenas para profissionais.');
-        $agenda = $agendaQuery->execute($filters, (int) $professionalId);
-        $weekNavigation = $this->buildWeekNavigation(
-            $request,
-            'specialized-educational-support.sessions.my-sessions',
-        );
+        $calendar = $calendarQuery->execute($filters, (int) $professionalId);
 
         return Inertia::render('Inclusion/Sessions/MySessions', [
             'sessions' => $presenter->sessions($sessions, $request),
-            'agenda' => $presenter->agenda($agenda, $request),
-            'weekNavigation' => $weekNavigation,
+            'calendar' => $presenter->calendar($calendar, $request),
+            'view' => $request->string('view')->toString() === 'list' ? 'list' : 'calendar',
             'filters' => $presenter->filters($filters),
             'options' => [
                 'students' => $presenter->peopleOptions($students, 'Aluno'),
@@ -279,30 +270,5 @@ final class SessionController
     public function availability(SessionAvailabilityData $data, SessionAvailabilityQuery $query): JsonResponse
     {
         return response()->json($query->execute($data));
-    }
-
-    /**
-     * @return array{previous: string, current: string, next: string}
-     */
-    private function buildWeekNavigation(Request $request, string $routeName): array
-    {
-        $referenceWeek = Carbon::parse($request->input('week', now()->toDateString()))
-            ->startOfWeek(Carbon::MONDAY);
-
-        $baseParams = collect($request->except(['week', 'page']))
-            ->filter(fn ($value): bool => $value !== null && $value !== '')
-            ->toArray();
-
-        return [
-            'previous' => route($routeName, array_merge($baseParams, [
-                'week' => $referenceWeek->copy()->subWeek()->toDateString(),
-            ])),
-            'current' => route($routeName, array_merge($baseParams, [
-                'week' => now()->toDateString(),
-            ])),
-            'next' => route($routeName, array_merge($baseParams, [
-                'week' => $referenceWeek->copy()->addWeek()->toDateString(),
-            ])),
-        ];
     }
 }

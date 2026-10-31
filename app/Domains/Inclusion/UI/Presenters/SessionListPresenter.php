@@ -31,27 +31,22 @@ final class SessionListPresenter
     }
 
     /**
-     * @param  array{weekStart: CarbonInterface, weekEnd: CarbonInterface, days: array<int, array{date: CarbonInterface, label: string, sessions: Collection<int, Session>}>}  $agenda
+     * @param  array{rangeStart: CarbonInterface, rangeEnd: CarbonInterface, sessions: Collection<int, Session>}  $calendar
      * @return array<string, mixed>
      */
-    public function agenda(array $agenda, Request $request): array
+    public function calendar(array $calendar, Request $request): array
     {
         $userId = (int) $request->user()?->getAuthIdentifier();
         $canDelete = $request->user()?->can('session.delete') ?? false;
-        $days = collect($agenda['days'])->map(fn (array $day): array => [
-            'date' => $day['date']->toDateString(),
-            'label' => $day['label'],
-            'sessions' => $day['sessions']
-                ->map(fn (Session $session): array => $this->row($session, $userId, $canDelete))
-                ->values()
-                ->all(),
-        ]);
+        $sessions = $calendar['sessions']
+            ->map(fn (Session $session): array => $this->row($session, $userId, $canDelete))
+            ->values();
 
         return [
-            'weekStart' => $agenda['weekStart']->toDateString(),
-            'weekEnd' => $agenda['weekEnd']->toDateString(),
-            'total' => $days->sum(fn (array $day): int => count($day['sessions'])),
-            'days' => $days->all(),
+            'rangeStart' => $calendar['rangeStart']->toDateString(),
+            'rangeEnd' => $calendar['rangeEnd']->toDateString(),
+            'total' => $sessions->count(),
+            'sessions' => $sessions->all(),
         ];
     }
 

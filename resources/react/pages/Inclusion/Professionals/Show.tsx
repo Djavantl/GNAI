@@ -2,6 +2,7 @@ import { router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import FormActions from "@/components/Forms/FormActions/FormActions";
 import FormSection from "@/components/Forms/FormSection/FormSection";
+import ImpersonationAction from "@/components/Navigation/ImpersonationAction/ImpersonationAction";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
@@ -16,6 +17,7 @@ import type { ProfessionalShowProps } from "./Professional.types";
 export default function InclusionProfessionalsShowPage({
     professional,
     display,
+    impersonationUserId,
     can,
 }: ProfessionalShowProps): React.JSX.Element {
     const viewerIsAdmin = usePage<{
@@ -23,6 +25,8 @@ export default function InclusionProfessionalsShowPage({
     }>().props.auth?.user?.is_admin === true;
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [impersonating, setImpersonating] = useState(false);
+    const busy = deleting || impersonating;
     const person = professional.person;
     const itemUrl = `${professionalsBase}/${professional.id}`;
 
@@ -147,14 +151,23 @@ export default function InclusionProfessionalsShowPage({
                     </dl>
                 </FormSection>
             </CardBox>
-            <FormActions>
+            <FormActions
+                secondary={impersonationUserId !== null ? (
+                    <ImpersonationAction
+                        userId={impersonationUserId}
+                        name={person.name}
+                        disabled={deleting}
+                        onProcessingChange={setImpersonating}
+                    />
+                ) : undefined}
+            >
                 <Button
                     href={professionalsBase}
                     tone="cancel"
                     label="Voltar"
                     title="Voltar para profissionais"
                     aria-label="Voltar para profissionais"
-                    disabled={deleting}
+                    disabled={busy}
                 />
                 {can.update ? (
                     <Button
@@ -164,7 +177,7 @@ export default function InclusionProfessionalsShowPage({
                         label="Editar"
                         title="Editar profissional"
                         aria-label="Editar profissional"
-                        disabled={deleting}
+                        disabled={busy}
                     />
                 ) : null}
                 {can.delete ? (
@@ -174,7 +187,7 @@ export default function InclusionProfessionalsShowPage({
                         label="Excluir"
                         title="Excluir profissional"
                         aria-label="Excluir profissional"
-                        disabled={deleting}
+                        disabled={busy}
                         onClick={() => setDeleteModalOpen(true)}
                     />
                 ) : null}

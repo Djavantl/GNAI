@@ -44,29 +44,19 @@ export interface SessionListOptions {
     statuses: SelectFieldOption[];
 }
 
-export interface SessionWeeklyAgendaDay {
-    date: string;
-    label: string;
+export interface SessionCalendarData {
+    rangeStart: string;
+    rangeEnd: string;
+    total: number;
     sessions: SessionListRow[];
 }
 
-export interface SessionWeeklyAgendaData {
-    weekStart: string;
-    weekEnd: string;
-    total: number;
-    days: SessionWeeklyAgendaDay[];
-}
-
-export interface SessionWeekNavigation {
-    previous: string;
-    current: string;
-    next: string;
-}
+export type SessionView = "calendar" | "list";
 
 export interface SessionIndexProps {
     sessions: SessionListPaginator;
-    agenda: SessionWeeklyAgendaData;
-    weekNavigation: SessionWeekNavigation;
+    calendar: SessionCalendarData;
+    view: SessionView;
     filters: SessionListFilters;
     options: SessionListOptions;
     can: {
@@ -78,8 +68,8 @@ export interface SessionIndexProps {
 
 export interface SessionMySessionsProps {
     sessions: SessionListPaginator;
-    agenda: SessionWeeklyAgendaData;
-    weekNavigation: SessionWeekNavigation;
+    calendar: SessionCalendarData;
+    view: SessionView;
     filters: SessionListFilters;
     options: SessionListOptions;
     can: {

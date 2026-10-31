@@ -9,6 +9,7 @@ use App\Domains\Auth\Domain\Exceptions\InvalidImpersonation;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Auth\Infrastructure\Session\ImpersonationSession;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 final readonly class LeaveImpersonationAction
 {
@@ -30,7 +31,7 @@ final readonly class LeaveImpersonationAction
 
         $impersonator = $this->users->execute($impersonatorId);
 
-        if (! $impersonator instanceof User || ! $impersonator->isAdmin()) {
+        if (! $impersonator instanceof User || ! $impersonator->isSuperAdmin()) {
             $this->impersonationSession->clear();
 
             throw InvalidImpersonation::invalidImpersonator();
@@ -39,6 +40,10 @@ final readonly class LeaveImpersonationAction
         $this->impersonationSession->clear();
 
         Auth::login($impersonator);
+
+        Log::notice('Personificação encerrada.', [
+            'impersonator_id' => $impersonator->getKey(),
+        ]);
 
         return $impersonator;
     }

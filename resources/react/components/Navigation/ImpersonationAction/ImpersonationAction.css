@@ -1,0 +1,15 @@
+.impersonationAction__modes {
+    display: grid;
+    gap: 12px;
+}
+
+.impersonationAction__modes label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.impersonationAction__description {
+    color: var(--ui-color-text-muted);
+    font-size: 13px;
+}

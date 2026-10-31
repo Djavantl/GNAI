@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Http\Middleware;
 
+use App\Domains\Auth\Infrastructure\Session\ImpersonationSession;
 use App\Shared\Infrastructure\Navigation\AppNavigation;
 use App\Shared\Infrastructure\Navigation\AppTopbar;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ final class HandleInertiaRequests extends Middleware
             'navigation' => fn () => app(AppNavigation::class)->forRequest($request),
             'topbar' => fn () => app(AppTopbar::class)->forRequest($request),
             'impersonating' => fn () => $request->session()->has('impersonator_id'),
+            'impersonationReadOnly' => fn () => app(ImpersonationSession::class)->readOnly(),
             'flash' => fn () => [
                 'response_id' => (string) Str::uuid(),
                 'success' => $request->session()->get('success'),

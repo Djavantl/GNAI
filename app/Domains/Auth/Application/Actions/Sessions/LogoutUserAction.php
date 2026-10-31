@@ -11,10 +11,10 @@ final readonly class LogoutUserAction
 {
     public function execute(?LogoutSessionDTO $data = null): void
     {
-        $dataDTO ??= new LogoutSessionDTO;
+        $dataDTO = $data ?? new LogoutSessionDTO;
 
         if ($dataDTO->clearImpersonation) {
-            session()->forget('impersonator_id');
+            session()->forget(['impersonator_id', 'impersonation_mode']);
         }
 
         Auth::logout();

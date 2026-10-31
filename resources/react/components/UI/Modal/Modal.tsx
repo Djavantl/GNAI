@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { createPortal, flushSync } from 'react-dom';
 import { getCustomboxCloseDelay, getCustomboxPagePlaneName, isCustomboxPagePlaneEffect } from './Modal.runtime';
 import './Modal.css';
@@ -33,6 +33,7 @@ interface ModalProps {
 }
 
 export default function Modal({ open, title, children, footer, size = 'default', customWidth, effect, onClose, className, layerClassName, contentClassName, bodyClassName, bootstrap = false, closeOnBackdrop = true }: ModalProps): React.JSX.Element | null {
+  const titleId = useId();
   const isCustombox = !bootstrap && effect !== undefined;
   const customboxPagePlaneName = getCustomboxPagePlaneName(effect);
   const closeDelay = isCustombox ? getCustomboxCloseDelay(effect) : 300;
@@ -331,14 +332,14 @@ export default function Modal({ open, title, children, footer, size = 'default',
         style={customWidth ? { width: customWidth } : undefined}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? 'modal-title' : undefined}
+        aria-labelledby={title ? titleId : undefined}
         onMouseDown={() => {
           dialogMouseDownRef.current = true;
         }}
         onClick={(event) => event.stopPropagation()}
       >
         <div className={`modalLayer__content ${contentClassName ?? ''}`}>
-          {title ? <div className="modalLayer__header"><button type="button" className="modalLayer__close" aria-label="Fechar" onClick={requestClose}>×</button><h4 id="modal-title">{title}</h4></div> : null}
+          {title ? <div className="modalLayer__header"><button type="button" className="modalLayer__close" aria-label="Fechar" onClick={requestClose}>×</button><h4 id={titleId}>{title}</h4></div> : null}
           <div className={`modalLayer__body ${bodyClassName ?? ''}`}>{children}</div>
           {footer ? <div className="modalLayer__footer">{footer}</div> : null}
         </div>
