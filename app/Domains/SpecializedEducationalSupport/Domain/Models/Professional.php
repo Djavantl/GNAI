@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
@@ -21,8 +24,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[UseFactory(ProfessionalFactory::class)]
-final class Professional extends Model
+final class Professional extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'professionals';
@@ -39,6 +43,32 @@ final class Professional extends Model
         'entry_date' => 'date',
         'status' => ProfessionalStatus::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'professional';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Profissional';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'person_id' => AuditedField::reference('Pessoa', Person::class),
+            'position_id' => AuditedField::reference('Cargo', Position::class),
+            'registration' => AuditedField::text('Matrícula'),
+            'entry_date' => AuditedField::date('Data de Ingresso'),
+            'status' => AuditedField::enum('Status', ProfessionalStatus::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return 'o profissional '.($this->person?->name ?? "#{$this->getKey()}");
+    }
 
     /**
      * @throws InvalidProfessional

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\PeiDisciplines\CreatePeiDisciplineDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\PeiDisciplines\UpdatePeiDisciplineDTO;
@@ -12,8 +15,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-final class PeiDiscipline extends Model
+final class PeiDiscipline extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'pei_disciplines';
@@ -30,6 +34,42 @@ final class PeiDiscipline extends Model
         'opinion',
         'complementary_records',
     ];
+
+    public static function auditType(): string
+    {
+        return 'pei_discipline';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Adaptação Curricular do PEI';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            // PEI e professor não têm coluna de nome própria (o nome do professor mora em `people`); ficam pelo id.
+            'pei_id' => AuditedField::number('ID do PEI'),
+            'creator_id' => AuditedField::reference('Criada por', User::class),
+            'teacher_id' => AuditedField::reference('Professor responsável', Teacher::class, 'person.name'),
+            'discipline_id' => AuditedField::reference('Disciplina', Discipline::class),
+            'specific_objectives' => AuditedField::text('Objetivos específicos'),
+            'content_programmatic' => AuditedField::text('Conteúdo programático'),
+            'methodologies' => AuditedField::text('Metodologias e estratégias'),
+            'evaluations' => AuditedField::text('Processo de avaliação'),
+            'opinion' => AuditedField::text('Parecer'),
+            'complementary_records' => AuditedField::text('Registros complementares'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $disciplineName = $this->discipline?->name;
+
+        return $disciplineName !== null
+            ? "a adaptação curricular de {$disciplineName} do PEI #{$this->pei_id}"
+            : "a adaptação curricular #{$this->getKey()} do PEI #{$this->pei_id}";
+    }
 
     /**
      * @throws InvalidPeiDiscipline

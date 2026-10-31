@@ -42,7 +42,8 @@ final readonly class DeleteProfessionalAction
                 ->findOrFail($lockedProfessional->person_id);
             $personHasOtherRoles = $this->hasOtherRoles->execute($person, $lockedProfessional);
 
-            $lockedProfessional->user()->delete();
+            // Pelo model, não pela query: a exclusão do usuário entra na auditoria.
+            $lockedProfessional->user?->delete();
             $lockedProfessional->delete();
 
             if ($personHasOtherRoles) {

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Infrastructure\Providers;
 
+use App\Domains\Audit\Infrastructure\AuditableEntities;
 use App\Domains\Auth\Application\Permissions\PermissionCache;
 use App\Domains\Auth\Application\Permissions\PermissionRegistry;
 use App\Domains\Auth\Application\Queries\Permissions\UserHasPermissionQuery;
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Auth\UI\Console\Commands\CreateAdminUser;
 use App\Domains\Auth\UI\Console\Commands\SyncPermissions;
 use Illuminate\Support\Facades\Gate;
@@ -29,6 +31,8 @@ final class AuthServiceProvider extends ServiceProvider
             CreateAdminUser::class,
             SyncPermissions::class,
         ]);
+
+        $this->app->make(AuditableEntities::class)->register(User::class);
 
         Gate::before(function ($user, string $ability): ?bool {
             if ($user->is_admin) {

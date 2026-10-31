@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentDeficiencies\CreateStudentDeficiencyDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentDeficiencies\UpdateStudentDeficiencyDTO;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\DeficiencySeverity;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudentDeficiency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-final class StudentDeficiency extends Pivot
+final class StudentDeficiency extends Pivot implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'students_deficiencies';
@@ -27,6 +32,34 @@ final class StudentDeficiency extends Pivot
         'severity',
         'notes',
     ];
+
+    public static function auditType(): string
+    {
+        return 'student_deficiency';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Deficiência do Aluno';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'student_id' => AuditedField::reference('Aluno', Student::class, 'person.name'),
+            'deficiency_id' => AuditedField::reference('Perfil', Deficiency::class),
+            'severity' => AuditedField::enum('Severidade', DeficiencySeverity::class),
+            'notes' => AuditedField::richText('Observações'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $deficiencyName = $this->deficiency?->name ?? "#{$this->deficiency_id}";
+        $studentName = $this->student?->person?->name ?? "#{$this->student_id}";
+
+        return "o perfil de atendimento {$deficiencyName} do aluno {$studentName}";
+    }
 
     /**
      * @throws InvalidStudentDeficiency

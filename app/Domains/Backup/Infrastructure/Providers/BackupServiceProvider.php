@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Infrastructure\Providers;
 
+use App\Domains\Audit\Infrastructure\AuditableEntities;
 use App\Domains\Backup\Application\Actions\PruneBackupsAction;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
+use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Backup\Infrastructure\Storage\BackupArchiveStorage;
 use App\Domains\Backup\UI\Console\Commands\BackupAutomatic;
 use Illuminate\Support\ServiceProvider;
@@ -24,5 +26,7 @@ final class BackupServiceProvider extends ServiceProvider
         $this->commands([
             BackupAutomatic::class,
         ]);
+
+        $this->app->make(AuditableEntities::class)->register(Backup::class);
     }
 }

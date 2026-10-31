@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentCourses\CreateStudentCourseDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentCourses\UpdateStudentCourseDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\StudentCourseDisciplineCategory;
@@ -13,8 +16,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-final class StudentCourse extends Pivot
+final class StudentCourse extends Pivot implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'student_courses';
@@ -35,6 +39,48 @@ final class StudentCourse extends Pivot
         'academic_year' => 'integer',
         'is_current' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'student_course';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Matrícula em Curso';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'student_id' => AuditedField::reference('Aluno', Student::class, 'person.name'),
+            'course_id' => AuditedField::reference('Curso / Série', Course::class),
+            'academic_year' => AuditedField::text('Ano Letivo'),
+            'is_current' => AuditedField::boolean('Curso atual'),
+            'school_attendance_status' => AuditedField::richText('Situação da Frequência Escolar'),
+            'failed_disciplines' => AuditedField::list('Disciplinas com Reprovação', model: Discipline::class),
+            'at_risk_disciplines' => AuditedField::list('Disciplinas com Risco de Insucesso Acadêmico', model: Discipline::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $studentName = $this->student?->person?->name ?? "#{$this->student_id}";
+        $courseName = $this->course?->name ?? "#{$this->course_id}";
+
+        return "a matrícula de {$studentName} em {$courseName}";
+    }
+
+    /** @return array<string, mixed> */
+    public function auditExtraValues(): array
+    {
+        return $this->exists
+            ? [
+                'failed_disciplines' => $this->failedDisciplines()->pluck('disciplines.id')->all(),
+                'at_risk_disciplines' => $this->atRiskDisciplines()->pluck('disciplines.id')->all(),
+            ]
+            : [];
+    }
 
     /**
      * @throws InvalidStudentCourse
@@ -101,13 +147,17 @@ final class StudentCourse extends Pivot
     /** @param list<int> $disciplineIds */
     public function syncFailedDisciplines(array $disciplineIds): void
     {
+        $before = $this->failedDisciplines()->pluck('disciplines.id')->all();
         $this->failedDisciplines()->sync(array_values(array_unique($disciplineIds)));
+        $this->recordAuditFieldChange('failed_disciplines', $before, $this->failedDisciplines()->pluck('disciplines.id')->all());
     }
 
     /** @param list<int> $disciplineIds */
     public function syncAtRiskDisciplines(array $disciplineIds): void
     {
+        $before = $this->atRiskDisciplines()->pluck('disciplines.id')->all();
         $this->atRiskDisciplines()->sync(array_values(array_unique($disciplineIds)));
+        $this->recordAuditFieldChange('at_risk_disciplines', $before, $this->atRiskDisciplines()->pluck('disciplines.id')->all());
     }
 
     public function getFailedDisciplineNamesAttribute(): string

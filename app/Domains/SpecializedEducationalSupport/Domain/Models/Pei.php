@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Peis\CreatePeiDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidPei;
@@ -12,8 +15,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-final class Pei extends Model
+final class Pei extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'peis';
@@ -34,6 +38,40 @@ final class Pei extends Model
         'is_current' => 'boolean',
         'version' => 'integer',
     ];
+
+    public static function auditType(): string
+    {
+        return 'pei';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'PEI';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            // Aluno e contexto não têm coluna de nome própria (o nome do aluno mora em `people`); ficam pelo id.
+            'student_id' => AuditedField::reference('Aluno', Student::class, 'person.name'),
+            'creator_id' => AuditedField::reference('Criado por', User::class),
+            'semester_id' => AuditedField::reference('Semestre', Semester::class, 'label'),
+            'course_id' => AuditedField::reference('Curso', Course::class),
+            'student_context_id' => AuditedField::number('ID do contexto do aluno'),
+            'is_finished' => AuditedField::boolean('Finalizado'),
+            'version' => AuditedField::number('Versão'),
+            'is_current' => AuditedField::boolean('Vigente'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $studentName = $this->student?->person?->name;
+
+        return $studentName !== null
+            ? "o PEI #{$this->getKey()} de {$studentName}"
+            : "o PEI #{$this->getKey()}";
+    }
 
     /**
      * @throws InvalidPei

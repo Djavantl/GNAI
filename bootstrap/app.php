@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Audit\UI\Middleware\StartAuditOperation;
 use App\Domains\Auth\UI\Middleware\EnsureUserIsAdmin;
 use App\Shared\Application\Exceptions\AccessDeniedException;
 use App\Shared\Domain\Exceptions\BusinessRuleException;
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $middleware->web(append: [
+            StartAuditOperation::class,
             HandleInertiaRequests::class,
             SanitizeRichTextInput::class,
         ]);

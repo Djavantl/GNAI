@@ -28,6 +28,11 @@ Route::middleware('web')->group(function () {
         ->name('backup.')
         ->group(base_path('routes/modules/backup.php'));
 
+    Route::middleware(['auth'])
+        ->prefix('audit')
+        ->name('audit.')
+        ->group(base_path('routes/modules/audit.php'));
+
     Route::prefix('reports')
         ->name('reports.')
         ->group(base_path('routes/modules/reporting.php'));

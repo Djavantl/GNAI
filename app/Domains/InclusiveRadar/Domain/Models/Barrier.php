@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Barriers\CreateBarrierDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Barriers\UpdateBarrierDTO;
@@ -22,8 +25,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[UseFactory(BarrierFactory::class)]
-final class Barrier extends Model
+final class Barrier extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $fillable = [
@@ -58,6 +62,54 @@ final class Barrier extends Model
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
+
+    public static function auditType(): string
+    {
+        return 'barrier';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Barreira';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Título do Relato'),
+            'description' => AuditedField::text('Descrição Detalhada'),
+            'registered_by_user_id' => AuditedField::reference('Relator', User::class),
+            'institution_id' => AuditedField::reference('Campus / Unidade', Institution::class),
+            'barrier_category_id' => AuditedField::reference('Categoria', BarrierCategory::class),
+            'location_id' => AuditedField::reference('Local / Ponto de Referência', Location::class),
+            'location_specific_details' => AuditedField::text('Complemento'),
+            // Estudante e profissional não têm nome próprio (fica em people): a matrícula os identifica.
+            'affected_student_id' => AuditedField::reference('Estudante', Student::class, 'person.name'),
+            'affected_professional_id' => AuditedField::reference('Profissional', Professional::class, 'person.name'),
+            'is_anonymous' => AuditedField::boolean('Relato Anônimo'),
+            'not_applicable' => AuditedField::boolean('Relato Geral'),
+            'affected_person_name' => AuditedField::text('Nome da Pessoa Impactada'),
+            'affected_person_role' => AuditedField::text('Cargo da Pessoa Impactada'),
+            'priority' => AuditedField::enum('Prioridade', Priority::class),
+            'identified_at' => AuditedField::date('Data de Identificação'),
+            'resolved_at' => AuditedField::date('Data de Resolução'),
+            'latitude' => AuditedField::number('Latitude'),
+            'longitude' => AuditedField::number('Longitude'),
+            'is_active' => AuditedField::boolean('Ativo no Sistema'),
+            'deficiencies' => AuditedField::list('Público Alvo', model: Deficiency::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "a barreira {$this->name}";
+    }
+
+    /** @return array<string, mixed> */
+    public function auditExtraValues(): array
+    {
+        return $this->exists ? ['deficiencies' => $this->deficiencies()->pluck('deficiencies.id')->all()] : [];
+    }
 
     /**
      * @throws InvalidBarrier
@@ -103,7 +155,9 @@ final class Barrier extends Model
             throw new InvalidBarrier('O público afetado só pode ser atribuído a uma barreira persistida.');
         }
 
+        $before = $this->deficiencies()->pluck('deficiencies.id')->all();
         $this->deficiencies()->sync(array_values(array_unique($deficiencyIds)));
+        $this->recordAuditFieldChange('deficiencies', $before, $this->deficiencies()->pluck('deficiencies.id')->all());
     }
 
     public function latestStatus(): ?BarrierStatus

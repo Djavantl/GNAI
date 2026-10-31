@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Domain\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\DTOs\Users\ResetUserPasswordDTO;
 use App\Domains\Auth\Infrastructure\Notifications\ResetPasswordNotification;
 use App\Domains\Backup\Domain\Models\Backup;
@@ -21,8 +24,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 #[UseFactory(UserFactory::class)]
-class User extends Authenticatable
+class User extends Authenticatable implements Auditable
 {
+    use AuditsChanges;
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -50,6 +54,45 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public static function auditType(): string
+    {
+        return 'user';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Usuário';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome'),
+            'email' => AuditedField::text('E-mail'),
+            'password' => AuditedField::secret('Senha'),
+            'email_verified_at' => AuditedField::dateTime('E-mail verificado em'),
+            'is_admin' => AuditedField::boolean('Administrador'),
+            'role' => AuditedField::enum('Perfil', valueLabels: [
+                'admin' => 'Administrador',
+                'professional' => 'Profissional',
+                'teacher' => 'Professor',
+            ]),
+            'professional_id' => AuditedField::reference('Profissional vinculado', Professional::class, 'person.name'),
+            'teacher_id' => AuditedField::reference('Professor vinculado', Teacher::class, 'person.name'),
+        ];
+    }
+
+    /** @return list<string> */
+    public static function unauditedFields(): array
+    {
+        return ['remember_token'];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o usuário {$this->name}";
+    }
 
     public function professional(): BelongsTo
     {

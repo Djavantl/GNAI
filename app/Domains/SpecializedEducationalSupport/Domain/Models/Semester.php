@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Semesters\CreateSemesterDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Semesters\UpdateSemesterDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidSemester;
@@ -15,8 +18,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[UseFactory(SemesterFactory::class)]
-final class Semester extends Model
+final class Semester extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'semesters';
@@ -37,6 +41,38 @@ final class Semester extends Model
         'end_date' => 'date',
         'is_current' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'semester';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Semestre';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'year' => AuditedField::text('Ano Letivo'),
+            'term' => AuditedField::number('Período'),
+            'start_date' => AuditedField::date('Data de Início'),
+            'end_date' => AuditedField::date('Data de Término'),
+            'is_current' => AuditedField::boolean('Semestre atual'),
+        ];
+    }
+
+    /** O rótulo é derivado de ano e período ("2026.1"). */
+    public static function unauditedFields(): array
+    {
+        return ['label'];
+    }
+
+    public function auditDescription(): string
+    {
+        return 'o semestre '.($this->label ?? "{$this->year}.{$this->term}");
+    }
 
     /**
      * @throws InvalidSemester

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\DTOs\Locations\CreateLocationDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Locations\UpdateLocationDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLocation;
@@ -16,8 +19,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[UseFactory(LocationFactory::class)]
-class Location extends Model
+class Location extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
     use SoftDeletes;
 
@@ -39,6 +43,41 @@ class Location extends Model
         'longitude' => 'float',
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'location';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Ponto de Referência';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'institution_id' => AuditedField::reference('Instituição Base', Institution::class),
+            'name' => AuditedField::text('Nome do Local'),
+            'type' => AuditedField::text('Tipo de Local'),
+            'description' => AuditedField::text('Descrição/Observações'),
+            'latitude' => AuditedField::number('Latitude'),
+            'longitude' => AuditedField::number('Longitude'),
+            'is_active' => AuditedField::boolean('Ponto Ativo no Sistema'),
+        ];
+    }
+
+    /** @return list<string> */
+    public static function unauditedFields(): array
+    {
+        // Identificador técnico do Google Places, sem significado para quem lê o histórico.
+        return ['google_place_id'];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o ponto de referência {$this->name}";
+    }
 
     /**
      * @throws InvalidLocation

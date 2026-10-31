@@ -74,12 +74,14 @@ final readonly class UpdateTeacherAction
                 $lockedTeacher->revise($teacherDTO);
                 $lockedTeacher->save();
 
+                // Um registro por vez: a alteração do usuário entra na auditoria.
                 User::query()
                     ->where('teacher_id', $lockedTeacher->id)
-                    ->update([
+                    ->get()
+                    ->each(fn (User $user): bool => $user->update([
                         'name' => $person->name,
                         'email' => $person->email,
-                    ]);
+                    ]));
 
                 return $lockedTeacher->fresh('person');
             });

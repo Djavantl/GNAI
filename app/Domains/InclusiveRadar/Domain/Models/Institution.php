@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\DTOs\Institutions\CreateInstitutionDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Institutions\UpdateInstitutionDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitution;
@@ -16,8 +19,9 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[UseFactory(InstitutionFactory::class)]
-final class Institution extends Model
+final class Institution extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
     use SoftDeletes;
 
@@ -44,6 +48,37 @@ final class Institution extends Model
         'default_zoom' => 'integer',
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'institution';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Instituição';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome da Instituição'),
+            'short_name' => AuditedField::text('Sigla / Nome Curto'),
+            'city' => AuditedField::text('Cidade'),
+            'state' => AuditedField::text('Estado'),
+            'district' => AuditedField::text('Bairro / Distrito'),
+            'address' => AuditedField::text('Rua / Logradouro'),
+            'latitude' => AuditedField::number('Latitude Sede'),
+            'longitude' => AuditedField::number('Longitude Sede'),
+            'default_zoom' => AuditedField::number('Zoom Padrão'),
+            'is_active' => AuditedField::boolean('Instituição Ativa'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "a instituição {$this->name}";
+    }
 
     /**
      * @throws InvalidInstitution

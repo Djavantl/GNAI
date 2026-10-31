@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\CreateLoanDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\ReturnLoanDTO;
@@ -23,8 +26,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[UseFactory(LoanFactory::class)]
-final class Loan extends Model
+final class Loan extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'loans';
@@ -48,6 +52,41 @@ final class Loan extends Model
         'return_date' => 'datetime',
         'status' => LoanStatus::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'loan';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Empréstimo';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'loanable_type' => AuditedField::enum('Tipo de Recurso', LoanableType::class),
+            // Polimórfico: sem uma coluna de nome comum, fica o código do item (o nome vai na descrição).
+            'loanable_id' => AuditedField::number('Código do Item Emprestado'),
+            // Estudante e profissional não têm nome próprio (fica em people): a matrícula os identifica.
+            'student_id' => AuditedField::reference('Estudante (Beneficiário)', Student::class, 'person.name'),
+            'professional_id' => AuditedField::reference('Profissional (Beneficiário)', Professional::class, 'person.name'),
+            'user_id' => AuditedField::reference('Usuário Responsável', User::class),
+            'loan_date' => AuditedField::dateTime('Data de Saída'),
+            'due_date' => AuditedField::dateTime('Previsão de Devolução'),
+            'return_date' => AuditedField::dateTime('Data Real da Devolução'),
+            'status' => AuditedField::enum('Status do Empréstimo', LoanStatus::class),
+            'observation' => AuditedField::text('Observações'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $itemName = $this->loanable?->name;
+
+        return $itemName === null ? "o empréstimo #{$this->id}" : "o empréstimo #{$this->id} ({$itemName})";
+    }
 
     public static function register(CreateLoanDTO $data): self
     {

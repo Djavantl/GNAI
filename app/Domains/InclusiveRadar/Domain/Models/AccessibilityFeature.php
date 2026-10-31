@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibilityFeatures\CreateAccessibilityFeatureDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibilityFeatures\UpdateAccessibilityFeatureDTO;
 use Database\Factories\Domains\InclusiveRadar\AccessibilityFeatureFactory;
@@ -13,8 +16,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[UseFactory(AccessibilityFeatureFactory::class)]
-final class AccessibilityFeature extends Model
+final class AccessibilityFeature extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'accessibility_features';
@@ -28,6 +32,30 @@ final class AccessibilityFeature extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'accessibility_feature';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Recurso de Acessibilidade';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome do Recurso'),
+            'description' => AuditedField::text('Descrição Detalhada'),
+            'is_active' => AuditedField::boolean('Recurso Ativo'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o recurso de acessibilidade {$this->name}";
+    }
 
     public static function register(CreateAccessibilityFeatureDTO $data): self
     {

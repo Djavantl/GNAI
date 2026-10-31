@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\CreateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\AccessibleEducationalMaterials\UpdateAccessibleEducationalMaterialDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
@@ -21,8 +24,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[UseFactory(AccessibleEducationalMaterialFactory::class)]
-final class AccessibleEducationalMaterial extends Model
+final class AccessibleEducationalMaterial extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
     use SoftDeletes;
 
@@ -50,6 +54,50 @@ final class AccessibleEducationalMaterial extends Model
         'conservation_state' => ConservationState::class,
         'status' => ResourceStatus::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'accessible_educational_material';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Material Pedagógico Acessível';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Título do Material'),
+            'is_digital' => AuditedField::boolean('Recurso Digital'),
+            'notes' => AuditedField::richText('Descrição Detalhada'),
+            'asset_code' => AuditedField::text('Patrimônio / Tombamento'),
+            'quantity' => AuditedField::number('Quantidade Total'),
+            'quantity_available' => AuditedField::number('Quantidade Disponível'),
+            'conservation_state' => AuditedField::enum('Estado de Conservação', ConservationState::class),
+            'status' => AuditedField::enum('Status do Recurso', ResourceStatus::class),
+            'is_loanable' => AuditedField::boolean('Permite Empréstimos'),
+            'is_active' => AuditedField::boolean('Ativo no Sistema'),
+            'deficiencies' => AuditedField::list('Público Alvo', model: Deficiency::class),
+            'accessibility_features' => AuditedField::list('Recursos de Acessibilidade', model: AccessibilityFeature::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o material pedagógico acessível {$this->name}";
+    }
+
+    /** @return array<string, mixed> */
+    public function auditExtraValues(): array
+    {
+        return $this->exists
+            ? [
+                'deficiencies' => $this->deficiencies()->pluck('deficiencies.id')->all(),
+                'accessibility_features' => $this->accessibilityFeatures()->pluck('accessibility_features.id')->all(),
+            ]
+            : [];
+    }
 
     /**
      * @throws InvalidAccessibleEducationalMaterial
@@ -154,7 +202,9 @@ final class AccessibleEducationalMaterial extends Model
             );
         }
 
+        $before = $this->deficiencies()->pluck('deficiencies.id')->all();
         $this->deficiencies()->sync(array_values(array_unique($targetAudienceIds)));
+        $this->recordAuditFieldChange('deficiencies', $before, $this->deficiencies()->pluck('deficiencies.id')->all());
     }
 
     /**
@@ -170,7 +220,13 @@ final class AccessibleEducationalMaterial extends Model
             );
         }
 
+        $before = $this->accessibilityFeatures()->pluck('accessibility_features.id')->all();
         $this->accessibilityFeatures()->sync(array_values(array_unique($featureIds)));
+        $this->recordAuditFieldChange(
+            'accessibility_features',
+            $before,
+            $this->accessibilityFeatures()->pluck('accessibility_features.id')->all(),
+        );
     }
 
     public function inspections(): MorphMany

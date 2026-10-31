@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Teachers\CreateTeacherDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Teachers\UpdateTeacherDTO;
@@ -13,12 +16,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Teacher extends Model
+class Teacher extends Model implements Auditable
 {
+    use AuditsChanges;
+
     protected $fillable = [
         'person_id',
         'registration',
     ];
+
+    public static function auditType(): string
+    {
+        return 'teacher';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Professor';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'person_id' => AuditedField::reference('Pessoa', Person::class),
+            'registration' => AuditedField::text('Matrícula'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return 'o professor '.($this->person?->name ?? "#{$this->getKey()}");
+    }
 
     public static function register(CreateTeacherDTO $data): self
     {

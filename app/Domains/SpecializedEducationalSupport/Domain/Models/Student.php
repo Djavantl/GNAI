@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Students\CreateStudentDTO;
@@ -21,8 +24,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[UseFactory(StudentFactory::class)]
-final class Student extends Model
+final class Student extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'students';
@@ -38,6 +42,31 @@ final class Student extends Model
         'status' => StudentStatus::class,
         'entry_date' => 'date',
     ];
+
+    public static function auditType(): string
+    {
+        return 'student';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Aluno';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'person_id' => AuditedField::reference('Pessoa', Person::class),
+            'registration' => AuditedField::text('Matrícula'),
+            'entry_date' => AuditedField::date('Data de Ingresso'),
+            'status' => AuditedField::enum('Status do Aluno', StudentStatus::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return 'o aluno '.($this->person?->name ?? "#{$this->getKey()}");
+    }
 
     /**
      * @throws InvalidStudent

@@ -39,7 +39,6 @@ final readonly class UpdateTeacherDisciplinesAction
                 }
 
                 $rows = [];
-                $now = now();
 
                 foreach ($assignments as $courseId => $disciplineIds) {
                     /** @var Course $course */
@@ -60,22 +59,32 @@ final readonly class UpdateTeacherDisciplinesAction
                     }
 
                     foreach ($activeDisciplineIds as $disciplineId) {
-                        $rows[] = [
+                        $rows["{$course->id}:{$disciplineId}"] = [
                             'teacher_id' => $lockedTeacher->id,
                             'course_id' => $course->id,
                             'discipline_id' => $disciplineId,
-                            'created_at' => $now,
-                            'updated_at' => $now,
                         ];
                     }
                 }
 
+                // Só o que mudou, um registro por vez: cada atribuição incluída ou removida entra na auditoria.
                 TeacherCourseDiscipline::query()
                     ->where('teacher_id', $lockedTeacher->id)
-                    ->delete();
+                    ->get()
+                    ->each(function (TeacherCourseDiscipline $assignment) use (&$rows): void {
+                        $key = "{$assignment->course_id}:{$assignment->discipline_id}";
 
-                if ($rows !== []) {
-                    TeacherCourseDiscipline::query()->insert($rows);
+                        if (isset($rows[$key])) {
+                            unset($rows[$key]);
+
+                            return;
+                        }
+
+                        $assignment->delete();
+                    });
+
+                foreach ($rows as $row) {
+                    TeacherCourseDiscipline::query()->create($row);
                 }
             });
         } catch (DomainException $exception) {

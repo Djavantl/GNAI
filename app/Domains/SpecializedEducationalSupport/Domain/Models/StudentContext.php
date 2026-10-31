@@ -4,16 +4,29 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentContexts\CreateStudentContextDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\StudentContexts\UpdateStudentContextDTO;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttentionLevel;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AutonomyLevel;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\CommunicationType;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\ContextEvaluationType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\GeneralLevel;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\InteractionLevel;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\MemoryLevel;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\ReasoningLevel;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SocializationLevel;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudentContext;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-final class StudentContext extends Model
+final class StudentContext extends Model implements Auditable
 {
+    use AuditsChanges;
+
     protected $table = 'student_contexts';
 
     protected $fillable = [
@@ -56,6 +69,58 @@ final class StudentContext extends Model
         'uses_medication' => 'boolean',
         'version' => 'integer',
     ];
+
+    public static function auditType(): string
+    {
+        return 'student_context';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Contexto do Aluno';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'student_id' => AuditedField::reference('Aluno', Student::class, 'person.name'),
+            'semester_id' => AuditedField::reference('Semestre', Semester::class, 'label'),
+            'evaluation_type' => AuditedField::enum('Tipo de Avaliação', ContextEvaluationType::class),
+            'is_current' => AuditedField::boolean('Contexto atual'),
+            'evaluated_by_professional_id' => AuditedField::reference('Profissional Avaliador', Professional::class, 'person.name'),
+            'version' => AuditedField::number('Versão'),
+            'history' => AuditedField::richText('Histórico do Aluno'),
+            'specific_educational_needs' => AuditedField::richText('Necessidades Educacionais Específicas'),
+            'learning_level' => AuditedField::enum('Nível de Aprendizagem', GeneralLevel::class),
+            'attention_level' => AuditedField::enum('Nível de Atenção', AttentionLevel::class),
+            'memory_level' => AuditedField::enum('Nível de Memória', MemoryLevel::class),
+            'reasoning_level' => AuditedField::enum('Nível de Raciocínio', ReasoningLevel::class),
+            'learning_observations' => AuditedField::richText('Observações de Aprendizagem'),
+            'communication_type' => AuditedField::enum('Tipo de Comunicação', CommunicationType::class),
+            'interaction_level' => AuditedField::enum('Nível de Interação', InteractionLevel::class),
+            'socialization_level' => AuditedField::enum('Nível de Socialização', SocializationLevel::class),
+            'shows_aggressive_behavior' => AuditedField::boolean('Comportamento agressivo'),
+            'shows_withdrawn_behavior' => AuditedField::boolean('Comportamento retraído'),
+            'behavior_notes' => AuditedField::richText('Notas Comportamentais'),
+            'autonomy_level' => AuditedField::enum('Nível de Autonomia', AutonomyLevel::class),
+            'needs_mobility_support' => AuditedField::richText('Apoio de Mobilidade'),
+            'needs_communication_support' => AuditedField::richText('Apoio de Comunicação'),
+            'needs_pedagogical_adaptation' => AuditedField::richText('Adaptação Pedagógica'),
+            'uses_assistive_technology' => AuditedField::richText('Tecnologia Assistiva'),
+            'has_medical_report' => AuditedField::boolean('Possui laudo médico'),
+            'uses_medication' => AuditedField::boolean('Usa medicação'),
+            'medical_notes' => AuditedField::richText('Observações Médicas'),
+            'knowledge' => AuditedField::richText('Conhecimentos e Interesses'),
+            'difficulties' => AuditedField::richText('Dificuldades'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $studentName = $this->student?->person?->name ?? "#{$this->student_id}";
+
+        return "o contexto do aluno {$studentName} (versão {$this->version})";
+    }
 
     /**
      * @throws InvalidStudentContext

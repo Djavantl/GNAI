@@ -75,7 +75,7 @@ final readonly class CreateSessionAction
 
                 $session = Session::schedule($sessionDTO);
                 $session->save();
-                $session->students()->sync($payload['student_ids']);
+                $session->syncStudents($payload['student_ids']);
 
                 return $session->fresh(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
             });

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\Permission;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Positions\CreatePositionDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Positions\UpdatePositionDTO;
@@ -16,8 +19,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[UseFactory(PositionFactory::class)]
-final class Position extends Model
+final class Position extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'positions';
@@ -31,6 +35,37 @@ final class Position extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'position';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Cargo';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome'),
+            'description' => AuditedField::text('Descrição'),
+            'is_active' => AuditedField::boolean('Ativo'),
+            'permissions' => AuditedField::list('Permissões', model: Permission::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o cargo {$this->name}";
+    }
+
+    /** @return array<string, mixed> */
+    public function auditExtraValues(): array
+    {
+        return $this->exists ? ['permissions' => $this->permissions()->pluck('permissions.id')->all()] : [];
+    }
 
     public static function register(CreatePositionDTO $data): self
     {
@@ -62,7 +97,9 @@ final class Position extends Model
             );
         }
 
+        $before = $this->permissions()->pluck('permissions.id')->all();
         $this->permissions()->sync(array_values(array_unique($permissionIds)));
+        $this->recordAuditFieldChange('permissions', $before, $this->permissions()->pluck('permissions.id')->all());
     }
 
     /**

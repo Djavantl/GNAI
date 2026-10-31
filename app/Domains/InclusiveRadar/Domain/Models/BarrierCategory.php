@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\CreateBarrierCategoryDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\BarrierCategories\UpdateBarrierCategoryDTO;
 use Database\Factories\Domains\InclusiveRadar\BarrierCategoryFactory;
@@ -14,8 +17,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[UseFactory(BarrierCategoryFactory::class)]
-final class BarrierCategory extends Model
+final class BarrierCategory extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
     use SoftDeletes;
 
@@ -32,6 +36,31 @@ final class BarrierCategory extends Model
         'is_active' => 'boolean',
         'blocks_map' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'barrier_category';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Categoria de Barreira';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome da Categoria'),
+            'description' => AuditedField::text('Descrição Detalhada'),
+            'blocks_map' => AuditedField::boolean('Bloquear Mapa'),
+            'is_active' => AuditedField::boolean('Ativo no Sistema'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "a categoria de barreira {$this->name}";
+    }
 
     public static function register(CreateBarrierCategoryDTO $data): self
     {

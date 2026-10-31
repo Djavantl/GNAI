@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Courses\CreateCourseDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Courses\UpdateCourseDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidCourse;
@@ -15,8 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[UseFactory(CourseFactory::class)]
-final class Course extends Model
+final class Course extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'courses';
@@ -30,6 +34,37 @@ final class Course extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'course';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Curso';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome do Curso'),
+            'description' => AuditedField::richText('Descrição'),
+            'is_active' => AuditedField::boolean('Ativo'),
+            'disciplines' => AuditedField::list('Disciplinas do curso', model: Discipline::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o curso {$this->name}";
+    }
+
+    /** @return array<string, mixed> */
+    public function auditExtraValues(): array
+    {
+        return $this->exists ? ['disciplines' => $this->disciplines()->pluck('disciplines.id')->all()] : [];
+    }
 
     public static function register(CreateCourseDTO $data): self
     {
@@ -62,7 +97,9 @@ final class Course extends Model
             );
         }
 
+        $before = $this->disciplines()->pluck('disciplines.id')->all();
         $this->disciplines()->sync(array_values(array_unique($disciplineIds)));
+        $this->recordAuditFieldChange('disciplines', $before, $this->disciplines()->pluck('disciplines.id')->all());
     }
 
     /**

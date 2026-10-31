@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\People\CreatePersonDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\People\UpdatePersonDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\Gender;
@@ -21,8 +24,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Throwable;
 
 #[UseFactory(PersonFactory::class)]
-final class Person extends Model
+final class Person extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'people';
@@ -42,6 +46,35 @@ final class Person extends Model
         'birth_date' => 'date',
         'gender' => Gender::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'person';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Pessoa';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome'),
+            'document' => AuditedField::text('CPF'),
+            'birth_date' => AuditedField::date('Data de Nascimento'),
+            'gender' => AuditedField::enum('Gênero', Gender::class),
+            'email' => AuditedField::text('E-mail'),
+            'phone' => AuditedField::text('Telefone'),
+            'address' => AuditedField::richText('Endereço'),
+            'photo' => AuditedField::file('Foto'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return 'a pessoa '.($this->name ?? "#{$this->getKey()}");
+    }
 
     /**
      * @throws InvalidPerson

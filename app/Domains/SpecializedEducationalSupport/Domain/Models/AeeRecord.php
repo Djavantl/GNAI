@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\AeeRecords\CreateAeeRecordDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\AeeRecords\UpdateAeeRecordDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidAeeRecord;
@@ -12,8 +15,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class AeeRecord extends Model
+final class AeeRecord extends Model implements Auditable
 {
+    use AuditsChanges;
     use SoftDeletes;
 
     protected $table = 'aee_records';
@@ -26,6 +30,34 @@ final class AeeRecord extends Model
         'resources_used',
         'general_observations',
     ];
+
+    public static function auditType(): string
+    {
+        return 'aee_record';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Atendimento Educacional Especializado';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            // O agendamento não tem coluna de nome; o histórico guarda o vínculo pelo id.
+            'attendance_session_id' => AuditedField::number('ID do agendamento'),
+            'duration' => AuditedField::text('Duração'),
+            'activities_performed' => AuditedField::text('Atividades planejadas/realizadas'),
+            'strategies_used' => AuditedField::text('Estratégias planejadas/utilizadas'),
+            'resources_used' => AuditedField::text('Recursos planejados/utilizados'),
+            'general_observations' => AuditedField::text('Observações gerais'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o atendimento AEE #{$this->getKey()} do agendamento #{$this->attendance_session_id}";
+    }
 
     /** @throws InvalidAeeRecord */
     public static function register(Session $session, CreateAeeRecordDTO $data): self

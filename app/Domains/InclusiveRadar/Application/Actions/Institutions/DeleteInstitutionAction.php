@@ -7,6 +7,7 @@ namespace App\Domains\InclusiveRadar\Application\Actions\Institutions;
 use App\Domains\InclusiveRadar\Application\Queries\Institutions\InstitutionHasActiveBarriersQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitution;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -33,7 +34,10 @@ final readonly class DeleteInstitutionAction
                 );
             }
 
-            $lockedInstitution->locations()->delete();
+            // Um a um (e não delete em massa) para cada ponto excluído entrar na auditoria.
+            $lockedInstitution->locations()
+                ->get()
+                ->each(fn (Location $location) => $location->delete());
             $lockedInstitution->delete();
         });
     }

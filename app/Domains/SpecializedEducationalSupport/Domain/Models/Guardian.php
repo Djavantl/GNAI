@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Guardians\CreateGuardianDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Guardians\UpdateGuardianDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\GuardianRelationship;
@@ -16,8 +19,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[UseFactory(GuardianFactory::class)]
-final class Guardian extends Model
+final class Guardian extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'student_guardians';
@@ -31,6 +35,35 @@ final class Guardian extends Model
     protected $casts = [
         'relationship' => GuardianRelationship::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'guardian';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Responsável';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'student_id' => AuditedField::reference('Aluno', Student::class, 'person.name'),
+            'person_id' => AuditedField::reference('Pessoa', Person::class),
+            'relationship' => AuditedField::enum('Parentesco / Vínculo', GuardianRelationship::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $name = $this->person?->name ?? "#{$this->getKey()}";
+        $studentName = $this->student?->person?->name;
+
+        return $studentName === null
+            ? "o responsável {$name}"
+            : "o responsável {$name} (aluno {$studentName})";
+    }
 
     /**
      * @throws InvalidGuardian

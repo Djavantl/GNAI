@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Sessions\CreateSessionDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Sessions\UpdateSessionDTO;
@@ -17,8 +20,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class Session extends Model
+final class Session extends Model implements Auditable
 {
+    use AuditsChanges;
     use SoftDeletes;
 
     protected $table = 'attendance_sessions';
@@ -41,6 +45,61 @@ final class Session extends Model
         'session_date' => 'date',
         'attendance_type' => AttendanceType::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'session';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Agendamento';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            // O nome de profissionais e alunos mora em `people`; o histórico guarda o vínculo pelo id.
+            'professional_id' => AuditedField::reference('Profissional', Professional::class, 'person.name'),
+            'creator_id' => AuditedField::reference('Criado por', User::class),
+            'session_date' => AuditedField::date('Data do agendamento'),
+            'start_time' => AuditedField::time('Início'),
+            'end_time' => AuditedField::time('Fim'),
+            'type' => AuditedField::enum('Formato', SessionType::class),
+            'attendance_type' => AuditedField::enum('Tipo de atendimento', AttendanceType::class),
+            'location' => AuditedField::text('Local'),
+            'session_objective' => AuditedField::text('Objetivo do agendamento'),
+            // O status é gravado com o rótulo em português ("Agendada").
+            'status' => AuditedField::enum('Status', valueLabels: SessionStatus::options()),
+            'cancellation_reason' => AuditedField::text('Motivo do cancelamento'),
+            'students' => AuditedField::list('Alunos', model: Student::class, nameColumn: 'person.name'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $date = $this->session_date?->format('d/m/Y');
+
+        return $date !== null
+            ? "o agendamento #{$this->getKey()} de {$date}"
+            : "o agendamento #{$this->getKey()}";
+    }
+
+    /** @return array<string, mixed> */
+    public function auditExtraValues(): array
+    {
+        return $this->exists ? ['students' => $this->studentIds()] : [];
+    }
+
+    /**
+     * @param  list<int>  $studentIds
+     */
+    public function syncStudents(array $studentIds): void
+    {
+        $before = $this->studentIds();
+        $this->students()->sync($studentIds);
+        $this->recordAuditFieldChange('students', $before, $this->studentIds());
+    }
 
     /**
      * @throws InvalidSession
@@ -219,5 +278,11 @@ final class Session extends Model
     public function isScheduled(): bool
     {
         return SessionStatus::isScheduledValue($this->status);
+    }
+
+    /** @return list<int> */
+    private function studentIds(): array
+    {
+        return $this->students()->pluck('students.id')->map(fn (mixed $id): int => (int) $id)->all();
     }
 }

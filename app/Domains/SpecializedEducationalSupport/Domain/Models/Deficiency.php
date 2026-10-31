@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
 use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
@@ -17,8 +20,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[UseFactory(DeficiencyFactory::class)]
-final class Deficiency extends Model
+final class Deficiency extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'deficiencies';
@@ -33,6 +37,31 @@ final class Deficiency extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'deficiency';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Perfil de Atendimento';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome do Perfil'),
+            'cid_code' => AuditedField::text('Código CID'),
+            'description' => AuditedField::richText('Descrição / Detalhes'),
+            'is_active' => AuditedField::boolean('Ativo'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o perfil de atendimento {$this->name}";
+    }
 
     public static function register(CreateDeficiencyDTO $data): self
     {

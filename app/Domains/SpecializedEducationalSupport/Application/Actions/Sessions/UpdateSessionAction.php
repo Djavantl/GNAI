@@ -65,7 +65,7 @@ final readonly class UpdateSessionAction
 
             $lockedSession->revise($sessionDTO);
             $lockedSession->save();
-            $lockedSession->students()->sync($payload['student_ids']);
+            $lockedSession->syncStudents($payload['student_ids']);
 
             return $lockedSession->fresh(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']);
         });

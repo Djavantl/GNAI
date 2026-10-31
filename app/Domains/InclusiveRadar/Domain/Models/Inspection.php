@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Inspections\CreateInspectionDTO;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
@@ -18,8 +21,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[UseFactory(InspectionFactory::class)]
-final class Inspection extends Model
+final class Inspection extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $fillable = [
@@ -39,6 +43,42 @@ final class Inspection extends Model
         'status' => BarrierStatus::class,
         'type' => InspectionType::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'inspection';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Inspeção';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'inspectable_type' => AuditedField::enum('Tipo do Item Inspecionado', valueLabels: [
+                'assistive_technology' => 'Tecnologia Assistiva',
+                'accessible_educational_material' => 'Material Pedagógico Acessível',
+                'barrier' => 'Barreira',
+            ]),
+            // Polimórfico: sem uma coluna de nome comum, fica o código do item.
+            'inspectable_id' => AuditedField::number('Código do Item Inspecionado'),
+            'type' => AuditedField::enum('Tipo de Inspeção', InspectionType::class),
+            'inspection_date' => AuditedField::date('Data da Inspeção'),
+            'state' => AuditedField::enum('Estado de Conservação', ConservationState::class),
+            'status' => AuditedField::enum('Status', BarrierStatus::class),
+            'description' => AuditedField::richText('Parecer Técnico'),
+            'user_id' => AuditedField::reference('Usuário Responsável', User::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $date = $this->inspection_date?->format('d/m/Y');
+
+        return $date === null ? "a inspeção #{$this->id}" : "a inspeção #{$this->id} de {$date}";
+    }
 
     public static function register(CreateInspectionDTO $data): self
     {

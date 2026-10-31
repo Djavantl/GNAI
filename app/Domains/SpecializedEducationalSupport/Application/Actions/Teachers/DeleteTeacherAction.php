@@ -36,7 +36,9 @@ final readonly class DeleteTeacherAction
             $person = $lockedTeacher->person;
             $photoPath = $person?->getRawOriginal('photo');
 
-            $lockedTeacher->user()->delete();
+            // Um registro por vez (a cascata do banco não passa pela auditoria).
+            $lockedTeacher->courseDisciplines()->get()->each->delete();
+            $lockedTeacher->user?->delete();
             $lockedTeacher->delete();
             $person?->delete();
 

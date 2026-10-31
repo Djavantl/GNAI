@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\InclusiveRadar\Domain\DTOs\InstitutionalEvents\CreateInstitutionalEventDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\InstitutionalEvents\UpdateInstitutionalEventDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitutionalEvent;
@@ -14,8 +17,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[UseFactory(InstitutionalEventFactory::class)]
-class InstitutionalEvent extends Model
+class InstitutionalEvent extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'institutional_events';
@@ -40,6 +44,37 @@ class InstitutionalEvent extends Model
         'end_time' => 'datetime:H:i',
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'institutional_event';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Evento Institucional';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'title' => AuditedField::text('Título'),
+            'description' => AuditedField::text('Descrição'),
+            'start_date' => AuditedField::date('Data de Início'),
+            'end_date' => AuditedField::date('Data de Término'),
+            'start_time' => AuditedField::time('Horário de Início'),
+            'end_time' => AuditedField::time('Horário de Término'),
+            'location' => AuditedField::text('Local'),
+            'organizer' => AuditedField::text('Organizador'),
+            'audience' => AuditedField::text('Ouvintes'),
+            'is_active' => AuditedField::boolean('Ativo'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o evento institucional {$this->title}";
+    }
 
     /**
      * @throws InvalidInstitutionalEvent

@@ -9,6 +9,7 @@ use App\Domains\InclusiveRadar\Application\Queries\Institutions\InstitutionHasUn
 use App\Domains\InclusiveRadar\Domain\DTOs\Institutions\UpdateInstitutionDTO;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidInstitution;
 use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\InclusiveRadar\Domain\Models\Location;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -54,9 +55,11 @@ final readonly class UpdateInstitutionAction
             $lockedInstitution->save();
 
             if ($willDeactivate) {
-                $lockedInstitution->locations()->update([
-                    'is_active' => false,
-                ]);
+                // Um a um (e não update em massa) para cada ponto desativado entrar na auditoria.
+                $lockedInstitution->locations()
+                    ->where('is_active', true)
+                    ->get()
+                    ->each(fn (Location $location) => $location->update(['is_active' => false]));
             }
 
             return $lockedInstitution;

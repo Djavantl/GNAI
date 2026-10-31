@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Disciplines\CreateDisciplineDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Disciplines\UpdateDisciplineDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidDiscipline;
@@ -14,8 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[UseFactory(DisciplineFactory::class)]
-final class Discipline extends Model
+final class Discipline extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'disciplines';
@@ -29,6 +33,30 @@ final class Discipline extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public static function auditType(): string
+    {
+        return 'discipline';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Disciplina';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'name' => AuditedField::text('Nome da Disciplina'),
+            'description' => AuditedField::richText('Descrição'),
+            'is_active' => AuditedField::boolean('Ativa'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "a disciplina {$this->name}";
+    }
 
     public static function register(CreateDisciplineDTO $data): self
     {

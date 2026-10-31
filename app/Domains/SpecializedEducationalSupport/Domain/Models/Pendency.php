@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Pendencies\CreatePendencyDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Pendencies\UpdatePendencyDTO;
@@ -15,8 +18,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 
-final class Pendency extends Model
+final class Pendency extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'pendencies';
@@ -36,6 +40,37 @@ final class Pendency extends Model
         'due_date' => 'date',
         'priority' => Priority::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'pendency';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Pendência';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'created_by' => AuditedField::reference('Criada por', User::class),
+            // O nome do profissional mora em `people`; o histórico guarda o vínculo pelo id.
+            'assigned_to' => AuditedField::reference('Profissional responsável', Professional::class, 'person.name'),
+            'title' => AuditedField::text('Título'),
+            'description' => AuditedField::text('Descrição'),
+            'priority' => AuditedField::enum('Prioridade', Priority::class),
+            'due_date' => AuditedField::date('Data de vencimento'),
+            'is_completed' => AuditedField::boolean('Concluída'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $title = trim((string) $this->title);
+
+        return $title !== '' ? "a pendência {$title}" : "a pendência #{$this->getKey()}";
+    }
 
     public static function register(User $creator, Professional $assignedProfessional, CreatePendencyDTO $data): self
     {

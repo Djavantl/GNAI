@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use Database\Factories\Domains\InclusiveRadar\InspectionEvidenceFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,8 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[UseFactory(InspectionEvidenceFactory::class)]
-final class InspectionEvidence extends Model
+final class InspectionEvidence extends Model implements Auditable
 {
+    use AuditsChanges;
     use HasFactory;
 
     protected $table = 'inspection_evidences';
@@ -28,6 +32,32 @@ final class InspectionEvidence extends Model
     protected $casts = [
         'size' => 'integer',
     ];
+
+    public static function auditType(): string
+    {
+        return 'inspection_evidence';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Evidência de Inspeção';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'inspection_id' => AuditedField::number('Inspeção'),
+            'path' => AuditedField::file('Arquivo'),
+            'original_name' => AuditedField::text('Nome Original do Arquivo'),
+            'mime_type' => AuditedField::text('Tipo do Arquivo'),
+            'size' => AuditedField::number('Tamanho (bytes)'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "a evidência {$this->displayName()} da inspeção #{$this->inspection_id}";
+    }
 
     public function inspection(): BelongsTo
     {

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Domain\Models;
 
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Exceptions\InvalidBackup;
@@ -11,8 +14,10 @@ use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-final class Backup extends Model
+final class Backup extends Model implements Auditable
 {
+    use AuditsChanges;
+
     protected $fillable = [
         'file_name',
         'file_path',
@@ -24,6 +29,32 @@ final class Backup extends Model
     protected $casts = [
         'status' => BackupStatus::class,
     ];
+
+    public static function auditType(): string
+    {
+        return 'backup';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Backup';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'file_name' => AuditedField::text('Arquivo'),
+            'file_path' => AuditedField::file('Caminho do arquivo'),
+            'size' => AuditedField::text('Tamanho'),
+            'status' => AuditedField::enum('Status', BackupStatus::class),
+            'user_id' => AuditedField::reference('Gerado por', User::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        return "o backup {$this->file_name}";
+    }
 
     public static function register(CreateBackupDTO $data): self
     {
