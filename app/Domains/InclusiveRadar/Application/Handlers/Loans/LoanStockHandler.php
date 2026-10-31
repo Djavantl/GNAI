@@ -8,15 +8,14 @@ use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InsufficientStock;
 use App\Domains\InclusiveRadar\Domain\Exceptions\StockAlreadyFull;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 
 final class LoanStockHandler
 {
     /**
      * @throws InsufficientStock
      */
-    public function withdraw(AccessibleEducationalMaterial|AssistiveTechnology $item): void
+    public function withdraw(Item $item): void
     {
         if ($item->is_digital) {
             return;
@@ -35,7 +34,7 @@ final class LoanStockHandler
     /**
      * @throws StockAlreadyFull
      */
-    public function returnAvailable(AccessibleEducationalMaterial|AssistiveTechnology $item): void
+    public function returnAvailable(Item $item): void
     {
         $this->returnWithStatus($item, ResourceStatus::AVAILABLE);
     }
@@ -44,7 +43,7 @@ final class LoanStockHandler
      * @throws StockAlreadyFull
      */
     public function returnFromLoanStatus(
-        AccessibleEducationalMaterial|AssistiveTechnology $item,
+        Item $item,
         LoanStatus $status,
     ): void {
         $this->returnWithStatus(
@@ -59,7 +58,7 @@ final class LoanStockHandler
      * @throws StockAlreadyFull
      */
     private function returnWithStatus(
-        AccessibleEducationalMaterial|AssistiveTechnology $item,
+        Item $item,
         ResourceStatus $status,
     ): void {
         if ($item->is_digital) {

@@ -58,6 +58,7 @@ final class Inspection extends Model implements Auditable
     {
         return [
             'inspectable_type' => AuditedField::enum('Tipo do Item Inspecionado', valueLabels: [
+                'item' => 'Item',
                 'assistive_technology' => 'Tecnologia Assistiva',
                 'accessible_educational_material' => 'Material Pedagógico Acessível',
                 'barrier' => 'Barreira',

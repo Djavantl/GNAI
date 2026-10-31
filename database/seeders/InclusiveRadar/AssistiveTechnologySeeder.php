@@ -2,10 +2,11 @@
 
 namespace Database\Seeders\InclusiveRadar;
 
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +51,8 @@ class AssistiveTechnologySeeder extends Seeder
             $notes = $this->generateNotes($name, $conservationState, $isDigital);
 
             // Criar a tecnologia - campo status agora recebe o valor do enum, não um ID
-            $technology = AssistiveTechnology::create([
+            $technology = Item::create([
+                'item_type' => ItemType::AssistiveTechnology,
                 'name' => $name,
                 'is_digital' => $isDigital,
                 'notes' => $notes,
@@ -84,7 +86,7 @@ class AssistiveTechnologySeeder extends Seeder
         return DB::table('users')->value('id');
     }
 
-    private function attachDeficiencies(AssistiveTechnology $assistiveTechnology, array $deficiencyIds): void
+    private function attachDeficiencies(Item $assistiveTechnology, array $deficiencyIds): void
     {
         if (empty($deficiencyIds)) {
             return;
@@ -110,7 +112,7 @@ class AssistiveTechnologySeeder extends Seeder
         return $base;
     }
 
-    private function createInspections(AssistiveTechnology $technology, string $currentState, ?int $userId): void
+    private function createInspections(Item $technology, string $currentState, ?int $userId): void
     {
         $numInspections = rand(1, 4);
         $acquisitionDate = Carbon::now()->subMonths(rand(6, 24))->subDays(rand(0, 30));

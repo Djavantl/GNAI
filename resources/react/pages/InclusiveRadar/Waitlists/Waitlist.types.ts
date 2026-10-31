@@ -1,5 +1,6 @@
 export interface WaitlistResource {
     id: number;
+    item_type: "assistive_technology" | "accessible_educational_material";
     name?: string | null;
     title?: string | null;
     asset_code?: string | null;
@@ -14,7 +15,7 @@ export interface WaitlistPerson {
 export interface WaitlistRecord {
     id: number;
     waitlistable_id: number;
-    waitlistable_type: "assistive_technology" | "accessible_educational_material";
+    item_type: "assistive_technology" | "accessible_educational_material";
     item_name: string;
     asset_code?: string | null;
     student: WaitlistPerson | null;
@@ -58,8 +59,8 @@ export interface WaitlistFormProps {
     students: Record<string, string> | WaitlistStudentOption[];
     professionals: Record<string, string> | WaitlistProfessionalOption[];
     authUser: { id: number; name: string };
-    assistive_technologies?: WaitlistResource[];
-    educational_materials?: WaitlistResource[];
+    itemTypes?: Record<string, string>;
+    items?: WaitlistResource[];
     waitlist?: WaitlistRecord & {
         student_id: number | null;
         professional_id: number | null;

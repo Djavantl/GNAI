@@ -29,8 +29,8 @@ final readonly class CreateLoanAction
     {
         $loan = DB::transaction(function () use ($data, $registeredBy): Loan {
             $item = $this->loanables->lockForLoan(
-                type: $data->loanableType,
                 id: $data->loanableId,
+                expectedType: $data->itemType,
             );
 
             $this->registrationPolicy->ensureCanRegister(
@@ -41,7 +41,7 @@ final readonly class CreateLoanAction
 
             $loanDTO = new CreateLoanDTO(
                 loanableId: $item->id,
-                loanableType: $data->loanableType,
+                loanableType: $item->getMorphClass(),
                 studentId: $data->studentId,
                 professionalId: $data->professionalId,
                 registeredBy: $registeredBy,

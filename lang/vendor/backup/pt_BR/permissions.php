@@ -24,8 +24,7 @@ return [
         'pei-discipline' => 'Adaptações do PEI',
         'student-document' => 'Documentos do Aluno',
 
-        'assistive-technology' => 'Tecnologias Assistivas',
-        'material' => 'Materiais Pedagógicos Acessíveis',
+        'item' => 'Itens',
         'barrier' => 'Barreiras',
         'loan' => 'Empréstimos',
         'waitlist' => 'Lista de Espera',

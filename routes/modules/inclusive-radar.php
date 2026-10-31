@@ -1,12 +1,11 @@
 <?php
 
 use App\Domains\InclusiveRadar\UI\Controllers\AccessibilityFeatureController;
-use App\Domains\InclusiveRadar\UI\Controllers\AccessibleEducationalMaterialController;
-use App\Domains\InclusiveRadar\UI\Controllers\AssistiveTechnologyController;
 use App\Domains\InclusiveRadar\UI\Controllers\BarrierCategoryController;
 use App\Domains\InclusiveRadar\UI\Controllers\BarrierController;
 use App\Domains\InclusiveRadar\UI\Controllers\InstitutionalEventController;
 use App\Domains\InclusiveRadar\UI\Controllers\InstitutionController;
+use App\Domains\InclusiveRadar\UI\Controllers\ItemController;
 use App\Domains\InclusiveRadar\UI\Controllers\LoanController;
 use App\Domains\InclusiveRadar\UI\Controllers\LocationController;
 use App\Domains\InclusiveRadar\UI\Controllers\WaitlistController;
@@ -89,36 +88,36 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])
         ->name('accessibility-features.destroy')->middleware('can:accessibility-feature.destroy');
 
-    // ------------------- TECNOLOGIAS ASSISTIVAS -------------------
-    Route::get('/assistive-technologies', [AssistiveTechnologyController::class, 'index'])
-        ->name('assistive-technologies.index')->middleware('can:assistive-technology.index');
+    // ------------------- ITENS (TECNOLOGIAS ASSISTIVAS E MATERIAIS PEDAGÓGICOS) -------------------
+    Route::get('/items', [ItemController::class, 'index'])
+        ->name('items.index')->middleware('can:item.index');
 
-    Route::get('/assistive-technologies/create', [AssistiveTechnologyController::class, 'create'])
-        ->name('assistive-technologies.create')->middleware('can:assistive-technology.create');
+    Route::get('/items/create', [ItemController::class, 'create'])
+        ->name('items.create')->middleware('can:item.create');
 
-    Route::post('/assistive-technologies/store', [AssistiveTechnologyController::class, 'store'])
-        ->name('assistive-technologies.store')->middleware('can:assistive-technology.store');
+    Route::post('/items/store', [ItemController::class, 'store'])
+        ->name('items.store')->middleware('can:item.store');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/clone', [AssistiveTechnologyController::class, 'clone'])
-        ->name('assistive-technologies.clone')->middleware('can:assistive-technology.create');
+    Route::get('/items/{item}/clone', [ItemController::class, 'clone'])
+        ->name('items.clone')->middleware('can:item.create');
 
-    Route::get('assistive-technologies/{assistiveTechnology}/inspection/{inspection}', [AssistiveTechnologyController::class, 'showInspection'])
-        ->name('assistive-technologies.inspection.show')->middleware('can:assistive-technology.inspection.show');
+    Route::get('/items/{item}/inspection/{inspection}', [ItemController::class, 'showInspection'])
+        ->name('items.inspection.show')->middleware('can:item.inspection.show');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'show'])
-        ->name('assistive-technologies.show')->middleware('can:assistive-technology.show');
+    Route::get('/items/{item}', [ItemController::class, 'show'])
+        ->name('items.show')->middleware('can:item.show');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/edit', [AssistiveTechnologyController::class, 'edit'])
-        ->name('assistive-technologies.edit')->middleware('can:assistive-technology.edit');
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])
+        ->name('items.edit')->middleware('can:item.edit');
 
-    Route::put('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'update'])
-        ->name('assistive-technologies.update')->middleware('can:assistive-technology.update');
+    Route::put('/items/{item}', [ItemController::class, 'update'])
+        ->name('items.update')->middleware('can:item.update');
 
-    Route::delete('/assistive-technologies/{assistiveTechnology}', [AssistiveTechnologyController::class, 'destroy'])
-        ->name('assistive-technologies.destroy')->middleware('can:assistive-technology.destroy');
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])
+        ->name('items.destroy')->middleware('can:item.destroy');
 
-    Route::get('/assistive-technologies/{assistiveTechnology}/pdf', [AssistiveTechnologyController::class, 'generatePdf'])
-        ->name('assistive-technologies.pdf')->middleware('can:assistive-technology.pdf');
+    Route::get('/items/{item}/pdf', [ItemController::class, 'generatePdf'])
+        ->name('items.pdf')->middleware('can:item.pdf');
 
     // ------------------- BARREIRAS -------------------
     Route::get('/barriers', [BarrierController::class, 'index'])
@@ -147,37 +146,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/barriers/{barrier}/pdf', [BarrierController::class, 'generatePdf'])
         ->name('barriers.pdf')->middleware('can:barrier.pdf');
-
-    // ------------------- MATERIAIS PEDAGÓGICOS ACESSÍVEIS -------------------
-    Route::get('/accessible-educational-materials', [AccessibleEducationalMaterialController::class, 'index'])
-        ->name('accessible-educational-materials.index')->middleware('can:material.index');
-
-    Route::get('/accessible-educational-materials/create', [AccessibleEducationalMaterialController::class, 'create'])
-        ->name('accessible-educational-materials.create')->middleware('can:material.create');
-
-    Route::post('/accessible-educational-materials/store', [AccessibleEducationalMaterialController::class, 'store'])
-        ->name('accessible-educational-materials.store')->middleware('can:material.store');
-
-    Route::get('/accessible-educational-materials/{material}/clone', [AccessibleEducationalMaterialController::class, 'clone'])
-        ->name('accessible-educational-materials.clone')->middleware('can:material.create');
-
-    Route::get('accessible-educational-materials/{material}/inspection/{inspection}', [AccessibleEducationalMaterialController::class, 'showInspection'])
-        ->name('accessible-educational-materials.inspection.show')->middleware('can:material.inspection.show');
-
-    Route::get('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'show'])
-        ->name('accessible-educational-materials.show')->middleware('can:material.show');
-
-    Route::get('/accessible-educational-materials/{material}/edit', [AccessibleEducationalMaterialController::class, 'edit'])
-        ->name('accessible-educational-materials.edit')->middleware('can:material.edit');
-
-    Route::put('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'update'])
-        ->name('accessible-educational-materials.update')->middleware('can:material.update');
-
-    Route::delete('/accessible-educational-materials/{material}', [AccessibleEducationalMaterialController::class, 'destroy'])
-        ->name('accessible-educational-materials.destroy')->middleware('can:material.destroy');
-
-    Route::get('/accessible-educational-materials/{material}/pdf', [AccessibleEducationalMaterialController::class, 'generatePdf'])
-        ->name('accessible-educational-materials.pdf')->middleware('can:material.pdf');
 
     // ------------------- AGENDA INSTITUCIONAL -------------------
     Route::get('/institutional-events', [InstitutionalEventController::class, 'index'])

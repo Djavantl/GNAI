@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Application\Queries\Waitlists;
 
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
@@ -20,8 +20,8 @@ final class WaitlistFormQuery
     public function forCreation(?User $authUser = null): array
     {
         return $this->baseOptions() + [
-            'assistive_technologies' => $this->waitlistableItems(AssistiveTechnology::class),
-            'educational_materials' => $this->waitlistableItems(AccessibleEducationalMaterial::class),
+            'itemTypes' => ItemType::options(),
+            'items' => $this->waitlistableItems(),
             'authUser' => $authUser,
         ];
     }
@@ -76,19 +76,18 @@ final class WaitlistFormQuery
     }
 
     /**
-     * @param  class-string<AccessibleEducationalMaterial|AssistiveTechnology>  $model
-     * @return Collection<int, AccessibleEducationalMaterial|AssistiveTechnology>
+     * @return Collection<int, Item>
      */
-    private function waitlistableItems(string $model): Collection
+    private function waitlistableItems(): Collection
     {
-        return $model::query()
+        return Item::query()
             ->where('is_active', true)
             ->where('is_loanable', true)
             ->where('is_digital', false)
             ->orderBy('name')
             ->get()
             ->filter(
-                static fn (AccessibleEducationalMaterial|AssistiveTechnology $item): bool => (
+                static fn (Item $item): bool => (
                     $item->quantity_available <= 0 || $item->status->blocksLoan()
                 ),
             )

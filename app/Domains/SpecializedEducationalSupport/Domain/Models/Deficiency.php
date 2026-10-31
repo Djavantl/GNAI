@@ -7,8 +7,7 @@ namespace App\Domains\SpecializedEducationalSupport\Domain\Models;
 use App\Domains\Audit\Domain\Contracts\Auditable;
 use App\Domains\Audit\Domain\ValueObjects\AuditedField;
 use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Deficiencies\CreateDeficiencyDTO;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\Deficiencies\UpdateDeficiencyDTO;
@@ -128,23 +127,13 @@ final class Deficiency extends Model implements Auditable
             ->withTimestamps();
     }
 
-    public function assistiveTechnologies(): BelongsToMany
+    public function items(): BelongsToMany
     {
         return $this->belongsToMany(
-            AssistiveTechnology::class,
-            'assistive_technology_deficiency',
+            Item::class,
+            'item_deficiency',
             'deficiency_id',
-            'assistive_technology_id',
-        )->withTimestamps();
-    }
-
-    public function accessibleEducationalMaterials(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            AccessibleEducationalMaterial::class,
-            'accessible_educational_material_deficiency',
-            'deficiency_id',
-            'accessible_educational_material_id',
+            'item_id',
         )->withTimestamps();
     }
 

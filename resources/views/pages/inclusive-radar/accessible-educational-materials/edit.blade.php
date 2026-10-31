@@ -219,7 +219,7 @@
                 >
                     Cancelar
                 </x-buttons.link-button>
-                @can('material.update')
+                @can('item.update')
                     <x-buttons.submit-button>
                         <i class="fas fa-save me-1"></i> Salvar
                     </x-buttons.submit-button>

@@ -1,6 +1,6 @@
 # Páginas React de visualização e detalhes
 
-Esta convenção reúne o padrão compartilhado das telas de visualização do Gnai. As visualizações de materiais pedagógicos e tecnologias assistivas são as referências para detalhes diretos; o prontuário do aluno é a referência para registros extensos organizados em resumo e abas.
+Esta convenção reúne o padrão compartilhado das telas de visualização do Gnai. A visualização unificada de itens é a referência para detalhes diretos; o prontuário do aluno é a referência para registros extensos organizados em resumo e abas.
 
 ## Estrutura comum
 
@@ -12,7 +12,7 @@ Esta convenção reúne o padrão compartilhado das telas de visualização do G
 
 ## Visualizações simples
 
-Telas com poucos grupos de informação devem permanecer em um card com seções inline. Não adicione abas quando a leitura sequencial for curta e clara. Materiais pedagógicos e tecnologias assistivas demonstram a composição esperada de labels, valores, badges e ações.
+Telas com poucos grupos de informação devem permanecer em um card com seções inline. Não adicione abas quando a leitura sequencial for curta e clara. A tela de itens demonstra a composição esperada de labels, valores, badges e ações.
 
 ## Prontuários e visualizações extensas
 

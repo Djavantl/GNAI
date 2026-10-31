@@ -11,7 +11,7 @@ use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\CreateLoanDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\ReturnLoanDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\UpdateLoanDTO;
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoan;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoanableResource;
@@ -66,7 +66,11 @@ final class Loan extends Model implements Auditable
     public static function auditedFields(): array
     {
         return [
-            'loanable_type' => AuditedField::enum('Tipo de Recurso', LoanableType::class),
+            'loanable_type' => AuditedField::enum('Tipo de Recurso', valueLabels: [
+                'item' => 'Item',
+                'assistive_technology' => 'Tecnologia Assistiva',
+                'accessible_educational_material' => 'Material Pedagógico Acessível',
+            ]),
             // Polimórfico: sem uma coluna de nome comum, fica o código do item (o nome vai na descrição).
             'loanable_id' => AuditedField::number('Código do Item Emprestado'),
             // Estudante e profissional não têm nome próprio (fica em people): a matrícula os identifica.
@@ -92,7 +96,7 @@ final class Loan extends Model implements Auditable
     {
         return new self([
             'loanable_id' => $data->loanableId,
-            'loanable_type' => $data->loanableType->value,
+            'loanable_type' => $data->loanableType,
             'student_id' => $data->studentId,
             'professional_id' => $data->professionalId,
             'user_id' => $data->registeredBy,
@@ -173,9 +177,15 @@ final class Loan extends Model implements Auditable
     /**
      * @throws InvalidLoanableResource
      */
-    public function loanableType(): LoanableType
+    public function loanableType(): ItemType
     {
-        return LoanableType::fromStored($this->loanable_type);
+        $type = $this->loanable?->item_type;
+
+        if (! $type instanceof ItemType) {
+            throw new InvalidLoanableResource('O item emprestado não foi encontrado.');
+        }
+
+        return $type;
     }
 
     public function loanable(): MorphTo

@@ -5,8 +5,7 @@ namespace Database\Factories\Domains\InclusiveRadar;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
 use App\Domains\Auth\Domain\Models\User;
@@ -50,23 +49,23 @@ class InspectionFactory extends Factory
         })->for($barrier ?? Barrier::factory(), 'inspectable');
     }
 
-    public function forAccessibleEducationalMaterial(?AccessibleEducationalMaterial $material = null): static
+    public function forAccessibleEducationalMaterial(?Item $material = null): static
     {
         return $this->state(function () {
             return [
                 'state' => $this->faker->randomElement(ConservationState::cases()),
                 'status' => null,
             ];
-        })->for($material ?? AccessibleEducationalMaterial::factory(), 'inspectable');
+        })->for($material ?? Item::factory()->accessibleEducationalMaterial(), 'inspectable');
     }
 
-    public function forAssistiveTechnology(?AssistiveTechnology $assistiveTechnology = null): static
+    public function forAssistiveTechnology(?Item $assistiveTechnology = null): static
     {
         return $this->state(function () {
             return [
                 'state' => $this->faker->randomElement(ConservationState::cases()),
                 'status' => null,
             ];
-        })->for($assistiveTechnology ?? AssistiveTechnology::factory(), 'inspectable');
+        })->for($assistiveTechnology ?? Item::factory()->assistiveTechnology(), 'inspectable');
     }
 }

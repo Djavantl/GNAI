@@ -20,7 +20,7 @@
         </header>
 
         <div class="d-flex gap-2 justify-content-end ms-md-auto" role="group" aria-label="Ações principais">
-            @can('assistive-technology.create')
+            @can('item.create')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.assistive-technologies.clone', $assistiveTechnology)"
                     variant="primary">
@@ -28,7 +28,7 @@
                 </x-buttons.link-button>
             @endcan
 
-            @can('assistive-technology.edit')
+            @can('item.edit')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.assistive-technologies.edit', $assistiveTechnology)"
                     variant="warning">
@@ -64,7 +64,7 @@
                     {{ $assistiveTechnology->asset_code ?? 'Não se Aplica' }}
                 </x-show.info-item>
             </div>
-            @can('assistive-technology.inspection.show')
+            @can('item.inspection.show')
                 <x-forms.section title="Histórico de Vistorias" />
 
                 <div class="history-timeline p-4 border border-secondary-subtle rounded bg-white" style="max-height: 450px; overflow-y:auto;">
@@ -122,12 +122,12 @@
 
             <footer class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-light-subtle">
                 <div>
-                    @can('assistive-technology.pdf')
+                    @can('item.pdf')
                         <x-buttons.pdf-button :href="route('inclusive-radar.assistive-technologies.pdf', $assistiveTechnology)" />
                     @endcan
                 </div>
                 <div class="d-flex flex-wrap gap-2 justify-content-end">
-                    @can('assistive-technology.destroy')
+                    @can('item.destroy')
                         <x-buttons.submit-button
                             type="button"
                             variant="danger"

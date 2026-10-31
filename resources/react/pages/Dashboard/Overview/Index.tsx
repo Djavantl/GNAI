@@ -21,8 +21,8 @@ export default function Overview({ specializedEducationalSupport: s, inclusiveRa
     { title: 'Atrasadas', value: s.totalOverduePendencies, href: `${support}/pendencies?is_completed=0`, icon: 'clock-o', tone: 'purple' },
   ] as const;
   const radarStats = [
-    { title: 'Tecnologias assistivas', value: r.totalAt, href: 'assistive-technologies', icon: 'desktop', tone: 'purple' },
-    { title: 'Materiais pedagógicos acessíveis', value: r.totalAem, href: 'accessible-educational-materials', icon: 'book', tone: 'info' },
+    { title: 'Tecnologias assistivas', value: r.totalAt, href: 'items?item_type=assistive_technology', icon: 'desktop', tone: 'purple' },
+    { title: 'Materiais pedagógicos acessíveis', value: r.totalAem, href: 'items?item_type=accessible_educational_material', icon: 'book', tone: 'info' },
     { title: 'Empréstimos', value: r.totalLoans, href: 'loans', icon: 'exchange', tone: 'success' },
     { title: 'Fila de espera: aguardando/notificados', value: r.totalWaiting, href: 'waitlists', icon: 'hourglass-half', tone: 'pink' },
   ] as const;

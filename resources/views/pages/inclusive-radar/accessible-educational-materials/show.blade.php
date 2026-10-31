@@ -20,7 +20,7 @@
         </header>
 
         <div class="d-flex gap-2 justify-content-end ms-md-auto" role="group" aria-label="Ações principais">
-            @can('material.create')
+            @can('item.create')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.accessible-educational-materials.clone', $material)"
                     variant="primary">
@@ -28,7 +28,7 @@
                 </x-buttons.link-button>
             @endcan
 
-            @can('material.edit')
+            @can('item.edit')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.accessible-educational-materials.edit', $material)"
                     variant="warning">
@@ -74,7 +74,7 @@
                     </div>
                 </x-show.info-item>
             </div>
-            @can('material.inspection.show')
+            @can('item.inspection.show')
                 <x-forms.section title="Histórico de Vistorias" />
 
                 <div class="history-timeline p-4 border border-secondary-subtle rounded bg-white" style="max-height: 450px; overflow-y:auto;">
@@ -132,12 +132,12 @@
 
             <footer class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-light-subtle">
                 <div>
-                    @can('material.pdf')
+                    @can('item.pdf')
                         <x-buttons.pdf-button :href="route('inclusive-radar.accessible-educational-materials.pdf', $material)" />
                     @endcan
                 </div>
                 <div class="d-flex flex-wrap gap-2 justify-content-end">
-                    @can('material.destroy')
+                    @can('item.destroy')
                         <x-buttons.submit-button
                             type="button"
                             variant="danger"

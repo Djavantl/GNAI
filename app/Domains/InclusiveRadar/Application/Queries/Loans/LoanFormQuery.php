@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domains\InclusiveRadar\Application\Queries\Loans;
 
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
@@ -27,8 +27,8 @@ final class LoanFormQuery
         ?string $selectedItemType = null,
     ): array {
         return $this->baseOptions() + [
-            'assistive_technologies' => $this->loanableItems(AssistiveTechnology::class),
-            'educational_materials' => $this->loanableItems(AccessibleEducationalMaterial::class),
+            'itemTypes' => ItemType::options(),
+            'items' => $this->loanableItems(),
             'authUser' => $authUser,
             'selectedStudentId' => $selectedStudentId,
             'selectedProfessionalId' => $selectedProfessionalId,
@@ -91,14 +91,14 @@ final class LoanFormQuery
     }
 
     /**
-     * @param  class-string<AccessibleEducationalMaterial|AssistiveTechnology>  $model
-     * @return Collection<int, array{id: int, name: string, asset_code: string, is_digital: bool, quantity_available: int|null}>
+     * @return Collection<int, array{id: int, item_type: string, name: string, asset_code: string, is_digital: bool, quantity_available: int|null}>
      */
-    private function loanableItems(string $model): Collection
+    private function loanableItems(): Collection
     {
-        return $model::query()
+        return Item::query()
             ->select([
                 'id',
+                'item_type',
                 'name',
                 'asset_code',
                 'is_digital',
@@ -119,8 +119,9 @@ final class LoanFormQuery
             ->orderBy('name')
             ->get()
             ->map(
-                static fn (AccessibleEducationalMaterial|AssistiveTechnology $item): array => [
+                static fn (Item $item): array => [
                     'id' => $item->id,
+                    'item_type' => $item->item_type->value,
                     'name' => $item->name,
                     'asset_code' => $item->asset_code ?? 'S/N',
                     'is_digital' => $item->is_digital,

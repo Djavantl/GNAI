@@ -58,10 +58,7 @@ const columns: TableListColumn[] = [
 ];
 
 function itemHref(waitlist: WaitlistRecord): string {
-    const basePath = waitlist.waitlistable_type === "assistive_technology"
-        ? "/inclusive-radar/assistive-technologies"
-        : "/inclusive-radar/accessible-educational-materials";
-    return `${basePath}/${waitlist.waitlistable_id}`;
+    return `/inclusive-radar/items/${waitlist.waitlistable_id}`;
 }
 
 export default function InclusiveRadarWaitlistsIndexPage({

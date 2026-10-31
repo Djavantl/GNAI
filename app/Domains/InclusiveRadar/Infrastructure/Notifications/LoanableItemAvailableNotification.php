@@ -43,7 +43,7 @@ final class LoanableItemAvailableNotification extends Notification
 
         $loanCreationParameters = array_filter([
             'item_id' => $waitlist->waitlistable_id,
-            'item_type' => $waitlist->waitlistable_type,
+            'item_type' => $waitlist->waitlistable?->item_type?->value,
             'student_id' => $waitlist->student_id,
             'professional_id' => $waitlist->professional_id,
         ], static fn (mixed $value): bool => $value !== null);

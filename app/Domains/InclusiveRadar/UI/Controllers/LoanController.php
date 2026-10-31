@@ -187,8 +187,8 @@ final class LoanController
         return [
             'id' => $loan->id,
             'loanable_id' => $loan->loanable_id,
-            'loanable_type' => $loan->loanable_type,
-            'loanable_type_label' => $loan->loanableType()->label(),
+            'item_type' => $loan->loanableType()->value,
+            'item_type_label' => $loan->loanableType()->label(),
             'loanable_icon' => $loan->loanableType()->icon(),
             'loanable' => [
                 'name' => $loan->loanable?->name ?? 'Item removido',

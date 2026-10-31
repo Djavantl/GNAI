@@ -1,0 +1,26 @@
+.itemFilters {
+    display: grid;
+    grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(160px, 1fr)) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.itemFilters__additional {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 1200px) {
+    .itemFilters,
+    .itemFilters__additional {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .itemFilters,
+    .itemFilters__additional {
+        grid-template-columns: 1fr;
+    }
+}

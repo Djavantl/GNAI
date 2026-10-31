@@ -7,8 +7,7 @@ namespace App\Domains\InclusiveRadar\Application\Policies\Loans;
 use App\Domains\InclusiveRadar\Application\Data\Loans\CreateLoanData;
 use App\Domains\InclusiveRadar\Application\Queries\Loans\OpenLoanExistsQuery;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidLoan;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 
 final readonly class LoanRegistrationPolicy
 {
@@ -20,7 +19,7 @@ final readonly class LoanRegistrationPolicy
      * @throws InvalidLoan
      */
     public function ensureCanRegister(
-        AccessibleEducationalMaterial|AssistiveTechnology $item,
+        Item $item,
         CreateLoanData $data,
     ): void {
         $this->ensureValidBeneficiary(
@@ -48,7 +47,7 @@ final readonly class LoanRegistrationPolicy
     /**
      * @throws InvalidLoan
      */
-    private function ensureResourceCanBeLoaned(AccessibleEducationalMaterial|AssistiveTechnology $item): void
+    private function ensureResourceCanBeLoaned(Item $item): void
     {
         if (! $item->is_active || ! $item->is_loanable) {
             throw new InvalidLoan('Este recurso não está disponível para empréstimo.');
@@ -78,7 +77,6 @@ final readonly class LoanRegistrationPolicy
     {
         if (! $this->openLoanExists->execute(
             loanableId: $data->loanableId,
-            loanableType: $data->loanableType,
             studentId: $data->studentId,
             professionalId: $data->professionalId,
         )) {

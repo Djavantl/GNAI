@@ -10,7 +10,6 @@ use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\DTOs\Waitlists\CreateWaitlistDTO;
 use App\Domains\InclusiveRadar\Domain\DTOs\Waitlists\UpdateWaitlistDTO;
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidWaitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
@@ -59,7 +58,11 @@ final class Waitlist extends Model implements Auditable
     public static function auditedFields(): array
     {
         return [
-            'waitlistable_type' => AuditedField::enum('Tipo de Recurso', LoanableType::class),
+            'waitlistable_type' => AuditedField::enum('Tipo de Recurso', valueLabels: [
+                'item' => 'Item',
+                'assistive_technology' => 'Tecnologia Assistiva',
+                'accessible_educational_material' => 'Material Pedagógico Acessível',
+            ]),
             // Polimórfico: sem uma coluna de nome comum, fica o código do item (o nome vai na descrição).
             'waitlistable_id' => AuditedField::number('Código do Item Solicitado'),
             // Estudante e profissional não têm nome próprio (fica em people): a matrícula os identifica.
@@ -85,7 +88,7 @@ final class Waitlist extends Model implements Auditable
     {
         return new self([
             'waitlistable_id' => $data->waitlistableId,
-            'waitlistable_type' => $data->waitlistableType->value,
+            'waitlistable_type' => $data->waitlistableType,
             'student_id' => $data->studentId,
             'professional_id' => $data->professionalId,
             'user_id' => $data->registeredBy,

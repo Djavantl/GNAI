@@ -4,8 +4,7 @@ namespace Database\Factories\Domains\InclusiveRadar;
 
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
@@ -34,23 +33,23 @@ class WaitlistFactory extends Factory
         ];
     }
 
-    public function forAssistiveTechnology(?AssistiveTechnology $assistiveTechnology = null): self
+    public function forAssistiveTechnology(?Item $assistiveTechnology = null): self
     {
         return $this->for(
-            $assistiveTechnology ?? AssistiveTechnology::factory()->physical()->unavailable(),
+            $assistiveTechnology ?? Item::factory()->assistiveTechnology()->physical()->unavailable(),
             'waitlistable'
         )->state(fn () => [
-            'waitlistable_type' => (new AssistiveTechnology)->getMorphClass(),
+            'waitlistable_type' => (new Item)->getMorphClass(),
         ]);
     }
 
-    public function forAccessibleEducationalMaterial(?AccessibleEducationalMaterial $material = null): self
+    public function forAccessibleEducationalMaterial(?Item $material = null): self
     {
         return $this->for(
-            $material ?? AccessibleEducationalMaterial::factory()->physical()->unavailable(),
+            $material ?? Item::factory()->accessibleEducationalMaterial()->physical()->unavailable(),
             'waitlistable'
         )->state(fn () => [
-            'waitlistable_type' => (new AccessibleEducationalMaterial)->getMorphClass(),
+            'waitlistable_type' => (new Item)->getMorphClass(),
         ]);
     }
 

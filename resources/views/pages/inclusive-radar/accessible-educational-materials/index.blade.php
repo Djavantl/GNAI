@@ -15,7 +15,7 @@
             title="Materiais Pedagógicos Acessíveis"
             subtitle="Gestão de recursos didáticos, livros e jogos adaptados."
         >
-            @can('material.create')
+            @can('item.create')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.accessible-educational-materials.create')"
                     variant="new"

@@ -111,8 +111,8 @@ export default function InclusiveRadarLoansShowPage({
                         <DetailField label="Recurso Emprestado">
                             {loan.loanable.name}
                         </DetailField>
-                        <DetailField label="Tipo de Recurso">
-                            {loan.loanable_type_label}
+                        <DetailField label="Tipo do Item">
+                            {loan.item_type_label}
                         </DetailField>
                         <DetailField label="Patrimônio / Tombamento" wide>
                             {loan.loanable.asset_code || "Não se aplica"}

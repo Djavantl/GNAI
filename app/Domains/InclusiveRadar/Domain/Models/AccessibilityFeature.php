@@ -75,13 +75,13 @@ final class AccessibilityFeature extends Model implements Auditable
         ]);
     }
 
-    public function materials(): BelongsToMany
+    public function items(): BelongsToMany
     {
         return $this->belongsToMany(
-            AccessibleEducationalMaterial::class,
-            'accessible_educational_material_accessibility',
+            Item::class,
+            'item_accessibility_feature',
             'accessibility_feature_id',
-            'accessible_educational_material_id',
+            'item_id',
         )->withTimestamps();
     }
 

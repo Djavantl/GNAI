@@ -3,10 +3,11 @@
 namespace Database\Seeders\InclusiveRadar;
 
 use Database\Seeders\SpecializedEducationalSupport\DeficiencySeeder;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -61,7 +62,8 @@ class AccessibleEducationalMaterialSeeder extends Seeder
             $quantityAvailable = $quantity;
 
             // Criar o material
-            $mpa = AccessibleEducationalMaterial::create([
+            $mpa = Item::create([
+                'item_type' => ItemType::AccessibleEducationalMaterial,
                 'name' => $material['name'],
                 'is_digital' => $isDigital,
                 'notes' => $notes,
@@ -110,7 +112,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         return DB::table('users')->value('id');
     }
 
-    private function attachDeficiencies(AccessibleEducationalMaterial $mpa, array $deficiencyIds): void
+    private function attachDeficiencies(Item $mpa, array $deficiencyIds): void
     {
         if (empty($deficiencyIds)) {
             return;
@@ -122,7 +124,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         $mpa->deficiencies()->sync($selected);
     }
 
-    private function attachAccessibilityFeatures(AccessibleEducationalMaterial $mpa, array $featureIds): void
+    private function attachAccessibilityFeatures(Item $mpa, array $featureIds): void
     {
         if (empty($featureIds)) {
             return;
@@ -149,7 +151,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         return $notes[$state] ?? 'Material pedagógico acessível disponível para empréstimo.';
     }
 
-    private function createInspections(AccessibleEducationalMaterial $mpa, string $currentState, ?int $userId): void
+    private function createInspections(Item $mpa, string $currentState, ?int $userId): void
     {
         $numInspections = rand(1, 3);
         $acquisitionDate = Carbon::now()->subMonths(rand(6, 24))->subDays(rand(0, 30));
@@ -190,7 +192,7 @@ class AccessibleEducationalMaterialSeeder extends Seeder
         }
     }
 
-    private function createDigitalInspection(AccessibleEducationalMaterial $mpa, ?int $userId): void
+    private function createDigitalInspection(Item $mpa, ?int $userId): void
     {
         $mpa->inspections()->create([
             'state' => ConservationState::NOT_APPLICABLE->value,

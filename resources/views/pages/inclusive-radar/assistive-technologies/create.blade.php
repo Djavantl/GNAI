@@ -194,7 +194,7 @@
                     <i class="fas fa-times"></i> Cancelar
                 </x-buttons.link-button>
 
-                @can('assistive-technology.store')
+                @can('item.store')
                     <x-buttons.submit-button>
                         <i class="fas fa-save me-1"></i> Cadastrar
                     </x-buttons.submit-button>

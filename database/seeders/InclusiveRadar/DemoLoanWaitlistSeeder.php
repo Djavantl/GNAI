@@ -3,11 +3,12 @@
 namespace Database\Seeders\InclusiveRadar;
 
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ResourceStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
@@ -40,9 +41,10 @@ class DemoLoanWaitlistSeeder extends Seeder
             | ITEM 1
             |--------------------------------------------------------------------------
             */
-            $item1 = AccessibleEducationalMaterial::updateOrCreate(
+            $item1 = Item::updateOrCreate(
                 ['name' => 'Leitor Portátil com Áudio'],
                 [
+                    'item_type' => ItemType::AccessibleEducationalMaterial,
                     'asset_code' => 'AEM-LOAN-001',
                     'is_digital' => false,
                     'quantity' => 1,
@@ -94,9 +96,10 @@ class DemoLoanWaitlistSeeder extends Seeder
             | ITEM 2
             |--------------------------------------------------------------------------
             */
-            $item2 = AccessibleEducationalMaterial::updateOrCreate(
+            $item2 = Item::updateOrCreate(
                 ['name' => 'Mapa Tátil'],
                 [
+                    'item_type' => ItemType::AccessibleEducationalMaterial,
                     'asset_code' => 'AEM-LOAN-002',
                     'is_digital' => false,
                     'quantity' => 1,
@@ -128,9 +131,10 @@ class DemoLoanWaitlistSeeder extends Seeder
             | ITEM 3 (Digital)
             |--------------------------------------------------------------------------
             */
-            $item3 = AccessibleEducationalMaterial::updateOrCreate(
+            $item3 = Item::updateOrCreate(
                 ['name' => 'Software Leitor de Tela'],
                 [
+                    'item_type' => ItemType::AccessibleEducationalMaterial,
                     'asset_code' => 'AEM-DIG-001',
                     'is_digital' => true,
                     'quantity' => 999,
@@ -152,9 +156,10 @@ class DemoLoanWaitlistSeeder extends Seeder
             | ITEM 4
             |--------------------------------------------------------------------------
             */
-            $item4 = AccessibleEducationalMaterial::updateOrCreate(
+            $item4 = Item::updateOrCreate(
                 ['name' => 'Livro em Braille'],
                 [
+                    'item_type' => ItemType::AccessibleEducationalMaterial,
                     'asset_code' => 'AEM-LOAN-003',
                     'is_digital' => false,
                     'quantity' => 1,

@@ -37,20 +37,14 @@
             <div class="col-md-12 mb-4 px-4">
                 <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
                     <div class="bg-purple-dark text-white p-3 rounded shadow-sm" style="background-color: #4c1d95;">
-                        <i class="fas {{ $waitlist->waitlistable_type === 'assistive_technology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
+                        <i class="fas {{ $waitlist->waitlistable?->item_type?->value === 'assistive_technology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
                     </div>
 
                     <div>
                         <h5 class="mb-0 fw-bold">
                             @php
-                                $type = $waitlist->waitlistable_type;
                                 $id = $waitlist->waitlistable_id;
-
-                                $resourceRoute = match($type) {
-                                    'assistive_technology'            => route('inclusive-radar.assistive-technologies.show', $id),
-                                    'accessible_educational_material' => route('inclusive-radar.accessible-educational-materials.show', $id),
-                                    default                           => '#',
-                                };
+                                $resourceRoute = route('inclusive-radar.items.show', $id);
                             @endphp
 
                             <a href="{{ $resourceRoute }}"

@@ -7,7 +7,6 @@ namespace App\Domains\InclusiveRadar\Application\Actions\Loans;
 use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanableLockHandler;
 use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanStockHandler;
 use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanWaitlistHandler;
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +28,6 @@ final readonly class DeleteLoanAction
         DB::transaction(function () use ($loan, $deletedBy): void {
             if ($loan->return_date === null) {
                 $item = $this->loanables->lockForLoan(
-                    type: LoanableType::fromStored($loan->loanable_type),
                     id: $loan->loanable_id,
                 );
 

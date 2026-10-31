@@ -13,11 +13,7 @@
         <tr>
             <x-table.td :responsive="false">
                 @php
-                    $resourceRoute = match($waitlist->waitlistable_type) {
-                        'assistive_technology'            => route('inclusive-radar.assistive-technologies.show', $waitlist->waitlistable_id),
-                        'accessible_educational_material' => route('inclusive-radar.accessible-educational-materials.show', $waitlist->waitlistable_id),
-                        default                           => '#',
-                    };
+                    $resourceRoute = route('inclusive-radar.items.show', $waitlist->waitlistable_id);
                 @endphp
 
                 <a href="{{ $resourceRoute }}" class="text-purple-dark text-decoration-none" target="_blank">

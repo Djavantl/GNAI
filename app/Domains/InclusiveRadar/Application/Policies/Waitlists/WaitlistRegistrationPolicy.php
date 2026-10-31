@@ -7,10 +7,8 @@ namespace App\Domains\InclusiveRadar\Application\Policies\Waitlists;
 use App\Domains\InclusiveRadar\Application\Data\Waitlists\CreateWaitlistData;
 use App\Domains\InclusiveRadar\Application\Queries\Loans\OpenLoanExistsQuery;
 use App\Domains\InclusiveRadar\Application\Queries\Waitlists\ActiveWaitlistExistsQuery;
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Exceptions\InvalidWaitlist;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 
 final readonly class WaitlistRegistrationPolicy
 {
@@ -23,7 +21,7 @@ final readonly class WaitlistRegistrationPolicy
      * @throws InvalidWaitlist
      */
     public function ensureCanRegister(
-        AccessibleEducationalMaterial|AssistiveTechnology $item,
+        Item $item,
         CreateWaitlistData $data,
     ): void {
         $this->ensureSingleBeneficiary($data);
@@ -49,7 +47,7 @@ final readonly class WaitlistRegistrationPolicy
     /**
      * @throws InvalidWaitlist
      */
-    private function ensureItemIsUnavailable(AccessibleEducationalMaterial|AssistiveTechnology $item): void
+    private function ensureItemIsUnavailable(Item $item): void
     {
         if ($item->is_digital) {
             throw new InvalidWaitlist(
@@ -68,12 +66,11 @@ final readonly class WaitlistRegistrationPolicy
      * @throws InvalidWaitlist
      */
     private function ensureNoDuplicateWaitlist(
-        AccessibleEducationalMaterial|AssistiveTechnology $item,
+        Item $item,
         CreateWaitlistData $data,
     ): void {
         if ($this->activeWaitlistExists->execute(
             waitlistableId: $item->id,
-            waitlistableType: LoanableType::fromModel($item),
             studentId: $data->studentId,
             professionalId: $data->professionalId,
         )) {
@@ -85,12 +82,11 @@ final readonly class WaitlistRegistrationPolicy
      * @throws InvalidWaitlist
      */
     private function ensureNoOpenLoan(
-        AccessibleEducationalMaterial|AssistiveTechnology $item,
+        Item $item,
         CreateWaitlistData $data,
     ): void {
         if ($this->openLoanExists->execute(
             loanableId: $item->id,
-            loanableType: LoanableType::fromModel($item),
             studentId: $data->studentId,
             professionalId: $data->professionalId,
         )) {

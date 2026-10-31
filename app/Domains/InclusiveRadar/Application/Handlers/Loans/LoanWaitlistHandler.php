@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Application\Handlers\Loans;
 
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use App\Domains\InclusiveRadar\Infrastructure\Notifications\LoanableItemAvailableNotification;
 use App\Domains\Auth\Domain\Models\User;
@@ -15,13 +13,13 @@ use App\Domains\Auth\Domain\Models\User;
 final class LoanWaitlistHandler
 {
     public function fulfillMatching(
-        AccessibleEducationalMaterial|AssistiveTechnology $item,
+        Item $item,
         ?int $studentId,
         ?int $professionalId,
     ): void {
         $query = Waitlist::query()
             ->where('waitlistable_id', $item->id)
-            ->where('waitlistable_type', LoanableType::fromModel($item)->value)
+            ->where('waitlistable_type', $item->getMorphClass())
             ->whereIn('status', [
                 WaitlistStatus::WAITING->value,
                 WaitlistStatus::NOTIFIED->value,
@@ -44,11 +42,11 @@ final class LoanWaitlistHandler
         }
     }
 
-    public function notifyNext(AccessibleEducationalMaterial|AssistiveTechnology $item, User $notifier): ?Waitlist
+    public function notifyNext(Item $item, User $notifier): ?Waitlist
     {
         $waitlist = Waitlist::query()
             ->where('waitlistable_id', $item->id)
-            ->where('waitlistable_type', LoanableType::fromModel($item)->value)
+            ->where('waitlistable_type', $item->getMorphClass())
             ->where('status', WaitlistStatus::WAITING->value)
             ->oldest('requested_at')
             ->first();

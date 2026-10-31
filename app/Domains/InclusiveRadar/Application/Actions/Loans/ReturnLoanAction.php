@@ -9,7 +9,6 @@ use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanableLockHandler;
 use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanStockHandler;
 use App\Domains\InclusiveRadar\Application\Handlers\Loans\LoanWaitlistHandler;
 use App\Domains\InclusiveRadar\Domain\DTOs\Loans\ReturnLoanDTO;
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\Auth\Domain\Models\User;
@@ -31,7 +30,6 @@ final readonly class ReturnLoanAction
     {
         $returnedLoan = DB::transaction(function () use ($loan, $data, $returnedBy): Loan {
             $item = $this->loanables->lockForLoan(
-                type: LoanableType::fromStored($loan->loanable_type),
                 id: $loan->loanable_id,
             );
 

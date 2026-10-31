@@ -38,8 +38,8 @@
 
             <x-table.td :responsive="false">
                 <x-table.actions>
-                    @canany(['assistive-technology.show', 'assistive-technology.destroy'])
-                        @can('assistive-technology.show')
+                    @canany(['item.show', 'item.destroy'])
+                        @can('item.show')
                             <x-buttons.link-button
                                 :href="route('inclusive-radar.assistive-technologies.show', $tech)"
                                 variant="info"
@@ -47,7 +47,7 @@
                                 <i class="fas fa-eye"></i> Ver
                             </x-buttons.link-button>
                         @endcan
-                        @can('assistive-technology.destroy')
+                        @can('item.destroy')
                             <x-buttons.submit-button
                                 type="button"
                                 variant="danger"

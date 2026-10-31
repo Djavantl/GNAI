@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Infrastructure\Reporting;
 
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\LoanStatus;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use App\Domains\Reporting\Application\Services\ReportOptionCatalog;
 use App\Domains\Reporting\Domain\Enums\ReportColumnType;
 use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
+use Illuminate\Database\Eloquent\Builder;
 
 final class LoansReportSource extends EloquentReportSource
 {
@@ -35,10 +37,11 @@ final class LoansReportSource extends EloquentReportSource
     protected function definitions(): array
     {
         return [
-            'loanable_type' => [
+            'item_type' => [
                 'label' => 'Tipo de recurso',
+                'path' => 'loanable.item_type',
                 'type' => ReportColumnType::SELECT,
-                'options' => ReportOptionCatalog::loanableTypes(),
+                'options' => ItemType::options(),
             ],
             'loanable' => ['label' => 'Recurso', 'path' => 'loanable.name'],
             'student' => ['label' => 'Aluno', 'path' => 'student.person.name'],
@@ -53,6 +56,22 @@ final class LoansReportSource extends EloquentReportSource
 
     protected function filterable(): array
     {
-        return ['loanable_type', 'student', 'professional', 'loan_date', 'due_date', 'return_date', 'status', 'registered_by'];
+        return ['item_type', 'student', 'professional', 'loan_date', 'due_date', 'return_date', 'status', 'registered_by'];
+    }
+
+    public function applyFilter(Builder $query, string $field, string $operator, mixed $value): void
+    {
+        if ($field !== 'item_type') {
+            parent::applyFilter($query, $field, $operator, $value);
+
+            return;
+        }
+
+        // O tipo fica no item: relações MorphTo exigem whereHasMorph em vez de whereHas.
+        $query->whereHasMorph(
+            'loanable',
+            [Item::class],
+            static fn (Builder $item): Builder => $item->where('item_type', $operator, $value),
+        );
     }
 }

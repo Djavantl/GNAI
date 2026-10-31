@@ -42,15 +42,15 @@ export default function WaitlistForm({
     students,
     professionals,
     authUser,
-    assistive_technologies = [],
-    educational_materials = [],
+    itemTypes = {},
+    items = [],
     waitlist,
     statusLabel,
     can,
 }: WaitlistFormProps): React.JSX.Element {
     const editing = Boolean(waitlist);
     const form = useForm({
-        waitlistable_type: "",
+        item_type: "",
         waitlistable_id: "",
         student_id: "",
         professional_id: "",
@@ -59,11 +59,9 @@ export default function WaitlistForm({
     const errors = form.errors as Record<string, string | undefined>;
     const studentOptions = optionList(students);
     const professionalOptions = optionList(professionals);
-    const resources = form.data.waitlistable_type === "assistive_technology"
-        ? itemOptions(assistive_technologies)
-        : form.data.waitlistable_type === "accessible_educational_material"
-            ? itemOptions(educational_materials)
-            : [];
+    const resources = itemOptions(
+        items.filter((item) => item.item_type === form.data.item_type),
+    );
 
     function updateStudent(value: string): void {
         form.setData((data) => ({
@@ -111,7 +109,7 @@ export default function WaitlistForm({
                             id="waitlist-resource"
                             title="Recurso Solicitado"
                             variant="inline"
-                            iconClass={waitlist.waitlistable_type === "assistive_technology" ? "fa fa-microchip" : "fa fa-book"}
+                            iconClass={waitlist.item_type === "assistive_technology" ? "fa fa-microchip" : "fa fa-book"}
                         >
                             <WaitlistResourceDetails {...waitlist} />
                         </FormSection>
@@ -125,25 +123,22 @@ export default function WaitlistForm({
                             <FormGrid columns={2}>
                                 <FormField
                                     id="waitlist-resource-type"
-                                    label="Tipo de Recurso"
+                                    label="Tipo do Item"
                                     requiredIndicator
-                                    error={errors.waitlistable_type}
+                                    error={errors.item_type}
                                 >
                                     <SelectField
                                         id="waitlist-resource-type"
-                                        name="waitlistable_type"
-                                        label="Tipo de Recurso"
+                                        name="item_type"
+                                        label="Tipo do Item"
                                         required
-                                        value={form.data.waitlistable_type}
-                                        options={[
-                                            { value: "assistive_technology", label: "Tecnologia Assistiva" },
-                                            { value: "accessible_educational_material", label: "Material Pedagógico" },
-                                        ]}
-                                        aria-invalid={!!errors.waitlistable_type}
-                                        aria-describedby={errors.waitlistable_type ? "waitlist-resource-type-error" : undefined}
+                                        value={form.data.item_type}
+                                        options={optionList(itemTypes)}
+                                        aria-invalid={!!errors.item_type}
+                                        aria-describedby={errors.item_type ? "waitlist-resource-type-error" : undefined}
                                         onChange={(event) => form.setData((data) => ({
                                             ...data,
-                                            waitlistable_type: event.target.value,
+                                            item_type: event.target.value,
                                             waitlistable_id: "",
                                         }))}
                                     />
@@ -160,9 +155,9 @@ export default function WaitlistForm({
                                         label="Item Específico"
                                         required
                                         value={form.data.waitlistable_id}
-                                        placeholder={form.data.waitlistable_type ? "Selecione o item" : "Selecione o tipo primeiro"}
+                                        placeholder={form.data.item_type ? "Selecione o item" : "Selecione o tipo primeiro"}
                                         options={resources}
-                                        disabled={!form.data.waitlistable_type}
+                                        disabled={!form.data.item_type}
                                         aria-invalid={!!errors.waitlistable_id}
                                         aria-describedby={errors.waitlistable_id ? "waitlist-resource-item-error" : undefined}
                                         onChange={(event) => form.setData("waitlistable_id", event.target.value)}

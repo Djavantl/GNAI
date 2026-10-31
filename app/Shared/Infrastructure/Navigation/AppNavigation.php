@@ -31,8 +31,7 @@ final class AppNavigation
                 ['pendencies', 'Pendências', 'specialized-educational-support.pendencies.index', 'ti-alert', ['pendency.view'], ['specialized-educational-support.pendencies.*']],
             ]],
             ['Radar Inclusivo', [
-                ['assistive-technologies', 'Tecnologias Assistivas', 'inclusive-radar.assistive-technologies.index', 'ti-desktop', ['assistive-technology.index'], ['inclusive-radar.assistive-technologies.*']],
-                ['accessible-educational-materials', 'Materiais Pedagógicos', 'inclusive-radar.accessible-educational-materials.index', 'ti-book', ['material.index'], ['inclusive-radar.accessible-educational-materials.*']],
+                ['items', 'Itens', 'inclusive-radar.items.index', 'ti-package', ['item.index'], ['inclusive-radar.items.*']],
                 ['loans', 'Empréstimos', 'inclusive-radar.loans.index', 'ti-exchange-vertical', ['loan.index'], ['inclusive-radar.loans.*']],
                 ['waitlists', 'Fila de Espera', 'inclusive-radar.waitlists.index', 'ti-time', ['waitlist.index'], ['inclusive-radar.waitlists.*']],
                 ['barriers', 'Barreiras', 'inclusive-radar.barriers.index', 'ti-na', ['barrier.index'], ['inclusive-radar.barriers.*']],

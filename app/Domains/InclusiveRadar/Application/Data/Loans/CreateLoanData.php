@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Application\Data\Loans;
 
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use Illuminate\Validation\Rules\Enum;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\MergeValidationRules;
@@ -17,7 +17,7 @@ final class CreateLoanData extends Data
 {
     public function __construct(
         public int $loanableId,
-        public LoanableType $loanableType,
+        public ItemType $itemType,
         public string $loanDate,
         public string $dueDate,
         public ?int $studentId = null,
@@ -29,9 +29,9 @@ final class CreateLoanData extends Data
     {
         return [
             'loanable_id' => ['required', 'integer'],
-            'loanable_type' => [
+            'item_type' => [
                 'required',
-                new Enum(LoanableType::class),
+                new Enum(ItemType::class),
             ],
             'student_id' => ['nullable', 'integer', 'exists:students,id'],
             'professional_id' => ['nullable', 'integer', 'exists:professionals,id'],
@@ -45,8 +45,8 @@ final class CreateLoanData extends Data
     {
         return [
             'loanable_id.required' => 'O item para empréstimo não foi identificado.',
-            'loanable_type.required' => 'O tipo de item é obrigatório.',
-            'loanable_type.enum' => 'O tipo de item selecionado é inválido.',
+            'item_type.required' => 'O tipo de item é obrigatório.',
+            'item_type.enum' => 'O tipo de item selecionado é inválido.',
             'due_date.required' => 'A data de previsão de entrega é obrigatória.',
             'due_date.after_or_equal' => 'A data de entrega não pode ser anterior à data do empréstimo.',
         ];

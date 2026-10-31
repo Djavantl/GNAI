@@ -15,7 +15,7 @@
             title="Tecnologias Assistivas"
             subtitle="Gerenciamento de periféricos, softwares e equipamentos de acessibilidade."
         >
-            @can('assistive-technology.create')
+            @can('item.create')
                 <x-buttons.link-button
                     :href="route('inclusive-radar.assistive-technologies.create')"
                     variant="new"

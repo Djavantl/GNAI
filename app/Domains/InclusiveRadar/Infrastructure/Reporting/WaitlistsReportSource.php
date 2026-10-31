@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Infrastructure\Reporting;
 
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
-use App\Domains\Reporting\Application\Services\ReportOptionCatalog;
 use App\Domains\Reporting\Domain\Enums\ReportColumnType;
 use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
+use Illuminate\Database\Eloquent\Builder;
 
 final class WaitlistsReportSource extends EloquentReportSource
 {
@@ -35,10 +37,11 @@ final class WaitlistsReportSource extends EloquentReportSource
     protected function definitions(): array
     {
         return [
-            'waitlistable_type' => [
+            'item_type' => [
                 'label' => 'Tipo de recurso',
+                'path' => 'waitlistable.item_type',
                 'type' => ReportColumnType::SELECT,
-                'options' => ReportOptionCatalog::loanableTypes(),
+                'options' => ItemType::options(),
             ],
             'waitlistable' => ['label' => 'Recurso', 'path' => 'waitlistable.name'],
             'student' => ['label' => 'Aluno', 'path' => 'student.person.name'],
@@ -51,6 +54,22 @@ final class WaitlistsReportSource extends EloquentReportSource
 
     protected function filterable(): array
     {
-        return ['waitlistable_type', 'student', 'professional', 'requested_at', 'status', 'registered_by'];
+        return ['item_type', 'student', 'professional', 'requested_at', 'status', 'registered_by'];
+    }
+
+    public function applyFilter(Builder $query, string $field, string $operator, mixed $value): void
+    {
+        if ($field !== 'item_type') {
+            parent::applyFilter($query, $field, $operator, $value);
+
+            return;
+        }
+
+        // O tipo fica no item: relações MorphTo exigem whereHasMorph em vez de whereHas.
+        $query->whereHasMorph(
+            'waitlistable',
+            [Item::class],
+            static fn (Builder $item): Builder => $item->where('item_type', $operator, $value),
+        );
     }
 }

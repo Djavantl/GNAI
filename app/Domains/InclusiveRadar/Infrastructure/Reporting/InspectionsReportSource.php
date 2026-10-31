@@ -7,10 +7,9 @@ namespace App\Domains\InclusiveRadar\Infrastructure\Reporting;
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
 use App\Domains\InclusiveRadar\Domain\Enums\ConservationState;
 use App\Domains\InclusiveRadar\Domain\Enums\InspectionType;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\Reporting\Application\Services\ReportOptionCatalog;
 use App\Domains\Reporting\Domain\DTOs\PolymorphicReportRelationDTO;
 use App\Domains\Reporting\Domain\Enums\ReportColumnType;
@@ -42,18 +41,11 @@ final class InspectionsReportSource extends EloquentReportSource
     {
         return [
             new PolymorphicReportRelationDTO(
-                key: 'assistiveTechnology',
-                label: 'Tecnologia assistiva',
+                key: 'item',
+                label: 'Item',
                 eloquentRelation: 'inspectable',
-                morphType: 'assistive_technology',
-                sourceKey: 'inclusive-radar.assistive-technologies',
-            ),
-            new PolymorphicReportRelationDTO(
-                key: 'accessibleEducationalMaterial',
-                label: 'Material pedagógico acessível',
-                eloquentRelation: 'inspectable',
-                morphType: 'accessible_educational_material',
-                sourceKey: 'inclusive-radar.accessible-educational-materials',
+                morphType: 'item',
+                sourceKey: 'inclusive-radar.items',
             ),
             new PolymorphicReportRelationDTO(
                 key: 'barrier',
@@ -91,8 +83,7 @@ final class InspectionsReportSource extends EloquentReportSource
     protected function relationPolicy(string $parentModel, string $relationName): array
     {
         $excluded = in_array($parentModel, [
-            AssistiveTechnology::class,
-            AccessibleEducationalMaterial::class,
+            Item::class,
             Barrier::class,
         ], true) ? ['inspectable_type', 'inspectable'] : [];
 

@@ -3,8 +3,8 @@ import LoanPage from "./LoanPage";
 import type { LoanFormProps, LoanableItem } from "./Loan.types";
 
 type Props = LoanFormProps & {
-    assistive_technologies: LoanableItem[];
-    educational_materials: LoanableItem[];
+    itemTypes: Record<string, string>;
+    items: LoanableItem[];
     selectedStudentId: number | null;
     selectedProfessionalId: number | null;
     selectedItemId: number | null;
@@ -26,8 +26,8 @@ export default function InclusiveRadarLoansCreatePage(
                 professionals={props.professionals}
                 authUser={props.authUser}
                 can={props.can}
-                assistiveTechnologies={props.assistive_technologies}
-                educationalMaterials={props.educational_materials}
+                itemTypes={props.itemTypes}
+                items={props.items}
                 selectedStudentId={props.selectedStudentId}
                 selectedProfessionalId={props.selectedProfessionalId}
                 selectedItemId={props.selectedItemId}

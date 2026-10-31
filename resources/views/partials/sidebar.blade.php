@@ -126,24 +126,14 @@
 
         <li class="menu-divider">Radar Inclusivo</li>
 
-        @can('assistive-technology.index')
+        @can('item.index')
         <li>
-            <a href="{{ route('inclusive-radar.assistive-technologies.index') }}"
-               class="{{ request()->routeIs('inclusive-radar.assistive-technologies.*') ? 'active' : '' }}">
-                <span class="icon"><i class="bi bi-cpu"></i></span>
-                <span class="text">Tecnologias Assistivas</span>
+            <a href="{{ route('inclusive-radar.items.index') }}"
+               class="{{ request()->routeIs('inclusive-radar.items.*') ? 'active' : '' }}">
+                <span class="icon"><i class="bi bi-box-seam"></i></span>
+                <span class="text">Itens</span>
             </a>
         </li>
-        @endcan
-
-        @can('material.index')
-            <li>
-                <a href="{{ route('inclusive-radar.accessible-educational-materials.index') }}"
-                   class="{{ request()->routeIs('inclusive-radar.accessible-educational-materials.*') ? 'active' : '' }}">
-                    <span class="icon"><i class="bi bi-book"></i></span>
-                    <span class="text">Materiais Pedagógicos</span>
-                </a>
-            </li>
         @endcan
 
         @can('loan.index')

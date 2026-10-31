@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domains\Dashboard\Application\Queries;
 
 use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\InclusiveRadar\Domain\Models\Loan;
 use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
 use Illuminate\Support\Collection;
@@ -21,8 +21,8 @@ final readonly class InclusiveRadarDashboardQuery
     public function execute(): array
     {
         return [
-            'totalAt' => $this->totalActiveAssistiveTechnologies(),
-            'totalAem' => $this->totalActiveAccessibleEducationalMaterials(),
+            'totalAt' => $this->totalActiveItems(ItemType::AssistiveTechnology),
+            'totalAem' => $this->totalActiveItems(ItemType::AccessibleEducationalMaterial),
             'totalLoans' => $this->totalLoans(),
             'totalWaiting' => $this->totalWaitingAndNotifiedWaitlists(),
             'totalBarriers' => $this->totalBarriers(),
@@ -31,16 +31,10 @@ final readonly class InclusiveRadarDashboardQuery
         ];
     }
 
-    private function totalActiveAssistiveTechnologies(): int
+    private function totalActiveItems(ItemType $type): int
     {
-        return AssistiveTechnology::query()
-            ->where('is_active', true)
-            ->count();
-    }
-
-    private function totalActiveAccessibleEducationalMaterials(): int
-    {
-        return AccessibleEducationalMaterial::query()
+        return Item::query()
+            ->where('item_type', $type->value)
             ->where('is_active', true)
             ->count();
     }

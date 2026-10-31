@@ -26,15 +26,15 @@ final readonly class CreateWaitlistAction
     {
         $waitlist = DB::transaction(function () use ($data, $registeredBy): Waitlist {
             $item = $this->loanables->lockForLoan(
-                type: $data->waitlistableType,
                 id: $data->waitlistableId,
+                expectedType: $data->itemType,
             );
 
             $this->registrationPolicy->ensureCanRegister($item, $data);
 
             $waitlistDTO = new CreateWaitlistDTO(
                 waitlistableId: $item->id,
-                waitlistableType: $data->waitlistableType,
+                waitlistableType: $item->getMorphClass(),
                 studentId: $data->studentId,
                 professionalId: $data->professionalId,
                 registeredBy: $registeredBy,

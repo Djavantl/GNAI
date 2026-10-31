@@ -6,10 +6,9 @@ namespace App\Providers;
 
 use App\Domains\Audit\Infrastructure\AuditableEntities;
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\InclusiveRadar\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\InclusiveRadar\Domain\Models\AssistiveTechnology;
 use App\Domains\InclusiveRadar\Domain\Models\Barrier;
 use App\Domains\InclusiveRadar\Domain\Models\Inspection;
+use App\Domains\InclusiveRadar\Domain\Models\Item;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeRecord;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\AeeStudentEvaluation;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Course;
@@ -49,8 +48,7 @@ final class AppServiceProvider extends ServiceProvider
             'student_document' => StudentDocument::class,
             'student_course' => StudentCourse::class,
             'student_context' => StudentContext::class,
-            'assistive_technology' => AssistiveTechnology::class,
-            'accessible_educational_material' => AccessibleEducationalMaterial::class,
+            'item' => Item::class,
             'barrier' => Barrier::class,
             'inspection' => Inspection::class,
             'user' => User::class,

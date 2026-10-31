@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\InclusiveRadar\Application\Data\Waitlists;
 
-use App\Domains\InclusiveRadar\Domain\Enums\LoanableType;
+use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
 use Illuminate\Validation\Rules\Enum;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\MergeValidationRules;
@@ -17,7 +17,7 @@ final class CreateWaitlistData extends Data
 {
     public function __construct(
         public int $waitlistableId,
-        public LoanableType $waitlistableType,
+        public ItemType $itemType,
         public ?int $studentId = null,
         public ?int $professionalId = null,
         public ?string $observation = null,
@@ -27,7 +27,7 @@ final class CreateWaitlistData extends Data
     {
         return [
             'waitlistable_id' => ['required', 'integer'],
-            'waitlistable_type' => ['required', new Enum(LoanableType::class)],
+            'item_type' => ['required', new Enum(ItemType::class)],
             'student_id' => ['nullable', 'integer', 'exists:students,id'],
             'professional_id' => ['nullable', 'integer', 'exists:professionals,id'],
             'observation' => ['nullable', 'string'],
@@ -38,8 +38,8 @@ final class CreateWaitlistData extends Data
     {
         return [
             'waitlistable_id.required' => 'O recurso é obrigatório.',
-            'waitlistable_type.required' => 'O tipo de recurso é obrigatório.',
-            'waitlistable_type.enum' => 'Tipo de recurso inválido.',
+            'item_type.required' => 'O tipo de recurso é obrigatório.',
+            'item_type.enum' => 'Tipo de recurso inválido.',
             'student_id.exists' => 'Aluno inválido.',
             'professional_id.exists' => 'Profissional inválido.',
         ];

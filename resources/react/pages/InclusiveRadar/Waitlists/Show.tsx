@@ -72,7 +72,7 @@ export default function InclusiveRadarWaitlistsShowPage({
                     id="waitlist-show-resource"
                     title="Recurso Solicitado"
                     variant="inline"
-                    iconClass={waitlist.waitlistable_type === "assistive_technology" ? "fa fa-microchip" : "fa fa-book"}
+                    iconClass={waitlist.item_type === "assistive_technology" ? "fa fa-microchip" : "fa fa-book"}
                 >
                     <WaitlistResourceDetails {...waitlist} />
                 </FormSection>

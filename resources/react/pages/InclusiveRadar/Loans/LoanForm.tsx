@@ -25,7 +25,7 @@ import "./Loan.css";
 const base = "/inclusive-radar/loans";
 
 type FormData = {
-    loanable_type: string;
+    item_type: string;
     loanable_id: string;
     student_id: string;
     professional_id: string;
@@ -51,8 +51,8 @@ export default function LoanForm({
     professionals,
     authUser,
     can,
-    assistiveTechnologies = [],
-    educationalMaterials = [],
+    itemTypes = {},
+    items = [],
     selectedStudentId,
     selectedProfessionalId,
     selectedItemId,
@@ -60,8 +60,8 @@ export default function LoanForm({
     loan,
 }: LoanFormProps & {
     mode: "create" | "edit";
-    assistiveTechnologies?: LoanableItem[];
-    educationalMaterials?: LoanableItem[];
+    itemTypes?: Record<string, string>;
+    items?: LoanableItem[];
     selectedStudentId?: number | null;
     selectedProfessionalId?: number | null;
     selectedItemId?: number | null;
@@ -71,7 +71,7 @@ export default function LoanForm({
     const formElement = useRef<HTMLFormElement>(null);
     const busy = useRef(false);
     const form = useForm<FormData>({
-        loanable_type: selectedItemType ?? "",
+        item_type: selectedItemType ?? "",
         loanable_id: selectedItemId ? String(selectedItemId) : "",
         student_id: selectedStudentId ? String(selectedStudentId) : "",
         professional_id: selectedProfessionalId
@@ -86,19 +86,10 @@ export default function LoanForm({
     );
     const [loanTime, setLoanTime] = useState(initialLoanTime.current);
     const errors = form.errors as Record<string, string | undefined>;
-    const availableItems = useMemo(() => {
-        if (form.data.loanable_type === "assistive_technology") {
-            return assistiveTechnologies;
-        }
-        if (form.data.loanable_type === "accessible_educational_material") {
-            return educationalMaterials;
-        }
-        return [];
-    }, [
-        assistiveTechnologies,
-        educationalMaterials,
-        form.data.loanable_type,
-    ]);
+    const availableItems = useMemo(
+        () => items.filter((item) => item.item_type === form.data.item_type),
+        [form.data.item_type, items],
+    );
     const itemOptions = availableItems.map((item) => ({
         value: String(item.id),
         label: item.is_digital
@@ -160,39 +151,30 @@ export default function LoanForm({
                         <FormGrid>
                             <FormField
                                 id="loanable-type"
-                                label="Tipo de Recurso"
-                                error={errors.loanable_type}
+                                label="Tipo do Item"
+                                error={errors.item_type}
                                 requiredIndicator
                             >
                                 <SelectField
                                     id="loanable-type"
-                                    name="loanable_type"
-                                    label="Tipo de Recurso"
+                                    name="item_type"
+                                    label="Tipo do Item"
                                     required
-                                    value={form.data.loanable_type}
-                                    options={[
-                                        {
-                                            value: "assistive_technology",
-                                            label: "Tecnologia Assistiva",
-                                        },
-                                        {
-                                            value: "accessible_educational_material",
-                                            label: "Material Pedagógico Acessível",
-                                        },
-                                    ]}
-                                    aria-invalid={!!errors.loanable_type}
+                                    value={form.data.item_type}
+                                    options={optionMap(itemTypes)}
+                                    aria-invalid={!!errors.item_type}
                                     aria-describedby={describedBy(
-                                        "loanable_type",
+                                        "item_type",
                                         "loanable-type",
                                     )}
                                     onChange={(event) => {
                                         form.setData((data) => ({
                                             ...data,
-                                            loanable_type: event.target.value,
+                                            item_type: event.target.value,
                                             loanable_id: "",
                                         }));
                                         form.clearErrors(
-                                            "loanable_type",
+                                            "item_type",
                                             "loanable_id",
                                         );
                                     }}
@@ -209,9 +191,9 @@ export default function LoanForm({
                                     name="loanable_id"
                                     label="Item Específico"
                                     required
-                                    disabled={!form.data.loanable_type}
+                                    disabled={!form.data.item_type}
                                     placeholder={
-                                        form.data.loanable_type
+                                        form.data.item_type
                                             ? "Selecione"
                                             : "Selecione o tipo primeiro"
                                     }
@@ -246,11 +228,11 @@ export default function LoanForm({
                             </FormField>
                             <FormField
                                 id="loan-resource-type"
-                                label="Tipo de Recurso"
+                                label="Tipo do Item"
                             >
                                 <TextInput
                                     id="loan-resource-type"
-                                    value={loan.loanable_type_label}
+                                    value={loan.item_type_label}
                                     disabled
                                 />
                             </FormField>

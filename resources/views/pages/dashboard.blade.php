@@ -170,7 +170,7 @@
         {{-- SEÇÃO RADAR INCLUSIVO: CARDS DE RESUMO --}}
         <div class="row g-4 mt-2 mb-4">
             <div class="col-12 col-md-4">
-                <a href="{{ route('inclusive-radar.assistive-technologies.index') }}" class="text-decoration-none h-100">
+                <a href="{{ route('inclusive-radar.items.index', ['item_type' => 'assistive_technology']) }}" class="text-decoration-none h-100">
                     <div class="card card-custom border-0 shadow-sm h-100">
                         <div class="card-body p-3">
                             <div class="dashboard-kpi-header">
@@ -186,7 +186,7 @@
             </div>
 
             <div class="col-12 col-md-4">
-                <a href="{{ route('inclusive-radar.accessible-educational-materials.index') }}" class="text-decoration-none h-100">
+                <a href="{{ route('inclusive-radar.items.index', ['item_type' => 'accessible_educational_material']) }}" class="text-decoration-none h-100">
                     <div class="card card-custom border-0 shadow-sm h-100">
                         <div class="card-body p-3">
                             <div class="dashboard-kpi-header">
