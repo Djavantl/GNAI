@@ -69,7 +69,7 @@ export default function InclusionPublicationsShowPage({
                         <DetailField label="Título" wide>{publication.title}</DetailField>
                         <DetailField label="Resumo" wide>{publication.summary || "Nenhum resumo informado."}</DetailField>
                         <DetailField label="Tipo">{publication.type_label}</DetailField>
-                        <DetailField label="Categoria">{publication.category || "—"}</DetailField>
+                        <DetailField label="Etiquetas">{publication.tags.map((tag) => tag.name).join(", ") || "—"}</DetailField>
                         <DetailField label="Autor">{publication.author_name || "—"}</DetailField>
                         <DetailField label="Link">
                             {publication.link_url ? (
@@ -106,7 +106,7 @@ export default function InclusionPublicationsShowPage({
                         <DetailField label="Local">{publication.location || "—"}</DetailField>
                         <DetailField label="Organizador">{publication.organizer || "—"}</DetailField>
                         <DetailField label="Público" wide>{publication.audience || "—"}</DetailField>
-                        <DetailField label="Palestrantes" wide>
+                        <DetailField label="Participantes" wide>
                             {publication.speakers?.length ? (
                                 <ul className="publicationShow__people">
                                     {publication.speakers.map((speaker) => (
@@ -114,12 +114,12 @@ export default function InclusionPublicationsShowPage({
                                             <img src={speaker.photo_url ?? "/images/default-user.jpg"} alt="" />
                                             <span>
                                                 {speaker.name}
-                                                {speaker.role ? <small>{speaker.role}</small> : null}
+                                                {speaker.participation || speaker.role ? <small>{[speaker.participation, speaker.role].filter(Boolean).join(" · ")}</small> : null}
                                             </span>
                                         </li>
                                     ))}
                                 </ul>
-                            ) : "Nenhum palestrante vinculado."}
+                            ) : "Nenhum participante vinculado."}
                         </DetailField>
                     </dl>
                 </FormSection>

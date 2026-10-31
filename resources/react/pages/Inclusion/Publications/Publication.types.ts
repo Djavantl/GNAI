@@ -10,6 +10,7 @@ export interface PublicationSpeaker {
     id: number;
     name: string | null;
     role: string | null;
+    participation: string | null;
     photo_url: string | null;
 }
 
@@ -21,7 +22,7 @@ export interface PublicationRecord {
     summary: string | null;
     type: string;
     type_label: string;
-    category: string | null;
+    tags: { id: number; name: string }[];
     has_schedule: boolean;
     description: string | null;
     description_html?: string;
@@ -70,7 +71,7 @@ export interface PublicationFormOptions {
     types: SelectOption[];
     authors: SelectOption[];
     speakers: SelectOption[];
-    categories: string[];
+    tags: SelectOption[];
     defaultAuthorId: number | null;
     publicBaseUrl: string;
 }
@@ -79,6 +80,13 @@ export interface NewGalleryImage {
     key: string;
     file: File;
     alt: string;
+}
+
+/** Linha dinâmica de participante; `key` mantém a identidade ao remover linhas. */
+export interface SpeakerRow {
+    key: string;
+    id: string;
+    participation: string;
 }
 
 export interface ExistingGalleryImage {
@@ -93,7 +101,7 @@ export interface PublicationFormData {
     slug: string;
     summary: string;
     type: string;
-    category: string;
+    tag_ids: string[];
     has_schedule: boolean;
     description: string;
     start_date: string;
@@ -104,7 +112,7 @@ export interface PublicationFormData {
     organizer: string;
     audience: string;
     author_id: string;
-    speaker_ids: string[];
+    speaker_rows: SpeakerRow[];
     link_url: string;
     link_label: string;
     cover: File | null;

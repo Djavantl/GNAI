@@ -95,9 +95,9 @@ export default function PublicationCard({
             <div className="publicationCard__body">
                 <div className="publicationCard__tags">
                     <span className="publicationCard__type">{publication.type_label}</span>
-                    {publication.category ? (
-                        <span className="publicationCard__category">{publication.category}</span>
-                    ) : null}
+                    {publication.tags.map((tag) => (
+                        <span key={tag} className="publicationCard__category">{tag}</span>
+                    ))}
                     {schedule ? <ScheduleStatus schedule={schedule} /> : null}
                 </div>
                 {publication.published_at_label ? (

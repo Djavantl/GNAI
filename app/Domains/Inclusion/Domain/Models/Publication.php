@@ -45,7 +45,6 @@ class Publication extends Model implements Auditable
         'slug',
         'summary',
         'type',
-        'category',
         'has_schedule',
         'description',
         'start_date',
@@ -115,7 +114,6 @@ class Publication extends Model implements Auditable
             'slug' => AuditedField::text('Endereço da página'),
             'summary' => AuditedField::text('Resumo'),
             'type' => AuditedField::enum('Tipo', PublicationType::class),
-            'category' => AuditedField::text('Categoria'),
             'has_schedule' => AuditedField::boolean('Possui datas'),
             'description' => AuditedField::richText('Conteúdo'),
             'start_date' => AuditedField::date('Data de Início'),
@@ -179,8 +177,14 @@ class Publication extends Model implements Auditable
             'publication_id',
             'professional_id',
         )
-            ->withPivot('position')
+            ->withPivot(['position', 'participation'])
             ->orderByPivot('position');
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'publication_tag', 'publication_id', 'tag_id')
+            ->orderBy('tags.name');
     }
 
     /**
@@ -276,7 +280,6 @@ class Publication extends Model implements Auditable
             'slug' => self::normalizeSlug($data->slug),
             'summary' => self::normalizeNullableText($data->summary),
             'type' => $type->value,
-            'category' => self::normalizeNullableText($data->category),
             'has_schedule' => $hasSchedule,
             'description' => self::normalizeNullableText($data->description),
             'location' => self::normalizeNullableText($data->location),

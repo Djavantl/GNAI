@@ -19,6 +19,7 @@ use App\Domains\Inclusion\Domain\Exceptions\InvalidPublication;
 use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Models\PublicationMedia;
 use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Tag;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -112,6 +113,7 @@ final class PublicationController
             'options' => $formQuery->execute(
                 $request->user(),
                 $publication->speakers->modelKeys(),
+                $publication->tags->modelKeys(),
             ),
             'can' => ['submit' => $request->user()?->can('publication.update') ?? false],
         ]);
@@ -187,7 +189,10 @@ final class PublicationController
             'summary' => $publication->summary,
             'type' => $type->value,
             'type_label' => $type->label(),
-            'category' => $publication->category,
+            'tags' => $publication->tags
+                ->map(fn (Tag $tag): array => ['id' => $tag->id, 'name' => $tag->name])
+                ->values()
+                ->all(),
             'has_schedule' => (bool) $publication->has_schedule,
             'description' => $publication->description,
             'start_date' => $publication->start_date?->format('Y-m-d'),
@@ -237,6 +242,7 @@ final class PublicationController
                     'id' => $professional->id,
                     'name' => $professional->person?->name,
                     'role' => $professional->position?->name,
+                    'participation' => $professional->pivot?->participation,
                     'photo_url' => $professional->person?->photo_url,
                 ])
                 ->values()

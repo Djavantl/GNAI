@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * Persiste capa, galeria e palestrantes de uma publicação. Os arquivos novos
+ * Persiste capa, galeria, palestrantes e etiquetas de uma publicação. Os arquivos novos
  * são gravados antes da transação e descartados se ela falhar; os arquivos
  * substituídos ou removidos só são apagados depois do commit.
  */
@@ -21,7 +21,8 @@ final readonly class SyncPublicationRelationsAction
     public function __construct(private PublicationMediaStorage $storage) {}
 
     /**
-     * @param  list<int|string>  $speakerIds
+     * @param  list<array{id?: int|string, participation?: string|null}>  $speakers
+     * @param  list<int|string>  $tagIds
      * @param  list<array{file?: UploadedFile, alt?: string|null}>  $newGallery
      * @param  list<array{id?: int|string, alt?: string|null, remove?: bool|string|null}>  $existingGallery
      *
@@ -30,7 +31,8 @@ final readonly class SyncPublicationRelationsAction
     public function execute(
         Publication $publication,
         callable $persist,
-        array $speakerIds,
+        array $speakers,
+        array $tagIds,
         ?UploadedFile $cover,
         bool $removeCover,
         array $newGallery,
@@ -66,7 +68,8 @@ final readonly class SyncPublicationRelationsAction
             DB::transaction(function () use (
                 $publication,
                 $persist,
-                $speakerIds,
+                $speakers,
+                $tagIds,
                 $newCoverPath,
                 $removeCover,
                 $newGalleryRows,
@@ -101,7 +104,10 @@ final readonly class SyncPublicationRelationsAction
                     $publication->media()->create([...$row, 'position' => $position]);
                 }
 
-                $this->syncSpeakers($publication, $speakerIds);
+                $this->syncSpeakers($publication, $speakers);
+                $publication->tags()->sync(
+                    array_values(array_filter(array_unique(array_map('intval', $tagIds)), static fn (int $id): bool => $id > 0)),
+                );
             });
         } catch (Throwable $exception) {
             $this->storage->deleteMany($storedPaths);
@@ -155,16 +161,24 @@ final readonly class SyncPublicationRelationsAction
     }
 
     /**
-     * @param  list<int|string>  $speakerIds
+     * @param  list<array{id?: int|string, participation?: string|null}>  $speakers
      */
-    private function syncSpeakers(Publication $publication, array $speakerIds): void
+    private function syncSpeakers(Publication $publication, array $speakers): void
     {
         $sync = [];
 
-        foreach (array_values(array_unique(array_map('intval', $speakerIds))) as $index => $id) {
-            if ($id > 0) {
-                $sync[$id] = ['position' => $index];
+        foreach (array_values($speakers) as $index => $speaker) {
+            $id = (int) ($speaker['id'] ?? 0);
+
+            if ($id <= 0 || isset($sync[$id])) {
+                continue;
             }
+
+            $participation = trim((string) ($speaker['participation'] ?? ''));
+            $sync[$id] = [
+                'position' => $index,
+                'participation' => $participation !== '' ? mb_substr($participation, 0, 100) : null,
+            ];
         }
 
         $publication->speakers()->sync($sync);

@@ -30,7 +30,7 @@ final class ListPublicationsQuery
         }
 
         return $query
-            ->with('author')
+            ->with(['author', 'tags'])
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->orderByDesc('id')
             ->paginate($filters->perPage)

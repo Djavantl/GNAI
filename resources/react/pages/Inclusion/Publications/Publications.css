@@ -40,7 +40,6 @@
     border: 0;
 }
 
-.publicationForm__tabAlert,
 .publicationGallery__error {
     color: var(--ui-color-danger);
     font-weight: 600;
@@ -49,6 +48,56 @@
 .publicationGallery__error {
     margin: 0 0 8px;
     font-size: 12px;
+}
+
+/* Título e resumo à esquerda; autor, tipo e etiquetas à direita. */
+/* Espaçamento vertical igual ao da grade de formulários (20px). */
+.publicationForm__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+    gap: 20px 24px;
+    margin-bottom: 20px;
+}
+
+.publicationForm__introMain,
+.publicationForm__introAside {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.publicationForm__intro #publication-summary {
+    resize: vertical;
+}
+
+.publicationForm__placeRow {
+    margin-top: 20px;
+}
+
+.publicationForm__speakers {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+}
+
+.publicationForm__speakers .formField__label {
+    margin-bottom: 0;
+}
+
+.publicationForm__speakerList {
+    display: grid;
+    gap: 20px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.publicationForm__speakerRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 0 24px;
 }
 
 .publicationForm__slug {
@@ -71,12 +120,6 @@
 
 .publicationForm__slug .textInput {
     border-radius: 0 4px 4px 0;
-}
-
-.publicationGallery__hint {
-    margin: 0 0 12px;
-    color: var(--ui-color-text-muted);
-    font-size: 13px;
 }
 
 .publicationGallery {
@@ -202,6 +245,10 @@
     .publicationIndex__filters {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
+
+    .publicationForm__intro {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 @media (max-width: 700px) {
@@ -219,6 +266,11 @@
 
     .publicationGallery__item {
         flex-wrap: wrap;
+    }
+
+    .publicationForm__speakerRow {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
     }
 
     .publicationForm__slugPrefix {

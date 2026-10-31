@@ -31,6 +31,7 @@ final readonly class WebsiteContentQuery
             ->whereDate('end_date', '>=', now()->toDateString())
             ->orderBy('start_date')
             ->orderBy('start_time')
+            ->with('tags')
             ->limit(self::MAX_ITEMS)
             ->get();
 
@@ -39,6 +40,7 @@ final readonly class WebsiteContentQuery
             ->orderByDesc('is_featured')
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->orderByDesc('id')
+            ->with('tags')
             ->limit(self::MAX_ITEMS)
             ->get();
 

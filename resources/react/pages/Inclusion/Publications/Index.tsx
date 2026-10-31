@@ -48,7 +48,7 @@ const columns: TableListColumn[] = [
     { id: "published", label: "Publicação", width: "13%", minWidth: 100 },
     { id: "period", label: "Período", width: "19%", minWidth: 120 },
     { id: "status", label: "Situação", width: "12%", minWidth: 90 },
-    { id: "category", label: "Categoria", width: "14%", defaultVisible: false },
+    { id: "tags", label: "Etiquetas", width: "14%", defaultVisible: false },
     { id: "location", label: "Local", width: "16%", defaultVisible: false },
     { id: "author", label: "Autor", width: "16%", defaultVisible: false },
     { id: "organizer", label: "Organizador", width: "16%", defaultVisible: false },
@@ -196,7 +196,7 @@ export default function InclusionPublicationsIndexPage({
                                         {publication.is_active ? "Publicado" : "Rascunho"}
                                     </TableLabel>
                                 </td>
-                                <td>{publication.category || "Não informada"}</td>
+                                <td>{publication.tags.map((tag) => tag.name).join(", ") || "Nenhuma"}</td>
                                 <td>{publication.location || "Não informado"}</td>
                                 <td>{publication.author_name || "Não informado"}</td>
                                 <td>{publication.organizer || "Não informado"}</td>

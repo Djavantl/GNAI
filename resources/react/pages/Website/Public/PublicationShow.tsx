@@ -32,7 +32,7 @@ export default function WebsitePublicPublicationShowPage({
     return (
         <SiteLayout site={site} current="publications" seo={seo}>
             <SitePageHeader
-                eyebrow={[publication.type_label, publication.category].filter(Boolean).join(" · ")}
+                eyebrow={[publication.type_label, ...publication.tags].filter(Boolean).join(" · ")}
                 title={publication.title}
                 subtitle={publication.summary}
                 trail={[
@@ -86,7 +86,7 @@ export default function WebsitePublicPublicationShowPage({
                         ) : null}
                         {publication.speakers.length ? (
                             <section className="websitePublic__block" aria-labelledby="publication-speakers">
-                                <h2 id="publication-speakers" className="websitePublic__blockTitle">Palestrantes</h2>
+                                <h2 id="publication-speakers" className="websitePublic__blockTitle">Participantes</h2>
                                 <ul className="websitePublic__teamGrid websitePublic__teamGrid--compact">
                                     {publication.speakers.map((speaker) => (
                                         <li key={speaker.id}>

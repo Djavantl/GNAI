@@ -16,7 +16,7 @@ final class ListPublicPublicationsData extends Data
     public function __construct(
         public ?string $q = null,
         public ?string $type = null,
-        public ?string $category = null,
+        public ?string $tag = null,
     ) {}
 
     public static function rules(): array
@@ -24,7 +24,7 @@ final class ListPublicPublicationsData extends Data
         return [
             'q' => ['nullable', 'string', 'max:120'],
             'type' => ['nullable', Rule::enum(PublicationType::class)],
-            'category' => ['nullable', 'string', 'max:100'],
+            'tag' => ['nullable', 'string', 'max:100'],
         ];
     }
 }

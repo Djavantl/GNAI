@@ -20,7 +20,8 @@ final class UpdatePublicationData extends Data
     use PublicationRules;
 
     /**
-     * @param  list<int|string>  $speakerIds
+     * @param  list<array{id?: int|string, participation?: string|null}>  $speakers
+     * @param  list<int|string>  $tagIds
      * @param  list<array{file?: UploadedFile, alt?: string|null}>  $gallery
      * @param  list<array{id?: int|string, alt?: string|null, remove?: bool|string|null}>  $galleryExisting
      */
@@ -38,10 +39,10 @@ final class UpdatePublicationData extends Data
         public bool $hasSchedule = true,
         public string $type = 'event',
         public ?string $summary = null,
-        public ?string $category = null,
         public ?string $slug = null,
         public ?int $authorId = null,
-        public array $speakerIds = [],
+        public array $speakers = [],
+        public array $tagIds = [],
         public ?string $linkUrl = null,
         public ?string $linkLabel = null,
         public ?UploadedFile $cover = null,

@@ -20,7 +20,6 @@ final readonly class CreatePublicationDTO
         public bool $hasSchedule = true,
         public string $type = 'event',
         public ?string $summary = null,
-        public ?string $category = null,
         public ?string $slug = null,
         public ?int $authorId = null,
         public ?string $linkUrl = null,

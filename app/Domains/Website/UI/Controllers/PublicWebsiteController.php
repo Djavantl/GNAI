@@ -69,9 +69,9 @@ final readonly class PublicWebsiteController
             'publications' => $query->execute($filters)->through(
                 fn (Publication $event): array => $this->presenter->publicationCard($event),
             ),
-            'filters' => $request->only(['q', 'type', 'category']),
+            'filters' => $request->only(['q', 'type', 'tag']),
             'types' => $types,
-            'categories' => $query->categories(),
+            'tags' => $query->tags(),
             'seo' => [
                 'title' => "Publicações - {$site['name']}",
                 'description' => "Notícias, eventos e comunicados do {$site['name']}.",
@@ -84,7 +84,7 @@ final readonly class PublicWebsiteController
         $event = Publication::query()
             ->publiclyVisible()
             ->where('slug', $slug)
-            ->with(['author', 'media', 'speakers.person', 'speakers.position'])
+            ->with(['author', 'media', 'speakers.person', 'speakers.position', 'tags'])
             ->firstOrFail();
         $site = $this->presenter->site(WebsiteSetting::current());
         $publication = $this->presenter->publicationDetail($event);
@@ -93,6 +93,7 @@ final readonly class PublicWebsiteController
             ->publiclyVisible()
             ->whereKeyNot($event->getKey())
             ->where('type', $event->type)
+            ->with('tags')
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->limit(3)
             ->get()

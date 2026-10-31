@@ -1,0 +1,30 @@
+.removableField { display: flex; align-items: stretch; min-width: 0; }
+.removableField__control { flex: 1; min-width: 0; }
+.removableField__control .textInput,
+.removableField__control .select2-container { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.removableField .button.removableField__button { flex: none; min-width: 38px; min-height: 38px; margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+
+/* Botão de adicionar linha, no formato "+ Atividade" do Ubold (btn-xs com btn-label). */
+.button.removableField__add,
+.button.removableField__add:hover,
+.button.removableField__add:focus,
+.button.removableField__add:active {
+    padding: 0 10px 0 0;
+    border-color: transparent !important;
+    border-radius: 2px;
+    background-color: #f3f3f3 !important;
+    box-shadow: none;
+    color: #797979 !important;
+    font-size: 12px;
+    line-height: 24px;
+}
+.button.removableField__add:hover { background-color: #ebebeb !important; }
+.button.removableField__add:active { background-color: #e3e3e3 !important; box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5); }
+.button.removableField__add:focus-visible { outline: 2px solid var(--ui-color-gnai-primary); outline-offset: 2px; }
+.button.removableField__add .button__label {
+    margin: 0 10px 0 0;
+    padding: 0 9px;
+    border-radius: 2px 0 0 2px;
+    background: rgba(0, 0, 0, 0.06);
+    color: #4c5667;
+}

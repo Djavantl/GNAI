@@ -72,7 +72,7 @@ export interface PublicationCardData {
     summary: string;
     type: string;
     type_label: string;
-    category: string | null;
+    tags: string[];
     published_at: string | null;
     published_at_label: string | null;
     cover_url: string | null;

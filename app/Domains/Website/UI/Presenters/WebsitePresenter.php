@@ -80,7 +80,7 @@ final class WebsitePresenter
             ),
             'type' => $type->value,
             'type_label' => $type->label(),
-            'category' => $event->category,
+            'tags' => $event->tags->where('is_active', true)->pluck('name')->values()->all(),
             'published_at' => $date?->toIso8601String(),
             'published_at_label' => $date ? $date->copy()->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y') : null,
             'cover_url' => $event->cover_path ? asset('storage/'.$event->cover_path) : null,
@@ -114,7 +114,12 @@ final class WebsitePresenter
                 ->values()
                 ->all(),
             'speakers' => $event->speakers
-                ->map(fn (Professional $professional): array => $this->teamMember($professional))
+                ->map(fn (Professional $professional): array => [
+                    ...$this->teamMember($professional),
+                    'role' => collect([$professional->pivot?->participation, $professional->position?->name])
+                        ->filter()
+                        ->implode(' · ') ?: null,
+                ])
                 ->values()
                 ->all(),
         ];

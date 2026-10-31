@@ -6,21 +6,22 @@ namespace App\Domains\Inclusion\Application\Queries\Publications;
 
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Domain\Enums\PublicationType;
-use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Enums\ProfessionalStatus;
 use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Tag;
 
 /**
  * Opções do formulário de publicações: tipos, autores, palestrantes e
- * categorias já utilizadas (sugestões, sem cadastro próprio).
+ * etiquetas do cadastro de etiquetas.
  */
 final class PublicationFormQuery
 {
     /**
      * @param  list<int>  $selectedSpeakerIds  palestrantes já vinculados, mesmo inativos
+     * @param  list<int>  $selectedTagIds  etiquetas já vinculadas, mesmo inativas
      * @return array<string, mixed>
      */
-    public function execute(?User $currentUser, array $selectedSpeakerIds = []): array
+    public function execute(?User $currentUser, array $selectedSpeakerIds = [], array $selectedTagIds = []): array
     {
         $authors = User::query()
             ->with(['professional.person', 'teacher.person'])
@@ -49,11 +50,18 @@ final class PublicationFormQuery
             ->values()
             ->all();
 
-        $categories = Publication::query()
-            ->whereNotNull('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category')
+        $tags = Tag::query()
+            ->where(function ($query) use ($selectedTagIds): void {
+                $query->where('is_active', true)
+                    ->orWhereIn('id', $selectedTagIds);
+            })
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Tag $tag): array => [
+                'value' => (string) $tag->getKey(),
+                'label' => (string) $tag->name,
+            ])
+            ->values()
             ->all();
 
         $types = [];
@@ -66,7 +74,7 @@ final class PublicationFormQuery
             'types' => $types,
             'authors' => $authors,
             'speakers' => $speakers,
-            'categories' => $categories,
+            'tags' => $tags,
             'defaultAuthorId' => $currentUser?->getKey(),
             'publicBaseUrl' => url('/site/publicacoes'),
         ];

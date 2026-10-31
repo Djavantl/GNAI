@@ -13,13 +13,13 @@ import {
 } from "@/components/Website/Website.types";
 import "./WebsitePublic.css";
 
-type Filters = { q: string; type: string; category: string };
+type Filters = { q: string; type: string; tag: string };
 type Props = {
     site: WebsiteSite;
     publications: WebsitePaginator<PublicationCardData>;
     filters: Partial<Filters>;
     types: { value: string; label: string }[];
-    categories: string[];
+    tags: string[];
     seo: WebsiteSeo;
 };
 
@@ -34,13 +34,13 @@ export default function WebsitePublicPublicationsPage({
     publications,
     filters: initialFilters,
     types,
-    categories,
+    tags,
     seo,
 }: Props): React.JSX.Element {
     const [filters, setFilters] = useState<Filters>({
         q: initialFilters.q ?? "",
         type: initialFilters.type ?? "",
-        category: initialFilters.category ?? "",
+        tag: initialFilters.tag ?? "",
     });
     const [loading, setLoading] = useState(false);
     const hasFilters = Object.values(filters).some((value) => value !== "");
@@ -60,7 +60,7 @@ export default function WebsitePublicPublicationsPage({
     }
 
     function clear(): void {
-        const empty = { q: "", type: "", category: "" };
+        const empty = { q: "", type: "", tag: "" };
         setFilters(empty);
         visit({});
     }
@@ -100,17 +100,17 @@ export default function WebsitePublicPublicationsPage({
                                 ))}
                             </select>
                         </div>
-                        {categories.length ? (
+                        {tags.length ? (
                             <div className="websitePublic__field">
-                                <label htmlFor="publications-category">Categoria</label>
+                                <label htmlFor="publications-tag">Etiqueta</label>
                                 <select
-                                    id="publications-category"
-                                    value={filters.category}
-                                    onChange={(event) => setFilters((current) => ({ ...current, category: event.target.value }))}
+                                    id="publications-tag"
+                                    value={filters.tag}
+                                    onChange={(event) => setFilters((current) => ({ ...current, tag: event.target.value }))}
                                 >
-                                    <option value="">Todas as categorias</option>
-                                    {categories.map((category) => (
-                                        <option key={category} value={category}>{category}</option>
+                                    <option value="">Todas as etiquetas</option>
+                                    {tags.map((tag) => (
+                                        <option key={tag} value={tag}>{tag}</option>
                                     ))}
                                 </select>
                             </div>

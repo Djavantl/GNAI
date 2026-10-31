@@ -63,6 +63,7 @@ Os caminhos desta tabela são relativos a `resources/react/components/`.
 | Grupos de checkbox/radio | `Forms/ChoiceGroup/ChoiceGroup.tsx` envolvendo controles `ChoiceControl` e recebendo o estado inválido |
 | Alternância booleana | `Forms/ToggleControl/ToggleControl.tsx`; adaptador React do Switchery local, com estado controlado, tamanho e limpeza |
 | Valor numérico em faixa | `Forms/RangeSlider/RangeSlider.tsx`; adaptador controlado do Ion.RangeSlider do Ubold, com grade, cor roxa do Gnai, trilha focável por teclado e `role="slider"` |
+| Linhas dinâmicas removíveis | `Forms/RemovableField/RemovableField.tsx`; campo com o X vermelho colado à direita (`input-group-btn` do Ubold), com nome acessível por linha e modo de desfazer (`removed`). Adicione linhas com `Button tone="white" className="removableField__add" labelIconClass="fa fa-plus"`, no formato "+ Atividade" do Ubold, como os participantes das publicações |
 | Data de calendário | `Forms/DatePicker/DatePicker.tsx`, quando aplicável ao formato de data esperado |
 | Foto de pessoa | `Forms/PersonPhotoUpload/PersonPhotoUpload.tsx`, quando o cadastro precisar dessa informação |
 | Imagem única que não é foto de pessoa (capa, logo, banner) | `Forms/ImageUploadField/ImageUploadField.tsx`; o pai controla arquivo, imagem atual e remoção, e pede texto alternativo quando a imagem for informativa |

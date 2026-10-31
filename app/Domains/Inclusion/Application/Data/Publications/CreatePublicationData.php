@@ -19,7 +19,8 @@ final class CreatePublicationData extends Data
     use PublicationRules;
 
     /**
-     * @param  list<int|string>  $speakerIds
+     * @param  list<array{id?: int|string, participation?: string|null}>  $speakers
+     * @param  list<int|string>  $tagIds
      * @param  list<array{file?: UploadedFile, alt?: string|null}>  $gallery
      */
     public function __construct(
@@ -36,10 +37,10 @@ final class CreatePublicationData extends Data
         public bool $hasSchedule = true,
         public string $type = 'event',
         public ?string $summary = null,
-        public ?string $category = null,
         public ?string $slug = null,
         public ?int $authorId = null,
-        public array $speakerIds = [],
+        public array $speakers = [],
+        public array $tagIds = [],
         public ?string $linkUrl = null,
         public ?string $linkLabel = null,
         public ?UploadedFile $cover = null,

@@ -19,7 +19,7 @@ export function slugify(value: string): string {
         .replace(/-+$/g, "");
 }
 
-/** Aba Publicação: situação, data, destaque, endereço e dados para buscadores. */
+/** Situação, data, destaque, endereço e dados para buscadores. */
 export default function PublicationPublishingFields({
     data,
     errors,
@@ -56,6 +56,7 @@ export default function PublicationPublishingFields({
                         label="Data de publicação"
                         error={errors.published_at}
                         hint="Em branco, vale o momento em que a publicação for para o ar. Datas futuras só aparecem no site a partir do dia escolhido."
+                        hintLabel="Sobre a data de publicação"
                     >
                         <DatePicker
                             id="publication-published-at"
@@ -64,7 +65,7 @@ export default function PublicationPublishingFields({
                             value={data.published_at}
                             disabled={disabled}
                             invalid={!!errors.published_at}
-                            describedBy={describedBy(errors, "published_at", "publication-published-at", true)}
+                            describedBy={describedBy(errors, "published_at", "publication-published-at")}
                             onChange={(value) => update("published_at", value)}
                         />
                     </FormField>
@@ -92,6 +93,7 @@ export default function PublicationPublishingFields({
                             label="Endereço da página"
                             error={errors.slug}
                             hint={`Em branco, é gerado a partir do título: ${publicBaseUrl}/${data.slug || suggestedSlug}`}
+                            hintLabel="Sobre o endereço da página"
                         >
                             <div className="publicationForm__slug">
                                 <span className="publicationForm__slugPrefix" aria-hidden="true">/site/publicacoes/</span>
@@ -102,7 +104,7 @@ export default function PublicationPublishingFields({
                                     maxLength={160}
                                     placeholder={suggestedSlug}
                                     invalid={!!errors.slug}
-                                    aria-describedby={describedBy(errors, "slug", "publication-slug", true)}
+                                    aria-describedby={describedBy(errors, "slug", "publication-slug")}
                                     onChange={(event) => update("slug", event.target.value.toLowerCase().replace(/\s+/g, "-"))}
                                     onBlur={() => update("slug", slugify(data.slug))}
                                 />
@@ -114,6 +116,7 @@ export default function PublicationPublishingFields({
                         label="Título para buscadores"
                         error={errors.seo_title}
                         hint="Vazio usa o título da publicação."
+                        hintLabel="Sobre o título para buscadores"
                     >
                         <TextInput
                             id="publication-seo-title"
@@ -121,7 +124,7 @@ export default function PublicationPublishingFields({
                             value={data.seo_title}
                             maxLength={255}
                             invalid={!!errors.seo_title}
-                            aria-describedby={describedBy(errors, "seo_title", "publication-seo-title", true)}
+                            aria-describedby={describedBy(errors, "seo_title", "publication-seo-title")}
                             onChange={(event) => update("seo_title", event.target.value)}
                         />
                     </FormField>
@@ -130,6 +133,7 @@ export default function PublicationPublishingFields({
                         label="Descrição para buscadores"
                         error={errors.seo_description}
                         hint="Vazio usa o resumo."
+                        hintLabel="Sobre a descrição para buscadores"
                     >
                         <TextInput
                             id="publication-seo-description"
@@ -137,7 +141,7 @@ export default function PublicationPublishingFields({
                             value={data.seo_description}
                             maxLength={300}
                             invalid={!!errors.seo_description}
-                            aria-describedby={describedBy(errors, "seo_description", "publication-seo-description", true)}
+                            aria-describedby={describedBy(errors, "seo_description", "publication-seo-description")}
                             onChange={(event) => update("seo_description", event.target.value)}
                         />
                     </FormField>

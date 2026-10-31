@@ -6,8 +6,8 @@ import ImageUploadField, {
     defaultImageAccept,
     useObjectUrl,
 } from "@/components/Forms/ImageUploadField/ImageUploadField";
+import RemovableField from "@/components/Forms/RemovableField/RemovableField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
-import Button from "@/components/UI/Button/Button";
 import type { NewGalleryImage } from "./Publication.types";
 import { describedBy, type PublicationFieldsProps } from "./PublicationFields.types";
 
@@ -20,7 +20,7 @@ function NewGalleryThumbnail({ image }: { image: NewGalleryImage }): React.JSX.E
     return url ? <img src={url} alt="" /> : <span className="publicationGallery__placeholder" aria-hidden="true" />;
 }
 
-/** Aba Mídia: capa e galeria de fotos, sempre com texto alternativo. */
+/** Capa e galeria de fotos, sempre com texto alternativo. */
 export default function PublicationMediaFields({
     data,
     errors,
@@ -74,6 +74,7 @@ export default function PublicationMediaFields({
                         label="Capa"
                         error={errors.cover}
                         hint="Aparece nos cartões e no topo da publicação. JPG, PNG ou WEBP com até 4 MB."
+                        hintLabel="Sobre a capa"
                     >
                         <ImageUploadField
                             id="publication-cover-file"
@@ -85,7 +86,7 @@ export default function PublicationMediaFields({
                             previewAlt={data.cover_alt}
                             disabled={disabled}
                             invalid={!!errors.cover}
-                            describedBy={describedBy(errors, "cover", "publication-cover-file", true)}
+                            describedBy={describedBy(errors, "cover", "publication-cover-file")}
                             onChange={(file) => updateWith((current) => ({ ...current, cover: file, remove_cover: false }))}
                             onRemove={() => updateWith((current) => ({ ...current, cover: null, remove_cover: true }))}
                             onError={onImageError}
@@ -96,6 +97,7 @@ export default function PublicationMediaFields({
                         label="Texto alternativo"
                         error={errors.cover_alt}
                         hint="Descreva a imagem para quem usa leitor de tela."
+                        hintLabel="Sobre o texto alternativo"
                         requiredIndicator={hasCover}
                     >
                         <TextInput
@@ -106,7 +108,7 @@ export default function PublicationMediaFields({
                             placeholder="Ex.: Participantes reunidos no auditório"
                             required={hasCover}
                             invalid={!!errors.cover_alt}
-                            aria-describedby={describedBy(errors, "cover_alt", "publication-cover-alt", true)}
+                            aria-describedby={describedBy(errors, "cover_alt", "publication-cover-alt")}
                             onChange={(event) => update("cover_alt", event.target.value)}
                         />
                     </FormField>
@@ -120,10 +122,6 @@ export default function PublicationMediaFields({
             >
                 <FormGrid>
                     <FormGridWide>
-                        <p className="publicationGallery__hint" id="publication-gallery-hint">
-                            Adicione fotos do evento ou da ação, cada uma com seu texto alternativo.
-                            {" "}{total}/{maxGallery} fotos.
-                        </p>
                         {errors.gallery ? (
                             <p className="publicationGallery__error" id="publication-gallery-error">{errors.gallery}</p>
                         ) : null}
@@ -141,41 +139,39 @@ export default function PublicationMediaFields({
                                             <img src={image.url} alt="" />
                                             <div className="publicationGallery__fields">
                                                 <FormField id={id} label={`Texto alternativo da foto ${index + 1}`} error={errors[errorKey]} requiredIndicator={!image.remove}>
-                                                    <TextInput
-                                                        id={id}
-                                                        name={`gallery_existing[${index}][alt]`}
-                                                        value={image.alt}
-                                                        maxLength={255}
-                                                        disabled={image.remove}
-                                                        invalid={!!errors[errorKey]}
-                                                        aria-describedby={errors[errorKey] ? `${id}-error` : undefined}
-                                                        onChange={(event) => updateWith((current) => ({
+                                                    <RemovableField
+                                                        removed={image.remove}
+                                                        removeLabel={`Remover a foto ${index + 1}`}
+                                                        restoreLabel={`Manter a foto ${index + 1}`}
+                                                        disabled={disabled}
+                                                        onRemove={() => updateWith((current) => ({
                                                             ...current,
                                                             gallery_existing: current.gallery_existing.map((item) => (
-                                                                item.id === image.id ? { ...item, alt: event.target.value } : item
+                                                                item.id === image.id ? { ...item, remove: !item.remove } : item
                                                             )),
                                                         }))}
-                                                    />
+                                                    >
+                                                        <TextInput
+                                                            id={id}
+                                                            name={`gallery_existing[${index}][alt]`}
+                                                            value={image.alt}
+                                                            maxLength={255}
+                                                            disabled={image.remove}
+                                                            invalid={!!errors[errorKey]}
+                                                            aria-describedby={errors[errorKey] ? `${id}-error` : undefined}
+                                                            onChange={(event) => updateWith((current) => ({
+                                                                ...current,
+                                                                gallery_existing: current.gallery_existing.map((item) => (
+                                                                    item.id === image.id ? { ...item, alt: event.target.value } : item
+                                                                )),
+                                                            }))}
+                                                        />
+                                                    </RemovableField>
                                                 </FormField>
                                                 {image.remove ? (
                                                     <span className="publicationGallery__status">Será removida ao salvar.</span>
                                                 ) : null}
                                             </div>
-                                            <Button
-                                                size="sm"
-                                                tone={image.remove ? "white" : "dark-red"}
-                                                leftIconClass={image.remove ? "fa fa-undo" : "fa fa-trash-o"}
-                                                label={image.remove ? "Manter" : "Remover"}
-                                                title={image.remove ? `Manter a foto ${index + 1}` : `Remover a foto ${index + 1}`}
-                                                aria-label={image.remove ? `Manter a foto ${index + 1}` : `Remover a foto ${index + 1}`}
-                                                disabled={disabled}
-                                                onClick={() => updateWith((current) => ({
-                                                    ...current,
-                                                    gallery_existing: current.gallery_existing.map((item) => (
-                                                        item.id === image.id ? { ...item, remove: !item.remove } : item
-                                                    )),
-                                                }))}
-                                            />
                                         </li>
                                     );
                                 })}
@@ -190,38 +186,34 @@ export default function PublicationMediaFields({
                                             <NewGalleryThumbnail image={image} />
                                             <div className="publicationGallery__fields">
                                                 <FormField id={id} label={`Texto alternativo da foto ${position}`} error={altError ?? fileError} requiredIndicator>
-                                                    <TextInput
-                                                        id={id}
-                                                        name={`gallery[${index}][alt]`}
-                                                        value={image.alt}
-                                                        maxLength={255}
-                                                        placeholder="Descreva a foto"
-                                                        required
-                                                        invalid={!!(altError ?? fileError)}
-                                                        aria-describedby={altError ?? fileError ? `${id}-error` : undefined}
-                                                        onChange={(event) => updateWith((current) => ({
+                                                    <RemovableField
+                                                        removeLabel={`Remover a foto ${position}`}
+                                                        disabled={disabled}
+                                                        onRemove={() => updateWith((current) => ({
                                                             ...current,
-                                                            gallery: current.gallery.map((item) => (
-                                                                item.key === image.key ? { ...item, alt: event.target.value } : item
-                                                            )),
+                                                            gallery: current.gallery.filter((item) => item.key !== image.key),
                                                         }))}
-                                                    />
+                                                    >
+                                                        <TextInput
+                                                            id={id}
+                                                            name={`gallery[${index}][alt]`}
+                                                            value={image.alt}
+                                                            maxLength={255}
+                                                            placeholder="Descreva a foto"
+                                                            required
+                                                            invalid={!!(altError ?? fileError)}
+                                                            aria-describedby={altError ?? fileError ? `${id}-error` : undefined}
+                                                            onChange={(event) => updateWith((current) => ({
+                                                                ...current,
+                                                                gallery: current.gallery.map((item) => (
+                                                                    item.key === image.key ? { ...item, alt: event.target.value } : item
+                                                                )),
+                                                            }))}
+                                                        />
+                                                    </RemovableField>
                                                 </FormField>
                                                 <span className="publicationGallery__status">Nova foto: {image.file.name}</span>
                                             </div>
-                                            <Button
-                                                size="sm"
-                                                tone="dark-red"
-                                                leftIconClass="fa fa-trash-o"
-                                                label="Remover"
-                                                title={`Remover a foto ${position}`}
-                                                aria-label={`Remover a foto ${position}`}
-                                                disabled={disabled}
-                                                onClick={() => updateWith((current) => ({
-                                                    ...current,
-                                                    gallery: current.gallery.filter((item) => item.key !== image.key),
-                                                }))}
-                                            />
                                         </li>
                                     );
                                 })}
@@ -234,7 +226,7 @@ export default function PublicationMediaFields({
                             accept={defaultImageAccept}
                             multiple
                             disabled={disabled || total >= maxGallery}
-                            aria-describedby="publication-gallery-hint"
+                            aria-describedby={errors.gallery ? "publication-gallery-error" : undefined}
                             onChange={(event) => {
                                 addFiles(event.target.files);
                                 event.target.value = "";

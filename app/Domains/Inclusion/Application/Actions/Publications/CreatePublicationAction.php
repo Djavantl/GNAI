@@ -34,7 +34,6 @@ final readonly class CreatePublicationAction
             hasSchedule: $data->hasSchedule,
             type: $data->type,
             summary: $data->summary,
-            category: $data->category,
             slug: $data->slug,
             authorId: $data->authorId,
             linkUrl: $data->linkUrl,
@@ -49,9 +48,10 @@ final readonly class CreatePublicationAction
         $publication = Publication::schedule($eventDTO);
 
         return $this->relations->execute(
-            event: $publication,
+            publication: $publication,
             persist: fn (Publication $publication) => $publication->save(),
-            speakerIds: $data->speakerIds,
+            speakers: $data->speakers,
+            tagIds: $data->tagIds,
             cover: $data->cover,
             removeCover: false,
             newGallery: $data->gallery,
