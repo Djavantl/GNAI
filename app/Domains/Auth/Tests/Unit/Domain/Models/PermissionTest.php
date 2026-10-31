@@ -32,7 +32,7 @@ final class PermissionTest extends TestCase
         ));
     }
 
-    public function test_slug_cannot_change_during_synchronization(): void
+    public function test_it_rejects_changing_the_slug_during_synchronization(): void
     {
         $permission = Permission::register(new PermissionDTO(
             name: 'Visualizar alunos',

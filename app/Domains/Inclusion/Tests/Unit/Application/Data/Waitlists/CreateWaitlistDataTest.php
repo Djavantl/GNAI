@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Inclusion\Tests\Unit\Application\Data\Waitlists;
 
 use App\Domains\Inclusion\Application\Data\Waitlists\CreateWaitlistData;
-use App\Domains\Inclusion\Domain\Enums\LoanableType;
+use App\Domains\Inclusion\Domain\Enums\ItemType;
 use Tests\TestCase;
 
 final class CreateWaitlistDataTest extends TestCase
@@ -14,16 +14,15 @@ final class CreateWaitlistDataTest extends TestCase
     {
         $data = CreateWaitlistData::from([
             'waitlistable_id' => 10,
-            'waitlistable_type' => LoanableType::AssistiveTechnology->value,
-            'student_id' => 20,
-            'professional_id' => null,
+            'item_type' => ItemType::AccessibleEducationalMaterial->value,
+            'professional_id' => 30,
             'observation' => 'Aguardar disponibilidade.',
         ]);
 
         self::assertSame(10, $data->waitlistableId);
-        self::assertSame(LoanableType::AssistiveTechnology, $data->waitlistableType);
-        self::assertSame(20, $data->studentId);
-        self::assertNull($data->professionalId);
+        self::assertSame(ItemType::AccessibleEducationalMaterial, $data->itemType);
+        self::assertNull($data->studentId);
+        self::assertSame(30, $data->professionalId);
         self::assertSame('Aguardar disponibilidade.', $data->observation);
     }
 }

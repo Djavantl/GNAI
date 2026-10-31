@@ -21,140 +21,176 @@ final class StudentPagesTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const BASE = '/specialized-educational-support/students';
-
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->withoutVite();
         $this->actingAs(User::factory()->create(['is_admin' => true]));
     }
 
-    private function payload(): array
+    public function test_it_renders_the_index_with_filtered_and_paginated_students(): void
     {
-        return [
-            'name' => 'Aluno de Integração', 'birth_date' => '2005-03-01',
-            'gender' => 'not_specified', 'email' => 'aluno@example.test',
-            'registration' => 'TEST-001', 'document' => '529.982.247-25',
-            'phone' => '(11) 98765-4321', 'entry_date' => '2025-01-02',
-            'address' => '<p>Rua <strong>das Flores</strong>, 10</p>',
-        ];
+        Student::factory()->count(3)->active()->for(Person::factory()->state(['name' => 'Ana Teste']), 'person')->create();
+        Student::factory()->active()->for(Person::factory()->state(['name' => 'Bruno Teste']), 'person')->create();
+
+        $response = $this->get(route('specialized-educational-support.students.index', [
+            'name' => 'Ana',
+            'per_page' => 2,
+            'page' => 2,
+        ]));
+
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Inclusion/Students/Index')
+            ->where('students.total', 3)
+            ->where('students.current_page', 2)
+            ->has('students.data', 1)
+            ->where('students.data.0.person.name', 'Ana Teste')
+            ->where('filters.name', 'Ana'));
     }
 
-    public function test_creation_and_editing_receive_real_options_dates_and_photo_urls(): void
+    public function test_it_renders_the_create_and_edit_forms_with_their_contracts(): void
     {
         $student = Student::factory()->active()->create(['entry_date' => '2025-02-01']);
-        $this->get(self::BASE.'/create')->assertOk()->assertInertia(fn (Assert $page) => $page
+
+        $create = $this->get(route('specialized-educational-support.students.create'));
+        $edit = $this->get(route('specialized-educational-support.students.edit', $student));
+
+        $create->assertOk()->assertInertia(fn (Assert $page) => $page
             ->component('Inclusion/Students/Create')
-            ->where('defaultGender', 'not_specified')->where('permissions', fn ($permissions) => $permissions['student.create'] === true)
-            ->has('genders')->has('studentStatuses'));
-        $this->get(self::BASE.'/'.$student->id.'/edit')->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->where('defaultGender', 'not_specified')
+            ->has('genders')
+            ->has('studentStatuses'));
+        $edit->assertOk()->assertInertia(fn (Assert $page) => $page
             ->component('Inclusion/Students/Edit')
             ->where('student.entry_date', '2025-02-01')
             ->where('student.person.birth_date', $student->person->birth_date->toDateString())
             ->where('student.person.photo_url', $student->person->photo_url)
-            ->where('student.status', 'active')->has('genders'));
+            ->where('student.status', 'active'));
     }
 
-    public function test_multipart_creation_update_and_photo_removal_preserve_redirects_and_flash(): void
+    public function test_it_creates_and_updates_a_student_with_photo_upload_and_removal(): void
     {
         Storage::fake('public');
         // A real PNG avoids depending on GD in the test environment.
         $photo = UploadedFile::fake()->createWithContent('photo.png', base64_decode(
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD1kAAAAASUVORK5CYII='
         ));
-        $this->post(self::BASE.'/store', $this->payload() + ['photo' => $photo])
-            ->assertSessionHasNoErrors()->assertSessionHas('success', 'Aluno cadastrado com sucesso.');
+
+        $this->post(route('specialized-educational-support.students.store'), $this->payload() + ['photo' => $photo])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'Aluno cadastrado com sucesso.');
+
         $student = Student::query()->sole();
         $path = $student->person->getRawOriginal('photo');
         Storage::disk('public')->assertExists($path);
         $this->assertDatabaseHas('people', ['document' => '52998224725', 'phone' => '11987654321']);
-        $this->get(self::BASE.'/'.$student->id.'/show')->assertInertia(fn (Assert $page) => $page
-            ->where('student.person.address_html', '<p>Rua <strong>das Flores</strong>, 10</p>'));
 
-        $this->post(self::BASE.'/'.$student->id, array_replace($this->payload(), [
-            '_method' => 'put', 'status' => 'locked', 'remove_photo' => '1', 'entry_date' => '',
-            'address' => '<p>Endereço <em>atualizado</em></p>',
-        ]))->assertRedirect(self::BASE.'/'.$student->id.'/show')
-            ->assertSessionHasNoErrors()->assertSessionHas('success', 'Aluno atualizado com sucesso.');
+        $this->put(route('specialized-educational-support.students.update', $student), array_replace($this->payload(), [
+            'status' => 'locked',
+            'remove_photo' => '1',
+            'entry_date' => '',
+        ]))
+            ->assertRedirect(route('specialized-educational-support.students.show', $student))
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'Aluno atualizado com sucesso.');
+
         $this->assertDatabaseHas('students', ['id' => $student->id, 'status' => 'locked', 'entry_date' => null]);
         $this->assertDatabaseHas('people', ['id' => $student->person_id, 'photo' => null]);
         Storage::disk('public')->assertMissing($path);
     }
 
-    public function test_validation_errors_are_available_to_inertia_and_no_invalid_student_is_saved(): void
+    public function test_it_rejects_invalid_data_without_saving_the_student(): void
     {
-        $this->from(self::BASE.'/create')->post(self::BASE.'/store', array_replace($this->payload(), [
-            'name' => 'A', 'birth_date' => '2999-01-01', 'email' => 'invalid', 'document' => '111.111.111-11',
-        ]))->assertRedirect(self::BASE.'/create')->assertSessionHasErrors(['name', 'birth_date', 'email', 'document']);
-        $this->get(self::BASE.'/create')->assertInertia(fn (Assert $page) => $page
-            ->has('errors.name')->has('errors.birth_date')->has('errors.email')->has('errors.document'));
+        $response = $this->from(route('specialized-educational-support.students.create'))
+            ->post(route('specialized-educational-support.students.store'), array_replace($this->payload(), [
+                'name' => 'A',
+                'birth_date' => '2999-01-01',
+                'email' => 'invalid',
+                'document' => '111.111.111-11',
+            ]));
+
+        $response->assertRedirect(route('specialized-educational-support.students.create'))
+            ->assertSessionHasErrors(['name', 'birth_date', 'email', 'document']);
         $this->assertDatabaseCount('students', 0);
     }
 
-    public function test_filters_and_pagination_work_on_inertia_partial_reloads(): void
-    {
-        Student::factory()->count(3)->active()->for(Person::factory()->state(['name' => 'Ana Teste']), 'person')->create();
-        Student::factory()->active()->for(Person::factory()->state(['name' => 'Bruno Teste']), 'person')->create();
-        $initial = $this->get(self::BASE)->assertOk();
-        $this->get(self::BASE.'?name=Ana&status=active&course_id=0&deficiency_id=0&per_page=2&page=2', [
-            'X-Inertia' => 'true', 'X-Inertia-Version' => $initial->viewData('page')['version'],
-            'X-Inertia-Partial-Component' => 'Inclusion/Students/Index',
-            'X-Inertia-Partial-Data' => 'students,filters', 'X-Requested-With' => 'XMLHttpRequest',
-        ])->assertOk()->assertJsonPath('props.students.total', 3)
-            ->assertJsonPath('props.students.current_page', 2)->assertJsonCount(1, 'props.students.data')
-            ->assertJsonPath('props.students.data.0.person.name', 'Ana Teste')
-            ->assertJsonPath('props.filters.course_id', '0')->assertJsonMissingPath('props.auth');
-    }
-
-    public function test_record_includes_real_related_labels_and_safe_formatted_address(): void
+    public function test_it_shows_related_labels_and_a_sanitized_address(): void
     {
         $student = Student::factory()->active()->for(Person::factory()->state([
             'address' => '<p onclick="alert(1)">Rua <b>Central</b></p><script>alert(1)</script>&lt;img src=x onerror=alert(1)&gt;',
         ]), 'person')->create();
-        $deficiency = Deficiency::factory()->create();
-        $student->deficiencies()->attach($deficiency, ['severity' => 'moderate']);
+        $student->deficiencies()->attach(Deficiency::factory()->create(), ['severity' => 'moderate']);
         $guardian = Guardian::factory()->create(['student_id' => $student->id]);
-        $this->get(self::BASE.'/'.$student->id.'/show')->assertOk()->assertInertia(fn (Assert $page) => $page
+
+        $response = $this->get(route('specialized-educational-support.students.show', $student));
+
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
             ->component('Inclusion/Students/Show')
             ->where('student.deficiencies.0.severity_label', 'Moderada')
             ->where('student.guardians.0.relationship_label', $guardian->relationshipLabel())
-            ->where('student.guardians.0.person.photo_url', $guardian->person->photo_url)
-            ->where('student.person.address_html', '<p>Rua <b>Central</b></p>&lt;img src=x onerror=alert(1)&gt;')
-            ->has('student.student_courses', 0)->has('aeeEvaluations', 0)->has('pedagogicalRecords', 0));
+            ->where('student.person.address_html', '<p>Rua <b>Central</b></p>&lt;img src=x onerror=alert(1)&gt;'));
     }
 
-    public function test_view_only_users_cannot_mutate_and_do_not_receive_restricted_sections(): void
+    public function test_it_restricts_view_only_users_to_the_allowed_sections(): void
     {
         $professional = Professional::factory()->active()->create();
-        $permission = Permission::query()->create(['name' => 'Ver alunos', 'slug' => 'student.view']);
-        $professional->position->permissions()->attach($permission);
-        $user = User::factory()->create(['is_admin' => false, 'professional_id' => $professional->id]);
-        $this->actingAs($user);
+        $professional->position->permissions()->attach(
+            Permission::query()->create(['name' => 'Ver alunos', 'slug' => 'student.view']),
+        );
+        $this->actingAs(User::factory()->create(['is_admin' => false, 'professional_id' => $professional->id]));
         $student = Student::factory()->active()->create();
         Guardian::factory()->create(['student_id' => $student->id]);
-        $this->get(self::BASE.'/'.$student->id.'/show')->assertOk()->assertInertia(fn (Assert $page) => $page
+
+        $show = $this->get(route('specialized-educational-support.students.show', $student));
+
+        $show->assertOk()->assertInertia(fn (Assert $page) => $page
             ->where('permissions', fn ($permissions) => $permissions['student.view'] === true
-                && $permissions['student.update'] === false && $permissions['student.delete'] === false)->missing('student.guardians')
-            ->missing('student.deficiencies')->missing('student.documents')->missing('student.peis')
-            ->has('aeeEvaluations', 0)->has('pedagogicalRecords', 0));
-        $this->get(self::BASE.'/create')->assertForbidden();
-        $this->get(self::BASE.'/'.$student->id.'/edit')->assertForbidden();
-        $this->delete(self::BASE.'/'.$student->id)->assertForbidden();
+                && $permissions['student.update'] === false
+                && $permissions['student.delete'] === false)
+            ->missing('student.guardians')
+            ->missing('student.deficiencies')
+            ->missing('student.documents')
+            ->missing('student.peis'));
+        $this->get(route('specialized-educational-support.students.create'))->assertForbidden();
+        $this->get(route('specialized-educational-support.students.edit', $student))->assertForbidden();
+        $this->delete(route('specialized-educational-support.students.destroy', $student))->assertForbidden();
         $this->assertDatabaseHas('students', ['id' => $student->id]);
     }
 
-    public function test_deletion_succeeds_without_links_and_preserves_linked_students_with_error_flash(): void
+    public function test_it_deletes_only_students_without_links(): void
     {
         $student = Student::factory()->active()->create();
-        $this->delete(self::BASE.'/'.$student->id)->assertRedirect(self::BASE)
-            ->assertSessionHas('success', 'Aluno removido com sucesso.');
-        $this->assertDatabaseMissing('students', ['id' => $student->id]);
-
         $linked = Student::factory()->active()->create();
         Guardian::factory()->create(['student_id' => $linked->id]);
-        $this->from(self::BASE.'/'.$linked->id.'/show')->delete(self::BASE.'/'.$linked->id)
-            ->assertRedirect(self::BASE.'/'.$linked->id.'/show')->assertSessionHas('error');
+
+        $this->delete(route('specialized-educational-support.students.destroy', $student))
+            ->assertRedirect(route('specialized-educational-support.students.index'))
+            ->assertSessionHas('success', 'Aluno removido com sucesso.');
+        $this->from(route('specialized-educational-support.students.show', $linked))
+            ->delete(route('specialized-educational-support.students.destroy', $linked))
+            ->assertRedirect(route('specialized-educational-support.students.show', $linked))
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseMissing('students', ['id' => $student->id]);
         $this->assertDatabaseHas('students', ['id' => $linked->id]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function payload(): array
+    {
+        return [
+            'name' => 'Aluno de Integração',
+            'birth_date' => '2005-03-01',
+            'gender' => 'not_specified',
+            'email' => 'aluno@example.test',
+            'registration' => 'TEST-001',
+            'document' => '529.982.247-25',
+            'phone' => '(11) 98765-4321',
+            'entry_date' => '2025-01-02',
+            'address' => '<p>Rua <strong>das Flores</strong>, 10</p>',
+        ];
     }
 }

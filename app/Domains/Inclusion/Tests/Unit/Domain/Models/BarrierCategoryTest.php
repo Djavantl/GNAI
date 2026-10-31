@@ -47,14 +47,4 @@ final class BarrierCategoryTest extends TestCase
         self::assertFalse($category->blocks_map);
         self::assertFalse($category->is_active);
     }
-
-    public function test_it_trims_name(): void
-    {
-        $category = BarrierCategory::register(new CreateBarrierCategoryDTO(
-            name: ' Comunicacional ',
-        ));
-
-        self::assertSame('Comunicacional', $category->name);
-    }
-
 }

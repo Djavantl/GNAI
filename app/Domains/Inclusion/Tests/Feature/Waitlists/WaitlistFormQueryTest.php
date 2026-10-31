@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Inclusion\Tests\Feature\Waitlists;
 
 use App\Domains\Inclusion\Application\Queries\Waitlists\WaitlistFormQuery;
-use App\Domains\Inclusion\Domain\Enums\ResourceStatus;
-use App\Domains\Inclusion\Domain\Models\AccessibleEducationalMaterial;
+use App\Domains\Inclusion\Domain\Models\Item;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,35 +13,16 @@ final class WaitlistFormQueryTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_does_not_list_digital_items_as_waitlistable(): void
+    public function test_it_lists_only_unavailable_physical_loanable_items(): void
     {
-        $digitalMaterial = AccessibleEducationalMaterial::factory()
-            ->digital()
-            ->loanable()
-            ->create([
-                'name' => 'Slide adaptado',
-                'quantity' => null,
-                'quantity_available' => null,
-                'status' => ResourceStatus::AVAILABLE,
-            ]);
+        $waitlistable = Item::factory()->physical()->loanable()->unavailable()->create();
+        Item::factory()->physical()->loanable()->available()->create();
+        Item::factory()->digital()->create();
+        Item::factory()->physical()->notLoanable()->unavailable()->create();
+        Item::factory()->physical()->loanable()->unavailable()->inactive()->create();
 
-        $physicalUnavailableMaterial = AccessibleEducationalMaterial::factory()
-            ->physical()
-            ->loanable()
-            ->create([
-                'name' => 'Material físico indisponível',
-                'quantity' => 1,
-                'quantity_available' => 0,
-                'status' => ResourceStatus::AVAILABLE,
-            ]);
+        $items = app(WaitlistFormQuery::class)->forCreation()['items'];
 
-        $options = app(WaitlistFormQuery::class)->forCreation();
-
-        self::assertFalse($options['educational_materials']->contains(
-            static fn (AccessibleEducationalMaterial $item): bool => $item->is($digitalMaterial),
-        ));
-        self::assertTrue($options['educational_materials']->contains(
-            static fn (AccessibleEducationalMaterial $item): bool => $item->is($physicalUnavailableMaterial),
-        ));
+        self::assertSame([$waitlistable->id], $items->modelKeys());
     }
 }

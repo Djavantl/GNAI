@@ -12,61 +12,13 @@ use App\Domains\Inclusion\Application\Data\Deficiencies\CreateDeficiencyData;
 use App\Domains\Inclusion\Application\Data\Deficiencies\UpdateDeficiencyData;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidDeficiency;
 use App\Domains\Inclusion\Domain\Models\Deficiency;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Domains\Inclusion\Domain\Models\Student;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 final class DeficiencyActionsTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Schema::create('deficiencies', function (Blueprint $table): void {
-            $table->id();
-            $table->string('name');
-            $table->string('cid_code', 20)->nullable();
-            $table->text('description')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
-        Schema::create('people', function (Blueprint $table): void {
-            $table->id();
-            $table->string('name');
-            $table->string('document')->nullable();
-            $table->date('birth_date');
-            $table->string('gender')->default('not_specified');
-            $table->string('email')->nullable();
-            $table->timestamps();
-        });
-        Schema::create('students', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('person_id')->constrained('people')->cascadeOnDelete();
-            $table->string('registration')->unique();
-            $table->date('entry_date')->nullable();
-            $table->string('status')->default('active');
-            $table->timestamps();
-        });
-        Schema::create('students_deficiencies', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-            $table->foreignId('deficiency_id')->constrained('deficiencies')->restrictOnDelete();
-            $table->string('severity')->nullable();
-            $table->text('notes')->nullable();
-            $table->timestamps();
-        });
-    }
-
-    protected function tearDown(): void
-    {
-        Schema::dropIfExists('students_deficiencies');
-        Schema::dropIfExists('students');
-        Schema::dropIfExists('people');
-        Schema::dropIfExists('deficiencies');
-
-        parent::tearDown();
-    }
+    use RefreshDatabase;
 
     public function test_it_creates_and_normalizes_a_deficiency(): void
     {
@@ -154,32 +106,8 @@ final class DeficiencyActionsTest extends TestCase
 
     private function linkStudentTo(Deficiency $deficiency): void
     {
-        $now = now();
-        $personId = DB::table('people')->insertGetId([
-            'name' => 'Estudante de teste',
-            'document' => '12345678901',
-            'birth_date' => '2010-01-01',
-            'gender' => 'not_specified',
-            'email' => 'estudante@example.test',
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-        $studentId = DB::table('students')->insertGetId([
-            'person_id' => $personId,
-            'registration' => 'MAT-TESTE',
-            'entry_date' => '2026-01-01',
-            'status' => 'active',
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-
-        DB::table('students_deficiencies')->insert([
-            'student_id' => $studentId,
-            'deficiency_id' => $deficiency->getKey(),
+        $deficiency->students()->attach(Student::factory()->active()->create(), [
             'severity' => 'mild',
-            'notes' => null,
-            'created_at' => $now,
-            'updated_at' => $now,
         ]);
     }
 }

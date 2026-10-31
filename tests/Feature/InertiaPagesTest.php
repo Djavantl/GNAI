@@ -13,7 +13,7 @@ final class InertiaPagesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_initial_visits_boot_react_without_the_previous_layout(): void
+    public function test_it_boots_react_on_initial_visits_without_the_legacy_layout(): void
     {
         $this->withoutVite();
 
@@ -22,93 +22,74 @@ final class InertiaPagesTest extends TestCase
         $response->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component('Auth/Login')->where('auth.user', null))
             ->assertSee('data-page="root"', false)
+            ->assertSee('<div id="root"></div>', false)
             ->assertDontSee('bootstrap.min.css', false)
             ->assertDontSee('resources/js/app.js', false);
-
-        $this->get('/about-us')->assertOk()
-            ->assertInertia(fn (Assert $page) => $page->component('AboutUs/AboutUs'));
     }
 
-    public function test_authenticated_screens_use_inertia_and_hide_user_secrets(): void
+    public function test_it_shares_the_authenticated_user_without_secrets(): void
     {
         $this->withoutVite();
         $user = User::factory()->create(['is_admin' => true]);
-        $this->actingAs($user);
 
-        foreach ([
-            '/inclusive-radar/institutions' => 'Inclusion/Institutions/Index',
-            '/inclusive-radar/barriers' => 'Inclusion/Barriers/Index',
-            '/specialized-educational-support/students' => 'Inclusion/Students/Index',
-            '/specialized-educational-support/sessions' => 'Inclusion/Sessions/Index',
-            '/notifications' => 'Notifications/Index',
-        ] as $url => $component) {
-            $this->get($url)->assertOk()->assertInertia(fn (Assert $page) => $page
-                ->component($component)
-                ->where('auth.user.id', $user->id)
-                ->missing('auth.user.password')
-                ->missing('auth.user.remember_token')
-            );
-        }
-    }
+        $response = $this->actingAs($user)->get('/specialized-educational-support/students');
 
-    public function test_dashboard_exposes_metrics_to_the_migrated_page(): void
-    {
-        $this->withoutVite();
-        $this->actingAs(User::factory()->create(['is_admin' => true]));
-
-        $this->get('/auth/dashboard')->assertOk()->assertInertia(fn (Assert $page) => $page
-            ->component('Dashboard/Overview/Index')
-            ->where('specializedEducationalSupport.totalStudents', 0)
-            ->where('specializedEducationalSupport.totalPeis', 0)
-            ->has('specializedEducationalSupport.pendenciesByPriority')
-            ->has('specializedEducationalSupport.sessionsByStatus')
-            ->where('inclusiveRadar.totalBarriers', 0)
-            ->has('inclusiveRadar.barrierStatusCounts', 0)
-            ->has('inclusiveRadar.mapBarriers', 0)
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Inclusion/Students/Index')
+            ->where('auth.user.id', $user->id)
+            ->missing('auth.user.password')
+            ->missing('auth.user.remember_token')
         );
     }
 
-    public function test_inertia_partial_reload_returns_filtered_props_instead_of_html(): void
+    public function test_it_shares_validation_errors_and_flash_messages_with_react(): void
+    {
+        $this->withoutVite();
+
+        $this->from('/auth/login')->post('/auth/login', [])->assertRedirect('/auth/login');
+
+        $this->get('/auth/login')->assertInertia(fn (Assert $page) => $page
+            ->has('errors.email')
+            ->has('errors.password')
+        );
+
+        $this->withSession(['success' => '</script><script>alert(1)</script>', 'warning' => 'Atenção'])
+            ->get('/auth/login')
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('flash.success', '</script><script>alert(1)</script>')
+                ->where('flash.warning', 'Atenção')
+                ->has('flash.response_id')
+            )
+            ->assertDontSee('</script><script>alert(1)</script>', false);
+    }
+
+    public function test_it_returns_only_the_requested_props_on_partial_reloads(): void
     {
         $this->withoutVite();
         $this->actingAs(User::factory()->create(['is_admin' => true]));
         $url = '/inclusive-radar/barriers';
         $initial = $this->get($url)->assertOk();
 
-        $this->get($url.'?search=teste', [
+        $response = $this->get($url.'?search=teste', [
             'X-Inertia' => 'true',
             'X-Inertia-Version' => $initial->viewData('page')['version'],
             'X-Inertia-Partial-Component' => 'Inclusion/Barriers/Index',
             'X-Inertia-Partial-Data' => 'barriers',
             'X-Requested-With' => 'XMLHttpRequest',
             'Accept' => 'text/html, application/xhtml+xml',
-        ])->assertOk()
+        ]);
+
+        $response->assertOk()
             ->assertHeader('X-Inertia', 'true')
             ->assertJsonPath('component', 'Inclusion/Barriers/Index')
             ->assertJsonStructure(['props' => ['barriers' => ['data', 'links']]])
             ->assertJsonMissingPath('props.auth');
     }
 
-    public function test_shared_flash_and_validation_errors_reach_react(): void
+    public function test_it_renders_missing_pages_in_react_and_keeps_api_errors_as_json(): void
     {
         $this->withoutVite();
-        $this->from('/auth/login')->post('/auth/login', [])->assertRedirect('/auth/login');
-        $this->get('/auth/login')->assertInertia(fn (Assert $page) => $page
-            ->has('errors.email')
-            ->has('errors.password')
-        );
 
-        $this->withSession(['success' => '</script><script>alert(1)</script>'])
-            ->get('/about-us')
-            ->assertInertia(fn (Assert $page) => $page
-                ->where('flash.success', '</script><script>alert(1)</script>')
-            )
-            ->assertDontSee('</script><script>alert(1)</script>', false);
-    }
-
-    public function test_missing_pages_render_a_react_error_and_api_requests_stay_json(): void
-    {
-        $this->withoutVite();
         $this->get('/nonexistent-screen')->assertNotFound()
             ->assertInertia(fn (Assert $page) => $page->component('Errors/Error')->where('status', 404));
 

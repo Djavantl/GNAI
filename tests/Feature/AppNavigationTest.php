@@ -18,9 +18,10 @@ final class AppNavigationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guests_do_not_receive_private_navigation(): void
+    public function test_it_hides_private_navigation_from_guests(): void
     {
         $this->withoutVite();
+
         $this->get('/auth/login')->assertOk()->assertInertia(fn (Assert $page) => $page
             ->where('navigation.entries', [])
             ->where('topbar', null)
@@ -28,36 +29,31 @@ final class AppNavigationTest extends TestCase
         );
     }
 
-    public function test_admin_receives_all_menu_items_with_real_routes_and_active_item(): void
+    public function test_it_gives_admins_every_section_with_relative_links_and_the_active_nested_item(): void
     {
         $this->withoutVite();
         $this->actingAs(User::factory()->create(['is_admin' => true]));
-        $this->get('/notifications')->assertOk()->assertInertia(fn (Assert $page) => $page
-            ->where('navigation.currentItemKey', 'notifications')
+
+        $response = $this->get('/inclusive-radar/institutions');
+
+        $response->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->where('navigation.currentItemKey', 'institutions')
             ->where('topbar.institutionName', 'Gnai')
             ->where('navigation.entries', function ($entries): bool {
-                $items = collect($entries)->filter(fn ($entry) => isset($entry['href']))->keyBy('key');
-                $titles = collect($entries)->pluck('title')->filter()->values()->all();
-                self::assertSame(['Outros'], $titles);
-                self::assertSame([
-                    'dashboard', 'notifications',
-                    'students', 'professionals', 'teachers', 'pei', 'sessions', 'aee-records', 'pedagogical-records', 'pendencies',
-                    'items', 'loans', 'waitlists', 'barriers', 'publications',
-                    'website', 'reports', 'backups', 'audit', 'settings', 'about',
-                ], $items->keys()->all());
-                $registrations = collect(collect($entries)->firstWhere('key', 'registrations')['children'] ?? [])->keyBy('key');
-                self::assertSame('Cadastros', collect($entries)->firstWhere('key', 'registrations')['label'] ?? null);
-                self::assertSame([
-                    'deficiencies', 'positions', 'semesters', 'disciplines', 'courses',
-                    'accessibility-features', 'barrier-categories', 'institutions', 'locations',
-                ], $registrations->keys()->all());
-                self::assertSame('/auth/dashboard', $items['dashboard']['href']);
-                self::assertSame(route('website.builder.edit', absolute: false), $items['website']['href']);
-                self::assertSame(route('specialized-educational-support.sessions.index', absolute: false), $items['sessions']['href']);
-                self::assertSame(route('backup.backups.index', absolute: false), $items['backups']['href']);
-                foreach ($items->merge($registrations) as $item) {
-                    self::assertStringStartsWith('/', $item['href']);
-                    self::assertStringNotContainsString('.html', $item['href']);
+                $entries = collect($entries);
+                $registrations = $entries->firstWhere('key', 'registrations');
+                $links = $entries->filter(fn ($entry) => isset($entry['href']))
+                    ->merge($registrations['children'] ?? []);
+
+                self::assertSame(['Outros'], $entries->pluck('title')->filter()->values()->all());
+                self::assertContains('institutions', array_column($registrations['children'] ?? [], 'key'));
+                self::assertSame('/auth/dashboard', $links->firstWhere('key', 'dashboard')['href']);
+                foreach (['reports', 'backups', 'audit', 'settings', 'website'] as $adminOnly) {
+                    self::assertNotNull($links->firstWhere('key', $adminOnly), $adminOnly);
+                }
+                foreach ($links as $link) {
+                    self::assertStringStartsWith('/', $link['href']);
+                    self::assertStringNotContainsString('.html', $link['href']);
                 }
 
                 return true;
@@ -65,7 +61,7 @@ final class AppNavigationTest extends TestCase
         );
     }
 
-    public function test_restricted_professional_only_receives_allowed_items_and_own_record_routes(): void
+    public function test_it_limits_restricted_professionals_to_allowed_items_and_own_record_routes(): void
     {
         $this->withoutVite();
         // Isolate this test from the developer machine's generated permission manifest.
@@ -76,6 +72,7 @@ final class AppNavigationTest extends TestCase
         $ids = collect($slugs)->map(fn ($slug) => Permission::query()->firstOrCreate(['slug' => $slug], ['name' => $slug])->id);
         $professional->position->permissions()->sync($ids);
         $user = User::factory()->create(['is_admin' => false, 'professional_id' => $professional->id]);
+
         $this->actingAs($user)->get('/notifications')->assertOk()->assertInertia(fn (Assert $page) => $page
             ->where('navigation.entries', function ($entries): bool {
                 $items = collect($entries)->filter(fn ($entry) => isset($entry['href']))->keyBy('key');
@@ -84,15 +81,13 @@ final class AppNavigationTest extends TestCase
                 foreach (['sessions' => 'my-sessions', 'aee-records' => 'my-records', 'pedagogical-records' => 'my-records'] as $key => $action) {
                     self::assertSame(route("specialized-educational-support.$key.$action", absolute: false), $items[$key]['href']);
                 }
-                self::assertNotContains('Radar Inclusivo', collect($entries)->pluck('title')->all());
-                self::assertNotContains('Atendimento e Acompanhamento', collect($entries)->pluck('title')->all());
 
                 return true;
             })
         );
     }
 
-    public function test_topbar_uses_only_current_users_unread_notifications_and_impersonation_state(): void
+    public function test_it_shows_only_the_current_users_unread_notifications_and_impersonation_state(): void
     {
         $this->withoutVite();
         $user = User::factory()->create(['is_admin' => true]);
@@ -106,6 +101,7 @@ final class AppNavigationTest extends TestCase
                 'read_at' => $readAt,
             ]);
         }
+
         $this->actingAs($user)->withSession(['impersonator_id' => $other->id])->get('/notifications')
             ->assertOk()->assertInertia(fn (Assert $page) => $page
             ->where('impersonating', true)

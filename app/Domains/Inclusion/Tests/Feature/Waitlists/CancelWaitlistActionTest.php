@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Tests\Feature\Waitlists;
 
-use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Application\Actions\Waitlists\CancelWaitlistAction;
 use App\Domains\Inclusion\Domain\Enums\WaitlistStatus;
-use App\Domains\Inclusion\Domain\Models\AssistiveTechnology;
+use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Waitlist;
-use App\Domains\Inclusion\Domain\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,19 +15,12 @@ final class CancelWaitlistActionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_cancels_a_waitlist(): void
+    public function test_it_cancels_a_waiting_waitlist(): void
     {
-        $user = User::factory()->create();
-        $student = Student::factory()->create();
-        $technology = AssistiveTechnology::factory()->physical()->loanable()->unavailable()->create();
-        $waitlist = Waitlist::factory()
-            ->forAssistiveTechnology($technology)
-            ->forStudent($student)
-            ->state([
-                'user_id' => $user->id,
-                'status' => WaitlistStatus::WAITING,
-            ])
-            ->create();
+        $item = Item::factory()->physical()->loanable()->unavailable()->create();
+        $waitlist = Waitlist::factory()->forAssistiveTechnology($item)->create([
+            'status' => WaitlistStatus::WAITING,
+        ]);
 
         $cancelled = app(CancelWaitlistAction::class)->execute($waitlist);
 

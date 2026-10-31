@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Tests\Feature\Inspections;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Application\Actions\Inspections\AttachInspectionEvidencesAction;
 use App\Domains\Inclusion\Application\Actions\Inspections\CreateInspectionAction;
 use App\Domains\Inclusion\Application\Data\Inspections\CreateInspectionData;
 use App\Domains\Inclusion\Domain\Enums\ConservationState;
 use App\Domains\Inclusion\Domain\Enums\InspectionType;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidInspection;
-use App\Domains\Inclusion\Domain\Models\AssistiveTechnology;
-use App\Domains\Auth\Domain\Models\User;
+use App\Domains\Inclusion\Domain\Models\Item;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -21,16 +21,40 @@ final class CreateInspectionActionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_it_creates_an_inspection_linked_to_the_item(): void
+    {
+        $user = User::factory()->create();
+        $item = Item::factory()->physical()->create();
+
+        $inspection = app(CreateInspectionAction::class)->execute(
+            inspectable: $item,
+            data: new CreateInspectionData(
+                date: '2026-07-18',
+                type: InspectionType::PERIODIC,
+            ),
+            registeredBy: $user->id,
+            state: ConservationState::REGULAR->value,
+            defaultDescription: 'Inspeção registrada na atualização do item.',
+        );
+
+        self::assertTrue($inspection->inspectable->is($item));
+        $this->assertDatabaseHas('inspections', [
+            'id' => $inspection->id,
+            'inspectable_type' => 'item',
+            'inspectable_id' => $item->id,
+            'state' => ConservationState::REGULAR->value,
+            'type' => InspectionType::PERIODIC->value,
+            'description' => 'Inspeção registrada na atualização do item.',
+            'user_id' => $user->id,
+        ]);
+    }
+
     public function test_it_removes_stored_evidences_when_evidence_attachment_fails(): void
     {
         Storage::fake('public');
 
         $user = User::factory()->create();
-        $technology = AssistiveTechnology::factory()
-            ->physical()
-            ->loanable()
-            ->state(['name' => 'Linha Braille'])
-            ->create();
+        $item = Item::factory()->physical()->loanable()->create();
 
         $data = new CreateInspectionData(
             date: now()->toDateString(),
@@ -42,7 +66,7 @@ final class CreateInspectionActionTest extends TestCase
         );
 
         $inspection = app(CreateInspectionAction::class)->execute(
-            inspectable: $technology,
+            inspectable: $item,
             data: $data,
             registeredBy: $user->id,
             state: ConservationState::GOOD->value,
@@ -67,11 +91,7 @@ final class CreateInspectionActionTest extends TestCase
         Storage::fake('public');
 
         $user = User::factory()->create();
-        $technology = AssistiveTechnology::factory()
-            ->digital()
-            ->notLoanable()
-            ->state(['name' => 'Slide adaptado'])
-            ->create();
+        $item = Item::factory()->digital()->create();
 
         $data = new CreateInspectionData(
             date: now()->toDateString(),
@@ -86,7 +106,7 @@ final class CreateInspectionActionTest extends TestCase
         );
 
         $inspection = app(CreateInspectionAction::class)->execute(
-            inspectable: $technology,
+            inspectable: $item,
             data: $data,
             registeredBy: $user->id,
             state: ConservationState::NOT_APPLICABLE->value,

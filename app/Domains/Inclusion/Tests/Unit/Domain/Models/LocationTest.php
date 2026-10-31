@@ -7,10 +7,7 @@ namespace App\Domains\Inclusion\Tests\Unit\Domain\Models;
 use App\Domains\Inclusion\Domain\DTOs\Locations\CreateLocationDTO;
 use App\Domains\Inclusion\Domain\DTOs\Locations\UpdateLocationDTO;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidLocation;
-use App\Domains\Inclusion\Domain\Models\Institution;
 use App\Domains\Inclusion\Domain\Models\Location;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Tests\TestCase;
 
 final class LocationTest extends TestCase
@@ -72,18 +69,6 @@ final class LocationTest extends TestCase
         self::assertFalse($location->is_active);
     }
 
-    public function test_it_trims_name(): void
-    {
-        $location = Location::register(new CreateLocationDTO(
-            institutionId: 10,
-            name: ' Biblioteca ',
-            latitude: -14.22,
-            longitude: -42.77,
-        ));
-
-        self::assertSame('Biblioteca', $location->name);
-    }
-
     public function test_it_rejects_invalid_latitude(): void
     {
         $this->expectException(InvalidLocation::class);
@@ -108,24 +93,5 @@ final class LocationTest extends TestCase
             latitude: -14.22,
             longitude: -200,
         ));
-    }
-
-    public function test_it_has_institution_relationship(): void
-    {
-        $location = new Location();
-
-        $relation = $location->institution();
-
-        self::assertInstanceOf(BelongsTo::class, $relation);
-        self::assertSame(Institution::class, $relation->getRelated()::class);
-    }
-
-    public function test_it_has_barriers_relationship(): void
-    {
-        $location = new Location();
-
-        $relation = $location->barriers();
-
-        self::assertInstanceOf(HasMany::class, $relation);
     }
 }

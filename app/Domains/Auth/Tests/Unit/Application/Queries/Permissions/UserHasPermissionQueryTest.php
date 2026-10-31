@@ -10,10 +10,14 @@ use Tests\TestCase;
 
 final class UserHasPermissionQueryTest extends TestCase
 {
-    public function test_admin_user_has_any_permission(): void
+    public function test_it_grants_any_permission_to_admins(): void
     {
-        $user = new User(['is_admin' => true]);
+        $admin = new User(['is_admin' => true]);
+        $superAdmin = (new User)->forceFill(['is_super_admin' => true]);
 
-        self::assertTrue(app(UserHasPermissionQuery::class)->execute($user, 'any.permission'));
+        $query = app(UserHasPermissionQuery::class);
+
+        self::assertTrue($query->execute($admin, 'any.permission'));
+        self::assertTrue($query->execute($superAdmin, 'any.permission'));
     }
 }

@@ -16,15 +16,15 @@ final class ReturnLoanDataTest extends TestCase
             'observation' => 'Retornou com avaria.',
         ]);
 
-        $this->assertTrue($data->isDamaged);
-        $this->assertSame('Retornou com avaria.', $data->observation);
+        self::assertTrue($data->isDamaged);
+        self::assertSame('Retornou com avaria.', $data->observation);
     }
 
     public function test_it_defaults_to_not_damaged(): void
     {
         $data = ReturnLoanData::from([]);
 
-        $this->assertFalse($data->isDamaged);
-        $this->assertNull($data->observation);
+        self::assertFalse($data->isDamaged);
+        self::assertNull($data->observation);
     }
 }

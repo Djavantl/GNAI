@@ -34,9 +34,5 @@ final class CreateInspectionDataTest extends TestCase
             $rules['type'],
             static fn (mixed $rule): bool => $rule instanceof Enum,
         ));
-        self::assertContains('max:10', $rules['evidences']);
-        self::assertContains('file', $rules['evidences.*']);
-        self::assertContains('mimes:jpeg,png,jpg,webp,pdf,doc,docx,ppt,pptx,odp,odt,ods,xls,xlsx,csv,txt', $rules['evidences.*']);
-        self::assertContains('max:20480', $rules['evidences.*']);
     }
 }

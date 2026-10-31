@@ -10,28 +10,19 @@ use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
-use App\Domains\Backup\UI\Controllers\BackupController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 final class RestoreBackupControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const ENDPOINT = '/_tests/backups';
-
     private FakeBackupArchiveStorage $storage;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        Route::post(
-            self::ENDPOINT.'/{backup}/restore',
-            [BackupController::class, 'restore'],
-        )->middleware('web');
 
         $this->storage = new FakeBackupArchiveStorage;
         $this->storage->backupArchiveExists = true;
@@ -41,16 +32,14 @@ final class RestoreBackupControllerTest extends TestCase
 
     public function test_it_requires_the_authenticated_user_password_to_restore_backup(): void
     {
-        $user = User::factory()->create([
-            'password' => Hash::make('senha-correta'),
-        ]);
+        $user = $this->admin();
         $backup = $this->backup();
 
         $response = $this->actingAs($user)
-            ->from('/backup/backups')
-            ->post(self::ENDPOINT.'/'.$backup->id.'/restore', []);
+            ->from(route('backup.backups.index'))
+            ->post(route('backup.backups.restore', $backup), []);
 
-        $response->assertRedirect('/backup/backups');
+        $response->assertRedirect(route('backup.backups.index'));
         $response->assertSessionHasErrors([
             'password' => 'Informe sua senha para confirmar a restauração.',
         ]);
@@ -59,23 +48,36 @@ final class RestoreBackupControllerTest extends TestCase
 
     public function test_it_rejects_restore_when_password_is_invalid(): void
     {
-        $user = User::factory()->create([
-            'password' => Hash::make('senha-correta'),
-        ]);
+        $user = $this->admin();
         $backup = $this->backup();
 
         $response = $this->actingAs($user)
-            ->from('/backup/backups')
-            ->post(self::ENDPOINT.'/'.$backup->id.'/restore', [
+            ->from(route('backup.backups.index'))
+            ->post(route('backup.backups.restore', $backup), [
                 'password' => 'senha-errada',
             ]);
 
-        $response->assertRedirect('/backup/backups');
+        $response->assertRedirect(route('backup.backups.index'));
         $response->assertSessionHas('error', 'Senha incorreta. A restauração não foi executada.');
         self::assertFalse($this->storage->restoreWasCalled);
     }
 
     public function test_it_restores_backup_when_password_is_valid(): void
+    {
+        $user = $this->admin();
+        $backup = $this->backup();
+
+        $response = $this->actingAs($user)
+            ->post(route('backup.backups.restore', $backup), [
+                'password' => 'senha-correta',
+            ]);
+
+        $response->assertRedirect(route('backup.backups.index'));
+        $response->assertSessionHas('success', 'Sistema restaurado com sucesso para a versão selecionada!');
+        self::assertTrue($this->storage->restoreWasCalled);
+    }
+
+    public function test_it_forbids_restore_without_permission(): void
     {
         $user = User::factory()->create([
             'password' => Hash::make('senha-correta'),
@@ -83,13 +85,20 @@ final class RestoreBackupControllerTest extends TestCase
         $backup = $this->backup();
 
         $response = $this->actingAs($user)
-            ->post(self::ENDPOINT.'/'.$backup->id.'/restore', [
+            ->post(route('backup.backups.restore', $backup), [
                 'password' => 'senha-correta',
             ]);
 
-        $response->assertRedirect(route('backup.backups.index'));
-        $response->assertSessionHas('success', 'Sistema restaurado com sucesso para a versão selecionada!');
-        self::assertTrue($this->storage->restoreWasCalled);
+        $response->assertForbidden();
+        self::assertFalse($this->storage->restoreWasCalled);
+    }
+
+    private function admin(): User
+    {
+        return User::factory()->create([
+            'password' => Hash::make('senha-correta'),
+            'is_admin' => true,
+        ]);
     }
 
     private function backup(): Backup

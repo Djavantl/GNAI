@@ -18,7 +18,8 @@ final class LeaveImpersonationActionTest extends TestCase
         session(['impersonator_id' => 1, 'impersonation_mode' => 'read_only']);
         $admin = $this->user(id: 1, isSuperAdmin: true);
 
-        $this->app->instance(FindUserByIdQuery::class, new class($admin) extends FindUserByIdQuery {
+        $this->app->instance(FindUserByIdQuery::class, new class($admin) extends FindUserByIdQuery
+        {
             public function __construct(private readonly User $user) {}
 
             public function execute(int $id): ?User
@@ -40,7 +41,8 @@ final class LeaveImpersonationActionTest extends TestCase
     {
         session()->forget('impersonator_id');
 
-        $this->app->instance(FindUserByIdQuery::class, new class extends FindUserByIdQuery {
+        $this->app->instance(FindUserByIdQuery::class, new class extends FindUserByIdQuery
+        {
             public function execute(int $id): ?User
             {
                 self::fail('User query should not be executed when impersonation is inactive.');
@@ -57,7 +59,8 @@ final class LeaveImpersonationActionTest extends TestCase
     {
         session(['impersonator_id' => 1]);
 
-        $this->app->instance(FindUserByIdQuery::class, new class extends FindUserByIdQuery {
+        $this->app->instance(FindUserByIdQuery::class, new class extends FindUserByIdQuery
+        {
             public function execute(int $id): ?User
             {
                 return null;
@@ -81,7 +84,8 @@ final class LeaveImpersonationActionTest extends TestCase
         session(['impersonator_id' => 1]);
         $user = $this->user(id: 1, isAdmin: true);
 
-        $this->app->instance(FindUserByIdQuery::class, new class($user) extends FindUserByIdQuery {
+        $this->app->instance(FindUserByIdQuery::class, new class($user) extends FindUserByIdQuery
+        {
             public function __construct(private readonly User $user) {}
 
             public function execute(int $id): ?User

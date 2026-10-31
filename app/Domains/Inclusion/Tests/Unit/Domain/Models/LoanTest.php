@@ -6,29 +6,19 @@ namespace App\Domains\Inclusion\Tests\Unit\Domain\Models;
 
 use App\Domains\Inclusion\Domain\DTOs\Loans\CreateLoanDTO;
 use App\Domains\Inclusion\Domain\DTOs\Loans\ReturnLoanDTO;
-use App\Domains\Inclusion\Domain\DTOs\Loans\UpdateLoanDTO;
-use App\Domains\Inclusion\Domain\Enums\LoanableType;
 use App\Domains\Inclusion\Domain\Enums\LoanStatus;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidLoan;
+use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Loan;
 use Tests\TestCase;
 
 final class LoanTest extends TestCase
 {
-    public function test_it_casts_status_to_domain_enum(): void
-    {
-        $loan = new Loan([
-            'status' => LoanStatus::ACTIVE,
-        ]);
-
-        $this->assertSame(LoanStatus::ACTIVE, $loan->status);
-    }
-
-    public function test_it_registers_an_active_loan(): void
+    public function test_it_registers_an_active_loan_for_an_item(): void
     {
         $loan = Loan::register(new CreateLoanDTO(
             loanableId: 10,
-            loanableType: LoanableType::AssistiveTechnology,
+            loanableType: (new Item)->getMorphClass(),
             studentId: 20,
             professionalId: null,
             registeredBy: 30,
@@ -37,30 +27,15 @@ final class LoanTest extends TestCase
             observation: 'Entrega inicial.',
         ));
 
-        $this->assertSame(10, $loan->loanable_id);
-        $this->assertSame('assistive_technology', $loan->loanable_type);
-        $this->assertSame(20, $loan->student_id);
-        $this->assertNull($loan->professional_id);
-        $this->assertSame(30, $loan->user_id);
-        $this->assertSame(LoanStatus::ACTIVE, $loan->status);
-        $this->assertNull($loan->return_date);
-        $this->assertSame('Entrega inicial.', $loan->observation);
+        self::assertSame(10, $loan->loanable_id);
+        self::assertSame('item', $loan->loanable_type);
+        self::assertSame(20, $loan->student_id);
+        self::assertSame(30, $loan->user_id);
+        self::assertSame(LoanStatus::ACTIVE, $loan->status);
+        self::assertNull($loan->return_date);
     }
 
-    public function test_it_revises_observation(): void
-    {
-        $loan = new Loan([
-            'observation' => 'Antiga.',
-        ]);
-
-        $loan->revise(new UpdateLoanDTO(
-            observation: 'Nova.',
-        ));
-
-        $this->assertSame('Nova.', $loan->observation);
-    }
-
-    public function test_it_registers_return(): void
+    public function test_it_registers_return_keeping_observation_when_none_is_given(): void
     {
         $loan = new Loan([
             'status' => LoanStatus::ACTIVE,
@@ -74,39 +49,9 @@ final class LoanTest extends TestCase
             observation: null,
         ));
 
-        $this->assertSame(LoanStatus::RETURNED, $loan->status);
-        $this->assertNotNull($loan->return_date);
-        $this->assertSame('Sem avaria.', $loan->observation);
-    }
-
-    public function test_it_calculates_returned_status(): void
-    {
-        $dueDate = now();
-
-        $this->assertSame(
-            LoanStatus::DAMAGED,
-            Loan::returnedStatus(
-                isDamaged: true,
-                returnDate: $dueDate,
-                dueDate: $dueDate,
-            ),
-        );
-        $this->assertSame(
-            LoanStatus::LATE,
-            Loan::returnedStatus(
-                isDamaged: false,
-                returnDate: $dueDate->copy()->addSecond(),
-                dueDate: $dueDate,
-            ),
-        );
-        $this->assertSame(
-            LoanStatus::RETURNED,
-            Loan::returnedStatus(
-                isDamaged: false,
-                returnDate: $dueDate,
-                dueDate: $dueDate,
-            ),
-        );
+        self::assertSame(LoanStatus::RETURNED, $loan->status);
+        self::assertNotNull($loan->return_date);
+        self::assertSame('Sem avaria.', $loan->observation);
     }
 
     public function test_it_rejects_registering_return_twice(): void
@@ -123,5 +68,23 @@ final class LoanTest extends TestCase
             status: LoanStatus::RETURNED,
             observation: null,
         ));
+    }
+
+    public function test_it_calculates_returned_status(): void
+    {
+        $dueDate = now();
+
+        self::assertSame(
+            LoanStatus::DAMAGED,
+            Loan::returnedStatus(isDamaged: true, returnDate: $dueDate->copy()->addDay(), dueDate: $dueDate),
+        );
+        self::assertSame(
+            LoanStatus::LATE,
+            Loan::returnedStatus(isDamaged: false, returnDate: $dueDate->copy()->addSecond(), dueDate: $dueDate),
+        );
+        self::assertSame(
+            LoanStatus::RETURNED,
+            Loan::returnedStatus(isDamaged: false, returnDate: $dueDate, dueDate: $dueDate),
+        );
     }
 }

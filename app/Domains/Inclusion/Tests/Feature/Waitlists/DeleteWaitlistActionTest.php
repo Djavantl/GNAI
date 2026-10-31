@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Tests\Feature\Waitlists;
 
-use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Application\Actions\Waitlists\DeleteWaitlistAction;
 use App\Domains\Inclusion\Domain\Enums\WaitlistStatus;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidWaitlist;
-use App\Domains\Inclusion\Domain\Models\AssistiveTechnology;
+use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Waitlist;
-use App\Domains\Inclusion\Domain\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,17 +18,7 @@ final class DeleteWaitlistActionTest extends TestCase
 
     public function test_it_deletes_a_non_fulfilled_waitlist(): void
     {
-        $user = User::factory()->create();
-        $student = Student::factory()->create();
-        $technology = AssistiveTechnology::factory()->physical()->loanable()->unavailable()->create();
-        $waitlist = Waitlist::factory()
-            ->forAssistiveTechnology($technology)
-            ->forStudent($student)
-            ->state([
-                'user_id' => $user->id,
-                'status' => WaitlistStatus::WAITING,
-            ])
-            ->create();
+        $waitlist = $this->waitlist(WaitlistStatus::WAITING);
 
         app(DeleteWaitlistAction::class)->execute($waitlist);
 
@@ -41,21 +29,20 @@ final class DeleteWaitlistActionTest extends TestCase
 
     public function test_it_rejects_deleting_a_fulfilled_waitlist(): void
     {
-        $user = User::factory()->create();
-        $student = Student::factory()->create();
-        $technology = AssistiveTechnology::factory()->physical()->loanable()->unavailable()->create();
-        $waitlist = Waitlist::factory()
-            ->forAssistiveTechnology($technology)
-            ->forStudent($student)
-            ->state([
-                'user_id' => $user->id,
-                'status' => WaitlistStatus::FULFILLED,
-            ])
-            ->create();
+        $waitlist = $this->waitlist(WaitlistStatus::FULFILLED);
 
         $this->expectException(InvalidWaitlist::class);
         $this->expectExceptionMessage('Solicitações já atendidas não podem ser removidas.');
 
         app(DeleteWaitlistAction::class)->execute($waitlist);
+    }
+
+    private function waitlist(WaitlistStatus $status): Waitlist
+    {
+        $item = Item::factory()->physical()->loanable()->unavailable()->create();
+
+        return Waitlist::factory()->forAssistiveTechnology($item)->create([
+            'status' => $status,
+        ]);
     }
 }

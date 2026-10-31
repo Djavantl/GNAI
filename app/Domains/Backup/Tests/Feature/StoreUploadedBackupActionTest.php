@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\Backup\Tests\Feature;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Backup\Application\Actions\StoreUploadedBackupAction;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Data\UploadBackupData;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Exceptions\BackupOperationFailed;
 use App\Domains\Backup\Tests\Fakes\FakeBackupArchiveStorage;
-use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;

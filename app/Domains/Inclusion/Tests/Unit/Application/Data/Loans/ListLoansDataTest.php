@@ -20,21 +20,21 @@ final class ListLoansDataTest extends TestCase
             'per_page' => 25,
         ]);
 
-        $this->assertSame('Ana', $data->student);
-        $this->assertSame('Marley', $data->professional);
-        $this->assertSame('Linha Braille', $data->item);
-        $this->assertSame(LoanStatus::ACTIVE, $data->status);
-        $this->assertSame(25, $data->perPage);
+        self::assertSame('Ana', $data->student);
+        self::assertSame('Marley', $data->professional);
+        self::assertSame('Linha Braille', $data->item);
+        self::assertSame(LoanStatus::ACTIVE, $data->status);
+        self::assertSame(25, $data->perPage);
     }
 
     public function test_it_applies_default_filters(): void
     {
         $data = ListLoansData::from([]);
 
-        $this->assertNull($data->student);
-        $this->assertNull($data->professional);
-        $this->assertNull($data->item);
-        $this->assertNull($data->status);
-        $this->assertSame(10, $data->perPage);
+        self::assertNull($data->student);
+        self::assertNull($data->professional);
+        self::assertNull($data->item);
+        self::assertNull($data->status);
+        self::assertSame(10, $data->perPage);
     }
 }

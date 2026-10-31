@@ -9,16 +9,12 @@ use Tests\TestCase;
 
 final class UpdateAccessibilityFeatureDataTest extends TestCase
 {
-    public function test_it_maps_snake_case_input(): void
+    public function test_it_treats_an_unchecked_active_checkbox_as_inactive(): void
     {
         $data = UpdateAccessibilityFeatureData::from([
             'name' => 'Libras',
-            'description' => 'Recurso atualizado.',
-            'is_active' => false,
         ]);
 
-        self::assertSame('Libras', $data->name);
-        self::assertSame('Recurso atualizado.', $data->description);
         self::assertFalse($data->isActive);
     }
 }

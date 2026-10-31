@@ -12,8 +12,8 @@ use App\Domains\Inclusion\Domain\Enums\BarrierStatus;
 use App\Domains\Inclusion\Domain\Enums\InspectionType;
 use App\Domains\Inclusion\Domain\Enums\Priority;
 use App\Domains\Inclusion\Domain\Models\BarrierCategory;
-use App\Domains\Inclusion\Domain\Models\Institution;
 use App\Domains\Inclusion\Domain\Models\Deficiency;
+use App\Domains\Inclusion\Domain\Models\Institution;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

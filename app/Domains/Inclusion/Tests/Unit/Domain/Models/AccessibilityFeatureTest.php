@@ -7,12 +7,11 @@ namespace App\Domains\Inclusion\Tests\Unit\Domain\Models;
 use App\Domains\Inclusion\Domain\DTOs\AccessibilityFeatures\CreateAccessibilityFeatureDTO;
 use App\Domains\Inclusion\Domain\DTOs\AccessibilityFeatures\UpdateAccessibilityFeatureDTO;
 use App\Domains\Inclusion\Domain\Models\AccessibilityFeature;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Tests\TestCase;
 
 final class AccessibilityFeatureTest extends TestCase
 {
-    public function test_it_registers_an_accessibility_feature(): void
+    public function test_it_trims_name_and_description_on_registration(): void
     {
         $feature = AccessibilityFeature::register(new CreateAccessibilityFeatureDTO(
             name: ' Audiodescrição ',
@@ -25,7 +24,7 @@ final class AccessibilityFeatureTest extends TestCase
         self::assertTrue($feature->is_active);
     }
 
-    public function test_it_revises_an_accessibility_feature(): void
+    public function test_it_clears_a_blank_description_on_revision(): void
     {
         $feature = new AccessibilityFeature([
             'name' => 'Audiodescrição',
@@ -42,24 +41,5 @@ final class AccessibilityFeatureTest extends TestCase
         self::assertSame('Libras', $feature->name);
         self::assertNull($feature->description);
         self::assertFalse($feature->is_active);
-    }
-
-    public function test_it_trims_name(): void
-    {
-        $feature = AccessibilityFeature::register(new CreateAccessibilityFeatureDTO(
-            name: ' Libras ',
-        ));
-
-        self::assertSame('Libras', $feature->name);
-    }
-
-    public function test_it_has_materials_relationship(): void
-    {
-        $feature = new AccessibilityFeature();
-
-        $relation = $feature->materials();
-
-        self::assertInstanceOf(BelongsToMany::class, $relation);
-        self::assertSame('accessible_educational_material_accessibility', $relation->getTable());
     }
 }

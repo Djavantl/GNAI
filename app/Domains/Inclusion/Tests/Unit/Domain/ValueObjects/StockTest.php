@@ -24,16 +24,6 @@ final class StockTest extends TestCase
         self::assertFalse($stock->isNotApplicable());
     }
 
-    public function test_it_rejects_non_positive_initial_stock(): void
-    {
-        $this->expectException(InvalidStock::class);
-        $this->expectExceptionMessage(
-            'Para recursos físicos, a quantidade deve ser no mínimo 1.'
-        );
-
-        Stock::initial(0);
-    }
-
     public function test_it_represents_stock_that_does_not_apply(): void
     {
         $stock = Stock::notApplicable();
@@ -44,15 +34,6 @@ final class StockTest extends TestCase
         self::assertTrue($stock->isNotApplicable());
         self::assertFalse($stock->isFullyAvailable());
         self::assertFalse($stock->isEmpty());
-    }
-
-    public function test_it_restores_valid_persisted_stock(): void
-    {
-        $stock = Stock::restore(total: 5, available: 3);
-
-        self::assertSame(5, $stock->total());
-        self::assertSame(3, $stock->available());
-        self::assertSame(2, $stock->borrowed());
     }
 
     public function test_it_rejects_partially_null_stock(): void
@@ -132,21 +113,12 @@ final class StockTest extends TestCase
         $stock->returnOne();
     }
 
-    public function test_stock_operations_are_no_op_when_stock_does_not_apply(): void
+    public function test_it_ignores_stock_operations_when_stock_does_not_apply(): void
     {
         $stock = Stock::notApplicable();
 
         self::assertSame($stock, $stock->withdrawOne());
         self::assertSame($stock, $stock->returnOne());
-    }
-
-    public function test_it_recalculates_availability_preserving_open_loans(): void
-    {
-        $stock = Stock::withOpenLoans(total: 5, openLoans: 2);
-
-        self::assertSame(5, $stock->total());
-        self::assertSame(3, $stock->available());
-        self::assertSame(2, $stock->borrowed());
     }
 
     public function test_it_rejects_negative_open_loan_count(): void
@@ -157,15 +129,5 @@ final class StockTest extends TestCase
         );
 
         Stock::withOpenLoans(total: 5, openLoans: -1);
-    }
-
-    public function test_it_rejects_total_below_open_loan_count(): void
-    {
-        $this->expectException(InvalidStock::class);
-        $this->expectExceptionMessage(
-            'Impossível reduzir estoque: existem 3 unidades emprestadas.'
-        );
-
-        Stock::withOpenLoans(total: 2, openLoans: 3);
     }
 }

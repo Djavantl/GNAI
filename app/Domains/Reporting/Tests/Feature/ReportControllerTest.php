@@ -7,59 +7,40 @@ namespace App\Domains\Reporting\Tests\Feature;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Models\Backup;
-use App\Domains\Inclusion\Domain\Models\AccessibleEducationalMaterial;
-use App\Domains\Inclusion\Domain\Models\AssistiveTechnology;
+use App\Domains\Inclusion\Domain\Enums\StudentStatus;
+use App\Domains\Inclusion\Domain\Models\Barrier;
+use App\Domains\Inclusion\Domain\Models\Deficiency;
 use App\Domains\Inclusion\Domain\Models\Inspection;
+use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Loan;
+use App\Domains\Inclusion\Domain\Models\Student;
 use App\Domains\Inclusion\Domain\Models\Waitlist;
 use App\Domains\Reporting\Application\Services\ReportCatalog;
 use App\Domains\Reporting\Application\Services\ReportRelationCatalog;
-use App\Domains\Inclusion\Domain\Enums\StudentStatus;
-use App\Domains\Inclusion\Domain\Models\Deficiency;
-use App\Domains\Inclusion\Domain\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 final class ReportControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_catalog_exposes_the_students_report_source(): void
+    public function test_it_lists_primary_sources_and_hides_relation_only_sources(): void
     {
         $response = $this->actingAs($this->admin())->getJson(route('reports.sources'));
 
-        $response
-            ->assertOk()
-            ->assertJsonFragment([
-                'key' => 'specialized-support.students',
-                'label' => 'Alunos',
-            ]);
-    }
-
-    public function test_catalog_exposes_primary_sources_and_hides_relation_only_sources(): void
-    {
-        $response = $this->actingAs($this->admin())->getJson(route('reports.sources'));
-
-        $response
-            ->assertOk()
-            ->assertJsonCount(33)
-            ->assertJsonFragment(['key' => 'auth.users'])
-            ->assertJsonFragment(['key' => 'backup.backups'])
+        $response->assertOk()
+            ->assertJsonFragment(['key' => 'specialized-support.students', 'label' => 'Alunos'])
+            ->assertJsonFragment(['key' => 'inclusive-radar.items'])
             ->assertJsonFragment(['key' => 'inclusive-radar.loans'])
             ->assertJsonFragment(['key' => 'inclusive-radar.inspections'])
-            ->assertJsonFragment(['key' => 'specialized-support.pei-disciplines'])
-            ->assertJsonFragment(['key' => 'specialized-support.pedagogical-records'])
-            ->assertJsonFragment(['key' => 'specialized-support.student-courses'])
             ->assertJsonMissing(['key' => 'specialized-support.student-deficiencies']);
     }
 
-    public function test_every_discovered_source_provides_metadata_and_can_execute(): void
+    public function test_it_describes_and_runs_every_listed_source(): void
     {
         $admin = $this->admin();
-        $sources = $this->actingAs($admin)
-            ->getJson(route('reports.sources'))
-            ->assertOk()
-            ->json();
+        $sources = $this->actingAs($admin)->getJson(route('reports.sources'))->assertOk()->json();
 
         foreach ($sources as $source) {
             $metadata = $this->actingAs($admin)
@@ -67,12 +48,10 @@ final class ReportControllerTest extends TestCase
                 ->assertOk()
                 ->json();
 
-            $firstColumn = array_key_first($metadata['columns']);
-
             $this->actingAs($admin)
                 ->postJson(route('reports.run'), [
                     'source' => $source['key'],
-                    'columns' => [$firstColumn],
+                    'columns' => [array_key_first($metadata['columns'])],
                     'limit' => 1,
                 ])
                 ->assertOk()
@@ -80,291 +59,101 @@ final class ReportControllerTest extends TestCase
         }
     }
 
-    public function test_metadata_only_exposes_explicit_columns_and_filters(): void
+    public function test_it_only_exposes_explicitly_declared_columns_and_filters(): void
     {
         $response = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
             'source' => 'specialized-support.students',
         ]));
 
-        $response
-            ->assertOk()
+        $response->assertOk()
             ->assertJsonPath('columns.registration', 'Matrícula')
             ->assertJsonMissing(['key' => 'password'])
             ->assertJsonFragment(['key' => 'status', 'type' => 'select']);
     }
 
-    public function test_inspections_metadata_exposes_each_polymorphic_target_as_a_relation(): void
+    public function test_it_exposes_items_and_barriers_as_inspection_targets(): void
     {
-        $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'inclusive-radar.inspections',
-        ]))->assertOk()->json();
+        $metadata = $this->metadata('inclusive-radar.inspections');
 
         $relations = collect($metadata['relations'])->keyBy('name');
 
-        self::assertSame('Tecnologia assistiva', $relations['assistiveTechnology']['label']);
-        self::assertSame('Material pedagógico acessível', $relations['accessibleEducationalMaterial']['label']);
-        self::assertSame('Barreira', $relations['barrier']['label']);
-        self::assertArrayNotHasKey('name', $relations['assistiveTechnology']['columns']);
-        self::assertArrayHasKey('asset_code', $relations['assistiveTechnology']['columns']);
-        self::assertArrayHasKey('asset_code', $relations['accessibleEducationalMaterial']['columns']);
+        self::assertArrayHasKey('asset_code', $relations['item']['columns']);
+        self::assertArrayNotHasKey('name', $relations['item']['columns']);
         self::assertArrayHasKey('priority', $relations['barrier']['columns']);
+        self::assertSame(
+            ['original_name' => 'Nome do arquivo', 'mime_type' => 'Formato', 'size' => 'Tamanho (bytes)'],
+            $relations['evidences']['columns'],
+        );
     }
 
-    public function test_resource_inspections_do_not_repeat_the_inspected_resource(): void
+    public function test_it_does_not_repeat_the_inspected_resource_in_its_inspections(): void
     {
-        foreach ([
-            'inclusive-radar.assistive-technologies',
-            'inclusive-radar.accessible-educational-materials',
-            'inclusive-radar.barriers',
-        ] as $source) {
-            $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-                'source' => $source,
-            ]))->assertOk()->json();
-            $inspections = collect($metadata['relations'])->firstWhere('name', 'inspections');
+        foreach (['inclusive-radar.items', 'inclusive-radar.barriers'] as $source) {
+            $inspections = collect($this->metadata($source)['relations'])->firstWhere('name', 'inspections');
 
-            self::assertArrayNotHasKey('inspectable_type', $inspections['columns']);
-            self::assertArrayNotHasKey('inspectable', $inspections['columns']);
-            self::assertArrayHasKey('inspection_date', $inspections['columns']);
+            self::assertArrayNotHasKey('inspectable_type', $inspections['columns'], $source);
+            self::assertArrayNotHasKey('inspectable', $inspections['columns'], $source);
+            self::assertArrayHasKey('inspection_date', $inspections['columns'], $source);
         }
     }
 
-    public function test_inspection_evidence_relation_only_exposes_file_fields(): void
+    public function test_it_uses_history_relations_for_students_instead_of_current_shortcuts(): void
     {
-        $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'inclusive-radar.inspections',
-        ]))->assertOk()->json();
-
-        $evidences = collect($metadata['relations'])->firstWhere('name', 'evidences');
-
-        self::assertSame([
-            'original_name' => 'Nome do arquivo',
-            'mime_type' => 'Formato',
-            'size' => 'Tamanho (bytes)',
-        ], $evidences['columns']);
-        self::assertArrayNotHasKey('inspectable_type', $evidences['columns']);
-        self::assertArrayNotHasKey('inspectable', $evidences['columns']);
-    }
-
-    public function test_inspection_evidence_item_type_uses_translated_options(): void
-    {
-        $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'inclusive-radar.inspection-evidences',
-        ]))->assertOk()->json();
-        $definitions = collect($metadata['column_definitions'])->keyBy('key');
-
-        self::assertSame('select', $definitions['inspectable_type']['type']);
-        self::assertSame('Tecnologia assistiva', $definitions['inspectable_type']['options']['assistive_technology']);
-        self::assertSame('Material pedagógico acessível', $definitions['inspectable_type']['options']['accessible_educational_material']);
-        self::assertSame('Barreira', $definitions['inspectable_type']['options']['barrier']);
-    }
-
-    public function test_it_runs_students_report_with_allowed_filter_and_formats_values(): void
-    {
-        Student::factory()->create([
-            'registration' => 'MAT000001',
-            'status' => StudentStatus::ACTIVE,
-        ]);
-        Student::factory()->create([
-            'registration' => 'MAT000002',
-            'status' => StudentStatus::DROPPED,
-        ]);
-
-        $response = $this->actingAs($this->admin())->postJson(route('reports.run'), [
-            'source' => 'specialized-support.students',
-            'columns' => ['registration', 'status'],
-            'filters' => [[
-                'field' => 'status',
-                'operator' => 'eq',
-                'value' => 'active',
-            ]],
-        ]);
-
-        $response
-            ->assertOk()
-            ->assertJsonPath('total', 1)
-            ->assertJsonPath('rows.0.registration', 'MAT000001')
-            ->assertJsonPath('rows.0.status', 'Ativo');
-    }
-
-    public function test_students_metadata_exposes_reportable_relations(): void
-    {
-        $response = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.students',
-        ]));
-
-        $response
-            ->assertOk()
-            ->assertJsonFragment([
-                'name' => 'deficiencies',
-                'label' => 'Deficiências',
-            ])
-            ->assertJsonFragment([
-                'severity' => 'Severidade',
-                'notes' => 'Observações',
-            ]);
-    }
-
-    public function test_students_metadata_uses_history_relations_without_current_duplicates(): void
-    {
-        $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.students',
-        ]))->assertOk()->json();
+        $metadata = $this->metadata('specialized-support.students');
 
         $relations = collect($metadata['relations'])->keyBy('name');
 
-        self::assertSame('Contextos dos alunos', $relations['contexts']['label']);
         self::assertFalse($relations->has('person'));
         self::assertFalse($relations->has('currentContext'));
-        self::assertContains('is_current', array_column($relations['contexts']['column_definitions'], 'key'));
-        self::assertSame('Matrículas em cursos', $relations['studentCourses']['label']);
         self::assertFalse($relations->has('currentCourse'));
-        self::assertArrayNotHasKey('student', $relations['contexts']['columns']);
-        self::assertArrayNotHasKey('registration', $relations['contexts']['columns']);
-        self::assertArrayNotHasKey('student', $relations['studentCourses']['columns']);
-        self::assertArrayNotHasKey('registration', $relations['studentCourses']['columns']);
+        self::assertContains('is_current', array_column($relations['contexts']['column_definitions'], 'key'));
         self::assertContains('is_current', array_column($relations['studentCourses']['column_definitions'], 'key'));
-        self::assertArrayNotHasKey('student', $relations['guardians']['columns']);
     }
 
-    public function test_guardians_relation_does_not_repeat_the_student_name(): void
+    /**
+     * @param  list<string>  $repeated
+     */
+    #[DataProvider('relationsBackToTheParent')]
+    public function test_it_does_not_repeat_the_parent_identity_in_its_relations(string $source, string $relation, array $repeated, string $kept): void
     {
-        $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.guardians',
-        ]))->assertOk()->json();
+        $metadata = $this->metadata($source);
 
-        $relations = collect($metadata['relations'])->keyBy('name');
+        $columns = collect($metadata['relations'])->firstWhere('name', $relation)['columns'];
 
-        self::assertArrayNotHasKey('name', $relations['student']['columns']);
-        self::assertArrayHasKey('registration', $relations['student']['columns']);
-    }
-
-    public function test_guardians_and_people_relations_do_not_repeat_person_fields(): void
-    {
-        $guardianMetadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.guardians',
-        ]))->assertOk()->json();
-        $guardianRelations = collect($guardianMetadata['relations'])->keyBy('name');
-
-        self::assertArrayNotHasKey('name', $guardianRelations['person']['columns']);
-        self::assertArrayNotHasKey('document', $guardianRelations['person']['columns']);
-        self::assertArrayHasKey('birth_date', $guardianRelations['person']['columns']);
-
-        $peopleMetadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.people',
-        ]))->assertOk()->json();
-        $peopleRelations = collect($peopleMetadata['relations'])->keyBy('name');
-
-        self::assertArrayNotHasKey('name', $peopleRelations['guardians']['columns']);
-        self::assertArrayNotHasKey('document', $peopleRelations['guardians']['columns']);
-        self::assertArrayHasKey('relationship', $peopleRelations['guardians']['columns']);
-        self::assertArrayHasKey('student', $peopleRelations['guardians']['columns']);
-    }
-
-    public function test_users_and_professionals_do_not_repeat_identity_fields(): void
-    {
-        $users = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'auth.users',
-        ]))->assertOk()->json();
-        $userRelations = collect($users['relations'])->keyBy('name');
-
-        self::assertArrayNotHasKey('name', $userRelations['professional']['columns']);
-        self::assertArrayNotHasKey('email', $userRelations['professional']['columns']);
-        self::assertArrayHasKey('registration', $userRelations['professional']['columns']);
-
-        $professionals = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.professionals',
-        ]))->assertOk()->json();
-        $professionalRelations = collect($professionals['relations'])->keyBy('name');
-
-        self::assertArrayNotHasKey('name', $professionalRelations['user']['columns']);
-        self::assertArrayNotHasKey('email', $professionalRelations['user']['columns']);
-        self::assertArrayHasKey('role', $professionalRelations['user']['columns']);
-    }
-
-    public function test_students_and_professionals_expose_loans_and_waitlists(): void
-    {
-        foreach (['specialized-support.students', 'specialized-support.professionals'] as $source) {
-            $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-                'source' => $source,
-            ]))->assertOk()->json();
-            $relations = collect($metadata['relations'])->keyBy('name');
-
-            self::assertSame('Empréstimos', $relations['loans']['label']);
-            self::assertSame('Listas de espera', $relations['waitlists']['label']);
+        foreach ($repeated as $column) {
+            self::assertArrayNotHasKey($column, $columns, "{$source}.{$relation}.{$column}");
         }
-
-        $studentMetadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.students',
-        ]))->assertOk()->json();
-        $studentRelations = collect($studentMetadata['relations'])->keyBy('name');
-        self::assertArrayNotHasKey('student', $studentRelations['loans']['columns']);
-        self::assertArrayNotHasKey('student', $studentRelations['waitlists']['columns']);
-
-        $professionalMetadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.professionals',
-        ]))->assertOk()->json();
-        $professionalRelations = collect($professionalMetadata['relations'])->keyBy('name');
-        self::assertArrayNotHasKey('professional', $professionalRelations['loans']['columns']);
-        self::assertArrayNotHasKey('professional', $professionalRelations['waitlists']['columns']);
+        self::assertArrayHasKey($kept, $columns);
     }
 
-    public function test_student_contexts_and_peis_only_repeat_independent_version_fields(): void
+    /**
+     * @return array<string, array{string, string, list<string>, string}>
+     */
+    public static function relationsBackToTheParent(): array
     {
-        $contextMetadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.student-contexts',
-        ]))->assertOk()->json();
-        $contextRelations = collect($contextMetadata['relations'])->keyBy('name');
-
-        self::assertArrayNotHasKey('student', $contextRelations['peis']['columns']);
-        self::assertArrayNotHasKey('registration', $contextRelations['peis']['columns']);
-        self::assertArrayNotHasKey('semester', $contextRelations['peis']['columns']);
-        self::assertSame('Versão do PEI', $contextRelations['peis']['columns']['version']);
-
-        $peiMetadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'specialized-support.peis',
-        ]))->assertOk()->json();
-        $peiRelations = collect($peiMetadata['relations'])->keyBy('name');
-
-        self::assertArrayNotHasKey('student', $peiRelations['studentContext']['columns']);
-        self::assertArrayNotHasKey('registration', $peiRelations['studentContext']['columns']);
-        self::assertArrayNotHasKey('semester', $peiRelations['studentContext']['columns']);
-        self::assertSame('Versão do contexto', $peiRelations['studentContext']['columns']['version']);
+        return [
+            'student contexts' => ['specialized-support.students', 'contexts', ['student', 'registration'], 'is_current'],
+            'student courses' => ['specialized-support.students', 'studentCourses', ['student', 'registration'], 'is_current'],
+            'student loans' => ['specialized-support.students', 'loans', ['student'], 'loan_date'],
+            'student waitlists' => ['specialized-support.students', 'waitlists', ['student'], 'requested_at'],
+            'professional loans' => ['specialized-support.professionals', 'loans', ['professional'], 'loan_date'],
+            'professional waitlists' => ['specialized-support.professionals', 'waitlists', ['professional'], 'requested_at'],
+            'professional user' => ['specialized-support.professionals', 'user', ['name', 'email'], 'role'],
+            'user professional' => ['auth.users', 'professional', ['name', 'email'], 'registration'],
+            'user loans' => ['auth.users', 'loans', ['registered_by'], 'loan_date'],
+            'user waitlists' => ['auth.users', 'waitlists', ['registered_by'], 'requested_at'],
+            'guardian student' => ['specialized-support.guardians', 'student', ['name'], 'registration'],
+            'guardian person' => ['specialized-support.guardians', 'person', ['name', 'document'], 'birth_date'],
+            'person guardians' => ['specialized-support.people', 'guardians', ['name', 'document'], 'relationship'],
+            'context peis' => ['specialized-support.student-contexts', 'peis', ['student', 'registration', 'semester'], 'version'],
+            'pei context' => ['specialized-support.peis', 'studentContext', ['student', 'registration', 'semester'], 'version'],
+            'document semester' => ['specialized-support.student-documents', 'semester', ['label', 'year', 'term'], 'start_date'],
+            'context semester' => ['specialized-support.student-contexts', 'semester', ['label', 'year', 'term'], 'start_date'],
+            'pei semester' => ['specialized-support.peis', 'semester', ['label', 'year', 'term'], 'start_date'],
+        ];
     }
 
-    public function test_semester_relations_do_not_repeat_period_parts_already_shown_by_the_parent(): void
-    {
-        foreach ([
-            'specialized-support.student-documents',
-            'specialized-support.student-contexts',
-            'specialized-support.peis',
-        ] as $source) {
-            $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-                'source' => $source,
-            ]))->assertOk()->json();
-            $semester = collect($metadata['relations'])->firstWhere('name', 'semester');
-
-            self::assertArrayNotHasKey('label', $semester['columns']);
-            self::assertArrayNotHasKey('year', $semester['columns']);
-            self::assertArrayNotHasKey('term', $semester['columns']);
-            self::assertArrayHasKey('start_date', $semester['columns']);
-            self::assertArrayHasKey('end_date', $semester['columns']);
-        }
-    }
-
-    public function test_users_expose_loans_and_waitlists_without_repeating_the_registrant(): void
-    {
-        $metadata = $this->actingAs($this->admin())->getJson(route('reports.metadata', [
-            'source' => 'auth.users',
-        ]))->assertOk()->json();
-        $relations = collect($metadata['relations'])->keyBy('name');
-
-        self::assertSame('Empréstimos', $relations['loans']['label']);
-        self::assertSame('Listas de espera', $relations['waitlists']['label']);
-        self::assertArrayNotHasKey('registered_by', $relations['loans']['columns']);
-        self::assertArrayNotHasKey('registered_by', $relations['waitlists']['columns']);
-    }
-
-    public function test_no_relation_repeats_a_field_already_flattened_by_its_parent(): void
+    public function test_it_never_repeats_a_field_already_flattened_by_the_parent(): void
     {
         $sources = $this->app->make(ReportCatalog::class);
         $relations = $this->app->make(ReportRelationCatalog::class);
@@ -389,7 +178,7 @@ final class ReportControllerTest extends TestCase
         }
     }
 
-    public function test_no_source_exposes_duplicate_relations_to_the_same_model(): void
+    public function test_it_never_exposes_two_relations_to_the_same_model(): void
     {
         $sources = $this->app->make(ReportCatalog::class);
         $relations = $this->app->make(ReportRelationCatalog::class);
@@ -406,13 +195,29 @@ final class ReportControllerTest extends TestCase
         }
     }
 
-    public function test_students_report_selects_and_filters_deficiency_fields(): void
+    public function test_it_filters_by_an_allowed_field_and_formats_enum_values(): void
+    {
+        Student::factory()->create(['registration' => 'MAT000001', 'status' => StudentStatus::ACTIVE]);
+        Student::factory()->create(['registration' => 'MAT000002', 'status' => StudentStatus::DROPPED]);
+
+        $response = $this->actingAs($this->admin())->postJson(route('reports.run'), [
+            'source' => 'specialized-support.students',
+            'columns' => ['registration', 'status'],
+            'filters' => [['field' => 'status', 'operator' => 'eq', 'value' => 'active']],
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('total', 1)
+            ->assertJsonPath('rows.0.registration', 'MAT000001')
+            ->assertJsonPath('rows.0.status', 'Ativo');
+    }
+
+    public function test_it_selects_and_filters_many_to_many_fields_including_pivot_data(): void
     {
         $included = Student::factory()->create(['registration' => 'MAT-REL-1']);
         $excluded = Student::factory()->create(['registration' => 'MAT-REL-2']);
         $visual = Deficiency::factory()->create(['name' => 'Deficiência visual', 'cid_code' => 'H54']);
         $hearing = Deficiency::factory()->create(['name' => 'Deficiência auditiva', 'cid_code' => 'H90']);
-
         $included->deficiencies()->attach($visual, ['severity' => 'moderate', 'notes' => 'Acompanhamento']);
         $included->deficiencies()->attach($hearing, ['severity' => 'mild']);
         $excluded->deficiencies()->attach($hearing, ['severity' => 'severe']);
@@ -420,15 +225,10 @@ final class ReportControllerTest extends TestCase
         $response = $this->actingAs($this->admin())->postJson(route('reports.run'), [
             'source' => 'specialized-support.students',
             'columns' => ['registration', 'deficiencies.name', 'deficiencies.cid_code', 'deficiencies.pivot.severity'],
-            'filters' => [[
-                'field' => 'deficiencies.name',
-                'operator' => 'contains',
-                'value' => 'visual',
-            ]],
+            'filters' => [['field' => 'deficiencies.name', 'operator' => 'contains', 'value' => 'visual']],
         ]);
 
-        $response
-            ->assertOk()
+        $response->assertOk()
             ->assertJsonPath('total', 1)
             ->assertJsonPath('rows.0.registration', 'MAT-REL-1')
             ->assertJsonPath('rows.0.deficiencies__name', 'Deficiência visual, Deficiência auditiva')
@@ -436,48 +236,33 @@ final class ReportControllerTest extends TestCase
             ->assertJsonPath('rows.0.deficiencies__pivot__severity', 'moderate, mild');
     }
 
-    public function test_related_records_can_be_limited_to_matching_filters(): void
+    public function test_it_limits_related_values_to_the_matching_filters_when_requested(): void
     {
+        $admin = $this->admin();
         $student = Student::factory()->create(['registration' => 'MAT-MODOS']);
-        $visual = Deficiency::factory()->create(['name' => 'Visual']);
-        $hearing = Deficiency::factory()->create(['name' => 'Auditiva']);
-        $student->deficiencies()->attach($visual, ['severity' => 'moderate']);
-        $student->deficiencies()->attach($hearing, ['severity' => 'mild']);
+        $student->deficiencies()->attach(Deficiency::factory()->create(['name' => 'Visual']), ['severity' => 'moderate']);
+        $student->deficiencies()->attach(Deficiency::factory()->create(['name' => 'Auditiva']), ['severity' => 'mild']);
 
-        $filtered = $this->actingAs($this->admin())->postJson(route('reports.run'), [
+        $byRelatedField = $this->actingAs($admin)->postJson(route('reports.run'), [
             'source' => 'specialized-support.students',
             'columns' => ['registration', 'deficiencies.name'],
-            'filters' => [[
-                'field' => 'deficiencies.name',
-                'operator' => 'eq',
-                'value' => 'Visual',
-            ]],
+            'filters' => [['field' => 'deficiencies.name', 'operator' => 'eq', 'value' => 'Visual']],
             'filter_related_values' => true,
-        ])->assertOk();
-
-        $filtered->assertJsonPath('rows.0.deficiencies__name', 'Visual');
-
-        $pivotFiltered = $this->actingAs($this->admin())->postJson(route('reports.run'), [
+        ]);
+        $byPivotField = $this->actingAs($admin)->postJson(route('reports.run'), [
             'source' => 'specialized-support.students',
             'columns' => ['registration', 'deficiencies.name'],
-            'filters' => [[
-                'field' => 'deficiencies.pivot.severity',
-                'operator' => 'eq',
-                'value' => 'moderate',
-            ]],
+            'filters' => [['field' => 'deficiencies.pivot.severity', 'operator' => 'eq', 'value' => 'moderate']],
             'filter_related_values' => true,
-        ])->assertOk();
-
-        $pivotFiltered->assertJsonPath('rows.0.deficiencies__name', 'Visual');
-    }
-
-    public function test_backup_report_resolves_a_singular_user_relation(): void
-    {
-        $responsible = User::factory()->create([
-            'name' => 'Responsável pelo backup',
-            'email' => 'backup@example.test',
         ]);
 
+        $byRelatedField->assertOk()->assertJsonPath('rows.0.deficiencies__name', 'Visual');
+        $byPivotField->assertOk()->assertJsonPath('rows.0.deficiencies__name', 'Visual');
+    }
+
+    public function test_it_resolves_a_singular_relation_as_a_display_name_and_nested_columns(): void
+    {
+        $responsible = User::factory()->create(['name' => 'Responsável pelo backup', 'email' => 'backup@example.test']);
         Backup::query()->create([
             'file_name' => 'manual.zip',
             'file_path' => 'backups/manual.zip',
@@ -491,35 +276,10 @@ final class ReportControllerTest extends TestCase
             'columns' => ['file_name', 'user', 'user.email'],
         ]);
 
-        $response
-            ->assertOk()
+        $response->assertOk()
             ->assertJsonPath('total', 1)
             ->assertJsonPath('rows.0.user', 'Responsável pelo backup')
             ->assertJsonPath('rows.0.user__email', 'backup@example.test');
-    }
-
-    public function test_user_profile_is_formatted_in_portuguese(): void
-    {
-        User::factory()->create([
-            'name' => 'Professor do relatório',
-            'email' => 'professor-relatorio@example.test',
-            'role' => 'teacher',
-        ]);
-
-        $response = $this->actingAs($this->admin())->postJson(route('reports.run'), [
-            'source' => 'auth.users',
-            'columns' => ['name', 'role'],
-            'filters' => [[
-                'field' => 'email',
-                'operator' => 'eq',
-                'value' => 'professor-relatorio@example.test',
-            ]],
-        ]);
-
-        $response
-            ->assertOk()
-            ->assertJsonPath('total', 1)
-            ->assertJsonPath('rows.0.role', 'Professor');
     }
 
     public function test_it_rejects_a_column_not_declared_by_the_source(): void
@@ -529,8 +289,7 @@ final class ReportControllerTest extends TestCase
             'columns' => ['person_id'],
         ]);
 
-        $response
-            ->assertUnprocessable()
+        $response->assertUnprocessable()
             ->assertJsonPath('message', 'A coluna person_id não está disponível neste relatório.');
     }
 
@@ -539,87 +298,88 @@ final class ReportControllerTest extends TestCase
         $response = $this->actingAs($this->admin())->postJson(route('reports.run'), [
             'source' => 'specialized-support.students',
             'columns' => ['registration'],
-            'filters' => [[
-                'field' => 'status',
-                'operator' => 'contains',
-                'value' => 'active',
-            ]],
+            'filters' => [['field' => 'status', 'operator' => 'contains', 'value' => 'active']],
         ]);
 
-        $response
-            ->assertUnprocessable()
+        $response->assertUnprocessable()
             ->assertJsonPath('message', 'O operador selecionado não é permitido para esse filtro.');
     }
 
-    public function test_polymorphic_loan_report_resolves_each_resource_type(): void
+    /**
+     * @param  class-string<Loan|Waitlist>  $model
+     */
+    #[DataProvider('itemRequests')]
+    public function test_it_reports_and_filters_item_requests_by_item_type(string $source, string $model, string $itemColumn): void
     {
         $admin = $this->admin();
         $student = Student::factory()->create();
-        $technology = AssistiveTechnology::factory()->create(['name' => 'Teclado adaptado']);
-        $material = AccessibleEducationalMaterial::factory()->create(['name' => 'Livro em braile']);
+        $model::factory()->forStudent($student)
+            ->forAssistiveTechnology(Item::factory()->assistiveTechnology()->physical()->create(['name' => 'Teclado adaptado']))
+            ->create(['user_id' => $admin->id]);
+        $model::factory()->forStudent($student)
+            ->forAccessibleEducationalMaterial(Item::factory()->accessibleEducationalMaterial()->physical()->create(['name' => 'Livro em braile']))
+            ->create(['user_id' => $admin->id]);
 
-        Loan::factory()->forAssistiveTechnology($technology)->forStudent($student)->create(['user_id' => $admin->id]);
-        Loan::factory()->forAccessibleEducationalMaterial($material)->forStudent($student)->create(['user_id' => $admin->id]);
-
-        $response = $this->actingAs($admin)->postJson(route('reports.run'), [
-            'source' => 'inclusive-radar.loans',
-            'columns' => ['loanable_type', 'loanable', 'student', 'status'],
+        $all = $this->actingAs($admin)->postJson(route('reports.run'), [
+            'source' => $source,
+            'columns' => ['item_type', $itemColumn, 'student'],
+        ]);
+        $onlyTechnologies = $this->actingAs($admin)->postJson(route('reports.run'), [
+            'source' => $source,
+            'columns' => ['item_type', $itemColumn],
+            'filters' => [['field' => 'item_type', 'operator' => 'eq', 'value' => 'assistive_technology']],
         ]);
 
-        $response
-            ->assertOk()
+        $all->assertOk()
             ->assertJsonPath('total', 2)
-            ->assertJsonFragment(['loanable_type' => 'Tecnologia assistiva'])
-            ->assertJsonFragment(['loanable_type' => 'Material pedagógico acessível'])
-            ->assertJsonFragment(['loanable' => 'Teclado adaptado'])
-            ->assertJsonFragment(['loanable' => 'Livro em braile']);
+            ->assertJsonFragment(['item_type' => 'Tecnologia Assistiva', $itemColumn => 'Teclado adaptado'])
+            ->assertJsonFragment(['item_type' => 'Material Pedagógico Acessível', $itemColumn => 'Livro em braile']);
+        $onlyTechnologies->assertOk()
+            ->assertJsonPath('total', 1)
+            ->assertJsonPath("rows.0.{$itemColumn}", 'Teclado adaptado');
     }
 
-    public function test_polymorphic_inspection_report_resolves_different_targets(): void
+    /**
+     * @return array<string, array{string, class-string, string}>
+     */
+    public static function itemRequests(): array
+    {
+        return [
+            'loans' => ['inclusive-radar.loans', Loan::class, 'loanable'],
+            'waitlists' => ['inclusive-radar.waitlists', Waitlist::class, 'waitlistable'],
+        ];
+    }
+
+    public function test_it_resolves_items_and_barriers_as_inspected_targets(): void
     {
         $admin = $this->admin();
-        $technology = AssistiveTechnology::factory()->create(['name' => 'Mouse adaptado']);
-        $material = AccessibleEducationalMaterial::factory()->create(['name' => 'Prancha de comunicação']);
-
-        Inspection::factory()->forAssistiveTechnology($technology)->create(['user_id' => $admin->id]);
-        Inspection::factory()->forAccessibleEducationalMaterial($material)->create(['user_id' => $admin->id]);
+        Inspection::factory()
+            ->forAssistiveTechnology(Item::factory()->assistiveTechnology()->create(['name' => 'Mouse adaptado']))
+            ->create(['user_id' => $admin->id]);
+        Inspection::factory()
+            ->forBarrier(Barrier::factory()->create(['name' => 'Rampa sem corrimão']))
+            ->create(['user_id' => $admin->id]);
 
         $response = $this->actingAs($admin)->postJson(route('reports.run'), [
             'source' => 'inclusive-radar.inspections',
-            'columns' => ['inspectable_type', 'inspectable', 'inspection_date', 'registered_by'],
+            'columns' => ['inspectable_type', 'inspectable', 'item.asset_code', 'barrier.priority'],
         ]);
 
-        $response
-            ->assertOk()
+        $response->assertOk()
             ->assertJsonPath('total', 2)
-            ->assertJsonFragment(['inspectable_type' => 'Tecnologia assistiva'])
-            ->assertJsonFragment(['inspectable_type' => 'Material pedagógico acessível'])
-            ->assertJsonFragment(['inspectable' => 'Mouse adaptado'])
-            ->assertJsonFragment(['inspectable' => 'Prancha de comunicação']);
+            ->assertJsonFragment(['inspectable_type' => 'Item', 'inspectable' => 'Mouse adaptado'])
+            ->assertJsonFragment(['inspectable_type' => 'Barreira', 'inspectable' => 'Rampa sem corrimão']);
     }
 
-    public function test_polymorphic_waitlist_report_resolves_each_resource_type(): void
+    /**
+     * @return array<string, mixed>
+     */
+    private function metadata(string $source): array
     {
-        $admin = $this->admin();
-        $student = Student::factory()->create();
-        $technology = AssistiveTechnology::factory()->create(['name' => 'Acionador adaptado']);
-        $material = AccessibleEducationalMaterial::factory()->create(['name' => 'Mapa tátil']);
-
-        Waitlist::factory()->forAssistiveTechnology($technology)->forStudent($student)->create(['user_id' => $admin->id]);
-        Waitlist::factory()->forAccessibleEducationalMaterial($material)->forStudent($student)->create(['user_id' => $admin->id]);
-
-        $response = $this->actingAs($admin)->postJson(route('reports.run'), [
-            'source' => 'inclusive-radar.waitlists',
-            'columns' => ['waitlistable_type', 'waitlistable', 'student', 'status'],
-        ]);
-
-        $response
+        return $this->actingAs($this->admin())
+            ->getJson(route('reports.metadata', ['source' => $source]))
             ->assertOk()
-            ->assertJsonPath('total', 2)
-            ->assertJsonFragment(['waitlistable_type' => 'Tecnologia assistiva'])
-            ->assertJsonFragment(['waitlistable_type' => 'Material pedagógico acessível'])
-            ->assertJsonFragment(['waitlistable' => 'Acionador adaptado'])
-            ->assertJsonFragment(['waitlistable' => 'Mapa tátil']);
+            ->json();
     }
 
     private function admin(): User
