@@ -1,7 +1,7 @@
 import './bootstrap';
 import './pages/messages.js';
-import './pages/inclusive-radar/type-attributes.js';
-import './pages/specialized-educational-support/session.js';
+import './pages/inclusion/type-attributes.js';
+import './pages/inclusion/session.js';
 import './components/search-filter.js';
 import './components/confirm-action-modal.js';
 import './utils/cpf.js';

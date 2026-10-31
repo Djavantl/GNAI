@@ -21,7 +21,7 @@ O desenho segue a auditoria do projeto controle-bar, adaptado ao Gnai: sem multi
 4. `auditedFields()`: lista branca de colunas com rótulo e formato (`AuditedField::text`, `richText`, `number`, `money`, `date`, `dateTime`, `time`, `boolean`, `enum`, `reference`, `list`, `file`, `secret`). Senhas e tokens usam `secret`: o valor nunca é gravado.
 5. `unauditedFields()`: colunas deliberadamente fora, além de `id` e timestamps. Toda coluna nova precisa entrar em uma das duas listas.
 6. `auditDescription()`: como o registro aparece na frase, com artigo ("o aluno Maria Souza").
-7. Registre a classe em `AuditableEntities` no provider do próprio domínio (Auth, Backup, InclusiveRadar). O atendimento especializado não tem provider próprio e registra os seus no `AppServiceProvider`. Sem o registro, o tipo não aparece no filtro e os rótulos não são resolvidos.
+7. Registre a classe em `AuditableEntities` no provider do próprio domínio (Auth, Backup, Inclusion, Website). Sem o registro, o tipo não aparece no filtro e os rótulos não são resolvidos.
 
 ## Escritas fora dos eventos do Eloquent
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Domain\DTOs\Profiles;
 
-use App\Domains\SpecializedEducationalSupport\Domain\Enums\Gender;
+use App\Domains\Inclusion\Domain\Enums\Gender;
 
 final readonly class UpdateProfileDTO
 {

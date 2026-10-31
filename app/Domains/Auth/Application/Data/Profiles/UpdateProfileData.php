@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Application\Data\Profiles;
 
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\SpecializedEducationalSupport\Application\Data\People\Concerns\NormalizesPersonInput;
-use App\Domains\SpecializedEducationalSupport\Application\Rules\ValidCpf;
-use App\Domains\SpecializedEducationalSupport\Domain\Enums\Gender;
+use App\Domains\Inclusion\Application\Data\People\Concerns\NormalizesPersonInput;
+use App\Domains\Inclusion\Application\Rules\ValidCpf;
+use App\Domains\Inclusion\Domain\Enums\Gender;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;

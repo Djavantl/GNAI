@@ -64,4 +64,4 @@
 </div>
 
 {{-- Script JS --}}
-@vite('resources/js/pages/inclusive-radar/evidence-uploader.js')
+@vite('resources/js/pages/inclusion/evidence-uploader.js')

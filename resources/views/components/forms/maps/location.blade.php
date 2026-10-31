@@ -61,5 +61,5 @@
 
         console.log('Configuração do mapa de localização definida:', window.locationMapConfig);
     </script>
-    @vite('resources/js/pages/inclusive-radar/locations.js')
+    @vite('resources/js/pages/inclusion/locations.js')
 @endpush

@@ -1,0 +1,55 @@
+<?php
+
+namespace Database\Seeders\Inclusion;
+
+use App\Domains\Inclusion\Domain\Models\Course;
+use App\Domains\Inclusion\Domain\Models\Student;
+use App\Domains\Inclusion\Domain\Models\StudentCourse;
+use Illuminate\Database\Seeder;
+
+class StudentCourseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // Pegamos os cursos disponíveis
+        $courseInfo = Course::where('name', 'Técnico em Informática')->first();
+        $courseAdm = Course::where('name', 'Técnico em Administração')->first();
+
+        // Se não existirem, pegamos os dois primeiros que encontrar
+        if (! $courseInfo || ! $courseAdm) {
+            $courses = Course::limit(2)->get();
+            $courseInfo = $courses->first();
+            $courseAdm = $courses->last();
+        }
+
+        $students = Student::all();
+
+        foreach ($students as $index => $student) {
+            // Alterna entre Informática e Administração baseado no ID (par/ímpar)
+            $courseId = ($index % 2 == 0) ? $courseInfo->id : $courseAdm->id;
+
+            // Evita duplicados caso a seeder rode duas vezes
+            $studentCourse = StudentCourse::updateOrCreate(
+                ['student_id' => $student->id, 'course_id' => $courseId],
+                [
+                    'academic_year' => 2026,
+                    'is_current' => true,
+                    'school_attendance_status' => 'Frequência regular, sem ausências recorrentes no período.',
+                ]
+            );
+
+            $disciplineIds = $studentCourse->course
+                ->disciplines()
+                ->pluck('disciplines.id')
+                ->shuffle()
+                ->values();
+
+            $studentCourse->syncFailedDisciplines(
+                $disciplineIds->take(1)->map(static fn (mixed $id): int => (int) $id)->all()
+            );
+            $studentCourse->syncAtRiskDisciplines(
+                $disciplineIds->slice(1, 2)->map(static fn (mixed $id): int => (int) $id)->all()
+            );
+        }
+    }
+}

@@ -9,8 +9,8 @@ use App\Domains\Reporting\Application\Services\ReportOptionCatalog;
 use App\Domains\Reporting\Domain\DTOs\ReportRequestDTO;
 use App\Domains\Reporting\Domain\Enums\ReportColumnType;
 use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
+use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Teacher;
 use Illuminate\Database\Eloquent\Builder;
 
 final class UsersReportSource extends EloquentReportSource

@@ -1,0 +1,230 @@
+@extends('layouts.master')
+
+@php($cloneSource = $cloneSource ?? null)
+
+@section('title', isset($cloneSource) ? 'Clonar - Material Pedagógico Acessível' : 'Cadastrar - Material Pedagógico Acessível')
+
+@section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+            'Home' => route('dashboard'),
+            'Materiais Pedagógicos Acessíveis' => route('inclusive-radar.accessible-educational-materials.index'),
+            'Cadastrar' => null
+        ]" />
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
+        <header>
+            <h2 class="text-title">{{ isset($cloneSource) ? 'Clonar Material Pedagógico Acessível' : 'Novo Material Pedagógico Acessível' }}</h2>
+            <p class="text-muted mb-0">
+                Cadastre materiais adaptados e realize a vistoria inicial.
+            </p>
+        </header>
+
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
+            <x-buttons.link-button
+                :href="route('inclusive-radar.accessible-educational-materials.index')"
+                variant="secondary"
+            >
+                <i class="fas fa-times"></i> Cancelar
+            </x-buttons.link-button>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <x-forms.form-card
+            action="{{ route('inclusive-radar.accessible-educational-materials.store') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+            @csrf
+
+            <x-forms.section title="Identificação do Recurso" />
+
+            <div class="col-md-12">
+                <x-forms.input
+                    name="name"
+                    label="Título do Material"
+                    required
+                    placeholder="Ex: Livro em Braille, Maquete Tátil..."
+                    :value="old('name', $cloneSource?->name ?? null)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="is_digital"
+                    label="Natureza do Recurso"
+                    required
+                    :options="[0 => 'Recurso Físico', 1 => 'Recurso Digital']"
+                    :selected="old('is_digital', $cloneSource?->is_digital ?? 0)"
+                />
+            </div>
+
+            <div class="col-md-6" id="asset_code_container">
+                <x-forms.input
+                    name="asset_code"
+                    label="Patrimônio / Tombamento"
+                    :value="old('asset_code')"
+                />
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="notes"
+                    label="Descrição"
+                    rows="3"
+                    :value="old('notes', $cloneSource?->notes ?? null)"
+                />
+            </div>
+
+            <x-forms.section title="Recursos de Acessibilidade" />
+
+            <div class="col-md-12 mb-4">
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">
+                    Recursos presentes no material
+                </span>
+
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('accessibility_features') border-danger @enderror">
+                    @foreach($accessibilityFeatures as $feature)
+                        <x-forms.checkbox
+                            name="accessibility_features[]"
+                            id="feat_{{ $feature->id }}"
+                            :value="$feature->id"
+                            :label="$feature->name"
+                            :checked="in_array($feature->id, old('accessibility_features', $cloneSource?->accessibilityFeatures->modelKeys() ?? []))"
+                        />
+                    @endforeach
+                </div>
+
+                @error('accessibility_features')
+                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <x-forms.section title="Vistoria Inicial" />
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="inspection[type]"
+                    label="Tipo de Inspeção"
+                    required
+                    :options="$inspectionTypes"
+                    :selected="old('inspection.type', isset($cloneSource) ? null : $defaultInspection)"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.input
+                    name="inspection[date]"
+                    label="Data da Inspeção"
+                    type="date"
+                    required
+                    :value="old('inspection.date', isset($cloneSource) ? null : date('Y-m-d'))"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.select
+                    name="conservation_state"
+                    label="Estado de Conservação"
+                    required
+                    :options="$conservationStates"
+                    :selected="old('conservation_state')"
+                />
+            </div>
+
+            <div class="col-md-6">
+                <x-forms.evidence-uploader
+                    name="inspection[evidences][]"
+                    label="Evidências"
+                />
+            </div>
+
+            <div class="col-md-12">
+                <x-forms.textarea
+                    name="inspection[description]"
+                    label="Parecer Técnico"
+                    rows="3"
+                    placeholder="Descreva o estado do item ou detalhes da vistoria inicial..."
+                    :value="old('inspection.description')"
+                />
+            </div>
+
+            <x-forms.section title="Gestão e Público" />
+
+            <div class="col-md-6 d-flex flex-column gap-3">
+                <x-forms.input
+                    name="quantity"
+                    label="Quantidade Total"
+                    type="number"
+                    min="1"
+                    :value="old('quantity', $cloneSource?->quantity ?? 1)"
+                />
+
+                <input type="hidden" name="is_loanable" value="0">
+                <x-forms.checkbox
+                    name="is_loanable"
+                    label="Permitir Empréstimos"
+                    description="Marque se este material pode ser emprestado"
+                    :checked="old('is_loanable', $cloneSource?->is_loanable ?? true)"
+                />
+            </div>
+
+            <div class="col-md-6 d-flex flex-column gap-3">
+                <x-forms.select
+                    name="status"
+                    label="Status do Recurso"
+                    :options="$resourceStatuses"
+                    :selected="old('status', $cloneSource?->status?->value ?? $defaultStatus)"
+                />
+
+                <input type="hidden" name="is_active" value="0">
+                <x-forms.checkbox
+                    name="is_active"
+                    label="Ativar no Sistema"
+                    description="Disponível para visualização e empréstimos"
+                    :checked="old('is_active', $cloneSource?->is_active ?? true)"
+                />
+            </div>
+
+            <div class="col-md-12 mb-4 mt-4">
+                <span class="d-block form-label fw-bold text-purple-dark mb-3">
+                    Público Alvo
+                </span>
+
+                <div class="d-flex flex-wrap gap-4 p-3 border rounded bg-light @error('deficiencies') border-danger @enderror">
+                    @foreach($deficiencies as $def)
+                        <x-forms.checkbox
+                            name="deficiencies[]"
+                            id="def_{{ $def->id }}"
+                            :value="$def->id"
+                            :label="$def->name"
+                            :checked="in_array($def->id, old('deficiencies', $cloneSource?->deficiencies->modelKeys() ?? []))"
+                        />
+                    @endforeach
+                </div>
+
+                @error('deficiencies')
+                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="col-12 d-flex justify-content-end gap-3 border-top pt-4 px-4 pb-4">
+                <x-buttons.link-button
+                    :href="route('inclusive-radar.accessible-educational-materials.index')"
+                    variant="secondary"
+                >
+                    <i class="fas fa-times"></i> Cancelar
+                </x-buttons.link-button>
+                @can('item.store')
+                    <x-buttons.submit-button>
+                        <i class="fas fa-save me-1"></i> Cadastrar
+                    </x-buttons.submit-button>
+                @endcan
+            </div>
+        </x-forms.form-card>
+    </div>
+
+    @vite('resources/js/pages/inclusion/accessible-educational-materials.js')
+@endsection

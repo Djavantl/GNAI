@@ -128,9 +128,9 @@ build-assets:
 # -----------------------------
 # PHPUnit / Testes
 # ex: make test
-#     make test TEST=app/Domains/InclusiveRadar/Tests/Feature/Waitlists
+#     make test TEST=app/Domains/Inclusion/Tests/Feature/Waitlists
 #     make coverage
-#     make coverage TEST=app/Domains/InclusiveRadar/Tests/Feature/Waitlists
+#     make coverage TEST=app/Domains/Inclusion/Tests/Feature/Waitlists
 # -----------------------------
 test:
 	@if [ -n "$(TEST)" ]; then \

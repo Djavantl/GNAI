@@ -36,10 +36,10 @@ final class InertiaPagesTest extends TestCase
         $this->actingAs($user);
 
         foreach ([
-            '/inclusive-radar/institutions' => 'InclusiveRadar/Institutions/Index',
-            '/inclusive-radar/barriers' => 'InclusiveRadar/Barriers/Index',
-            '/specialized-educational-support/students' => 'SpecializedEducationalSupport/Students/Index',
-            '/specialized-educational-support/sessions' => 'SpecializedEducationalSupport/Sessions/Index',
+            '/inclusive-radar/institutions' => 'Inclusion/Institutions/Index',
+            '/inclusive-radar/barriers' => 'Inclusion/Barriers/Index',
+            '/specialized-educational-support/students' => 'Inclusion/Students/Index',
+            '/specialized-educational-support/sessions' => 'Inclusion/Sessions/Index',
             '/notifications' => 'Notifications/Index',
         ] as $url => $component) {
             $this->get($url)->assertOk()->assertInertia(fn (Assert $page) => $page
@@ -78,13 +78,13 @@ final class InertiaPagesTest extends TestCase
         $this->get($url.'?search=teste', [
             'X-Inertia' => 'true',
             'X-Inertia-Version' => $initial->viewData('page')['version'],
-            'X-Inertia-Partial-Component' => 'InclusiveRadar/Barriers/Index',
+            'X-Inertia-Partial-Component' => 'Inclusion/Barriers/Index',
             'X-Inertia-Partial-Data' => 'barriers',
             'X-Requested-With' => 'XMLHttpRequest',
             'Accept' => 'text/html, application/xhtml+xml',
         ])->assertOk()
             ->assertHeader('X-Inertia', 'true')
-            ->assertJsonPath('component', 'InclusiveRadar/Barriers/Index')
+            ->assertJsonPath('component', 'Inclusion/Barriers/Index')
             ->assertJsonStructure(['props' => ['barriers' => ['data', 'links']]])
             ->assertJsonMissingPath('props.auth');
     }

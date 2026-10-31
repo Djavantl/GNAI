@@ -39,5 +39,5 @@
             isEditMode: {{ $institution ? 'true' : 'false' }}
         };
     </script>
-    @vite('resources/js/pages/inclusive-radar/institutions.js')
+    @vite('resources/js/pages/inclusion/institutions.js')
 @endpush

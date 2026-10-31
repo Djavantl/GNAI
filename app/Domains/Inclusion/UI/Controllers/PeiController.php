@@ -1,0 +1,413 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\Inclusion\UI\Controllers;
+
+use App\Domains\Auth\Application\Resolvers\AuthenticatedUserResolver;
+use App\Domains\Auth\Domain\Models\User;
+use App\Domains\Inclusion\Application\Actions\PeiDisciplines\CreatePeiDisciplineAction;
+use App\Domains\Inclusion\Application\Actions\PeiDisciplines\DeletePeiDisciplineAction;
+use App\Domains\Inclusion\Application\Actions\PeiDisciplines\UpdatePeiDisciplineAction;
+use App\Domains\Inclusion\Application\Actions\Peis\CreatePeiAction;
+use App\Domains\Inclusion\Application\Actions\Peis\DeletePeiAction;
+use App\Domains\Inclusion\Application\Actions\Peis\FinishPeiAction;
+use App\Domains\Inclusion\Application\Data\PeiDisciplines\CreatePeiDisciplineData;
+use App\Domains\Inclusion\Application\Data\PeiDisciplines\UpdatePeiDisciplineData;
+use App\Domains\Inclusion\Application\Data\Peis\ListPeisData;
+use App\Domains\Inclusion\Application\Queries\PeiDisciplines\PeiDisciplineFormQuery;
+use App\Domains\Inclusion\Application\Queries\PeiDisciplines\TeacherDisciplinesQuery;
+use App\Domains\Inclusion\Application\Queries\Peis\ListAllPeisQuery;
+use App\Domains\Inclusion\Application\Queries\Peis\ListStudentPeisQuery;
+use App\Domains\Inclusion\Application\Queries\Peis\PeiFilterOptionsQuery;
+use App\Domains\Inclusion\Application\Queries\Peis\PeiFormQuery;
+use App\Domains\Inclusion\Application\Queries\Peis\ShowPeiQuery;
+use App\Domains\Inclusion\Domain\Exceptions\InvalidStudent;
+use App\Domains\Inclusion\Domain\Models\Pei;
+use App\Domains\Inclusion\Domain\Models\PeiDiscipline;
+use App\Domains\Inclusion\Domain\Models\Semester;
+use App\Domains\Inclusion\Domain\Models\Student;
+use App\Domains\Inclusion\UI\Presenters\PeiPagePresenter;
+use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
+use Throwable;
+
+final class PeiController
+{
+    /**
+     * @throws Throwable
+     */
+    public function all(
+        ListPeisData $filters,
+        ListAllPeisQuery $query,
+        PeiFilterOptionsQuery $filterOptions,
+        Request $request,
+    ): InertiaResponse {
+        $user = $request->user();
+        $peis = $query->execute($filters, $user instanceof User ? $user : null);
+
+        return Inertia::render(
+            'Inclusion/Peis/All',
+            [
+                'peis' => $peis,
+                'students' => $filterOptions->students()
+                    ->map(static fn (Student $student): array => [
+                        'value' => (string) $student->getKey(),
+                        'label' => (string) ($student->person?->name ?? ''),
+                    ])
+                    ->values(),
+                'semesters' => $this->semesterOptions($filterOptions),
+                'filters' => $this->listFilterValues($filters) + [
+                    'student_id' => $filters->studentId === null ? '' : (string) $filters->studentId,
+                ],
+                'can' => $this->listPermissions($request),
+            ]
+        );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function index(
+        Student $student,
+        ListPeisData $filters,
+        ListStudentPeisQuery $query,
+        PeiFilterOptionsQuery $filterOptions,
+        Request $request,
+    ): InertiaResponse {
+        $user = $request->user();
+        $peis = $query->execute($student, $filters, $user instanceof User ? $user : null);
+        $disciplines = $filterOptions->disciplines();
+
+        return Inertia::render(
+            'Inclusion/Peis/Index',
+            [
+                'peis' => $peis,
+                'student' => [
+                    'id' => $student->getKey(),
+                    'name' => (string) ($student->person?->name ?? ''),
+                ],
+                'semesters' => $this->semesterOptions($filterOptions),
+                'disciplines' => $disciplines,
+                'filters' => $this->listFilterValues($filters),
+                'can' => $this->listPermissions($request),
+            ]
+        );
+    }
+
+    public function show(
+        Pei $pei,
+        ShowPeiQuery $query,
+        PeiPagePresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
+        return Inertia::render(
+            'Inclusion/Peis/Show',
+            $presenter->show($query->execute($pei), $request),
+        );
+    }
+
+    /**
+     * @throws InvalidStudent
+     */
+    public function create(Student $student, PeiFormQuery $form): InertiaResponse
+    {
+        return Inertia::render(
+            'Inclusion/Peis/Create',
+            $form->forCreation($student),
+        );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function store(
+        Student $student,
+        CreatePeiAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($student, $authenticatedUser->fromRequest($request));
+
+        return redirect()
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'peis',
+            ])
+            ->with('success', 'PEI gerado com sucesso.');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function destroy(
+        Pei $pei,
+        DeletePeiAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $studentId = $action->execute($pei, $authenticatedUser->fromRequest($request));
+
+        return redirect()
+            ->route('specialized-educational-support.students.show', [
+                'student' => $studentId,
+                'tab' => 'peis',
+            ])
+            ->with('success', 'PEI removido com sucesso.');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function finish(
+        Pei $pei,
+        FinishPeiAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $pei = $action->execute($pei, $authenticatedUser->fromRequest($request));
+
+        return redirect()
+            ->route('specialized-educational-support.students.show', [
+                'student' => $pei->student_id,
+                'tab' => 'peis',
+            ])
+            ->with('success', 'PEI finalizado com sucesso.');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function createVersion(
+        Student $student,
+        CreatePeiAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($student, $authenticatedUser->fromRequest($request));
+
+        return redirect()
+            ->route('specialized-educational-support.students.show', [
+                'student' => $student,
+                'tab' => 'peis',
+            ])
+            ->with('success', 'Nova versão criada com sucesso.');
+    }
+
+    public function generateDisciplinePdf(Pei $pei, PeiDiscipline $peiDiscipline): Response
+    {
+        if ($peiDiscipline->pei_id !== $pei->id) {
+            abort(404);
+        }
+
+        $pei->load([
+            'student.person',
+            'student.deficiencies',
+            'studentContext',
+            'course',
+            'semester',
+        ]);
+
+        $peiDiscipline->load(['discipline', 'teacher.person']);
+
+        $pdf = Pdf::loadView('pages.inclusion.peis.pdf', [
+            'pei' => $pei,
+            'item' => $peiDiscipline,
+        ])->setPaper('a4', 'portrait');
+
+        $disciplineName = str_replace(' ', '_', $peiDiscipline->discipline->name);
+
+        PdfPageNumberer::apply($pdf);
+
+        return $pdf->stream("PEI_{$disciplineName}.pdf");
+    }
+
+    public function generateCompletePdf(Pei $pei): Response
+    {
+        $pei->load([
+            'student.person',
+            'student.deficiencies',
+            'studentContext',
+            'course',
+            'semester',
+        ]);
+
+        $peiDisciplines = $pei->peiDisciplines()
+            ->with(['discipline', 'teacher.person', 'creator'])
+            ->orderBy('id')
+            ->get();
+
+        $pdf = Pdf::loadView('pages.inclusion.peis.pdf-complete', [
+            'pei' => $pei,
+            'peiDisciplines' => $peiDisciplines,
+        ])->setPaper('a4', 'portrait');
+
+        $studentName = str_replace(' ', '_', $pei->student->person->name);
+
+        PdfPageNumberer::apply($pdf);
+
+        return $pdf->stream("PEI_COMPLETO_{$studentName}_v{$pei->version}.pdf");
+    }
+
+    public function showDiscipline(
+        Pei $pei,
+        PeiDiscipline $peiDiscipline,
+        PeiPagePresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
+        return Inertia::render(
+            'Inclusion/Peis/Disciplines/Show',
+            $presenter->discipline($pei, $peiDiscipline, $request),
+        );
+    }
+
+    /**
+     * @throws InvalidStudent
+     */
+    public function createDiscipline(
+        Pei $pei,
+        PeiDisciplineFormQuery $form,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): InertiaResponse {
+        return Inertia::render(
+            'Inclusion/Peis/Disciplines/Create',
+            $form->forCreation($pei, $authenticatedUser->fromRequest($request)),
+        );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function storeDiscipline(
+        CreatePeiDisciplineData $data,
+        Pei $pei,
+        CreatePeiDisciplineAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($pei, $authenticatedUser->fromRequest($request), $data);
+
+        return redirect()
+            ->route('specialized-educational-support.pei.show', [
+                'pei' => $pei,
+                'tab' => 'disciplines',
+            ])
+            ->with('success', 'Adaptação de disciplina adicionada com sucesso.');
+    }
+
+    public function editDiscipline(
+        Pei $pei,
+        PeiDiscipline $peiDiscipline,
+        PeiDisciplineFormQuery $form,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): InertiaResponse {
+        return Inertia::render(
+            'Inclusion/Peis/Disciplines/Edit',
+            $form->forUpdate($pei, $peiDiscipline, $authenticatedUser->fromRequest($request)),
+        );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function updateDiscipline(
+        UpdatePeiDisciplineData $data,
+        Pei $pei,
+        PeiDiscipline $peiDiscipline,
+        UpdatePeiDisciplineAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($peiDiscipline, $authenticatedUser->fromRequest($request), $data);
+
+        return redirect()
+            ->route('specialized-educational-support.pei.show', [
+                'pei' => $pei,
+                'tab' => 'disciplines',
+            ])
+            ->with('success', 'Adaptação de disciplina atualizada com sucesso.');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function destroyDiscipline(
+        Pei $pei,
+        PeiDiscipline $peiDiscipline,
+        DeletePeiDisciplineAction $action,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): RedirectResponse {
+        $action->execute($peiDiscipline, $authenticatedUser->fromRequest($request));
+
+        return redirect()
+            ->route('specialized-educational-support.pei.show', [
+                'pei' => $pei,
+                'tab' => 'disciplines',
+            ])
+            ->with('success', 'Adaptação removida com sucesso.');
+    }
+
+    public function teacherDisciplines(Request $request, Pei $pei, TeacherDisciplinesQuery $query): JsonResponse
+    {
+        $teacherId = $request->integer('teacher_id');
+
+        if (! $teacherId) {
+            return response()->json([]);
+        }
+
+        return response()->json($query->execute($pei, $teacherId));
+    }
+
+    /**
+     * @return array{semester_id: string, version: string, is_finished: string}
+     */
+    private function listFilterValues(ListPeisData $filters): array
+    {
+        $isFinished = $filters->isFinished;
+
+        return [
+            'semester_id' => $filters->semesterId === null ? '' : (string) $filters->semesterId,
+            'version' => $filters->version === null ? '' : (string) $filters->version,
+            'is_finished' => $isFinished === null || $isFinished === ''
+                ? ''
+                : (string) (int) filter_var($isFinished, FILTER_VALIDATE_BOOLEAN),
+        ];
+    }
+
+    /**
+     * @return list<array{value: string, label: string}>
+     */
+    private function semesterOptions(PeiFilterOptionsQuery $filterOptions): array
+    {
+        return $filterOptions->semesters()
+            ->map(static fn (Semester $semester): array => [
+                'value' => (string) $semester->getKey(),
+                'label' => (string) $semester->label,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array{create: bool, view: bool, delete: bool}
+     */
+    private function listPermissions(Request $request): array
+    {
+        $user = $request->user();
+
+        return [
+            'create' => $user?->can('pei.create') ?? false,
+            'view' => $user?->can('pei.view') ?? false,
+            'delete' => $user?->can('pei.delete') ?? false,
+        ];
+    }
+}

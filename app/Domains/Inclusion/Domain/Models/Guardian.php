@@ -1,0 +1,133 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\Inclusion\Domain\Models;
+
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
+use App\Domains\Inclusion\Domain\DTOs\Guardians\CreateGuardianDTO;
+use App\Domains\Inclusion\Domain\DTOs\Guardians\UpdateGuardianDTO;
+use App\Domains\Inclusion\Domain\Enums\GuardianRelationship;
+use App\Domains\Inclusion\Domain\Exceptions\InvalidGuardian;
+use Database\Factories\Domains\Inclusion\GuardianFactory;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+#[UseFactory(GuardianFactory::class)]
+final class Guardian extends Model implements Auditable
+{
+    use AuditsChanges;
+    use HasFactory;
+
+    protected $table = 'student_guardians';
+
+    protected $fillable = [
+        'student_id',
+        'person_id',
+        'relationship',
+    ];
+
+    protected $casts = [
+        'relationship' => GuardianRelationship::class,
+    ];
+
+    public static function auditType(): string
+    {
+        return 'guardian';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Responsável';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'student_id' => AuditedField::reference('Aluno', Student::class, 'person.name'),
+            'person_id' => AuditedField::reference('Pessoa', Person::class),
+            'relationship' => AuditedField::enum('Parentesco / Vínculo', GuardianRelationship::class),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $name = $this->person?->name ?? "#{$this->getKey()}";
+        $studentName = $this->student?->person?->name;
+
+        return $studentName === null
+            ? "o responsável {$name}"
+            : "o responsável {$name} (aluno {$studentName})";
+    }
+
+    /**
+     * @throws InvalidGuardian
+     */
+    public static function register(Student $student, Person $person, CreateGuardianDTO $data): self
+    {
+        if (! $student->exists || ! $person->exists) {
+            throw new InvalidGuardian(
+                'O responsável deve ser vinculado a um aluno e a uma pessoa persistidos.'
+            );
+        }
+
+        return new self([
+            'student_id' => $student->getKey(),
+            'person_id' => $person->getKey(),
+            'relationship' => $data->relationship->value,
+        ]);
+    }
+
+    public function revise(UpdateGuardianDTO $data): void
+    {
+        $this->relationship = $data->relationship->value;
+    }
+
+    /**
+     * @throws InvalidGuardian
+     */
+    public function ensureBelongsTo(Student $student): void
+    {
+        if ((int) $this->student_id !== (int) $student->getKey()) {
+            throw new InvalidGuardian('Este responsável não está vinculado ao aluno informado.');
+        }
+    }
+
+    /** @throws InvalidGuardian */
+    public function ensureCanBeDeleted(): void
+    {
+        if ($this->pedagogicalRecords()->exists()) {
+            throw new InvalidGuardian('Este responsável participou de atendimentos pedagógicos e não pode ser excluído.');
+        }
+    }
+
+    public function relationshipLabel(): string
+    {
+        return $this->relationship->label();
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class, 'student_id');
+    }
+
+    public function person(): BelongsTo
+    {
+        return $this->belongsTo(Person::class, 'person_id');
+    }
+
+    public function pedagogicalRecords(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            PedagogicalRecord::class,
+            'pedagogical_record_guardians',
+            'guardian_id',
+            'pedagogical_record_id',
+        )->withTimestamps();
+    }
+}

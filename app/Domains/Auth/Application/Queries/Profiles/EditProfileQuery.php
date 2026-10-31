@@ -6,9 +6,9 @@ namespace App\Domains\Auth\Application\Queries\Profiles;
 
 use App\Domains\Auth\Domain\Exceptions\InvalidProfile;
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
+use App\Domains\Inclusion\Domain\Models\Person;
+use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Teacher;
 
 final readonly class EditProfileQuery
 {

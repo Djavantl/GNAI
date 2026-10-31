@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\Inclusion\Domain\DTOs\PeiDisciplines;
+
+final readonly class CreatePeiDisciplineDTO
+{
+    public function __construct(
+        public string $specificObjectives,
+        public string $contentProgrammatic,
+        public string $methodologies,
+        public string $evaluations,
+        public ?string $opinion = null,
+        public ?string $complementaryRecords = null,
+    ) {}
+}

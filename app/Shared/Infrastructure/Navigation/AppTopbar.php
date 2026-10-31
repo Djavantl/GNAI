@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Navigation;
 
-use App\Domains\InclusiveRadar\Domain\Models\Institution;
+use App\Domains\Inclusion\Domain\Models\Institution;
 use App\Domains\Notifications\UI\Presenters\NotificationDestination;
 use Illuminate\Http\Request;
 

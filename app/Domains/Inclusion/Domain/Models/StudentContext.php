@@ -1,0 +1,293 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domains\Inclusion\Domain\Models;
+
+use App\Domains\Audit\Domain\Contracts\Auditable;
+use App\Domains\Audit\Domain\ValueObjects\AuditedField;
+use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
+use App\Domains\Inclusion\Domain\DTOs\StudentContexts\CreateStudentContextDTO;
+use App\Domains\Inclusion\Domain\DTOs\StudentContexts\UpdateStudentContextDTO;
+use App\Domains\Inclusion\Domain\Enums\AttentionLevel;
+use App\Domains\Inclusion\Domain\Enums\AutonomyLevel;
+use App\Domains\Inclusion\Domain\Enums\CommunicationType;
+use App\Domains\Inclusion\Domain\Enums\ContextEvaluationType;
+use App\Domains\Inclusion\Domain\Enums\GeneralLevel;
+use App\Domains\Inclusion\Domain\Enums\InteractionLevel;
+use App\Domains\Inclusion\Domain\Enums\MemoryLevel;
+use App\Domains\Inclusion\Domain\Enums\ReasoningLevel;
+use App\Domains\Inclusion\Domain\Enums\SocializationLevel;
+use App\Domains\Inclusion\Domain\Exceptions\InvalidStudentContext;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+final class StudentContext extends Model implements Auditable
+{
+    use AuditsChanges;
+
+    protected $table = 'student_contexts';
+
+    protected $fillable = [
+        'student_id',
+        'semester_id',
+        'evaluation_type',
+        'is_current',
+        'evaluated_by_professional_id',
+        'history',
+        'specific_educational_needs',
+        'learning_level',
+        'attention_level',
+        'memory_level',
+        'reasoning_level',
+        'learning_observations',
+        'communication_type',
+        'interaction_level',
+        'socialization_level',
+        'shows_aggressive_behavior',
+        'shows_withdrawn_behavior',
+        'behavior_notes',
+        'autonomy_level',
+        'needs_mobility_support',
+        'needs_communication_support',
+        'needs_pedagogical_adaptation',
+        'uses_assistive_technology',
+        'has_medical_report',
+        'uses_medication',
+        'medical_notes',
+        'knowledge',
+        'difficulties',
+        'version',
+    ];
+
+    protected $casts = [
+        'is_current' => 'boolean',
+        'shows_aggressive_behavior' => 'boolean',
+        'shows_withdrawn_behavior' => 'boolean',
+        'has_medical_report' => 'boolean',
+        'uses_medication' => 'boolean',
+        'version' => 'integer',
+    ];
+
+    public static function auditType(): string
+    {
+        return 'student_context';
+    }
+
+    public static function auditLabel(): string
+    {
+        return 'Contexto do Aluno';
+    }
+
+    public static function auditedFields(): array
+    {
+        return [
+            'student_id' => AuditedField::reference('Aluno', Student::class, 'person.name'),
+            'semester_id' => AuditedField::reference('Semestre', Semester::class, 'label'),
+            'evaluation_type' => AuditedField::enum('Tipo de Avaliação', ContextEvaluationType::class),
+            'is_current' => AuditedField::boolean('Contexto atual'),
+            'evaluated_by_professional_id' => AuditedField::reference('Profissional Avaliador', Professional::class, 'person.name'),
+            'version' => AuditedField::number('Versão'),
+            'history' => AuditedField::richText('Histórico do Aluno'),
+            'specific_educational_needs' => AuditedField::richText('Necessidades Educacionais Específicas'),
+            'learning_level' => AuditedField::enum('Nível de Aprendizagem', GeneralLevel::class),
+            'attention_level' => AuditedField::enum('Nível de Atenção', AttentionLevel::class),
+            'memory_level' => AuditedField::enum('Nível de Memória', MemoryLevel::class),
+            'reasoning_level' => AuditedField::enum('Nível de Raciocínio', ReasoningLevel::class),
+            'learning_observations' => AuditedField::richText('Observações de Aprendizagem'),
+            'communication_type' => AuditedField::enum('Tipo de Comunicação', CommunicationType::class),
+            'interaction_level' => AuditedField::enum('Nível de Interação', InteractionLevel::class),
+            'socialization_level' => AuditedField::enum('Nível de Socialização', SocializationLevel::class),
+            'shows_aggressive_behavior' => AuditedField::boolean('Comportamento agressivo'),
+            'shows_withdrawn_behavior' => AuditedField::boolean('Comportamento retraído'),
+            'behavior_notes' => AuditedField::richText('Notas Comportamentais'),
+            'autonomy_level' => AuditedField::enum('Nível de Autonomia', AutonomyLevel::class),
+            'needs_mobility_support' => AuditedField::richText('Apoio de Mobilidade'),
+            'needs_communication_support' => AuditedField::richText('Apoio de Comunicação'),
+            'needs_pedagogical_adaptation' => AuditedField::richText('Adaptação Pedagógica'),
+            'uses_assistive_technology' => AuditedField::richText('Tecnologia Assistiva'),
+            'has_medical_report' => AuditedField::boolean('Possui laudo médico'),
+            'uses_medication' => AuditedField::boolean('Usa medicação'),
+            'medical_notes' => AuditedField::richText('Observações Médicas'),
+            'knowledge' => AuditedField::richText('Conhecimentos e Interesses'),
+            'difficulties' => AuditedField::richText('Dificuldades'),
+        ];
+    }
+
+    public function auditDescription(): string
+    {
+        $studentName = $this->student?->person?->name ?? "#{$this->student_id}";
+
+        return "o contexto do aluno {$studentName} (versão {$this->version})";
+    }
+
+    /**
+     * @throws InvalidStudentContext
+     */
+    public static function register(Student $student, Semester $semester, Professional $evaluator, CreateStudentContextDTO $data): self
+    {
+        self::ensurePersisted($student, $semester, $evaluator);
+
+        return new self([
+            'student_id' => $student->getKey(),
+            'semester_id' => $semester->getKey(),
+            'evaluation_type' => ContextEvaluationType::INITIAL->value,
+            'is_current' => true,
+            'evaluated_by_professional_id' => $evaluator->getKey(),
+            'version' => 1,
+            ...self::attributesFrom($data),
+        ]);
+    }
+
+    public function revise(UpdateStudentContextDTO $data): void
+    {
+        $this->fill(self::attributesFrom($data));
+    }
+
+    public function createRevision(UpdateStudentContextDTO $data, Professional $evaluator, int $version): self
+    {
+        $revision = $this->replicate();
+        $revision->revise($data);
+        $revision->forceFill([
+            'evaluation_type' => ContextEvaluationType::PERIODIC_REVIEW->value,
+            'is_current' => true,
+            'evaluated_by_professional_id' => $evaluator->getKey(),
+            'version' => $version,
+        ]);
+
+        return $revision;
+    }
+
+    public function restoreAsRevision(Professional $evaluator, int $version): self
+    {
+        $revision = $this->replicate();
+        $revision->forceFill([
+            'evaluation_type' => ContextEvaluationType::PERIODIC_REVIEW->value,
+            'is_current' => true,
+            'evaluated_by_professional_id' => $evaluator->getKey(),
+            'version' => $version,
+        ]);
+
+        return $revision;
+    }
+
+    public function markAsHistorical(): void
+    {
+        $this->is_current = false;
+    }
+
+    public function markAsCurrent(): void
+    {
+        $this->is_current = true;
+    }
+
+    /**
+     * @throws InvalidStudentContext
+     */
+    public function ensureIsCurrent(): void
+    {
+        if (! $this->is_current) {
+            throw new InvalidStudentContext('Não é possível editar um contexto que não é atual.');
+        }
+    }
+
+    /**
+     * @throws InvalidStudentContext
+     */
+    public function ensureCanBeManagedBy(?int $professionalId, string $action = 'alterar'): void
+    {
+        if (! $this->canBeManagedBy($professionalId)) {
+            throw new InvalidStudentContext(
+                "Apenas o profissional avaliador deste contexto pode {$action} este registro."
+            );
+        }
+    }
+
+    public function canBeManagedBy(?int $professionalId): bool
+    {
+        return $professionalId !== null
+            && $this->evaluated_by_professional_id !== null
+            && (int) $this->evaluated_by_professional_id === $professionalId;
+    }
+
+    public function canBeManagedByCurrentUser(): bool
+    {
+        $professionalId = auth()->user()?->professional_id;
+
+        return $this->canBeManagedBy(
+            $professionalId === null ? null : (int) $professionalId,
+        );
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function semester(): BelongsTo
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    public function evaluator(): BelongsTo
+    {
+        return $this->belongsTo(Professional::class, 'evaluated_by_professional_id');
+    }
+
+    public function peis(): HasMany
+    {
+        return $this->hasMany(Pei::class, 'student_context_id');
+    }
+
+    /**
+     * @throws InvalidStudentContext
+     */
+    private static function ensurePersisted(Student $student, Semester $semester, Professional $evaluator): void
+    {
+        if (! $student->exists || ! $semester->exists || ! $evaluator->exists) {
+            throw new InvalidStudentContext(
+                'O contexto deve ser vinculado a um aluno, semestre e avaliador persistidos.'
+            );
+        }
+    }
+
+    /**
+     * @return array<string, string|bool|null>
+     */
+    private static function attributesFrom(CreateStudentContextDTO|UpdateStudentContextDTO $data): array
+    {
+        return [
+            'history' => trim($data->history),
+            'specific_educational_needs' => trim($data->specificEducationalNeeds),
+            'learning_level' => $data->learningLevel?->value,
+            'attention_level' => $data->attentionLevel?->value,
+            'memory_level' => $data->memoryLevel?->value,
+            'reasoning_level' => $data->reasoningLevel?->value,
+            'learning_observations' => self::normalizeText($data->learningObservations),
+            'communication_type' => $data->communicationType?->value,
+            'interaction_level' => $data->interactionLevel?->value,
+            'socialization_level' => $data->socializationLevel?->value,
+            'shows_aggressive_behavior' => $data->showsAggressiveBehavior,
+            'shows_withdrawn_behavior' => $data->showsWithdrawnBehavior,
+            'behavior_notes' => self::normalizeText($data->behaviorNotes),
+            'autonomy_level' => $data->autonomyLevel?->value,
+            'needs_mobility_support' => self::normalizeText($data->needsMobilitySupport),
+            'needs_communication_support' => self::normalizeText($data->needsCommunicationSupport),
+            'needs_pedagogical_adaptation' => self::normalizeText($data->needsPedagogicalAdaptation),
+            'uses_assistive_technology' => self::normalizeText($data->usesAssistiveTechnology),
+            'has_medical_report' => $data->hasMedicalReport,
+            'uses_medication' => $data->usesMedication,
+            'medical_notes' => self::normalizeText($data->medicalNotes),
+            'knowledge' => trim($data->knowledge),
+            'difficulties' => trim($data->difficulties),
+        ];
+    }
+
+    private static function normalizeText(?string $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : $value;
+    }
+}

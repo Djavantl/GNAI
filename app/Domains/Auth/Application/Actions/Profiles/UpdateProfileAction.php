@@ -9,7 +9,7 @@ use App\Domains\Auth\Domain\DTOs\Profiles\UpdateProfileDTO;
 use App\Domains\Auth\Domain\Exceptions\InvalidProfile;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Auth\Infrastructure\Storage\ProfilePhotoStorage;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Person;
+use App\Domains\Inclusion\Domain\Models\Person;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Throwable;

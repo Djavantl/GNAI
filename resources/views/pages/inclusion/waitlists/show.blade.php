@@ -1,0 +1,157 @@
+@extends('layouts.master')
+
+@section('title', "Fila de Espera #$waitlist->id")
+
+@section('content')
+    <div class="mb-5">
+        <x-breadcrumb :items="[
+        'Home' => route('dashboard'),
+        'Filas de Espera' => route('inclusive-radar.waitlists.index'),
+        $waitlist->id => null
+    ]" />
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between mb-3 align-items-md-center gap-3">
+        <div>
+            <h2 class="text-title">Detalhes da Fila de Espera</h2>
+            <p class="text-muted">Visualize informações da solicitação, status e histórico do recurso.</p>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end ms-md-auto">
+            @can('waitlist.edit')
+                <x-buttons.link-button :href="route('inclusive-radar.waitlists.edit', $waitlist)" variant="warning">
+                    <i class="fas fa-edit"></i> Editar
+                </x-buttons.link-button>
+            @endcan
+            <x-buttons.link-button :href="route('inclusive-radar.waitlists.index')" variant="secondary">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </x-buttons.link-button>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <div class="custom-table-card bg-white shadow-sm">
+
+            <x-forms.section title="Recurso Solicitado" />
+
+            <div class="col-md-12 mb-4 px-4">
+                <div class="p-3 border rounded bg-light d-flex align-items-center gap-3">
+                    <div class="bg-purple-dark text-white p-3 rounded shadow-sm" style="background-color: #4c1d95;">
+                        <i class="fas {{ $waitlist->waitlistable?->item_type?->value === 'assistive_technology' ? 'fa-microchip' : 'fa-book' }} fa-lg"></i>
+                    </div>
+
+                    <div>
+                        <h5 class="mb-0 fw-bold">
+                            @php
+                                $id = $waitlist->waitlistable_id;
+                                $resourceRoute = route('inclusive-radar.items.show', $id);
+                            @endphp
+
+                            <a href="{{ $resourceRoute }}"
+                               class="text-purple-dark text-decoration-none hover-underline"
+                               target="_blank"
+                               aria-label="Ver detalhes do recurso: {{ $waitlist->waitlistable->name }} (abre em nova aba)">
+                                {{ $waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Recurso') }}
+                                <i class="fas fa-external-link-alt ms-1" aria-hidden="true" style="font-size: 0.70rem;"></i>
+                            </a>
+                        </h5>
+                        <small class="text-muted text-uppercase">Patrimônio: {{ $waitlist->waitlistable->asset_code ?? 'N/A' }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <x-forms.section title="Beneficiário e Usuário Responsável" />
+
+            <div class="row g-3 mb-4">
+                <x-show.info-item label="Estudante (Beneficiário)" column="col-md-6" isBox="true">
+                    {{ $waitlist->student->person->name ?? '---' }}
+                </x-show.info-item>
+
+                <x-show.info-item label="Profissional (Beneficiário)" column="col-md-6" isBox="true">
+                    {{ $waitlist->professional->person->name ?? '---' }}
+                </x-show.info-item>
+
+                <x-show.info-item label="Usuário Autenticado (Responsável)" column="col-md-6" isBox="true">
+                    {{ $waitlist->user->name ?? '---' }}
+                </x-show.info-item>
+            </div>
+
+            <x-forms.section title="Status e Datas" />
+
+            <div class="row g-3 mb-4">
+                <x-show.info-item label="Data da Solicitação" column="col-md-6" isBox="true">
+                    {{ $waitlist->requested_at->format('d/m/Y H:i') }}
+                </x-show.info-item>
+
+                <x-show.info-item label="Status da Solicitação" column="col-md-6" isBox="true">
+                    <span class="text-{{ $statusColor }} fw-bold text-uppercase">
+                        {{ $statusLabel }}
+                    </span>
+                </x-show.info-item>
+            </div>
+
+            <x-forms.section title="Observações" />
+
+            <div class="row g-3 mb-4">
+                <x-show.info-textarea
+                    label="Observações"
+                    column="col-md-12"
+                    :value="$waitlist->observation ?? '---'"
+                    :rich="true"
+                />
+            </div>
+
+            <div class="col-12 border-top p-4 d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 bg-light no-print">
+                <div>
+                    @can('waitlist.pdf')
+                        <x-buttons.pdf-button :href="route('inclusive-radar.waitlists.pdf', $waitlist)" />
+                    @endcan
+                </div>
+
+                <div class="d-flex flex-wrap gap-3 justify-content-end">
+                    @can('waitlist.cancel')
+                        @if($canCancel)
+                            <x-buttons.submit-button
+                                type="button"
+                                variant="danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#globalConfirmActionModal"
+                                data-confirm-title="Cancelar Solicitacao"
+                                data-confirm-message="A solicitacao #{{ $waitlist->id }} sera cancelada e deixara de ficar ativa."
+                                data-confirm-action="{{ route('inclusive-radar.waitlists.cancel', $waitlist) }}"
+                                data-confirm-method="PATCH"
+                                data-confirm-submit-text="Confirmar Cancelamento"
+                                data-confirm-variant="danger"
+                            >
+                                <i class="fas fa-times"></i> Cancelar
+                            </x-buttons.submit-button>
+                        @endif
+                    @endcan
+                    @can('waitlist.destroy')
+                        <x-buttons.submit-button
+                            type="button"
+                            variant="danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#globalConfirmActionModal"
+                            data-confirm-title="Excluir Solicitacao"
+                            data-confirm-message="A solicitacao #{{ $waitlist->id }} sera excluida permanentemente."
+                            data-confirm-action="{{ route('inclusive-radar.waitlists.destroy', $waitlist) }}"
+                            data-confirm-method="DELETE"
+                            data-confirm-submit-text="Confirmar Exclusao"
+                            data-confirm-variant="danger"
+                        >
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </x-buttons.submit-button>
+                    @endcan
+                    <x-buttons.link-button :href="route('inclusive-radar.waitlists.index')" variant="secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </x-buttons.link-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+        @vite('resources/js/pages/inclusion/waitlists.js')
+    @endpush
+@endsection

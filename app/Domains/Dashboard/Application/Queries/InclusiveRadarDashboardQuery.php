@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\Dashboard\Application\Queries;
 
-use App\Domains\InclusiveRadar\Domain\Enums\BarrierStatus;
-use App\Domains\InclusiveRadar\Domain\Enums\ItemType;
-use App\Domains\InclusiveRadar\Domain\Enums\WaitlistStatus;
-use App\Domains\InclusiveRadar\Domain\Models\Barrier;
-use App\Domains\InclusiveRadar\Domain\Models\Item;
-use App\Domains\InclusiveRadar\Domain\Models\Loan;
-use App\Domains\InclusiveRadar\Domain\Models\Waitlist;
+use App\Domains\Inclusion\Domain\Enums\BarrierStatus;
+use App\Domains\Inclusion\Domain\Enums\ItemType;
+use App\Domains\Inclusion\Domain\Enums\WaitlistStatus;
+use App\Domains\Inclusion\Domain\Models\Barrier;
+use App\Domains\Inclusion\Domain\Models\Item;
+use App\Domains\Inclusion\Domain\Models\Loan;
+use App\Domains\Inclusion\Domain\Models\Waitlist;
 use Illuminate\Support\Collection;
 
 final readonly class InclusiveRadarDashboardQuery

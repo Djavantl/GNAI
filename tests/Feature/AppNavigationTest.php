@@ -7,8 +7,8 @@ namespace Tests\Feature;
 use App\Domains\Auth\Application\Permissions\PermissionRegistry;
 use App\Domains\Auth\Domain\Models\Permission;
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\InclusiveRadar\Domain\Models\Institution;
-use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Institution;
+use App\Domains\Inclusion\Domain\Models\Professional;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -37,12 +37,25 @@ final class AppNavigationTest extends TestCase
             ->where('topbar.institutionName', 'Gnai')
             ->where('navigation.entries', function ($entries): bool {
                 $items = collect($entries)->filter(fn ($entry) => isset($entry['href']))->keyBy('key');
-                self::assertContains('Cadastros', collect($entries)->pluck('title')->all());
-                self::assertCount(28, $items);
+                $titles = collect($entries)->pluck('title')->filter()->values()->all();
+                self::assertSame(['Outros'], $titles);
+                self::assertSame([
+                    'dashboard', 'notifications',
+                    'students', 'professionals', 'teachers', 'pei', 'sessions', 'aee-records', 'pedagogical-records', 'pendencies',
+                    'items', 'loans', 'waitlists', 'barriers', 'institutional-events',
+                    'website', 'reports', 'backups', 'audit', 'settings', 'about',
+                ], $items->keys()->all());
+                $registrations = collect(collect($entries)->firstWhere('key', 'registrations')['children'] ?? [])->keyBy('key');
+                self::assertSame('Cadastros', collect($entries)->firstWhere('key', 'registrations')['label'] ?? null);
+                self::assertSame([
+                    'deficiencies', 'positions', 'semesters', 'disciplines', 'courses',
+                    'accessibility-features', 'barrier-categories', 'institutions', 'locations',
+                ], $registrations->keys()->all());
                 self::assertSame('/auth/dashboard', $items['dashboard']['href']);
+                self::assertSame(route('website.builder.edit', absolute: false), $items['website']['href']);
                 self::assertSame(route('specialized-educational-support.sessions.index', absolute: false), $items['sessions']['href']);
                 self::assertSame(route('backup.backups.index', absolute: false), $items['backups']['href']);
-                foreach ($items as $item) {
+                foreach ($items->merge($registrations) as $item) {
                     self::assertStringStartsWith('/', $item['href']);
                     self::assertStringNotContainsString('.html', $item['href']);
                 }
@@ -67,11 +80,12 @@ final class AppNavigationTest extends TestCase
             ->where('navigation.entries', function ($entries): bool {
                 $items = collect($entries)->filter(fn ($entry) => isset($entry['href']))->keyBy('key');
                 self::assertSame(['dashboard', 'notifications', 'students', 'sessions', 'aee-records', 'pedagogical-records', 'about'], $items->keys()->all());
+                self::assertNull(collect($entries)->firstWhere('key', 'registrations'));
                 foreach (['sessions' => 'my-sessions', 'aee-records' => 'my-records', 'pedagogical-records' => 'my-records'] as $key => $action) {
                     self::assertSame(route("specialized-educational-support.$key.$action", absolute: false), $items[$key]['href']);
                 }
-                self::assertNotContains('Cadastros', collect($entries)->pluck('title')->all());
                 self::assertNotContains('Radar Inclusivo', collect($entries)->pluck('title')->all());
+                self::assertNotContains('Atendimento e Acompanhamento', collect($entries)->pluck('title')->all());
 
                 return true;
             })

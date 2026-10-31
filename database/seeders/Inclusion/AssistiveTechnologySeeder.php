@@ -1,0 +1,224 @@
+<?php
+
+namespace Database\Seeders\Inclusion;
+
+use App\Domains\Inclusion\Domain\Enums\ItemType;
+use App\Domains\Inclusion\Domain\Enums\ConservationState;
+use App\Domains\Inclusion\Domain\Enums\InspectionType;
+use App\Domains\Inclusion\Domain\Enums\ResourceStatus;
+use App\Domains\Inclusion\Domain\Models\Item;
+use Database\Seeders\Inclusion\DeficiencySeeder;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+
+class AssistiveTechnologySeeder extends Seeder
+{
+    public function run(): void
+    {
+        // Garantir deficiências cadastradas
+        $this->ensureDeficienciesExist();
+
+        // REMOVIDO: consulta à tabela resource_statuses
+        // Agora usamos diretamente o enum ResourceStatus
+        $status = ResourceStatus::AVAILABLE->value; // 'available'
+
+        // Usuário para as inspeções
+        $userId = $this->ensureUserExists();
+
+        // IDs das deficiências
+        $deficiencyIds = DB::table('deficiencies')->pluck('id')->toArray();
+
+        // Gerar 15 notebooks no formato "Notebook (marca) (cor)"
+        $notebookBrands = ['Dell', 'Lenovo', 'HP', 'Acer', 'Samsung', 'Apple', 'Asus', 'Positivo', 'Vaio', 'Microsoft'];
+        $colors = ['Prata', 'Preto', 'Cinza', 'Branco', 'Azul', 'Vermelho', 'Dourado'];
+
+        $notebookNames = [];
+        for ($i = 0; $i < 15; $i++) {
+            $brand = $notebookBrands[array_rand($notebookBrands)];
+            $color = $colors[array_rand($colors)];
+            $notebookNames[] = "Notebook {$brand} {$color}";
+        }
+
+        $allowedStates = ['novo', 'bom', 'regular'];
+        $now = Carbon::now();
+
+        foreach ($notebookNames as $name) {
+            // Notebooks são sempre físicos
+            $isDigital = false;
+            $assetCode = 'PAT-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $conservationState = $allowedStates[array_rand($allowedStates)];
+            $notes = $this->generateNotes($name, $conservationState, $isDigital);
+
+            // Criar a tecnologia - campo status agora recebe o valor do enum, não um ID
+            $technology = Item::create([
+                'item_type' => ItemType::AssistiveTechnology,
+                'name' => $name,
+                'is_digital' => $isDigital,
+                'notes' => $notes,
+                'asset_code' => $assetCode,
+                'quantity' => 1,
+                'quantity_available' => 1,
+                'conservation_state' => $conservationState,
+                'status' => $status, // <-- Alterado de status_id para status
+                'is_active' => true,
+            ]);
+
+            // Associar deficiências (1 a 3 aleatórias)
+            $this->attachDeficiencies($technology, $deficiencyIds);
+
+            // Criar inspeções via relação
+            $this->createInspections($technology, $conservationState, $userId);
+        }
+
+        $this->command->info("15 notebooks criados com sucesso, cada um com inspeções e deficiências associadas.");
+    }
+
+    private function ensureDeficienciesExist(): void
+    {
+        if (DB::table('deficiencies')->count() === 0) {
+            $this->call(DeficiencySeeder::class);
+        }
+    }
+
+    private function ensureUserExists(): ?int
+    {
+        return DB::table('users')->value('id');
+    }
+
+    private function attachDeficiencies(Item $assistiveTechnology, array $deficiencyIds): void
+    {
+        if (empty($deficiencyIds)) {
+            return;
+        }
+
+        $number = rand(1, min(3, count($deficiencyIds)));
+        $selected = collect($deficiencyIds)->random($number)->toArray();
+
+        $assistiveTechnology->deficiencies()->sync($selected);
+    }
+
+    private function generateNotes(string $name, string $state, bool $isDigital): string
+    {
+        $notes = [
+            'novo'    => 'Equipamento novo, acabado de chegar ao acervo. Embalagem original lacrada.',
+            'bom'     => 'Em bom estado, com pequenos sinais de uso decorrentes de empréstimos anteriores.',
+            'regular' => 'Apresenta desgaste visível pelo uso frequente, mas ainda totalmente funcional.',
+        ];
+
+        $base = $notes[$state] ?? 'Tecnologia assistiva disponível para empréstimo.';
+        $base .= ' Notebook adaptado com tecnologias assistivas.';
+
+        return $base;
+    }
+
+    private function createInspections(Item $technology, string $currentState, ?int $userId): void
+    {
+        $numInspections = rand(1, 4);
+        $acquisitionDate = Carbon::now()->subMonths(rand(6, 24))->subDays(rand(0, 30));
+
+        // Inspeção inicial
+        $technology->inspections()->create([
+            'state'           => $currentState,
+            'inspection_date' => $acquisitionDate->format('Y-m-d'),
+            'description'     => $this->generateInspectionDescription('initial', $technology->name, $currentState, $technology->is_digital),
+            'type'            => InspectionType::INITIAL->value,
+            'user_id'         => $userId,
+            'created_at'      => $acquisitionDate,
+            'updated_at'      => $acquisitionDate,
+        ]);
+
+        if ($numInspections > 1) {
+            $lastDate = clone $acquisitionDate;
+            for ($i = 2; $i <= $numInspections; $i++) {
+                $type = $this->getRandomInspectionType($i);
+                $lastDate = $lastDate->copy()->addMonths(rand(2, 8))->addDays(rand(0, 15));
+
+                if ($lastDate->isFuture()) {
+                    $lastDate = Carbon::now()->subDays(rand(1, 10));
+                }
+
+                $inspectionState = $this->determineInspectionState($currentState, $i);
+
+                $technology->inspections()->create([
+                    'state'           => $inspectionState,
+                    'inspection_date' => $lastDate->format('Y-m-d'),
+                    'description'     => $this->generateInspectionDescription($type, $technology->name, $inspectionState, $technology->is_digital),
+                    'type'            => $type,
+                    'user_id'         => $userId,
+                    'created_at'      => $lastDate,
+                    'updated_at'      => $lastDate,
+                ]);
+            }
+        }
+    }
+
+    private function getRandomInspectionType(int $index): string
+    {
+        $types = ['periodic', 'maintenance', 'return'];
+        if ($index == 2) {
+            return (rand(1, 100) <= 70) ? 'periodic' : 'maintenance';
+        }
+        return $types[array_rand($types)];
+    }
+
+    private function determineInspectionState(string $currentState, int $inspectionIndex): string
+    {
+        $rand = rand(1, 100);
+        if ($rand <= 70) {
+            return $currentState;
+        } elseif ($rand <= 90) {
+            return $this->improveState($currentState);
+        } else {
+            return $this->worsenState($currentState);
+        }
+    }
+
+    private function improveState(string $state): string
+    {
+        return match($state) {
+            'regular' => 'bom',
+            'bom'     => 'novo',
+            'novo'    => 'novo',
+            default   => 'bom',
+        };
+    }
+
+    private function worsenState(string $state): string
+    {
+        return match($state) {
+            'novo'    => 'bom',
+            'bom'     => 'regular',
+            'regular' => 'regular',
+            default   => 'regular',
+        };
+    }
+
+    private function generateInspectionDescription(string $type, string $technologyName, string $state, bool $isDigital): string
+    {
+        $descriptions = [
+            'initial' => [
+                'novo'    => 'Vistoria inicial de aquisição. Tecnologia recém-chegada, lacrada, sem qualquer sinal de uso.',
+                'bom'     => 'Vistoria inicial. Equipamento em bom estado, com leves marcas de uso anterior, mas totalmente funcional.',
+                'regular' => 'Vistoria inicial. Recurso já apresenta alguns sinais de desgaste, porém ainda atende plenamente.',
+            ],
+            'periodic' => [
+                'novo'    => 'Inspeção periódica: recurso mantém-se em perfeitas condições, sem necessidade de intervenção.',
+                'bom'     => 'Inspeção periódica: pequenos desgastes esperados, mas funcionamento normal. Recomendada limpeza.',
+                'regular' => 'Inspeção periódica: desgaste natural acentuado, mas operacional. Avaliar necessidade de manutenção.',
+            ],
+            'maintenance' => [
+                'novo'    => 'Manutenção preventiva realizada: limpeza, calibração e verificação geral. Estado mantido.',
+                'bom'     => 'Manutenção corretiva: ajuste em componentes móveis. Após reparo, encontra-se em bom estado.',
+                'regular' => 'Manutenção: substituição de peças desgastadas. Após intervenção, ainda regular, mas com vida útil prolongada.',
+            ],
+            'return' => [
+                'novo'    => 'Devolução de empréstimo: recurso foi utilizado e retornou em perfeito estado, conforme inspeção.',
+                'bom'     => 'Retorno de empréstimo: usuário devolveu com pequenos sinais de uso, nada que comprometa.',
+                'regular' => 'Devolução: recurso apresenta desgaste além do esperado, será avaliado para possível manutenção.',
+            ],
+        ];
+
+        return $descriptions[$type][$state] ?? "Inspeção do tipo $type realizada. Estado: $state.";
+    }
+}

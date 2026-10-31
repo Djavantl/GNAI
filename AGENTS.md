@@ -11,9 +11,9 @@ Novas convenções devem ser adicionadas a `docs/ai-conventions/` e indexadas aq
 ## Arquitetura e caminhos reais
 
 - Backend: Laravel 12, PHP `^8.2` no Composer e PHP 8.3-FPM no `Dockerfile`; MySQL 8 em Docker. Desenvolvimento usa Nginx; produção usa Apache no host encaminhando ao PHP-FPM, conforme `README.md` e os arquivos Compose.
-- Backend organizado em `app/Domains/`: `Auth`, `Backup`, `Dashboard`, `InclusiveRadar`, `Notifications`, `Reporting`, `Settings` e `SpecializedEducationalSupport`. Procure controllers em `UI/Controllers`, validação e normalização em `Application/Data` e `Application/Rules`, operações em `Application/Actions`, consultas em `Application/Queries` e modelos/enums/DTOs em `Domain`. Código transversal fica em `app/Shared`; não presuma a estrutura convencional `app/Http/Controllers`.
-- Rotas: `routes/web.php`, `routes/auth.php` e `routes/modules/{specialized-educational-support,inclusive-radar,reporting,backup,settings}.php`. Confira também middlewares e tratamento de exceções em `bootstrap/app.php`.
-- Blade legado: `resources/views/pages/`, especialmente `specialized-educational-support/` e `inclusive-radar/`; autenticação em `resources/views/auth/`. Componentes, layouts e fragmentos ficam em `resources/views/components/`, `resources/views/layouts/` e `resources/views/partials/`, além dos `partials/` de cada funcionalidade.
+- Backend organizado em `app/Domains/`: `Audit`, `Auth`, `Backup`, `Dashboard`, `Inclusion` (domínio único de inclusão: atendimento educacional especializado, radar inclusivo, publicações e cadastros de apoio), `Notifications`, `Reporting`, `Settings` e `Website` (site público white label). Procure controllers em `UI/Controllers`, validação e normalização em `Application/Data` e `Application/Rules`, operações em `Application/Actions`, consultas em `Application/Queries` e modelos/enums/DTOs em `Domain`. Código transversal fica em `app/Shared`; não presuma a estrutura convencional `app/Http/Controllers`.
+- Rotas: `routes/web.php`, `routes/auth.php` e `routes/modules/{inclusion,audit,reporting,backup,settings,website}.php`. `inclusion.php` mantém os prefixos históricos de URL e de nome (`inclusive-radar.` e `specialized-educational-support.`), usados por links, permissões e notificações gravadas; não os confunda com divisões de pasta. O site público fica em `/site` (páginas `Website/Public/*`, sem `AppLayout`) e sua retaguarda em `/website`; as publicações do site reutilizam as rotas `institutional-events` da antiga agenda institucional. Confira também middlewares e tratamento de exceções em `bootstrap/app.php`.
+- Blade legado: `resources/views/pages/`, especialmente `inclusion/`; autenticação em `resources/views/auth/`. Componentes, layouts e fragmentos ficam em `resources/views/components/`, `resources/views/layouts/` e `resources/views/partials/`, além dos `partials/` de cada funcionalidade.
 - Scripts e estilos legados: `resources/js/` e `resources/css/`. Leia scripts inline e componentes Blade referenciados pela tela, além dos arquivos externos.
 - Frontend ativo: React 19 + TypeScript + Inertia, em `resources/react/`. Entrada `main.tsx`; páginas em `pages/`; alias `@/` aponta para essa pasta. `vite.config.js` compila apenas a entrada React. Componentes e páginas novos usam **`.tsx`**; lógica e tipos sem markup usam `.ts`.
 - Documento de entrada: `resources/views/inertia.php`, um arquivo PHP mínimo. Controllers de telas usam `Inertia::render('Dominio/Recurso/Acao', $props)`, resolvido como `resources/react/pages/Dominio/Recurso/Acao.tsx`.
@@ -22,7 +22,7 @@ Novas convenções devem ser adicionadas a `docs/ai-conventions/` e indexadas aq
 
 ## Estado da migração: não confundir estrutura com tela pronta
 
-O roteamento de telas já usa Inertia. Muitas páginas de negócio ainda contêm somente `PageScaffold` e um título, por exemplo `pages/Auth/ResetPassword.tsx` e `pages/SpecializedEducationalSupport/Students/{Create,Edit}.tsx`. Esses arquivos indicam destino e nomenclatura, mas não comprovam paridade funcional. Já `pages/Auth/{Login,ForgotPassword}.tsx` compõem `Navigation/AuthLayout` e formulários em `components/Forms/{LoginForm,ForgotPasswordForm}/`: são referências reais de `useForm`, erros inline e processamento, não de identidade visual definitivamente consolidada.
+O roteamento de telas já usa Inertia. Muitas páginas de negócio ainda contêm somente `PageScaffold` e um título, por exemplo `pages/Auth/ResetPassword.tsx` e `pages/Inclusion/Students/{Create,Edit}.tsx`. Esses arquivos indicam destino e nomenclatura, mas não comprovam paridade funcional. Já `pages/Auth/{Login,ForgotPassword}.tsx` compõem `Navigation/AuthLayout` e formulários em `components/Forms/{LoginForm,ForgotPasswordForm}/`: são referências reais de `useForm`, erros inline e processamento, não de identidade visual definitivamente consolidada.
 
 O catálogo `/react/index.html`, disponível em ambiente `local` ou `testing` com Laravel em execução, reúne exemplos implementados. `pages/Catalog/Catalog.tsx` carrega `app/App.tsx`, e `app/routes.tsx` organiza suas demonstrações. Consulte o código de `pages/FormElements/`, `pages/FormValidation/` e `pages/AccountPages/` como referência de composição, sem tratar dados, links ou submits demonstrativos como integração pronta com o Gnai. Consultar essas referências não exige executar o catálogo ou iniciar a aplicação. Procure novamente telas de negócio concluídas antes de cada migração e siga seus padrões quando existirem.
 
@@ -44,7 +44,7 @@ Antes de implementar:
 
 Após implementar, ajuste apenas as integrações necessárias, compare o código com o inventário funcional, revise o próprio diff e entregue. Essa revisão é de código e não exige execução da aplicação ou de testes.
 
-Exemplo para alunos: compare `resources/views/pages/specialized-educational-support/students/{create,edit}.blade.php` com `routes/modules/specialized-educational-support.php` e, dentro de `app/Domains/SpecializedEducationalSupport/`, `UI/Controllers/StudentController.php`, `Application/Data/Students/` e `Application/Queries/Students/StudentFormQuery.php`. A criação e a edição têm contratos diferentes; campos como `status` e `remove_photo` precisam ser conferidos na edição.
+Exemplo para alunos: compare `resources/views/pages/inclusion/students/{create,edit}.blade.php` com `routes/modules/inclusion.php` e, dentro de `app/Domains/Inclusion/`, `UI/Controllers/StudentController.php`, `Application/Data/Students/` e `Application/Queries/Students/StudentFormQuery.php`. A criação e a edição têm contratos diferentes; campos como `status` e `remove_photo` precisam ser conferidos na edição.
 
 ## Paridade funcional e limites da tarefa
 
@@ -66,7 +66,7 @@ Procure primeiro em `resources/react/components/`; os caminhos abaixo são relat
 
 | Necessidade | Componentes existentes |
 | --- | --- |
-| Formulários | `Forms/FormLayout`, `FormGrid`, `FormField`, `TextInput`, `TextArea`, `SelectField`, `ChoiceControl`, `ChoiceGroup`, `ToggleControl`, `MaskedInput`, `FileUploadButton`, `FileDropzone`, `EvidenceUpload`, `FormSection`, `FormPage` (todos sob `Forms/`) |
+| Formulários | `Forms/FormLayout`, `FormGrid`, `FormField`, `TextInput`, `TextArea`, `SelectField`, `ChoiceControl`, `ChoiceGroup`, `ToggleControl`, `MaskedInput`, `FileUploadButton`, `FileDropzone`, `EvidenceUpload`, `ImageUploadField`, `FormSection`, `FormPage` (todos sob `Forms/`) |
 | Ações, agrupamento e feedback | `UI/Button`, `UI/CardBox`, `UI/Panel`, `UI/Modal`, `UI/ConfirmActionModal`, `UI/InlineAlert`, `UI/NotificationToast`, `UI/AppLoader`, `UI/ErrorState` |
 | Tabelas e navegação | `Tables/Table`, `Tables/DataTable`, `Tables/TableList`, `Navigation/Pagination`, `Navigation/Tabs`, `Navigation/PageBreadcrumb`, `Navigation/PageTitle` (cabeçalho de negócio), `Navigation/PageHeader` (referência Ubold) |
 | Estrutura compartilhada | `Navigation/AuthLayout`, `Navigation/AccountLayout`, `Navigation/TopBarPrimary`, `Navigation/SidebarPrimary`, `Navigation/AppFooter` |
@@ -159,7 +159,7 @@ Comandos na raiz, conforme `package.json`, `composer.json`, `Makefile` e `phpuni
 | Typecheck no Docker | `docker compose --env-file .env.dev -f docker-compose.dev.yml exec node npm run check` |
 | Testes padrão do Make (Unit + Domains) | `make test` |
 | Integração de páginas Inertia | `make test TEST=tests/Feature/InertiaPagesTest.php` |
-| Testes específicos | `make test TEST=app/Domains/InclusiveRadar/Tests/Feature/Waitlists` (substitua pelo caminho relevante existente) |
+| Testes específicos | `make test TEST=app/Domains/Inclusion/Tests/Feature/Waitlists` (substitua pelo caminho relevante existente) |
 | Todos os testes no PHP local preparado | `composer test` (limpa config e executa `php artisan test`) |
 | Verificação de estilo PHP | `vendor/bin/pint --test <arquivo.php>`; para formatar, remova `--test` e informe os arquivos alterados |
 

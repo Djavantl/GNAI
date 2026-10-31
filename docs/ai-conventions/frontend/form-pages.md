@@ -10,8 +10,8 @@ Os caminhos abaixo são referências da implementação atual, não uma obrigaç
 
 | Responsabilidade | Arquivo de referência |
 | --- | --- |
-| Página de cadastro e título | [Create.tsx](../../../resources/react/pages/SpecializedEducationalSupport/Students/Create.tsx) |
-| Página de edição, registro existente e identidade do formulário | [Edit.tsx](../../../resources/react/pages/SpecializedEducationalSupport/Students/Edit.tsx) |
+| Página de cadastro e título | [Create.tsx](../../../resources/react/pages/Inclusion/Students/Create.tsx) |
+| Página de edição, registro existente e identidade do formulário | [Edit.tsx](../../../resources/react/pages/Inclusion/Students/Edit.tsx) |
 | Composição da página, breadcrumbs, cabeçalho e feedback | [StudentPage.tsx](../../../resources/react/components/Students/StudentPage.tsx) |
 | Dados, campos, seções, submissão, upload e processamento | [StudentForm.tsx](../../../resources/react/components/Students/StudentForm.tsx) |
 | Layout dos campos e adaptações responsivas do exemplo | [Students.css](../../../resources/react/components/Students/Students.css) |
@@ -64,6 +64,7 @@ Os caminhos desta tabela são relativos a `resources/react/components/`.
 | Alternância booleana | `Forms/ToggleControl/ToggleControl.tsx`; adaptador React do Switchery local, com estado controlado, tamanho e limpeza |
 | Data de calendário | `Forms/DatePicker/DatePicker.tsx`, quando aplicável ao formato de data esperado |
 | Foto de pessoa | `Forms/PersonPhotoUpload/PersonPhotoUpload.tsx`, quando o cadastro precisar dessa informação |
+| Imagem única que não é foto de pessoa (capa, logo, banner) | `Forms/ImageUploadField/ImageUploadField.tsx`; o pai controla arquivo, imagem atual e remoção, e pede texto alternativo quando a imagem for informativa |
 | Evidências anexadas | `Forms/EvidenceUpload/EvidenceUpload.tsx`; seleção múltipla, limites, prévia, lista e remoção controladas pelo formulário |
 | Texto rico | `Forms/SummernoteEditor/SummernoteEditor.tsx`, quando houver requisito de editor |
 | Ações finais e andamento | `Forms/FormActions/FormActions.tsx`; `children` para ações principais, `secondary` para ações de menor ênfase e `status` |
@@ -133,7 +134,7 @@ As falhas de conexão e de resposta HTTP são apresentadas por `useStudentReques
 
 ### Selects
 
-Quando houver seleção de opções, use `SelectField` com Select2 habilitado por padrão. Passe `options` como `{ value, label }[]`, valores controlados e `onChange`, sem títulos de grupo ou repetição do label no menu. O placeholder padrão é “Selecione”; filtros podem exigir “Todos”, mas isso não define o placeholder de todo formulário. Preserve valores do backend, inclusive zero e string vazia quando tiverem significado distinto.
+Quando houver seleção de opções, use `SelectField` com Select2 habilitado por padrão. Passe `options` como `{ value, label }[]`, valores controlados e `onChange`, sem títulos de grupo ou repetição do label no menu. O placeholder padrão é “Selecione”; filtros podem exigir “Todos”, mas isso não define o placeholder de todo formulário. Preserve valores do backend, inclusive zero e string vazia quando tiverem significado distinto. Para escolher um ícone, informe `iconClass` em cada opção e use `iconOnly`: o menu vira uma grade de ícones sem busca, o valor escolhido aparece como ícone e o nome permanece como texto oculto para leitores de tela e dica ao passar o ponteiro; opções sem ícone, como “Sem ícone”, continuam em texto. Referência: ícones dos itens no construtor do site.
 
 O componente sincroniza seleção e desabilitação com os controles gerados pelo plugin, encaminha as alterações para o React e mantém associações de erro. Se o plugin não carregar, informa a falha e mantém a seleção nativa disponível. Não inicialize Select2 manualmente na página.
 
@@ -169,7 +170,7 @@ Plugins usam os assets locais de `public/assets/react/`, com adaptadores que car
 
 ### Mapas vinculados à instituição
 
-Use `InclusiveRadar/GeoMap` com a instituição em `reference`, incluindo suas coordenadas e `default_zoom`. A sede e o zoom padrão definem o enquadramento inicial em cadastro, edição e visualização; `value` continua representando a posição real da barreira ou do ponto de referência. Não substitua o zoom cadastrado por valores fixos nas telas de edição. Ao trocar de instituição, o mapa atualiza o enquadramento e mantém os comportamentos existentes de seleção do marcador. Sem instituição selecionada/vinculada, preserve o fallback da funcionalidade. O zoom zero é válido e não deve ser tratado como ausência de configuração.
+Use `Inclusion/GeoMap` com a instituição em `reference`, incluindo suas coordenadas e `default_zoom`. A sede e o zoom padrão definem o enquadramento inicial em cadastro, edição e visualização; `value` continua representando a posição real da barreira ou do ponto de referência. Não substitua o zoom cadastrado por valores fixos nas telas de edição. Ao trocar de instituição, o mapa atualiza o enquadramento e mantém os comportamentos existentes de seleção do marcador. Sem instituição selecionada/vinculada, preserve o fallback da funcionalidade. O zoom zero é válido e não deve ser tratado como ausência de configuração.
 
 ## Particularidades do formulário de alunos
 
@@ -186,12 +187,12 @@ Para alunos, consulte estes arquivos reais; em outra tela, localize os equivalen
 
 | Contrato | Referência |
 | --- | --- |
-| Endpoints e middlewares `can:*` | `routes/modules/specialized-educational-support.php`, com prefixo em `routes/web.php` |
-| Páginas Inertia, operações e redirects | `app/Domains/SpecializedEducationalSupport/UI/Controllers/StudentController.php` |
-| Opções e defaults de criação/edição | `app/Domains/SpecializedEducationalSupport/Application/Queries/Students/StudentFormQuery.php` |
-| Dados de apresentação e permissões | `app/Domains/SpecializedEducationalSupport/UI/Presenters/StudentPagePresenter.php` |
-| Nomes, tipos e validações | `app/Domains/SpecializedEducationalSupport/Application/Data/Students/CreateStudentData.php` e `UpdateStudentData.php` |
-| Normalização de entrada de pessoa | `app/Domains/SpecializedEducationalSupport/Application/Data/People/Concerns/NormalizesPersonInput.php` |
+| Endpoints e middlewares `can:*` | `routes/modules/inclusion.php`, no grupo com prefixo `specialized-educational-support` |
+| Páginas Inertia, operações e redirects | `app/Domains/Inclusion/UI/Controllers/StudentController.php` |
+| Opções e defaults de criação/edição | `app/Domains/Inclusion/Application/Queries/Students/StudentFormQuery.php` |
+| Dados de apresentação e permissões | `app/Domains/Inclusion/UI/Presenters/StudentPagePresenter.php` |
+| Nomes, tipos e validações | `app/Domains/Inclusion/Application/Data/Students/CreateStudentData.php` e `UpdateStudentData.php` |
+| Normalização de entrada de pessoa | `app/Domains/Inclusion/Application/Data/People/Concerns/NormalizesPersonInput.php` |
 | Dados compartilhados e flash | `app/Shared/Infrastructure/Http/Middleware/HandleInertiaRequests.php` |
 
 A referência cria por POST em `/specialized-educational-support/students/store` e atualiza por PUT em `/specialized-educational-support/students/{id}`, via POST multipart com `_method`. O controller redireciona para o prontuário com mensagem de sucesso. Essas URLs e destinos são exemplos, não uma convenção de URLs obrigatória para novos módulos.

@@ -15,13 +15,7 @@ Route::middleware('web')->group(function () {
 
     Route::redirect('/', '/about-us');
 
-    Route::prefix('inclusive-radar')
-        ->name('inclusive-radar.')
-        ->group(base_path('routes/modules/inclusive-radar.php'));
-
-    Route::prefix('specialized-educational-support')
-        ->name('specialized-educational-support.')
-        ->group(base_path('routes/modules/specialized-educational-support.php'));
+    Route::group([], base_path('routes/modules/inclusion.php'));
 
     Route::middleware(['auth'])
         ->prefix('backup')
@@ -37,6 +31,9 @@ Route::middleware('web')->group(function () {
         ->prefix('settings')
         ->name('settings.')
         ->group(base_path('routes/modules/settings.php'));
+
+    Route::name('website.')
+        ->group(base_path('routes/modules/website.php'));
 
     Route::prefix('reports')
         ->name('reports.')

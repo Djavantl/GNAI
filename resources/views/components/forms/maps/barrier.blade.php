@@ -59,5 +59,5 @@
             isEditMode: {{ $barrier ? 'true' : 'false' }}
         };
     </script>
-    @vite('resources/js/pages/inclusive-radar/barriers.js')
+    @vite('resources/js/pages/inclusion/barriers.js')
 @endpush
