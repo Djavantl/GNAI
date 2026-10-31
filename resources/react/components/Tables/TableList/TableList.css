@@ -410,7 +410,7 @@
 .tableListTable__resizeHandle {
   position: absolute;
   top: 0;
-  right: -5px;
+  left: -5px;
   z-index: 2;
   width: 10px;
   height: 100%;

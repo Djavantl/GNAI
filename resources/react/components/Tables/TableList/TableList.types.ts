@@ -5,8 +5,10 @@ export interface TableListColumn {
   id: string;
   label: string;
   width?: number | string;
+  /** @deprecated Mantido por compatibilidade; não limita o redimensionamento. */
   minWidth?: number;
   hideable?: boolean;
+  /** Mantém a coluna visível na extremidade; end também bloqueia o redimensionamento. */
   fixed?: 'start' | 'end';
 }
 

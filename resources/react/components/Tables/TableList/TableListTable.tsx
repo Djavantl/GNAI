@@ -48,11 +48,9 @@ function resizeAdjacentColumns(
     return widths;
   }
 
-  const leftMinWidth = Math.min(leftColumn.minWidth ?? 56, leftWidth);
-  const rightMinWidth = Math.min(rightColumn.minWidth ?? 56, rightWidth);
   const boundedDelta = Math.max(
-    leftMinWidth - leftWidth,
-    Math.min(delta, rightWidth - rightMinWidth),
+    32 - leftWidth,
+    Math.min(delta, rightWidth - 32),
   );
 
   return {
@@ -215,14 +213,14 @@ export default function TableListTable({
 
     event.preventDefault();
     const widths = measureVisibleColumns();
-    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const keyDirection = event.key === 'ArrowRight' ? 1 : -1;
 
     setColumnWidths(
       resizeAdjacentColumns(
         widths,
         leftColumn,
         rightColumn,
-        direction * 10,
+        keyDirection * 10,
       ),
     );
   }
@@ -276,29 +274,27 @@ export default function TableListTable({
           <thead>
             <tr>
               {visibleColumns.map((column, index) => {
-                const nextColumn = visibleColumns[index + 1];
-                const canResizeBoundary = Boolean(
-                  nextColumn && !column.fixed && !nextColumn.fixed,
-                );
+                const leftColumn = visibleColumns[index - 1];
+                const rightColumn = column;
 
                 return (
                   <th key={column.id} scope="col">
                     <span className="tableListTable__heading">
                       {column.label}
                     </span>
-                    {nextColumn && canResizeBoundary ? (
+                    {leftColumn && column.fixed !== 'end' && leftColumn.fixed !== 'end' ? (
                       <span
                         className="tableListTable__resizeHandle"
                         role="separator"
-                        aria-label={`Redimensionar colunas ${column.label} e ${nextColumn.label}`}
+                        aria-label={`Redimensionar colunas ${leftColumn.label} e ${rightColumn.label}`}
                         aria-orientation="vertical"
-                        aria-valuemin={column.minWidth ?? 56}
+                        aria-valuemin={32}
                         aria-valuenow={
-                          columnWidths[column.id] ?? column.minWidth ?? 56
+                          columnWidths[leftColumn.id] ?? 32
                         }
                         tabIndex={0}
                         onPointerDown={(event) =>
-                          beginResize(event, column, nextColumn)
+                          beginResize(event, leftColumn, rightColumn)
                         }
                         onPointerMove={resizeColumn}
                         onPointerUp={endResize}
@@ -306,8 +302,8 @@ export default function TableListTable({
                         onKeyDown={(event) =>
                           resizeColumnWithKeyboard(
                             event,
-                            column,
-                            nextColumn,
+                            leftColumn,
+                            rightColumn,
                           )
                         }
                       />
