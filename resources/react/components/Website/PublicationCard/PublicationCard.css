@@ -1,0 +1,206 @@
+.publicationCard {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--site-border);
+    border-radius: var(--site-radius);
+    background: #fff;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.publicationCard:hover,
+.publicationCard:focus-within {
+    box-shadow: var(--site-shadow);
+    transform: translateY(-2px);
+}
+
+.publicationCard--featured {
+    border-color: var(--site-primary-tint);
+}
+
+.publicationCard__media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--site-primary-soft);
+}
+
+.publicationCard__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.publicationCard__placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    color: var(--site-primary-tint);
+    font-size: 3rem;
+}
+
+.publicationCard__placeholder i {
+    color: color-mix(in srgb, var(--site-primary) 35%, #fff);
+}
+
+.publicationCard__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+}
+
+.publicationCard__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.publicationCard__type,
+.publicationCard__category,
+.publicationCard__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.publicationCard__type {
+    background: var(--site-primary);
+    color: #fff;
+}
+
+.publicationCard__category {
+    background: var(--site-primary-soft);
+    color: var(--site-primary);
+}
+
+.publicationCard__status--upcoming {
+    background: #e7f1ff;
+    color: #0b4f9c;
+}
+
+.publicationCard__status--ongoing {
+    background: #e3f6ec;
+    color: #146c43;
+}
+
+.publicationCard__status--ongoing i {
+    font-size: 0.55rem;
+}
+
+.publicationCard__status--finished {
+    background: #eef0f2;
+    color: #495057;
+}
+
+.publicationCard__date {
+    color: var(--site-ink-muted);
+    font-size: 0.82rem;
+}
+
+.publicationCard__title {
+    margin: 0;
+    font-family: var(--site-font-heading);
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.publicationCard__title a {
+    color: var(--site-ink);
+    text-decoration: none;
+}
+
+.publicationCard__title a:hover {
+    color: var(--site-primary);
+}
+
+.publicationCard__summary {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    color: var(--site-ink-soft);
+    font-size: 0.93rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.publicationCard__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 6px;
+    color: var(--site-primary) !important;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.publicationCard__more:hover {
+    text-decoration: underline;
+}
+
+/* Variante de evento: data em destaque */
+.publicationCard--event {
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.publicationCard__dateBadge {
+    display: flex;
+    flex: 0 0 88px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--site-primary);
+    color: #fff;
+    font-family: var(--site-font-heading);
+    line-height: 1;
+}
+
+.publicationCard__day {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.publicationCard__month {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.publicationCard--event .publicationCard__status {
+    align-self: flex-start;
+}
+
+.publicationCard__meta {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    color: var(--site-ink-soft);
+    font-size: 0.88rem;
+    list-style: none;
+}
+
+.publicationCard__meta i {
+    width: 18px;
+    color: var(--site-primary);
+}
+
+.publicationCard__srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}

@@ -20,9 +20,11 @@ interface TabsProps {
   items: TabItem[];
   initialActiveId?: string;
   variant?: 'standard' | 'material' | 'bootstrap' | 'justified' | 'vertical' | 'vertical-reverse' | 'pills';
+  /** Informa a aba escolhida pelo usuário; combine com initialActiveId para controlar a aba ativa. */
+  onChange?: (id: string) => void;
 }
 
-export default function Tabs({ items, initialActiveId, variant = 'standard' }: TabsProps): React.JSX.Element {
+export default function Tabs({ items, initialActiveId, variant = 'standard', onChange }: TabsProps): React.JSX.Element {
   const [activeId, setActiveId] = useState<string>(initialActiveId ?? items[0]?.id ?? '');
   const activeItem = items.find((item: TabItem) => item.id === activeId) ?? items[0];
   const activeIndex = Math.max(0, items.findIndex((item: TabItem) => item.id === activeId));
@@ -53,6 +55,7 @@ export default function Tabs({ items, initialActiveId, variant = 'standard' }: T
 
   function selectTab(id: string): void {
     setActiveId(id);
+    onChange?.(id);
   }
 
   function handleKeyDown(

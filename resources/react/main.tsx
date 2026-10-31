@@ -19,6 +19,7 @@ void createInertiaApp({
     const page = (await load()).default;
     if (
       !name.startsWith('Catalog/') &&
+      !name.startsWith('Website/Public/') &&
       !['Auth/Login', 'Auth/ForgotPassword', 'Auth/ResetPassword', 'Errors/Error'].includes(name)
     ) {
       page.layout ??= (children) => <AppLayout>{children}</AppLayout>;

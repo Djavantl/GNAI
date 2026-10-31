@@ -1,6 +1,8 @@
 export interface SelectFieldOption {
   value: string;
   label: string;
+  /** Classe do ícone (Font Awesome) exibido no lugar do texto quando o campo usa `iconOnly`. */
+  iconClass?: string;
 }
 export interface SelectFieldGroup {
   label: string;

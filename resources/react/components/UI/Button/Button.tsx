@@ -61,6 +61,8 @@ interface ButtonCommonProps {
   'aria-haspopup'?: 'menu';
   'aria-controls'?: string;
   'aria-describedby'?: string;
+  /** Estado de botões de alternância; aplicado somente ao elemento <button>. */
+  'aria-pressed'?: boolean;
 }
 
 type ButtonAsAnchorProps = ButtonCommonProps & {
@@ -224,6 +226,7 @@ export default function Button(props: ButtonProps): React.JSX.Element {
       aria-expanded={props['aria-expanded']}
       aria-haspopup={props['aria-haspopup']}
       aria-controls={props['aria-controls']}
+      aria-pressed={props['aria-pressed']}
       onClick={props.onClick}
     >
       {content}

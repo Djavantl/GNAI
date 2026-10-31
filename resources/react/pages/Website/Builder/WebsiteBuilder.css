@@ -1,0 +1,366 @@
+.websiteBuilder {
+    display: grid;
+    grid-template-columns: minmax(360px, 460px) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.websiteBuilder__editor {
+    align-self: stretch;
+    min-width: 0;
+}
+
+.websiteBuilder__editor .tabs,
+.websiteBuilder__structure {
+    min-width: 0;
+}
+
+/* O card já tem respiro; o painel das abas não precisa repetir o padding largo do tema. */
+.websiteBuilder__editor .tabs__content {
+    padding: 24px 0 0;
+    box-shadow: none;
+}
+
+.websiteBuilder__editor fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* Barra da aba de edição: retorno à lista antes do formulário do item. */
+.websiteBuilder__editBar {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 0 16px;
+}
+
+.websiteBuilder__note {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--ui-color-surface-alt, #f5f6f8);
+    color: var(--ui-color-text-muted);
+    font-size: 13px;
+}
+
+/* Lista de seções */
+.websiteBuilder__sectionList {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+}
+
+.websiteBuilder__sectionRow {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.websiteBuilder__sectionRow--selected {
+    border-color: var(--ui-color-gnai-primary);
+    box-shadow: inset 3px 0 0 var(--ui-color-gnai-primary);
+}
+
+.websiteBuilder__sectionRow--hidden .websiteBuilder__sectionText {
+    opacity: 0.6;
+}
+
+.websiteBuilder__sectionSelect {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ui-color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.websiteBuilder__sectionSelect:hover,
+.websiteBuilder__sectionSelect:focus-visible {
+    background: var(--ui-color-surface-alt, #f5f6f8);
+}
+
+.websiteBuilder__sectionSelect:focus-visible {
+    outline: 2px solid var(--ui-color-input-focus-border);
+    outline-offset: 1px;
+}
+
+.websiteBuilder__sectionSelect > i {
+    width: 18px;
+    color: var(--ui-color-heading);
+    text-align: center;
+}
+
+.websiteBuilder__sectionText {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.3;
+}
+
+.websiteBuilder__sectionType {
+    color: var(--ui-color-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.websiteBuilder__sectionTitle {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.websiteBuilder__badge {
+    flex: 0 0 auto;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #eef0f2;
+    color: #495057;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.websiteBuilder__badge--error {
+    background: #fdecea;
+    color: #b42318;
+}
+
+.websiteBuilder__sectionActions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 4px;
+}
+
+.websiteBuilder__add {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.websiteBuilder__addSelect {
+    display: flex;
+    flex: 1 1 200px;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.websiteBuilder__addLabel {
+    color: var(--ui-color-form-label);
+    font-weight: 600;
+}
+
+/* Itens de números e serviços */
+.websiteBuilder__items {
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 8px;
+}
+
+.websiteBuilder__items legend {
+    width: auto;
+    margin: 0;
+    padding: 0 6px;
+    border: 0;
+    color: var(--ui-color-form-label);
+    font-size: var(--ui-font-size-form-label, 16px);
+    font-weight: 600;
+}
+
+.websiteBuilder__items ol {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+}
+
+.websiteBuilder__itemsError {
+    margin: 0 0 8px;
+    color: var(--ui-color-danger);
+    font-size: 12px;
+}
+
+.websiteBuilder__item {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ui-color-border-subtle, #eef0f2);
+}
+
+.websiteBuilder__itemFields {
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 8px 12px;
+    min-width: 0;
+}
+
+.websiteBuilder__itemWide {
+    grid-column: 1 / -1;
+}
+
+.websiteBuilder__itemActions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 28px;
+}
+
+.websiteBuilder__color {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.websiteBuilder__color input[type="color"] {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid var(--ui-color-input-border);
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* Prévia */
+/*
+ * A prévia acompanha a altura do card de edição, terminando junto dele e do
+ * rodapé de ações. O contêiner da aplicação usa overflow: hidden, o que
+ * impede position: sticky; por isso a prévia estica na linha do grid.
+ */
+.websiteBuilder__preview {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    min-height: 480px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 6px;
+    background: #fff;
+}
+
+.websiteBuilder__previewBar {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.websiteBuilder__previewTitle {
+    margin: 0;
+    color: var(--ui-color-heading);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Grupo de dispositivos no padrão btn-group grafite da Visdom: botões colados, e o ativo fica pressionado. */
+.websiteBuilder__devices {
+    display: inline-flex;
+}
+
+.websiteBuilder__device.button {
+    margin: 0;
+    border-radius: 0;
+}
+
+.websiteBuilder__device.button + .websiteBuilder__device.button {
+    margin-left: -1px;
+}
+
+.websiteBuilder__device.button:first-child {
+    border-radius: 3px 0 0 3px;
+}
+
+.websiteBuilder__device.button:last-child {
+    border-radius: 0 3px 3px 0;
+}
+
+.websiteBuilder__device.button[aria-pressed="true"] {
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+}
+
+
+.websiteBuilder__viewport {
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Altura zero + crescimento: o site não aumenta a linha, só ocupa o espaço que sobra. */
+    flex: 1 1 auto;
+    height: 0;
+    min-height: 0;
+    border: 1px solid var(--ui-color-border-subtle, #eef0f2);
+    border-radius: 6px;
+    background: #e9ecf2;
+    cursor: pointer;
+}
+
+.websiteBuilder__frameSizer {
+    position: relative;
+    overflow: hidden;
+}
+
+.websiteBuilder__frame {
+    margin: 0 auto;
+    background: #fff;
+    transform-origin: top left;
+    pointer-events: none;
+    user-select: none;
+}
+
+@media (max-width: 1100px) {
+    .websiteBuilder {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .websiteBuilder__preview {
+        min-height: 0;
+    }
+
+    .websiteBuilder__viewport {
+        flex: none;
+        height: 70vh;
+        min-height: 320px;
+    }
+}
+
+@media (max-width: 520px) {
+    .websiteBuilder__sectionRow {
+        flex-wrap: wrap;
+    }
+
+    .websiteBuilder__sectionActions {
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    .websiteBuilder__itemFields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

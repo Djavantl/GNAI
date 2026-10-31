@@ -5,6 +5,32 @@ import { joinClassNames } from "@/utils/joinClassNames";
 import type { SelectFieldCollection, SelectFieldGroup, SelectFieldOption, SelectFieldRuntime } from "./SelectField.types";
 import "@/components/Forms/TextInput/TextInput.css";
 import "./SelectField.css";
+
+type Select2OptionData = { text?: string; element?: HTMLElement[] };
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, character => `&#${character.charCodeAt(0)};`);
+}
+
+function optionIcon(data: Select2OptionData): string {
+  return data.element?.[0]?.dataset.icon ?? "";
+}
+
+/**
+ * Opção desenhada só com o ícone: o nome segue como texto oculto (leitores
+ * de tela) e como dica ao passar o ponteiro. Sem ícone, mostra o texto.
+ */
+function formatIconOption(data: Select2OptionData): string {
+  const text = escapeHtml(data.text ?? "");
+  const icon = optionIcon(data);
+
+  if (!icon) return `<span class="selectField__iconOption selectField__iconOption--text">${text}</span>`;
+
+  return `<span class="selectField__iconOption" title="${text}">`
+    + `<i class="${escapeHtml(icon)}" aria-hidden="true"></i>`
+    + `<span class="selectField__srOnly">${text}</span></span>`;
+}
+
 export default function SelectField({
   id,
   name,
@@ -13,6 +39,7 @@ export default function SelectField({
   label,
   defaultValue,
   enhanced = true,
+  iconOnly = false,
   placeholder = "Selecione",
   ...props
 }: {
@@ -23,6 +50,8 @@ export default function SelectField({
   label: string;
   defaultValue?: SelectHTMLAttributes<HTMLSelectElement>['defaultValue'];
   enhanced?: boolean;
+  /** Mostra as opções e o valor escolhido pelos ícones (`iconClass`), em grade e sem busca. */
+  iconOnly?: boolean;
   placeholder?: string;
 } & Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'>): React.JSX.Element {
   const ref = useRef<HTMLSelectElement>(null);
@@ -76,7 +105,14 @@ export default function SelectField({
       const instance = runtime(element);
       instance.select2({
         width: "100%",
-        dropdownCssClass: "selectFieldDropdown",
+        dropdownCssClass: iconOnly ? "selectFieldDropdown selectFieldDropdown--icons" : "selectFieldDropdown",
+        ...(iconOnly ? {
+          minimumResultsForSearch: -1,
+          formatResult: formatIconOption,
+          formatSelection: formatIconOption,
+          formatResultCssClass: (data: Select2OptionData) =>
+            optionIcon(data) ? "selectField__iconResult" : "selectField__textResult",
+        } : {}),
         searchInputPlaceholder: "Pesquisar...",
         formatNoMatches: () => "Nenhum resultado encontrado",
         formatSearching: () => "Pesquisando...",
@@ -141,7 +177,7 @@ export default function SelectField({
       disposed = true;
       cleanup?.();
     };
-  }, [enhanced, id, props.multiple]);
+  }, [enhanced, iconOnly, id, props.multiple]);
   return (
     <div
       className={joinClassNames(
@@ -158,11 +194,13 @@ export default function SelectField({
         aria-invalid={nativeError ? true : props['aria-invalid']}
         aria-describedby={[props['aria-describedby'], nativeError ? `${id}-validation` : undefined].filter(Boolean).join(' ') || undefined}
         className="textInput"
+        data-placeholder={props.multiple ? placeholder : undefined}
         defaultValue={props.value === undefined ? defaultValue ?? (props.multiple ? [] : "") : undefined}
       >
-        <option value="">{placeholder}</option>
+        {/* Em seleção múltipla o placeholder vem de data-placeholder, sem opção vazia selecionável. */}
+        {props.multiple ? null : <option value="">{placeholder}</option>}
         {(options ?? groups.flatMap(group => group.options)).map((option) => (
-          <option value={option.value} key={option.value}>{option.label}</option>
+          <option value={option.value} key={option.value} data-icon={option.iconClass}>{option.label}</option>
         ))}
       </select>
       {nativeError ? <span id={`${id}-validation`} className="selectField__error" role="alert">{nativeError}</span> : null}

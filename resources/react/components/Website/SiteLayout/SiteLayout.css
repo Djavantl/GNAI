@@ -1,0 +1,390 @@
+/* Site público white label. A cor principal vem da configuração (--site-primary)
+   e as variações são derivadas dela para que cada instituição mantenha sua identidade. */
+.siteLayout {
+    --site-primary: var(--ui-color-gnai-primary, #322b75);
+    --site-primary-strong: color-mix(in srgb, var(--site-primary) 82%, #000);
+    --site-primary-soft: color-mix(in srgb, var(--site-primary) 9%, #fff);
+    --site-primary-tint: color-mix(in srgb, var(--site-primary) 18%, #fff);
+    --site-ink: #212529;
+    --site-ink-soft: #495057;
+    --site-ink-muted: #5f6770;
+    --site-surface: #f6f7fb;
+    --site-border: color-mix(in srgb, var(--site-primary) 12%, #e9ecef);
+    --site-radius: 14px;
+    --site-shadow: 0 10px 30px rgba(20, 20, 50, 0.08);
+    --site-font-heading: var(--ui-font-gnai-heading);
+    --site-font-body: var(--ui-font-gnai-body);
+
+    container-name: site;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #fff;
+    color: var(--site-ink);
+    font-family: var(--site-font-body);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.siteLayout--preview {
+    min-height: 0;
+}
+
+.siteLayout *,
+.siteLayout *::before,
+.siteLayout *::after {
+    box-sizing: border-box;
+}
+
+.siteLayout a {
+    color: inherit;
+}
+
+.siteLayout :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--site-primary) 55%, #fff);
+    outline-offset: 2px;
+}
+
+.siteLayout__container {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.siteLayout__skip {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--site-primary);
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.siteLayout__skip:focus {
+    top: 12px;
+}
+
+/* Cabeçalho */
+.siteLayout__header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-bottom: 1px solid var(--site-border);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+}
+
+.siteLayout--preview .siteLayout__header {
+    position: relative;
+}
+
+.siteLayout__headerInner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 76px;
+}
+
+.siteLayout__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    margin-right: auto;
+    text-decoration: none;
+}
+
+.siteLayout__logo {
+    display: block;
+    width: auto;
+    max-width: 160px;
+    height: 46px;
+    object-fit: contain;
+}
+
+.siteLayout__monogram {
+    display: inline-grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--site-primary);
+    color: #fff;
+    font-family: var(--site-font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.siteLayout__brandText {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.siteLayout__brandName {
+    color: var(--site-primary);
+    font-family: var(--site-font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.siteLayout__brandTagline {
+    overflow: hidden;
+    max-width: 340px;
+    color: var(--site-ink-muted);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.siteLayout__nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.siteLayout__nav ul {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.siteLayout__navLink {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    color: var(--site-ink-soft) !important;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.siteLayout__navLink:hover,
+.siteLayout__navLink--active {
+    background: var(--site-primary-soft);
+    color: var(--site-primary) !important;
+}
+
+.siteLayout__access {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border: 1px solid var(--site-primary);
+    border-radius: 999px;
+    color: var(--site-primary) !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.siteLayout__access:hover {
+    background: var(--site-primary);
+    color: #fff !important;
+}
+
+.siteLayout__menuToggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--site-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--site-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.siteLayout__main {
+    flex: 1 0 auto;
+    outline: none;
+}
+
+/* Rodapé */
+.siteLayout__footer {
+    margin-top: auto;
+    padding-top: 56px;
+    background: var(--site-primary-strong);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.92rem;
+}
+
+.siteLayout__footerGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.4fr;
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+.siteLayout__footerName {
+    margin: 0 0 8px;
+    color: #fff;
+    font-family: var(--site-font-heading);
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.siteLayout__footer p {
+    margin: 0 0 12px;
+}
+
+.siteLayout__footerTitle {
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.siteLayout__footerLinks {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.siteLayout__footerLinks a,
+.siteLayout__footerContact a {
+    color: rgba(255, 255, 255, 0.82);
+    text-decoration: none;
+}
+
+.siteLayout__footerLinks a:hover,
+.siteLayout__footerContact a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.siteLayout__footerContact {
+    display: grid;
+    gap: 8px;
+    font-style: normal;
+    overflow-wrap: anywhere;
+}
+
+.siteLayout__footerContact i {
+    width: 18px;
+    color: #fff;
+}
+
+.siteLayout__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.siteLayout__social a {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff !important;
+    font-size: 1.05rem;
+    transition: background 0.2s ease;
+}
+
+.siteLayout__social a:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.siteLayout__copyright {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 18px;
+    padding-bottom: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.82rem;
+}
+
+@container site (max-width: 860px) {
+    .siteLayout__menuToggle {
+        display: inline-grid;
+        place-items: center;
+    }
+
+    .siteLayout__nav {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 16px 24px 20px;
+        border-bottom: 1px solid var(--site-border);
+        background: #fff;
+        box-shadow: var(--site-shadow);
+    }
+
+    .siteLayout__nav--open {
+        display: flex;
+    }
+
+    .siteLayout__nav ul {
+        flex-direction: column;
+    }
+
+    .siteLayout__navLink {
+        display: block;
+        border-radius: 10px;
+    }
+
+    .siteLayout__access {
+        justify-content: center;
+    }
+
+    .siteLayout__headerInner {
+        position: relative;
+    }
+
+    .siteLayout__header {
+        position: relative;
+    }
+
+    .siteLayout__footerGrid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+    }
+
+    .siteLayout__brandTagline {
+        max-width: 200px;
+    }
+}
+
+@container site (max-width: 480px) {
+    .siteLayout__container {
+        padding: 0 16px;
+    }
+
+    .siteLayout__brandTagline {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .siteLayout * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
