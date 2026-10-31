@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domains\Website\UI\Presenters;
 
 use App\Domains\Inclusion\Domain\Enums\PublicationType;
+use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Models\PublicationMedia;
 use App\Domains\Inclusion\Domain\Models\PublicationSpeaker;
-use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
 use App\Domains\Website\Infrastructure\Storage\WebsiteMediaStorage;
@@ -63,50 +63,75 @@ final class WebsitePresenter
     }
 
     /**
+     * Valores do formulário do construtor, com as redes sociais separadas por campo.
+     *
      * @return array<string, mixed>
      */
-    public function publicationCard(Publication $event): array
+    public function settings(WebsiteSetting $setting): array
     {
-        $type = $event->type instanceof PublicationType ? $event->type : PublicationType::EVENT;
-        $date = $event->published_at ?? $event->created_at;
+        $social = is_array($setting->social_links) ? $setting->social_links : [];
 
         return [
-            'id' => $event->id,
-            'slug' => $event->slug,
-            'url' => route('website.publications.show', $event->slug),
-            'title' => $event->title,
-            'summary' => $event->summary ?: Str::limit(
-                trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) $event->description))) ?? ''),
-                220,
-            ),
-            'type' => $type->value,
-            'type_label' => $type->label(),
-            'tags' => $event->tags->where('is_active', true)->pluck('name')->values()->all(),
-            'published_at' => $date?->toIso8601String(),
-            'published_at_label' => $date ? $date->copy()->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y') : null,
-            'cover_url' => $event->cover_path ? asset('storage/'.$event->cover_path) : null,
-            'cover_alt' => $event->cover_alt ?? '',
-            'is_featured' => (bool) $event->is_featured,
-            'schedule' => $this->schedule($event),
+            'site_name' => $setting->site_name,
+            'tagline' => $setting->tagline,
+            'primary_color' => $setting->primary_color,
+            'logo_url' => $this->site($setting)['logo_url'],
+            'contact_email' => $setting->contact_email,
+            'contact_phone' => $setting->contact_phone,
+            'address' => $setting->address,
+            'instagram_url' => $social['instagram'] ?? null,
+            'facebook_url' => $social['facebook'] ?? null,
+            'youtube_url' => $social['youtube'] ?? null,
+            'website_url' => $social['website'] ?? null,
+            'footer_text' => $setting->footer_text,
         ];
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function publicationDetail(Publication $event): array
+    public function publicationCard(Publication $publication): array
+    {
+        $type = $publication->type instanceof PublicationType ? $publication->type : PublicationType::EVENT;
+        $date = $publication->published_at ?? $publication->created_at;
+
+        return [
+            'id' => $publication->id,
+            'slug' => $publication->slug,
+            'url' => route('website.publications.show', $publication->slug),
+            'title' => $publication->title,
+            'summary' => $publication->summary ?: Str::limit(
+                trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) $publication->description))) ?? ''),
+                220,
+            ),
+            'type' => $type->value,
+            'type_label' => $type->label(),
+            'tags' => $publication->tags->where('is_active', true)->pluck('name')->values()->all(),
+            'published_at' => $date?->toIso8601String(),
+            'published_at_label' => $date ? $date->copy()->locale('pt_BR')->translatedFormat('d \d\e F \d\e Y') : null,
+            'cover_url' => $publication->cover_path ? asset('storage/'.$publication->cover_path) : null,
+            'cover_alt' => $publication->cover_alt ?? '',
+            'is_featured' => (bool) $publication->is_featured,
+            'schedule' => $this->schedule($publication),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function publicationDetail(Publication $publication): array
     {
         return [
-            ...$this->publicationCard($event),
-            'content_html' => RichTextSanitizer::sanitize($event->description ?? ''),
-            'author' => $event->author?->name,
-            'organizer' => $event->organizer,
-            'audience' => $event->audience,
-            'link_url' => $event->link_url,
-            'link_label' => $event->link_label,
-            'seo_title' => $event->seo_title ?: $event->title,
-            'seo_description' => $event->seo_description ?: ($event->summary ?? null),
-            'gallery' => $event->media
+            ...$this->publicationCard($publication),
+            'content_html' => RichTextSanitizer::sanitize($publication->description ?? ''),
+            'author' => $publication->author?->name,
+            'organizer' => $publication->organizer,
+            'audience' => $publication->audience,
+            'link_url' => $publication->link_url,
+            'link_label' => $publication->link_label,
+            'seo_title' => $publication->seo_title ?: $publication->title,
+            'seo_description' => $publication->seo_description ?: ($publication->summary ?? null),
+            'gallery' => $publication->media
                 ->map(fn (PublicationMedia $media): array => [
                     'id' => $media->id,
                     'url' => $media->url(),
@@ -114,7 +139,7 @@ final class WebsitePresenter
                 ])
                 ->values()
                 ->all(),
-            'speakers' => $event->speakers
+            'speakers' => $publication->speakers
                 ->map(fn (PublicationSpeaker $speaker): array => [
                     'id' => $speaker->id,
                     'name' => $speaker->displayName(),
@@ -144,15 +169,15 @@ final class WebsitePresenter
     /**
      * @return array<string, mixed>|null
      */
-    private function schedule(Publication $event): ?array
+    private function schedule(Publication $publication): ?array
     {
-        $status = $event->scheduleStatus();
+        $status = $publication->scheduleStatus();
 
         if ($status === null) {
             return null;
         }
 
-        $sameDay = $event->end_date === null || $event->start_date->isSameDay($event->end_date);
+        $sameDay = $publication->end_date === null || $publication->start_date->isSameDay($publication->end_date);
 
         return [
             'status' => $status,
@@ -161,15 +186,15 @@ final class WebsitePresenter
                 'ongoing' => 'Acontecendo agora',
                 default => 'Encerrado',
             },
-            'starts_at' => $event->startsAt()?->toIso8601String(),
-            'day' => $event->start_date->format('d'),
-            'month' => Str::upper($event->start_date->copy()->locale('pt_BR')->translatedFormat('M')),
+            'starts_at' => $publication->startsAt()?->toIso8601String(),
+            'day' => $publication->start_date->format('d'),
+            'month' => Str::upper($publication->start_date->copy()->locale('pt_BR')->translatedFormat('M')),
             'date_label' => $sameDay
-                ? $event->start_date->format('d/m/Y')
-                : $event->start_date->format('d/m/Y').' a '.$event->end_date->format('d/m/Y'),
-            'time_label' => trim(($event->start_time?->format('H:i') ?? '')
-                .($event->end_time ? ' às '.$event->end_time->format('H:i') : '')),
-            'location' => $event->location,
+                ? $publication->start_date->format('d/m/Y')
+                : $publication->start_date->format('d/m/Y').' a '.$publication->end_date->format('d/m/Y'),
+            'time_label' => trim(($publication->start_time?->format('H:i') ?? '')
+                .($publication->end_time ? ' às '.$publication->end_time->format('H:i') : '')),
+            'location' => $publication->location,
         ];
     }
 }

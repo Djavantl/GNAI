@@ -96,4 +96,40 @@ final readonly class AuditChanges
     {
         return $this->byField === [];
     }
+
+    /**
+     * Nome dos registros apontados pelas chaves estrangeiras e listas de ids alteradas, no momento da mudança:
+     * o histórico mostra o nome que valia, mesmo se depois o registro for renomeado ou excluído.
+     *
+     * @param  array<string, AuditedField>  $fields
+     * @return array<string, mixed>
+     */
+    public function referencedNames(array $fields): array
+    {
+        $names = [];
+
+        foreach ($this->byField as $field => $change) {
+            $definition = $fields[$field];
+
+            if ($definition->referencedModel === null) {
+                continue;
+            }
+
+            if ($definition->format === FieldFormat::REFERENCE) {
+                $names[$field] = [
+                    'before' => $definition->referencedName($change['before']),
+                    'after' => $definition->referencedName($change['after']),
+                ];
+
+                continue;
+            }
+
+            if ($definition->format === FieldFormat::LIST) {
+                $ids = array_values(array_unique([...(array) $change['before'], ...(array) $change['after']]));
+                $names[$field] = ['items' => $definition->referencedNames($ids)];
+            }
+        }
+
+        return $names;
+    }
 }

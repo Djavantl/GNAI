@@ -20,7 +20,7 @@ final readonly class CreatePublicationAction
      */
     public function execute(CreatePublicationData $data): Publication
     {
-        $eventDTO = new CreatePublicationDTO(
+        $publicationDTO = new CreatePublicationDTO(
             title: $data->title,
             startDate: $data->startDate,
             endDate: $data->endDate,
@@ -45,11 +45,10 @@ final readonly class CreatePublicationAction
             seoDescription: $data->seoDescription,
         );
 
-        $publication = Publication::schedule($eventDTO);
+        $publication = Publication::schedule($publicationDTO);
 
         return $this->relations->execute(
             publication: $publication,
-            persist: fn (Publication $publication) => $publication->save(),
             speakers: $data->speakers,
             tagIds: $data->tagIds,
             cover: $data->cover,

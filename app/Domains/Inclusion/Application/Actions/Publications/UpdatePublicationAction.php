@@ -20,7 +20,7 @@ final readonly class UpdatePublicationAction
      */
     public function execute(Publication $publication, UpdatePublicationData $data): Publication
     {
-        $eventDTO = new UpdatePublicationDTO(
+        $publicationDTO = new UpdatePublicationDTO(
             title: $data->title,
             startDate: $data->startDate,
             endDate: $data->endDate,
@@ -45,11 +45,10 @@ final readonly class UpdatePublicationAction
             seoDescription: $data->seoDescription,
         );
 
-        $publication->revise($eventDTO);
+        $publication->revise($publicationDTO);
 
         return $this->relations->execute(
             publication: $publication,
-            persist: fn (Publication $publication) => $publication->save(),
             speakers: $data->speakers,
             tagIds: $data->tagIds,
             cover: $data->cover,

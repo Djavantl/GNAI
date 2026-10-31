@@ -30,19 +30,6 @@ final readonly class DeleteStudentDocumentAction
             return $filePath;
         });
 
-        $this->deleteWithoutFailing($filePath);
-    }
-
-    private function deleteWithoutFailing(?string $path): void
-    {
-        try {
-            $this->storage->delete($path);
-        } catch (Throwable $cleanupException) {
-            try {
-                report($cleanupException);
-            } catch (Throwable) {
-                // A falha ao reportar não pode alterar o resultado já persistido.
-            }
-        }
+        $this->storage->deleteQuietly($filePath);
     }
 }

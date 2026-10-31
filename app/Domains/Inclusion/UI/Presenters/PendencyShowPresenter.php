@@ -7,7 +7,6 @@ namespace App\Domains\Inclusion\UI\Presenters;
 use App\Domains\Inclusion\Domain\Models\Pendency;
 use Illuminate\Http\Request;
 
-/** Presentation-only values and action flags that the legacy pendency details computed in Blade. */
 final class PendencyShowPresenter
 {
     /**

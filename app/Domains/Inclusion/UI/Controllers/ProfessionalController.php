@@ -62,6 +62,7 @@ final class ProfessionalController
     {
         $professional = $query->execute($professional);
         $professional->person?->append('photo_url');
+        $isSuperAdmin = $request->user()?->isSuperAdmin() ?? false;
 
         return Inertia::render(
             'Inclusion/Professionals/Show',
@@ -72,7 +73,7 @@ final class ProfessionalController
                     'statusColor' => $professional->status?->color(),
                     'serviceTime' => $professional->entry_date?->diffForHumans(null, true),
                 ],
-                'impersonationUserId' => $this->canManageAdministrators($request)
+                'impersonationUserId' => $isSuperAdmin
                     ? $professional->user()
                         ->where('is_super_admin', false)
                         ->whereKeyNot($request->user()->getKey())
@@ -90,7 +91,7 @@ final class ProfessionalController
     {
         return Inertia::render(
             'Inclusion/Professionals/Create',
-            $form->forCreation($this->canManageAdministrators($request)),
+            $form->forCreation($request->user()?->isSuperAdmin() ?? false),
         );
     }
 
@@ -113,7 +114,7 @@ final class ProfessionalController
     {
         return Inertia::render(
             'Inclusion/Professionals/Edit',
-            $form->forUpdate($professional, $this->canManageAdministrators($request)),
+            $form->forUpdate($professional, $request->user()?->isSuperAdmin() ?? false),
         );
     }
 
@@ -141,12 +142,5 @@ final class ProfessionalController
         return redirect()
             ->route('specialized-educational-support.professionals.index')
             ->with('success', 'Profissional removido com sucesso.');
-    }
-
-    private function canManageAdministrators(Request $request): bool
-    {
-        $user = $request->user();
-
-        return $user instanceof User && $user->isSuperAdmin();
     }
 }

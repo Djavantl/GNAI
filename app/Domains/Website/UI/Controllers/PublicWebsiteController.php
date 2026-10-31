@@ -58,19 +58,14 @@ final readonly class PublicWebsiteController
         PublicPublicationsQuery $query,
     ): InertiaResponse {
         $site = $this->presenter->site(WebsiteSetting::current());
-        $types = [];
-
-        foreach (PublicationType::options() as $value => $label) {
-            $types[] = ['value' => $value, 'label' => $label];
-        }
 
         return Inertia::render('Website/Public/Publications', [
             'site' => $site,
             'publications' => $query->execute($filters)->through(
-                fn (Publication $event): array => $this->presenter->publicationCard($event),
+                fn (Publication $publication): array => $this->presenter->publicationCard($publication),
             ),
             'filters' => $request->only(['q', 'type', 'tag']),
-            'types' => $types,
+            'types' => PublicationType::options(),
             'tags' => $query->tags(),
             'seo' => [
                 'title' => "Publicações - {$site['name']}",
@@ -79,35 +74,23 @@ final readonly class PublicWebsiteController
         ]);
     }
 
-    public function publication(string $slug): InertiaResponse
+    public function publication(string $slug, PublicPublicationsQuery $query): InertiaResponse
     {
-        $event = Publication::query()
-            ->publiclyVisible()
-            ->where('slug', $slug)
-            ->with(['author', 'media', 'speakers.professional.person', 'speakers.professional.position', 'tags'])
-            ->firstOrFail();
+        $publication = $query->findVisible($slug);
         $site = $this->presenter->site(WebsiteSetting::current());
-        $publication = $this->presenter->publicationDetail($event);
-
-        $related = Publication::query()
-            ->publiclyVisible()
-            ->whereKeyNot($event->getKey())
-            ->where('type', $event->type)
-            ->with('tags')
-            ->orderByRaw('COALESCE(published_at, created_at) DESC')
-            ->limit(3)
-            ->get()
+        $detail = $this->presenter->publicationDetail($publication);
+        $related = $query->related($publication)
             ->map(fn (Publication $item): array => $this->presenter->publicationCard($item))
             ->all();
 
         return Inertia::render('Website/Public/PublicationShow', [
             'site' => $site,
-            'publication' => $publication,
+            'publication' => $detail,
             'related' => $related,
             'seo' => [
-                'title' => "{$publication['seo_title']} - {$site['name']}",
-                'description' => $publication['seo_description'] ?: $publication['summary'],
-                'image' => $publication['cover_url'],
+                'title' => "{$detail['seo_title']} - {$site['name']}",
+                'description' => $detail['seo_description'] ?: $detail['summary'],
+                'image' => $detail['cover_url'],
             ],
         ]);
     }

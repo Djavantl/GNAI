@@ -85,7 +85,9 @@ final class Session extends Model implements Auditable
             : "o agendamento #{$this->getKey()}";
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @return array<string, mixed>
+     */
     public function auditExtraValues(): array
     {
         return $this->exists ? ['students' => $this->studentIds()] : [];
@@ -97,6 +99,7 @@ final class Session extends Model implements Auditable
     public function syncStudents(array $studentIds): void
     {
         $before = $this->studentIds();
+
         $this->students()->sync($studentIds);
         $this->recordAuditFieldChange('students', $before, $this->studentIds());
     }
@@ -280,7 +283,9 @@ final class Session extends Model implements Auditable
         return SessionStatus::isScheduledValue($this->status);
     }
 
-    /** @return list<int> */
+    /**
+     * @return list<int>
+     */
     private function studentIds(): array
     {
         return $this->students()->pluck('students.id')->map(fn (mixed $id): int => (int) $id)->all();

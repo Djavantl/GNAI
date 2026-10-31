@@ -7,8 +7,6 @@ namespace App\Domains\Inclusion\Domain\Models;
 use App\Domains\Audit\Domain\Contracts\Auditable;
 use App\Domains\Audit\Domain\ValueObjects\AuditedField;
 use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
-use App\Domains\Inclusion\Domain\Models\Item;
-use App\Domains\Inclusion\Domain\Models\Barrier;
 use App\Domains\Inclusion\Domain\DTOs\Deficiencies\CreateDeficiencyDTO;
 use App\Domains\Inclusion\Domain\DTOs\Deficiencies\UpdateDeficiencyDTO;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidDeficiency;

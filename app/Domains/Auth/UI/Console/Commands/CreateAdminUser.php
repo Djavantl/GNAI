@@ -40,7 +40,7 @@ final class CreateAdminUser extends Command
                 return self::SUCCESS;
             }
 
-            if ($user->professional_id !== null || $user->teacher_id !== null) {
+            if ($user->hasPersonProfile()) {
                 $this->components->error('Este e-mail pertence a um membro da equipe. O administrador superior deve ser uma conta própria; administradores internos são definidos no cadastro da equipe pela conta superior.');
 
                 return self::FAILURE;

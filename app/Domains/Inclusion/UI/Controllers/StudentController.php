@@ -63,22 +63,8 @@ final class StudentController
             $authenticatedUser,
             limit: null,
         );
-        $professionalId = $authenticatedUser?->professional_id;
-        $aeeEvaluations->each(static function ($evaluation) use ($professionalId): void {
-            $session = $evaluation->aeeRecord?->attendanceSession;
-            $evaluation->setAttribute(
-                'can_manage',
-                $professionalId !== null
-                    && (int) $session?->professional_id === (int) $professionalId,
-            );
-        });
-        $pedagogicalRecords->each(static function ($record) use ($professionalId): void {
-            $record->setAttribute(
-                'can_manage',
-                $professionalId !== null
-                    && (int) $record->attendanceSession?->professional_id === (int) $professionalId,
-            );
-        });
+        $this->presenter->markManageableAeeEvaluations($aeeEvaluations, $authenticatedUser);
+        $this->presenter->markManageablePedagogicalRecords($pedagogicalRecords, $authenticatedUser);
         $activeTab = $request->string('tab')->toString();
 
         return Inertia::render(

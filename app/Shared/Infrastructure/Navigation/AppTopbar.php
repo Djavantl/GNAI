@@ -17,6 +17,7 @@ final class AppTopbar
     public function forRequest(Request $request): ?array
     {
         $user = $request->user();
+
         if (! $user) {
             return null;
         }

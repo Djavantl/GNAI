@@ -9,6 +9,7 @@ use App\Domains\Inclusion\Domain\Enums\ProfessionalStatus;
 use App\Domains\Inclusion\Domain\Models\Position;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
 final class ProfessionalFormQuery
 {
@@ -64,7 +65,7 @@ final class ProfessionalFormQuery
         ];
     }
 
-    private function statusOptions(): \Illuminate\Support\Collection
+    private function statusOptions(): SupportCollection
     {
         return collect(ProfessionalStatus::cases())
             ->mapWithKeys(

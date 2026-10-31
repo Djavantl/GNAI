@@ -11,7 +11,6 @@ use App\Domains\Inclusion\Domain\Models\Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-/** Presentation-only values and action flags that the legacy session details computed in Blade. */
 final class SessionShowPresenter
 {
     /**
@@ -52,7 +51,7 @@ final class SessionShowPresenter
             'can' => [
                 'edit' => $can('session.update') && $isScheduled && $isCreator,
                 'cancel' => $can('session.update') && $isScheduled && $dateIsUpcoming && $isCreator,
-                // DeleteSessionAction only accepts the creator.
+                // Somente quem criou o agendamento pode excluí-lo (DeleteSessionAction).
                 'delete' => $can('session.delete') && $isCreator,
             ],
             'backUrl' => $user?->is_admin

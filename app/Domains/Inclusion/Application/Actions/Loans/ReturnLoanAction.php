@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Application\Actions\Loans;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Application\Data\Loans\ReturnLoanData;
 use App\Domains\Inclusion\Application\Handlers\Loans\LoanableLockHandler;
 use App\Domains\Inclusion\Application\Handlers\Loans\LoanStockHandler;
@@ -11,7 +12,6 @@ use App\Domains\Inclusion\Application\Handlers\Loans\LoanWaitlistHandler;
 use App\Domains\Inclusion\Domain\DTOs\Loans\ReturnLoanDTO;
 use App\Domains\Inclusion\Domain\Enums\LoanStatus;
 use App\Domains\Inclusion\Domain\Models\Loan;
-use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 

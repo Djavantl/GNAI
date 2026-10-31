@@ -15,7 +15,6 @@ use App\Domains\Inclusion\Domain\Enums\ResourceStatus;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidItem;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidStock;
 use App\Domains\Inclusion\Domain\ValueObjects\Stock;
-use App\Domains\Inclusion\Domain\Models\Deficiency;
 use Database\Factories\Domains\Inclusion\ItemFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

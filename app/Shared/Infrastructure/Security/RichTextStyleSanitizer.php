@@ -10,14 +10,17 @@ final class RichTextStyleSanitizer
     public static function sanitize(string $style): string
     {
         $clean = [];
+
         foreach (explode(';', $style) as $declaration) {
             $parts = explode(':', $declaration, 2);
+
             if (count($parts) !== 2) {
                 continue;
             }
 
             $property = strtolower(trim($parts[0]));
             $value = trim($parts[1]);
+
             if ($value === '' || preg_match('/[\\\\{}<>\x00-\x1f\x7f]|\/\*|\*\//', $value)) {
                 continue;
             }
@@ -53,28 +56,36 @@ final class RichTextStyleSanitizer
         $function = strtolower($match[1]);
         $parts = array_map('trim', explode(',', $match[2]));
         $hasAlpha = in_array($function, ['rgba', 'hsla'], true);
+
         if (count($parts) !== ($hasAlpha ? 4 : 3)) {
             return false;
         }
+
         if ($hasAlpha) {
             $alpha = array_pop($parts);
+
             if (! preg_match('/^(?:0(?:\.\d+)?|1(?:\.0+)?|\.\d+)$/D', $alpha)) {
                 return false;
             }
         }
+
         foreach ($parts as $index => $part) {
             if (! preg_match('/^\d+(?:\.\d+)?%?$/D', $part)) {
                 return false;
             }
+
             $percent = str_ends_with($part, '%');
+
             if (str_starts_with($function, 'hsl')) {
                 if (($index > 0 && ! $percent) || ($index === 0 && $percent)) {
                     return false;
                 }
+
                 $maximum = $index === 0 ? 360 : 100;
             } else {
                 $maximum = $percent ? 100 : 255;
             }
+
             if ((float) $part > $maximum) {
                 return false;
             }
@@ -128,9 +139,11 @@ final class RichTextStyleSanitizer
     private static function isSpacing(string $value): bool
     {
         $parts = preg_split('/\s+/', trim($value));
+
         if (count($parts) > 4) {
             return false;
         }
+
         foreach ($parts as $part) {
             if ($part !== 'auto' && ! self::isLength($part)) {
                 return false;
@@ -145,6 +158,7 @@ final class RichTextStyleSanitizer
         if (in_array(strtolower($value), ['none', '0'], true)) {
             return true;
         }
+
         $parts = preg_split('/\s+/', $value, 3);
 
         return count($parts) === 3

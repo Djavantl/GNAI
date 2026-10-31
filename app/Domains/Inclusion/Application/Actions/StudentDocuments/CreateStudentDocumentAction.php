@@ -64,27 +64,9 @@ final readonly class CreateStudentDocumentAction
                 return $document->load(['student.person', 'semester', 'uploader']);
             });
         } catch (Throwable $exception) {
-            $this->deleteWithoutFailing($fileData['file_path']);
+            $this->storage->deleteQuietly($fileData['file_path']);
 
             throw $exception;
-        }
-    }
-
-    private function deleteWithoutFailing(?string $path): void
-    {
-        try {
-            $this->storage->delete($path);
-        } catch (Throwable $cleanupException) {
-            $this->reportWithoutFailing($cleanupException);
-        }
-    }
-
-    private function reportWithoutFailing(Throwable $exception): void
-    {
-        try {
-            report($exception);
-        } catch (Throwable) {
-            // A falha ao reportar não pode mascarar a exceção original.
         }
     }
 }

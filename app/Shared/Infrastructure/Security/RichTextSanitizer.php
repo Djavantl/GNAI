@@ -7,6 +7,7 @@ namespace App\Shared\Infrastructure\Security;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use DOMText;
 
 final class RichTextSanitizer
 {
@@ -132,10 +133,11 @@ final class RichTextSanitizer
                 }
 
                 self::cleanAttributes($child, $tag);
+
                 if ($tag === 'img' && ! $child->hasAttribute('src')) {
                     $child->parentNode?->removeChild($child);
                 }
-            } elseif (! $child instanceof \DOMText) {
+            } elseif (! $child instanceof DOMText) {
                 // Comentários e instruções de processamento não são conteúdo do editor.
                 $child->parentNode?->removeChild($child);
             }
@@ -177,6 +179,7 @@ final class RichTextSanitizer
 
             if ($name === 'style') {
                 $style = RichTextStyleSanitizer::sanitize($attribute->value);
+
                 if ($style === '') {
                     $node->removeAttribute('style');
                 } else {
@@ -189,6 +192,7 @@ final class RichTextSanitizer
                     preg_split('/\s+/', trim($attribute->value)),
                     self::ALLOWED_CLASSES[$tag] ?? [],
                 );
+
                 if ($classes === []) {
                     $node->removeAttribute('class');
                 } else {
@@ -199,6 +203,7 @@ final class RichTextSanitizer
             if ($name === 'dir' && ! in_array($attribute->value, ['ltr', 'rtl', 'auto'], true)) {
                 $node->removeAttribute($name);
             }
+
             if ($name === 'lang' && ! preg_match('/^[a-z]{2,8}(?:-[a-z0-9]{1,8})*$/iD', $attribute->value)) {
                 $node->removeAttribute($name);
             }
@@ -206,16 +211,19 @@ final class RichTextSanitizer
             if ($tag === 'img' && $name === 'src' && ! self::isSafeImage($attribute->value)) {
                 $node->removeAttribute($name);
             }
+
             if ($name === 'width' || $name === 'height') {
                 if (! preg_match('/^(?:\d{1,5}(?:\.\d+)?)(?:%|px)?$/D', $attribute->value)) {
                     $node->removeAttribute($name);
                 }
             }
+
             if (in_array($name, ['cellpadding', 'cellspacing', 'border'], true)) {
                 if (! ctype_digit($attribute->value) || (int) $attribute->value > 100) {
                     $node->removeAttribute($name);
                 }
             }
+
             if ($tag === 'font') {
                 $valid = match ($name) {
                     'face' => RichTextStyleSanitizer::isFontFamily($attribute->value),
@@ -223,13 +231,16 @@ final class RichTextSanitizer
                     'size' => preg_match('/^[+-]?[1-7]$/D', $attribute->value) === 1,
                     default => true,
                 };
+
                 if (! $valid) {
                     $node->removeAttribute($name);
                 }
             }
+
             if (in_array($name, ['start', 'value'], true) && ! preg_match('/^-?\d{1,6}$/D', $attribute->value)) {
                 $node->removeAttribute($name);
             }
+
             if ($tag === 'ol' && $name === 'type' && ! in_array($attribute->value, ['1', 'a', 'A', 'i', 'I'], true)) {
                 $node->removeAttribute($name);
             }
@@ -245,6 +256,7 @@ final class RichTextSanitizer
             if ($name === 'span' && in_array($tag, ['col', 'colgroup'], true)) {
                 self::sanitizePositiveIntegerAttribute($node, $name);
             }
+
             if ($tag === 'a' && $name === 'target' && ! in_array($attribute->value, ['_blank', '_self'], true)) {
                 $node->removeAttribute($name);
             }
@@ -277,10 +289,13 @@ final class RichTextSanitizer
         if (! preg_match('~^data:(image/(?:png|jpeg|gif|webp|bmp));base64,([a-z0-9+/=]+)$~iD', $url, $match)) {
             return false;
         }
+
         $bytes = base64_decode($match[2], strict: true);
+
         if ($bytes === false || $bytes === '') {
             return false;
         }
+
         $image = @getimagesizefromstring($bytes);
 
         return $image !== false && strtolower($match[1]) === ($image['mime'] ?? null);
@@ -289,13 +304,17 @@ final class RichTextSanitizer
     private static function isSafeUrl(string $url, bool $image = false): bool
     {
         $url = trim($url);
+
         if (preg_match('/[\x00-\x20\x7f\\\\]/', $url)) {
             return false;
         }
+
         if ($url === '' || str_starts_with($url, '#')) {
             return ! $image;
         }
+
         $scheme = parse_url($url, PHP_URL_SCHEME);
+
         if ($scheme === false) {
             return false;
         }

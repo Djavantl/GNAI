@@ -12,9 +12,9 @@ use App\Domains\Auth\Domain\DTOs\Users\ResetUserPasswordDTO;
 use App\Domains\Auth\Infrastructure\Notifications\ResetPasswordNotification;
 use App\Domains\Backup\Domain\Models\Backup;
 use App\Domains\Inclusion\Domain\Models\Loan;
-use App\Domains\Inclusion\Domain\Models\Waitlist;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Inclusion\Domain\Models\Teacher;
+use App\Domains\Inclusion\Domain\Models\Waitlist;
 use Database\Factories\Domains\Auth\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,6 +27,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements Auditable
 {
     use AuditsChanges;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 

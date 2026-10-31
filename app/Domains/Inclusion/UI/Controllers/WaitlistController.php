@@ -16,7 +16,7 @@ use App\Domains\Inclusion\Application\Queries\Waitlists\ShowWaitlistQuery;
 use App\Domains\Inclusion\Application\Queries\Waitlists\WaitlistFormQuery;
 use App\Domains\Inclusion\Application\Queries\Waitlists\WaitlistPdfQuery;
 use App\Domains\Inclusion\Domain\Models\Waitlist;
-use App\Shared\Infrastructure\Security\RichTextSanitizer;
+use App\Domains\Inclusion\UI\Presenters\WaitlistPresenter;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -28,10 +28,14 @@ use Throwable;
 
 final class WaitlistController
 {
-    public function index(ListWaitlistsData $filters, ListWaitlistsQuery $query, Request $request): InertiaResponse
-    {
+    public function index(
+        ListWaitlistsData $filters,
+        ListWaitlistsQuery $query,
+        WaitlistPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         $waitlists = $query->execute($filters)->through(
-            fn (Waitlist $waitlist): array => $this->waitlistPayload($waitlist),
+            fn (Waitlist $waitlist): array => $presenter->waitlist($waitlist),
         );
 
         return Inertia::render(
@@ -75,14 +79,18 @@ final class WaitlistController
             ->with('success', 'Solicitação de fila criada com sucesso!');
     }
 
-    public function show(Waitlist $waitlist, ShowWaitlistQuery $query, Request $request): InertiaResponse
-    {
+    public function show(
+        Waitlist $waitlist,
+        ShowWaitlistQuery $query,
+        WaitlistPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         $waitlist = $query->execute($waitlist);
 
         return Inertia::render(
             'Inclusion/Waitlists/Show',
             [
-                'waitlist' => $this->waitlistPayload($waitlist, includeObservationHtml: true),
+                'waitlist' => $presenter->waitlist($waitlist, includeObservationHtml: true),
                 'statusLabel' => $waitlist->status->label(),
                 'statusColor' => $waitlist->status->color(),
                 'canCancel' => $waitlist->status->canCancel(),
@@ -96,13 +104,17 @@ final class WaitlistController
         );
     }
 
-    public function edit(Waitlist $waitlist, WaitlistFormQuery $form, Request $request): InertiaResponse
-    {
+    public function edit(
+        Waitlist $waitlist,
+        WaitlistFormQuery $form,
+        WaitlistPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         $props = $form->forUpdate(
             waitlist: $waitlist,
             authUser: $request->user(),
         );
-        $props['waitlist'] = $this->waitlistPayload($waitlist);
+        $props['waitlist'] = $presenter->waitlist($waitlist);
 
         return Inertia::render(
             'Inclusion/Waitlists/Edit',
@@ -171,50 +183,5 @@ final class WaitlistController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("Fila_Espera_{$waitlist->id}.pdf");
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function waitlistPayload(Waitlist $waitlist, bool $includeObservationHtml = false): array
-    {
-        $waitlist->loadMissing([
-            'waitlistable',
-            'student:id,person_id,registration',
-            'student.person:id,name',
-            'professional:id,person_id',
-            'professional.person:id,name',
-            'user:id,name',
-        ]);
-
-        $payload = [
-            'id' => $waitlist->id,
-            'student_id' => $waitlist->student_id,
-            'professional_id' => $waitlist->professional_id,
-            'waitlistable_id' => $waitlist->waitlistable_id,
-            'item_type' => $waitlist->waitlistable?->item_type?->value,
-            'item_name' => $waitlist->waitlistable?->name ?? 'Item removido',
-            'asset_code' => $waitlist->waitlistable?->asset_code,
-            'student' => $waitlist->student ? [
-                'name' => $waitlist->student->person?->name ?? 'Sem nome',
-                'registration' => $waitlist->student->registration,
-            ] : null,
-            'professional' => $waitlist->professional ? [
-                'name' => $waitlist->professional->person?->name ?? 'Sem nome',
-            ] : null,
-            'user' => $waitlist->user?->name ?? '—',
-            'requested_at' => $waitlist->requested_at?->format('Y-m-d\TH:i:s'),
-            'requested_at_label' => $waitlist->requested_at?->format('d/m/Y H:i') ?? '—',
-            'status' => $waitlist->status->value,
-            'status_label' => $waitlist->status->label(),
-            'status_color' => $waitlist->status->color(),
-            'observation' => $waitlist->observation,
-        ];
-
-        if ($includeObservationHtml) {
-            $payload['observation_html'] = RichTextSanitizer::sanitize($waitlist->observation ?? '');
-        }
-
-        return $payload;
     }
 }

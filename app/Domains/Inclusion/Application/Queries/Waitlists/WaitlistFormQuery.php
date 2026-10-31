@@ -7,9 +7,9 @@ namespace App\Domains\Inclusion\Application\Queries\Waitlists;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Domain\Enums\ItemType;
 use App\Domains\Inclusion\Domain\Models\Item;
-use App\Domains\Inclusion\Domain\Models\Waitlist;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Inclusion\Domain\Models\Student;
+use App\Domains\Inclusion\Domain\Models\Waitlist;
 use Illuminate\Support\Collection;
 
 final class WaitlistFormQuery

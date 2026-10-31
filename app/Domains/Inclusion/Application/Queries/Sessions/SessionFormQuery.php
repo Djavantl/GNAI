@@ -6,8 +6,8 @@ namespace App\Domains\Inclusion\Application\Queries\Sessions;
 
 use App\Domains\Inclusion\Domain\Enums\AttendanceType;
 use App\Domains\Inclusion\Domain\Enums\SessionType;
-use App\Domains\Inclusion\Domain\Models\Session;
 use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Session;
 use App\Domains\Inclusion\Domain\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;

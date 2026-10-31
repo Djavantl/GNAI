@@ -19,8 +19,6 @@ use Throwable;
  */
 final class AuditContext
 {
-    private const IMPERSONATOR_SESSION_KEY = 'impersonator_id';
-
     private ?string $operation = null;
 
     /** @var array<string, mixed> */
@@ -64,7 +62,7 @@ final class AuditContext
     {
         try {
             $request = request();
-            $id = $request->hasSession() ? $request->session()->get(self::IMPERSONATOR_SESSION_KEY) : null;
+            $id = $request->hasSession() ? $request->session()->get('impersonator_id') : null;
         } catch (Throwable) {
             return null;
         }

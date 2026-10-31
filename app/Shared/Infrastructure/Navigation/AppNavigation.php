@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Route;
 
 final class AppNavigation
 {
-    /** Endereços antigos ainda gravados em notificações → endereço atual. */
-    private const LEGACY_PATHS = [
-        '/inclusive-radar/institutional-events' => '/inclusive-radar/publications',
-    ];
-
     public function forRequest(Request $request): array
     {
         $user = $request->user();
@@ -50,7 +45,8 @@ final class AppNavigation
             return null;
         }
 
-        foreach (self::LEGACY_PATHS as $legacy => $current) {
+        // Endereços antigos ainda gravados em notificações → endereço atual.
+        foreach (['/inclusive-radar/institutional-events' => '/inclusive-radar/publications'] as $legacy => $current) {
             if ($path === $legacy || str_starts_with($path, $legacy.'/')) {
                 $path = $current.substr($path, strlen($legacy));
             }

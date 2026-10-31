@@ -10,14 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 final class WebsiteMediaStorage
 {
-    private const DIRECTORY = 'website';
-
     /**
      * @throws InvalidWebsite
      */
     public function store(UploadedFile $file): string
     {
-        $path = $file->store(self::DIRECTORY, 'public');
+        $path = $file->store('website', 'public');
 
         if (! is_string($path) || $path === '') {
             throw new InvalidWebsite('Não foi possível armazenar a imagem do site.');

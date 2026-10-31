@@ -18,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Throwable;
 
 final class TagController
 {
@@ -101,7 +102,7 @@ final class TagController
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function destroy(Tag $tag, DeleteTagAction $action): RedirectResponse
     {

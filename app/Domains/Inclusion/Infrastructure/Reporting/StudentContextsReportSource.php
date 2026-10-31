@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Infrastructure\Reporting;
 
-use App\Domains\Reporting\Domain\Enums\ReportColumnType;
-use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
 use App\Domains\Inclusion\Domain\Models\Pei;
 use App\Domains\Inclusion\Domain\Models\Student;
 use App\Domains\Inclusion\Domain\Models\StudentContext;
+use App\Domains\Reporting\Domain\Enums\ReportColumnType;
+use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
 
 final class StudentContextsReportSource extends EloquentReportSource
 {

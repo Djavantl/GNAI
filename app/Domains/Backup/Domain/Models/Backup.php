@@ -7,10 +7,10 @@ namespace App\Domains\Backup\Domain\Models;
 use App\Domains\Audit\Domain\Contracts\Auditable;
 use App\Domains\Audit\Domain\ValueObjects\AuditedField;
 use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Backup\Domain\DTOs\CreateBackupDTO;
 use App\Domains\Backup\Domain\Enums\BackupStatus;
 use App\Domains\Backup\Domain\Exceptions\InvalidBackup;
-use App\Domains\Auth\Domain\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

@@ -9,11 +9,10 @@ use App\Domains\Inclusion\Domain\Models\Tag;
 use App\Domains\Website\Application\Data\ListPublicPublicationsData;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 final class PublicPublicationsQuery
 {
-    private const PER_PAGE = 9;
-
     /**
      * @return LengthAwarePaginator<int, Publication>
      */
@@ -35,8 +34,34 @@ final class PublicPublicationsQuery
             ->with('tags')
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->orderByDesc('id')
-            ->paginate(self::PER_PAGE)
+            ->paginate(9)
             ->withQueryString();
+    }
+
+    public function findVisible(string $slug): Publication
+    {
+        return Publication::query()
+            ->publiclyVisible()
+            ->where('slug', $slug)
+            ->with(['author', 'media', 'speakers.professional.person', 'speakers.professional.position', 'tags'])
+            ->firstOrFail();
+    }
+
+    /**
+     * Até três publicações visíveis do mesmo tipo, das mais recentes para as mais antigas.
+     *
+     * @return Collection<int, Publication>
+     */
+    public function related(Publication $publication): Collection
+    {
+        return Publication::query()
+            ->publiclyVisible()
+            ->whereKeyNot($publication->getKey())
+            ->where('type', $publication->type)
+            ->with('tags')
+            ->orderByRaw('COALESCE(published_at, created_at) DESC')
+            ->limit(3)
+            ->get();
     }
 
     /**

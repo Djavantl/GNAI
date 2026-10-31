@@ -25,22 +25,19 @@ final class InstitutionController
     {
         $institutions = $query->execute($filters);
 
-        return Inertia::render(
-            'Inclusion/Institutions/Index',
-            [
-                'institutions' => $institutions,
-                'filters' => [
-                    'name' => $filters->name ?? '',
-                    'location' => $filters->location ?? '',
-                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
-                ],
-                'can' => [
-                    'create' => $request->user()?->can('institution.create') ?? false,
-                    'show' => $request->user()?->can('institution.show') ?? false,
-                    'destroy' => $request->user()?->can('institution.destroy') ?? false,
-                ],
+        return Inertia::render('Inclusion/Institutions/Index', [
+            'institutions' => $institutions,
+            'filters' => [
+                'name' => $filters->name ?? '',
+                'location' => $filters->location ?? '',
+                'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
             ],
-        );
+            'can' => [
+                'create' => $request->user()?->can('institution.create') ?? false,
+                'show' => $request->user()?->can('institution.show') ?? false,
+                'destroy' => $request->user()?->can('institution.destroy') ?? false,
+            ],
+        ]);
     }
 
     public function create(Request $request): InertiaResponse
@@ -66,29 +63,23 @@ final class InstitutionController
     {
         $institution = $query->execute($institution);
 
-        return Inertia::render(
-            'Inclusion/Institutions/Show',
-            [
-                'institution' => $institution,
-                'can' => [
-                    'edit' => $request->user()?->can('institution.edit') ?? false,
-                    'destroy' => $request->user()?->can('institution.destroy') ?? false,
-                ],
+        return Inertia::render('Inclusion/Institutions/Show', [
+            'institution' => $institution,
+            'can' => [
+                'edit' => $request->user()?->can('institution.edit') ?? false,
+                'destroy' => $request->user()?->can('institution.destroy') ?? false,
             ],
-        );
+        ]);
     }
 
     public function edit(Institution $institution, Request $request): InertiaResponse
     {
         $institution->load('locations');
 
-        return Inertia::render(
-            'Inclusion/Institutions/Edit',
-            [
-                'institution' => $institution,
-                'canSubmit' => $request->user()?->can('institution.update') ?? false,
-            ],
-        );
+        return Inertia::render('Inclusion/Institutions/Edit', [
+            'institution' => $institution,
+            'canSubmit' => $request->user()?->can('institution.update') ?? false,
+        ]);
     }
 
     /**

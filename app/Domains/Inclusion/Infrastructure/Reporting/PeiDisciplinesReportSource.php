@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Infrastructure\Reporting;
 
-use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
 use App\Domains\Inclusion\Domain\Models\PeiDiscipline;
+use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
 
 final class PeiDisciplinesReportSource extends EloquentReportSource
 {

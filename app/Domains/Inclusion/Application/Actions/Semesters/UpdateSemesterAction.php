@@ -23,7 +23,7 @@ final readonly class UpdateSemesterAction
                 ->findOrFail($semester->getKey());
 
             if ($data->isCurrent) {
-                $this->markOtherCurrentSemestersAsHistorical($lockedSemester);
+                Semester::markCurrentAsHistorical(except: $lockedSemester);
             }
 
             $semesterDTO = new UpdateSemesterDTO(
@@ -39,18 +39,5 @@ final readonly class UpdateSemesterAction
 
             return $lockedSemester;
         });
-    }
-
-    private function markOtherCurrentSemestersAsHistorical(Semester $currentSemester): void
-    {
-        Semester::query()
-            ->where('is_current', true)
-            ->whereKeyNot($currentSemester->getKey())
-            ->lockForUpdate()
-            ->get()
-            ->each(function (Semester $semester): void {
-                $semester->markAsHistorical();
-                $semester->save();
-            });
     }
 }

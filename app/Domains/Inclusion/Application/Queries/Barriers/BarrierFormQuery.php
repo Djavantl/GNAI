@@ -8,8 +8,8 @@ use App\Domains\Inclusion\Domain\Enums\BarrierStatus;
 use App\Domains\Inclusion\Domain\Enums\Priority;
 use App\Domains\Inclusion\Domain\Models\Barrier;
 use App\Domains\Inclusion\Domain\Models\BarrierCategory;
-use App\Domains\Inclusion\Domain\Models\Institution;
 use App\Domains\Inclusion\Domain\Models\Deficiency;
+use App\Domains\Inclusion\Domain\Models\Institution;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Inclusion\Domain\Models\Student;
 
@@ -32,7 +32,14 @@ final readonly class BarrierFormQuery
         $data = $this->baseData($barrier);
 
         return $data + [
-            'barrier' => $barrier->loadMissing(['deficiencies', 'inspections.evidences', 'location', 'institution', 'category', 'registeredBy']),
+            'barrier' => $barrier->loadMissing([
+                'deficiencies',
+                'inspections.evidences',
+                'location',
+                'institution',
+                'category',
+                'registeredBy',
+            ]),
             'selectedInstitution' => $selectedInstitutionId !== null
                 ? $data['institutions']->firstWhere('id', $selectedInstitutionId)
                 : $data['institutions']->firstWhere('id', $barrier->institution_id),
@@ -44,12 +51,14 @@ final readonly class BarrierFormQuery
         $institutions = Institution::query()
             ->with(['locations' => function ($query) use ($barrier): void {
                 $query->where('is_active', true);
+
                 if ($barrier?->location_id !== null) {
                     $query->orWhere('id', $barrier->location_id);
                 }
             }])
             ->where(function ($query) use ($barrier): void {
                 $query->where('is_active', true);
+
                 if ($barrier?->institution_id !== null) {
                     $query->orWhere('id', $barrier->institution_id);
                 }
@@ -60,6 +69,7 @@ final readonly class BarrierFormQuery
         $categories = BarrierCategory::query()
             ->where(function ($query) use ($barrier): void {
                 $query->where('is_active', true);
+
                 if ($barrier?->barrier_category_id !== null) {
                     $query->orWhere('id', $barrier->barrier_category_id);
                 }
@@ -70,6 +80,7 @@ final readonly class BarrierFormQuery
         $deficiencies = Deficiency::query()
             ->where(function ($query) use ($barrier): void {
                 $query->where('is_active', true);
+
                 if ($barrier !== null) {
                     $query->orWhereIn('id', $barrier->deficiencies()->pluck('deficiencies.id'));
                 }

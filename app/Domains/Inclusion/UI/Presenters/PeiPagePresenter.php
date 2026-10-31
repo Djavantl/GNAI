@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\UI\Presenters;
 
+use App\Domains\Inclusion\Application\Data\Peis\ListPeisData;
 use App\Domains\Inclusion\Domain\Enums\AttentionLevel;
 use App\Domains\Inclusion\Domain\Enums\AutonomyLevel;
 use App\Domains\Inclusion\Domain\Enums\CommunicationType;
@@ -13,16 +14,76 @@ use App\Domains\Inclusion\Domain\Enums\InteractionLevel;
 use App\Domains\Inclusion\Domain\Enums\MemoryLevel;
 use App\Domains\Inclusion\Domain\Enums\ReasoningLevel;
 use App\Domains\Inclusion\Domain\Enums\SocializationLevel;
+use App\Domains\Inclusion\Domain\Models\Discipline;
 use App\Domains\Inclusion\Domain\Models\Pei;
 use App\Domains\Inclusion\Domain\Models\PeiDiscipline;
+use App\Domains\Inclusion\Domain\Models\Semester;
+use App\Domains\Inclusion\Domain\Models\Student;
 use App\Domains\Inclusion\Domain\Models\StudentContext;
 use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use BackedEnum;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
-/** Presentation-only values that the PEI Blade screens previously read through accessors and Gates. */
 final class PeiPagePresenter
 {
+    /**
+     * @param  LengthAwarePaginator<int, Pei>  $peis
+     * @param  Collection<int, Student>  $students
+     * @param  Collection<int, Semester>  $semesters
+     * @return array<string, mixed>
+     */
+    public function all(
+        LengthAwarePaginator $peis,
+        Collection $students,
+        Collection $semesters,
+        ListPeisData $filters,
+        Request $request,
+    ): array {
+        return [
+            'peis' => $peis,
+            'students' => $students
+                ->map(static fn (Student $student): array => [
+                    'value' => (string) $student->getKey(),
+                    'label' => (string) ($student->person?->name ?? ''),
+                ])
+                ->values(),
+            'semesters' => $this->semesterOptions($semesters),
+            'filters' => $this->listFilterValues($filters) + [
+                'student_id' => $filters->studentId === null ? '' : (string) $filters->studentId,
+            ],
+            'can' => $this->listPermissions($request),
+        ];
+    }
+
+    /**
+     * @param  LengthAwarePaginator<int, Pei>  $peis
+     * @param  Collection<int, Semester>  $semesters
+     * @param  Collection<int, Discipline>  $disciplines
+     * @return array<string, mixed>
+     */
+    public function index(
+        LengthAwarePaginator $peis,
+        Student $student,
+        Collection $semesters,
+        Collection $disciplines,
+        ListPeisData $filters,
+        Request $request,
+    ): array {
+        return [
+            'peis' => $peis,
+            'student' => [
+                'id' => $student->getKey(),
+                'name' => (string) ($student->person?->name ?? ''),
+            ],
+            'semesters' => $this->semesterOptions($semesters),
+            'disciplines' => $disciplines,
+            'filters' => $this->listFilterValues($filters),
+            'can' => $this->listPermissions($request),
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -104,7 +165,7 @@ final class PeiPagePresenter
             'can' => [
                 'viewContext' => $canViewContext,
                 'viewDisciplines' => $canViewDisciplines,
-                // Domain actions also require the PEI creator and an open PEI.
+                // As ações de domínio também exigem o criador do PEI e um PEI em aberto.
                 'createDiscipline' => ! $pei->is_finished
                     && ($user?->can('pei-discipline.create') ?? false),
                 'finish' => ! $pei->is_finished
@@ -210,6 +271,51 @@ final class PeiPagePresenter
     }
 
     /**
+     * @return array{semester_id: string, version: string, is_finished: string}
+     */
+    private function listFilterValues(ListPeisData $filters): array
+    {
+        $isFinished = $filters->isFinished;
+
+        return [
+            'semester_id' => $filters->semesterId === null ? '' : (string) $filters->semesterId,
+            'version' => $filters->version === null ? '' : (string) $filters->version,
+            'is_finished' => $isFinished === null || $isFinished === ''
+                ? ''
+                : (string) (int) filter_var($isFinished, FILTER_VALIDATE_BOOLEAN),
+        ];
+    }
+
+    /**
+     * @param  Collection<int, Semester>  $semesters
+     * @return list<array{value: string, label: string}>
+     */
+    private function semesterOptions(Collection $semesters): array
+    {
+        return $semesters
+            ->map(static fn (Semester $semester): array => [
+                'value' => (string) $semester->getKey(),
+                'label' => (string) $semester->label,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array{create: bool, view: bool, delete: bool}
+     */
+    private function listPermissions(Request $request): array
+    {
+        $user = $request->user();
+
+        return [
+            'create' => $user?->can('pei.create') ?? false,
+            'view' => $user?->can('pei.view') ?? false,
+            'delete' => $user?->can('pei.delete') ?? false,
+        ];
+    }
+
+    /**
      * @param  class-string<BackedEnum>  $enum
      */
     private function enumLabel(string $enum, mixed $value): ?string
@@ -229,7 +335,7 @@ final class PeiPagePresenter
             : (string) $value;
     }
 
-    /** Mirrors the sanitized rendering of the legacy info boxes; plain text keeps its line breaks. */
+    /** Texto simples mantém as quebras de linha; HTML é sanitizado como nas caixas do legado. */
     private function richText(?string $value, string $empty = '---'): string
     {
         $value = trim((string) $value);

@@ -10,6 +10,7 @@ use App\Domains\Inclusion\Application\Actions\Items\UpdateItemAction;
 use App\Domains\Inclusion\Application\Data\Items\CreateItemData;
 use App\Domains\Inclusion\Application\Data\Items\ListItemsData;
 use App\Domains\Inclusion\Application\Data\Items\UpdateItemData;
+use App\Domains\Inclusion\Application\Queries\Items\ItemFilterOptionsQuery;
 use App\Domains\Inclusion\Application\Queries\Items\ItemFormQuery;
 use App\Domains\Inclusion\Application\Queries\Items\ItemPdfQuery;
 use App\Domains\Inclusion\Application\Queries\Items\ListItemsQuery;
@@ -17,12 +18,10 @@ use App\Domains\Inclusion\Application\Queries\Items\ShowItemInspectionQuery;
 use App\Domains\Inclusion\Application\Queries\Items\ShowItemQuery;
 use App\Domains\Inclusion\Domain\Enums\ItemType;
 use App\Domains\Inclusion\Domain\Exceptions\AssetCodeAlreadyInUse;
-use App\Domains\Inclusion\Domain\Models\AccessibilityFeature;
-use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Inspection;
-use App\Domains\Inclusion\Domain\Models\InspectionEvidence;
+use App\Domains\Inclusion\Domain\Models\Item;
+use App\Domains\Inclusion\UI\Presenters\ItemPresenter;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
-use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,19 +32,18 @@ use Throwable;
 
 final class ItemController
 {
-    public function index(ListItemsData $filters, ListItemsQuery $query, Request $request): InertiaResponse
-    {
-        $items = $query->execute($filters);
-        $items->getCollection()->each(static function (Item $item): void {
-            $item->setAttribute('conservation_state_label', $item->conservation_state?->label());
-            $item->setAttribute('resource_status_label', $item->status?->label());
-        });
-
+    public function index(
+        ListItemsData $filters,
+        ListItemsQuery $query,
+        ItemFilterOptionsQuery $filterOptions,
+        ItemPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         return Inertia::render(
             'Inclusion/Items/Index',
             [
-                'items' => $items,
-                'accessibilityFeatureOptions' => $this->accessibilityFeatureOptions(),
+                'items' => $presenter->items($query->execute($filters)),
+                'accessibilityFeatureOptions' => ['' => 'Recurso de acessibilidade (Todos)'] + $filterOptions->execute(),
                 'itemTypeOptions' => ['' => 'Tipo do item (Todos)'] + ItemType::options(),
                 'filters' => $request->only([
                     'name',
@@ -103,29 +101,19 @@ final class ItemController
             ->with('success', 'Item criado com sucesso!');
     }
 
-    public function show(Item $item, ShowItemQuery $query, Request $request): InertiaResponse
-    {
+    public function show(
+        Item $item,
+        ShowItemQuery $query,
+        ItemPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         $item = $query->execute($item);
 
         return Inertia::render('Inclusion/Items/Show', [
             'item' => $item,
             'deficiencies' => $item->deficiencies,
             'features' => $item->accessibilityFeatures,
-            'display' => [
-                'itemTypeLabel' => $item->item_type?->label() ?? '---',
-                'notesHtml' => RichTextSanitizer::sanitize((string) ($item->notes ?: '---')),
-                'statusLabel' => $item->status?->label() ?? '---',
-                'inspectionDetails' => $item->inspections->map(fn ($inspection) => [
-                    'id' => $inspection->id,
-                    'date' => $inspection->inspection_date?->format('d/m/Y') ?? '---',
-                    'type' => $inspection->type?->label() ?? '---',
-                    'state' => $inspection->state?->label() ?? '---',
-                    'descriptionHtml' => $inspection->description
-                        ? RichTextSanitizer::sanitize((string) $inspection->description)
-                        : null,
-                    'evidenceCount' => $inspection->evidences->count(),
-                ])->all(),
-            ],
+            'display' => $presenter->display($item),
             'can' => [
                 'clone' => $request->user()?->can('item.create') ?? false,
                 'edit' => $request->user()?->can('item.edit') ?? false,
@@ -180,6 +168,7 @@ final class ItemController
     public function generatePdf(Item $item, ItemPdfQuery $query): Response
     {
         $item = $query->execute($item);
+
         $pdf = Pdf::loadView(
             'pages.inclusion.items.pdf',
             compact('item'),
@@ -193,8 +182,12 @@ final class ItemController
         return $pdf->stream("{$prefix}_{$item->name}.pdf");
     }
 
-    public function showInspection(Item $item, Inspection $inspection, ShowItemInspectionQuery $query): InertiaResponse
-    {
+    public function showInspection(
+        Item $item,
+        Inspection $inspection,
+        ShowItemInspectionQuery $query,
+        ItemPresenter $presenter,
+    ): InertiaResponse {
         $scopedInspection = $query->execute(
             item: $item,
             inspection: $inspection,
@@ -202,39 +195,7 @@ final class ItemController
 
         return Inertia::render('Inclusion/Items/Inspections/Show', [
             'item' => $item->only(['id', 'name']),
-            'inspection' => [
-                'date' => $scopedInspection->inspection_date?->format('d/m/Y') ?? '---',
-                'stateLabel' => $scopedInspection->state?->label() ?? '---',
-                'typeLabel' => $scopedInspection->type?->label() ?? '---',
-                'descriptionHtml' => RichTextSanitizer::sanitize(
-                    (string) ($scopedInspection->description ?: 'Nenhum parecer técnico registrado.'),
-                ),
-                'evidences' => $scopedInspection->evidences->map(
-                    static fn (InspectionEvidence $evidence): array => [
-                        'id' => $evidence->id,
-                        'name' => $evidence->displayName(),
-                        'url' => '/storage/'.ltrim((string) $evidence->path, '/'),
-                        'isImage' => $evidence->isImage(),
-                        'iconClass' => $evidence->iconClass(),
-                    ],
-                )->all(),
-            ],
+            'inspection' => $presenter->inspection($scopedInspection),
         ]);
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function accessibilityFeatureOptions(): array
-    {
-        return ['' => 'Recurso de acessibilidade (Todos)']
-            + AccessibilityFeature::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->pluck('name', 'id')
-                ->mapWithKeys(
-                    static fn (string $name, int $id): array => [(string) $id => $name],
-                )
-                ->all();
     }
 }

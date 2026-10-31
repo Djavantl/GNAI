@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Domain\Enums;
 
-use App\Domains\Inclusion\Domain\Exceptions\InvalidLoanableResource;
-
 enum ItemType: string
 {
     case AssistiveTechnology = 'assistive_technology';
@@ -25,15 +23,6 @@ enum ItemType: string
             self::AssistiveTechnology => 'fa-microchip',
             self::AccessibleEducationalMaterial => 'fa-book',
         };
-    }
-
-    /**
-     * @throws InvalidLoanableResource
-     */
-    public static function fromStored(string $value): self
-    {
-        return self::tryFrom($value)
-            ?? throw new InvalidLoanableResource('O tipo de item selecionado é inválido.');
     }
 
     /**

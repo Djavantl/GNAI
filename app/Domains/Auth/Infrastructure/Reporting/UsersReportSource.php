@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Infrastructure\Reporting;
 
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Teacher;
 use App\Domains\Reporting\Application\Services\ReportOptionCatalog;
 use App\Domains\Reporting\Domain\DTOs\ReportRequestDTO;
 use App\Domains\Reporting\Domain\Enums\ReportColumnType;
 use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
-use App\Domains\Inclusion\Domain\Models\Professional;
-use App\Domains\Inclusion\Domain\Models\Teacher;
 use Illuminate\Database\Eloquent\Builder;
 
 final class UsersReportSource extends EloquentReportSource

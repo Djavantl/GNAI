@@ -16,7 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as ConcreteLengthAwarePaginator;
 use Illuminate\Support\Collection;
 
-/** Presentation-only values that the legacy session listings computed in Blade. */
 final class SessionListPresenter
 {
     public function sessions(LengthAwarePaginator $sessions, Request $request): LengthAwarePaginator
@@ -125,7 +124,7 @@ final class SessionListPresenter
             'record_label' => $hasRecord
                 ? ($isPedagogical ? 'Atendimento Pedagógico registrado' : 'Atendimento AEE registrado')
                 : 'Sem registro',
-            // DeleteSessionAction only accepts the creator; hide the action for other users.
+            // Somente quem criou o agendamento pode excluí-lo (DeleteSessionAction).
             'can_delete' => $canDelete && (int) $session->creator_id === $userId,
         ];
     }

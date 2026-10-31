@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\UI\Presenters;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Domain\Enums\ContextEvaluationType;
 use App\Domains\Inclusion\Domain\Enums\DeficiencySeverity;
 use App\Domains\Inclusion\Domain\Enums\StudentStatus;
+use App\Domains\Inclusion\Domain\Models\AeeStudentEvaluation;
+use App\Domains\Inclusion\Domain\Models\PedagogicalRecord;
 use App\Domains\Inclusion\Domain\Models\Person;
 use App\Domains\Inclusion\Domain\Models\Student;
 use App\Shared\Infrastructure\Security\RichTextSanitizer;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
-/** Presentation-only values that Blade previously read through accessors and Gates. */
 final class StudentPagePresenter
 {
     public function shared(Request $request): array
@@ -49,7 +52,7 @@ final class StudentPagePresenter
         $data['person'] = $this->person($student->person);
         $data['entry_date'] = $student->entry_date?->toDateString();
 
-        // Do not serialize sections that the legacy screen hid through @can.
+        // Seções que a tela legada ocultava por @can não são serializadas.
         foreach ([
             'guardians' => 'guardian.view',
             'documents' => 'student-document.view',
@@ -112,6 +115,35 @@ final class StudentPagePresenter
         }
 
         return $data;
+    }
+
+    /** @param Collection<int, AeeStudentEvaluation> $evaluations */
+    public function markManageableAeeEvaluations(Collection $evaluations, ?User $user): void
+    {
+        $professionalId = $user?->professional_id;
+
+        $evaluations->each(static function (AeeStudentEvaluation $evaluation) use ($professionalId): void {
+            $session = $evaluation->aeeRecord?->attendanceSession;
+            $evaluation->setAttribute(
+                'can_manage',
+                $professionalId !== null
+                    && (int) $session?->professional_id === (int) $professionalId,
+            );
+        });
+    }
+
+    /** @param Collection<int, PedagogicalRecord> $records */
+    public function markManageablePedagogicalRecords(Collection $records, ?User $user): void
+    {
+        $professionalId = $user?->professional_id;
+
+        $records->each(static function (PedagogicalRecord $record) use ($professionalId): void {
+            $record->setAttribute(
+                'can_manage',
+                $professionalId !== null
+                    && (int) $record->attendanceSession?->professional_id === (int) $professionalId,
+            );
+        });
     }
 
     private function person(Person $person): array

@@ -160,6 +160,27 @@ final class StudentCourse extends Pivot implements Auditable
         $this->recordAuditFieldChange('at_risk_disciplines', $before, $this->atRiskDisciplines()->pluck('disciplines.id')->all());
     }
 
+    /**
+     * @param  list<int>  $failedDisciplineIds
+     * @param  list<int>  $atRiskDisciplineIds
+     *
+     * @throws InvalidStudentCourse
+     */
+    public function syncDisciplines(Course $course, array $failedDisciplineIds, array $atRiskDisciplineIds): void
+    {
+        $allowedIds = $course->disciplines()
+            ->pluck('disciplines.id')
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->all();
+
+        if (array_diff(array_map('intval', [...$failedDisciplineIds, ...$atRiskDisciplineIds]), $allowedIds) !== []) {
+            throw new InvalidStudentCourse('As disciplinas selecionadas devem pertencer ao curso do aluno.');
+        }
+
+        $this->syncFailedDisciplines($failedDisciplineIds);
+        $this->syncAtRiskDisciplines($atRiskDisciplineIds);
+    }
+
     public function getFailedDisciplineNamesAttribute(): string
     {
         return $this->failedDisciplines->pluck('name')->join(', ');

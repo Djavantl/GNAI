@@ -1,11 +1,11 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Domains\Inclusion\Domain\Enums;
 
 enum GeneralLevel: string
 {
-
     case VERY_LOW = 'very_low';
     case LOW = 'low';
     case ADEQUATE = 'adequate';
@@ -14,7 +14,7 @@ enum GeneralLevel: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::VERY_LOW => 'Muito Baixo',
             self::LOW => 'Baixo',
             self::ADEQUATE => 'Adequado',
@@ -25,7 +25,7 @@ enum GeneralLevel: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::VERY_LOW => 'danger',
             self::LOW => 'warning',
             self::ADEQUATE => 'info',

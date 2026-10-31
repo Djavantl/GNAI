@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Infrastructure\Reporting;
 
+use App\Domains\Inclusion\Domain\Models\StudentDeficiency;
 use App\Domains\Reporting\Domain\Enums\ReportSourceVisibility;
 use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
-use App\Domains\Inclusion\Domain\Models\StudentDeficiency;
 
 final class StudentDeficienciesReportSource extends EloquentReportSource
 {

@@ -148,4 +148,50 @@ final readonly class AuditedField
 
         return is_scalar($value) ? (string) $value : (string) json_encode($value, JSON_UNESCAPED_UNICODE);
     }
+
+    public function referencedName(mixed $id): ?string
+    {
+        if ($id === null) {
+            return null;
+        }
+
+        return $this->referencedNames([$id])[(string) $id] ?? null;
+    }
+
+    /**
+     * Nome por coluna própria ('name') ou por relação ('person.name', quando o nome mora em outra tabela).
+     *
+     * @param  list<int|string>  $ids
+     * @return array<string, string>
+     */
+    public function referencedNames(array $ids): array
+    {
+        if ($ids === [] || $this->referencedModel === null || $this->nameColumn === null) {
+            return [];
+        }
+
+        $model = new $this->referencedModel;
+        $key = $model->getKeyName();
+        $query = $this->referencedModel::query()
+            ->withoutGlobalScopes()
+            ->whereIn($key, $ids);
+
+        if (! str_contains($this->nameColumn, '.')) {
+            return $query
+                ->pluck($this->nameColumn, $key)
+                ->filter(fn (mixed $name): bool => $name !== null)
+                ->mapWithKeys(fn (mixed $name, mixed $id): array => [(string) $id => (string) $name])
+                ->all();
+        }
+
+        $relation = substr($this->nameColumn, 0, (int) strrpos($this->nameColumn, '.'));
+
+        return $query
+            ->with($relation)
+            ->get()
+            ->mapWithKeys(fn (Model $record): array => [(string) $record->getKey() => data_get($record, $this->nameColumn)])
+            ->filter(fn (mixed $name): bool => $name !== null)
+            ->map(fn (mixed $name): string => (string) $name)
+            ->all();
+    }
 }

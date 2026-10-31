@@ -19,7 +19,7 @@ final readonly class CreateSemesterAction
     {
         return DB::transaction(function () use ($data): Semester {
             if ($data->isCurrent) {
-                $this->markCurrentSemestersAsHistorical();
+                Semester::markCurrentAsHistorical();
             }
 
             $semesterDTO = new CreateSemesterDTO(
@@ -35,17 +35,5 @@ final readonly class CreateSemesterAction
 
             return $semester;
         });
-    }
-
-    private function markCurrentSemestersAsHistorical(): void
-    {
-        Semester::query()
-            ->where('is_current', true)
-            ->lockForUpdate()
-            ->get()
-            ->each(function (Semester $semester): void {
-                $semester->markAsHistorical();
-                $semester->save();
-            });
     }
 }

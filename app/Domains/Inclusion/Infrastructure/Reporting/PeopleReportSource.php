@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Infrastructure\Reporting;
 
-use App\Domains\Reporting\Domain\Enums\ReportColumnType;
-use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
 use App\Domains\Inclusion\Domain\Enums\Gender;
 use App\Domains\Inclusion\Domain\Models\Guardian;
 use App\Domains\Inclusion\Domain\Models\Person;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Inclusion\Domain\Models\Student;
 use App\Domains\Inclusion\Domain\Models\Teacher;
+use App\Domains\Reporting\Domain\Enums\ReportColumnType;
+use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
 
 final class PeopleReportSource extends EloquentReportSource
 {

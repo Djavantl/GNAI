@@ -100,6 +100,19 @@ final class Semester extends Model implements Auditable
         $this->is_current = false;
     }
 
+    public static function markCurrentAsHistorical(?self $except = null): void
+    {
+        self::query()
+            ->where('is_current', true)
+            ->when($except !== null, fn ($query) => $query->whereKeyNot($except->getKey()))
+            ->lockForUpdate()
+            ->get()
+            ->each(function (self $semester): void {
+                $semester->markAsHistorical();
+                $semester->save();
+            });
+    }
+
     /**
      * @throws InvalidSemester
      */

@@ -20,15 +20,7 @@ final readonly class SetCurrentSemesterAction
                 ->lockForUpdate()
                 ->findOrFail($semester->getKey());
 
-            Semester::query()
-                ->where('is_current', true)
-                ->whereKeyNot($lockedSemester->getKey())
-                ->lockForUpdate()
-                ->get()
-                ->each(function (Semester $currentSemester): void {
-                    $currentSemester->markAsHistorical();
-                    $currentSemester->save();
-                });
+            Semester::markCurrentAsHistorical(except: $lockedSemester);
 
             $lockedSemester->markAsCurrent();
             $lockedSemester->save();

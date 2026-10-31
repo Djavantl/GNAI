@@ -69,34 +69,16 @@ final readonly class UpdateStudentDocumentAction
             });
         } catch (Throwable $exception) {
             if ($newFileData !== null) {
-                $this->deleteWithoutFailing($newFileData['file_path']);
+                $this->storage->deleteQuietly($newFileData['file_path']);
             }
 
             throw $exception;
         }
 
         if ($oldFilePath !== null) {
-            $this->deleteWithoutFailing($oldFilePath);
+            $this->storage->deleteQuietly($oldFilePath);
         }
 
         return $updatedDocument;
-    }
-
-    private function deleteWithoutFailing(?string $path): void
-    {
-        try {
-            $this->storage->delete($path);
-        } catch (Throwable $cleanupException) {
-            $this->reportWithoutFailing($cleanupException);
-        }
-    }
-
-    private function reportWithoutFailing(Throwable $exception): void
-    {
-        try {
-            report($exception);
-        } catch (Throwable) {
-            // A falha ao reportar não pode alterar o resultado já persistido.
-        }
     }
 }

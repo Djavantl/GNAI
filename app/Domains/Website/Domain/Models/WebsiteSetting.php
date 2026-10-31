@@ -7,7 +7,11 @@ namespace App\Domains\Website\Domain\Models;
 use App\Domains\Audit\Domain\Contracts\Auditable;
 use App\Domains\Audit\Domain\ValueObjects\AuditedField;
 use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
+use App\Domains\Website\Domain\DTOs\UpdateWebsiteDTO;
+use App\Domains\Website\Domain\Enums\WebsiteSectionType;
+use App\Domains\Website\Domain\Exceptions\InvalidWebsite;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -83,5 +87,113 @@ final class WebsiteSetting extends Model implements Auditable
             ...WebsiteDefaults::identity(),
             'sections' => WebsiteDefaults::sections(),
         ]);
+    }
+
+    public function revise(UpdateWebsiteDTO $data): void
+    {
+        $this->fill([
+            'site_name' => trim($data->siteName),
+            'tagline' => self::normalizeNullableText($data->tagline),
+            'logo_path' => $data->logoPath,
+            'primary_color' => strtolower($data->primaryColor),
+            'contact_email' => self::normalizeNullableText($data->contactEmail),
+            'contact_phone' => self::normalizeNullableText($data->contactPhone),
+            'address' => self::normalizeNullableText($data->address),
+            'social_links' => [
+                'instagram' => self::normalizeNullableText($data->instagramUrl),
+                'facebook' => self::normalizeNullableText($data->facebookUrl),
+                'youtube' => self::normalizeNullableText($data->youtubeUrl),
+                'website' => self::normalizeNullableText($data->websiteUrl),
+            ],
+            'footer_text' => self::normalizeNullableText($data->footerText),
+            'sections' => $data->sections,
+        ]);
+    }
+
+    /**
+     * Normaliza uma seção enviada pelo construtor. A imagem existente só é mantida
+     * quando pertence à mesma seção salva anteriormente, com o mesmo tipo.
+     *
+     * @param  array<string, mixed>  $input
+     * @param  array<string, mixed>|null  $previous
+     * @return array<string, mixed>|null
+     */
+    public static function normalizeSection(array $input, ?array $previous): ?array
+    {
+        $type = WebsiteSectionType::tryFrom((string) ($input['type'] ?? ''));
+
+        if ($type === null) {
+            return null;
+        }
+
+        $imagePath = null;
+
+        if (
+            $type->hasImage()
+            && ! filter_var($input['remove_image'] ?? false, FILTER_VALIDATE_BOOL)
+            && $previous !== null
+            && ($previous['type'] ?? null) === $type->value
+        ) {
+            $imagePath = $previous['image_path'] ?? null;
+        }
+
+        $items = [];
+
+        if ($type->hasItems()) {
+            foreach (array_values((array) ($input['items'] ?? [])) as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+
+                $normalized = [
+                    'icon' => trim((string) ($item['icon'] ?? '')),
+                    'value' => trim((string) ($item['value'] ?? '')),
+                    'title' => trim((string) ($item['title'] ?? '')),
+                    'text' => trim((string) ($item['text'] ?? '')),
+                ];
+
+                if (implode('', $normalized) !== '') {
+                    $items[] = $normalized;
+                }
+            }
+        }
+
+        $body = trim((string) ($input['body'] ?? ''));
+
+        return WebsiteDefaults::section((string) $input['id'], $type->value, [
+            'enabled' => filter_var($input['enabled'] ?? true, FILTER_VALIDATE_BOOL),
+            'title' => trim((string) ($input['title'] ?? '')),
+            'subtitle' => trim((string) ($input['subtitle'] ?? '')),
+            'body' => $type->hasRichBody() && $body !== '' ? RichTextSanitizer::sanitize($body) : '',
+            'button_label' => trim((string) ($input['button_label'] ?? '')),
+            'button_url' => trim((string) ($input['button_url'] ?? '')),
+            'image_path' => $imagePath,
+            'image_alt' => trim((string) ($input['image_alt'] ?? '')),
+            'limit' => max(1, min(12, (int) ($input['limit'] ?? 3))),
+            'items' => $items,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $section
+     *
+     * @throws InvalidWebsite
+     */
+    public static function ensureSectionImageDescribed(array $section): void
+    {
+        if (
+            $section['type'] === WebsiteSectionType::ABOUT->value
+            && $section['image_path'] !== null
+            && $section['image_alt'] === ''
+        ) {
+            throw new InvalidWebsite('Descreva a imagem da seção "Sobre nós" no texto alternativo.');
+        }
+    }
+
+    private static function normalizeNullableText(?string $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : $value;
     }
 }

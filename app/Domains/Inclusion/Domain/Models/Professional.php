@@ -8,8 +8,6 @@ use App\Domains\Audit\Domain\Contracts\Auditable;
 use App\Domains\Audit\Domain\ValueObjects\AuditedField;
 use App\Domains\Audit\Infrastructure\Eloquent\AuditsChanges;
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\Inclusion\Domain\Models\Loan;
-use App\Domains\Inclusion\Domain\Models\Waitlist;
 use App\Domains\Inclusion\Domain\DTOs\Professionals\CreateProfessionalDTO;
 use App\Domains\Inclusion\Domain\DTOs\Professionals\UpdateProfessionalDTO;
 use App\Domains\Inclusion\Domain\Enums\ProfessionalStatus;

@@ -25,7 +25,7 @@ final class PublicationMedia extends Model
         'position' => 'integer',
     ];
 
-    public function event(): BelongsTo
+    public function publication(): BelongsTo
     {
         return $this->belongsTo(Publication::class, 'publication_id');
     }

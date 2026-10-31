@@ -10,17 +10,6 @@ use Carbon\CarbonInterface;
 final readonly class BackupSettings
 {
     /**
-     * Padrões que preservam o comportamento anterior: 30 backups mantidos e
-     * backup automático diário às 12:05.
-     */
-    public const DEFAULT_RETENTION_MODE = BackupRetentionMode::COUNT;
-
-    public const int DEFAULT_RETENTION_VALUE = 30;
-
-    /** @var list<string> */
-    public const array DEFAULT_TIMES = ['12:05'];
-
-    /**
      * @param  list<string>  $times  Horários no formato H:i, no fuso horário da aplicação.
      */
     public function __construct(
@@ -29,12 +18,16 @@ final readonly class BackupSettings
         public array $times,
     ) {}
 
+    /**
+     * Padrões que preservam o comportamento anterior: 30 backups mantidos e
+     * backup automático diário às 12:05.
+     */
     public static function defaults(): self
     {
         return new self(
-            retentionMode: self::DEFAULT_RETENTION_MODE,
-            retentionValue: self::DEFAULT_RETENTION_VALUE,
-            times: self::DEFAULT_TIMES,
+            retentionMode: BackupRetentionMode::COUNT,
+            retentionValue: 30,
+            times: ['12:05'],
         );
     }
 
@@ -47,12 +40,13 @@ final readonly class BackupSettings
             ? (int) $payload['retention_value']
             : 0;
         $times = self::normalizeTimes(is_array($payload['times'] ?? null) ? $payload['times'] : []);
+        $defaults = self::defaults();
 
         return new self(
             retentionMode: BackupRetentionMode::tryFrom((string) ($payload['retention_mode'] ?? ''))
-                ?? self::DEFAULT_RETENTION_MODE,
-            retentionValue: $retentionValue > 0 ? $retentionValue : self::DEFAULT_RETENTION_VALUE,
-            times: $times !== [] ? $times : self::DEFAULT_TIMES,
+                ?? $defaults->retentionMode,
+            retentionValue: $retentionValue > 0 ? $retentionValue : $defaults->retentionValue,
+            times: $times !== [] ? $times : $defaults->times,
         );
     }
 

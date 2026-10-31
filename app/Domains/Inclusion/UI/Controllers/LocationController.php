@@ -20,6 +20,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Throwable;
 
 final class LocationController
 {
@@ -27,31 +28,30 @@ final class LocationController
     {
         $locations = $query->execute($filters);
 
-        return Inertia::render(
-            'Inclusion/Locations/Index',
-            [
-                'locations' => $locations,
-                'filters' => [
-                    'name' => $filters->name ?? '',
-                    'institution_name' => $filters->institutionName ?? '',
-                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
-                ],
-                'can' => [
-                    'create' => $request->user()?->can('location.create') ?? false,
-                    'show' => $request->user()?->can('location.show') ?? false,
-                    'destroy' => $request->user()?->can('location.destroy') ?? false,
-                ],
+        return Inertia::render('Inclusion/Locations/Index', [
+            'locations' => $locations,
+            'filters' => [
+                'name' => $filters->name ?? '',
+                'institution_name' => $filters->institutionName ?? '',
+                'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
             ],
-        );
+            'can' => [
+                'create' => $request->user()?->can('location.create') ?? false,
+                'show' => $request->user()?->can('location.show') ?? false,
+                'destroy' => $request->user()?->can('location.destroy') ?? false,
+            ],
+        ]);
     }
 
     public function create(LocationFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'Inclusion/Locations/Create',
-            $form->execute(selectedInstitutionId: $this->selectedInstitutionId($request)) + [
-                'canSubmit' => $request->user()?->can('location.store') ?? false,
-            ],
+            $form->execute(
+                selectedInstitutionId: $request->old('institution_id') !== null
+                    ? (int) $request->old('institution_id')
+                    : null,
+            ) + ['canSubmit' => $request->user()?->can('location.store') ?? false],
         );
     }
 
@@ -89,7 +89,9 @@ final class LocationController
             'Inclusion/Locations/Edit',
             $form->execute(
                 location: $location,
-                selectedInstitutionId: $this->selectedInstitutionId($request),
+                selectedInstitutionId: $request->old('institution_id') !== null
+                    ? (int) $request->old('institution_id')
+                    : null,
             ) + [
                 'location' => $location,
                 'canSubmit' => $request->user()?->can('location.update') ?? false,
@@ -99,7 +101,7 @@ final class LocationController
 
     /**
      * @throws InvalidLocation
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function update(UpdateLocationData $data, Location $location, UpdateLocationAction $action): RedirectResponse
     {
@@ -111,7 +113,7 @@ final class LocationController
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function destroy(Location $location, DeleteLocationAction $action): RedirectResponse
     {
@@ -120,12 +122,5 @@ final class LocationController
         return redirect()
             ->route('inclusive-radar.locations.index')
             ->with('success', 'Localização removida com sucesso!');
-    }
-
-    private function selectedInstitutionId(Request $request): ?int
-    {
-        $institutionId = $request->old('institution_id');
-
-        return $institutionId !== null ? (int) $institutionId : null;
     }
 }

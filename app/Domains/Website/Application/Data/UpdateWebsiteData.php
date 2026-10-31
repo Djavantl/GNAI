@@ -16,10 +16,6 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 #[MergeValidationRules]
 final class UpdateWebsiteData extends Data
 {
-    private const IMAGE_RULES = ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'];
-
-    private const LINK_REGEX = '/^(https?:\/\/|\/|#|mailto:|tel:)\S*$/i';
-
     /**
      * @param  list<array<string, mixed>>  $sections
      */
@@ -46,7 +42,7 @@ final class UpdateWebsiteData extends Data
             'site_name' => ['required', 'string', 'max:120'],
             'tagline' => ['nullable', 'string', 'max:255'],
             'primary_color' => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
-            'logo' => ['nullable', ...self::IMAGE_RULES],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'remove_logo' => ['sometimes', 'boolean'],
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:40'],
@@ -64,8 +60,8 @@ final class UpdateWebsiteData extends Data
             'sections.*.subtitle' => ['nullable', 'string', 'max:500'],
             'sections.*.body' => ['nullable', 'string', 'max:20000'],
             'sections.*.button_label' => ['nullable', 'string', 'max:60'],
-            'sections.*.button_url' => ['nullable', 'string', 'max:500', 'regex:'.self::LINK_REGEX],
-            'sections.*.image' => ['nullable', ...self::IMAGE_RULES],
+            'sections.*.button_url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/|\/|#|mailto:|tel:)\S*$/i'],
+            'sections.*.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'sections.*.image_path' => ['nullable', 'string', 'max:255'],
             'sections.*.image_alt' => ['nullable', 'string', 'max:255'],
             'sections.*.remove_image' => ['sometimes', 'boolean'],

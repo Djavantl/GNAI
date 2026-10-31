@@ -20,8 +20,7 @@ final class StudentPedagogicalRecordsQuery
         Student $student,
         ?User $user,
         ?int $limit = 5,
-    ): Collection
-    {
+    ): Collection {
         $query = $this->query($student, $user)->orderByDesc('id');
 
         if ($limit !== null) {

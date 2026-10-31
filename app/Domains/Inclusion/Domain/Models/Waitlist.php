@@ -12,8 +12,6 @@ use App\Domains\Inclusion\Domain\DTOs\Waitlists\CreateWaitlistDTO;
 use App\Domains\Inclusion\Domain\DTOs\Waitlists\UpdateWaitlistDTO;
 use App\Domains\Inclusion\Domain\Enums\WaitlistStatus;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidWaitlist;
-use App\Domains\Inclusion\Domain\Models\Professional;
-use App\Domains\Inclusion\Domain\Models\Student;
 use Database\Factories\Domains\Inclusion\WaitlistFactory;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -65,7 +63,6 @@ final class Waitlist extends Model implements Auditable
             ]),
             // Polimórfico: sem uma coluna de nome comum, fica o código do item (o nome vai na descrição).
             'waitlistable_id' => AuditedField::number('Código do Item Solicitado'),
-            // Estudante e profissional não têm nome próprio (fica em people): a matrícula os identifica.
             'student_id' => AuditedField::reference('Aluno (Beneficiário)', Student::class, 'person.name'),
             'professional_id' => AuditedField::reference('Profissional (Beneficiário)', Professional::class, 'person.name'),
             'user_id' => AuditedField::reference('Usuário Responsável pelo Registro', User::class),

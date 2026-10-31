@@ -26,21 +26,18 @@ final class BarrierCategoryController
     {
         $categories = $query->execute($filters);
 
-        return Inertia::render(
-            'Inclusion/BarrierCategories/Index',
-            [
-                'categories' => $categories,
-                'filters' => [
-                    'name' => $filters->name ?? '',
-                    'is_active' => $filters->isActive === null ? '' : ($filters->isActive ? '1' : '0'),
-                ],
-                'can' => [
-                    'create' => $request->user()->can('barrier-category.create'),
-                    'show' => $request->user()->can('barrier-category.show'),
-                    'destroy' => $request->user()->can('barrier-category.destroy'),
-                ],
+        return Inertia::render('Inclusion/BarrierCategories/Index', [
+            'categories' => $categories,
+            'filters' => [
+                'name' => $filters->name ?? '',
+                'is_active' => $filters->isActive === null ? '' : ($filters->isActive ? '1' : '0'),
             ],
-        );
+            'can' => [
+                'create' => $request->user()->can('barrier-category.create'),
+                'show' => $request->user()->can('barrier-category.show'),
+                'destroy' => $request->user()->can('barrier-category.destroy'),
+            ],
+        ]);
     }
 
     public function create(Request $request): InertiaResponse
@@ -63,30 +60,24 @@ final class BarrierCategoryController
     {
         $barrierCategory = $query->execute($barrierCategory);
 
-        return Inertia::render(
-            'Inclusion/BarrierCategories/Show',
-            [
-                'barrierCategory' => $barrierCategory,
-                'display' => [
-                    'descriptionHtml' => RichTextSanitizer::sanitize($barrierCategory->description ?: 'Não informada'),
-                ],
-                'can' => [
-                    'edit' => $request->user()->can('barrier-category.edit'),
-                    'destroy' => $request->user()->can('barrier-category.destroy'),
-                ],
+        return Inertia::render('Inclusion/BarrierCategories/Show', [
+            'barrierCategory' => $barrierCategory,
+            'display' => [
+                'descriptionHtml' => RichTextSanitizer::sanitize($barrierCategory->description ?: 'Não informada'),
             ],
-        );
+            'can' => [
+                'edit' => $request->user()->can('barrier-category.edit'),
+                'destroy' => $request->user()->can('barrier-category.destroy'),
+            ],
+        ]);
     }
 
     public function edit(BarrierCategory $barrierCategory, Request $request): InertiaResponse
     {
-        return Inertia::render(
-            'Inclusion/BarrierCategories/Edit',
-            [
-                'barrierCategory' => $barrierCategory,
-                'can' => ['update' => $request->user()->can('barrier-category.update')],
-            ],
-        );
+        return Inertia::render('Inclusion/BarrierCategories/Edit', [
+            'barrierCategory' => $barrierCategory,
+            'can' => ['update' => $request->user()->can('barrier-category.update')],
+        ]);
     }
 
     public function update(

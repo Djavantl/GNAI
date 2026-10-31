@@ -1,12 +1,11 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Domains\Inclusion\Domain\Enums;
 
+namespace App\Domains\Inclusion\Domain\Enums;
 
 enum EvaluationType: string
 {
-
     case INITIAL = 'initial';
     case PERIODIC_REVIEW = 'periodic_review';
     case PEI_REVIEW = 'pei_review';
@@ -14,7 +13,7 @@ enum EvaluationType: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::INITIAL => 'Avaliação Inicial',
             self::PERIODIC_REVIEW => 'Revisão Periódica',
             self::PEI_REVIEW => 'Revisão do PEI',
@@ -24,7 +23,7 @@ enum EvaluationType: string
 
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::INITIAL => 'primary',
             self::PERIODIC_REVIEW => 'info',
             self::PEI_REVIEW => 'warning',

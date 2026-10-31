@@ -1,18 +1,19 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Domains\Inclusion\Domain\Enums;
 
 enum ObjectiveStatus: string
 {
     case PENDING = 'pending';
     case IN_PROGRESS = 'in_progress';
-    case ACHIEVED = 'achieved'; 
+    case ACHIEVED = 'achieved';
     case NOT_ACHIEVED = 'not_achieved';
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'Pendente',
             self::IN_PROGRESS => 'Em Andamento',
             self::ACHIEVED => 'Alcançado',
@@ -22,7 +23,7 @@ enum ObjectiveStatus: string
 
     public static function values(): array
     {
-        return array_map(fn($case) => $case->value, self::cases());
+        return array_map(fn ($case) => $case->value, self::cases());
     }
 
     public static function labels(): array
@@ -31,6 +32,7 @@ enum ObjectiveStatus: string
         foreach (self::cases() as $case) {
             $map[$case->value] = $case->label();
         }
+
         return $map;
     }
 }

@@ -15,10 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class BlockReadOnlyImpersonationWrites
 {
-    private const ALLOWED_ROUTES = ['admin.impersonate.leave', 'logout'];
-
-    private const MESSAGE = 'Você está no modo somente leitura. Volte para a sua conta e entre novamente com acesso completo para fazer alterações.';
-
     /**
      * @param  Closure(Request): Response  $next
      */
@@ -28,15 +24,17 @@ final class BlockReadOnlyImpersonationWrites
             $request->isMethodSafe()
             || ! $request->hasSession()
             || ! app(ImpersonationSession::class)->readOnly()
-            || $request->routeIs(...self::ALLOWED_ROUTES)
+            || $request->routeIs('admin.impersonate.leave', 'logout')
         ) {
             return $next($request);
         }
 
+        $message = 'Você está no modo somente leitura. Volte para a sua conta e entre novamente com acesso completo para fazer alterações.';
+
         if ($request->expectsJson() && ! $request->header('X-Inertia')) {
-            return response()->json(['message' => self::MESSAGE], 403);
+            return response()->json(['message' => $message], 403);
         }
 
-        return redirect()->back()->with('warning', self::MESSAGE);
+        return redirect()->back()->with('warning', $message);
     }
 }

@@ -6,9 +6,7 @@ namespace App\Domains\Inclusion\Application\Actions\Teachers;
 
 use App\Domains\Inclusion\Application\Data\Teachers\UpdateTeacherDisciplinesData;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidTeacher;
-use App\Domains\Inclusion\Domain\Models\Course;
 use App\Domains\Inclusion\Domain\Models\Teacher;
-use App\Domains\Inclusion\Domain\Models\TeacherCourseDiscipline;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -27,90 +25,10 @@ final readonly class UpdateTeacherDisciplinesAction
                     ->lockForUpdate()
                     ->findOrFail($teacher->getKey());
 
-                $assignments = $this->normalizeAssignments($data->assignments);
-                $courseIds = array_keys($assignments);
-                $courses = Course::query()
-                    ->whereIn('id', $courseIds)
-                    ->get()
-                    ->keyBy('id');
-
-                if ($courses->count() !== count($courseIds)) {
-                    throw new InvalidTeacher('Um ou mais cursos informados não foram encontrados.');
-                }
-
-                $rows = [];
-
-                foreach ($assignments as $courseId => $disciplineIds) {
-                    /** @var Course $course */
-                    $course = $courses->get($courseId);
-                    $course->ensureIsActive();
-
-                    $activeDisciplineIds = $course->disciplines()
-                        ->whereIn('disciplines.id', $disciplineIds)
-                        ->where('disciplines.is_active', true)
-                        ->pluck('disciplines.id')
-                        ->map(fn (mixed $id): int => (int) $id)
-                        ->all();
-
-                    if (count($activeDisciplineIds) !== count($disciplineIds)) {
-                        throw new InvalidTeacher(
-                            "Uma ou mais disciplinas informadas não pertencem ao curso {$course->name} ou estão inativas."
-                        );
-                    }
-
-                    foreach ($activeDisciplineIds as $disciplineId) {
-                        $rows["{$course->id}:{$disciplineId}"] = [
-                            'teacher_id' => $lockedTeacher->id,
-                            'course_id' => $course->id,
-                            'discipline_id' => $disciplineId,
-                        ];
-                    }
-                }
-
-                // Só o que mudou, um registro por vez: cada atribuição incluída ou removida entra na auditoria.
-                TeacherCourseDiscipline::query()
-                    ->where('teacher_id', $lockedTeacher->id)
-                    ->get()
-                    ->each(function (TeacherCourseDiscipline $assignment) use (&$rows): void {
-                        $key = "{$assignment->course_id}:{$assignment->discipline_id}";
-
-                        if (isset($rows[$key])) {
-                            unset($rows[$key]);
-
-                            return;
-                        }
-
-                        $assignment->delete();
-                    });
-
-                foreach ($rows as $row) {
-                    TeacherCourseDiscipline::query()->create($row);
-                }
+                $lockedTeacher->assignCourseDisciplines($data->assignments);
             });
         } catch (DomainException $exception) {
             throw new InvalidTeacher($exception->getMessage(), previous: $exception);
         }
-    }
-
-    /**
-     * @param  array<int|string, list<int|string>>  $assignments
-     * @return array<int, list<int>>
-     */
-    private function normalizeAssignments(array $assignments): array
-    {
-        $normalized = [];
-
-        foreach ($assignments as $courseId => $disciplineIds) {
-            $courseId = (int) $courseId;
-            $disciplineIds = array_values(array_unique(array_map('intval', (array) $disciplineIds)));
-
-            if ($courseId <= 0 || $disciplineIds === []) {
-                continue;
-            }
-
-            $normalized[$courseId] = $disciplineIds;
-        }
-
-        return $normalized;
     }
 }

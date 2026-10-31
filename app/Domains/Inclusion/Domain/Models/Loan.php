@@ -15,8 +15,6 @@ use App\Domains\Inclusion\Domain\Enums\ItemType;
 use App\Domains\Inclusion\Domain\Enums\LoanStatus;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidLoan;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidLoanableResource;
-use App\Domains\Inclusion\Domain\Models\Professional;
-use App\Domains\Inclusion\Domain\Models\Student;
 use Database\Factories\Domains\Inclusion\LoanFactory;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
@@ -73,7 +71,6 @@ final class Loan extends Model implements Auditable
             ]),
             // Polimórfico: sem uma coluna de nome comum, fica o código do item (o nome vai na descrição).
             'loanable_id' => AuditedField::number('Código do Item Emprestado'),
-            // Estudante e profissional não têm nome próprio (fica em people): a matrícula os identifica.
             'student_id' => AuditedField::reference('Estudante (Beneficiário)', Student::class, 'person.name'),
             'professional_id' => AuditedField::reference('Profissional (Beneficiário)', Professional::class, 'person.name'),
             'user_id' => AuditedField::reference('Usuário Responsável', User::class),

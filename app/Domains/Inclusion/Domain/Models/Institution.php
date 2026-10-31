@@ -96,6 +96,23 @@ final class Institution extends Model implements Auditable
         $this->fill(self::attributesFrom($data));
     }
 
+    public function deactivateLocations(): void
+    {
+        // Um a um (e não update em massa) para cada ponto desativado entrar na auditoria.
+        $this->locations()
+            ->where('is_active', true)
+            ->get()
+            ->each(fn (Location $location) => $location->update(['is_active' => false]));
+    }
+
+    public function deleteLocations(): void
+    {
+        // Um a um (e não delete em massa) para cada ponto excluído entrar na auditoria.
+        $this->locations()
+            ->get()
+            ->each(fn (Location $location) => $location->delete());
+    }
+
     public function latestInspection(): MorphOne
     {
         return $this->morphOne(Inspection::class, 'inspectable')

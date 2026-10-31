@@ -25,7 +25,6 @@ use App\Domains\Inclusion\Application\Queries\Peis\ShowPeiQuery;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidStudent;
 use App\Domains\Inclusion\Domain\Models\Pei;
 use App\Domains\Inclusion\Domain\Models\PeiDiscipline;
-use App\Domains\Inclusion\Domain\Models\Semester;
 use App\Domains\Inclusion\Domain\Models\Student;
 use App\Domains\Inclusion\UI\Presenters\PeiPagePresenter;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
@@ -47,6 +46,7 @@ final class PeiController
         ListPeisData $filters,
         ListAllPeisQuery $query,
         PeiFilterOptionsQuery $filterOptions,
+        PeiPagePresenter $presenter,
         Request $request,
     ): InertiaResponse {
         $user = $request->user();
@@ -54,20 +54,7 @@ final class PeiController
 
         return Inertia::render(
             'Inclusion/Peis/All',
-            [
-                'peis' => $peis,
-                'students' => $filterOptions->students()
-                    ->map(static fn (Student $student): array => [
-                        'value' => (string) $student->getKey(),
-                        'label' => (string) ($student->person?->name ?? ''),
-                    ])
-                    ->values(),
-                'semesters' => $this->semesterOptions($filterOptions),
-                'filters' => $this->listFilterValues($filters) + [
-                    'student_id' => $filters->studentId === null ? '' : (string) $filters->studentId,
-                ],
-                'can' => $this->listPermissions($request),
-            ]
+            $presenter->all($peis, $filterOptions->students(), $filterOptions->semesters(), $filters, $request),
         );
     }
 
@@ -79,25 +66,15 @@ final class PeiController
         ListPeisData $filters,
         ListStudentPeisQuery $query,
         PeiFilterOptionsQuery $filterOptions,
+        PeiPagePresenter $presenter,
         Request $request,
     ): InertiaResponse {
         $user = $request->user();
         $peis = $query->execute($student, $filters, $user instanceof User ? $user : null);
-        $disciplines = $filterOptions->disciplines();
 
         return Inertia::render(
             'Inclusion/Peis/Index',
-            [
-                'peis' => $peis,
-                'student' => [
-                    'id' => $student->getKey(),
-                    'name' => (string) ($student->person?->name ?? ''),
-                ],
-                'semesters' => $this->semesterOptions($filterOptions),
-                'disciplines' => $disciplines,
-                'filters' => $this->listFilterValues($filters),
-                'can' => $this->listPermissions($request),
-            ]
+            $presenter->index($peis, $student, $filterOptions->semesters(), $filterOptions->disciplines(), $filters, $request),
         );
     }
 
@@ -365,49 +342,5 @@ final class PeiController
         }
 
         return response()->json($query->execute($pei, $teacherId));
-    }
-
-    /**
-     * @return array{semester_id: string, version: string, is_finished: string}
-     */
-    private function listFilterValues(ListPeisData $filters): array
-    {
-        $isFinished = $filters->isFinished;
-
-        return [
-            'semester_id' => $filters->semesterId === null ? '' : (string) $filters->semesterId,
-            'version' => $filters->version === null ? '' : (string) $filters->version,
-            'is_finished' => $isFinished === null || $isFinished === ''
-                ? ''
-                : (string) (int) filter_var($isFinished, FILTER_VALIDATE_BOOLEAN),
-        ];
-    }
-
-    /**
-     * @return list<array{value: string, label: string}>
-     */
-    private function semesterOptions(PeiFilterOptionsQuery $filterOptions): array
-    {
-        return $filterOptions->semesters()
-            ->map(static fn (Semester $semester): array => [
-                'value' => (string) $semester->getKey(),
-                'label' => (string) $semester->label,
-            ])
-            ->values()
-            ->all();
-    }
-
-    /**
-     * @return array{create: bool, view: bool, delete: bool}
-     */
-    private function listPermissions(Request $request): array
-    {
-        $user = $request->user();
-
-        return [
-            'create' => $user?->can('pei.create') ?? false,
-            'view' => $user?->can('pei.view') ?? false,
-            'delete' => $user?->can('pei.delete') ?? false,
-        ];
     }
 }

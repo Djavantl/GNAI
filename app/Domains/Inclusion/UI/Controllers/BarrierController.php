@@ -17,8 +17,9 @@ use App\Domains\Inclusion\Application\Queries\Barriers\ShowBarrierInspectionQuer
 use App\Domains\Inclusion\Application\Queries\Barriers\ShowBarrierQuery;
 use App\Domains\Inclusion\Domain\Models\Barrier;
 use App\Domains\Inclusion\Domain\Models\Inspection;
-use App\Shared\Infrastructure\Security\RichTextSanitizer;
+use App\Domains\Inclusion\UI\Presenters\BarrierShowPresenter;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
+use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -76,28 +77,17 @@ final class BarrierController
             ->with('success', 'Barreira identificada com sucesso!');
     }
 
-    public function show(Barrier $barrier, ShowBarrierQuery $query, Request $request): InertiaResponse
-    {
+    public function show(
+        Barrier $barrier,
+        ShowBarrierQuery $query,
+        BarrierShowPresenter $presenter,
+        Request $request,
+    ): InertiaResponse {
         $barrier = $query->execute($barrier);
 
         return Inertia::render('Inclusion/Barriers/Show', [
             'barrier' => $barrier,
-            'display' => [
-                'descriptionHtml' => RichTextSanitizer::sanitize($barrier->description ?: 'Sem descrição detalhada.'),
-                'locationDetailsHtml' => $barrier->location_specific_details
-                    ? RichTextSanitizer::sanitize($barrier->location_specific_details)
-                    : null,
-                'inspectionDetails' => $barrier->inspections->map(fn (Inspection $inspection): array => [
-                    'id' => $inspection->id,
-                    'date' => $inspection->inspection_date?->format('d/m/Y') ?? '---',
-                    'type' => $inspection->type?->label() ?? '---',
-                    'state' => $inspection->status?->label() ?? '---',
-                    'descriptionHtml' => $inspection->description
-                        ? RichTextSanitizer::sanitize((string) $inspection->description)
-                        : null,
-                    'evidenceCount' => $inspection->evidences->count(),
-                ])->values()->all(),
-            ],
+            'display' => $presenter->present($barrier),
             'can' => [
                 'edit' => $request->user()?->can('barrier.edit') ?? false,
                 'destroy' => $request->user()?->can('barrier.destroy') ?? false,
@@ -123,8 +113,12 @@ final class BarrierController
     /**
      * @throws Throwable
      */
-    public function update(UpdateBarrierData $data, Barrier $barrier, UpdateBarrierAction $action, Request $request): RedirectResponse
-    {
+    public function update(
+        UpdateBarrierData $data,
+        Barrier $barrier,
+        UpdateBarrierAction $action,
+        Request $request,
+    ): RedirectResponse {
         $action->execute(
             barrier: $barrier,
             data: $data,
@@ -148,8 +142,11 @@ final class BarrierController
             ->with('success', 'Barreira removida com sucesso!');
     }
 
-    public function showInspection(Barrier $barrier, Inspection $inspection, ShowBarrierInspectionQuery $query): InertiaResponse
-    {
+    public function showInspection(
+        Barrier $barrier,
+        Inspection $inspection,
+        ShowBarrierInspectionQuery $query,
+    ): InertiaResponse {
         $inspection = $query->execute($barrier, $inspection);
 
         return Inertia::render('Inclusion/Barriers/Inspections/Show', [

@@ -18,9 +18,9 @@ use App\Domains\Inclusion\Application\Queries\StudentContexts\ShowStudentContext
 use App\Domains\Inclusion\Application\Queries\StudentContexts\StudentContextFilterOptionsQuery;
 use App\Domains\Inclusion\Application\Queries\StudentContexts\StudentContextFormQuery;
 use App\Domains\Inclusion\Application\Queries\StudentContexts\StudentContextPdfQuery;
-use App\Domains\Inclusion\Domain\Enums\ContextEvaluationType;
 use App\Domains\Inclusion\Domain\Models\Student;
 use App\Domains\Inclusion\Domain\Models\StudentContext;
+use App\Domains\Inclusion\UI\Presenters\StudentContextPagePresenter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,49 +31,35 @@ use Throwable;
 
 final class StudentContextController
 {
-    public function index(ListStudentContextsData $filters, Student $student, ListStudentContextsQuery $query, StudentContextFilterOptionsQuery $filterOptions, Request $request): InertiaResponse
+    public function index(ListStudentContextsData $filters, Student $student, ListStudentContextsQuery $query, StudentContextFilterOptionsQuery $filterOptions, StudentContextPagePresenter $presenter, Request $request): InertiaResponse
     {
-        $contexts = $query->execute($student, $filters)->through(
-            static fn (StudentContext $context): array => [
-                ...$context->toArray(),
-                'evaluation_type_label' => ContextEvaluationType::tryFrom((string) $context->evaluation_type)?->label()
-                    ?? (string) $context->evaluation_type,
-                'can_manage' => $context->canBeManagedByCurrentUser(),
-            ],
-        );
+        $contexts = $query->execute($student, $filters);
         $student->loadMissing('person');
-        $user = $request->user();
 
-        return Inertia::render('Inclusion/StudentContext/Index', [
-            'contexts' => $contexts,
-            'student' => $student,
-            // The create action depends on the full history, not on the filtered page.
-            'hasContexts' => $student->contexts()->exists(),
-            'semesters' => collect($filterOptions->execute()['semesters'])
-                ->except('')
-                ->map(static fn (mixed $label, int|string $id): array => ['value' => (string) $id, 'label' => (string) $label])
-                ->values(),
-            'filters' => [
-                'semester_id' => $filters->semesterId === null ? '' : (string) $filters->semesterId,
-                'evaluation_type' => $filters->evaluationType?->value ?? '',
-                'is_current' => $filters->isCurrent === null ? '' : (string) (int) $filters->isCurrent,
-            ],
-            'can' => [
-                'create' => $user?->can('student-context.create') ?? false,
-                'view' => $user?->can('student-context.view') ?? false,
-                'delete' => $user?->can('student-context.delete') ?? false,
-            ],
-        ]);
+        return Inertia::render(
+            'Inclusion/StudentContext/Index',
+            $presenter->index($contexts, $student, $filters, $filterOptions->execute(), $request),
+        );
     }
 
-    public function show(StudentContext $studentContext, ShowStudentContextQuery $query, StudentContextFormQuery $form, Request $request): InertiaResponse
+    public function show(StudentContext $studentContext, ShowStudentContextQuery $query, StudentContextFormQuery $form, StudentContextPagePresenter $presenter, Request $request): InertiaResponse
     {
-        return $this->renderShow($query->execute($studentContext), $form, $request);
+        $studentContext = $query->execute($studentContext);
+
+        return Inertia::render(
+            'Inclusion/StudentContext/Show',
+            $presenter->show($studentContext, $form->forDisplay($studentContext->student), $request),
+        );
     }
 
-    public function showCurrent(Student $student, CurrentStudentContextQuery $query, StudentContextFormQuery $form, Request $request): InertiaResponse
+    public function showCurrent(Student $student, CurrentStudentContextQuery $query, StudentContextFormQuery $form, StudentContextPagePresenter $presenter, Request $request): InertiaResponse
     {
-        return $this->renderShow($query->execute($student), $form, $request);
+        $studentContext = $query->execute($student);
+
+        return Inertia::render(
+            'Inclusion/StudentContext/Show',
+            $presenter->show($studentContext, $form->forDisplay($studentContext->student), $request),
+        );
     }
 
     public function create(Student $student, StudentContextFormQuery $form): InertiaResponse
@@ -201,29 +187,6 @@ final class StudentContextController
             ->setPaper('a4', 'portrait')
             ->setOption(['enable_php' => true])
             ->stream("Contexto_{$student->person->name}.pdf");
-    }
-
-    private function renderShow(StudentContext $studentContext, StudentContextFormQuery $form, Request $request): InertiaResponse
-    {
-        $student = $studentContext->student;
-        $user = $request->user();
-        $canUpdate = $user?->can('student-context.update') ?? false;
-        $canManage = $studentContext->canBeManagedByCurrentUser();
-
-        return Inertia::render('Inclusion/StudentContext/Show', [
-            'studentContext' => $studentContext,
-            'student' => $student,
-            'deficiencies' => $student->deficiencies,
-            ...$form->forDisplay($student),
-            'evaluationTypeLabel' => ContextEvaluationType::tryFrom((string) $studentContext->evaluation_type)?->label()
-                ?? (string) $studentContext->evaluation_type,
-            // Same conditions the legacy Blade evaluated for each action.
-            'can' => [
-                'update' => $studentContext->is_current && $canUpdate && $canManage,
-                'restore' => ! $studentContext->is_current && $canUpdate,
-                'delete' => $canManage && ($user?->can('student-context.delete') ?? false),
-            ],
-        ]);
     }
 
     private function professionalId(Request $request): ?int

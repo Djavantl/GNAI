@@ -11,6 +11,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 final class StudentDocumentStorage
 {
@@ -44,6 +45,19 @@ final class StudentDocumentStorage
     {
         if (filled($path) && ! $this->disk()->delete($path)) {
             throw new InvalidStudentDocument('Não foi possível excluir o arquivo do documento.');
+        }
+    }
+
+    public function deleteQuietly(?string $path): void
+    {
+        try {
+            $this->delete($path);
+        } catch (Throwable $cleanupException) {
+            try {
+                report($cleanupException);
+            } catch (Throwable) {
+                // A falha na limpeza do arquivo não pode mascarar o resultado da operação.
+            }
         }
     }
 

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Inclusion\Application\Handlers\Loans;
 
+use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Inclusion\Domain\Enums\WaitlistStatus;
 use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Waitlist;
 use App\Domains\Inclusion\Infrastructure\Notifications\LoanableItemAvailableNotification;
-use App\Domains\Auth\Domain\Models\User;
 
 final class LoanWaitlistHandler
 {

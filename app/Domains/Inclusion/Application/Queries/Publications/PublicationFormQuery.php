@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domains\Inclusion\Application\Queries\Publications;
 
 use App\Domains\Auth\Domain\Models\User;
-use App\Domains\Inclusion\Domain\Enums\PublicationType;
 use App\Domains\Inclusion\Domain\Enums\ProfessionalStatus;
+use App\Domains\Inclusion\Domain\Enums\PublicationType;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Inclusion\Domain\Models\Tag;
 
@@ -64,14 +64,8 @@ final class PublicationFormQuery
             ->values()
             ->all();
 
-        $types = [];
-
-        foreach (PublicationType::options() as $value => $label) {
-            $types[] = ['value' => $value, 'label' => $label];
-        }
-
         return [
-            'types' => $types,
+            'types' => PublicationType::options(),
             'authors' => $authors,
             'speakers' => $speakers,
             'tags' => $tags,

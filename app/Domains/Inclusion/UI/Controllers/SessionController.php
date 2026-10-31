@@ -185,12 +185,9 @@ final class SessionController
         Request $request,
     ): InertiaResponse {
         $user = $authenticatedUser->fromRequest($request);
-
         $sessions = $query->execute($filters, $user);
         $students = Student::with('person')->orderBy('id')->get(['id', 'person_id']);
-        $professionalId = $user->professional?->id;
-        abort_unless($professionalId !== null, 403, 'Acesso permitido apenas para profissionais.');
-        $calendar = $calendarQuery->execute($filters, (int) $professionalId);
+        $calendar = $calendarQuery->execute($filters, (int) $user->professional->id);
 
         return Inertia::render('Inclusion/Sessions/MySessions', [
             'sessions' => $presenter->sessions($sessions, $request),

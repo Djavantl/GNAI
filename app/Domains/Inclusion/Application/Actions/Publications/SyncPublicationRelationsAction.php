@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * Persiste capa, galeria, palestrantes e etiquetas de uma publicação. Os arquivos novos
+ * Salva a publicação com capa, galeria, participantes e etiquetas. Os arquivos novos
  * são gravados antes da transação e descartados se ela falhar; os arquivos
  * substituídos ou removidos só são apagados depois do commit.
  */
@@ -26,11 +26,11 @@ final readonly class SyncPublicationRelationsAction
      * @param  list<array{file?: UploadedFile, alt?: string|null}>  $newGallery
      * @param  list<array{id?: int|string, alt?: string|null, remove?: bool|string|null}>  $existingGallery
      *
+     * @throws InvalidPublication
      * @throws Throwable
      */
     public function execute(
         Publication $publication,
-        callable $persist,
         array $speakers,
         array $tagIds,
         ?UploadedFile $cover,
@@ -48,7 +48,7 @@ final readonly class SyncPublicationRelationsAction
                 $storedPaths[] = $newCoverPath;
             }
 
-            $newGalleryRows = [];
+            $newPhotos = [];
 
             foreach ($newGallery as $entry) {
                 $file = $entry['file'] ?? null;
@@ -59,7 +59,7 @@ final readonly class SyncPublicationRelationsAction
 
                 $path = $this->storage->store($file);
                 $storedPaths[] = $path;
-                $newGalleryRows[] = [
+                $newPhotos[] = [
                     'path' => $path,
                     'alt_text' => trim((string) ($entry['alt'] ?? '')),
                 ];
@@ -67,47 +67,26 @@ final readonly class SyncPublicationRelationsAction
 
             DB::transaction(function () use (
                 $publication,
-                $persist,
                 $speakers,
                 $tagIds,
                 $newCoverPath,
                 $removeCover,
-                $newGalleryRows,
+                $newPhotos,
                 $existingGallery,
                 &$obsoletePaths,
             ): void {
-                $previousCover = $publication->cover_path;
+                $previousCover = $publication->replaceCover($newCoverPath, $removeCover);
+                $publication->save();
 
-                if ($newCoverPath !== null) {
-                    $publication->cover_path = $newCoverPath;
-                } elseif ($removeCover) {
-                    $publication->cover_path = null;
-                    $publication->cover_alt = null;
-                }
-
-                if ($publication->cover_path !== null && blank($publication->cover_alt)) {
-                    throw new InvalidPublication('Descreva a imagem de capa no texto alternativo.');
-                }
-
-                $persist($publication);
-
-                if ($previousCover !== null && $previousCover !== $publication->cover_path) {
+                if ($previousCover !== null) {
                     $obsoletePaths[] = $previousCover;
                 }
 
-                $this->syncExistingGallery($publication, $existingGallery, $obsoletePaths);
+                $obsoletePaths = [...$obsoletePaths, ...$publication->reviseGallery($existingGallery)];
 
-                $position = (int) $publication->media()->max('position');
-
-                foreach ($newGalleryRows as $row) {
-                    $position++;
-                    $publication->media()->create([...$row, 'position' => $position]);
-                }
-
-                $this->syncSpeakers($publication, $speakers);
-                $publication->tags()->sync(
-                    array_values(array_filter(array_unique(array_map('intval', $tagIds)), static fn (int $id): bool => $id > 0)),
-                );
+                $publication->appendGallery($newPhotos);
+                $publication->syncSpeakers($speakers);
+                $publication->syncTags($tagIds);
             });
         } catch (Throwable $exception) {
             $this->storage->deleteMany($storedPaths);
@@ -118,81 +97,5 @@ final readonly class SyncPublicationRelationsAction
         $this->storage->deleteMany($obsoletePaths);
 
         return $publication;
-    }
-
-    /**
-     * @param  list<array{id?: int|string, alt?: string|null, remove?: bool|string|null}>  $entries
-     * @param  list<string>  $obsoletePaths
-     *
-     * @throws InvalidPublication
-     */
-    private function syncExistingGallery(Publication $publication, array $entries, array &$obsoletePaths): void
-    {
-        if ($entries === []) {
-            return;
-        }
-
-        $media = $publication->media()->get()->keyBy('id');
-
-        foreach ($entries as $entry) {
-            $item = $media->get((int) ($entry['id'] ?? 0));
-
-            if ($item === null) {
-                continue;
-            }
-
-            if (filter_var($entry['remove'] ?? false, FILTER_VALIDATE_BOOL)) {
-                $obsoletePaths[] = $item->path;
-                $item->delete();
-
-                continue;
-            }
-
-            $alt = trim((string) ($entry['alt'] ?? ''));
-
-            if ($alt === '') {
-                throw new InvalidPublication('Todas as fotos da galeria precisam de texto alternativo.');
-            }
-
-            if ($alt !== $item->alt_text) {
-                $item->update(['alt_text' => $alt]);
-            }
-        }
-    }
-
-    /**
-     * @param  list<array{id?: int|string|null, name?: string|null, participation?: string|null}>  $speakers
-     */
-    private function syncSpeakers(Publication $publication, array $speakers): void
-    {
-        $rows = [];
-        $professionalIds = [];
-
-        foreach (array_values($speakers) as $speaker) {
-            $id = (int) ($speaker['id'] ?? 0);
-            $name = trim((string) ($speaker['name'] ?? ''));
-
-            if ($id > 0 ? isset($professionalIds[$id]) : $name === '') {
-                continue;
-            }
-
-            if ($id > 0) {
-                $professionalIds[$id] = true;
-            }
-
-            $participation = trim((string) ($speaker['participation'] ?? ''));
-            $rows[] = [
-                'professional_id' => $id > 0 ? $id : null,
-                'name' => $id > 0 ? null : mb_substr($name, 0, 150),
-                'position' => count($rows),
-                'participation' => $participation !== '' ? mb_substr($participation, 0, 100) : null,
-            ];
-        }
-
-        $publication->speakers()->delete();
-
-        if ($rows !== []) {
-            $publication->speakers()->createMany($rows);
-        }
     }
 }

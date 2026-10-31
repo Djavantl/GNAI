@@ -9,8 +9,8 @@ use App\Domains\Inclusion\Domain\Enums\InspectionType;
 use App\Domains\Inclusion\Domain\Enums\ItemType;
 use App\Domains\Inclusion\Domain\Enums\ResourceStatus;
 use App\Domains\Inclusion\Domain\Models\AccessibilityFeature;
-use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Deficiency;
+use App\Domains\Inclusion\Domain\Models\Item;
 
 final class ItemFormQuery
 {

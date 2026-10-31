@@ -27,23 +27,9 @@ final readonly class WebsiteBuilderController
     public function edit(Request $request, WebsiteContentQuery $content): InertiaResponse
     {
         $setting = WebsiteSetting::current();
-        $social = is_array($setting->social_links) ? $setting->social_links : [];
 
         return Inertia::render('Website/Builder/Edit', [
-            'settings' => [
-                'site_name' => $setting->site_name,
-                'tagline' => $setting->tagline,
-                'primary_color' => $setting->primary_color,
-                'logo_url' => $this->presenter->site($setting)['logo_url'],
-                'contact_email' => $setting->contact_email,
-                'contact_phone' => $setting->contact_phone,
-                'address' => $setting->address,
-                'instagram_url' => $social['instagram'] ?? null,
-                'facebook_url' => $social['facebook'] ?? null,
-                'youtube_url' => $social['youtube'] ?? null,
-                'website_url' => $social['website'] ?? null,
-                'footer_text' => $setting->footer_text,
-            ],
+            'settings' => $this->presenter->settings($setting),
             'sections' => $this->presenter->sections($setting),
             'site' => $this->presenter->site($setting),
             'content' => $content->execute(),

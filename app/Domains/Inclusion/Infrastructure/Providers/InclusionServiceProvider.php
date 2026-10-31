@@ -17,7 +17,6 @@ use App\Domains\Inclusion\Domain\Models\Guardian;
 use App\Domains\Inclusion\Domain\Models\Inspection;
 use App\Domains\Inclusion\Domain\Models\InspectionEvidence;
 use App\Domains\Inclusion\Domain\Models\Institution;
-use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Models\Item;
 use App\Domains\Inclusion\Domain\Models\Loan;
 use App\Domains\Inclusion\Domain\Models\Location;
@@ -28,6 +27,7 @@ use App\Domains\Inclusion\Domain\Models\Pendency;
 use App\Domains\Inclusion\Domain\Models\Person;
 use App\Domains\Inclusion\Domain\Models\Position;
 use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Models\Semester;
 use App\Domains\Inclusion\Domain\Models\Session;
 use App\Domains\Inclusion\Domain\Models\Student;
@@ -68,7 +68,6 @@ final class InclusionServiceProvider extends ServiceProvider
             Inspection::class,
             InspectionEvidence::class,
             Institution::class,
-            Publication::class,
             Item::class,
             Loan::class,
             Location::class,
@@ -79,6 +78,7 @@ final class InclusionServiceProvider extends ServiceProvider
             Person::class,
             Position::class,
             Professional::class,
+            Publication::class,
             Semester::class,
             Session::class,
             Student::class,

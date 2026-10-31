@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Website\Application\Queries;
 
-use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Enums\ProfessionalStatus;
 use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Website\UI\Presenters\WebsitePresenter;
 
 /**
@@ -15,8 +15,6 @@ use App\Domains\Website\UI\Presenters\WebsitePresenter;
  */
 final readonly class WebsiteContentQuery
 {
-    private const MAX_ITEMS = 12;
-
     public function __construct(private WebsitePresenter $presenter) {}
 
     /**
@@ -32,7 +30,7 @@ final readonly class WebsiteContentQuery
             ->orderBy('start_date')
             ->orderBy('start_time')
             ->with('tags')
-            ->limit(self::MAX_ITEMS)
+            ->limit(12)
             ->get();
 
         $publications = Publication::query()
@@ -41,13 +39,13 @@ final readonly class WebsiteContentQuery
             ->orderByRaw('COALESCE(published_at, created_at) DESC')
             ->orderByDesc('id')
             ->with('tags')
-            ->limit(self::MAX_ITEMS)
+            ->limit(12)
             ->get();
 
         return [
-            'team' => array_slice($this->team(), 0, self::MAX_ITEMS),
-            'events' => $events->map(fn (Publication $event): array => $this->presenter->publicationCard($event))->all(),
-            'publications' => $publications->map(fn (Publication $event): array => $this->presenter->publicationCard($event))->all(),
+            'team' => array_slice($this->team(), 0, 12),
+            'events' => $events->map(fn (Publication $publication): array => $this->presenter->publicationCard($publication))->all(),
+            'publications' => $publications->map(fn (Publication $publication): array => $this->presenter->publicationCard($publication))->all(),
         ];
     }
 

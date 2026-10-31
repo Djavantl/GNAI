@@ -28,16 +28,13 @@ enum PublicationType: string
     }
 
     /**
-     * @return array<string, string>
+     * @return list<array{value: string, label: string}>
      */
     public static function options(): array
     {
-        $options = [];
-
-        foreach (self::cases() as $case) {
-            $options[$case->value] = $case->label();
-        }
-
-        return $options;
+        return array_map(
+            fn (self $type): array => ['value' => $type->value, 'label' => $type->label()],
+            self::cases(),
+        );
     }
 }

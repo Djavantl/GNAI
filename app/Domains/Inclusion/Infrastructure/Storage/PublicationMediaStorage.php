@@ -10,14 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 final class PublicationMediaStorage
 {
-    private const DIRECTORY = 'publications';
-
     /**
      * @throws InvalidPublication
      */
     public function store(UploadedFile $file): string
     {
-        $path = $file->store(self::DIRECTORY, 'public');
+        $path = $file->store('publications', 'public');
 
         if (! is_string($path) || $path === '') {
             throw new InvalidPublication('Não foi possível armazenar a imagem da publicação.');

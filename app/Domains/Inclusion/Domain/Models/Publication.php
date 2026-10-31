@@ -35,8 +35,6 @@ class Publication extends Model implements Auditable
     use AuditsChanges;
     use HasFactory;
 
-    public const SLUG_MAX_LENGTH = 160;
-
     protected $table = 'publications';
 
     protected $fillable = [
@@ -156,6 +154,137 @@ class Publication extends Model implements Auditable
         $this->fill(self::attributesFrom($data));
     }
 
+    /**
+     * Aplica a nova capa ou a remoção solicitada e devolve o caminho da capa anterior
+     * quando ela deixa de ser usada.
+     *
+     * @throws InvalidPublication
+     */
+    public function replaceCover(?string $path, bool $remove): ?string
+    {
+        $previousCover = $this->cover_path;
+
+        if ($path !== null) {
+            $this->cover_path = $path;
+        } elseif ($remove) {
+            $this->cover_path = null;
+            $this->cover_alt = null;
+        }
+
+        if ($this->cover_path !== null && blank($this->cover_alt)) {
+            throw new InvalidPublication('Descreva a imagem de capa no texto alternativo.');
+        }
+
+        return $previousCover !== null && $previousCover !== $this->cover_path ? $previousCover : null;
+    }
+
+    /**
+     * Atualiza o texto alternativo ou remove fotos já existentes da galeria e devolve
+     * os caminhos dos arquivos removidos.
+     *
+     * @param  list<array{id?: int|string, alt?: string|null, remove?: bool|string|null}>  $entries
+     * @return list<string>
+     *
+     * @throws InvalidPublication
+     */
+    public function reviseGallery(array $entries): array
+    {
+        if ($entries === []) {
+            return [];
+        }
+
+        $removedPaths = [];
+        $media = $this->media()->get()->keyBy('id');
+
+        foreach ($entries as $entry) {
+            $item = $media->get((int) ($entry['id'] ?? 0));
+
+            if ($item === null) {
+                continue;
+            }
+
+            if (filter_var($entry['remove'] ?? false, FILTER_VALIDATE_BOOL)) {
+                $removedPaths[] = $item->path;
+                $item->delete();
+
+                continue;
+            }
+
+            $alt = trim((string) ($entry['alt'] ?? ''));
+
+            if ($alt === '') {
+                throw new InvalidPublication('Todas as fotos da galeria precisam de texto alternativo.');
+            }
+
+            if ($alt !== $item->alt_text) {
+                $item->update(['alt_text' => $alt]);
+            }
+        }
+
+        return $removedPaths;
+    }
+
+    /**
+     * @param  list<array{path: string, alt_text: string}>  $photos
+     */
+    public function appendGallery(array $photos): void
+    {
+        $position = (int) $this->media()->max('position');
+
+        foreach ($photos as $photo) {
+            $position++;
+            $this->media()->create([...$photo, 'position' => $position]);
+        }
+    }
+
+    /**
+     * Substitui os participantes, ignorando linhas vazias e profissionais repetidos.
+     *
+     * @param  list<array{id?: int|string|null, name?: string|null, participation?: string|null}>  $speakers
+     */
+    public function syncSpeakers(array $speakers): void
+    {
+        $rows = [];
+        $professionalIds = [];
+
+        foreach (array_values($speakers) as $speaker) {
+            $id = (int) ($speaker['id'] ?? 0);
+            $name = trim((string) ($speaker['name'] ?? ''));
+
+            if ($id > 0 ? isset($professionalIds[$id]) : $name === '') {
+                continue;
+            }
+
+            if ($id > 0) {
+                $professionalIds[$id] = true;
+            }
+
+            $participation = trim((string) ($speaker['participation'] ?? ''));
+            $rows[] = [
+                'professional_id' => $id > 0 ? $id : null,
+                'name' => $id > 0 ? null : mb_substr($name, 0, 150),
+                'position' => count($rows),
+                'participation' => $participation !== '' ? mb_substr($participation, 0, 100) : null,
+            ];
+        }
+
+        $this->speakers()->delete();
+
+        if ($rows !== []) {
+            $this->speakers()->createMany($rows);
+        }
+    }
+
+    /**
+     * @param  list<int|string>  $tagIds
+     */
+    public function syncTags(array $tagIds): void
+    {
+        $this->tags()->sync(
+            array_values(array_filter(array_unique(array_map('intval', $tagIds)), static fn (int $id): bool => $id > 0)),
+        );
+    }
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -246,7 +375,7 @@ class Publication extends Model implements Auditable
 
     public static function uniqueSlug(string $source, int|string|null $ignoreId = null): string
     {
-        $base = Str::limit(Str::slug($source), self::SLUG_MAX_LENGTH, '');
+        $base = Str::limit(Str::slug($source), 160, '');
         $base = trim($base, '-') !== '' ? trim($base, '-') : 'publicacao';
         $slug = $base;
         $suffix = 2;
@@ -354,7 +483,7 @@ class Publication extends Model implements Auditable
 
     private static function normalizeSlug(?string $value): ?string
     {
-        $slug = Str::limit(Str::slug((string) $value), self::SLUG_MAX_LENGTH, '');
+        $slug = Str::limit(Str::slug((string) $value), 160, '');
         $slug = trim($slug, '-');
 
         return $slug === '' ? null : $slug;
