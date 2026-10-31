@@ -92,6 +92,8 @@ As fontes e cores compartilhadas estão em `resources/react/styles/tokens.css`, 
 
 Organize campos relacionados com `FormGrid`, usando `FormGridWide` para campos longos e `FormStack` para controles empilhados. Mantenha CSS no domínio somente para composições particulares, como a foto ao lado dos dados pessoais. Preserve padding, bordas, foco e espaçamentos compartilhados; não copie dimensões locais de alunos como regra global.
 
+No `ToggleControl`, texto e controle ficam próximos na mesma linha, com o toggle imediatamente após o rótulo e sua eventual ajuda. Não distribua o rótulo e o controle pelas extremidades da coluna. Em telas estreitas, o texto pode quebrar dentro de sua área, mantendo o controle ao lado; preserve o texto de estado, a associação acessível e o foco do componente compartilhado.
+
 Botões devem ter ícone pertinente e texto, inclusive nos rodapés sticky de criar, editar e visualizar. Todo botão tem `title`; o componente compartilhado o infere de `aria-label`, `label` ou texto simples, enquanto conteúdos complexos devem informá-lo explicitamente. Use rótulos curtos conforme o contexto: `Salvar` e `Cancelar` em formulários; `Voltar`, `Editar`, `Excluir`, `Clonar` e `PDF` nas visualizações quando essas ações existirem. Ações somente com ícone também precisam de `aria-label`, pois `title` não substitui o nome acessível. Cancelar/voltar usa X cinza; salvar usa check no roxo institucional do Gnai. `Button` também admite `iconOnly` para exceções autorizadas, `leftIconClass`, outras posições de ícone e `showIcon={false}`. Não suponha que todas as variantes do tema já tenham as cores do Gnai.
 
 ### Labels, validação e acessibilidade
@@ -157,11 +159,17 @@ JPG/PNG e 2 MB são os defaults que atendem a alunos. `acceptedTypes` e `maxSize
 
 Quando o requisito pedir editor, use `SummernoteEditor`; não transforme todo campo de texto em editor. Ele aceita HTML inicial por `defaultValue`, lido uma vez na montagem, e entrega HTML por `onChange`. Use o valor inicial seguro que o backend disponibiliza e atualize o campo correspondente em `form.setData`.
 
+O `RichTextSanitizer` preserva a apresentação oferecida pelo Summernote: negrito, itálico, sublinhado, tachado, sobrescrito/subscrito, títulos, fontes, tamanhos, cores, alinhamento, recuos, espaçamento, listas, tabelas, links e imagens (URLs HTTP(S)/relativas ou raster em base64). Estilos são validados por propriedade e valor; classes ficam restritas às de tabelas e imagens usadas pelo editor. Scripts, eventos, URLs executáveis, SVG, iframes e CSS arbitrário continuam bloqueados, inclusive no modo de código. Não restrinja o editor a tags sem estilos para contornar o sanitizador.
+
 No modo padrão com `id`, o conteúdo editável recebe `${id}-input`; o `FormField` do endereço de alunos usa esse ID. Passe `disabled`, `invalid`, `describedBy` e `onLoadError`, conforme necessário. Preserve a toolbar completa padrão, sem reduzi-la por iniciativa própria. A altura é uma decisão contextual, não um tamanho obrigatório para todos os editores.
 
-A referência bloqueia Salvar após falha de carregamento do editor e apresenta erro no campo. Não declare HTML recebido como seguro por ter vindo do editor: respeite o tratamento do backend. `StudentPagePresenter` disponibiliza `address_html` por `RichTextSanitizer`; a toolbar oferece recursos que não são todos preservados pelo sanitizador, como imagens e atributos de estilo. Essa diferença precisa ser considerada no contrato do campo, sem ampliar as regras do servidor durante uma migração visual.
+A referência bloqueia Salvar após falha de carregamento do editor e apresenta erro no campo. Não declare HTML recebido como seguro por ter vindo do editor: respeite o tratamento do backend. `StudentPagePresenter` disponibiliza `address_html` por `RichTextSanitizer`. A descrição dos itens usa `UI/RichTextContent` para exibir o HTML já sanitizado, preservando listas, tabelas, imagens e formatação sem depender do CSS do editor. As entidades do HTML sanitizado permanecem escapadas; nunca faça uma decodificação posterior antes de inserir o conteúdo no DOM.
 
 Plugins usam os assets locais de `public/assets/react/`, com adaptadores que carregam suas dependências e limpam listeners/instâncias ao desmontar. Não importe Bootstrap global, não reinicialize os plugins por tela e não instale bibliotecas equivalentes sem necessidade comprovada.
+
+### Mapas vinculados à instituição
+
+Use `InclusiveRadar/GeoMap` com a instituição em `reference`, incluindo suas coordenadas e `default_zoom`. A sede e o zoom padrão definem o enquadramento inicial em cadastro, edição e visualização; `value` continua representando a posição real da barreira ou do ponto de referência. Não substitua o zoom cadastrado por valores fixos nas telas de edição. Ao trocar de instituição, o mapa atualiza o enquadramento e mantém os comportamentos existentes de seleção do marcador. Sem instituição selecionada/vinculada, preserve o fallback da funcionalidade. O zoom zero é válido e não deve ser tratado como ausência de configuração.
 
 ## Particularidades do formulário de alunos
 

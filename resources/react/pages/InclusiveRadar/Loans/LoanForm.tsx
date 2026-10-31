@@ -15,6 +15,7 @@ import ClockPicker from "@/components/Forms/ClockPicker/ClockPicker";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
+import LoanDetails from "./LoanDetails";
 import type {
     LoanFormProps,
     LoanableItem,
@@ -142,242 +143,148 @@ export default function LoanForm({
         >
             <CardBox>
                 <FormSection
-                    id="loan-resource"
-                    title="Recurso Emprestado"
+                    id="loan-identification"
+                    title="Identificação"
                     variant="inline"
                     iconClass="fa fa-exchange"
                 >
-                    {mode === "create" ? (
-                        <FormGrid>
-                            <FormField
-                                id="loanable-type"
-                                label="Tipo do Item"
-                                error={errors.item_type}
-                                requiredIndicator
-                            >
-                                <SelectField
-                                    id="loanable-type"
-                                    name="item_type"
-                                    label="Tipo do Item"
-                                    required
-                                    value={form.data.item_type}
-                                    options={optionMap(itemTypes)}
-                                    aria-invalid={!!errors.item_type}
-                                    aria-describedby={describedBy(
-                                        "item_type",
-                                        "loanable-type",
-                                    )}
-                                    onChange={(event) => {
-                                        form.setData((data) => ({
-                                            ...data,
-                                            item_type: event.target.value,
-                                            loanable_id: "",
-                                        }));
-                                        form.clearErrors(
-                                            "item_type",
-                                            "loanable_id",
-                                        );
-                                    }}
-                                />
-                            </FormField>
-                            <FormField
-                                id="loanable-item"
-                                label="Item Específico"
-                                error={errors.loanable_id}
-                                requiredIndicator
-                            >
-                                <SelectField
-                                    id="loanable-item"
-                                    name="loanable_id"
-                                    label="Item Específico"
-                                    required
-                                    disabled={!form.data.item_type}
-                                    placeholder={
-                                        form.data.item_type
-                                            ? "Selecione"
-                                            : "Selecione o tipo primeiro"
-                                    }
-                                    value={form.data.loanable_id}
-                                    options={itemOptions}
-                                    aria-invalid={!!errors.loanable_id}
-                                    aria-describedby={describedBy(
-                                        "loanable_id",
-                                        "loanable-item",
-                                    )}
-                                    onChange={(event) => {
-                                        form.setData(
-                                            "loanable_id",
-                                            event.target.value,
-                                        );
-                                        form.clearErrors("loanable_id");
-                                    }}
-                                />
-                            </FormField>
-                        </FormGrid>
-                    ) : loan ? (
-                        <FormGrid>
-                            <FormField
-                                id="loan-resource-name"
-                                label="Recurso Emprestado"
-                            >
-                                <TextInput
-                                    id="loan-resource-name"
-                                    value={loan.loanable.name}
-                                    disabled
-                                />
-                            </FormField>
-                            <FormField
-                                id="loan-resource-type"
-                                label="Tipo do Item"
-                            >
-                                <TextInput
-                                    id="loan-resource-type"
-                                    value={loan.item_type_label}
-                                    disabled
-                                />
-                            </FormField>
-                            <FormGridWide>
-                                <FormField
-                                    id="loan-resource-asset-code"
-                                    label="Patrimônio / Tombamento"
-                                >
-                                    <TextInput
-                                        id="loan-resource-asset-code"
-                                        value={
-                                            loan.loanable.asset_code ||
-                                            "Não se aplica"
-                                        }
-                                        disabled
-                                    />
-                                </FormField>
-                            </FormGridWide>
-                        </FormGrid>
-                    ) : null}
-                </FormSection>
-
-                <FormSection
-                    id="loan-beneficiary"
-                    title="Beneficiário e Responsável"
-                    variant="inline"
-                    iconClass="fa fa-users"
-                >
-                    {mode === "create" ? (
-                        <FormGrid>
-                            <FormField
-                                id="loan-student"
-                                label="Estudante (Beneficiário)"
-                                error={errors.student_id}
-                            >
-                                <SelectField
-                                    id="loan-student"
-                                    name="student_id"
-                                    label="Estudante (Beneficiário)"
-                                    value={form.data.student_id}
-                                    options={optionMap(students)}
-                                    aria-invalid={!!errors.student_id}
-                                    aria-describedby={describedBy(
-                                        "student_id",
-                                        "loan-student",
-                                    )}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            "student_id",
-                                            event.target.value,
-                                        )
-                                    }
-                                />
-                            </FormField>
-                            <FormField
-                                id="loan-professional"
-                                label="Profissional (Beneficiário)"
-                                error={errors.professional_id}
-                            >
-                                <SelectField
-                                    id="loan-professional"
-                                    name="professional_id"
-                                    label="Profissional (Beneficiário)"
-                                    value={form.data.professional_id}
-                                    options={optionMap(professionals)}
-                                    aria-invalid={!!errors.professional_id}
-                                    aria-describedby={describedBy(
-                                        "professional_id",
-                                        "loan-professional",
-                                    )}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            "professional_id",
-                                            event.target.value,
-                                        )
-                                    }
-                                />
-                            </FormField>
-                            <FormGridWide>
-                                <FormField
-                                    id="loan-user"
-                                    label="Usuário Autenticado (Responsável)"
-                                >
-                                    <TextInput
-                                        id="loan-user"
-                                        value={authUser.name}
-                                        disabled
-                                    />
-                                </FormField>
-                            </FormGridWide>
-                        </FormGrid>
-                    ) : loan ? (
-                        <FormGrid>
-                            <FormField
-                                id="loan-student"
-                                label="Estudante (Beneficiário)"
-                            >
-                                <TextInput
-                                    id="loan-student"
-                                    value={
-                                        loan.student?.name ?? "Não se aplica"
-                                    }
-                                    disabled
-                                />
-                            </FormField>
-                            <FormField
-                                id="loan-professional"
-                                label="Profissional (Beneficiário)"
-                            >
-                                <TextInput
-                                    id="loan-professional"
-                                    value={
-                                        loan.professional?.name ??
-                                        "Não se aplica"
-                                    }
-                                    disabled
-                                />
-                            </FormField>
-                            <FormGridWide>
-                                <FormField
-                                    id="loan-user"
-                                    label="Usuário Responsável"
-                                >
-                                    <TextInput
-                                        id="loan-user"
-                                        value={loan.user.name}
-                                        disabled
-                                    />
-                                </FormField>
-                            </FormGridWide>
-                        </FormGrid>
-                    ) : null}
-                </FormSection>
-
-                <FormSection
-                    id="loan-deadlines"
-                    title={
-                        mode === "create"
-                            ? "Prazos e Observações"
-                            : "Prazos e Status"
-                    }
-                    variant="inline"
-                    iconClass="fa fa-calendar"
-                >
                     <FormGrid>
+                        {mode === "create" ? (
+                            <>
+                                <FormField
+                                    id="loanable-type"
+                                    label="Tipo do Item"
+                                    error={errors.item_type}
+                                    requiredIndicator
+                                >
+                                    <SelectField
+                                        id="loanable-type"
+                                        name="item_type"
+                                        label="Tipo do Item"
+                                        required
+                                        value={form.data.item_type}
+                                        options={optionMap(itemTypes)}
+                                        aria-invalid={!!errors.item_type}
+                                        aria-describedby={describedBy(
+                                            "item_type",
+                                            "loanable-type",
+                                        )}
+                                        onChange={(event) => {
+                                            form.setData((data) => ({
+                                                ...data,
+                                                item_type: event.target.value,
+                                                loanable_id: "",
+                                            }));
+                                            form.clearErrors(
+                                                "item_type",
+                                                "loanable_id",
+                                            );
+                                        }}
+                                    />
+                                </FormField>
+                                <FormField
+                                    id="loanable-item"
+                                    label="Item Específico"
+                                    error={errors.loanable_id}
+                                    requiredIndicator
+                                >
+                                    <SelectField
+                                        id="loanable-item"
+                                        name="loanable_id"
+                                        label="Item Específico"
+                                        required
+                                        disabled={!form.data.item_type}
+                                        placeholder={
+                                            form.data.item_type
+                                                ? "Selecione"
+                                                : "Selecione o tipo primeiro"
+                                        }
+                                        value={form.data.loanable_id}
+                                        options={itemOptions}
+                                        aria-invalid={!!errors.loanable_id}
+                                        aria-describedby={describedBy(
+                                            "loanable_id",
+                                            "loanable-item",
+                                        )}
+                                        onChange={(event) => {
+                                            form.setData(
+                                                "loanable_id",
+                                                event.target.value,
+                                            );
+                                            form.clearErrors("loanable_id");
+                                        }}
+                                    />
+                                </FormField>
+                            </>
+                        ) : loan ? (
+                            <FormGridWide>
+                                <LoanDetails loan={loan} showObservation={false} />
+                            </FormGridWide>
+                        ) : null}
+                        {mode === "create" ? (
+                            <>
+                                <FormField
+                                    id="loan-student"
+                                    label="Estudante (Beneficiário)"
+                                    error={errors.student_id}
+                                >
+                                    <SelectField
+                                        id="loan-student"
+                                        name="student_id"
+                                        label="Estudante (Beneficiário)"
+                                        value={form.data.student_id}
+                                        options={optionMap(students)}
+                                        aria-invalid={!!errors.student_id}
+                                        aria-describedby={describedBy(
+                                            "student_id",
+                                            "loan-student",
+                                        )}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                "student_id",
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                </FormField>
+                                <FormField
+                                    id="loan-professional"
+                                    label="Profissional (Beneficiário)"
+                                    error={errors.professional_id}
+                                >
+                                    <SelectField
+                                        id="loan-professional"
+                                        name="professional_id"
+                                        label="Profissional (Beneficiário)"
+                                        value={form.data.professional_id}
+                                        options={optionMap(professionals)}
+                                        aria-invalid={!!errors.professional_id}
+                                        aria-describedby={describedBy(
+                                            "professional_id",
+                                            "loan-professional",
+                                        )}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                "professional_id",
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                </FormField>
+                                <FormGridWide>
+                                    <FormField
+                                        id="loan-user"
+                                        label="Usuário Autenticado (Responsável)"
+                                    >
+                                        <TextInput
+                                            id="loan-user"
+                                            value={authUser.name}
+                                            disabled
+                                        />
+                                    </FormField>
+                                </FormGridWide>
+                            </>
+                        ) : null}
                         {mode === "create" ? (
                             <>
                                 <div className="loanForm__dateTimeFields">
@@ -452,46 +359,6 @@ export default function LoanForm({
                                         onChange={(date) =>
                                             form.setData("due_date", date)
                                         }
-                                    />
-                                </FormField>
-                            </>
-                        ) : loan ? (
-                            <>
-                                <FormField id="loan-date" label="Data de Saída">
-                                    <TextInput
-                                        id="loan-date"
-                                        value={loan.loan_date_label}
-                                        disabled
-                                    />
-                                </FormField>
-                                <FormField
-                                    id="loan-due-date"
-                                    label="Previsão de Devolução"
-                                >
-                                    <TextInput
-                                        id="loan-due-date"
-                                        value={loan.due_date_label}
-                                        disabled
-                                    />
-                                </FormField>
-                                <FormField id="loan-status" label="Status Atual">
-                                    <TextInput
-                                        id="loan-status"
-                                        value={loan.status_label}
-                                        disabled
-                                    />
-                                </FormField>
-                                <FormField
-                                    id="loan-return-date"
-                                    label="Data Real da Devolução"
-                                >
-                                    <TextInput
-                                        id="loan-return-date"
-                                        value={
-                                            loan.return_date_label ??
-                                            "Ainda não devolvido"
-                                        }
-                                        disabled
                                     />
                                 </FormField>
                             </>

@@ -39,6 +39,8 @@
   --ui-color-cancel-text: var(--button-secondary-text);
   --ui-color-danger: #f05050;
   --ui-color-info: #34d3eb;
+  --ui-color-info-light: var(--color-info-light);
+  --ui-color-info-text: var(--color-info-text);
   --ui-color-success: #81c868;
   --ui-color-pink: #fb6d9d;
   --ui-color-purple: #7266ba;

@@ -78,7 +78,7 @@ export default function AccessibilityFeatureForm({
                 <CardBox>
                     <FormSection
                         id="accessibility-feature-identification"
-                        title="Dados do Recurso"
+                        title="Identificação"
                         variant="inline"
                         iconClass="fa fa-universal-access"
                     >

@@ -3,7 +3,7 @@ import CardBox from "@/components/UI/CardBox/CardBox";
 import Button from "@/components/UI/Button/Button";
 import FormActions from "@/components/Forms/FormActions/FormActions";
 import FormField from "@/components/Forms/FormField/FormField";
-import FormGrid from "@/components/Forms/FormGrid/FormGrid";
+import FormGrid, { FormStack } from "@/components/Forms/FormGrid/FormGrid";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import FormSection from "@/components/Forms/FormSection/FormSection";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -104,171 +104,152 @@ export default function WaitlistForm({
         >
             <FormLayout onSubmit={submit} className="waitlistForm">
                 <CardBox className="waitlistForm__card">
-                    {waitlist ? (
-                        <FormSection
-                            id="waitlist-resource"
-                            title="Recurso Solicitado"
-                            variant="inline"
-                            iconClass={waitlist.item_type === "assistive_technology" ? "fa fa-microchip" : "fa fa-book"}
-                        >
-                            <WaitlistResourceDetails {...waitlist} />
-                        </FormSection>
-                    ) : (
-                        <FormSection
-                            id="waitlist-resource"
-                            title="Seleção do Recurso"
-                            variant="inline"
-                            iconClass="fa fa-cubes"
-                        >
-                            <FormGrid columns={2}>
-                                <FormField
-                                    id="waitlist-resource-type"
-                                    label="Tipo do Item"
-                                    requiredIndicator
-                                    error={errors.item_type}
-                                >
-                                    <SelectField
-                                        id="waitlist-resource-type"
-                                        name="item_type"
-                                        label="Tipo do Item"
-                                        required
-                                        value={form.data.item_type}
-                                        options={optionList(itemTypes)}
-                                        aria-invalid={!!errors.item_type}
-                                        aria-describedby={errors.item_type ? "waitlist-resource-type-error" : undefined}
-                                        onChange={(event) => form.setData((data) => ({
-                                            ...data,
-                                            item_type: event.target.value,
-                                            waitlistable_id: "",
-                                        }))}
-                                    />
-                                </FormField>
-                                <FormField
-                                    id="waitlist-resource-item"
-                                    label="Item Específico"
-                                    requiredIndicator
-                                    error={errors.waitlistable_id}
-                                >
-                                    <SelectField
-                                        id="waitlist-resource-item"
-                                        name="waitlistable_id"
-                                        label="Item Específico"
-                                        required
-                                        value={form.data.waitlistable_id}
-                                        placeholder={form.data.item_type ? "Selecione o item" : "Selecione o tipo primeiro"}
-                                        options={resources}
-                                        disabled={!form.data.item_type}
-                                        aria-invalid={!!errors.waitlistable_id}
-                                        aria-describedby={errors.waitlistable_id ? "waitlist-resource-item-error" : undefined}
-                                        onChange={(event) => form.setData("waitlistable_id", event.target.value)}
-                                    />
-                                </FormField>
-                            </FormGrid>
-                        </FormSection>
-                    )}
                     <FormSection
-                        id="waitlist-beneficiary"
-                        title={waitlist ? "Beneficiário e Responsável" : "Solicitante"}
+                        id="waitlist-identification"
+                        title="Identificação"
                         variant="inline"
-                        iconClass="fa fa-users"
+                        iconClass="fa fa-list-alt"
                     >
-                        {waitlist ? (
-                            <dl className="waitlistForm__details">
-                                <DetailField label="Aluno (Beneficiário)">
-                                    {waitlist.student
-                                        ? `${waitlist.student.name}${waitlist.student.registration ? ` (Matrícula: ${waitlist.student.registration})` : ""}`
-                                        : "Não informado"}
-                                </DetailField>
-                                <DetailField label="Profissional (Beneficiário)">
-                                    {waitlist.professional?.name ?? "Não informado"}
-                                </DetailField>
-                                <DetailField label="Usuário Responsável">
-                                    {authUser.name}
-                                </DetailField>
-                                <DetailField label="Status Atual">
-                                    {statusLabel ?? waitlist.status_label}
-                                </DetailField>
-                            </dl>
-                        ) : (
-                            <>
+                        <FormStack>
+                            {waitlist ? (
+                                <WaitlistResourceDetails {...waitlist} />
+                            ) : (
                                 <FormGrid columns={2}>
                                     <FormField
-                                        id="waitlist-student"
-                                        label="Aluno (Beneficiário)"
-                                        error={errors.student_id}
+                                        id="waitlist-resource-type"
+                                        label="Tipo do Item"
+                                        requiredIndicator
+                                        error={errors.item_type}
                                     >
                                         <SelectField
-                                            id="waitlist-student"
-                                            name="student_id"
-                                            label="Aluno (Beneficiário)"
-                                            value={form.data.student_id}
-                                            options={studentOptions}
-                                            disabled={!!form.data.professional_id}
-                                            aria-invalid={!!errors.student_id}
-                                            aria-describedby={errors.student_id ? "waitlist-student-error" : undefined}
-                                            onChange={(event) => updateStudent(event.target.value)}
+                                            id="waitlist-resource-type"
+                                            name="item_type"
+                                            label="Tipo do Item"
+                                            required
+                                            value={form.data.item_type}
+                                            options={optionList(itemTypes)}
+                                            aria-invalid={!!errors.item_type}
+                                            aria-describedby={errors.item_type ? "waitlist-resource-type-error" : undefined}
+                                            onChange={(event) => form.setData((data) => ({
+                                                ...data,
+                                                item_type: event.target.value,
+                                                waitlistable_id: "",
+                                            }))}
                                         />
                                     </FormField>
                                     <FormField
-                                        id="waitlist-professional"
-                                        label="Profissional (Beneficiário)"
-                                        error={errors.professional_id}
+                                        id="waitlist-resource-item"
+                                        label="Item Específico"
+                                        requiredIndicator
+                                        error={errors.waitlistable_id}
                                     >
                                         <SelectField
-                                            id="waitlist-professional"
-                                            name="professional_id"
-                                            label="Profissional (Beneficiário)"
-                                            value={form.data.professional_id}
-                                            options={professionalOptions}
-                                            disabled={!!form.data.student_id}
-                                            aria-invalid={!!errors.professional_id}
-                                            aria-describedby={errors.professional_id ? "waitlist-professional-error" : undefined}
-                                            onChange={(event) => updateProfessional(event.target.value)}
-                                        />
-                                    </FormField>
-                                    <FormField
-                                        id="waitlist-user"
-                                        label="Usuário Responsável pelo Registro"
-                                        className="waitlistForm__wide"
-                                    >
-                                        <TextInput
-                                            id="waitlist-user"
-                                            value={authUser.name}
-                                            disabled
-                                            readOnly
+                                            id="waitlist-resource-item"
+                                            name="waitlistable_id"
+                                            label="Item Específico"
+                                            required
+                                            value={form.data.waitlistable_id}
+                                            placeholder={form.data.item_type ? "Selecione o item" : "Selecione o tipo primeiro"}
+                                            options={resources}
+                                            disabled={!form.data.item_type}
+                                            aria-invalid={!!errors.waitlistable_id}
+                                            aria-describedby={errors.waitlistable_id ? "waitlist-resource-item-error" : undefined}
+                                            onChange={(event) => form.setData("waitlistable_id", event.target.value)}
                                         />
                                     </FormField>
                                 </FormGrid>
-                                <p className="waitlistForm__hint">
-                                    Selecione um aluno ou um profissional como beneficiário, nunca ambos.
-                                </p>
-                            </>
-                        )}
-                    </FormSection>
-                    <FormSection
-                        id="waitlist-observation"
-                        title="Observações"
-                        variant="inline"
-                        iconClass="fa fa-comment"
-                    >
-                        <FormField
-                            id="waitlist-observation-field"
-                            label={waitlist ? "Notas e Prioridades" : "Observações Adicionais"}
-                            error={errors.observation}
-                        >
-                            <TextArea
+                            )}
+                            {waitlist ? (
+                                <dl className="waitlistForm__details">
+                                    <DetailField label="Aluno (Beneficiário)">
+                                        {waitlist.student
+                                            ? `${waitlist.student.name}${waitlist.student.registration ? ` (Matrícula: ${waitlist.student.registration})` : ""}`
+                                            : "Não informado"}
+                                    </DetailField>
+                                    <DetailField label="Profissional (Beneficiário)">
+                                        {waitlist.professional?.name ?? "Não informado"}
+                                    </DetailField>
+                                    <DetailField label="Usuário Responsável">
+                                        {authUser.name}
+                                    </DetailField>
+                                    <DetailField label="Status Atual">
+                                        {statusLabel ?? waitlist.status_label}
+                                    </DetailField>
+                                </dl>
+                            ) : (
+                                <>
+                                    <FormGrid columns={2}>
+                                        <FormField
+                                            id="waitlist-student"
+                                            label="Aluno (Beneficiário)"
+                                            error={errors.student_id}
+                                        >
+                                            <SelectField
+                                                id="waitlist-student"
+                                                name="student_id"
+                                                label="Aluno (Beneficiário)"
+                                                value={form.data.student_id}
+                                                options={studentOptions}
+                                                disabled={!!form.data.professional_id}
+                                                aria-invalid={!!errors.student_id}
+                                                aria-describedby={errors.student_id ? "waitlist-student-error" : undefined}
+                                                onChange={(event) => updateStudent(event.target.value)}
+                                            />
+                                        </FormField>
+                                        <FormField
+                                            id="waitlist-professional"
+                                            label="Profissional (Beneficiário)"
+                                            error={errors.professional_id}
+                                        >
+                                            <SelectField
+                                                id="waitlist-professional"
+                                                name="professional_id"
+                                                label="Profissional (Beneficiário)"
+                                                value={form.data.professional_id}
+                                                options={professionalOptions}
+                                                disabled={!!form.data.student_id}
+                                                aria-invalid={!!errors.professional_id}
+                                                aria-describedby={errors.professional_id ? "waitlist-professional-error" : undefined}
+                                                onChange={(event) => updateProfessional(event.target.value)}
+                                            />
+                                        </FormField>
+                                        <FormField
+                                            id="waitlist-user"
+                                            label="Usuário Responsável pelo Registro"
+                                            className="waitlistForm__wide"
+                                        >
+                                            <TextInput
+                                                id="waitlist-user"
+                                                value={authUser.name}
+                                                disabled
+                                                readOnly
+                                            />
+                                        </FormField>
+                                    </FormGrid>
+                                    <p className="waitlistForm__hint">
+                                        Selecione um aluno ou um profissional como beneficiário, nunca ambos.
+                                    </p>
+                                </>
+                            )}
+                            <FormField
                                 id="waitlist-observation-field"
-                                name="observation"
-                                rows={3}
-                                value={form.data.observation}
-                                placeholder={waitlist
-                                    ? "Adicione informações relevantes sobre esta solicitação..."
-                                    : "Relate o motivo da urgência ou detalhes da solicitação..."}
-                                aria-invalid={!!errors.observation}
-                                aria-describedby={errors.observation ? "waitlist-observation-field-error" : undefined}
-                                onChange={(event) => form.setData("observation", event.target.value)}
-                            />
-                        </FormField>
+                                label="Observações"
+                                error={errors.observation}
+                            >
+                                <TextArea
+                                    id="waitlist-observation-field"
+                                    name="observation"
+                                    rows={3}
+                                    value={form.data.observation}
+                                    placeholder={waitlist
+                                        ? "Adicione informações relevantes sobre esta solicitação..."
+                                        : "Relate o motivo da urgência ou detalhes da solicitação..."}
+                                    aria-invalid={!!errors.observation}
+                                    aria-describedby={errors.observation ? "waitlist-observation-field-error" : undefined}
+                                    onChange={(event) => form.setData("observation", event.target.value)}
+                                />
+                            </FormField>
+                        </FormStack>
                     </FormSection>
                 </CardBox>
                 <FormActions>

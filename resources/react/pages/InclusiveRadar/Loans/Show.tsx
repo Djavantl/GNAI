@@ -6,10 +6,9 @@ import FormSection from "@/components/Forms/FormSection/FormSection";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import DetailField from "@/components/UI/DetailField/DetailField";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
-import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import LoanPage from "./LoanPage";
+import LoanDetails from "./LoanDetails";
 import type { LoanRecord } from "./Loan.types";
 import "./Loan.css";
 
@@ -102,66 +101,12 @@ export default function InclusiveRadarLoansShowPage({
             ) : null}
             <CardBox className="loanShow__panel">
                 <FormSection
-                    id="loan-resource-details"
-                    title="Identificação do Recurso"
+                    id="loan-identification-details"
+                    title="Identificação"
                     variant="inline"
                     iconClass="fa fa-exchange"
                 >
-                    <dl className="loanShow__grid">
-                        <DetailField label="Recurso Emprestado">
-                            {loan.loanable.name}
-                        </DetailField>
-                        <DetailField label="Tipo do Item">
-                            {loan.item_type_label}
-                        </DetailField>
-                        <DetailField label="Patrimônio / Tombamento" wide>
-                            {loan.loanable.asset_code || "Não se aplica"}
-                        </DetailField>
-                    </dl>
-                </FormSection>
-                <FormSection
-                    id="loan-people-details"
-                    title="Beneficiário e Responsável"
-                    variant="inline"
-                    iconClass="fa fa-users"
-                >
-                    <dl className="loanShow__grid">
-                        <DetailField label="Estudante (Beneficiário)">
-                            {loan.student?.name ?? "Não se aplica"}
-                        </DetailField>
-                        <DetailField label="Profissional (Beneficiário)">
-                            {loan.professional?.name ?? "Não se aplica"}
-                        </DetailField>
-                        <DetailField label="Usuário Responsável" wide>
-                            {loan.user.name}
-                        </DetailField>
-                    </dl>
-                </FormSection>
-                <FormSection
-                    id="loan-status-details"
-                    title="Prazos e Status"
-                    variant="inline"
-                    iconClass="fa fa-calendar"
-                >
-                    <dl className="loanShow__grid">
-                        <DetailField label="Data de Saída">
-                            {loan.loan_date_label}
-                        </DetailField>
-                        <DetailField label="Previsão de Devolução">
-                            {loan.due_date_label}
-                        </DetailField>
-                        <DetailField label="Status do Empréstimo">
-                            <TableLabel tone={loan.status_color}>
-                                {loan.status_label}
-                            </TableLabel>
-                        </DetailField>
-                        <DetailField label="Data Real da Devolução">
-                            {loan.return_date_label ?? "Não devolvido"}
-                        </DetailField>
-                        <DetailField label="Observações" wide>
-                            {loan.observation || "Nenhuma observação registrada."}
-                        </DetailField>
-                    </dl>
+                    <LoanDetails loan={loan} />
                 </FormSection>
             </CardBox>
             <FormActions

@@ -15,25 +15,6 @@
     margin: 0;
 }
 
-.itemShow__rich {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    line-height: 1.6;
-}
-
-.itemShow__rich > :first-child {
-    margin-top: 0;
-}
-
-.itemShow__rich > :last-child {
-    margin-bottom: 0;
-}
-
-.itemShow__rich img,
-.itemShow__rich table {
-    max-width: 100%;
-}
-
 .itemShow__tags {
     display: flex;
     flex-wrap: wrap;

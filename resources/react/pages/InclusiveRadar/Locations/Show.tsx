@@ -60,27 +60,36 @@ export default function InclusiveRadarLocationsShowPage({
             <CardBox aria-busy={deleting}>
                 <FormSection
                     id="location-show-information"
-                    title="Vínculo e Identificação"
+                    title="Identificação"
                     variant="inline"
                     iconClass="fa fa-map-marker"
                 >
                     <dl className="locationShow__grid">
                         <DetailField label="Instituição Base" wide>
-                            {location.institution?.name ?? "— Não informada —"}
+                            {location.institution?.name ?? "Não informada"}
                         </DetailField>
                         <DetailField label="Nome do Local" wide>{location.name}</DetailField>
                         <DetailField label="Tipo de Local">
-                            {location.type || "— Não informado —"}
-                        </DetailField>
-                        <DetailField label="Ativo no Sistema">
-                            <TableLabel tone={location.is_active ? "success" : "inverse"}>
-                                {location.is_active ? "Sim" : "Não"}
-                            </TableLabel>
+                            {location.type || "Não informado"}
                         </DetailField>
                         <DetailField label="Descrição/Observações" wide>
                             <span className="locationShow__description">
                                 <span dangerouslySetInnerHTML={{ __html: display.descriptionHtml }} />
                             </span>
+                        </DetailField>
+                    </dl>
+                </FormSection>
+                <FormSection
+                    id="location-show-map-section"
+                    title="Configuração"
+                    variant="inline"
+                    iconClass="fa fa-globe"
+                >
+                    <dl className="locationShow__grid">
+                        <DetailField label="Ativo no Sistema">
+                            <TableLabel tone={location.is_active ? "success" : "inverse"}>
+                                {location.is_active ? "Sim" : "Não"}
+                            </TableLabel>
                         </DetailField>
                         <DetailField label="Latitude">
                             {Number(location.latitude).toFixed(8)}
@@ -89,19 +98,18 @@ export default function InclusiveRadarLocationsShowPage({
                             {Number(location.longitude).toFixed(8)}
                         </DetailField>
                     </dl>
-                </FormSection>
-                <FormSection
-                    id="location-show-map-section"
-                    title="Localização no Mapa"
-                    variant="inline"
-                    iconClass="fa fa-globe"
-                >
                     <GeoMap
                         title="Localização do Ponto"
                         value={{ latitude: Number(location.latitude), longitude: Number(location.longitude) }}
                         zoom={location.institution?.default_zoom ?? 16}
+                        reference={location.institution ? {
+                            id: location.institution.id,
+                            name: location.institution.name,
+                            latitude: Number(location.institution.latitude),
+                            longitude: Number(location.institution.longitude),
+                            default_zoom: location.institution.default_zoom,
+                        } : null}
                         markerLabel={location.name}
-                        reference={null}
                     />
                 </FormSection>
             </CardBox>

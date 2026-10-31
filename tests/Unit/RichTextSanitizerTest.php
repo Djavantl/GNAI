@@ -24,7 +24,7 @@ class RichTextSanitizerTest extends TestCase
         $sanitized = RichTextSanitizer::sanitize($html);
 
         $this->assertSame(
-            '<p>Texto <strong>ok</strong></p><a target="_blank" rel="noopener noreferrer">link</a>',
+            '<p>Texto <strong>ok</strong></p><a target="_blank" rel="noopener noreferrer">link</a><img src="x">',
             $sanitized
         );
     }
@@ -43,7 +43,7 @@ class RichTextSanitizerTest extends TestCase
             . '<td rowspan="999" class="x">B</td></tr></table>';
 
         $this->assertSame(
-            '<table><tr><th>A</th><td>B</td></tr></table>',
+            '<table style="width: 100%"><tr><th>A</th><td>B</td></tr></table>',
             RichTextSanitizer::sanitize($html)
         );
     }
@@ -65,5 +65,67 @@ class RichTextSanitizerTest extends TestCase
                 'notes' => '<p>Ok</p>',
             ],
         ], RichTextSanitizer::sanitizeMixed($data));
+    }
+
+    public function test_it_preserves_summernote_inline_formatting(): void
+    {
+        $html = '<h1>Título</h1><p style="text-align: center; margin-left: 25px; line-height: 1.8">'
+            .'<span style="font-weight: bold; font-style: italic; text-decoration: underline; font-size: 24px; font-family: Arial; color: rgb(255, 0, 0); background-color: #ffff00">Download</span>'
+            .'<u>Sublinhado</u><strike>Tachado</strike><sub>2</sub><sup>3</sup></p>'
+            .'<pre>Trecho de código</pre><hr>';
+
+        $this->assertSame($html, RichTextSanitizer::sanitize($html));
+        $this->assertSame($html, RichTextSanitizer::sanitize(RichTextSanitizer::sanitize($html)));
+    }
+
+    public function test_it_preserves_legacy_font_markup_and_safe_image_controls(): void
+    {
+        $html = '<font face="Arial" color="#322b75" size="4">Texto</font>'
+            .'<img src="/images/logo.png" alt="Gnai" width="120" class="img-rounded pull-left" style="width: 50%; float: left">'
+            .'<table class="table table-bordered"><tr><td>Conteúdo</td></tr></table>';
+
+        $this->assertSame($html, RichTextSanitizer::sanitize($html));
+    }
+
+    public function test_it_preserves_raster_images_but_rejects_svg_and_mislabeled_data(): void
+    {
+        $png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jk9sAAAAASUVORK5CYII=';
+        $this->assertSame('<img src="'.$png.'">', RichTextSanitizer::sanitize('<img src="'.$png.'">'));
+        $this->assertSame('', RichTextSanitizer::sanitize('<img src="data:image/svg+xml;base64,'.base64_encode('<svg onload="alert(1)"></svg>').'">'));
+        $this->assertSame('', RichTextSanitizer::sanitize('<img src="data:image/png;base64,'.base64_encode('<script>alert(1)</script>').'">'));
+    }
+
+    public function test_it_removes_executable_styles_and_unrelated_classes(): void
+    {
+        $html = '<span style="font-weight:bold; color:expression(alert(1)); background-image:url(javascript:alert(1)); position:fixed; z-index:99999">Texto</span>'
+            .'<img src="javascript:alert(1)" onerror="alert(1)">'
+            .'<img src="/images/logo.png" class="img-circle summernoteOverlay button" onload="alert(1)">'
+            .'<iframe src="https://example.com"></iframe>';
+
+        $this->assertSame(
+            '<span style="font-weight: bold">Texto</span><img src="/images/logo.png" class="img-circle">',
+            RichTextSanitizer::sanitize($html),
+        );
+    }
+
+    public function test_it_does_not_turn_escaped_markup_into_executable_html(): void
+    {
+        $html = '<p>&lt;img src=x onerror=alert(1)&gt; &amp; texto</p>'
+            .'<a href="https://example.com/?q=&quot;teste&quot;">Link</a>';
+
+        $this->assertSame($html, RichTextSanitizer::sanitize($html));
+        $this->assertSame($html, RichTextSanitizer::sanitize($html, decodeEntities: false));
+        $this->assertSame($html, RichTextSanitizer::sanitize(RichTextSanitizer::sanitize($html)));
+    }
+
+    public function test_it_rejects_obfuscated_urls_and_css(): void
+    {
+        $html = '<a href="jav&#x09;ascript:alert(1)">Link</a>'
+            .'<span style="color: e\\78pression(alert(1)); width: calc(100%); font-family: Arial, url(evil); font-weight: 700">Texto</span>';
+
+        $this->assertSame(
+            '<a>Link</a><span style="font-weight: 700">Texto</span>',
+            RichTextSanitizer::sanitize($html),
+        );
     }
 }

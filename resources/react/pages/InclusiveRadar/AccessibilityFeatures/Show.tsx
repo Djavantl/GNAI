@@ -61,7 +61,7 @@ export default function InclusiveRadarAccessibilityFeaturesShowPage({
             <CardBox aria-busy={deleting}>
                 <FormSection
                     id="accessibility-feature-show-identification"
-                    title="Dados do Recurso"
+                    title="Identificação"
                     variant="inline"
                     iconClass="fa fa-universal-access"
                 >

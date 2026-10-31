@@ -41,7 +41,16 @@ export function useSummernote(host: RefObject<HTMLDivElement | null>, { defaultV
       document.body.append(overlay);
       const oldAirNodes = new Set(Array.from(document.querySelectorAll('body > .note-air-layout')));
       editor = runtime(holder);
-      cleanupDocumentEvents = trackSummernoteDocumentEvents(runtime, () => editor!.summernote({ lang: 'pt-BR', height: mode === 'standard' ? height : undefined, airMode: mode === 'inline', focus: false, ...(toolbar ? { toolbar } : {}), onChange: (html: string): void => { if (!cancelled && !state.current.disabled) callback.current?.(html); } }));
+      cleanupDocumentEvents = trackSummernoteDocumentEvents(runtime, () => editor!.summernote({
+        lang: 'pt-BR',
+        height: mode === 'standard' ? height : undefined,
+        airMode: mode === 'inline',
+        focus: false,
+        ...(toolbar ? { toolbar } : {}),
+        onChange: (html: string): void => {
+          if (!cancelled && !state.current.disabled) callback.current?.(html);
+        },
+      }));
       document.querySelectorAll('body > .note-air-layout').forEach(node => { if (!oldAirNodes.has(node)) overlay!.append(node); });
       const containers = [root, overlay];
       for (const container of containers) {

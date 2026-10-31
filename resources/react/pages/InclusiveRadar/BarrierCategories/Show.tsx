@@ -61,7 +61,7 @@ export default function InclusiveRadarBarrierCategoriesShowPage({
             <CardBox aria-busy={deleting}>
                 <FormSection
                     id="barrier-category-show-information"
-                    title="Informações da Categoria"
+                    title="Identificação"
                     variant="inline"
                     iconClass="fa fa-tags"
                 >
@@ -87,7 +87,7 @@ export default function InclusiveRadarBarrierCategoriesShowPage({
                             </TableLabel>
                         </DetailField>
                         <DetailField label="Mapa se Aplica">
-                            <TableLabel tone={category.blocks_map ? "inverse" : "success"}>
+                            <TableLabel tone={category.blocks_map ? "danger" : "success"}>
                                 {category.blocks_map ? "Não" : "Sim"}
                             </TableLabel>
                         </DetailField>

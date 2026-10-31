@@ -68,7 +68,7 @@ final class BarrierCategoryController
             [
                 'barrierCategory' => $barrierCategory,
                 'display' => [
-                    'descriptionHtml' => RichTextSanitizer::sanitize($barrierCategory->description ?: '— Não informada —'),
+                    'descriptionHtml' => RichTextSanitizer::sanitize($barrierCategory->description ?: 'Não informada'),
                 ],
                 'can' => [
                     'edit' => $request->user()->can('barrier-category.edit'),

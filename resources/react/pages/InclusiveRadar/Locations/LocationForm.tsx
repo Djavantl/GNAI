@@ -104,7 +104,7 @@ export default function LocationForm({
                 <CardBox>
                     <FormSection
                         id="location-identification"
-                        title="Vínculo e Identificação"
+                        title="Identificação"
                         variant="inline"
                         iconClass="fa fa-map-marker"
                     >
@@ -186,6 +186,15 @@ export default function LocationForm({
                                     />
                                 </FormField>
                             </FormGridWide>
+                        </FormGrid>
+                    </FormSection>
+                    <FormSection
+                        id="location-map-section"
+                        title="Configuração"
+                        variant="inline"
+                        iconClass="fa fa-globe"
+                    >
+                        <FormGrid columns={2}>
                             <FormGridWide>
                                 <FormStack>
                                     <ToggleControl
@@ -200,15 +209,6 @@ export default function LocationForm({
                                     />
                                 </FormStack>
                             </FormGridWide>
-                        </FormGrid>
-                    </FormSection>
-                    <FormSection
-                        id="location-map-section"
-                        title="Coordenadas e Localização no Mapa"
-                        variant="inline"
-                        iconClass="fa fa-globe"
-                    >
-                        <FormGrid columns={2}>
                             <FormField id="location-latitude" label="Latitude" requiredIndicator error={errors.latitude}>
                                 <TextInput
                                     id="location-latitude"
@@ -243,7 +243,7 @@ export default function LocationForm({
                                 <GeoMap
                                     title="Localização no Campus"
                                     value={mapPoint}
-                                    zoom={editing ? 18 : selectedInstitution?.default_zoom ?? 16}
+                                    zoom={selectedInstitution?.default_zoom ?? 16}
                                     editable
                                     interactionEnabled={Boolean(form.data.institution_id) && !form.processing}
                                     markerLabel="Localização selecionada"

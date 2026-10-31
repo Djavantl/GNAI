@@ -11,6 +11,7 @@ import DetailField from "@/components/UI/DetailField/DetailField";
 import ExpandableContent from "@/components/UI/ExpandableContent/ExpandableContent";
 import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
+import RichTextContent from "@/components/UI/RichTextContent/RichTextContent";
 import InspectionHistoryTable from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable";
 import type { InspectionHistoryItem } from "@/components/Inspections/InspectionHistoryTable/InspectionHistoryTable.types";
 import { itemsBase as base } from "./Items.types";
@@ -142,7 +143,7 @@ export default function InclusiveRadarItemsShowPage({
             <CardBox className="itemShow__panel">
                 <FormSection
                     id="item-identification"
-                    title="Identificação do Item"
+                    title="Identificação"
                     variant="inline"
                     iconClass="fa fa-cube"
                 >
@@ -161,12 +162,7 @@ export default function InclusiveRadarItemsShowPage({
                         </DetailField>
                         <DetailField label="Descrição Detalhada" wide>
                             <ExpandableContent>
-                                <div
-                                    className="itemShow__rich"
-                                    dangerouslySetInnerHTML={{
-                                        __html: display.notesHtml,
-                                    }}
-                                />
+                                <RichTextContent html={display.notesHtml} />
                             </ExpandableContent>
                         </DetailField>
                         <DetailField label="Recursos de Acessibilidade" wide>
@@ -179,16 +175,16 @@ export default function InclusiveRadarItemsShowPage({
                 </FormSection>
                 <FormSection
                     id="item-management"
-                    title="Gestão e Público"
+                    title="Gestão"
                     variant="inline"
-                    iconClass="fa fa-cogs"
+                    iconClass="fa fa-tasks"
                 >
                     <dl className="itemShow__grid">
                         <DetailField label="Quantidade Total">
-                            {item.quantity ?? "---"}
+                            {item.is_digital ? "Não se aplica" : item.quantity ?? "---"}
                         </DetailField>
                         <DetailField label="Quantidade Disponível">
-                            {item.quantity_available ?? "---"}
+                            {item.is_digital ? "Não se aplica" : item.quantity_available ?? "---"}
                         </DetailField>
                         <DetailField label="Status do Recurso">
                             <TableLabel tone={statusTone}>

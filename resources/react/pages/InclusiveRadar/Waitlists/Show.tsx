@@ -2,6 +2,7 @@ import { router } from "@inertiajs/react";
 import { useState } from "react";
 import FormActions from "@/components/Forms/FormActions/FormActions";
 import FormSection from "@/components/Forms/FormSection/FormSection";
+import { FormStack } from "@/components/Forms/FormGrid/FormGrid";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
@@ -69,62 +70,39 @@ export default function InclusiveRadarWaitlistsShowPage({
         >
             <CardBox className="waitlistShow__card">
                 <FormSection
-                    id="waitlist-show-resource"
-                    title="Recurso Solicitado"
+                    id="waitlist-show-identification"
+                    title="Identificação"
                     variant="inline"
-                    iconClass={waitlist.item_type === "assistive_technology" ? "fa fa-microchip" : "fa fa-book"}
+                    iconClass="fa fa-list-alt"
                 >
-                    <WaitlistResourceDetails {...waitlist} />
-                </FormSection>
-                <FormSection
-                    id="waitlist-show-beneficiary"
-                    title="Beneficiário e Usuário Responsável"
-                    variant="inline"
-                    iconClass="fa fa-users"
-                >
-                    <dl className="waitlistShow__grid">
-                        <DetailField label="Estudante (Beneficiário)">
-                            {waitlist.student?.name ?? "Não informado"}
-                        </DetailField>
-                        <DetailField label="Profissional (Beneficiário)">
-                            {waitlist.professional?.name ?? "Não informado"}
-                        </DetailField>
-                        <DetailField label="Usuário Responsável">
-                            {waitlist.user || "—"}
-                        </DetailField>
-                    </dl>
-                </FormSection>
-                <FormSection
-                    id="waitlist-show-status"
-                    title="Status e Datas"
-                    variant="inline"
-                    iconClass="fa fa-calendar"
-                >
-                    <dl className="waitlistShow__grid">
-                        <DetailField label="Data da Solicitação">
-                            {waitlist.requested_at_label}
-                        </DetailField>
-                        <DetailField label="Status da Solicitação">
-                            <TableLabel tone={statusColor}>{statusLabel}</TableLabel>
-                        </DetailField>
-                    </dl>
-                </FormSection>
-                <FormSection
-                    id="waitlist-show-observation"
-                    title="Observações"
-                    variant="inline"
-                    iconClass="fa fa-comment"
-                >
-                    <dl className="waitlistShow__grid">
-                        <DetailField label="Observações" wide>
-                            {waitlist.observation_html ? (
-                                <div
-                                    className="waitlistShow__richText"
-                                    dangerouslySetInnerHTML={{ __html: waitlist.observation_html }}
-                                />
-                            ) : "Nenhuma observação registrada."}
-                        </DetailField>
-                    </dl>
+                    <FormStack>
+                        <WaitlistResourceDetails {...waitlist} />
+                        <dl className="waitlistShow__grid">
+                            <DetailField label="Estudante (Beneficiário)">
+                                {waitlist.student?.name ?? "Não informado"}
+                            </DetailField>
+                            <DetailField label="Profissional (Beneficiário)">
+                                {waitlist.professional?.name ?? "Não informado"}
+                            </DetailField>
+                            <DetailField label="Usuário Responsável">
+                                {waitlist.user || "—"}
+                            </DetailField>
+                            <DetailField label="Data da Solicitação">
+                                {waitlist.requested_at_label}
+                            </DetailField>
+                            <DetailField label="Status da Solicitação">
+                                <TableLabel tone={statusColor}>{statusLabel}</TableLabel>
+                            </DetailField>
+                            <DetailField label="Observações" wide>
+                                {waitlist.observation_html ? (
+                                    <div
+                                        className="waitlistShow__richText"
+                                        dangerouslySetInnerHTML={{ __html: waitlist.observation_html }}
+                                    />
+                                ) : "Nenhuma observação registrada."}
+                            </DetailField>
+                        </dl>
+                    </FormStack>
                 </FormSection>
             </CardBox>
             <FormActions

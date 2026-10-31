@@ -78,7 +78,7 @@ export default function BarrierCategoryForm({
                 <CardBox>
                     <FormSection
                         id="barrier-category-information"
-                        title="Informações da Categoria"
+                        title="Identificação"
                         variant="inline"
                         iconClass="fa fa-tags"
                     >

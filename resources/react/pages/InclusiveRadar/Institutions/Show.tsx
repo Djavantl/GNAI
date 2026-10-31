@@ -58,17 +58,26 @@ export default function InclusiveRadarInstitutionsShowPage({
             <CardBox aria-busy={deleting}>
                 <FormSection
                     id="institution-show-information"
-                    title="Informações Gerais e Localização"
+                    title="Identificação"
                     variant="inline"
                     iconClass="fa fa-university"
                 >
                     <dl className="institutionShow__grid">
                         <DetailField label="Nome da Instituição" wide>{institution.name}</DetailField>
-                        <DetailField label="Sigla / Nome Curto" wide>{institution.short_name || "— Não informada —"}</DetailField>
+                        <DetailField label="Sigla / Nome Curto" wide>{institution.short_name || "Não informada"}</DetailField>
                         <DetailField label="Cidade">{institution.city}</DetailField>
                         <DetailField label="Estado">{institution.state}</DetailField>
-                        <DetailField label="Bairro / Distrito">{institution.district || "— Não informado —"}</DetailField>
-                        <DetailField label="Rua / Logradouro">{institution.address || "— Não informado —"}</DetailField>
+                        <DetailField label="Bairro / Distrito">{institution.district || "Não informado"}</DetailField>
+                        <DetailField label="Rua / Logradouro">{institution.address || "Não informado"}</DetailField>
+                    </dl>
+                </FormSection>
+                <FormSection
+                    id="institution-show-settings"
+                    title="Configuração"
+                    variant="inline"
+                    iconClass="fa fa-globe"
+                >
+                    <dl className="institutionShow__grid">
                         <DetailField label="Instituição Ativa">
                             <TableLabel tone={institution.is_active ? "success" : "inverse"}>
                                 {institution.is_active ? "Sim" : "Não"}
@@ -77,15 +86,13 @@ export default function InclusiveRadarInstitutionsShowPage({
                         <DetailField label="Zoom Padrão">{institution.default_zoom}</DetailField>
                         <DetailField label="Latitude Sede">{Number(institution.latitude).toFixed(8)}</DetailField>
                         <DetailField label="Longitude Sede">{Number(institution.longitude).toFixed(8)}</DetailField>
-                        <DetailField label="Localização no Mapa" wide>
-                            <GeoMap
-                                title="Localização da Instituição"
-                                value={{ latitude: Number(institution.latitude), longitude: Number(institution.longitude) }}
-                                zoom={institution.default_zoom}
-                                markerLabel={institution.name}
-                            />
-                        </DetailField>
                     </dl>
+                    <GeoMap
+                        title="Localização da Instituição"
+                        value={{ latitude: Number(institution.latitude), longitude: Number(institution.longitude) }}
+                        zoom={institution.default_zoom}
+                        markerLabel={institution.name}
+                    />
                 </FormSection>
             </CardBox>
             <FormActions>

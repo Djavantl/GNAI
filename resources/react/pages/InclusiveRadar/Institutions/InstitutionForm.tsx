@@ -49,7 +49,8 @@ export default function InstitutionForm({ institution, canSubmit }: { institutio
         latitude: parseCoordinate(form.data.latitude, defaultPoint.latitude),
         longitude: parseCoordinate(form.data.longitude, defaultPoint.longitude),
     };
-    const zoom = Number.parseInt(form.data.default_zoom, 10) || 16;
+    const parsedZoom = Number.parseInt(form.data.default_zoom, 10);
+    const zoom = Number.isFinite(parsedZoom) ? parsedZoom : 16;
 
     useEffect(() => {
         if (previousAddressRef.current === addressKey) return;
@@ -173,7 +174,7 @@ export default function InstitutionForm({ institution, canSubmit }: { institutio
         >
             <FormLayout onSubmit={submit} aria-busy={form.processing}>
                 <CardBox>
-                    <FormSection id="institution-information" title="Informações Gerais" variant="inline" iconClass="fa fa-university">
+                    <FormSection id="institution-information" title="Identificação" variant="inline" iconClass="fa fa-university">
                         <FormGrid columns={2}>
                             <FormField id="institution-name" label="Nome da Instituição" requiredIndicator error={errors.name}>
                                 <TextInput
@@ -219,6 +220,10 @@ export default function InstitutionForm({ institution, canSubmit }: { institutio
                                     disabled={form.processing} onChange={(event) => form.setData("address", event.target.value)}
                                 />
                             </FormField>
+                        </FormGrid>
+                    </FormSection>
+                    <FormSection id="institution-map-settings" title="Configuração" variant="inline" iconClass="fa fa-globe">
+                        <FormGrid columns={2}>
                             <FormGridWide>
                                 <FormStack>
                                     <ToggleControl
@@ -230,15 +235,11 @@ export default function InstitutionForm({ institution, canSubmit }: { institutio
                                     />
                                 </FormStack>
                             </FormGridWide>
-                        </FormGrid>
-                    </FormSection>
-                    <FormSection id="institution-map-settings" title="Configurações e Localização no Mapa" variant="inline" iconClass="fa fa-globe">
-                        <FormGrid columns={2}>
                             <FormGridWide>
                                 <FormField id="institution-default-zoom" label="Zoom Padrão" error={errors.default_zoom}>
                                     <div className="institutionForm__rangeField">
                                         <input
-                                            id="institution-default-zoom" name="default_zoom" type="range" min="1" max="20"
+                                            id="institution-default-zoom" name="default_zoom" type="range" min="0" max="20"
                                             value={zoom} aria-describedby={errors.default_zoom ? "institution-default-zoom-error" : undefined}
                                             disabled={form.processing}
                                             onChange={(event) => form.setData("default_zoom", event.target.value)}

@@ -244,7 +244,7 @@ export default function BarrierForm({
                                     onChange={setShowLocations}
                                 />
                                 <div className="barrierForm__mapFrame">
-                                    <GeoMap title="Localização da Barreira" value={mapPoint} zoom={editing ? 18 : institution?.default_zoom ?? 16} editable interactionEnabled={!!institution && !mapBlocked && !form.processing} markerLabel="Barreira selecionada" reference={institution} showReferenceMarkers={showLocations} onChange={updatePoint} onBlockedInteraction={() => {
+                                    <GeoMap title="Localização da Barreira" value={mapPoint} zoom={institution?.default_zoom ?? 16} editable interactionEnabled={!!institution && !mapBlocked && !form.processing} markerLabel="Barreira selecionada" reference={institution} showReferenceMarkers={showLocations} onChange={updatePoint} onBlockedInteraction={() => {
                                         notify({ tone: "warning", title: mapBlocked ? "Mapa não aplicável" : "Selecione a instituição", text: mapBlocked ? `O mapa não se aplica à categoria ${category?.name ?? "selecionada"}.` : "Escolha uma instituição antes de marcar a localização." });
                                     }} />
                                     {errors.latitude || errors.longitude ? <p className="geoMap__message" role="alert">{errors.latitude ?? errors.longitude}</p> : null}

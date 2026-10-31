@@ -7,7 +7,7 @@ export type LocationRecord = GeoPoint & {
     type: string | null;
     description: string | null;
     is_active: boolean;
-    institution?: { id: number; name: string; default_zoom?: number };
+    institution?: { id: number; name: string; latitude: number | string; longitude: number | string; default_zoom?: number };
 };
 
 export type LocationPaginator = {

@@ -74,7 +74,7 @@ final class LocationController
         return Inertia::render('InclusiveRadar/Locations/Show', [
             'location' => $location,
             'display' => [
-                'descriptionHtml' => RichTextSanitizer::sanitize($location->description ?: '— Não informada —'),
+                'descriptionHtml' => RichTextSanitizer::sanitize($location->description ?: 'Não informada'),
             ],
             'can' => [
                 'edit' => $request->user()?->can('location.edit') ?? false,

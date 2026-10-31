@@ -227,7 +227,7 @@ export default function ItemForm({
                 <fieldset disabled={form.processing}>
                     <FormSection
                         id="item-identification-form"
-                        title="Identificação do Recurso"
+                        title="Identificação"
                         variant="inline"
                         iconClass="fa fa-cube"
                     >
@@ -380,25 +380,141 @@ export default function ItemForm({
                                     />
                                 </FormField>
                             </FormGridWide>
+                            <FormGridWide>
+                                <CheckboxOptions
+                                    id="item-accessibility-features"
+                                    name="accessibility_features"
+                                    label="Recursos presentes no item"
+                                    options={options.accessibilityFeatures}
+                                    selected={form.data.accessibility_features}
+                                    error={errors.accessibility_features}
+                                    onChange={(values) =>
+                                        form.setData("accessibility_features", values)
+                                    }
+                                />
+                            </FormGridWide>
+                            <FormGridWide>
+                                <CheckboxOptions
+                                    id="item-deficiencies"
+                                    name="deficiencies"
+                                    label="Público Alvo"
+                                    options={options.deficiencies}
+                                    selected={form.data.deficiencies}
+                                    error={errors.deficiencies}
+                                    required
+                                    onChange={(values) =>
+                                        form.setData("deficiencies", values)
+                                    }
+                                />
+                            </FormGridWide>
                         </FormGrid>
                     </FormSection>
                     <FormSection
-                        id="item-accessibility-form"
-                        title="Recursos de Acessibilidade"
+                        id="item-management-form"
+                        title="Gestão"
                         variant="inline"
-                        iconClass="fa fa-universal-access"
+                        iconClass="fa fa-tasks"
                     >
-                        <CheckboxOptions
-                            id="item-accessibility-features"
-                            name="accessibility_features"
-                            label="Recursos presentes no item"
-                            options={options.accessibilityFeatures}
-                            selected={form.data.accessibility_features}
-                            error={errors.accessibility_features}
-                            onChange={(values) =>
-                                form.setData("accessibility_features", values)
-                            }
-                        />
+                        <FormGrid>
+                            <FormStack>
+                                <FormField
+                                    id="item-quantity"
+                                    label="Quantidade Total"
+                                    error={errors.quantity}
+                                    requiredIndicator={!form.data.is_digital}
+                                >
+                                    <TextInput
+                                        id="item-quantity"
+                                        name="quantity"
+                                        type="number"
+                                        min={
+                                            form.data.is_digital
+                                                ? 0
+                                                : Math.max(1, activeLoans)
+                                        }
+                                        required={!form.data.is_digital}
+                                        value={form.data.quantity}
+                                        invalid={!!errors.quantity}
+                                        aria-describedby={describedBy(
+                                            "quantity",
+                                            "item-quantity",
+                                        )}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                "quantity",
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                </FormField>
+                                {mode === "edit" && activeLoans > 0 ? (
+                                    <InlineAlert variant="warning">
+                                        <i className="fa fa-lock" aria-hidden="true" />{" "}
+                                        {activeLoans} unidades em uso.
+                                    </InlineAlert>
+                                ) : null}
+                            </FormStack>
+                            <FormField
+                                id="item-status"
+                                label="Status do Recurso"
+                                error={errors.status}
+                                requiredIndicator
+                            >
+                                <SelectField
+                                    id="item-status"
+                                    name="status"
+                                    label="Status do Recurso"
+                                    required
+                                    value={form.data.status}
+                                    aria-invalid={!!errors.status}
+                                    aria-describedby={describedBy(
+                                        "status",
+                                        "item-status",
+                                    )}
+                                    options={selectOptions(
+                                        options.resourceStatuses,
+                                    )}
+                                    onChange={(event) =>
+                                        form.setData(
+                                            "status",
+                                            event.target.value,
+                                        )
+                                    }
+                                />
+                            </FormField>
+                            <ToggleControl
+                                id="item-loanable"
+                                name="is_loanable"
+                                size="small"
+                                checked={form.data.is_loanable}
+                                disabled={form.processing}
+                                label="Permitir Empréstimos"
+                                labelAddon={(
+                                    <InfoTooltip
+                                        text="Marque se este item pode ser emprestado."
+                                    />
+                                )}
+                                onChange={(checked) =>
+                                    form.setData("is_loanable", checked)
+                                }
+                            />
+                            <ToggleControl
+                                id="item-active"
+                                name="is_active"
+                                size="small"
+                                checked={form.data.is_active}
+                                disabled={form.processing}
+                                label="Ativar no Sistema"
+                                labelAddon={(
+                                    <InfoTooltip
+                                        text="Disponível para visualização e empréstimos."
+                                    />
+                                )}
+                                onChange={(checked) =>
+                                    form.setData("is_active", checked)
+                                }
+                            />
+                        </FormGrid>
                     </FormSection>
                     <FormSection
                         id="item-inspection-form"
@@ -546,129 +662,6 @@ export default function ItemForm({
                                         }
                                     />
                                 </FormField>
-                            </FormGridWide>
-                        </FormGrid>
-                    </FormSection>
-                    <FormSection
-                        id="item-management-form"
-                        title="Gestão e Público"
-                        variant="inline"
-                        iconClass="fa fa-cogs"
-                    >
-                        <FormGrid>
-                            <FormStack>
-                                <FormField
-                                    id="item-quantity"
-                                    label="Quantidade Total"
-                                    error={errors.quantity}
-                                    requiredIndicator={!form.data.is_digital}
-                                >
-                                    <TextInput
-                                        id="item-quantity"
-                                        name="quantity"
-                                        type="number"
-                                        min={
-                                            form.data.is_digital
-                                                ? 0
-                                                : Math.max(1, activeLoans)
-                                        }
-                                        required={!form.data.is_digital}
-                                        value={form.data.quantity}
-                                        invalid={!!errors.quantity}
-                                        aria-describedby={describedBy(
-                                            "quantity",
-                                            "item-quantity",
-                                        )}
-                                        onChange={(event) =>
-                                            form.setData(
-                                                "quantity",
-                                                event.target.value,
-                                            )
-                                        }
-                                    />
-                                </FormField>
-                                {mode === "edit" && activeLoans > 0 ? (
-                                    <InlineAlert variant="warning">
-                                        <i className="fa fa-lock" aria-hidden="true" />{" "}
-                                        {activeLoans} unidades em uso.
-                                    </InlineAlert>
-                                ) : null}
-                                <ToggleControl
-                                    id="item-loanable"
-                                    name="is_loanable"
-                                    size="small"
-                                    checked={form.data.is_loanable}
-                                    disabled={form.processing}
-                                    label="Permitir Empréstimos"
-                                    labelAddon={(
-                                        <InfoTooltip
-                                            text="Marque se este item pode ser emprestado."
-                                        />
-                                    )}
-                                    onChange={(checked) =>
-                                        form.setData("is_loanable", checked)
-                                    }
-                                />
-                            </FormStack>
-                            <FormStack>
-                                <FormField
-                                    id="item-status"
-                                    label="Status do Recurso"
-                                    error={errors.status}
-                                    requiredIndicator
-                                >
-                                    <SelectField
-                                        id="item-status"
-                                        name="status"
-                                        label="Status do Recurso"
-                                        required
-                                        value={form.data.status}
-                                        aria-invalid={!!errors.status}
-                                        aria-describedby={describedBy(
-                                            "status",
-                                            "item-status",
-                                        )}
-                                        options={selectOptions(
-                                            options.resourceStatuses,
-                                        )}
-                                        onChange={(event) =>
-                                            form.setData(
-                                                "status",
-                                                event.target.value,
-                                            )
-                                        }
-                                    />
-                                </FormField>
-                                <ToggleControl
-                                    id="item-active"
-                                    name="is_active"
-                                    size="small"
-                                    checked={form.data.is_active}
-                                    disabled={form.processing}
-                                    label="Ativar no Sistema"
-                                    labelAddon={(
-                                        <InfoTooltip
-                                            text="Disponível para visualização e empréstimos."
-                                        />
-                                    )}
-                                    onChange={(checked) =>
-                                        form.setData("is_active", checked)
-                                    }
-                                />
-                            </FormStack>
-                            <FormGridWide>
-                                <CheckboxOptions
-                                    id="item-deficiencies"
-                                    name="deficiencies"
-                                    label="Público Alvo"
-                                    options={options.deficiencies}
-                                    selected={form.data.deficiencies}
-                                    error={errors.deficiencies}
-                                    required
-                                    onChange={(values) =>
-                                        form.setData("deficiencies", values)
-                                    }
-                                />
                             </FormGridWide>
                         </FormGrid>
                     </FormSection>

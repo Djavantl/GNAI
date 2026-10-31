@@ -1,0 +1,26 @@
+.richTextContent { display: flow-root; min-width: 0; max-width: 100%; overflow-wrap: anywhere; line-height: 1.6; }
+.richTextContent > :first-child { margin-top: 0; }
+.richTextContent > :last-child { margin-bottom: 0; }
+.richTextContent :is(b, strong) { font-weight: 700; }
+.richTextContent :is(i, em) { font-style: italic; }
+.richTextContent ul { list-style: disc; }
+.richTextContent ol { list-style: decimal; }
+.richTextContent :is(ul, ol) { margin: 0 0 10px; padding-left: 2em; }
+.richTextContent ul ul { list-style-type: circle; }
+.richTextContent ol[type="a"] { list-style-type: lower-alpha; }
+.richTextContent ol[type="A"] { list-style-type: upper-alpha; }
+.richTextContent ol[type="i"] { list-style-type: lower-roman; }
+.richTextContent ol[type="I"] { list-style-type: upper-roman; }
+.richTextContent pre { max-width: 100%; overflow-x: auto; white-space: pre-wrap; }
+.richTextContent blockquote { margin: 0 0 16px; padding: 8px 16px; border-left: 4px solid var(--ui-color-card-border); }
+.richTextContent img { max-width: 100%; height: auto; vertical-align: middle; }
+.richTextContent .img-rounded { border-radius: 6px; }
+.richTextContent .img-circle { border-radius: 50%; }
+.richTextContent .img-thumbnail { padding: 4px; border: 1px solid var(--ui-color-card-border); border-radius: 4px; background: var(--ui-color-surface); }
+.richTextContent .pull-left { float: left; }
+.richTextContent .pull-right { float: right; }
+.richTextContent table { width: 100%; max-width: 100%; border-collapse: collapse; }
+.richTextContent :is(th, td) { padding: 5px; border: 1px solid var(--ui-color-card-border); overflow-wrap: anywhere; }
+.richTextContent a { color: var(--ui-color-gnai-primary); text-decoration: underline; }
+.richTextContent a:hover { color: var(--ui-color-gnai-primary-hover); }
+.richTextContent a:focus-visible { outline: 2px solid var(--ui-color-input-focus-border); outline-offset: 2px; }

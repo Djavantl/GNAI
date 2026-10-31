@@ -119,6 +119,7 @@ export default function GeoMap({
     const selectedMarkerRef = useRef<LeafletLayer | null>(null);
     const referenceMarkersRef = useRef<LeafletLayerGroup | null>(null);
     const previousReferenceIdRef = useRef(reference?.id);
+    const previousViewportCenterRef = useRef<GeoPoint | null>(null);
     const onChangeRef = useRef(onChange);
     const onBlockedInteractionRef = useRef(onBlockedInteraction);
     const interactionEnabledRef = useRef(interactionEnabled);
@@ -129,6 +130,11 @@ export default function GeoMap({
     onBlockedInteractionRef.current = onBlockedInteraction;
     interactionEnabledRef.current = interactionEnabled;
     onZoomChangeRef.current = onZoomChange;
+    // A sede define o enquadramento; value mantém a posição real do marcador.
+    const viewportCenter = reference && validPoint(reference)
+        ? reference
+        : validPoint(value) ? value : defaultCenter;
+    const viewportZoom = reference?.default_zoom ?? zoom;
 
     useEffect(() => {
         let disposed = false;
@@ -142,8 +148,8 @@ export default function GeoMap({
 
                 const point = validPoint(value) ? value : defaultCenter;
                 const map = leaflet.map(containerRef.current, {
-                    center: [point.latitude, point.longitude],
-                    zoom,
+                    center: [viewportCenter.latitude, viewportCenter.longitude],
+                    zoom: viewportZoom,
                     scrollWheelZoom: true,
                 });
                 const streets = leaflet.tileLayer(
@@ -223,10 +229,23 @@ export default function GeoMap({
     }, [value.latitude, value.longitude, ready]);
 
     useEffect(() => {
-        if (zoom > 0 && mapRef.current && mapRef.current.getZoom() !== zoom) {
-            mapRef.current.setView([value.latitude, value.longitude], zoom);
+        const map = mapRef.current;
+        if (!map || !ready || !Number.isFinite(viewportZoom) || viewportZoom < 0) return;
+        const point: [number, number] = [viewportCenter.latitude, viewportCenter.longitude];
+        const changedInstitution = previousReferenceIdRef.current !== reference?.id;
+        const changedCenter = previousViewportCenterRef.current?.latitude !== viewportCenter.latitude
+            || previousViewportCenterRef.current?.longitude !== viewportCenter.longitude;
+        previousReferenceIdRef.current = reference?.id;
+        previousViewportCenterRef.current = {
+            latitude: viewportCenter.latitude,
+            longitude: viewportCenter.longitude,
+        };
+        if (changedInstitution && reference) {
+            map.flyTo(point, viewportZoom, { animate: true, duration: 0.8 });
+        } else if (changedCenter || map.getZoom() !== viewportZoom) {
+            map.setView(point, viewportZoom);
         }
-    }, [value.latitude, value.longitude, zoom, ready]);
+    }, [viewportCenter.latitude, viewportCenter.longitude, viewportZoom, reference?.id, ready]);
 
     useEffect(() => {
         const leaflet = (window as Window & { L?: LeafletRuntime }).L;
@@ -257,17 +276,6 @@ export default function GeoMap({
         if (showReferenceMarkers) map.addLayer(markers);
         else map.removeLayer(markers);
     }, [showReferenceMarkers, ready]);
-
-    useEffect(() => {
-        if (!reference || !validPoint(reference) || !mapRef.current) return;
-        if (previousReferenceIdRef.current === reference.id) return;
-        previousReferenceIdRef.current = reference.id;
-        mapRef.current.flyTo(
-            [reference.latitude, reference.longitude],
-            reference.default_zoom ?? zoom,
-            { animate: true, duration: 0.8 },
-        );
-    }, [reference?.id, reference?.name, reference?.latitude, reference?.longitude, reference?.default_zoom, ready]);
 
     return (
         <div className="geoMap">

@@ -96,7 +96,7 @@ export default function InclusiveRadarBarriersShowPage({ barrier, display, can }
                         <FormSection id="barrier-show-map" title="Localização no Mapa" variant="inline" iconClass="fa fa-map-marker">
                             <div className="barrierShow__details">
                                 <div className="barrierForm__mapFrame">
-                                    <GeoMap title="Localização da Barreira" value={mapPoint} zoom={18} markerLabel="Barreira" reference={reference} />
+                                    <GeoMap title="Localização da Barreira" value={mapPoint} zoom={reference?.default_zoom ?? 16} markerLabel="Barreira" reference={reference} />
                                     {barrier.category?.blocks_map ? <div className="barrierForm__mapBlock"><span><i className="fa fa-lock" aria-hidden="true" /><br />Mapa não se aplica à categoria<br />{barrier.category.name}.</span></div> : null}
                                 </div>
                             </div>

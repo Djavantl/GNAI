@@ -51,8 +51,8 @@
 
 .inlineAlert--info {
   border-color: rgba(52, 211, 235, 0.3);
-  background-color: rgba(52, 211, 235, 0.2);
-  color: #34d3eb;
+  background-color: var(--ui-color-info-light);
+  color: var(--ui-color-info-text);
 }
 
 .inlineAlert--warning {
