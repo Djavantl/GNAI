@@ -25,10 +25,12 @@ final class GuardianFormQuery
     {
         $guardian->ensureBelongsTo($student);
         $student->ensureIsActive();
+        $guardian->loadMissing('person');
+        $guardian->person?->append('photo_url');
 
         return $this->formOptions() + [
             'student' => $student->loadMissing('person'),
-            'guardian' => $guardian->loadMissing('person'),
+            'guardian' => $guardian,
         ];
     }
 

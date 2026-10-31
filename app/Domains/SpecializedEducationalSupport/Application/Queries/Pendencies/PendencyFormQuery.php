@@ -29,6 +29,9 @@ final class PendencyFormQuery
     {
         return [
             'pendency' => $pendency->loadMissing(['assignedProfessional.person', 'creator.professional.person']),
+            'pendencyForm' => [
+                'due_date' => $pendency->due_date?->format('Y-m-d') ?? '',
+            ],
             'professionals' => $this->professionals(),
             'priorities' => $this->priorities(),
         ];

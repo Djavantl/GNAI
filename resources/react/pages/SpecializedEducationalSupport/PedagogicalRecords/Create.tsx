@@ -1,5 +1,10 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import PedagogicalRecordForm from "./PedagogicalRecordForm";
+import type { PedagogicalRecordFormContext } from "./PedagogicalRecordForm.types";
 
-export default function SpecializedEducationalSupportPedagogicalRecordsCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Atendimentos pedagógicos" />;
+export default function SpecializedEducationalSupportPedagogicalRecordsCreatePage({
+    context,
+}: {
+    context: PedagogicalRecordFormContext;
+}): React.JSX.Element {
+    return <PedagogicalRecordForm context={context} />;
 }

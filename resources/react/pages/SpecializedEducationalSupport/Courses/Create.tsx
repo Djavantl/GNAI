@@ -1,5 +1,10 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import CourseForm from "./CourseForm";
+import type { CourseDisciplineOption } from "./Course.types";
 
-export default function SpecializedEducationalSupportCoursesCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Cursos" />;
+export default function SpecializedEducationalSupportCoursesCreatePage({
+    disciplines,
+}: {
+    disciplines: CourseDisciplineOption[];
+}): React.JSX.Element {
+    return <CourseForm disciplines={disciplines} />;
 }

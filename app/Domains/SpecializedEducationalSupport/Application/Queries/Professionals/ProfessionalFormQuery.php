@@ -29,8 +29,11 @@ final class ProfessionalFormQuery
 
     public function forUpdate(Professional $professional): array
     {
+        $professional->loadMissing(['person', 'position', 'user']);
+        $professional->person?->append('photo_url');
+
         return $this->formOptions() + [
-            'professional' => $professional->loadMissing(['person', 'position', 'user']),
+            'professional' => $professional,
             'defaultStatus' => ProfessionalStatus::ACTIVE->value,
         ];
     }

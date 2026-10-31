@@ -1,5 +1,5 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import SemesterForm from "./SemesterForm";
 
 export default function SpecializedEducationalSupportSemestersCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Semestres" />;
+    return <SemesterForm />;
 }

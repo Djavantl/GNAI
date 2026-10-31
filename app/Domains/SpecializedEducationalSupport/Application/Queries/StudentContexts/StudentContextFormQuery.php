@@ -7,6 +7,7 @@ namespace App\Domains\SpecializedEducationalSupport\Application\Queries\StudentC
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttentionLevel;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\AutonomyLevel;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\CommunicationType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\DeficiencySeverity;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\GeneralLevel;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\InteractionLevel;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\MemoryLevel;
@@ -36,6 +37,7 @@ final class StudentContextFormQuery
             'student' => $student->loadMissing(['person', 'deficiencies']),
             'deficiencies' => $student->deficiencies,
             'studentContextOptions' => $this->options(),
+            'studentProfile' => $this->studentProfile($student),
         ];
     }
 
@@ -51,6 +53,7 @@ final class StudentContextFormQuery
             'student' => $context->student,
             'deficiencies' => $context->student->deficiencies,
             'studentContextOptions' => $this->options(),
+            'studentProfile' => $this->studentProfile($context->student),
         ];
     }
 
@@ -78,6 +81,28 @@ final class StudentContextFormQuery
             'student' => $student->loadMissing(['person', 'deficiencies']),
             'deficiencies' => $student->deficiencies,
             'studentContextOptions' => $this->options(),
+        ];
+    }
+
+    /**
+     * Presentation values the legacy form read through accessors and enum methods.
+     *
+     * @return array<string, mixed>
+     */
+    private function studentProfile(Student $student): array
+    {
+        return [
+            'name' => $student->person->name,
+            'registration' => $student->registration,
+            'photo_url' => $student->person->photo_url,
+            'status_label' => $student->status->label(),
+            'status_color' => $student->status->color(),
+            'deficiencies' => $student->deficiencies->map(fn ($deficiency): array => [
+                'id' => (int) $deficiency->getKey(),
+                'name' => $deficiency->name,
+                'severity' => $deficiency->pivot->severity,
+                'severity_label' => DeficiencySeverity::tryFrom((string) $deficiency->pivot->severity)?->label(),
+            ])->values()->all(),
         ];
     }
 

@@ -250,11 +250,15 @@ final class PeiController
     /**
      * @throws InvalidStudent
      */
-    public function createDiscipline(Pei $pei, PeiDisciplineFormQuery $form): InertiaResponse
-    {
+    public function createDiscipline(
+        Pei $pei,
+        PeiDisciplineFormQuery $form,
+        AuthenticatedUserResolver $authenticatedUser,
+        Request $request,
+    ): InertiaResponse {
         return Inertia::render(
             'SpecializedEducationalSupport/Peis/Disciplines/Create',
-            $form->forCreation($pei),
+            $form->forCreation($pei, $authenticatedUser->fromRequest($request)),
         );
     }
 

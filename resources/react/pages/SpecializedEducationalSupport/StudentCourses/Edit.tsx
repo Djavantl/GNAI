@@ -1,18 +1,16 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import StudentCourseForm from "./StudentCourseForm";
+import type { StudentCourseRecord } from "./StudentCourse.types";
 
 export default function SpecializedEducationalSupportStudentCoursesEditPage({
-  studentCourse,
+    studentCourse,
 }: {
-  studentCourse: { student_id: number; student?: { id: number } };
+    studentCourse: StudentCourseRecord;
 }): React.JSX.Element {
-  return (
-    <PageScaffold title="Edição — Cursos do estudante">
-      <StudentRecordReturnButton
-        studentId={studentCourse.student?.id ?? studentCourse.student_id}
-        tab="academic-data"
-        cancel
-      />
-    </PageScaffold>
-  );
+    return (
+        <StudentCourseForm
+            key={studentCourse.id}
+            mode="edit"
+            studentCourse={studentCourse}
+        />
+    );
 }

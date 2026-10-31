@@ -21,7 +21,7 @@ final class PeiDisciplineFormQuery
      * @throws InvalidPei
      * @throws InvalidStudent
      */
-    public function forCreation(Pei $pei): array
+    public function forCreation(Pei $pei, ?User $user = null): array
     {
         $pei->loadMissing(['student', 'course.disciplines']);
         $pei->student->ensureIsActive();
@@ -34,6 +34,7 @@ final class PeiDisciplineFormQuery
             'pei' => $pei,
             'teachers' => $this->teachers($pei),
             'disciplines' => $pei->course->disciplines,
+            'loggedTeacher' => $this->loggedTeacher($user),
         ];
     }
 
@@ -59,6 +60,25 @@ final class PeiDisciplineFormQuery
             'peiDiscipline' => $peiDiscipline,
             'teachers' => $this->teachers($pei),
             'disciplines' => Discipline::query()->orderBy('name')->get(),
+        ];
+    }
+
+    /**
+     * Professor vinculado ao usuário autenticado, usado como responsável fixo no cadastro.
+     *
+     * @return array{id: int, name: string|null}|null
+     */
+    private function loggedTeacher(?User $user): ?array
+    {
+        if (! $user?->teacher_id) {
+            return null;
+        }
+
+        $teacher = Teacher::query()->with('person')->find($user->teacher_id);
+
+        return [
+            'id' => (int) $user->teacher_id,
+            'name' => $teacher?->person?->name,
         ];
     }
 

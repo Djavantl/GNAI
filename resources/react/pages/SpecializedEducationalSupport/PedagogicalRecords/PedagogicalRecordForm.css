@@ -1,0 +1,36 @@
+.pedagogicalRecordForm__details {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0 0 24px;
+}
+
+.pedagogicalRecordForm__details > .detailField {
+    grid-column: span 2;
+}
+
+.pedagogicalRecordForm__details > .detailField:nth-child(-n + 2) {
+    grid-column: span 3;
+}
+
+.pedagogicalRecordForm__guardians {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 24px;
+}
+
+.pedagogicalRecordForm__relationship {
+    color: var(--ui-color-page-subtitle);
+}
+
+@media (max-width: 700px) {
+    .pedagogicalRecordForm__details,
+    .pedagogicalRecordForm__guardians {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pedagogicalRecordForm__details > .detailField,
+    .pedagogicalRecordForm__details > .detailField:nth-child(-n + 2) {
+        grid-column: auto;
+    }
+}

@@ -1,0 +1,13 @@
+.profileForm__personal { display: grid; grid-template-columns: 14rem minmax(0, 1fr); align-items: start; gap: 24px 40px; }
+.profileForm__identity { display: flex; flex-direction: column; align-items: center; min-width: 0; text-align: center; }
+.profileForm__identity .personPhotoUpload { margin-bottom: 0; }
+.profileForm__identity .personPhotoUpload__divider { display: none; }
+.profileForm__name { margin: 16px 0 6px; color: var(--ui-color-page-title); font: 700 1.125rem/1.35 var(--ui-font-gnai-heading); overflow-wrap: anywhere; }
+.profileForm__position { max-width: 100%; white-space: normal; }
+.profileForm__bond { width: 100%; margin: 20px 0 0; padding: 12px 16px; border: 1px solid var(--ui-color-card-border); border-radius: 4px; text-align: left; }
+.profileForm__bond dt { margin: 0 0 4px; color: var(--ui-color-text-muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.profileForm__bond dd { margin: 0; color: var(--ui-color-heading); }
+.profileForm__fields { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+@media (max-width: 900px) {
+  .profileForm__personal { grid-template-columns: minmax(0, 1fr); }
+}

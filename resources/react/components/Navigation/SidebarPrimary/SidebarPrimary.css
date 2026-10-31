@@ -3,7 +3,8 @@
   top: var(--ui-topbar-height);
   bottom: 0;
   width: var(--ui-sidebar-width);
-  z-index: 2;
+  /* Acima do rodapé sticky dos formulários (FormActions, z-index 20). */
+  z-index: 25;
   background: var(--ui-sidebar-bg);
 }
 
@@ -30,6 +31,7 @@
   right: 1px;
   bottom: 0;
   width: 5px;
+  z-index: 3;
   pointer-events: none;
   opacity: 0;
   transition: opacity 180ms ease-out;
@@ -282,7 +284,6 @@
 
 .sidebarPrimary--collapsed.side-menu {
   width: var(--ui-sidebar-collapsed-width);
-  z-index: 5;
 }
 
 .sidebarPrimary--collapsed .menu-title {
@@ -364,6 +365,14 @@
     transform: none;
     transition: width 200ms ease-out;
   }
+}
+
+/*
+ * O `.waves-effect` global usa `transition: all`, o que inclui `visibility`, padding e largura:
+ * ao ocultar a sidebar o item ativo permanecia visível e deformado durante a transição.
+ */
+.sidebarPrimary .waves-effect {
+  transition-property: color, background-color;
 }
 
 /* Closed React submenus remain mounted for the height transition. */

@@ -1,18 +1,29 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import StudentDeficiencyForm from "./StudentDeficiencyForm";
+import StudentDeficiencyPage from "./StudentDeficiencyPage";
+import type {
+    DeficiencyOption,
+    StudentDeficiencyStudent,
+} from "./StudentDeficiency.types";
 
 export default function SpecializedEducationalSupportStudentDeficienciesCreatePage({
-  student,
+    student,
+    deficienciesList,
 }: {
-  student: { id: number };
+    student: StudentDeficiencyStudent;
+    deficienciesList: DeficiencyOption[];
 }): React.JSX.Element {
-  return (
-    <PageScaffold title="Cadastro — Deficiências do estudante">
-      <StudentRecordReturnButton
-        studentId={student.id}
-        tab="support-profiles"
-        cancel
-      />
-    </PageScaffold>
-  );
+    return (
+        <StudentDeficiencyPage
+            title="Vincular Perfil de Atendimento"
+            subtitle={`Aluno: ${student.person.name}`}
+            current="Cadastrar"
+            student={student}
+        >
+            <StudentDeficiencyForm
+                mode="create"
+                student={student}
+                deficiencies={deficienciesList}
+            />
+        </StudentDeficiencyPage>
+    );
 }

@@ -1,5 +1,5 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import DeficiencyForm from "./DeficiencyForm";
 
 export default function SpecializedEducationalSupportDeficienciesCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Deficiências" />;
+    return <DeficiencyForm />;
 }

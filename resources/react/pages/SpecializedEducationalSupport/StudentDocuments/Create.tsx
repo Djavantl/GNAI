@@ -1,18 +1,24 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import StudentDocumentForm from "./StudentDocumentForm";
+import StudentDocumentPage from "./StudentDocumentPage";
+import type { StudentDocumentFormOptions } from "./StudentDocument.types";
 
 export default function SpecializedEducationalSupportStudentDocumentsCreatePage({
-  student,
-}: {
-  student: { id: number };
-}): React.JSX.Element {
-  return (
-    <PageScaffold title="Cadastro — Documentos do estudante">
-      <StudentRecordReturnButton
-        studentId={student.id}
-        tab="documents"
-        cancel
-      />
-    </PageScaffold>
-  );
+    student,
+    types,
+    semester,
+}: StudentDocumentFormOptions): React.JSX.Element {
+    return (
+        <StudentDocumentPage
+            title={`Novo Documento para ${student.person.name}`}
+            subtitle="Faça o upload de laudos, avaliações ou planos de AEE para este estudante."
+            current="Cadastrar"
+            student={student}
+        >
+            <StudentDocumentForm
+                student={student}
+                types={types}
+                semester={semester}
+            />
+        </StudentDocumentPage>
+    );
 }

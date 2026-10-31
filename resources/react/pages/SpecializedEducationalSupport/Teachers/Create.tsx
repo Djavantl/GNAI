@@ -1,5 +1,14 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import TeacherForm from "./TeacherForm";
+import TeacherPage from "./TeacherPage";
 
 export default function SpecializedEducationalSupportTeachersCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Docentes" />;
+    return (
+        <TeacherPage
+            title="Novo Professor"
+            subtitle="Cadastre os dados pessoais, matrícula e atribua as disciplinas do novo docente."
+            current="Cadastrar"
+        >
+            <TeacherForm mode="create" />
+        </TeacherPage>
+    );
 }

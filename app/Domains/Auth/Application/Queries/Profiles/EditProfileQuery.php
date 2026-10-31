@@ -29,6 +29,8 @@ final readonly class EditProfileQuery
             throw new InvalidProfile('Vínculo de pessoa não encontrado para este usuário.');
         }
 
+        $person->append('photo_url');
+
         return [
             'person' => $person,
             'professional' => $user->professional,

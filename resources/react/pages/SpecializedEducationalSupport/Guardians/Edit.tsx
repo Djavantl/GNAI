@@ -1,18 +1,26 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import GuardianForm from "./GuardianForm";
+import GuardianPage from "./GuardianPage";
+import type { GuardianFormOptions, GuardianRecord } from "./Guardian.types";
 
-export default function SpecializedEducationalSupportGuardiansEditPage({
-  student,
-}: {
-  student: { id: number };
-}): React.JSX.Element {
-  return (
-    <PageScaffold title="Edição — Responsáveis">
-      <StudentRecordReturnButton
-        studentId={student.id}
-        tab="guardians"
-        cancel
-      />
-    </PageScaffold>
-  );
+export default function SpecializedEducationalSupportGuardiansEditPage(
+    props: GuardianFormOptions & { guardian: GuardianRecord },
+): React.JSX.Element {
+    return (
+        <GuardianPage
+            title="Editar Responsável"
+            subtitle={`Editando vínculo de: ${props.guardian.person.name}`}
+            current="Editar"
+            student={props.student}
+            guardian={props.guardian}
+        >
+            <GuardianForm
+                key={props.guardian.id}
+                mode="edit"
+                student={props.student}
+                genders={props.genders}
+                relationships={props.relationships}
+                guardian={props.guardian}
+            />
+        </GuardianPage>
+    );
 }

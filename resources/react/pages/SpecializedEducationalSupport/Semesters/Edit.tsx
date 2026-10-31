@@ -1,5 +1,15 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import SemesterForm from "./SemesterForm";
+import type { SemesterRecord } from "./Semester.types";
 
-export default function SpecializedEducationalSupportSemestersEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Semestres" />;
+export default function SpecializedEducationalSupportSemestersEditPage({
+    semester,
+}: {
+    semester: SemesterRecord;
+}): React.JSX.Element {
+    return (
+        <SemesterForm
+            key={semester.id}
+            semester={semester}
+        />
+    );
 }

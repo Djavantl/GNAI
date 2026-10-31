@@ -1,5 +1,13 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import SessionForm from './SessionForm';
+import type { SessionCreateProps } from './SessionForm.types';
 
-export default function SpecializedEducationalSupportSessionsCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Agendamentos" />;
+export default function SpecializedEducationalSupportSessionsCreatePage(
+  props: SessionCreateProps,
+): React.JSX.Element {
+  return (
+    <SessionForm
+      mode="create"
+      {...props}
+    />
+  );
 }

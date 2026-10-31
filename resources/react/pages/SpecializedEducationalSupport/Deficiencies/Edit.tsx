@@ -1,5 +1,15 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import DeficiencyForm from "./DeficiencyForm";
+import type { DeficiencyRecord } from "./Deficiency.types";
 
-export default function SpecializedEducationalSupportDeficienciesEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Deficiências" />;
+export default function SpecializedEducationalSupportDeficienciesEditPage({
+    deficiency,
+}: {
+    deficiency: DeficiencyRecord;
+}): React.JSX.Element {
+    return (
+        <DeficiencyForm
+            key={deficiency.id}
+            deficiency={deficiency}
+        />
+    );
 }

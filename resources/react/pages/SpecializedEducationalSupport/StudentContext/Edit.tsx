@@ -1,18 +1,17 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import StudentContextForm from "./StudentContextForm";
+import type { StudentContextFormProps, StudentContextRecord } from "./StudentContext.types";
 
 export default function SpecializedEducationalSupportStudentContextEditPage({
-  student,
-}: {
-  student: { id: number };
+    studentContext,
+    ...props
+}: StudentContextFormProps & {
+    studentContext: StudentContextRecord;
 }): React.JSX.Element {
-  return (
-    <PageScaffold title="Edição — Contextos do estudante">
-      <StudentRecordReturnButton
-        studentId={student.id}
-        tab="current-context"
-        cancel
-      />
-    </PageScaffold>
-  );
+    return (
+        <StudentContextForm
+            key={studentContext.id}
+            {...props}
+            studentContext={studentContext}
+        />
+    );
 }

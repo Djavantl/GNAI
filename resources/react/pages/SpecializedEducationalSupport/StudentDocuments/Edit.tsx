@@ -1,18 +1,33 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import StudentDocumentForm from "./StudentDocumentForm";
+import StudentDocumentPage from "./StudentDocumentPage";
+import type {
+    StudentDocumentFormOptions,
+    StudentDocumentRecord,
+} from "./StudentDocument.types";
 
 export default function SpecializedEducationalSupportStudentDocumentsEditPage({
-  student,
-}: {
-  student: { id: number };
+    student,
+    types,
+    semester,
+    studentDocument,
+}: StudentDocumentFormOptions & {
+    studentDocument: StudentDocumentRecord;
 }): React.JSX.Element {
-  return (
-    <PageScaffold title="Edição — Documentos do estudante">
-      <StudentRecordReturnButton
-        studentId={student.id}
-        tab="documents"
-        cancel
-      />
-    </PageScaffold>
-  );
+    return (
+        <StudentDocumentPage
+            title="Editar Documento"
+            subtitle="Atualize as informações do documento ou substitua o arquivo anexado."
+            current="Editar"
+            student={student}
+            documentTitle={studentDocument.title}
+        >
+            <StudentDocumentForm
+                key={studentDocument.id}
+                student={student}
+                types={types}
+                semester={semester}
+                studentDocument={studentDocument}
+            />
+        </StudentDocumentPage>
+    );
 }

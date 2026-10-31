@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Queries\Sessions;
 
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\AttendanceType;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\SessionType;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
@@ -17,7 +19,12 @@ final class SessionFormQuery
      */
     public function forCreation(): array
     {
-        return $this->formOptions();
+        return $this->formOptions() + [
+            'defaults' => [
+                'attendance_type' => AttendanceType::AEE->value,
+                'type' => SessionType::INDIVIDUAL->value,
+            ],
+        ];
     }
 
     /**
@@ -25,8 +32,14 @@ final class SessionFormQuery
      */
     public function forUpdate(Session $session): array
     {
-        return $this->timeOptions() + [
+        return $this->timeOptions() + $this->typeOptions() + [
             'session' => $session->load(['students.person', 'professional.person', 'aeeRecord', 'pedagogicalRecord']),
+            'sessionForm' => [
+                'attendance_type' => AttendanceType::valueOf($session->attendance_type),
+                'session_date' => $session->session_date?->format('Y-m-d') ?? '',
+                'start_time' => $session->start_time ? Carbon::parse($session->start_time)->format('H:i') : '',
+                'end_time' => $session->end_time ? Carbon::parse($session->end_time)->format('H:i') : '',
+            ],
         ];
     }
 
@@ -35,9 +48,20 @@ final class SessionFormQuery
      */
     private function formOptions(): array
     {
-        return $this->timeOptions() + [
+        return $this->timeOptions() + $this->typeOptions() + [
             'students' => $this->students(),
             'professionals' => $this->professionals(),
+        ];
+    }
+
+    /**
+     * @return array{attendanceTypes: array<string, string>, sessionTypes: array<string, string>}
+     */
+    private function typeOptions(): array
+    {
+        return [
+            'attendanceTypes' => AttendanceType::options(),
+            'sessionTypes' => SessionType::options(),
         ];
     }
 

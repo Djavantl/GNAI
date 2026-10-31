@@ -5,7 +5,7 @@
 .gnaiApp .sidebarPrimary__menu > ul > li > a > i { flex-shrink: 0; }
 .gnaiApp__overlay { display: none; }
 @media (max-width: 767px) {
-  .gnaiApp__overlay { display: block; position: fixed; inset: var(--ui-topbar-height) 0 0; z-index: 1; border: 0; background: rgba(0, 0, 0, .2); }
+  .gnaiApp__overlay { display: block; position: fixed; inset: var(--ui-topbar-height) 0 0; z-index: 24; border: 0; background: rgba(0, 0, 0, .2); }
 }
 
 .gnaiApp .sidebarPrimary__collapsedFlyoutBody { max-height: calc(100dvh - var(--ui-topbar-height) - 12px); overflow-y: auto; }

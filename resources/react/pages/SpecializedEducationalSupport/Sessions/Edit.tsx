@@ -1,5 +1,14 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import SessionForm from './SessionForm';
+import type { SessionEditProps } from './SessionForm.types';
 
-export default function SpecializedEducationalSupportSessionsEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Agendamentos" />;
+export default function SpecializedEducationalSupportSessionsEditPage(
+  props: SessionEditProps,
+): React.JSX.Element {
+  return (
+    <SessionForm
+      key={props.session.id}
+      mode="edit"
+      {...props}
+    />
+  );
 }

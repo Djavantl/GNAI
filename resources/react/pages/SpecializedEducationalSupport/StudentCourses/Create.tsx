@@ -1,18 +1,21 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import StudentCourseForm from "./StudentCourseForm";
+import type { StudentCourseCourse, StudentCourseStudent } from "./StudentCourse.types";
 
 export default function SpecializedEducationalSupportStudentCoursesCreatePage({
-  student,
+    student,
+    courses,
+    mustBeCurrent,
 }: {
-  student: { id: number };
+    student: StudentCourseStudent;
+    courses: StudentCourseCourse[];
+    mustBeCurrent: boolean;
 }): React.JSX.Element {
-  return (
-    <PageScaffold title="Cadastro — Cursos do estudante">
-      <StudentRecordReturnButton
-        studentId={student.id}
-        tab="academic-data"
-        cancel
-      />
-    </PageScaffold>
-  );
+    return (
+        <StudentCourseForm
+            mode="create"
+            student={student}
+            courses={courses}
+            mustBeCurrent={mustBeCurrent}
+        />
+    );
 }

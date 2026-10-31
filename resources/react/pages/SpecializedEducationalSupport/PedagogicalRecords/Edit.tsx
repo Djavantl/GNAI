@@ -1,20 +1,24 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
-import StudentRecordReturnButton from '@/components/Students/StudentRecordReturnButton';
+import PedagogicalRecordForm from "./PedagogicalRecordForm";
+import type {
+    PedagogicalRecordFormContext,
+    PedagogicalRecordFormRecord,
+} from "./PedagogicalRecordForm.types";
 
 export default function SpecializedEducationalSupportPedagogicalRecordsEditPage({
-  returnStudentId,
+    pedagogicalRecord,
+    context,
+    returnStudentId,
 }: {
-  returnStudentId?: number;
+    pedagogicalRecord: PedagogicalRecordFormRecord;
+    context: PedagogicalRecordFormContext;
+    returnStudentId?: number;
 }): React.JSX.Element {
-  return (
-    <PageScaffold title="Edição — Atendimentos pedagógicos">
-      {returnStudentId ? (
-        <StudentRecordReturnButton
-          studentId={returnStudentId}
-          tab="pedagogical-attendance"
-          cancel
+    return (
+        <PedagogicalRecordForm
+            key={pedagogicalRecord.id}
+            record={pedagogicalRecord}
+            context={context}
+            returnStudentId={returnStudentId || undefined}
         />
-      ) : null}
-    </PageScaffold>
-  );
+    );
 }

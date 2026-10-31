@@ -1,5 +1,14 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import PendencyForm from './PendencyForm';
+import type { PendencyFormOptions } from './PendencyForm.types';
 
-export default function SpecializedEducationalSupportPendenciesCreatePage(): React.JSX.Element {
-  return <PageScaffold title="Cadastro — Pendências" />;
+export default function SpecializedEducationalSupportPendenciesCreatePage({
+  professionals,
+  priorities,
+}: PendencyFormOptions): React.JSX.Element {
+  return (
+    <PendencyForm
+      professionals={professionals}
+      priorities={priorities}
+    />
+  );
 }

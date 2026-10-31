@@ -1,0 +1,130 @@
+.aeeRecordForm__tabs .tabs__verticalEnv {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 4px;
+    background: var(--ui-color-surface-alt);
+}
+
+.aeeRecordForm__tabs .tabs__nav {
+    flex: 0 0 clamp(190px, 25%, 260px);
+    background: var(--ui-color-surface-alt);
+}
+
+.aeeRecordForm__tabs .tabs__button {
+    min-height: 52px;
+    height: auto;
+    padding: 12px 18px;
+    color: var(--ui-color-heading);
+    font-size: 13px;
+    line-height: 1.35;
+    text-align: left;
+}
+
+.aeeRecordForm__tabs .tabs__button:hover,
+.aeeRecordForm__tabs .tabs__item--active .tabs__button {
+    color: var(--ui-color-gnai-primary);
+}
+
+.aeeRecordForm__tabs .tabs__item--active .tabs__button {
+    background: var(--ui-color-surface);
+}
+
+.aeeRecordForm__tabs .tabs__button:focus-visible {
+    z-index: 1;
+    outline: 2px solid var(--ui-color-gnai-primary);
+    outline-offset: -3px;
+}
+
+.aeeRecordForm__tabs .tabs__content {
+    min-width: 0;
+    min-height: 0;
+    padding: 24px;
+    box-shadow: none;
+}
+
+.aeeRecordForm__tabs .tabs__content:focus-visible {
+    outline: 2px solid var(--ui-color-gnai-primary);
+    outline-offset: -4px;
+}
+
+.aeeRecordForm__tabLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.aeeRecordForm__tabIcon--danger {
+    color: var(--ui-color-danger);
+}
+
+.aeeRecordForm__evaluationTitle {
+    margin: 0 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ui-color-border-soft);
+    color: var(--ui-color-page-title);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.aeeRecordForm__collectionErrors {
+    margin-bottom: 16px;
+}
+
+.aeeRecordForm__empty {
+    margin: 0;
+    color: var(--ui-color-text-muted);
+}
+
+.aeeRecordForm__text {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.aeeRecordForm__details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0 0 20px;
+}
+
+.aeeRecordForm__details--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 991px) {
+    .aeeRecordForm__details--three {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .aeeRecordForm__tabs .tabs__verticalEnv {
+        display: block;
+        overflow: visible;
+    }
+
+    .aeeRecordForm__tabs .tabs__nav {
+        display: flex;
+        overflow-x: auto;
+    }
+
+    .aeeRecordForm__tabs .tabs__nav > li {
+        flex: 0 0 auto;
+    }
+
+    .aeeRecordForm__tabs .tabs__button {
+        min-width: 150px;
+        text-align: center;
+    }
+
+    .aeeRecordForm__tabs .tabs__content {
+        padding: 16px;
+    }
+
+    .aeeRecordForm__details,
+    .aeeRecordForm__details--three {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

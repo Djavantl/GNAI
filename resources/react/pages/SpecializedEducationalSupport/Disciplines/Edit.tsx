@@ -1,5 +1,15 @@
-import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
+import DisciplineForm from "./DisciplineForm";
+import type { DisciplineRecord } from "./Discipline.types";
 
-export default function SpecializedEducationalSupportDisciplinesEditPage(): React.JSX.Element {
-  return <PageScaffold title="Edição — Disciplinas" />;
+export default function SpecializedEducationalSupportDisciplinesEditPage({
+    discipline,
+}: {
+    discipline: DisciplineRecord;
+}): React.JSX.Element {
+    return (
+        <DisciplineForm
+            key={discipline.id}
+            discipline={discipline}
+        />
+    );
 }

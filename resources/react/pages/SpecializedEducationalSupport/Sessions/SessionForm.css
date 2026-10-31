@@ -1,0 +1,185 @@
+.sessionForm__times {
+    gap: 20px 16px;
+}
+
+.sessionForm__students {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.sessionForm__studentRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+}
+
+.sessionForm__studentSelect {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.sessionForm__details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0 0 20px;
+}
+
+.sessionForm__studentList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sessionAvailability {
+    min-width: 0;
+    padding: 16px;
+    overflow-x: auto;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 4px;
+    background: var(--ui-color-surface);
+}
+
+.sessionAvailability__message {
+    margin: 0;
+    padding: 12px 0;
+    color: var(--ui-color-text-muted);
+    text-align: center;
+}
+
+.sessionAvailability__message--error {
+    color: var(--ui-color-danger);
+}
+
+.sessionAvailability__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(72px, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sessionAvailability__slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 60px;
+    padding: 12px 4px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.sessionAvailability__detail {
+    max-width: 100%;
+    margin-top: 4px;
+    overflow: hidden;
+    font-size: 0.65rem;
+    font-weight: 400;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+}
+
+.sessionAvailability__slot--free {
+    border-color: color-mix(in srgb, var(--ui-color-success) 45%, transparent);
+    background: color-mix(in srgb, var(--ui-color-success) 12%, var(--ui-color-surface));
+    color: color-mix(in srgb, var(--ui-color-success) 45%, #000000);
+    cursor: pointer;
+}
+
+.sessionAvailability__slot--free:hover,
+.sessionAvailability__slot--free:focus-visible {
+    border-color: color-mix(in srgb, var(--ui-color-success) 75%, #000000);
+}
+
+.sessionAvailability__slot--free:focus-visible {
+    outline: 2px solid var(--ui-color-input-focus-border);
+    outline-offset: 2px;
+}
+
+.sessionAvailability__slot--free:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.sessionAvailability__slot--selected {
+    border-color: color-mix(in srgb, var(--ui-color-success) 40%, #000000);
+    background: color-mix(in srgb, var(--ui-color-success) 55%, #000000);
+    color: var(--ui-color-surface);
+}
+
+.sessionAvailability__slot--students,
+.sessionAvailability__slot--professional,
+.sessionAvailability__slot--other {
+    cursor: not-allowed;
+}
+
+.sessionAvailability__slot--students {
+    border-color: color-mix(in srgb, var(--ui-color-danger) 35%, transparent);
+    background: color-mix(in srgb, var(--ui-color-danger) 15%, var(--ui-color-surface));
+    color: color-mix(in srgb, var(--ui-color-danger) 50%, #000000);
+}
+
+.sessionAvailability__slot--professional {
+    border-color: color-mix(in srgb, var(--ui-color-warning) 45%, transparent);
+    background: color-mix(in srgb, var(--ui-color-warning) 18%, var(--ui-color-surface));
+    color: color-mix(in srgb, var(--ui-color-warning) 40%, #000000);
+}
+
+.sessionAvailability__slot--other {
+    border-color: var(--ui-color-card-border);
+    background: var(--ui-color-surface-alt);
+    color: var(--ui-color-text);
+}
+
+.sessionAvailability__srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.sessionNotificationModal__message {
+    margin: 0;
+}
+
+.sessionNotificationModal__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+@media (max-width: 900px) {
+    .sessionAvailability__grid {
+        grid-template-columns: repeat(4, minmax(72px, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .sessionForm__details {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sessionAvailability__grid {
+        grid-template-columns: repeat(3, minmax(72px, 1fr));
+    }
+}

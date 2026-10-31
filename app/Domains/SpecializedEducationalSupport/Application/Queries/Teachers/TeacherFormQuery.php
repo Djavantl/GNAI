@@ -25,7 +25,8 @@ final class TeacherFormQuery
      */
     public function forUpdate(Teacher $teacher): array
     {
-        $teacher->loadMissing('disciplines');
+        $teacher->loadMissing(['person', 'disciplines']);
+        $teacher->person?->append('photo_url');
 
         return [
             'teacher' => $teacher,

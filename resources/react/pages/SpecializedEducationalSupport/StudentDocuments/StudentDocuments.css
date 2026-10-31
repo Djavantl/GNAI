@@ -1,0 +1,7 @@
+.studentDocumentForm__file { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.studentDocumentForm__file .fileUploadButton:focus-within { outline: 2px solid var(--ui-color-text); outline-offset: 3px; }
+.studentDocumentForm__fileName { display: inline-flex; align-items: center; gap: 8px; min-width: 0; overflow-wrap: anywhere; color: var(--ui-color-text); }
+.studentDocumentForm__current { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; color: var(--ui-color-text); }
+.studentDocumentForm__current i { font-size: 1.5rem; color: var(--ui-color-heading); }
+.studentDocumentForm__current p { margin: 0; overflow-wrap: anywhere; }
+.studentDocumentForm__current small { color: var(--ui-color-text-muted); }
