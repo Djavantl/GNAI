@@ -1,6 +1,5 @@
 import './Button.css';
 import { Link } from '@inertiajs/react';
-import { useState } from 'react';
 import { joinClassNames } from '@/utils/joinClassNames';
 
 export type ButtonTone =
@@ -107,7 +106,6 @@ function renderButtonInner({
 }
 
 export default function Button(props: ButtonProps): React.JSX.Element {
-  const [pressed, setPressed] = useState<boolean>(false);
   const {
     label,
     tone = 'default',
@@ -139,7 +137,6 @@ export default function Button(props: ButtonProps): React.JSX.Element {
     block ? 'button--block' : undefined,
     iconOnly ? 'button--iconOnly' : undefined,
     disabled ? 'button--disabled' : undefined,
-    pressed && !disabled ? 'button--active' : undefined,
     waves ? 'waves-effect' : undefined,
     waves && wavesLight ? 'waves-light' : undefined,
     className
@@ -183,12 +180,6 @@ export default function Button(props: ButtonProps): React.JSX.Element {
             }
             props.onClick?.(event);
           }}
-          onPointerDown={() => {
-            if (!disabled) setPressed(true);
-          }}
-          onPointerUp={() => setPressed(false)}
-          onPointerCancel={() => setPressed(false)}
-          onPointerLeave={() => setPressed(false)}
         >
           {content}
         </a>
@@ -216,14 +207,6 @@ export default function Button(props: ButtonProps): React.JSX.Element {
 
           props.onClick?.(event as React.MouseEvent<HTMLAnchorElement>);
         }}
-        onPointerDown={() => {
-          if (!disabled) {
-            setPressed(true);
-          }
-        }}
-        onPointerUp={() => setPressed(false)}
-        onPointerCancel={() => setPressed(false)}
-        onPointerLeave={() => setPressed(false)}
       >
         {content}
       </Link>
@@ -242,14 +225,6 @@ export default function Button(props: ButtonProps): React.JSX.Element {
       aria-haspopup={props['aria-haspopup']}
       aria-controls={props['aria-controls']}
       onClick={props.onClick}
-      onPointerDown={() => {
-        if (!disabled) {
-          setPressed(true);
-        }
-      }}
-      onPointerUp={() => setPressed(false)}
-      onPointerCancel={() => setPressed(false)}
-      onPointerLeave={() => setPressed(false)}
     >
       {content}
     </button>

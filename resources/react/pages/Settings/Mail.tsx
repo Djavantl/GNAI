@@ -10,7 +10,7 @@ import TextInput from "@/components/Forms/TextInput/TextInput";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import { notify } from "@/components/UI/NotificationToast/notify";
-import SettingsPage, { settingsBase } from "./SettingsPage";
+import { settingsBase, SettingsLayout } from "./SettingsPage";
 import {
     MAIL_PORTS,
     MAIL_PROVIDERS,
@@ -218,255 +218,252 @@ export default function SettingsMail({
     };
 
     return (
-        <SettingsPage
-            category="mail"
-            subtitle="Defina o serviço usado pelo Gnai para enviar e-mails, como links de redefinição de senha e notificações."
+        <FormLayout
+            ref={element}
+            aria-label="Configurações de e-mail"
+            aria-busy={form.processing || testForm.processing}
+            onSubmit={(event) => {
+                event.preventDefault();
+                if (!canUpdate || busy.current || form.processing) return;
+                busy.current = true;
+                form.put(`${settingsBase}/mail`, {
+                    ...requestFeedback,
+                    preserveScroll: true,
+                    onError: () =>
+                        requestAnimationFrame(() =>
+                            element.current
+                                ?.querySelector<HTMLElement>(
+                                    '[aria-invalid="true"]',
+                                )
+                                ?.focus(),
+                        ),
+                    onFinish: () => {
+                        busy.current = false;
+                    },
+                });
+            }}
         >
-            <FormLayout
-                ref={element}
-                aria-label="Configurações de e-mail"
-                aria-busy={form.processing || testForm.processing}
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    if (!canUpdate || busy.current || form.processing) return;
-                    busy.current = true;
-                    form.put(`${settingsBase}/mail`, {
-                        ...requestFeedback,
-                        preserveScroll: true,
-                        onError: () =>
-                            requestAnimationFrame(() =>
-                                element.current
-                                    ?.querySelector<HTMLElement>(
-                                        '[aria-invalid="true"]',
-                                    )
-                                    ?.focus(),
-                            ),
-                        onFinish: () => {
-                            busy.current = false;
-                        },
-                    });
-                }}
-            >
-                <CardBox>
-                    <fieldset disabled={!canUpdate || form.processing}>
-                        <FormSection
-                            id="mail-server"
-                            title="Servidor de envio"
-                            variant="inline"
-                            iconClass="fa fa-server"
-                        >
-                            <p className="settingsPage__note">
-                                {configured
-                                    ? "Estas configurações são usadas por todos os envios de e-mail do Gnai."
-                                    : "Ainda não há configuração cadastrada: os envios usam os valores do arquivo .env do servidor. Os campos foram preenchidos com esses valores, exceto a senha. Ao salvar, estas configurações passam a ter prioridade."}
-                            </p>
-                            <FormStack>
-                                <FormGrid columns={usesSmtp ? 4 : 2}>
-                                    {select("transport", "Tipo de envio", transports)}
-                                    {usesSmtp ? (
-                                        <>
-                                            {choiceField(
-                                                "mail-host-option",
-                                                "host",
-                                                "Servidor SMTP",
-                                                hostOption,
-                                                [
-                                                    ...MAIL_PROVIDERS.map((item) => ({
-                                                        value: item.key,
-                                                        label: `${item.label} (${item.host})`,
-                                                    })),
-                                                    { value: OTHER_OPTION, label: "Outro servidor" },
-                                                ],
-                                                !customHost,
-                                                chooseProvider,
-                                            )}
-                                            {choiceField(
-                                                "mail-port-option",
-                                                "port",
-                                                "Porta",
-                                                portOption,
-                                                [
-                                                    ...MAIL_PORTS.map(({ value, label }) => ({ value, label })),
-                                                    { value: OTHER_OPTION, label: "Outra porta" },
-                                                ],
-                                                !customPort,
-                                                choosePort,
-                                            )}
-                                            {select(
-                                                "encryption",
-                                                "Segurança da conexão",
-                                                encryptions,
-                                            )}
-                                        </>
-                                    ) : null}
-                                </FormGrid>
-                                {usesSmtp && (customHost || customPort) ? (
-                                    <FormGrid>
-                                        {customHost
-                                            ? input("host", "Endereço do servidor SMTP", {
-                                                required: true,
-                                                placeholder: "smtp.exemplo.com",
-                                            })
-                                            : null}
-                                        {customPort
-                                            ? input("port", "Número da porta", {
-                                                type: "number",
-                                                required: true,
-                                                placeholder: "587",
-                                            })
-                                            : null}
-                                    </FormGrid>
-                                ) : null}
+            <CardBox>
+                <fieldset disabled={!canUpdate || form.processing}>
+                    <FormSection
+                        id="mail-server"
+                        title="Servidor de envio"
+                        variant="inline"
+                        iconClass="fa fa-server"
+                    >
+                        <p className="settingsPage__note">
+                            {configured
+                                ? "Estas configurações são usadas por todos os envios de e-mail do Gnai."
+                                : "Ainda não há configuração cadastrada: os envios usam os valores do arquivo .env do servidor. Os campos foram preenchidos com esses valores, exceto a senha. Ao salvar, estas configurações passam a ter prioridade."}
+                        </p>
+                        <FormStack>
+                            <FormGrid columns={usesSmtp ? 4 : 2}>
+                                {select("transport", "Tipo de envio", transports)}
                                 {usesSmtp ? (
-                                    <FormGrid>
-                                        {input("username", "Usuário de autenticação", {
-                                            hint: "Geralmente o próprio e-mail da conta de envio.",
-                                        })}
-                                        {input("password", "Senha ou chave de aplicativo", {
-                                            type: "password",
-                                            autoComplete: "new-password",
-                                            placeholder: mail.has_password
-                                                ? "••••••••"
-                                                : undefined,
-                                            hint: [
-                                                mail.has_password
-                                                    ? "Há uma senha cadastrada. Deixe em branco para mantê-la."
-                                                    : "A senha é armazenada criptografada e nunca é exibida.",
-                                                provider?.passwordHint,
-                                            ]
-                                                .filter(Boolean)
-                                                .join(" "),
-                                        })}
-                                    </FormGrid>
-                                ) : (
-                                    <p className="settingsPage__note">
-                                        Com “Registro em log”, as mensagens são gravadas no log da aplicação e não são entregues aos destinatários.
-                                    </p>
-                                )}
-                            </FormStack>
-                        </FormSection>
-                        <FormSection
-                            id="mail-sender"
-                            title="Remetente"
-                            variant="inline"
-                            iconClass="fa fa-envelope"
-                        >
-                            <FormGrid>
-                                {input("from_address", "E-mail de envio", {
-                                    type: "email",
-                                    required: true,
-                                    hint: "Endereço exibido como remetente. Em geral, deve pertencer à conta autenticada.",
-                                })}
-                                {input("from_name", "Nome do remetente", {
-                                    required: true,
-                                })}
+                                    <>
+                                        {choiceField(
+                                            "mail-host-option",
+                                            "host",
+                                            "Servidor SMTP",
+                                            hostOption,
+                                            [
+                                                ...MAIL_PROVIDERS.map((item) => ({
+                                                    value: item.key,
+                                                    label: `${item.label} (${item.host})`,
+                                                })),
+                                                { value: OTHER_OPTION, label: "Outro servidor" },
+                                            ],
+                                            !customHost,
+                                            chooseProvider,
+                                        )}
+                                        {choiceField(
+                                            "mail-port-option",
+                                            "port",
+                                            "Porta",
+                                            portOption,
+                                            [
+                                                ...MAIL_PORTS.map(({ value, label }) => ({ value, label })),
+                                                { value: OTHER_OPTION, label: "Outra porta" },
+                                            ],
+                                            !customPort,
+                                            choosePort,
+                                        )}
+                                        {select(
+                                            "encryption",
+                                            "Segurança da conexão",
+                                            encryptions,
+                                        )}
+                                    </>
+                                ) : null}
                             </FormGrid>
-                        </FormSection>
-                        {canUpdate ? (
-                            <FormSection
-                                id="mail-test"
-                                title="Enviar e-mail de teste"
-                                variant="inline"
-                                iconClass="fa fa-paper-plane"
-                            >
-                                <div className="settingsPage__test">
-                                    <FormField
-                                        id="mail-test-recipient"
-                                        label="E-mail de destino"
-                                        hint={
-                                            form.isDirty
-                                                ? "Salve as alterações antes de enviar o teste."
-                                                : "O teste usa as configurações salvas."
-                                        }
-                                        error={testForm.errors.recipient}
-                                    >
-                                        <TextInput
-                                            id="mail-test-recipient"
-                                            name="recipient"
-                                            type="email"
-                                            maxLength={255}
-                                            autoComplete="email"
-                                            value={testForm.data.recipient}
-                                            disabled={testForm.processing}
-                                            invalid={!!testForm.errors.recipient}
-                                            aria-describedby={[
-                                                "mail-test-recipient-hint",
-                                                testForm.errors.recipient
-                                                    ? "mail-test-recipient-error"
-                                                    : null,
-                                            ]
-                                                .filter(Boolean)
-                                                .join(" ")}
-                                            onKeyDown={(event) => {
-                                                if (event.key !== "Enter") return;
-                                                event.preventDefault();
-                                                sendTest();
-                                            }}
-                                            onChange={(event) =>
-                                                testForm.setData(
-                                                    "recipient",
-                                                    event.target.value,
-                                                )
-                                            }
-                                        />
-                                    </FormField>
-                                    <Button
-                                        type="button"
-                                        tone="dark-blue"
-                                        leftIconClass="fa fa-paper-plane"
-                                        label={
-                                            testForm.processing
-                                                ? "Enviando..."
-                                                : "Enviar teste"
-                                        }
-                                        title="Enviar e-mail de teste"
-                                        aria-label={
-                                            testForm.processing
-                                                ? "Enviando e-mail de teste"
-                                                : "Enviar e-mail de teste"
-                                        }
-                                        disabled={testBlocked}
-                                        onClick={sendTest}
-                                    />
-                                </div>
-                            </FormSection>
-                        ) : null}
-                    </fieldset>
-                </CardBox>
-                <FormActions
-                    status={
-                        form.processing
-                            ? "Salvando configurações de e-mail..."
-                            : testForm.processing
-                              ? "Enviando e-mail de teste..."
-                              : ""
-                    }
-                >
-                    <Button
-                        href="/auth/dashboard"
-                        tone="cancel"
-                        label="Cancelar"
-                        title="Cancelar e voltar ao início"
-                        aria-label="Cancelar e voltar ao início"
-                        disabled={form.processing}
-                    />
+                            {usesSmtp && (customHost || customPort) ? (
+                                <FormGrid>
+                                    {customHost
+                                        ? input("host", "Endereço do servidor SMTP", {
+                                            required: true,
+                                            placeholder: "smtp.exemplo.com",
+                                        })
+                                        : null}
+                                    {customPort
+                                        ? input("port", "Número da porta", {
+                                            type: "number",
+                                            required: true,
+                                            placeholder: "587",
+                                        })
+                                        : null}
+                                </FormGrid>
+                            ) : null}
+                            {usesSmtp ? (
+                                <FormGrid>
+                                    {input("username", "Usuário de autenticação", {
+                                        hint: "Geralmente o próprio e-mail da conta de envio.",
+                                    })}
+                                    {input("password", "Senha ou chave de aplicativo", {
+                                        type: "password",
+                                        autoComplete: "new-password",
+                                        placeholder: mail.has_password
+                                            ? "••••••••"
+                                            : undefined,
+                                        hint: [
+                                            mail.has_password
+                                                ? "Há uma senha cadastrada. Deixe em branco para mantê-la."
+                                                : "A senha é armazenada criptografada e nunca é exibida.",
+                                            provider?.passwordHint,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(" "),
+                                    })}
+                                </FormGrid>
+                            ) : (
+                                <p className="settingsPage__note">
+                                    Com “Registro em log”, as mensagens são gravadas no log da aplicação e não são entregues aos destinatários.
+                                </p>
+                            )}
+                        </FormStack>
+                    </FormSection>
+                    <FormSection
+                        id="mail-sender"
+                        title="Remetente"
+                        variant="inline"
+                        iconClass="fa fa-envelope"
+                    >
+                        <FormGrid>
+                            {input("from_address", "E-mail de envio", {
+                                type: "email",
+                                required: true,
+                                hint: "Endereço exibido como remetente. Em geral, deve pertencer à conta autenticada.",
+                            })}
+                            {input("from_name", "Nome do remetente", {
+                                required: true,
+                            })}
+                        </FormGrid>
+                    </FormSection>
                     {canUpdate ? (
-                        <Button
-                            type="submit"
-                            tone="save"
-                            leftIconClass="fa fa-check"
-                            label="Salvar"
-                            title="Salvar configurações de e-mail"
-                            aria-label={
-                                form.processing
-                                    ? "Salvando configurações de e-mail"
-                                    : "Salvar configurações de e-mail"
-                            }
-                            disabled={form.processing || testForm.processing}
-                        />
+                        <FormSection
+                            id="mail-test"
+                            title="Enviar e-mail de teste"
+                            variant="inline"
+                            iconClass="fa fa-paper-plane"
+                        >
+                            <div className="settingsPage__test">
+                                <FormField
+                                    id="mail-test-recipient"
+                                    label="E-mail de destino"
+                                    hint={
+                                        form.isDirty
+                                            ? "Salve as alterações antes de enviar o teste."
+                                            : "O teste usa as configurações salvas."
+                                    }
+                                    error={testForm.errors.recipient}
+                                >
+                                    <TextInput
+                                        id="mail-test-recipient"
+                                        name="recipient"
+                                        type="email"
+                                        maxLength={255}
+                                        autoComplete="email"
+                                        value={testForm.data.recipient}
+                                        disabled={testForm.processing}
+                                        invalid={!!testForm.errors.recipient}
+                                        aria-describedby={[
+                                            "mail-test-recipient-hint",
+                                            testForm.errors.recipient
+                                                ? "mail-test-recipient-error"
+                                                : null,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(" ")}
+                                        onKeyDown={(event) => {
+                                            if (event.key !== "Enter") return;
+                                            event.preventDefault();
+                                            sendTest();
+                                        }}
+                                        onChange={(event) =>
+                                            testForm.setData(
+                                                "recipient",
+                                                event.target.value,
+                                            )
+                                        }
+                                    />
+                                </FormField>
+                                <Button
+                                    type="button"
+                                    tone="dark-blue"
+                                    leftIconClass="fa fa-paper-plane"
+                                    label={
+                                        testForm.processing
+                                            ? "Enviando..."
+                                            : "Enviar teste"
+                                    }
+                                    title="Enviar e-mail de teste"
+                                    aria-label={
+                                        testForm.processing
+                                            ? "Enviando e-mail de teste"
+                                            : "Enviar e-mail de teste"
+                                    }
+                                    disabled={testBlocked}
+                                    onClick={sendTest}
+                                />
+                            </div>
+                        </FormSection>
                     ) : null}
-                </FormActions>
-            </FormLayout>
-        </SettingsPage>
+                </fieldset>
+            </CardBox>
+            <FormActions
+                status={
+                    form.processing
+                        ? "Salvando configurações de e-mail..."
+                        : testForm.processing
+                          ? "Enviando e-mail de teste..."
+                          : ""
+                }
+            >
+                <Button
+                    href="/auth/dashboard"
+                    tone="cancel"
+                    label="Cancelar"
+                    title="Cancelar e voltar ao início"
+                    aria-label="Cancelar e voltar ao início"
+                    disabled={form.processing}
+                />
+                {canUpdate ? (
+                    <Button
+                        type="submit"
+                        tone="save"
+                        leftIconClass="fa fa-check"
+                        label="Salvar"
+                        title="Salvar configurações de e-mail"
+                        aria-label={
+                            form.processing
+                                ? "Salvando configurações de e-mail"
+                                : "Salvar configurações de e-mail"
+                        }
+                        disabled={form.processing || testForm.processing}
+                    />
+                ) : null}
+            </FormActions>
+        </FormLayout>
     );
 }
+
+SettingsMail.layout = SettingsLayout;

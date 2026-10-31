@@ -4,6 +4,7 @@ import type { ActiveVisit, PendingVisit } from '@inertiajs/core';
 import './AppLoader.css';
 
 const fadeDurationMs = 180;
+const showDelayMs = 300;
 const scrollLockClass = 'app-loader-scroll-lock';
 
 type LoaderPhase = 'hidden' | 'visible' | 'closing';
@@ -11,6 +12,8 @@ type LoaderPhase = 'hidden' | 'visible' | 'closing';
 export default function AppLoader(): React.JSX.Element | null {
   const [phase, setPhase] = useState<LoaderPhase>('hidden');
   const activeVisits = useRef(new Set<PendingVisit>());
+  const showTimer = useRef<number | null>(null);
+  const visible = useRef(false);
   const closeTimer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -23,6 +26,13 @@ export default function AppLoader(): React.JSX.Element | null {
       closeTimer.current = null;
     }
 
+    function clearShowTimer(): void {
+      if (showTimer.current !== null) {
+        window.clearTimeout(showTimer.current);
+        showTimer.current = null;
+      }
+    }
+
     function unlockPage(): void {
       document.documentElement.classList.remove(scrollLockClass);
       document.body.classList.remove(scrollLockClass);
@@ -30,9 +40,14 @@ export default function AppLoader(): React.JSX.Element | null {
 
     function closeLoader(): void {
       activeVisits.current.clear();
-      setPhase('closing');
+      clearShowTimer();
       clearCloseTimer();
+      if (!visible.current) {
+        return;
+      }
+      setPhase('closing');
       closeTimer.current = window.setTimeout(() => {
+        visible.current = false;
         setPhase('hidden');
         unlockPage();
         closeTimer.current = null;
@@ -51,9 +66,21 @@ export default function AppLoader(): React.JSX.Element | null {
 
       clearCloseTimer();
       activeVisits.current.add(visit);
-      document.documentElement.classList.add(scrollLockClass);
-      document.body.classList.add(scrollLockClass);
-      setPhase('visible');
+      if (visible.current) {
+        setPhase('visible');
+        return;
+      }
+      if (showTimer.current !== null) {
+        return;
+      }
+      showTimer.current = window.setTimeout(() => {
+        showTimer.current = null;
+        if (activeVisits.current.size === 0) return;
+        visible.current = true;
+        document.documentElement.classList.add(scrollLockClass);
+        document.body.classList.add(scrollLockClass);
+        setPhase('visible');
+      }, showDelayMs);
     });
 
     const stopFinishListener = router.on('finish', (event) => {
@@ -78,6 +105,7 @@ export default function AppLoader(): React.JSX.Element | null {
       stopStartListener();
       stopFinishListener();
       stopCancelListener();
+      clearShowTimer();
       clearCloseTimer();
       activeVisits.current.clear();
       unlockPage();

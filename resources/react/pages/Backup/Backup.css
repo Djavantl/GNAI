@@ -29,19 +29,12 @@
     min-width: 0;
     align-items: center;
     gap: 8px;
-    color: var(--ui-color-legacy-text);
-    font-weight: 600;
-    text-decoration: none;
 }
 
 .backupIndex__fileLink span,
 .backupIndex__fileName span {
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.backupIndex__fileLink:hover {
-    text-decoration: underline;
 }
 
 .backupIndex__fileLink i,

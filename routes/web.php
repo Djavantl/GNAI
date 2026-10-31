@@ -55,5 +55,11 @@ Route::middleware('web')->group(function () {
             ->name('notifications.readAll');
     });
 
-    Route::get('/about-us', fn () => Inertia::render('AboutUs/AboutUs'))->name('about-us');
+    Route::get('/about-us', function () {
+        if (request()->header('X-Inertia')) {
+            return Inertia::location(route('about-us'));
+        }
+
+        return view('pages.about-us');
+    })->name('about-us');
 });

@@ -186,7 +186,15 @@ export default function InclusiveRadarLoansIndexPage({
                             const beneficiary = loan.student ?? loan.professional;
                             return (
                                 <tr key={loan.id}>
-                                    <td>{loan.loanable.name}</td>
+                                    <td>
+                                        <a
+                                            href={`/inclusive-radar/items/${loan.loanable_id}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            {loan.loanable.name}
+                                        </a>
+                                    </td>
                                     <td>
                                         <span className="loanIndex__beneficiary">
                                             <span className="loanIndex__beneficiaryName">

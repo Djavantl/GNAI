@@ -27,11 +27,10 @@
 .button > .m-r-5 { margin-inline-end: 5px; }
 .button > .m-l-5 { margin-inline-start: 5px; }
 
-.button:active,
-.button.button--active {
+.button:active {
   background-image: none;
   outline: 0;
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
 }
 
 .button--default,
@@ -111,10 +110,15 @@
 }
 
 .button--list-action:hover,
-.button--list-action:focus,
-.button--list-action:active {
+.button--list-action:focus {
   border-color: var(--ui-color-list-action-hover) !important;
   background-color: var(--ui-color-list-action-hover) !important;
+  color: var(--ui-color-surface) !important;
+}
+
+.button--list-action:active {
+  border-color: var(--ui-color-list-action) !important;
+  background-color: var(--ui-color-list-action) !important;
   color: var(--ui-color-surface) !important;
 }
 

@@ -9,14 +9,12 @@
     width: min(100%, 320px);
 }
 
-.waitlistIndex__table td:first-child a,
 .waitlistShow__grid a {
     color: var(--ui-color-legacy-text);
     font-weight: 600;
     text-decoration: none;
 }
 
-.waitlistIndex__table td:first-child a:hover,
 .waitlistShow__grid a:hover {
     text-decoration: underline;
 }

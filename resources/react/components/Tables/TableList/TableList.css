@@ -369,6 +369,32 @@
   font-size: 15.5px;
 }
 
+.tableListTable > tbody strong,
+.tableListTable > tbody b {
+  font-weight: inherit;
+}
+
+.tableListTable > tbody a:not(.button) {
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.tableListTable > tbody a:not(.button):is(:hover, :focus-visible) {
+  color: var(--ui-color-gnai-primary-hover);
+  text-decoration: none;
+}
+
+.tableListTable > tbody a:not(.button):focus-visible {
+  outline: 2px solid var(--ui-color-input-focus-border);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tableListTable > tbody a:not(.button) { transition: none; }
+}
+
 .tableListTable.table-condensed > thead > tr > th {
   position: relative;
   padding: 16px 12px;

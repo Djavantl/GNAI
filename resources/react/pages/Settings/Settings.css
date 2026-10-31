@@ -1,10 +1,10 @@
 .settingsPage__categories { margin-bottom: 20px; }
-.settingsPage__categories ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; border-bottom: 2px solid var(--ui-color-card-border); }
-.settingsPage__category { display: inline-flex; align-items: center; gap: 8px; margin-bottom: -2px; padding: 10px 18px; border-bottom: 2px solid transparent; color: var(--ui-color-heading); font-family: var(--ui-font-gnai-body); font-weight: 600; text-decoration: none; }
+.settingsPage__categories ul { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: fit-content; max-width: 100%; margin: 0; padding: 0; list-style: none; border-bottom: 2px solid var(--ui-color-card-border); }
+.settingsPage__category { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: -2px; padding: 10px 18px; border-bottom: 2px solid transparent; color: var(--ui-color-heading); font-family: var(--ui-font-gnai-body); font-weight: 600; text-decoration: none; }
 .settingsPage__category:hover,
 .settingsPage__category:focus-visible { color: var(--ui-color-gnai-primary); }
 .settingsPage__category:focus-visible { outline: 2px solid var(--ui-color-gnai-primary); outline-offset: 2px; }
-.settingsPage__category--active { border-bottom-color: var(--ui-color-gnai-primary); color: var(--ui-color-gnai-primary); }
+.settingsPage__category--active { color: var(--ui-color-gnai-primary); }
 .settingsPage__note { margin: 0 0 20px; color: var(--ui-color-text-muted); }
 .settingsPage__test { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; }
 .settingsPage__test .formField { flex: 1 1 280px; margin-bottom: 0; }
@@ -12,3 +12,8 @@
 .settingsPage__time { display: flex; align-items: flex-start; gap: 12px; }
 .settingsPage__time .formField { flex: 0 1 220px; margin-bottom: 0; }
 .settingsPage__timeRemove { margin-top: 28px; }
+
+.settingsPage__categories .tabs__indicator { bottom: -2px; background: var(--ui-color-gnai-primary); }
+@media (prefers-reduced-motion: reduce) {
+    .settingsPage__categories .tabs__indicator { transition: none; }
+}
