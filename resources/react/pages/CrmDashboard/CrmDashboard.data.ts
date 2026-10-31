@@ -30,8 +30,8 @@ export const dealStats: DealStat[] = [
   },
 ];
 export const dealLegend: ChartLegendItem[] = [
-  { label: "Negócio — Ganho", color: "#81c868" },
-  { label: "Negócio — Perdido", color: "#ffbd4a" },
+  { label: "Negócio, Ganho", color: "#81c868" },
+  { label: "Negócio, Perdido", color: "#ffbd4a" },
 ];
 export const groupLegend: ChartLegendItem[] = [
   { label: "Grupo 1", color: "#ebeff2" },
@@ -52,7 +52,7 @@ export const dealLineOptions: Record<string, unknown> = {
   ],
   xkey: "y",
   ykeys: ["a", "b"],
-  labels: ["Negócio — Ganho ", "Negócio — Perdido "],
+  labels: ["Negócio, Ganho ", "Negócio, Perdido "],
   fillOpacity: ["0.1"],
   pointFillColors: ["#ffffff"],
   pointStrokeColors: ["#999999"],

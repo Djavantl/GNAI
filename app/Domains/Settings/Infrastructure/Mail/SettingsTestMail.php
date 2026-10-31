@@ -13,7 +13,7 @@ final class SettingsTestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Teste de configuração de e-mail — Gnai',
+            subject: 'Teste de configuração de e-mail, Gnai',
         );
     }
 

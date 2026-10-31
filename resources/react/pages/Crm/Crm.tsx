@@ -11,7 +11,7 @@ export default function Crm({
   page: CrmPageDefinition;
 }): React.JSX.Element {
   return (
-    <section className="crmPage" aria-label={`CRM — ${page.title}`}>
+    <section className="crmPage" aria-label={`CRM, ${page.title}`}>
       <PageHeader
         title={page.title}
         subtitle={

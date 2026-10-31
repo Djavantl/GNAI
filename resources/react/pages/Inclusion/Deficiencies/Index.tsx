@@ -214,7 +214,7 @@ export default function InclusionDeficienciesIndexPage({
                                                 }}
                                             />
                                         ) : null}
-                                        {!hasRowActions ? <span>—</span> : null}
+                                        {!hasRowActions ? <span>Sem ações</span> : null}
                                     </TableActions>
                                 </td>
                             </tr>

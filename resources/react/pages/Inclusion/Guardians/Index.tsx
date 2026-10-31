@@ -112,7 +112,7 @@ export default function InclusionGuardiansIndexPage({
 
     return (
         <GuardianPage
-            title={`Responsáveis — ${student.person.name}`}
+            title={`Responsáveis, ${student.person.name}`}
             subtitle="Gerenciamento de vínculos familiares e contatos de emergência."
             student={student}
             actions={
@@ -189,13 +189,13 @@ export default function InclusionGuardiansIndexPage({
                                             <strong>{guardian.person.name}</strong>
                                         </div>
                                     </td>
-                                    <td>{guardian.person.document || "—"}</td>
+                                    <td>{guardian.person.document || "Não informado"}</td>
                                     <td>
                                         {guardian.relationship
                                             ? relationships[guardian.relationship] ?? guardian.relationship
-                                            : "—"}
+                                            : "Não informado"}
                                     </td>
-                                    <td>{guardian.person.email || guardian.person.phone || "—"}</td>
+                                    <td>{guardian.person.email || guardian.person.phone || "Não informado"}</td>
                                     <td>{guardian.person.email || "Não informado"}</td>
                                     <td>{guardian.person.phone || "Não informado"}</td>
                                     <td>{formatTableListDate(guardian.person.birth_date)}</td>

@@ -72,9 +72,9 @@ export default function PeiDisciplineTable({
                         return (
                             <tr key={item.id}>
                                 <td>
-                                    <strong>{item.discipline_name || "—"}</strong>
+                                    <strong>{item.discipline_name || "Não informado"}</strong>
                                 </td>
-                                <td>{item.teacher_name || "—"}</td>
+                                <td>{item.teacher_name || "Não informado"}</td>
                                 <td>{dateLabel(item.created_at)}</td>
                                 <td>
                                     <TableActions>

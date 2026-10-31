@@ -173,7 +173,7 @@ export default function InclusionDisciplinesIndexPage({
                                                 }}
                                             />
                                         ) : null}
-                                        {!can.view && !can.delete ? <span>—</span> : null}
+                                        {!can.view && !can.delete ? <span>Sem ações</span> : null}
                                     </TableActions>
                                 </td>
                             </tr>

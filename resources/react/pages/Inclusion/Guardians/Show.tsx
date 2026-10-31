@@ -97,16 +97,16 @@ export default function InclusionGuardiansShowPage({
                             <strong>{person.name}</strong>
                         </DetailField>
                         <DetailField label="Gênero">
-                            {display.genderLabel || "—"}
+                            {display.genderLabel || "Não informado"}
                         </DetailField>
                         <DetailField label="CPF / Documento">
-                            {person.document || "—"}
+                            {person.document || "Não informado"}
                         </DetailField>
                         <DetailField label="Data de Nascimento">
-                            {person.birth_date ? dateLabel(person.birth_date) : "—"}
+                            {person.birth_date ? dateLabel(person.birth_date) : "Não informado"}
                         </DetailField>
                         <DetailField label="Idade">
-                            {display.age != null ? `${display.age} anos` : "—"}
+                            {display.age != null ? `${display.age} anos` : "Não informado"}
                         </DetailField>
                     </dl>
                 </FormSection>

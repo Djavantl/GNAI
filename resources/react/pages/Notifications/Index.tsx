@@ -119,7 +119,7 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                                     </span>
                                 </td>
                                 <td title={notification.message || undefined}>
-                                    {notification.message || "—"}
+                                    {notification.message || "Não informado"}
                                 </td>
                                 <td>
                                     {notification.created_at ? (
@@ -127,7 +127,7 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                                             <i className="fa fa-clock-o notificationIndex__clock" aria-hidden="true" />
                                             {notification.created_at_human}
                                         </time>
-                                    ) : "—"}
+                                    ) : "Não informado"}
                                 </td>
                                 <td>
                                     <TableLabel tone={notification.is_unread ? "purple" : "inverse"}>
@@ -160,7 +160,7 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                                                 onClick={() => markAsRead(notification)}
                                             />
                                         ) : null}
-                                        {!notification.url && !notification.is_unread ? <span>—</span> : null}
+                                        {!notification.url && !notification.is_unread ? <span>Sem ações</span> : null}
                                     </TableActions>
                                 </td>
                             </tr>

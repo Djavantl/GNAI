@@ -162,7 +162,7 @@
 .siteLayout__navLink {
     display: inline-block;
     padding: 8px 14px;
-    border-radius: 999px;
+    border-bottom: 2px solid transparent;
     color: var(--site-ink-soft) !important;
     font-weight: 600;
     text-decoration: none;
@@ -171,27 +171,8 @@
 
 .siteLayout__navLink:hover,
 .siteLayout__navLink--active {
-    background: var(--site-primary-soft);
+    border-bottom-color: var(--site-primary);
     color: var(--site-primary) !important;
-}
-
-.siteLayout__access {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 18px;
-    border: 1px solid var(--site-primary);
-    border-radius: 999px;
-    color: var(--site-primary) !important;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.siteLayout__access:hover {
-    background: var(--site-primary);
-    color: #fff !important;
 }
 
 .siteLayout__menuToggle {
@@ -214,8 +195,8 @@
 /* Rodapé */
 .siteLayout__footer {
     margin-top: auto;
-    padding-top: 56px;
-    background: var(--site-primary-strong);
+    padding-top: 32px;
+    background: var(--site-primary);
     color: rgba(255, 255, 255, 0.82);
     font-size: 0.92rem;
 }
@@ -224,15 +205,7 @@
     display: grid;
     grid-template-columns: 2fr 1fr 1.4fr;
     gap: 40px;
-    padding-bottom: 40px;
-}
-
-.siteLayout__footerName {
-    margin: 0 0 8px;
-    color: #fff;
-    font-family: var(--site-font-heading);
-    font-size: 1.35rem;
-    font-weight: 700;
+    padding-bottom: 24px;
 }
 
 .siteLayout__footer p {
@@ -350,10 +323,6 @@
         border-radius: 10px;
     }
 
-    .siteLayout__access {
-        justify-content: center;
-    }
-
     .siteLayout__headerInner {
         position: relative;
     }
@@ -387,4 +356,34 @@
         transition: none !important;
         animation: none !important;
     }
+}
+
+.siteLayout__footer .siteLayout__brand {
+    margin-bottom: 16px;
+}
+
+.siteLayout__footer .siteLayout__brandName,
+.siteLayout__footer .siteLayout__brandTagline {
+    color: #fff;
+}
+
+.siteLayout__footer .siteLayout__monogram {
+    background: #fff;
+    color: var(--site-primary);
+}
+
+.siteLayout__copyright a {
+    color: #fff;
+    text-underline-offset: 3px;
+}
+
+.siteLayout__copyright a:hover {
+    text-decoration-thickness: 2px;
+}
+
+
+.siteLayout__footer .siteLayout__logo {
+    padding: 4px;
+    border-radius: 4px;
+    background: #fff;
 }

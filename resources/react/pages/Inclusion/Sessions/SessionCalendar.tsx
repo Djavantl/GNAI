@@ -25,7 +25,7 @@ function clockTime(hour: number): string {
     return `${String(hour).padStart(2, "0")}:00:00`;
 }
 
-/** Amplia a grade padrão (08h–19h) para não ocultar atendimentos fora dela. */
+/** Amplia a grade padrão (08h a 19h) para não ocultar atendimentos fora dela. */
 function visibleHours(sessions: SessionCalendarData["sessions"]): { minTime: string; maxTime: string } {
     let first = defaultFirstHour;
     let last = defaultLastHour;

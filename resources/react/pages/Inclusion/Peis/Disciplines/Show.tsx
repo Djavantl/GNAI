@@ -46,7 +46,7 @@ export default function InclusionPeisDisciplinesShowPage({
 }: PeiDisciplineShowProps): React.JSX.Element {
     const peiUrl = `${aeeBase}/peis/${pei.id}`;
     const disciplineUrl = `${peiUrl}/disciplines/${peiDiscipline.id}`;
-    const disciplineName = peiDiscipline.discipline_name || "—";
+    const disciplineName = peiDiscipline.discipline_name || "Não informado";
 
     return (
         <BusinessPage

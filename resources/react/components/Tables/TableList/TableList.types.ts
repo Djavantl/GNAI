@@ -30,7 +30,7 @@ export interface TableListPage extends TableListRange {
 export interface TableListTableProps
   extends Omit<TableProps, 'children' | 'width' | 'summary'> {
   columns: TableListColumn[];
-  /** Paginador da listagem: a barra mostra "1–10 de 14 registros". */
+  /** Paginador da listagem: a barra mostra "1 a 10 de 14 registros". */
   page?: TableListRange;
   /** Texto livre, só para coleções sem paginação (ex.: abas do prontuário). */
   summary?: ReactNode;

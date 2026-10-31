@@ -85,7 +85,7 @@ export default function InclusionWaitlistsShowPage({
                                 {waitlist.professional?.name ?? "Não informado"}
                             </DetailField>
                             <DetailField label="Usuário Responsável">
-                                {waitlist.user || "—"}
+                                {waitlist.user || "Não informado"}
                             </DetailField>
                             <DetailField label="Data da Solicitação">
                                 {waitlist.requested_at_label}

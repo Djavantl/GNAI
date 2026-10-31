@@ -60,7 +60,7 @@
         <div class="pdf-subject-header">
             <strong>Aluno(a): {!! \App\Shared\Infrastructure\Security\RichTextSanitizer::sanitize((string) ($evaluation->student->person->name ?? '---')) !!}</strong>
             @if(!$evaluation->is_present)
-                <span class="pdf-status-danger"> — Ausente</span>
+                <span class="pdf-status-danger">, Ausente</span>
             @endif
         </div>
 

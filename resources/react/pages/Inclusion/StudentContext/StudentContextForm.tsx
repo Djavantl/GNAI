@@ -255,10 +255,10 @@ export default function StudentContextForm({
                                 />
                                 <div className="studentContextForm__profileText">
                                     <strong>{studentProfile.name}</strong>
-                                    <span>Matrícula: {studentProfile.registration || "—"}</span>
+                                    <span>Matrícula: {studentProfile.registration || "Não informado"}</span>
                                     <span>
                                         <TableLabel tone={studentProfile.status_color || "inverse"}>
-                                            {studentProfile.status_label || "—"}
+                                            {studentProfile.status_label || "Não informado"}
                                         </TableLabel>
                                     </span>
                                 </div>
@@ -273,9 +273,9 @@ export default function StudentContextForm({
                                             key={deficiency.id}
                                             className="studentContextForm__deficiency"
                                         >
-                                            <strong>{deficiency.name || "—"}</strong>
+                                            <strong>{deficiency.name || "Não informado"}</strong>
                                             <span>
-                                                GRAU: {deficiency.severity_label ?? deficiency.severity ?? "—"}
+                                                GRAU: {deficiency.severity_label ?? deficiency.severity ?? "Não informado"}
                                             </span>
                                         </li>
                                     ))

@@ -202,15 +202,15 @@ export default function StudentCourseForm(props: StudentCourseFormProps): React.
                         >
                             <dl className="studentCourseForm__details">
                                 <DetailField label={editing ? "Aluno" : "Nome do Aluno"}>
-                                    <strong>{student?.person?.name ?? "—"}</strong>
+                                    <strong>{student?.person?.name ?? "Não informado"}</strong>
                                 </DetailField>
                                 {editing ? (
                                     <DetailField label="Curso / Série">
-                                        <strong>{studentCourse?.course?.name ?? "—"}</strong>
+                                        <strong>{studentCourse?.course?.name ?? "Não informado"}</strong>
                                     </DetailField>
                                 ) : (
                                     <DetailField label="Matrícula">
-                                        {student?.registration || "—"}
+                                        {student?.registration || "Não informado"}
                                     </DetailField>
                                 )}
                             </dl>

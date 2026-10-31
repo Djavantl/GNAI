@@ -34,7 +34,7 @@ export default function InclusionBarrierInspectionShowPage({
                 <FormSection id="barrier-inspection-details" title="Informações Gerais" variant="inline" iconClass="fa fa-clipboard">
                     <dl className="barrierShow__details">
                         <div className="barrierShow__item"><dt>Status da Barreira</dt><dd><TableLabel tone={inspection.status === "resolved" ? "success" : inspection.status === "in_progress" ? "warning" : "inverse"}>{statusLabels[inspection.status ?? ""] ?? "Identificada"}</TableLabel></dd></div>
-                        <div className="barrierShow__item"><dt>Tipo de Inspeção</dt><dd>{inspectionLabels[inspection.type ?? ""] ?? inspection.type ?? "—"}</dd></div>
+                        <div className="barrierShow__item"><dt>Tipo de Inspeção</dt><dd>{inspectionLabels[inspection.type ?? ""] ?? inspection.type ?? "Não informado"}</dd></div>
                         <div className="barrierShow__item"><dt>Data da Inspeção</dt><dd>{dateLabel(inspection.inspection_date)}</dd></div>
                         <div className="barrierShow__item barrierShow__wide"><dt>Parecer Técnico / Descrição</dt><dd><div dangerouslySetInnerHTML={{ __html: descriptionHtml }} /></dd></div>
                     </dl>

@@ -110,7 +110,7 @@ export default function InclusionBarriersIndexPage({ barriers, filters: initialF
                             return (
                                 <tr key={barrier.id}>
                                     <td>{barrier.name}</td>
-                                    <td>{barrier.category?.name ?? "—"}</td>
+                                    <td>{barrier.category?.name ?? "Não informado"}</td>
                                     <td><TableLabel tone={barrier.priority === "urgent" || barrier.priority === "high" ? "danger" : barrier.priority === "low" ? "info" : "warning"}>{priorityLabels[barrier.priority] ?? barrier.priority}</TableLabel></td>
                                     <td><TableLabel tone={status === "resolved" ? "success" : status === "in_progress" ? "warning" : status === "not_applicable" ? "danger" : "inverse"}>{statusLabels[status] ?? "Pendente"}</TableLabel></td>
                                     <td>{barrier.location?.name || "Não informado"}</td>
@@ -122,7 +122,7 @@ export default function InclusionBarriersIndexPage({ barriers, filters: initialF
                                         <TableActions>
                                             {can.show ? <Button href={`${base}/${barrier.id}`} size="sm" tone="dark-blue" iconOnly leftIconClass="fa fa-eye" aria-label={`Visualizar ${barrier.name}`} /> : null}
                                             {can.destroy ? <Button tone="dark-red" size="sm" iconOnly leftIconClass="fa fa-trash-o" aria-label={`Excluir ${barrier.name}`} onClick={() => { cancelScheduled(); removal.open(barrier); }} /> : null}
-                                            {!can.show && !can.destroy ? <span>—</span> : null}
+                                            {!can.show && !can.destroy ? <span>Sem ações</span> : null}
                                         </TableActions>
                                     </td>
                                 </tr>

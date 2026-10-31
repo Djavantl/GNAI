@@ -532,7 +532,7 @@ $relationshipMap = [
         @foreach ($pei->peiDisciplines as $item)
 
             <div class="section-title">
-                Adaptações Razoáveis e/ou Acessibilidades Curriculares —
+                Adaptações Razoáveis e/ou Acessibilidades Curriculares,
                 {!! $renderHtml(mb_strtoupper($item->discipline->name, 'UTF-8')) !!}
             </div>
 

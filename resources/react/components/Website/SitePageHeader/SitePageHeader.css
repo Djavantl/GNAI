@@ -1,8 +1,8 @@
 .sitePageHeader {
     padding: 40px 0 44px;
     background:
-        radial-gradient(circle at 85% 20%, color-mix(in srgb, var(--site-primary) 35%, transparent) 0, transparent 45%),
-        var(--site-primary-strong);
+        radial-gradient(circle at 94% 22%, transparent 0 130px, rgba(255, 255, 255, 0.04) 131px 190px, transparent 191px),
+        linear-gradient(115deg, var(--site-primary), var(--site-primary-strong));
     color: #fff;
 }
 
@@ -28,7 +28,11 @@
 }
 
 .sitePageHeader__eyebrow {
-    margin: 0 0 6px;
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    margin: 12px 0;
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.8rem;
     font-weight: 700;

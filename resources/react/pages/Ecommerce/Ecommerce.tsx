@@ -12,7 +12,7 @@ export default function Ecommerce({
   page: EcommercePageDefinition;
 }): React.JSX.Element {
   return (
-    <section className="ecommercePage" aria-label={`eCommerce — ${page.title}`}>
+    <section className="ecommercePage" aria-label={`eCommerce, ${page.title}`}>
       <PageHeader
         title={page.title}
         subtitle={

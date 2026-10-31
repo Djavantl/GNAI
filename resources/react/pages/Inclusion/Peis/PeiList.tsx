@@ -228,9 +228,9 @@ export default function PeiList({
                                         <>
                                             <td>
                                                 <div className="peiList__identity">
-                                                    <strong>{pei.student?.person?.name || "—"}</strong>
+                                                    <strong>{pei.student?.person?.name || "Não informado"}</strong>
                                                     <small className="peiList__meta">
-                                                        Matrícula: {pei.student?.registration || "—"}
+                                                        Matrícula: {pei.student?.registration || "Não informado"}
                                                     </small>
                                                 </div>
                                             </td>

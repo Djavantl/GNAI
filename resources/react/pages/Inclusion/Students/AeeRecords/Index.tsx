@@ -139,7 +139,7 @@ export default function InclusionStudentsAeeRecordsIndexPage({
                                         <strong className="aeeRecordList__date">{date}</strong>
                                     </td>
                                     <td>{session?.professional?.person?.name ?? "Não informado"}</td>
-                                    <td>{evaluation.aee_record?.duration || "—"}</td>
+                                    <td>{evaluation.aee_record?.duration || "Não informado"}</td>
                                     <td>
                                         <TableLabel tone={evaluation.is_present ? "success" : "danger"}>
                                             <i
@@ -185,7 +185,7 @@ export default function InclusionStudentsAeeRecordsIndexPage({
                                                 ) : null}
                                             </TableActions>
                                         ) : (
-                                            <span>—</span>
+                                            <span>Sem ações</span>
                                         )}
                                     </td>
                                 </tr>

@@ -127,7 +127,7 @@ export default function PendencyList({
     function renderPriority(pendency: PendencyListRecord): React.JSX.Element | string {
         const priority = pendency.priority ? priorityByValue.get(pendency.priority) : undefined;
 
-        if (!priority) return "—";
+        if (!priority) return "Não informado";
 
         return (
             <TableLabel tone={priorityTones[priority.color] ?? "inverse"}>
@@ -270,10 +270,10 @@ export default function PendencyList({
                                         {isMine ? <strong>{pendency.title}</strong> : pendency.title}
                                     </td>
                                     {!isMine ? (
-                                        <td>{pendency.assigned_professional?.person?.name || "—"}</td>
+                                        <td>{pendency.assigned_professional?.person?.name || "Não informado"}</td>
                                     ) : null}
                                     <td>{renderPriority(pendency)}</td>
-                                    <td>{pendency.due_date ? dateLabel(pendency.due_date) : "—"}</td>
+                                    <td>{pendency.due_date ? dateLabel(pendency.due_date) : "Não informado"}</td>
                                     <td>{renderStatus(pendency)}</td>
                                     <td>{pendency.creator?.name || "Não informado"}</td>
                                     <td>{formatTableListText(pendency.description)}</td>

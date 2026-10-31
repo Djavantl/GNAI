@@ -1,5 +1,5 @@
 import PageScaffold from '@/components/UI/PageScaffold/PageScaffold';
 
 export default function InclusionTeachersDisciplinesPage(): React.JSX.Element {
-  return <PageScaffold title="Disciplinas — Docentes" />;
+  return <PageScaffold title="Disciplinas, Docentes" />;
 }

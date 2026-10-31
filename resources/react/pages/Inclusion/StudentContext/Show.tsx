@@ -21,9 +21,9 @@ import "./StudentContext.css";
 type PendingAction = "delete" | "restore" | null;
 
 function dateTime(value: string | null | undefined): string {
-    if (!value) return "—";
+    if (!value) return "Não informado";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "—";
+    if (Number.isNaN(date.getTime())) return "Não informado";
 
     const day = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(date);
     const time = new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" }).format(date);
@@ -33,7 +33,7 @@ function dateTime(value: string | null | undefined): string {
 
 function LongText({
     value,
-    fallback = "—",
+    fallback = "Não informado",
 }: {
     value: string | null | undefined;
     fallback?: string;
@@ -93,9 +93,9 @@ export default function InclusionStudentContextShowPage({
     const busy = useRef(false);
     const contextUrl = `${aeeBase}/student-context/${context.id}`;
     const returnUrl = studentRecordUrl(student.id, "current-context");
-    const evaluatorName = context.evaluator?.person?.name || "—";
+    const evaluatorName = context.evaluator?.person?.name || "Não informado";
     const option = (key: StudentContextOptionKey, value: string | null): string => (
-        value ? studentContextOptions[key]?.[value] ?? value : "—"
+        value ? studentContextOptions[key]?.[value] ?? value : "Não informado"
     );
 
     function run(action: Exclude<PendingAction, null>): void {
@@ -150,10 +150,10 @@ export default function InclusionStudentContextShowPage({
                         iconClass="fa fa-id-card-o"
                     >
                         <DetailField label="Semestre">
-                            {context.semester?.label || "—"}
+                            {context.semester?.label || "Não informado"}
                         </DetailField>
                         <DetailField label="Tipo de Avaliação">
-                            {evaluationTypeLabel || "—"}
+                            {evaluationTypeLabel || "Não informado"}
                         </DetailField>
                         <DetailField label="Versão">
                             <strong>v{context.version}</strong>
@@ -178,9 +178,9 @@ export default function InclusionStudentContextShowPage({
                                         key={deficiency.id}
                                         className="studentContextForm__deficiency"
                                     >
-                                        <strong>{deficiency.name || "—"}</strong>
+                                        <strong>{deficiency.name || "Não informado"}</strong>
                                         <span>
-                                            GRAU: {deficiency.severity_label ?? deficiency.severity ?? "—"}
+                                            GRAU: {deficiency.severity_label ?? deficiency.severity ?? "Não informado"}
                                         </span>
                                     </li>
                                 ))
@@ -404,15 +404,15 @@ export default function InclusionStudentContextShowPage({
                                 <p className="studentsPage__summaryName">{studentProfile.name}</p>
                                 <dl className="studentContextShow__summary">
                                     <DetailField label="Matrícula">
-                                        {studentProfile.registration || "—"}
+                                        {studentProfile.registration || "Não informado"}
                                     </DetailField>
                                     <DetailField label="Status">
                                         <TableLabel tone={studentProfile.status_color || "inverse"}>
-                                            {studentProfile.status_label || "—"}
+                                            {studentProfile.status_label || "Não informado"}
                                         </TableLabel>
                                     </DetailField>
                                     <DetailField label="Tipo de Avaliação">
-                                        {evaluationTypeLabel || "—"}
+                                        {evaluationTypeLabel || "Não informado"}
                                     </DetailField>
                                     <DetailField label="Versão">
                                         <span className="studentContextShow__version">

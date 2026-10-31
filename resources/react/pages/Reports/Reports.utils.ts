@@ -34,7 +34,7 @@ export async function reportFailure(error: unknown): Promise<{ message: string; 
 
 export function reportCells(result: ReportResult): string[][] {
     const keys = Object.keys(result.headers);
-    return result.rows.map(row => keys.map(key => String(row[key.replaceAll('.', '__')] ?? '—')));
+    return result.rows.map(row => keys.map(key => String(row[key.replaceAll('.', '__')] ?? 'Não informado')));
 }
 
 export async function copyReport(result: ReportResult): Promise<void> {

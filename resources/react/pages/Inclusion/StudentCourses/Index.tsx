@@ -87,7 +87,7 @@ export default function InclusionStudentCoursesIndexPage({
     return (
         <StudentCoursePage
             index
-            title={`Matrículas — ${studentName}`}
+            title={`Matrículas, ${studentName}`}
             subtitle="Gerencie as matrículas e o histórico acadêmico do aluno."
             studentId={student.id}
             studentName={studentName}

@@ -104,7 +104,7 @@ export default function InclusionStudentCoursesShowPage({
 
     return (
         <StudentCoursePage
-            title={`Matrícula — ${studentName}`}
+            title={`Matrícula, ${studentName}`}
             subtitle="Detalhes completos da matrícula do aluno."
             studentId={studentId}
             studentName={studentName}
@@ -138,7 +138,7 @@ export default function InclusionStudentCoursesShowPage({
                             wide
                         >
                             <span className="studentCourseShow__text">
-                                {studentCourse.course?.description || "—"}
+                                {studentCourse.course?.description || "Não informado"}
                             </span>
                         </DetailField>
                     </dl>

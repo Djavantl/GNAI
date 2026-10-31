@@ -271,7 +271,7 @@ export default function PedagogicalRecordForm({
                                     {context.professional_name ?? "Profissional não informado"}
                                 </DetailField>
                                 <DetailField label="Data">
-                                    {context.session_date ?? "—"}
+                                    {context.session_date ?? "Não informado"}
                                 </DetailField>
                                 <DetailField label="Horário">
                                     {`${context.start_time} às ${context.end_time ?? "--:--"}`}
@@ -321,13 +321,12 @@ export default function PedagogicalRecordForm({
                                                         label={(
                                                             <>
                                                                 <strong>{guardian.name}</strong>
-                                                                {" "}
                                                                 <span className="pedagogicalRecordForm__relationship">
-                                                                    — {guardian.relationship_label}
+                                                                    {", "}{guardian.relationship_label}
                                                                 </span>
                                                             </>
                                                         )}
-                                                        aria-label={`${guardian.name} — ${guardian.relationship_label}`}
+                                                        aria-label={`${guardian.name}, ${guardian.relationship_label}`}
                                                         checked={form.data.guardian_ids.includes(guardian.id)}
                                                         disabled={form.processing}
                                                         onChange={(checked) => toggleGuardian(guardian.id, checked)}

@@ -123,7 +123,7 @@ export default function InclusionLocationsIndexPage({ locations, filters: initia
                             <tr key={location.id}>
                                 <td>{location.name || "N/A"}</td>
                                 <td>{location.institution?.name || "N/A"}</td>
-                                <td>{location.type || "—"}</td>
+                                <td>{location.type || "Não informado"}</td>
                                 <td>
                                     <TableLabel tone={location.is_active ? "success" : "inverse"}>
                                         {location.is_active ? "Ativo" : "Inativo"}
@@ -157,7 +157,7 @@ export default function InclusionLocationsIndexPage({ locations, filters: initia
                                                 }}
                                             />
                                         ) : null}
-                                        {!can.show && !can.destroy ? <span>—</span> : null}
+                                        {!can.show && !can.destroy ? <span>Sem ações</span> : null}
                                     </TableActions>
                                 </td>
                             </tr>

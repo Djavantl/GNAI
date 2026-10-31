@@ -38,9 +38,9 @@ final class WaitlistPresenter
             'professional' => $waitlist->professional ? [
                 'name' => $waitlist->professional->person?->name ?? 'Sem nome',
             ] : null,
-            'user' => $waitlist->user?->name ?? '—',
+            'user' => $waitlist->user?->name ?? 'Não informado',
             'requested_at' => $waitlist->requested_at?->format('Y-m-d\TH:i:s'),
-            'requested_at_label' => $waitlist->requested_at?->format('d/m/Y H:i') ?? '—',
+            'requested_at_label' => $waitlist->requested_at?->format('d/m/Y H:i') ?? 'Não informado',
             'status' => $waitlist->status->value,
             'status_label' => $waitlist->status->label(),
             'status_color' => $waitlist->status->color(),

@@ -42,7 +42,7 @@ export default function InclusionPeisShowPage({
     can,
 }: PeiShowProps): React.JSX.Element {
     const peiUrl = `${aeeBase}/peis/${pei.id}`;
-    const versionLabel = `v${pei.version ?? "—"}`;
+    const versionLabel = `v${pei.version ?? "Não informado"}`;
     const tabs: TabItem[] = [
         {
             id: "details",
@@ -60,10 +60,10 @@ export default function InclusionPeisShowPage({
                             {pei.responsible}
                         </DetailField>
                         <DetailField label="Curso">
-                            {pei.course_name || "—"}
+                            {pei.course_name || "Não informado"}
                         </DetailField>
                         <DetailField label="Semestre">
-                            {pei.semester_label || "—"}
+                            {pei.semester_label || "Não informado"}
                         </DetailField>
                         <DetailField label="Versão">
                             <strong>{versionLabel}</strong>
@@ -124,7 +124,7 @@ export default function InclusionPeisShowPage({
         <BusinessPage
             title="Plano Educacional Individualizado"
             subtitle={[
-                `Versão ${pei.version ?? "—"}`,
+                `Versão ${pei.version ?? "Não informado"}`,
                 pei.semester_label,
                 pei.is_finished ? "Finalizado" : "Em preenchimento",
             ].filter(Boolean).join(" • ")}
@@ -154,11 +154,11 @@ export default function InclusionPeisShowPage({
                             <p className="studentsPage__summaryName">{student.name}</p>
                             <dl className="peiShow__summaryDetails">
                                 <DetailField label="Matrícula">
-                                    {student.registration || "—"}
+                                    {student.registration || "Não informado"}
                                 </DetailField>
                                 <DetailField label="Situação do aluno">
                                     <TableLabel tone={student.status_color ?? "inverse"}>
-                                        {student.status_label || "—"}
+                                        {student.status_label || "Não informado"}
                                     </TableLabel>
                                 </DetailField>
                                 <DetailField label="Versão">

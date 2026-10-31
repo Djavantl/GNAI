@@ -95,7 +95,7 @@ export default function LoanForm({
         value: String(item.id),
         label: item.is_digital
             ? `${item.name} (Digital)`
-            : `${item.name} — Patrimônio: ${item.asset_code} — ${item.quantity_available ?? 0} disponível(is)`,
+            : `${item.name}, Patrimônio: ${item.asset_code}, ${item.quantity_available ?? 0} disponível(is)`,
     }));
     const describedBy = (name: string, id: string) =>
         errors[name] ? `${id}-error` : undefined;

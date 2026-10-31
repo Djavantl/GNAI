@@ -67,13 +67,13 @@ export default function PeiStudentContextDetails({
                 columns={4}
             >
                 <DetailField label="Semestre">
-                    {context.semester_label || "—"}
+                    {context.semester_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Tipo de Avaliação">
-                    {context.evaluation_type_label || "—"}
+                    {context.evaluation_type_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Versão">
-                    v{context.version ?? "—"}
+                    v{context.version ?? "Não informado"}
                 </DetailField>
                 <DetailField label="Contexto Atual?">
                     <TableLabel tone={context.is_current ? "success" : "inverse"}>
@@ -112,16 +112,16 @@ export default function PeiStudentContextDetails({
                 columns={4}
             >
                 <DetailField label="Nível de Aprendizagem">
-                    {context.learning_level_label || "—"}
+                    {context.learning_level_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Nível de Atenção">
-                    {context.attention_level_label || "—"}
+                    {context.attention_level_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Nível de Memória">
-                    {context.memory_level_label || "—"}
+                    {context.memory_level_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Nível de Raciocínio">
-                    {context.reasoning_level_label || "—"}
+                    {context.reasoning_level_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Observações de Aprendizagem" wide>
                     <PeiRichText html={context.learning_observations_html} />
@@ -134,13 +134,13 @@ export default function PeiStudentContextDetails({
                 columns={3}
             >
                 <DetailField label="Tipo de Comunicação">
-                    {context.communication_type_label || "—"}
+                    {context.communication_type_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Nível de Interação">
-                    {context.interaction_level_label || "—"}
+                    {context.interaction_level_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Nível de Socialização">
-                    {context.socialization_level_label || "—"}
+                    {context.socialization_level_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Comportamento Agressivo">
                     <YesNo value={context.shows_aggressive_behavior} />
@@ -158,7 +158,7 @@ export default function PeiStudentContextDetails({
                 iconClass="fa fa-universal-access"
             >
                 <DetailField label="Nível de Autonomia" wide>
-                    {context.autonomy_level_label || "—"}
+                    {context.autonomy_level_label || "Não informado"}
                 </DetailField>
                 <DetailField label="Apoio de Mobilidade">
                     <PeiRichText html={context.needs_mobility_support_html} />
@@ -195,7 +195,7 @@ export default function PeiStudentContextDetails({
                 columns={4}
             >
                 <DetailField label="Profissional Avaliador">
-                    {context.evaluator_name || "—"}
+                    {context.evaluator_name || "Não informado"}
                 </DetailField>
                 <DetailField label="Criado em">
                     {dateTimeLabel(context.created_at)}

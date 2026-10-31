@@ -66,7 +66,7 @@ export default function SessionDayModal({
                                         <header className="sessionsPage__dayModalSessionHeader">
                                             <div>
                                                 <span className="sessionsPage__dayModalTime">
-                                                    {session.start_time ?? "--:--"} – {session.end_time ?? "--:--"}
+                                                    {session.start_time ?? "--:--"} a {session.end_time ?? "--:--"}
                                                 </span>
                                                 <span className="sessionsPage__dayModalType">
                                                     {session.type_label}

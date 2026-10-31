@@ -2,7 +2,6 @@ import PublicationCard, { ScheduleStatus } from "@/components/Website/Publicatio
 import SiteLayout from "@/components/Website/SiteLayout/SiteLayout";
 import SiteLink from "@/components/Website/SiteLayout/SiteLink";
 import SitePageHeader from "@/components/Website/SitePageHeader/SitePageHeader";
-import TeamMemberCard from "@/components/Website/TeamMemberCard/TeamMemberCard";
 import {
     websiteRoutes,
     type PublicationCardData,
@@ -32,12 +31,12 @@ export default function WebsitePublicPublicationShowPage({
     return (
         <SiteLayout site={site} current="publications" seo={seo}>
             <SitePageHeader
-                eyebrow={[publication.type_label, ...publication.tags].filter(Boolean).join(" · ")}
+                eyebrow={publication.type_label}
                 title={publication.title}
                 subtitle={publication.summary}
                 trail={[
                     { label: "Publicações", href: websiteRoutes.publications },
-                    { label: publication.title },
+                    { label: publication.type_label },
                 ]}
             >
                 <p className="websitePublic__byline">
@@ -57,48 +56,19 @@ export default function WebsitePublicPublicationShowPage({
             </SitePageHeader>
             <article className="websitePublic__section">
                 <div className="siteLayout__container websitePublic__article">
+                    {publication.cover_url ? (
+                        <figure className="websitePublic__cover">
+                            <img src={publication.cover_url} alt={publication.cover_alt} />
+                        </figure>
+                    ) : null}
                     <div className="websitePublic__articleMain">
-                        {publication.cover_url ? (
-                            <figure className="websitePublic__cover">
-                                <img src={publication.cover_url} alt={publication.cover_alt} />
-                            </figure>
-                        ) : null}
                         {publication.content_html ? (
                             <RichTextContent html={publication.content_html} className="websitePublic__content" />
                         ) : null}
-                        {publication.gallery.length ? (
-                            <section className="websitePublic__block" aria-labelledby="publication-gallery">
-                                <h2 id="publication-gallery" className="websitePublic__blockTitle">Galeria de fotos</h2>
-                                <ImageLightbox className="websitePublic__gallery">
-                                    {publication.gallery.map((image) => (
-                                        <a
-                                            key={image.id}
-                                            href={image.url}
-                                            data-lightbox
-                                            title={image.alt}
-                                            aria-label={`Ampliar foto: ${image.alt}`}
-                                        >
-                                            <img src={image.url} alt={image.alt} loading="lazy" />
-                                        </a>
-                                    ))}
-                                </ImageLightbox>
-                            </section>
-                        ) : null}
-                        {publication.speakers.length ? (
-                            <section className="websitePublic__block" aria-labelledby="publication-speakers">
-                                <h2 id="publication-speakers" className="websitePublic__blockTitle">Participantes</h2>
-                                <ul className="websitePublic__teamGrid websitePublic__teamGrid--compact">
-                                    {publication.speakers.map((speaker) => (
-                                        <li key={speaker.id}>
-                                            <TeamMemberCard member={speaker} />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </section>
-                        ) : null}
                     </div>
                     {schedule || publication.link_url || publication.organizer || publication.audience ? (
-                        <aside className="websitePublic__aside" aria-label="Informações do evento">
+                        <section className="websitePublic__aside" aria-labelledby="publication-details">
+                            <h2 id="publication-details" className="websitePublic__blockTitle">Sobre esta publicação</h2>
                             {schedule ? (
                                 <>
                                     <ScheduleStatus schedule={schedule} />
@@ -155,7 +125,55 @@ export default function WebsitePublicPublicationShowPage({
                                     {publication.link_label || "Acessar link"}
                                 </SiteLink>
                             ) : null}
-                        </aside>
+                        </section>
+                    ) : null}
+                    {publication.gallery.length ? (
+                        <section className="websitePublic__block" aria-labelledby="publication-gallery">
+                            <h2 id="publication-gallery" className="websitePublic__blockTitle">Galeria de fotos</h2>
+                            <ImageLightbox className="websitePublic__gallery">
+                                {publication.gallery.map((image) => (
+                                    <a
+                                        key={image.id}
+                                        href={image.url}
+                                        data-lightbox
+                                        title={image.alt}
+                                        aria-label={`Ampliar foto: ${image.alt}`}
+                                    >
+                                        <img src={image.url} alt={image.alt} loading="lazy" />
+                                    </a>
+                                ))}
+                            </ImageLightbox>
+                        </section>
+                    ) : null}
+                    {publication.speakers.length ? (
+                        <section className="websitePublic__block" aria-labelledby="publication-speakers">
+                            <h2 id="publication-speakers" className="websitePublic__blockTitle">Participantes</h2>
+                            <ul className="websitePublic__participants">
+                                {publication.speakers.map((speaker) => (
+                                    <li key={speaker.id}>
+                                        <img src={speaker.photo_url} alt={`Foto de ${speaker.name}`} loading="lazy" />
+                                        <span>
+                                            <strong>{speaker.name}</strong>
+                                            {speaker.role ? <span>, {speaker.role}</span> : null}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    ) : null}
+                    {publication.tags.length ? (
+                        <div className="websitePublic__tags" aria-label="Tags da publicação">
+                            <strong>Tags</strong>
+                            {publication.tags.map((tag) => (
+                                <SiteLink
+                                    key={tag}
+                                    href={`${websiteRoutes.publications}?tag=${encodeURIComponent(tag)}`}
+                                    className="websitePublic__tag"
+                                >
+                                    {tag}
+                                </SiteLink>
+                            ))}
+                        </div>
                     ) : null}
                 </div>
             </article>

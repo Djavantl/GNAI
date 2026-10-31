@@ -116,7 +116,7 @@ function renderRecordRow(
                         />
                     </TableActions>
                 ) : (
-                    <span>—</span>
+                    <span>Sem ações</span>
                 )}
             </td>
         </tr>

@@ -7,7 +7,7 @@ export default function InclusionStudentContextVersionPage({
   student: { id: number };
 }): React.JSX.Element {
   return (
-    <PageScaffold title="Versão — Contextos do estudante">
+    <PageScaffold title="Versão, Contextos do estudante">
       <StudentRecordReturnButton
         studentId={student.id}
         tab="current-context"

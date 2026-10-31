@@ -53,7 +53,7 @@ export default function InclusionPedagogicalRecordsShowPage({
         ? "Voltar para o prontuário do aluno"
         : "Voltar para o agendamento";
     const showPedagogicalContent = record.is_present || record.has_guardians;
-    const subtitle = `Agendamento #${session.id} • Realizado em: ${session.session_date ?? "—"}`;
+    const subtitle = `Agendamento #${session.id} • Realizado em: ${session.session_date ?? "Não informado"}`;
 
     function failure(text: string): void {
         notify({
@@ -144,7 +144,7 @@ export default function InclusionPedagogicalRecordsShowPage({
                             />
                         </DetailField>
                         <DetailField label="Período/Duração do Acompanhamento">
-                            {record.duration || "—"}
+                            {record.duration || "Não informado"}
                         </DetailField>
                         <DetailField label="Presença do Estudante no Atendimento">
                             <TableLabel tone={record.is_present ? "success" : "danger"}>
@@ -176,7 +176,7 @@ export default function InclusionPedagogicalRecordsShowPage({
                                 >
                                     <TextValue
                                         value={record.systematic_pedagogical_follow_up_record}
-                                        fallback="—"
+                                        fallback="Não informado"
                                     />
                                 </DetailField>
                                 <DetailField

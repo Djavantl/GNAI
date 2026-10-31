@@ -186,7 +186,7 @@ export default function InclusionTeachersIndexPage({
                                         </div>
                                     </td>
                                     <td>{teacher.person.email || "Não informado"}</td>
-                                    <td>{teacher.registration || "—"}</td>
+                                    <td>{teacher.registration || "Não informado"}</td>
                                     <td>{teacher.person.phone || "Não informado"}</td>
                                     <td>{teacher.person.document || "Não informado"}</td>
                                     <td>{formatTableListDate(teacher.person.birth_date)}</td>

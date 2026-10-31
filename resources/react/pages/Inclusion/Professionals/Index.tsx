@@ -212,14 +212,14 @@ export default function InclusionProfessionalsIndexPage({
                                         </div>
                                     </td>
                                     <td>{professional.person.email || "Não informado"}</td>
-                                    <td>{professional.position?.name || "—"}</td>
+                                    <td>{professional.position?.name || "Não informado"}</td>
                                     <td>
                                         {professional.status ? (
                                             <TableLabel tone={professionalStatusColors[professional.status] ?? "inverse"}>
                                                 {professionalStatuses[professional.status] ?? professional.status}
                                             </TableLabel>
                                         ) : (
-                                            "—"
+                                            "Não informado"
                                         )}
                                     </td>
                                     <td>{professional.registration || "Não informado"}</td>

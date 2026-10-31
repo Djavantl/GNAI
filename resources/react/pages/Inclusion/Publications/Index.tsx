@@ -64,7 +64,7 @@ function periodLabel(publication: PublicationRecord): string {
         ? publication.start_date_label
         : `${publication.start_date_label} a ${publication.end_date_label}`;
 
-    return publication.start_time ? `${dates}, ${publication.start_time}–${publication.end_time ?? ""}` : dates;
+    return publication.start_time ? `${dates}, ${publication.start_time} a ${publication.end_time ?? ""}` : dates;
 }
 
 export default function InclusionPublicationsIndexPage({

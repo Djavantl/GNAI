@@ -24,7 +24,7 @@
         <x-pdf.info-item label="Local / Ref." :value="$barrier->location->name ?? '---'" colspan="2" />
     </x-pdf.row>
     <x-pdf.row>
-        <x-pdf.info-item label="Coordenadas" :value="($barrier->latitude ?? '—') . ', ' . ($barrier->longitude ?? '—')" colspan="4" />
+        <x-pdf.info-item label="Coordenadas" :value="($barrier->latitude ?? 'Não informado') . ', ' . ($barrier->longitude ?? 'Não informado')" colspan="4" />
     </x-pdf.row>
 </x-pdf.table>
 

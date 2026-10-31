@@ -158,8 +158,8 @@ export default function InclusionBarriersShowPage({ barrier, display, can }: Pro
                         <FormSection id="barrier-show-map" title="Localização no Mapa" variant="inline" iconClass="fa fa-map-marker">
                             {!barrier.category?.blocks_map ? (
                                 <dl className="barrierShow__grid barrierShow__coordinates">
-                                    <DetailField label="Latitude">{hasCoordinates ? barrierLatitude.toFixed(8) : "—"}</DetailField>
-                                    <DetailField label="Longitude">{hasCoordinates ? barrierLongitude.toFixed(8) : "—"}</DetailField>
+                                    <DetailField label="Latitude">{hasCoordinates ? barrierLatitude.toFixed(8) : "Não informado"}</DetailField>
+                                    <DetailField label="Longitude">{hasCoordinates ? barrierLongitude.toFixed(8) : "Não informado"}</DetailField>
                                 </dl>
                             ) : null}
                             <div className="barrierForm__mapFrame">

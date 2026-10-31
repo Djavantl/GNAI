@@ -327,7 +327,7 @@ export default function BackupIndexPage({
                                                     onClick={() => openAction(backup, "delete")}
                                                 />
                                             ) : null}
-                                            {!can.download && !can.restore && !can.show && !can.destroy ? <span>—</span> : null}
+                                            {!can.download && !can.restore && !can.show && !can.destroy ? <span>Sem ações</span> : null}
                                         </TableActions>
                                     </td>
                                 </tr>

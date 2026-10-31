@@ -162,7 +162,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
             $sourceStorage = $this->findStorageDir($extractPath);
             $this->restoreStorageApp($sourceStorage, $rollbackPath, $shouldCleanupWorkPath);
         } catch (Throwable $exception) {
-            Log::error('BackupArchiveStorage@restoreArchive — falha crítica: '.$exception->getMessage());
+            Log::error('BackupArchiveStorage@restoreArchive, falha crítica: '.$exception->getMessage());
 
             throw $exception instanceof Exception
                 ? $exception
@@ -268,7 +268,7 @@ final class BackupArchiveStorage implements BackupArchiveStorageContract
             }
         }
 
-        Log::error("BackupArchiveStorage@restoreArchive — arquivo não encontrado: {$fileName}");
+        Log::error("BackupArchiveStorage@restoreArchive, arquivo não encontrado: {$fileName}");
 
         throw new Exception("Arquivo físico não encontrado: {$fileName}");
     }

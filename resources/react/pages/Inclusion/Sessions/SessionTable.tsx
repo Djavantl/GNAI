@@ -118,7 +118,7 @@ export default function SessionTable({
                                                 ) : null}
                                             </TableActions>
                                         ) : (
-                                            <span>—</span>
+                                            <span>Sem ações</span>
                                         )}
                                     </td>
                                 </tr>

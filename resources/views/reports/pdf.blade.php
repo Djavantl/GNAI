@@ -5,7 +5,7 @@
 </head>
 <body>
     <x-pdf.header
-        :title="'Relatório — '.$subject"
+        :title="'Relatório, '.$subject"
         :meta="[
             'Gerado em' => now()->format('d/m/Y H:i'),
             'Registros' => count($data),

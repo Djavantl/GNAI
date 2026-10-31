@@ -42,7 +42,7 @@ final class BackupController
         $backups->getCollection()->each(
             fn (Backup $backup) => $backup->setAttribute(
                 'created_at_label',
-                $backup->created_at?->format('d/m/Y H:i') ?? '—',
+                $backup->created_at?->format('d/m/Y H:i') ?? 'Não informado',
             ),
         );
         $users = $usersQuery->execute()
@@ -84,7 +84,7 @@ final class BackupController
     public function show(Backup $backup, ShowBackupQuery $query, Request $request): InertiaResponse
     {
         $backup = $query->execute($backup);
-        $backup->setAttribute('created_at_label', $backup->created_at?->format('d/m/Y H:i') ?? '—');
+        $backup->setAttribute('created_at_label', $backup->created_at?->format('d/m/Y H:i') ?? 'Não informado');
 
         return Inertia::render('Backup/Show', [
             'backup' => $backup,

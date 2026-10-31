@@ -82,7 +82,7 @@ function sessionTime(session?: AttendanceSession | null): string {
   if (!session?.start_time) return '---';
   const start = session.start_time.slice(0, 5);
   const end = session.end_time?.slice(0, 5);
-  return end ? `${start} – ${end}` : start;
+  return end ? `${start} a ${end}` : start;
 }
 
 function AttendanceRowActions({

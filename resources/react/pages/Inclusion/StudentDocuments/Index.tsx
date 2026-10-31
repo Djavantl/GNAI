@@ -90,7 +90,7 @@ export default function InclusionStudentDocumentsIndexPage({
 
     return (
         <StudentDocumentPage
-            title={`Documentos — ${student.person.name}`}
+            title={`Documentos, ${student.person.name}`}
             subtitle="Gestão de laudos, relatórios e planos de AEE."
             student={student}
             actions={(

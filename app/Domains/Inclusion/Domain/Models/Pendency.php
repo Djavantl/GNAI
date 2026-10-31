@@ -154,21 +154,21 @@ final class Pendency extends Model implements Auditable
     {
         return $this->created_at
             ? $this->created_at->format('d/m/Y H:i')
-            : '—';
+            : 'Não informado';
     }
 
     public function getUpdatedAtFormattedAttribute(): string
     {
         return $this->updated_at
             ? $this->updated_at->format('d/m/Y H:i')
-            : '—';
+            : 'Não informado';
     }
 
     public function getDueDateFormattedAttribute(): string
     {
         return $this->due_date
             ? $this->due_date->format('d/m/Y')
-            : '—';
+            : 'Não informado';
     }
 
     public function creator(): BelongsTo

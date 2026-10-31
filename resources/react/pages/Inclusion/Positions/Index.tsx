@@ -207,7 +207,7 @@ export default function InclusionPositionsIndexPage({
                                                 }}
                                             />
                                         ) : null}
-                                        {!hasRowActions ? <span>—</span> : null}
+                                        {!hasRowActions ? <span>Sem ações</span> : null}
                                     </TableActions>
                                 </td>
                             </tr>

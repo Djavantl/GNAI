@@ -144,7 +144,7 @@ export default function InclusionInstitutionsIndexPage({ institutions, filters: 
                                                 }}
                                             />
                                         ) : null}
-                                        {!can.show && !can.destroy ? <span>—</span> : null}
+                                        {!can.show && !can.destroy ? <span>Sem ações</span> : null}
                                     </TableActions>
                                 </td>
                             </tr>

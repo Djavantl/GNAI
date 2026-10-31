@@ -44,7 +44,7 @@ final class PublicationFormQuery
             ->map(fn (Professional $professional): array => [
                 'value' => (string) $professional->getKey(),
                 'label' => trim(($professional->person?->name ?? 'Profissional')
-                    .($professional->position?->name ? ' — '.$professional->position->name : '')),
+                    .($professional->position?->name ? ', '.$professional->position->name : '')),
             ])
             ->sortBy('label', SORT_NATURAL | SORT_FLAG_CASE)
             ->values()

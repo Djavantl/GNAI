@@ -68,11 +68,11 @@ const studentColumns: TableListColumn[] = [
 ];
 
 function sessionTime(record: PedagogicalRecordListRow): string {
-    if (!record.start_time) return "—";
+    if (!record.start_time) return "Não informado";
     const start = record.start_time.slice(0, 5);
     const end = record.end_time?.slice(0, 5);
 
-    return end ? `${start} – ${end}` : start;
+    return end ? `${start} a ${end}` : start;
 }
 
 function presenceLabel(record: PedagogicalRecordListRow): React.JSX.Element {
@@ -197,7 +197,7 @@ export default function PedagogicalRecordList({
         const canDelete = isStudent && can.delete && record.can_manage;
 
         if (!can.view && !canUpdate && !canDelete) {
-            return <span>—</span>;
+            return <span>Sem ações</span>;
         }
 
         return (
@@ -262,7 +262,7 @@ export default function PedagogicalRecordList({
                     <td>{date}</td>
                     <td>{sessionTime(record)}</td>
                     <td>{record.professional_name ?? "Não informado"}</td>
-                    <td>{record.duration ?? "—"}</td>
+                    <td>{record.duration ?? "Não informado"}</td>
                     <td>{presenceLabel(record)}</td>
                     <td>{guardiansLabel(record)}</td>
                     <td>{renderActions(record)}</td>

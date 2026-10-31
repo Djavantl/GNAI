@@ -12,7 +12,7 @@ export default function Error({ status, homeHref }: { status: number; homeHref: 
 
   return (
     <>
-      <Head title={`${status} — Erro | Gnai`} />
+      <Head title={`${status}, Erro | Gnai`} />
       <AccountLayout>
         <ErrorState code={code} homeHref={homeHref} homeLabel="Voltar" />
       </AccountLayout>

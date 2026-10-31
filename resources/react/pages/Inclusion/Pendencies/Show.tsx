@@ -94,7 +94,7 @@ export default function InclusionPendenciesShowPage({
 
     return (
         <BusinessPage
-            title={`Pendência — ${pendency.title}`}
+            title={`Pendência, ${pendency.title}`}
             subtitle="Detalhes completos da pendência."
             breadcrumbItems={[
                 { label: "Home", href: "/auth/dashboard" },
@@ -126,7 +126,7 @@ export default function InclusionPendenciesShowPage({
                                         {pendency.priority_label}
                                     </TableLabel>
                                 ) : (
-                                    "—"
+                                    "Não informado"
                                 )}
                             </DetailField>
                             <DetailField label="Vencimento">
@@ -144,7 +144,7 @@ export default function InclusionPendenciesShowPage({
                             </DetailField>
                             <DetailField label="Descrição" wide>
                                 <span className="pendencyShow__text">
-                                    {pendency.description || "—"}
+                                    {pendency.description || "Não informado"}
                                 </span>
                             </DetailField>
                         </dl>

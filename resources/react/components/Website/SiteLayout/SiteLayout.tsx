@@ -137,10 +137,6 @@ export default function SiteLayout({
                                     </li>
                                 ))}
                             </ul>
-                            <SiteLink href={site.login_url} className="siteLayout__access">
-                                <i className="fa fa-sign-in" aria-hidden="true" />
-                                <span>Acessar o sistema</span>
-                            </SiteLink>
                         </nav>
                     </div>
                 </header>
@@ -154,7 +150,7 @@ export default function SiteLayout({
                 <footer className="siteLayout__footer">
                     <div className="siteLayout__container siteLayout__footerGrid">
                         <div className="siteLayout__footerBrand">
-                            <p className="siteLayout__footerName">{site.name}</p>
+                            <SiteBrand site={site} />
                             {site.footer_text ? <p>{site.footer_text}</p> : null}
                             <SiteSocialLinks site={site} />
                         </div>
@@ -191,7 +187,7 @@ export default function SiteLayout({
                     </div>
                     <div className="siteLayout__container siteLayout__copyright">
                         <span>© {year} {site.name}. Todos os direitos reservados.</span>
-                        <span>Plataforma Gnai</span>
+                        <span>Plataforma <SiteLink href="/about-us">Gnai</SiteLink></span>
                     </div>
                 </footer>
             </div>

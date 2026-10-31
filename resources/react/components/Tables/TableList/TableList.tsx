@@ -124,7 +124,7 @@ export function TableListEmpty({
   );
 }
 
-/** Rodapé das listagens paginadas: o intervalo ("1–10 de 14") e a paginação vêm do mesmo paginador. */
+/** Rodapé das listagens paginadas: o intervalo ("1 a 10 de 14") e a paginação vêm do mesmo paginador. */
 export function TableListFooter({
   page,
   disabled = false,

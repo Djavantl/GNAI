@@ -6,11 +6,11 @@ const dateTimeFormat = new Intl.DateTimeFormat("pt-BR", {
 });
 
 export function auditDateTime(value: string | null): string {
-    if (!value) return "—";
+    if (!value) return "Não informado";
 
     const date = new Date(value);
 
-    return Number.isNaN(date.getTime()) ? "—" : dateTimeFormat.format(date);
+    return Number.isNaN(date.getTime()) ? "Não informado" : dateTimeFormat.format(date);
 }
 
 export function auditEventTone(event: AuditEventValue): string {

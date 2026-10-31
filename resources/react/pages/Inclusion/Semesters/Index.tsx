@@ -202,7 +202,7 @@ export default function InclusionSemestersIndexPage({
                                         </span>
                                     </td>
                                     <td>
-                                        <span className="semesterIndex__label">{semester.label || "—"}</span>
+                                        <span className="semesterIndex__label">{semester.label || "Não informado"}</span>
                                     </td>
                                     <td>
                                         <TableLabel tone={semester.is_current ? "success" : "inverse"}>
@@ -248,7 +248,7 @@ export default function InclusionSemestersIndexPage({
                                                     }}
                                                 />
                                             ) : null}
-                                            {!can.view && !canSetCurrent && !canDelete ? <span>—</span> : null}
+                                            {!can.view && !canSetCurrent && !canDelete ? <span>Sem ações</span> : null}
                                         </TableActions>
                                     </td>
                                 </tr>

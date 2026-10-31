@@ -303,8 +303,8 @@ export default function GeoMap({
                 </p>
             ) : null}
             <dl className="geoMap__coordinates">
-                <div><dt>Latitude</dt><dd>{validPoint(value) ? value.latitude.toFixed(8) : "—"}</dd></div>
-                <div><dt>Longitude</dt><dd>{validPoint(value) ? value.longitude.toFixed(8) : "—"}</dd></div>
+                <div><dt>Latitude</dt><dd>{validPoint(value) ? value.latitude.toFixed(8) : "Não informado"}</dd></div>
+                <div><dt>Longitude</dt><dd>{validPoint(value) ? value.longitude.toFixed(8) : "Não informado"}</dd></div>
             </dl>
         </div>
     );
