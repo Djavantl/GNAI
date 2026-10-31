@@ -32,13 +32,11 @@ export default function SessionFilters({
     fields,
     filters,
     options,
-    disabled = false,
     onSearch,
 }: {
     fields: SessionTableFilterKey[];
     filters: SessionListFilters;
     options: SessionListOptions;
-    disabled?: boolean;
     onSearch: (values: Record<string, string>) => void;
 }): React.JSX.Element {
     // `fields` must be a stable (module-level) list to keep the memoized values.
@@ -89,10 +87,7 @@ export default function SessionFilters({
                     </FormField>
                 ))}
                 <TableListFilterActions>
-                    <TableListClearButton
-                        disabled={disabled}
-                        onClick={clear}
-                    />
+                    <TableListClearButton onClick={clear} />
                 </TableListFilterActions>
             </div>
         </FormLayout>

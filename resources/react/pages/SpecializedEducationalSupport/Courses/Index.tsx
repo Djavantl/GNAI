@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,13 +14,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import CoursePage, { courseBase } from "./CoursePage";
 import type { CourseFilters, CourseListRecord, CoursePaginator } from "./Course.types";
 import "./Courses.css";
@@ -49,11 +50,13 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [courseToDelete, setCourseToDelete] = useState<CourseListRecord | null>(null);
+    const list = useTableListVisit({
+        url: courseBase,
+        failureText: "Não foi possível atualizar os cursos. Tente novamente.",
+    });
+    const removal = useTableListAction<CourseListRecord>({
+        failureText: "Não foi possível excluir o curso. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -61,63 +64,8 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: CourseFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(courseBase, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os cursos. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !courseToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${courseBase}/${courseToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o curso. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setCourseToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <CoursePage
@@ -132,8 +80,8 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de cursos"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando cursos"
             >
                 <FormLayout
@@ -154,7 +102,6 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
                                 value={values.name}
                                 maxLength={255}
                                 placeholder="Buscar por nome do curso..."
-                                disabled={busy}
                                 invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "course-filter-name-error" : undefined}
                                 onChange={(event) => update("name", event.target.value)}
@@ -172,17 +119,13 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
                                 placeholder="Todos"
                                 value={values.is_active}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_active}
                                 aria-describedby={pageErrors.is_active ? "course-filter-status-error" : undefined}
                                 onChange={(event) => update("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -220,11 +163,10 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
                                                 iconOnly
                                                 leftIconClass="fa fa-trash-o"
                                                 aria-label={`Excluir ${course.name}`}
-                                                disabled={busy}
+                                                disabled={removal.processing}
                                                 onClick={() => {
                                                     cancelScheduled();
-                                                    setFailure("");
-                                                    setCourseToDelete(course);
+                                                    removal.open(course);
                                                 }}
                                             />
                                         ) : null}
@@ -243,29 +185,27 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={courses}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de cursos"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={courseToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Curso"
                 message={(
                     <>
-                        Excluir o curso <strong>{courseToDelete?.name}</strong>?
+                        Excluir o curso <strong>{removal.target?.name}</strong>?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo curso..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setCourseToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${courseBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </CoursePage>
     );

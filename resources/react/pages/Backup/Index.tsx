@@ -1,5 +1,5 @@
 import { Link, router, useForm, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -13,13 +13,15 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
 import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import BackupPage from "./BackupPage";
 import BackupStatusLabel from "./BackupStatusLabel";
 import type { BackupFilters, BackupPaginator, BackupRecord } from "./Backup.types";
@@ -41,7 +43,6 @@ type Props = {
     };
 };
 
-type BackupAction = "restore" | "delete";
 const base = "/backup/backups";
 const emptyFilters: BackupFilters = { name: "", status: "", user_id: "" };
 const statusOptions = [
@@ -68,12 +69,23 @@ export default function BackupIndexPage({
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
     const fileInput = useRef<HTMLInputElement>(null);
     const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [action, setAction] = useState<BackupAction | null>(null);
-    const [selectedBackup, setSelectedBackup] = useState<BackupRecord | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [restoreTarget, setRestoreTarget] = useState<BackupRecord | null>(null);
     const restoreForm = useForm({ password: "" });
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar os backups. Tente novamente.",
+    });
+    const removal = useTableListAction<BackupRecord>({
+        failureText: "Não foi possível excluir o backup. Tente novamente.",
+    });
+    const generation = useTableListAction<never>({
+        failureText: "Não foi possível gerar o backup. Tente novamente.",
+    });
+    const busy = uploading || generation.processing;
+    const actionBusy = busy || removal.processing || restoreForm.processing;
+    const action = restoreTarget ? "restore" : removal.target ? "delete" : null;
+    const selectedBackup = restoreTarget ?? removal.target;
     const initialValues = useMemo<BackupFilters>(() => ({
         name: initialFilters.name ?? "",
         status: initialFilters.status ?? "",
@@ -88,135 +100,60 @@ export default function BackupIndexPage({
     } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (values) => visit(values),
+        onSearch: (values) => list.visit(values),
     });
 
-    useEffect(() => {
-        if (!failure) return;
-        notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-    }, [failure]);
-
-    function visit(values: BackupFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(base, { ...compactListFilters(values), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os backups. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
+    function fail(text: string): false {
+        notify({ tone: "error", title: "Não foi possível concluir", text });
+        return false;
     }
 
-    function finishAction(): void {
-        setAction(null);
-        setSelectedBackup(null);
+    function closeRestore(): void {
+        setRestoreTarget(null);
         restoreForm.reset();
         restoreForm.clearErrors();
     }
 
-    function confirmAction(): void {
-        if (pending.current || !selectedBackup || !action) return;
+    function restore(target: BackupRecord): void {
+        if (pending.current) return;
         pending.current = true;
-        setFailure("");
-        if (action === "restore") {
-            restoreForm.post(`${base}/${selectedBackup.id}/restore`, {
-                preserveScroll: true,
-                onNetworkError: () => {
-                    setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                    return false;
-                },
-                onHttpException: () => {
-                    setFailure("Não foi possível restaurar o backup. Tente novamente.");
-                    return false;
-                },
-                onSuccess: finishAction,
-                onFinish: () => { pending.current = false; },
-            });
-            return;
-        }
-
-        router.delete(`${base}/${selectedBackup.id}`, {
+        restoreForm.post(`${base}/${target.id}/restore`, {
             preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o backup. Tente novamente.");
-                return false;
-            },
-            onSuccess: finishAction,
+            onNetworkError: () => fail("Falha de conexão. Confira sua conexão e tente novamente."),
+            onHttpException: () => fail("Não foi possível restaurar o backup. Tente novamente."),
+            onSuccess: closeRestore,
             onFinish: () => { pending.current = false; },
         });
     }
 
     function upload(file: File): void {
-        if (pending.current) return;
+        if (pending.current || actionBusy) return;
         pending.current = true;
-        setBusy(true);
-        setFailure("");
+        setUploading(true);
         router.post(`${base}/upload`, { backup_file: file }, {
             forceFormData: true,
             preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível importar o backup. Tente novamente.");
-                return false;
-            },
+            onNetworkError: () => fail("Falha de conexão. Confira sua conexão e tente novamente."),
+            onHttpException: () => fail("Não foi possível importar o backup. Tente novamente."),
             onFinish: () => {
                 pending.current = false;
-                setBusy(false);
+                setUploading(false);
                 if (fileInput.current) fileInput.current.value = "";
             },
         });
     }
 
     function generate(): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.post(`${base}/store`, {}, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível gerar o backup. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
+        if (pending.current || actionBusy) return;
+        generation.submit("post", `${base}/store`);
     }
 
-    function openAction(target: BackupRecord, nextAction: BackupAction): void {
+    function openAction(target: BackupRecord, nextAction: "restore" | "delete"): void {
         cancelScheduled();
         restoreForm.reset();
         restoreForm.clearErrors();
-        setFailure("");
-        setSelectedBackup(target);
-        setAction(nextAction);
+        if (nextAction === "restore") setRestoreTarget(target);
+        else removal.open(target);
     }
 
     return (
@@ -233,7 +170,7 @@ export default function BackupIndexPage({
                                 type="file"
                                 accept=".zip,application/zip"
                                 aria-label="Selecionar arquivo ZIP para importar backup"
-                                disabled={busy}
+                                disabled={actionBusy}
                                 onChange={(event) => {
                                     const file = event.currentTarget.files?.[0];
                                     if (file) upload(file);
@@ -245,7 +182,7 @@ export default function BackupIndexPage({
                                 label={busy ? "Processando..." : "Importar Backup"}
                                 aria-label={busy ? "Importando backup..." : "Importar backup ZIP"}
                                 aria-describedby={pageErrors.backup_file ? "backup-file-error" : undefined}
-                                disabled={busy}
+                                disabled={actionBusy}
                                 onClick={() => fileInput.current?.click()}
                             />
                         </>
@@ -256,7 +193,7 @@ export default function BackupIndexPage({
                             leftIconClass="fa fa-database"
                             label={busy ? "Processando..." : "Gerar Novo"}
                             aria-label={busy ? "Gerando backup..." : "Gerar novo backup"}
-                            disabled={busy}
+                            disabled={actionBusy}
                             onClick={generate}
                         />
                     ) : null}
@@ -268,7 +205,7 @@ export default function BackupIndexPage({
                 </div>
             )}
         >
-            <TableListCard aria-label="Histórico de backups" aria-busy={busy || restoreForm.processing} loading={listLoading} loadingLabel="Atualizando histórico de backups">
+            <TableListCard aria-label="Histórico de backups" aria-busy={list.loading} loading={list.loading} loadingLabel="Atualizando histórico de backups">
                 <FormLayout onSubmit={(event) => { event.preventDefault(); submitFilters(); }}>
                     <div className="backupIndex__filters">
                         <FormField id="backup-filter-name" label="Arquivo ZIP" error={pageErrors.name}>
@@ -278,7 +215,6 @@ export default function BackupIndexPage({
                                 value={filterValues.name}
                                 maxLength={255}
                                 placeholder="Filtrar por nome..."
-                                disabled={busy}
                                 invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "backup-filter-name-error" : undefined}
                                 onChange={(event) => updateFilter("name", event.target.value)}
@@ -292,7 +228,6 @@ export default function BackupIndexPage({
                                 placeholder="Todos os status"
                                 value={filterValues.status}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.status}
                                 aria-describedby={pageErrors.status ? "backup-filter-status-error" : undefined}
                                 onChange={(event) => updateFilter("status", event.target.value)}
@@ -306,14 +241,13 @@ export default function BackupIndexPage({
                                 placeholder="Todos os responsáveis"
                                 value={filterValues.user_id}
                                 options={users.map((user) => ({ value: String(user.id), label: user.name }))}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.user_id}
                                 aria-describedby={pageErrors.user_id ? "backup-filter-user-error" : undefined}
                                 onChange={(event) => updateFilter("user_id", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clearFilters} />
+                            <TableListClearButton onClick={clearFilters} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -363,7 +297,7 @@ export default function BackupIndexPage({
                                                     iconOnly
                                                     leftIconClass="fa fa-history"
                                                     aria-label={`Restaurar ${backup.file_name}`}
-                                                    disabled={busy}
+                                                    disabled={actionBusy}
                                                     onClick={() => openAction(backup, "restore")}
                                                 />
                                             ) : null}
@@ -384,7 +318,7 @@ export default function BackupIndexPage({
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
                                                     aria-label={`Excluir ${backup.file_name}`}
-                                                    disabled={busy}
+                                                    disabled={actionBusy}
                                                     onClick={() => openAction(backup, "delete")}
                                                 />
                                             ) : null}
@@ -400,11 +334,11 @@ export default function BackupIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={backups}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de backups"
                     onSelect={(page) => {
                         cancelScheduled();
-                        visit(filterValues, page);
+                        list.visit(filterValues, page);
                     }}
                 />
             </TableListCard>
@@ -445,13 +379,21 @@ export default function BackupIndexPage({
                         <small>Esta confirmação é obrigatória porque a restauração sobrescreve dados do sistema.</small>
                     </div>
                 ) : undefined}
-                processing={busy || restoreForm.processing}
+                processing={action === "restore" ? restoreForm.processing : removal.processing}
                 confirmLabel={action === "restore" ? "Confirmar restauração" : "Confirmar exclusão"}
                 processingLabel={action === "restore" ? "Restaurando backup..." : "Excluindo backup..."}
                 confirmTone={action === "restore" ? "warning" : "dark-red"}
-                error={failure || undefined}
-                onClose={() => { if (!pending.current) finishAction(); }}
-                onConfirm={confirmAction}
+                onClose={() => {
+                    if (restoreTarget) {
+                        if (!pending.current) closeRestore();
+                    } else {
+                        removal.close();
+                    }
+                }}
+                onConfirm={() => {
+                    if (restoreTarget) restore(restoreTarget);
+                    else if (removal.target) removal.submit("delete", `${base}/${removal.target.id}`);
+                }}
             />
         </BackupPage>
     );

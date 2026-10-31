@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import Button from "@/components/UI/Button/Button";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
@@ -12,6 +12,8 @@ import {
     TableListMoreFilters,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
@@ -20,10 +22,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, {
-    compactListFilters,
-} from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import AssistiveTechnologyPage from "./AssistiveTechnologyPage";
 import "./Index.css";
 
@@ -98,12 +97,13 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
     can,
 }: Props): React.JSX.Element {
     const { errors } = usePage().props;
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [technologyToDelete, setTechnologyToDelete] =
-        useState<Technology | null>(null);
-    const pending = useRef(false);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível concluir a operação. Tente novamente.",
+    });
+    const removal = useTableListAction<Technology>({
+        failureText: "Não foi possível concluir a operação. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -117,84 +117,8 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
     } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: visit,
+        onSearch: (values: Filters) => list.visit(values),
     });
-
-    useEffect(() => {
-        if (!failure) return;
-
-        notify({
-            tone: "error",
-            title: "Não foi possível concluir",
-            text: failure,
-        });
-    }, [failure]);
-
-    function visit(values: Filters, url = base): void {
-        if (pending.current) {
-            return;
-        }
-
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(
-            url,
-            url === base ? compactListFilters(values) : {},
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onHttpException: () => {
-                    setFailure(
-                        "Não foi possível concluir a operação. Tente novamente.",
-                    );
-                    return false;
-                },
-                onNetworkError: () => {
-                    setFailure(
-                        "Falha de conexão. Confira sua conexão e tente novamente.",
-                    );
-                    return false;
-                },
-                onFinish: () => {
-                    pending.current = false;
-                    setBusy(false);
-                    setListLoading(false);
-                },
-            },
-        );
-    }
-    function remove(): void {
-        if (pending.current || !technologyToDelete) {
-            return;
-        }
-
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${technologyToDelete.id}`, {
-            preserveScroll: true,
-            onHttpException: () => {
-                setFailure(
-                    "Não foi possível concluir a operação. Tente novamente.",
-                );
-                return false;
-            },
-            onNetworkError: () => {
-                setFailure(
-                    "Falha de conexão. Confira sua conexão e tente novamente.",
-                );
-                return false;
-            },
-            onSuccess: () => setTechnologyToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <AssistiveTechnologyPage
@@ -212,8 +136,8 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de tecnologias assistivas"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando tecnologias assistivas"
             >
                 <FormLayout
@@ -235,7 +159,6 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                 value={filters.name}
                                 maxLength={255}
                                 placeholder="Filtrar por nome..."
-                                disabled={busy}
                                 onChange={(event) =>
                                     updateFilter("name", event.target.value)
                                 }
@@ -264,7 +187,6 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                         { value: "0", label: field.no },
                                     ]}
                                     value={filters[field.name]}
-                                    disabled={busy}
                                     onChange={(event) =>
                                         updateFilter(
                                             field.name,
@@ -281,10 +203,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                             </FormField>
                         ))}
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clearFilters}
-                            />
+                            <TableListClearButton onClick={clearFilters} />
                         </TableListFilterActions>
                     </div>
                     <TableListMoreFilters active={Boolean(filters.available)}>
@@ -306,7 +225,6 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                             { value: "0", label: field.no },
                                         ]}
                                         value={filters[field.name]}
-                                        disabled={busy}
                                         onChange={(event) =>
                                             updateFilter(
                                                 field.name,
@@ -383,14 +301,11 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                                                     tone="dark-red"
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
-                                                    disabled={busy}
+                                                    disabled={removal.processing}
                                                     aria-label={`Excluir ${technology.name}`}
-                                                    onClick={() => {
-                                                        setFailure("");
-                                                        setTechnologyToDelete(
-                                                            technology,
-                                                        );
-                                                    }}
+                                                    onClick={() =>
+                                                        removal.open(technology)
+                                                    }
                                                 />
                                             )}
                                             {!can.show && !can.destroy && (
@@ -412,7 +327,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={records}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Páginas da listagem"
                     onSelect={(page) => {
                         cancelScheduled();
@@ -420,28 +335,32 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                             window.location.search,
                         );
                         params.set("page", String(page));
-                        visit(filters, `${base}?${params.toString()}`);
+                        list.visitUrl(`${base}?${params.toString()}`);
                     }}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={technologyToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Tecnologia Assistiva"
                 message={
                     <>
                         Excluir a tecnologia{" "}
-                        <strong>{technologyToDelete?.name}</strong>?
+                        <strong>{removal.target?.name}</strong>?
                     </>
                 }
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo tecnologia..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    setFailure("");
-                    setTechnologyToDelete(null);
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) {
+                        return;
+                    }
+
+                    cancelScheduled();
+                    removal.submit("delete", `${base}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </AssistiveTechnologyPage>
     );

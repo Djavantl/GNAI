@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,13 +14,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import DisciplinePage, { disciplineBase } from "./DisciplinePage";
 import type { DisciplineFilters, DisciplinePaginator, DisciplineRecord } from "./Discipline.types";
 import "./Disciplines.css";
@@ -48,11 +49,13 @@ export default function SpecializedEducationalSupportDisciplinesIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [disciplineToDelete, setDisciplineToDelete] = useState<DisciplineRecord | null>(null);
+    const list = useTableListVisit({
+        url: disciplineBase,
+        failureText: "Não foi possível atualizar as disciplinas. Tente novamente.",
+    });
+    const removal = useTableListAction<DisciplineRecord>({
+        failureText: "Não foi possível excluir a disciplina. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -60,63 +63,8 @@ export default function SpecializedEducationalSupportDisciplinesIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: DisciplineFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(disciplineBase, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar as disciplinas. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !disciplineToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${disciplineBase}/${disciplineToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir a disciplina. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setDisciplineToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <DisciplinePage
@@ -131,8 +79,8 @@ export default function SpecializedEducationalSupportDisciplinesIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de disciplinas"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando disciplinas"
             >
                 <FormLayout
@@ -153,7 +101,6 @@ export default function SpecializedEducationalSupportDisciplinesIndexPage({
                                 value={values.name}
                                 maxLength={255}
                                 placeholder="Nome da disciplina..."
-                                disabled={busy}
                                 invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "discipline-filter-name-error" : undefined}
                                 onChange={(event) => update("name", event.target.value)}
@@ -171,17 +118,13 @@ export default function SpecializedEducationalSupportDisciplinesIndexPage({
                                 placeholder="Todos"
                                 value={values.is_active}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_active}
                                 aria-describedby={pageErrors.is_active ? "discipline-filter-status-error" : undefined}
                                 onChange={(event) => update("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -220,11 +163,10 @@ export default function SpecializedEducationalSupportDisciplinesIndexPage({
                                                 iconOnly
                                                 leftIconClass="fa fa-trash-o"
                                                 aria-label={`Excluir ${discipline.name}`}
-                                                disabled={busy}
+                                                disabled={removal.processing}
                                                 onClick={() => {
                                                     cancelScheduled();
-                                                    setFailure("");
-                                                    setDisciplineToDelete(discipline);
+                                                    removal.open(discipline);
                                                 }}
                                             />
                                         ) : null}
@@ -243,29 +185,27 @@ export default function SpecializedEducationalSupportDisciplinesIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={disciplines}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de disciplinas"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={disciplineToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Disciplina"
                 message={(
                     <>
-                        Deseja excluir a disciplina <strong>{disciplineToDelete?.name}</strong>?
+                        Deseja excluir a disciplina <strong>{removal.target?.name}</strong>?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo disciplina..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setDisciplineToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${disciplineBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </DisciplinePage>
     );

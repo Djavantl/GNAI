@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -15,13 +15,14 @@ import {
     TableListMoreFilters,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import ProfessionalPage from "./ProfessionalPage";
 import { professionalsBase, professionalShowUrl } from "./Professionals.utils";
 import type {
@@ -65,16 +66,18 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
     can,
 }: ProfessionalIndexProps): React.JSX.Element {
     const errors = usePage().props.errors as Record<string, string | undefined>;
-    const cancelVisit = useRef<(() => void) | undefined>(undefined);
-    const deleting = useRef(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [busy, setBusy] = useState(false);
-    const [professionalToDelete, setProfessionalToDelete] = useState<ProfessionalListRecord | null>(null);
+    const list = useTableListVisit({
+        url: professionalsBase,
+        failureText: "Não foi possível atualizar a listagem de profissionais. Tente novamente.",
+    });
+    const removal = useTableListAction<ProfessionalListRecord>({
+        failureText: "Não foi possível excluir o profissional. Tente novamente.",
+    });
     const initialValues = useMemo(() => filterValues(initialFilters), [initialFilters]);
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (next) => visit(next),
+        onSearch: (next) => list.visit(next),
     });
     const positionOptions = positions.map((position) => ({
         value: String(position.id),
@@ -84,78 +87,6 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
         value,
         label,
     }));
-
-    useEffect(
-        () => () => {
-            cancelVisit.current?.();
-        },
-        [],
-    );
-
-    function failure(text: string): void {
-        notify({
-            tone: "error",
-            title: "Não foi possível concluir",
-            text,
-        });
-    }
-
-    function visit(next: ProfessionalFilters, page = 1): void {
-        if (busy) return;
-        cancelVisit.current?.();
-        router.get(
-            professionalsBase,
-            {
-                ...compactListFilters(next),
-                ...(page > 1 ? { page } : {}),
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                onCancelToken: (token) => {
-                    cancelVisit.current = () => token.cancel();
-                },
-                onStart: () => setListLoading(true),
-                onNetworkError: () => {
-                    failure("Falha de conexão. Confira sua conexão e tente novamente.");
-                    return false;
-                },
-                onHttpException: () => {
-                    failure("Não foi possível atualizar a listagem de profissionais. Tente novamente.");
-                    return false;
-                },
-                onFinish: () => {
-                    cancelVisit.current = undefined;
-                    setListLoading(false);
-                },
-            },
-        );
-    }
-
-    function remove(): void {
-        if (deleting.current || !professionalToDelete) return;
-        cancelScheduled();
-        cancelVisit.current?.();
-        deleting.current = true;
-        setBusy(true);
-        router.delete(`${professionalsBase}/${professionalToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                failure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                failure("Não foi possível excluir o profissional. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setProfessionalToDelete(null),
-            onFinish: () => {
-                deleting.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     function textFilter(
         name: "name" | "email" | "registration",
@@ -228,8 +159,8 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de profissionais"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando profissionais"
             >
                 <FormLayout
@@ -244,10 +175,7 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
                         {selectFilter("position", "Cargo", positionOptions)}
                         {selectFilter("status", "Status", statusOptions)}
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={listLoading}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                     <TableListMoreFilters active={Boolean(values.email || values.registration)}>
@@ -309,10 +237,10 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
                                                         iconOnly
                                                         leftIconClass="fa fa-trash-o"
                                                         aria-label={`Excluir profissional ${professional.person.name} do sistema`}
-                                                        disabled={busy}
+                                                        disabled={removal.processing}
                                                         onClick={() => {
                                                             cancelScheduled();
-                                                            setProfessionalToDelete(professional);
+                                                            removal.open(professional);
                                                         }}
                                                     />
                                                 ) : null}
@@ -334,27 +262,30 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={professionals}
-                    disabled={listLoading || busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de profissionais"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={professionalToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Profissional"
                 message={
                     <>
-                        Deseja remover o profissional <strong>{professionalToDelete?.person.name}</strong>?
+                        Deseja remover o profissional <strong>{removal.target?.person.name}</strong>?
                     </>
                 }
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo profissional..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (!busy) setProfessionalToDelete(null);
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    list.cancel();
+                    removal.submit("delete", `${professionalsBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </ProfessionalPage>
     );

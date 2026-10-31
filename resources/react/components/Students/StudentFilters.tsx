@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { router } from "@inertiajs/react";
+import { useMemo } from "react";
+import { usePage } from "@inertiajs/react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import TextInput from "@/components/Forms/TextInput/TextInput";
@@ -9,15 +9,11 @@ import {
     TableListFilterActions,
     TableListMoreFilters,
 } from "@/components/Tables/TableList/TableList";
-import useAutoListFilters, {
-    compactListFilters,
-} from "@/hooks/useAutoListFilters";
-import { studentsBase } from "./Students.utils";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import type {
     StudentFilters as Filters,
     StudentIndexProps,
 } from "./Students.types";
-import { useStudentRequest } from "./useStudentRequest";
 import "./StudentFilters.css";
 
 export function filterValues(filters: Partial<Filters>): Filters {
@@ -44,23 +40,20 @@ export default function StudentFilters({
     courses,
     deficiencies,
     studentStatuses,
-    onProcessingChange,
+    onSearch,
 }: Pick<
     StudentIndexProps,
     "filters" | "courses" | "deficiencies" | "studentStatuses"
 > & {
-    onProcessingChange?: (processing: boolean) => void;
+    onSearch: (filters: Filters) => void;
 }): React.JSX.Element {
-    const [processing, setProcessing] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const cancel = useRef<(() => void) | undefined>(undefined);
-    const request = useStudentRequest();
+    const errors = usePage().props.errors as Record<string, string | undefined>;
     const initialValues = useMemo(() => filterValues(filters), [filters]);
     const emptyValues = useMemo(() => filterValues({}), []);
     const { values, update, clear, submit } = useAutoListFilters({
         initialValues,
         emptyValues,
-        onSearch: search,
+        onSearch,
     });
     const textFilterFields = [
         ["name", "Nome do aluno"],
@@ -159,41 +152,11 @@ export default function StudentFilters({
             </FormField>
         );
     }
-    useEffect(
-        () => () => {
-            cancel.current?.();
-        },
-        [],
-    );
-    function search(next: Filters) {
-        cancel.current?.();
-        const data = compactListFilters(next);
-        router.get(studentsBase, data, {
-            ...request.options,
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-            onCancelToken: (token) => {
-                cancel.current = () => token.cancel();
-            },
-            onStart: () => {
-                setProcessing(true);
-                onProcessingChange?.(true);
-                setErrors({});
-            },
-            onError: setErrors,
-            onFinish: () => {
-                setProcessing(false);
-                onProcessingChange?.(false);
-                cancel.current = undefined;
-            },
-        });
-    }
+
     return (
         <FormLayout
             className="studentsPage__filterForm"
             aria-label="Filtrar alunos"
-            aria-busy={processing}
             onSubmit={(event) => {
                 event.preventDefault();
                 submit();
@@ -203,10 +166,7 @@ export default function StudentFilters({
                 {textFilterFields.slice(0, 1).map(renderTextFilter)}
                 {selectFilterFields.slice(0, 2).map(renderSelectFilter)}
                 <TableListFilterActions>
-                    <TableListClearButton
-                        disabled={processing}
-                        onClick={clear}
-                    />
+                    <TableListClearButton onClick={clear} />
                 </TableListFilterActions>
             </div>
             <TableListMoreFilters

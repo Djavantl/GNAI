@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,13 +14,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import BarrierCategoryPage from "./BarrierCategoryPage";
 import type {
     BarrierCategoryPaginator,
@@ -50,11 +51,13 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [categoryToDelete, setCategoryToDelete] = useState<BarrierCategoryRecord | null>(null);
-    const pending = useRef(false);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar as categorias de barreiras. Tente novamente.",
+    });
+    const removal = useTableListAction<BarrierCategoryRecord>({
+        failureText: "Não foi possível excluir a categoria. Tente novamente.",
+    });
     const initialValues = useMemo(() => ({ ...emptyFilters, ...initialFilters }), [initialFilters]);
     const {
         values: filterValues,
@@ -65,62 +68,8 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
     } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (values) => visit(values),
+        onSearch: (values) => list.visit(values),
     });
-
-    useEffect(() => {
-        if (!failure) return;
-        notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-    }, [failure]);
-
-    function visit(values: Filters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(base, { ...compactListFilters(values), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar as categorias de barreiras. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !categoryToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${categoryToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir a categoria. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setCategoryToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <BarrierCategoryPage
@@ -130,7 +79,7 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                 <TableListCreateButton href={`${base}/create`} ariaLabel="Cadastrar categoria de barreira" />
             ) : undefined}
         >
-            <TableListCard aria-label="Listagem de categorias de barreiras" aria-busy={busy} loading={listLoading} loadingLabel="Atualizando categorias de barreiras">
+            <TableListCard aria-label="Listagem de categorias de barreiras" aria-busy={list.loading} loading={list.loading} loadingLabel="Atualizando categorias de barreiras">
                 <FormLayout onSubmit={(event) => { event.preventDefault(); submitFilters(); }}>
                     <div className="barrierCategoryIndex__filters">
                         <FormField id="barrier-category-filter-name" label="Nome da Categoria" error={pageErrors.name}>
@@ -140,7 +89,6 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                                 value={filterValues.name}
                                 maxLength={150}
                                 placeholder="Filtrar por nome da categoria..."
-                                disabled={busy}
                                 invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "barrier-category-filter-name-error" : undefined}
                                 onChange={(event) => updateFilter("name", event.target.value)}
@@ -157,14 +105,13 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                                     { value: "1", label: "Ativo" },
                                     { value: "0", label: "Inativo" },
                                 ]}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_active}
                                 aria-describedby={pageErrors.is_active ? "barrier-category-filter-status-error" : undefined}
                                 onChange={(event) => updateFilter("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clearFilters} />
+                            <TableListClearButton onClick={clearFilters} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -204,8 +151,7 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                                                 aria-label={`Excluir ${category.name}`}
                                                 onClick={() => {
                                                     cancelScheduled();
-                                                    setFailure("");
-                                                    setCategoryToDelete(category);
+                                                    removal.open(category);
                                                 }}
                                             />
                                         ) : null}
@@ -220,27 +166,23 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={categories}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de categorias de barreiras"
-                    onSelect={(page) => visit(filterValues, page)}
+                    onSelect={(page) => list.visit(filterValues, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={categoryToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Categoria de Barreira"
-                message={<>A categoria <strong>{categoryToDelete?.name}</strong> será excluída permanentemente.</>}
-                processing={busy}
+                message={<>A categoria <strong>{removal.target?.name}</strong> será excluída permanentemente.</>}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo categoria..."
                 confirmTone="dark-red"
-                error={failure || undefined}
-                onClose={() => {
-                    if (!busy) {
-                        setCategoryToDelete(null);
-                        setFailure("");
-                    }
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${base}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </BarrierCategoryPage>
     );

@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -16,13 +16,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import StudentCoursePage from "./StudentCoursePage";
 import type {
     StudentCourseFilters,
@@ -64,12 +65,14 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [courseToDelete, setCourseToDelete] = useState<StudentCourseListRecord | null>(null);
     const listUrl = `${aeeBase}/students/${student.id}/history`;
+    const list = useTableListVisit({
+        url: listUrl,
+        failureText: "Não foi possível atualizar as matrículas. Tente novamente.",
+    });
+    const removal = useTableListAction<StudentCourseListRecord>({
+        failureText: "Não foi possível excluir a matrícula. Tente novamente.",
+    });
     const studentName = student.person.name;
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
@@ -78,63 +81,8 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: StudentCourseFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(listUrl, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar as matrículas. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !courseToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${aeeBase}/student-courses/${courseToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir a matrícula. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setCourseToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <StudentCoursePage
@@ -160,8 +108,8 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de matrículas do aluno"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando matrículas"
             >
                 <FormLayout
@@ -183,7 +131,6 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
                                 placeholder="Todos"
                                 value={values.course_id}
                                 options={courses}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.course_id}
                                 aria-describedby={pageErrors.course_id ? "student-course-filter-course-error" : undefined}
                                 onChange={(event) => update("course_id", event.target.value)}
@@ -201,7 +148,6 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
                                 inputMode="numeric"
                                 maxLength={4}
                                 placeholder="Ano letivo"
-                                disabled={busy}
                                 invalid={!!pageErrors.academic_year}
                                 aria-describedby={pageErrors.academic_year ? "student-course-filter-year-error" : undefined}
                                 onChange={(event) => update("academic_year", event.target.value)}
@@ -219,17 +165,13 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
                                 placeholder="Todos"
                                 value={values.is_current}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_current}
                                 aria-describedby={pageErrors.is_current ? "student-course-filter-status-error" : undefined}
                                 onChange={(event) => update("is_current", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -271,11 +213,10 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
                                                         iconOnly
                                                         leftIconClass="fa fa-trash-o"
                                                         aria-label={`Excluir matrícula no curso ${courseName}`}
-                                                        disabled={busy}
+                                                        disabled={removal.processing}
                                                         onClick={() => {
                                                             cancelScheduled();
-                                                            setFailure("");
-                                                            setCourseToDelete(enrollment);
+                                                            removal.open(enrollment);
                                                         }}
                                                     />
                                                 ) : null}
@@ -295,31 +236,32 @@ export default function SpecializedEducationalSupportStudentCoursesIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={studentCourses}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de matrículas"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={courseToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Matrícula"
                 message={(
                     <>
                         Excluir a matrícula no curso{" "}
-                        <strong>{courseToDelete?.course?.name ?? "não identificado"}</strong>{" "}
+                        <strong>{removal.target?.course?.name ?? "não identificado"}</strong>{" "}
                         do histórico do aluno?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo matrícula..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setCourseToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    list.cancel();
+                    removal.submit("delete", `${aeeBase}/student-courses/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </StudentCoursePage>
     );

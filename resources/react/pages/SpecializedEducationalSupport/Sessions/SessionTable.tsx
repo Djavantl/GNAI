@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { router } from "@inertiajs/react";
 import ChoiceControl from "@/components/Forms/ChoiceControl/ChoiceControl";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
@@ -7,11 +6,11 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import { dateLabel } from "@/components/Students/Students.utils";
 import { sessionShowUrl, sessionsBase } from "./SessionForm.utils";
@@ -58,44 +57,15 @@ export default function SessionTable({
     emptyMessage?: string;
     onPage: (page: number) => void;
 }): React.JSX.Element {
-    const [sessionToDelete, setSessionToDelete] = useState<SessionListRow | null>(null);
+    const removal = useTableListAction<SessionListRow>({
+        failureText: "Não foi possível excluir o agendamento. Tente novamente.",
+    });
     const [sendNotification, setSendNotification] = useState(false);
-    const [deleting, setDeleting] = useState(false);
     const columns = buildColumns(showStudents, showProfessional);
 
     function openDelete(session: SessionListRow): void {
         setSendNotification(false);
-        setSessionToDelete(session);
-    }
-
-    function remove(): void {
-        if (deleting || !sessionToDelete) return;
-
-        router.delete(`${sessionsBase}/${sessionToDelete.id}`, {
-            data: sessionToDelete.is_scheduled
-                ? { send_notification: sendNotification ? 1 : 0 }
-                : {},
-            preserveScroll: true,
-            onStart: () => setDeleting(true),
-            onNetworkError: () => {
-                notify({
-                    tone: "error",
-                    title: "Falha de conexão",
-                    text: "Não foi possível conectar ao servidor. Confira sua conexão e tente novamente.",
-                });
-                return false;
-            },
-            onHttpException: () => {
-                notify({
-                    tone: "error",
-                    title: "Não foi possível concluir",
-                    text: "Não foi possível excluir o agendamento. Tente novamente.",
-                });
-                return false;
-            },
-            onSuccess: () => setSessionToDelete(null),
-            onFinish: () => setDeleting(false),
-        });
+        removal.open(session);
     }
 
     return (
@@ -152,7 +122,7 @@ export default function SessionTable({
                                                 iconOnly
                                                 leftIconClass="fa fa-trash-o"
                                                 aria-label={`Excluir ${sessionDescription(session)}`}
-                                                disabled={deleting}
+                                                disabled={removal.processing}
                                                 onClick={() => openDelete(session)}
                                             />
                                         ) : null}
@@ -178,10 +148,10 @@ export default function SessionTable({
                 onSelect={onPage}
             />
             <ConfirmActionModal
-                open={sessionToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Agendamento"
                 message="Mover este agendamento para a lixeira?"
-                details={sessionToDelete?.is_scheduled ? (
+                details={removal.target?.is_scheduled ? (
                     <div className="sessionsPage__deleteDetails">
                         <ChoiceControl
                             type="checkbox"
@@ -190,19 +160,26 @@ export default function SessionTable({
                             name="send_notification"
                             label="Enviar e-mail de aviso aos participantes"
                             checked={sendNotification}
-                            disabled={deleting}
+                            disabled={removal.processing}
                             onChange={setSendNotification}
                         />
                     </div>
                 ) : undefined}
-                processing={deleting}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo agendamento..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (!deleting) setSessionToDelete(null);
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    removal.submit(
+                        "delete",
+                        `${sessionsBase}/${removal.target.id}`,
+                        removal.target.is_scheduled
+                            ? { send_notification: sendNotification ? 1 : 0 }
+                            : {},
+                    );
                 }}
-                onConfirm={remove}
             />
         </>
     );

@@ -1,5 +1,4 @@
-import { router } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import FormField from "@/components/Forms/FormField/FormField";
@@ -16,11 +15,12 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import BarrierPage from "./BarrierPage";
 import type { BarrierFilters, BarrierPaginator, BarrierRecord } from "./Barrier.types";
 import "./Barriers.css";
@@ -56,69 +56,19 @@ const columns: TableListColumn[] = [
 ];
 
 export default function InclusiveRadarBarriersIndexPage({ barriers, filters: initialFilters, can }: Props): React.JSX.Element {
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [barrierToDelete, setBarrierToDelete] = useState<BarrierRecord | null>(null);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar as barreiras. Tente novamente.",
+    });
+    const removal = useTableListAction<BarrierRecord>({
+        failureText: "Não foi possível excluir a barreira. Tente novamente.",
+    });
     const initialValues = useMemo(() => ({ ...emptyFilters, ...initialFilters }), [initialFilters]);
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (next) => visit(next),
+        onSearch: (next) => list.visit(next),
     });
-
-    useEffect(() => {
-        if (failure) notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-    }, [failure]);
-
-    function visit(next: BarrierFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(base, { ...compactListFilters(next), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar as barreiras. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (!barrierToDelete || pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${barrierToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir a barreira. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setBarrierToDelete(null);
-            },
-        });
-    }
 
     return (
         <BarrierPage
@@ -126,23 +76,23 @@ export default function InclusiveRadarBarriersIndexPage({ barriers, filters: ini
             subtitle="Contribuições da comunidade para uma instituição mais acessível."
             actions={can.create ? <TableListCreateButton href={`${base}/create`} ariaLabel="Relatar barreira" /> : undefined}
         >
-            <TableListCard aria-label="Listagem de barreiras" aria-busy={busy} loading={listLoading} loadingLabel="Atualizando barreiras">
+            <TableListCard aria-label="Listagem de barreiras" aria-busy={list.loading} loading={list.loading} loadingLabel="Atualizando barreiras">
                 <FormLayout onSubmit={(event) => { event.preventDefault(); submit(); }}>
                     <div className="barrierIndex__filters">
                         <FormField id="barrier-filter-name" label="Nome da barreira">
-                            <TextInput id="barrier-filter-name" name="name" value={values.name} maxLength={255} placeholder="Filtrar por nome da barreira..." disabled={busy} onChange={(event) => update("name", event.target.value)} />
+                            <TextInput id="barrier-filter-name" name="name" value={values.name} maxLength={255} placeholder="Filtrar por nome da barreira..." onChange={(event) => update("name", event.target.value)} />
                         </FormField>
                         <FormField id="barrier-filter-category" label="Categoria">
-                            <TextInput id="barrier-filter-category" name="category" value={values.category} maxLength={255} placeholder="Filtrar por categoria..." disabled={busy} onChange={(event) => update("category", event.target.value)} />
+                            <TextInput id="barrier-filter-category" name="category" value={values.category} maxLength={255} placeholder="Filtrar por categoria..." onChange={(event) => update("category", event.target.value)} />
                         </FormField>
                         <FormField id="barrier-filter-priority" label="Prioridade">
-                            <SelectField id="barrier-filter-priority" name="priority" label="Prioridade" placeholder="Todas" value={values.priority} options={priorities} disabled={busy} onChange={(event) => update("priority", event.target.value)} />
+                            <SelectField id="barrier-filter-priority" name="priority" label="Prioridade" placeholder="Todas" value={values.priority} options={priorities} onChange={(event) => update("priority", event.target.value)} />
                         </FormField>
                         <FormField id="barrier-filter-status" label="Status">
-                            <SelectField id="barrier-filter-status" name="status" label="Status" placeholder="Todos" value={values.status} options={statuses} disabled={busy} onChange={(event) => update("status", event.target.value)} />
+                            <SelectField id="barrier-filter-status" name="status" label="Status" placeholder="Todos" value={values.status} options={statuses} onChange={(event) => update("status", event.target.value)} />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clear} />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -159,7 +109,7 @@ export default function InclusiveRadarBarriersIndexPage({ barriers, filters: ini
                                     <td>
                                         <TableActions>
                                             {can.show ? <Button href={`${base}/${barrier.id}`} size="sm" tone="dark-blue" iconOnly leftIconClass="fa fa-eye" aria-label={`Visualizar ${barrier.name}`} /> : null}
-                                            {can.destroy ? <Button tone="dark-red" size="sm" iconOnly leftIconClass="fa fa-trash-o" aria-label={`Excluir ${barrier.name}`} onClick={() => { cancelScheduled(); setFailure(""); setBarrierToDelete(barrier); }} /> : null}
+                                            {can.destroy ? <Button tone="dark-red" size="sm" iconOnly leftIconClass="fa fa-trash-o" aria-label={`Excluir ${barrier.name}`} onClick={() => { cancelScheduled(); removal.open(barrier); }} /> : null}
                                             {!can.show && !can.destroy ? <span>—</span> : null}
                                         </TableActions>
                                     </td>
@@ -168,18 +118,20 @@ export default function InclusiveRadarBarriersIndexPage({ barriers, filters: ini
                         }) : <tr><TableListEmpty colSpan={5}>Nenhuma barreira identificada até o momento.</TableListEmpty></tr>}
                     </TableListTable>
                 </TableListScroll>
-                <TableListFooter page={barriers} disabled={busy} paginationLabel="Paginação de barreiras" onSelect={(page) => visit(values, page)} />
+                <TableListFooter page={barriers} disabled={list.loading} paginationLabel="Paginação de barreiras" onSelect={(page) => list.visit(values, page)} />
             </TableListCard>
             <ConfirmActionModal
-                open={barrierToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Barreira"
-                message={<>O registro <strong>{barrierToDelete?.name}</strong> será excluído permanentemente.</>}
-                processing={busy}
+                message={<>O registro <strong>{removal.target?.name}</strong> será excluído permanentemente.</>}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo barreira..."
                 confirmTone="dark-red"
-                onClose={() => { if (!busy) { setBarrierToDelete(null); setFailure(""); } }}
-                onConfirm={remove}
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${base}/${removal.target.id}`);
+                }}
             />
         </BarrierPage>
     );

@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -16,12 +16,13 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import GuardianPage from "./GuardianPage";
 import type {
     GuardianFilters,
@@ -59,94 +60,24 @@ export default function SpecializedEducationalSupportGuardiansIndexPage({
     can,
 }: GuardianIndexProps): React.JSX.Element {
     const errors = usePage().props.errors as Record<string, string | undefined>;
-    const cancelVisit = useRef<(() => void) | undefined>(undefined);
-    const deleting = useRef(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [busy, setBusy] = useState(false);
-    const [guardianToDelete, setGuardianToDelete] = useState<GuardianRecord | null>(null);
+    const guardiansBase = `${studentsBase}/${student.id}/guardians`;
+    const list = useTableListVisit({
+        url: guardiansBase,
+        failureText: "Não foi possível atualizar a listagem de responsáveis. Tente novamente.",
+    });
+    const removal = useTableListAction<GuardianRecord>({
+        failureText: "Não foi possível excluir o responsável. Tente novamente.",
+    });
     const initialValues = useMemo(() => filterValues(initialFilters), [initialFilters]);
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (next) => visit(next),
+        onSearch: (next) => list.visit(next),
     });
-    const guardiansBase = `${studentsBase}/${student.id}/guardians`;
     const relationshipOptions = Object.entries(relationships).map(([value, label]) => ({
         value,
         label,
     }));
-
-    useEffect(
-        () => () => {
-            cancelVisit.current?.();
-        },
-        [],
-    );
-
-    function failure(text: string): void {
-        notify({
-            tone: "error",
-            title: "Não foi possível concluir",
-            text,
-        });
-    }
-
-    function visit(next: GuardianFilters, page = 1): void {
-        if (busy) return;
-        cancelVisit.current?.();
-        router.get(
-            guardiansBase,
-            {
-                ...compactListFilters(next),
-                ...(page > 1 ? { page } : {}),
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                onCancelToken: (token) => {
-                    cancelVisit.current = () => token.cancel();
-                },
-                onStart: () => setListLoading(true),
-                onNetworkError: () => {
-                    failure("Falha de conexão. Confira sua conexão e tente novamente.");
-                    return false;
-                },
-                onHttpException: () => {
-                    failure("Não foi possível atualizar a listagem de responsáveis. Tente novamente.");
-                    return false;
-                },
-                onFinish: () => {
-                    cancelVisit.current = undefined;
-                    setListLoading(false);
-                },
-            },
-        );
-    }
-
-    function remove(): void {
-        if (deleting.current || !guardianToDelete) return;
-        cancelScheduled();
-        cancelVisit.current?.();
-        deleting.current = true;
-        setBusy(true);
-        router.delete(`${guardiansBase}/${guardianToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                failure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                failure("Não foi possível excluir o responsável. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setGuardianToDelete(null),
-            onFinish: () => {
-                deleting.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     function textFilter(
         name: "name" | "email",
@@ -197,8 +128,8 @@ export default function SpecializedEducationalSupportGuardiansIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de responsáveis do aluno"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando responsáveis"
             >
                 <FormLayout
@@ -229,10 +160,7 @@ export default function SpecializedEducationalSupportGuardiansIndexPage({
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={listLoading}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -284,10 +212,10 @@ export default function SpecializedEducationalSupportGuardiansIndexPage({
                                                         iconOnly
                                                         leftIconClass="fa fa-trash-o"
                                                         aria-label={`Excluir responsável ${guardian.person.name}`}
-                                                        disabled={busy}
+                                                        disabled={removal.processing}
                                                         onClick={() => {
                                                             cancelScheduled();
-                                                            setGuardianToDelete(guardian);
+                                                            removal.open(guardian);
                                                         }}
                                                     />
                                                 ) : null}
@@ -309,28 +237,31 @@ export default function SpecializedEducationalSupportGuardiansIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={guardians}
-                    disabled={listLoading || busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de responsáveis"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={guardianToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Responsável"
                 message={
                     <>
                         Deseja remover o vínculo de responsabilidade de{" "}
-                        <strong>{guardianToDelete?.person.name}</strong>? Esta ação não pode ser desfeita.
+                        <strong>{removal.target?.person.name}</strong>? Esta ação não pode ser desfeita.
                     </>
                 }
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo responsável..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (!busy) setGuardianToDelete(null);
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    list.cancel();
+                    removal.submit("delete", `${guardiansBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </GuardianPage>
     );

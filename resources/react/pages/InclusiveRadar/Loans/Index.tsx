@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -15,15 +15,14 @@ import {
     TableListMoreFilters,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, {
-    compactListFilters,
-} from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import LoanPage from "./LoanPage";
 import type { LoanPaginator, LoanRecord } from "./Loan.types";
 import "./Loan.css";
@@ -69,11 +68,13 @@ export default function InclusiveRadarLoansIndexPage({
     can,
 }: Props): React.JSX.Element {
     const { errors } = usePage().props;
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [loanToDelete, setLoanToDelete] = useState<LoanRecord | null>(null);
-    const pending = useRef(false);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar os empréstimos. Tente novamente.",
+    });
+    const removal = useTableListAction<LoanRecord>({
+        failureText: "Não foi possível excluir o empréstimo. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -87,59 +88,8 @@ export default function InclusiveRadarLoansIndexPage({
     } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: visit,
+        onSearch: (values: Filters) => list.visit(values),
     });
-
-    useEffect(() => {
-        if (!failure) return;
-
-        notify({
-            tone: "error",
-            title: "Não foi possível concluir",
-            text: failure,
-        });
-    }, [failure]);
-
-    function visit(values: Filters, url = base): void {
-        if (pending.current) return;
-
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(url, url === base ? compactListFilters(values) : {}, {
-            preserveState: true,
-            preserveScroll: true,
-            onError: () => {
-                setFailure("Não foi possível atualizar os empréstimos. Tente novamente.");
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !loanToDelete) return;
-
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${loanToDelete.id}`, {
-            preserveScroll: true,
-            onError: () => {
-                setFailure("Não foi possível excluir o empréstimo. Tente novamente.");
-            },
-            onSuccess: () => setLoanToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <LoanPage
@@ -157,8 +107,8 @@ export default function InclusiveRadarLoansIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de empréstimos"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando empréstimos"
             >
                 <FormLayout
@@ -175,7 +125,6 @@ export default function InclusiveRadarLoansIndexPage({
                                 value={filters.item}
                                 maxLength={255}
                                 placeholder="Filtrar por item..."
-                                disabled={busy}
                                 invalid={!!errors.item}
                                 aria-describedby={errors.item ? "loan-item-filter-error" : undefined}
                                 onChange={(event) => updateFilter("item", event.target.value)}
@@ -188,7 +137,6 @@ export default function InclusiveRadarLoansIndexPage({
                                 value={filters.student}
                                 maxLength={255}
                                 placeholder="Filtrar por estudante..."
-                                disabled={busy}
                                 invalid={!!errors.student}
                                 aria-describedby={errors.student ? "loan-student-filter-error" : undefined}
                                 onChange={(event) => updateFilter("student", event.target.value)}
@@ -201,14 +149,13 @@ export default function InclusiveRadarLoansIndexPage({
                                 value={filters.professional}
                                 maxLength={255}
                                 placeholder="Filtrar por profissional..."
-                                disabled={busy}
                                 invalid={!!errors.professional}
                                 aria-describedby={errors.professional ? "loan-professional-filter-error" : undefined}
                                 onChange={(event) => updateFilter("professional", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clearFilters} />
+                            <TableListClearButton onClick={clearFilters} />
                         </TableListFilterActions>
                     </div>
                     <TableListMoreFilters active={Boolean(filters.status)}>
@@ -221,7 +168,6 @@ export default function InclusiveRadarLoansIndexPage({
                                     placeholder="Todos"
                                     value={filters.status}
                                     options={statusOptions}
-                                    disabled={busy}
                                     aria-invalid={!!errors.status}
                                     aria-describedby={errors.status ? "loan-status-filter-error" : undefined}
                                     onChange={(event) => updateFilter("status", event.target.value)}
@@ -275,12 +221,9 @@ export default function InclusiveRadarLoansIndexPage({
                                                     tone="dark-red"
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
-                                                    disabled={busy}
+                                                    disabled={removal.processing}
                                                     aria-label={`Excluir empréstimo de ${loan.loanable.name}`}
-                                                    onClick={() => {
-                                                        setFailure("");
-                                                        setLoanToDelete(loan);
-                                                    }}
+                                                    onClick={() => removal.open(loan)}
                                                 />
                                             ) : null}
                                             {!can.show && !can.destroy ? <span>Nenhuma ação</span> : null}
@@ -300,34 +243,36 @@ export default function InclusiveRadarLoansIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={loans}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Páginas da listagem de empréstimos"
                     onSelect={(page) => {
                         cancelScheduled();
                         const params = new URLSearchParams(window.location.search);
                         params.set("page", String(page));
-                        visit(filters, `${base}?${params.toString()}`);
+                        list.visitUrl(`${base}?${params.toString()}`);
                     }}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={loanToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Empréstimo"
                 message={
                     <>
                         Excluir permanentemente o empréstimo de{" "}
-                        <strong>{loanToDelete?.loanable.name}</strong>?
+                        <strong>{removal.target?.loanable.name}</strong>?
                     </>
                 }
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo empréstimo..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    setFailure("");
-                    setLoanToDelete(null);
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+
+                    cancelScheduled();
+                    removal.submit("delete", `${base}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </LoanPage>
     );

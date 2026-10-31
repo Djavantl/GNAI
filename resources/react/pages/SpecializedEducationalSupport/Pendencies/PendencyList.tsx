@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { useMemo } from "react";
+import { usePage } from "@inertiajs/react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -13,14 +13,15 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import { dateLabel } from "@/components/Students/Students.utils";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import type {
     PendencyListFilters,
     PendencyListProps,
@@ -84,10 +85,13 @@ export default function PendencyList({
     const canView = can.view;
     const canDelete = !isMine && Boolean(can.delete);
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [pendencyToDelete, setPendencyToDelete] = useState<PendencyListRecord | null>(null);
+    const list = useTableListVisit({
+        url: listUrl,
+        failureText: "Não foi possível atualizar as pendências. Tente novamente.",
+    });
+    const removal = useTableListAction<PendencyListRecord>({
+        failureText: "Não foi possível excluir a pendência. Tente novamente.",
+    });
     const priorityOptions = useMemo(
         () => priorities.map(({ value, label }) => ({ value, label })),
         [priorities],
@@ -103,72 +107,8 @@ export default function PendencyList({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (next) => visit(next),
+        onSearch: (next) => list.visit(isMine ? { ...next, assigned_to: "" } : next),
     });
-
-    function fail(text: string): void {
-        notify({
-            tone: "error",
-            title: "Não foi possível concluir",
-            text,
-        });
-    }
-
-    function visit(next: PendencyListFilters, page = 1): void {
-        if (pending.current) return;
-
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        router.get(
-            listUrl,
-            {
-                ...compactListFilters(isMine ? { ...next, assigned_to: "" } : next),
-                page,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onNetworkError: () => {
-                    fail("Falha de conexão. Confira sua conexão e tente novamente.");
-                    return false;
-                },
-                onHttpException: () => {
-                    fail("Não foi possível atualizar as pendências. Tente novamente.");
-                    return false;
-                },
-                onFinish: () => {
-                    pending.current = false;
-                    setBusy(false);
-                    setListLoading(false);
-                },
-            },
-        );
-    }
-
-    function remove(): void {
-        if (pending.current || !pendencyToDelete) return;
-
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        router.delete(`${pendenciesBase}/${pendencyToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                fail("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                fail("Não foi possível excluir a pendência. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setPendencyToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     function describedBy(name: keyof PendencyListFilters, id: string): string | undefined {
         return pageErrors[name] ? `${id}-error` : undefined;
@@ -216,8 +156,7 @@ export default function PendencyList({
         <>
             <TableListCard
                 aria-label={isMine ? "Listagem das minhas pendências" : "Listagem de pendências"}
-                aria-busy={busy}
-                loading={listLoading}
+                loading={list.loading}
                 loadingLabel="Atualizando pendências"
             >
                 <FormLayout
@@ -244,7 +183,6 @@ export default function PendencyList({
                                 value={values.title}
                                 maxLength={255}
                                 placeholder="Buscar por título..."
-                                disabled={busy}
                                 invalid={Boolean(pageErrors.title)}
                                 aria-describedby={describedBy("title", "pendency-filter-title")}
                                 onChange={(event) => update("title", event.target.value)}
@@ -263,7 +201,6 @@ export default function PendencyList({
                                     placeholder="Todos"
                                     value={values.assigned_to}
                                     options={professionals}
-                                    disabled={busy}
                                     aria-invalid={Boolean(pageErrors.assigned_to)}
                                     aria-describedby={describedBy("assigned_to", "pendency-filter-professional")}
                                     onChange={(event) => update("assigned_to", event.target.value)}
@@ -282,7 +219,6 @@ export default function PendencyList({
                                 placeholder="Todas"
                                 value={values.priority}
                                 options={priorityOptions}
-                                disabled={busy}
                                 aria-invalid={Boolean(pageErrors.priority)}
                                 aria-describedby={describedBy("priority", "pendency-filter-priority")}
                                 onChange={(event) => update("priority", event.target.value)}
@@ -300,7 +236,6 @@ export default function PendencyList({
                                 placeholder="Todos"
                                 value={values.is_completed}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={Boolean(pageErrors.is_completed)}
                                 aria-describedby={describedBy("is_completed", "pendency-filter-status")}
                                 onChange={(event) => update("is_completed", event.target.value)}
@@ -308,7 +243,6 @@ export default function PendencyList({
                         </FormField>
                         <TableListFilterActions>
                             <TableListClearButton
-                                disabled={busy}
                                 onClick={clear}
                             />
                         </TableListFilterActions>
@@ -350,10 +284,10 @@ export default function PendencyList({
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
                                                     aria-label={`Excluir pendência ${pendency.title}`}
-                                                    disabled={busy}
+                                                    disabled={removal.processing}
                                                     onClick={() => {
                                                         cancelScheduled();
-                                                        setPendencyToDelete(pendency);
+                                                        removal.open(pendency);
                                                     }}
                                                 />
                                             ) : null}
@@ -377,28 +311,30 @@ export default function PendencyList({
                 </TableListScroll>
                 <TableListFooter
                     page={pendencies}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de pendências"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(isMine ? { ...values, assigned_to: "" } : values, page)}
                 />
             </TableListCard>
             {canDelete ? (
                 <ConfirmActionModal
-                    open={pendencyToDelete !== null}
+                    open={removal.target !== null}
                     title="Excluir Pendência"
                     message={
                         <>
-                            Deseja excluir a pendência <strong>{pendencyToDelete?.title}</strong>?
+                            Deseja excluir a pendência <strong>{removal.target?.title}</strong>?
                         </>
                     }
-                    processing={busy}
+                    processing={removal.processing}
                     confirmLabel="Confirmar exclusão"
                     processingLabel="Excluindo pendência..."
                     confirmTone="dark-red"
-                    onClose={() => {
-                        if (!busy) setPendencyToDelete(null);
+                    onClose={removal.close}
+                    onConfirm={() => {
+                        if (!removal.target) return;
+                        cancelScheduled();
+                        removal.submit("delete", `${pendenciesBase}/${removal.target.id}`);
                     }}
-                    onConfirm={remove}
                 />
             ) : null}
         </>

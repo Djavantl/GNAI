@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,13 +14,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import InstitutionalEventPage from "./InstitutionalEventPage";
 import type {
     InstitutionalEventPaginator,
@@ -53,11 +54,13 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
 }: Props): React.JSX.Element {
     const { errors: pageErrors } = usePage().props;
     const errors = pageErrors as Record<string, string | undefined>;
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [eventToDelete, setEventToDelete] = useState<InstitutionalEventRecord | null>(null);
-    const pending = useRef(false);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar a agenda institucional. Tente novamente.",
+    });
+    const removal = useTableListAction<InstitutionalEventRecord>({
+        failureText: "Não foi possível excluir o evento. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters, is_active: String(initialFilters.is_active ?? "") }),
         [initialFilters],
@@ -71,48 +74,8 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
     } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: visit,
+        onSearch: (values: Filters) => list.visit(values),
     });
-
-    useEffect(() => {
-        if (!failure) return;
-        notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-    }, [failure]);
-
-    function visit(values: Filters, url = base): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(url, url === base ? compactListFilters(values) : {}, {
-            preserveState: true,
-            preserveScroll: true,
-            onError: () => setFailure("Não foi possível atualizar a agenda institucional. Tente novamente."),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !eventToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${eventToDelete.id}`, {
-            preserveScroll: true,
-            onError: () => setFailure("Não foi possível excluir o evento. Tente novamente."),
-            onSuccess: () => setEventToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <InstitutionalEventPage
@@ -124,8 +87,8 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
         >
             <TableListCard
                 aria-label="Listagem da agenda institucional"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando a agenda institucional"
             >
                 <FormLayout onSubmit={(event) => { event.preventDefault(); submitFilters(); }}>
@@ -137,7 +100,6 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                                 value={filters.title}
                                 maxLength={255}
                                 placeholder="Filtrar por nome do evento..."
-                                disabled={busy}
                                 invalid={!!errors.title}
                                 aria-describedby={errors.title ? "institutional-event-title-filter-error" : undefined}
                                 onChange={(event) => updateFilter("title", event.target.value)}
@@ -154,14 +116,13 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                                     { value: "1", label: "Ativo" },
                                     { value: "0", label: "Inativo" },
                                 ]}
-                                disabled={busy}
                                 aria-invalid={!!errors.is_active}
                                 aria-describedby={errors.is_active ? "institutional-event-status-filter-error" : undefined}
                                 onChange={(event) => updateFilter("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clearFilters} />
+                            <TableListClearButton onClick={clearFilters} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -201,10 +162,10 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                                                 tone="dark-red"
                                                 iconOnly
                                                 leftIconClass="fa fa-trash-o"
-                                                disabled={busy}
+                                                disabled={removal.processing}
                                                 title={`Excluir evento ${event.title}`}
                                                 aria-label={`Excluir evento ${event.title}`}
-                                                onClick={() => setEventToDelete(event)}
+                                                onClick={() => removal.open(event)}
                                             />
                                         ) : null}
                                         {!can.show && !can.destroy ? <span>Nenhuma ação</span> : null}
@@ -219,26 +180,30 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={events}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Páginas da agenda institucional"
                     onSelect={(page) => {
                         cancelScheduled();
                         const params = new URLSearchParams(window.location.search);
                         params.set("page", String(page));
-                        visit(filters, `${base}?${params.toString()}`);
+                        list.visitUrl(`${base}?${params.toString()}`);
                     }}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={eventToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Evento Institucional"
-                message={<>O evento <strong>{eventToDelete?.title}</strong> será excluído permanentemente.</>}
-                processing={busy}
+                message={<>O evento <strong>{removal.target?.title}</strong> será excluído permanentemente.</>}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo evento..."
                 confirmTone="dark-red"
-                onClose={() => { setFailure(""); setEventToDelete(null); }}
-                onConfirm={remove}
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    removal.submit("delete", `${base}/${removal.target.id}`);
+                }}
             />
         </InstitutionalEventPage>
     );

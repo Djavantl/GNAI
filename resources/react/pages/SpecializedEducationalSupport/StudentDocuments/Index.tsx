@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -21,12 +21,13 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import StudentDocumentPage from "./StudentDocumentPage";
 import type {
     StudentDocumentFilters,
@@ -68,12 +69,14 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [documentToDelete, setDocumentToDelete] = useState<StudentDocumentListRecord | null>(null);
     const listUrl = `${studentsBase}/${student.id}/documents`;
+    const list = useTableListVisit({
+        url: listUrl,
+        failureText: "Não foi possível atualizar os documentos. Tente novamente.",
+    });
+    const removal = useTableListAction<StudentDocumentListRecord>({
+        failureText: "Não foi possível excluir o documento. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -81,63 +84,8 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: StudentDocumentFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(listUrl, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os documentos. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !documentToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${documentsBase}/${documentToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o documento. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setDocumentToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <StudentDocumentPage
@@ -161,8 +109,8 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
         >
             <TableListCard
                 aria-label="Documentos do aluno"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando documentos"
             >
                 <FormLayout
@@ -183,7 +131,6 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
                                 value={values.title}
                                 maxLength={255}
                                 placeholder="Buscar por título..."
-                                disabled={busy}
                                 invalid={!!pageErrors.title}
                                 aria-describedby={pageErrors.title ? "student-document-filter-title-error" : undefined}
                                 onChange={(event) => update("title", event.target.value)}
@@ -201,7 +148,6 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
                                 placeholder="Todos"
                                 value={values.type}
                                 options={types}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.type}
                                 aria-describedby={pageErrors.type ? "student-document-filter-type-error" : undefined}
                                 onChange={(event) => update("type", event.target.value)}
@@ -219,17 +165,13 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
                                 placeholder="Todos"
                                 value={values.semester_id}
                                 options={semesters}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.semester_id}
                                 aria-describedby={pageErrors.semester_id ? "student-document-filter-semester-error" : undefined}
                                 onChange={(event) => update("semester_id", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -293,11 +235,10 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
                                                     aria-label={`Excluir documento ${document.title}`}
-                                                    disabled={busy}
+                                                    disabled={removal.processing}
                                                     onClick={() => {
                                                         cancelScheduled();
-                                                        setFailure("");
-                                                        setDocumentToDelete(document);
+                                                        removal.open(document);
                                                     }}
                                                 />
                                             ) : null}
@@ -316,30 +257,31 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={documents}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de documentos"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={documentToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Documento"
                 message={(
                     <>
                         Deseja excluir permanentemente o documento{" "}
-                        <strong>{documentToDelete?.title}</strong>?
+                        <strong>{removal.target?.title}</strong>?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo documento..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setDocumentToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    list.cancel();
+                    removal.submit("delete", `${documentsBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </StudentDocumentPage>
     );

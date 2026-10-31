@@ -15,6 +15,7 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
@@ -35,7 +36,6 @@ import {
     studentAeeEvaluationUrl,
     studentAeeRecordsUrl,
 } from "@/pages/SpecializedEducationalSupport/AeeRecords/AeeRecord.utils";
-import useAeeRecordListVisit from "@/pages/SpecializedEducationalSupport/AeeRecords/useAeeRecordListVisit";
 
 type Props = AeeFilterOptions & {
     student: AeeStudent;
@@ -71,10 +71,10 @@ export default function SpecializedEducationalSupportStudentsAeeRecordsIndexPage
         () => (can.view_all ? ["professional_id", "is_present"] : ["is_present"]),
         [can.view_all],
     );
-    const list = useAeeRecordListVisit(
-        studentAeeRecordsUrl(student.id),
-        "Não foi possível atualizar os registros de atendimento AEE. Tente novamente.",
-    );
+    const list = useTableListVisit({
+        url: studentAeeRecordsUrl(student.id),
+        failureText: "Não foi possível atualizar os registros de atendimento AEE. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => aeeFilterValues(fields, filters),
         [fields, filters],

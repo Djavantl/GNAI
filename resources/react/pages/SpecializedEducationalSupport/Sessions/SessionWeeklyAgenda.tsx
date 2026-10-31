@@ -136,10 +136,7 @@ export default function SessionWeeklyAgenda({
                                 </FormField>
                             ) : null}
                             <TableListFilterActions>
-                                <TableListClearButton
-                                    disabled={loading}
-                                    onClick={clear}
-                                />
+                                <TableListClearButton onClick={clear} />
                             </TableListFilterActions>
                         </div>
                     </FormLayout>

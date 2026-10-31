@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { useMemo } from "react";
+import { usePage } from "@inertiajs/react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -13,14 +13,15 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import { aeeBase, dateLabel } from "@/components/Students/Students.utils";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import type {
     PeiListFilters,
     PeiListProps,
@@ -83,10 +84,13 @@ export default function PeiList({
     const listUrl = isStudent && studentId ? studentPeisUrl(studentId) : peisBase;
     const columns = isStudent ? studentColumns : allColumns;
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [peiToDelete, setPeiToDelete] = useState<PeiListRecord | null>(null);
+    const list = useTableListVisit({
+        url: listUrl,
+        failureText: "Não foi possível atualizar os PEIs. Tente novamente.",
+    });
+    const removal = useTableListAction<PeiListRecord>({
+        failureText: "Não foi possível excluir o PEI. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -94,72 +98,8 @@ export default function PeiList({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (next) => visit(next),
+        onSearch: (next) => list.visit(isStudent ? { ...next, student_id: "" } : next),
     });
-
-    function fail(text: string): void {
-        notify({
-            tone: "error",
-            title: "Não foi possível concluir",
-            text,
-        });
-    }
-
-    function visit(next: PeiListFilters, page = 1): void {
-        if (pending.current) return;
-
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        router.get(
-            listUrl,
-            {
-                ...compactListFilters(isStudent ? { ...next, student_id: "" } : next),
-                page,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onNetworkError: () => {
-                    fail("Falha de conexão. Confira sua conexão e tente novamente.");
-                    return false;
-                },
-                onHttpException: () => {
-                    fail("Não foi possível atualizar os PEIs. Tente novamente.");
-                    return false;
-                },
-                onFinish: () => {
-                    pending.current = false;
-                    setBusy(false);
-                    setListLoading(false);
-                },
-            },
-        );
-    }
-
-    function remove(): void {
-        if (pending.current || !peiToDelete) return;
-
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        router.delete(`${peisBase}/${peiToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                fail("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                fail("Não foi possível excluir o PEI. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setPeiToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     function describedBy(name: keyof PeiListFilters, id: string): string | undefined {
         return pageErrors[name] ? `${id}-error` : undefined;
@@ -175,8 +115,7 @@ export default function PeiList({
         <>
             <TableListCard
                 aria-label={isStudent ? "Histórico de PEIs do aluno" : "Listagem geral de PEIs"}
-                aria-busy={busy}
-                loading={listLoading}
+                loading={list.loading}
                 loadingLabel="Atualizando PEIs"
             >
                 <FormLayout
@@ -205,7 +144,6 @@ export default function PeiList({
                                     placeholder="Todos"
                                     value={values.student_id}
                                     options={students}
-                                    disabled={busy}
                                     aria-invalid={Boolean(pageErrors.student_id)}
                                     aria-describedby={describedBy("student_id", "pei-filter-student")}
                                     onChange={(event) => update("student_id", event.target.value)}
@@ -224,7 +162,6 @@ export default function PeiList({
                                 placeholder="Todos"
                                 value={values.semester_id}
                                 options={semesters}
-                                disabled={busy}
                                 aria-invalid={Boolean(pageErrors.semester_id)}
                                 aria-describedby={describedBy("semester_id", "pei-filter-semester")}
                                 onChange={(event) => update("semester_id", event.target.value)}
@@ -241,7 +178,6 @@ export default function PeiList({
                                 value={values.version}
                                 inputMode="numeric"
                                 placeholder="Versão..."
-                                disabled={busy}
                                 invalid={Boolean(pageErrors.version)}
                                 aria-describedby={describedBy("version", "pei-filter-version")}
                                 onChange={(event) => update("version", event.target.value)}
@@ -259,7 +195,6 @@ export default function PeiList({
                                 placeholder="Todos"
                                 value={values.is_finished}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={Boolean(pageErrors.is_finished)}
                                 aria-describedby={describedBy("is_finished", "pei-filter-status")}
                                 onChange={(event) => update("is_finished", event.target.value)}
@@ -267,7 +202,6 @@ export default function PeiList({
                         </FormField>
                         <TableListFilterActions>
                             <TableListClearButton
-                                disabled={busy}
                                 onClick={clear}
                             />
                         </TableListFilterActions>
@@ -342,10 +276,10 @@ export default function PeiList({
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
                                                     aria-label={`Excluir ${peiName(pei)}`}
-                                                    disabled={busy}
+                                                    disabled={removal.processing}
                                                     onClick={() => {
                                                         cancelScheduled();
-                                                        setPeiToDelete(pei);
+                                                        removal.open(pei);
                                                     }}
                                                 />
                                             ) : null}
@@ -369,25 +303,27 @@ export default function PeiList({
                 </TableListScroll>
                 <TableListFooter
                     page={peis}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de PEIs"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(isStudent ? { ...values, student_id: "" } : values, page)}
                 />
             </TableListCard>
             {can.delete ? (
                 <ConfirmActionModal
-                    open={peiToDelete !== null}
+                    open={removal.target !== null}
                     title="Excluir PEI"
                     message="Deseja remover este PEI?"
-                    details={peiToDelete ? <strong>{peiName(peiToDelete)}</strong> : undefined}
-                    processing={busy}
+                    details={removal.target ? <strong>{peiName(removal.target)}</strong> : undefined}
+                    processing={removal.processing}
                     confirmLabel="Confirmar exclusão"
                     processingLabel="Excluindo PEI..."
                     confirmTone="dark-red"
-                    onClose={() => {
-                        if (!busy) setPeiToDelete(null);
+                    onClose={removal.close}
+                    onConfirm={() => {
+                        if (!removal.target) return;
+                        cancelScheduled();
+                        removal.submit("delete", `${peisBase}/${removal.target.id}`);
                     }}
-                    onConfirm={remove}
                 />
             ) : null}
         </>

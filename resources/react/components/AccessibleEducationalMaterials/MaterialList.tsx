@@ -38,6 +38,7 @@ const materialColumns: TableListColumn[] = [
 interface MaterialListProps {
     materials: MaterialPaginator;
     permissions: MaterialPermissions;
+    loading: boolean;
     processing: boolean;
     onDelete: (material: AccessibleEducationalMaterial) => void;
     onPageSelect: (page: number) => void;
@@ -46,6 +47,7 @@ interface MaterialListProps {
 export default function MaterialList({
     materials,
     permissions,
+    loading,
     processing,
     onDelete,
     onPageSelect,
@@ -133,7 +135,7 @@ export default function MaterialList({
             </TableListScroll>
             <TableListFooter
                 page={materials}
-                disabled={processing}
+                disabled={loading}
                 paginationLabel="Páginas de materiais pedagógicos acessíveis"
                 onSelect={onPageSelect}
             />

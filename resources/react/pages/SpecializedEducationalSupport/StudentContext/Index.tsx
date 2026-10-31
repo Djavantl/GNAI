@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -15,13 +15,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import StudentContextPage from "./StudentContextPage";
 import type {
     StudentContextFilters,
@@ -69,12 +70,14 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [contextToDelete, setContextToDelete] = useState<StudentContextListRecord | null>(null);
     const listUrl = `${aeeBase}/student-context/${student.id}/index`;
+    const list = useTableListVisit({
+        url: listUrl,
+        failureText: "Não foi possível atualizar o histórico de contextos. Tente novamente.",
+    });
+    const removal = useTableListAction<StudentContextListRecord>({
+        failureText: "Não foi possível excluir o contexto do aluno. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -82,63 +85,8 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: StudentContextFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(listUrl, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar o histórico de contextos. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !contextToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${aeeBase}/student-context/${contextToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o contexto do aluno. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setContextToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <StudentContextPage
@@ -168,8 +116,8 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
         >
             <TableListCard
                 aria-label="Histórico de contextos do aluno"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando histórico de contextos"
             >
                 <FormLayout
@@ -191,7 +139,6 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
                                 placeholder="Todos"
                                 value={values.semester_id}
                                 options={semesters}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.semester_id}
                                 aria-describedby={pageErrors.semester_id ? "student-context-filter-semester-error" : undefined}
                                 onChange={(event) => update("semester_id", event.target.value)}
@@ -209,7 +156,6 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
                                 placeholder="Todos"
                                 value={values.evaluation_type}
                                 options={evaluationTypeOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.evaluation_type}
                                 aria-describedby={pageErrors.evaluation_type ? "student-context-filter-type-error" : undefined}
                                 onChange={(event) => update("evaluation_type", event.target.value)}
@@ -227,17 +173,13 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
                                 placeholder="Todos"
                                 value={values.is_current}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_current}
                                 aria-describedby={pageErrors.is_current ? "student-context-filter-status-error" : undefined}
                                 onChange={(event) => update("is_current", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -281,11 +223,10 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
                                                         iconOnly
                                                         leftIconClass="fa fa-trash-o"
                                                         aria-label={`Excluir contexto versão ${context.version}`}
-                                                        disabled={busy}
+                                                        disabled={removal.processing}
                                                         onClick={() => {
                                                             cancelScheduled();
-                                                            setFailure("");
-                                                            setContextToDelete(context);
+                                                            removal.open(context);
                                                         }}
                                                     />
                                                 ) : null}
@@ -305,30 +246,31 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={contexts}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação do histórico de contextos"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={contextToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Contexto do Aluno"
                 message={(
                     <>
                         Excluir permanentemente o contexto{" "}
-                        <strong>V{contextToDelete?.version}</strong>?
+                        <strong>V{removal.target?.version}</strong>?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo contexto..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setContextToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    list.cancel();
+                    removal.submit("delete", `${aeeBase}/student-context/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </StudentContextPage>
     );

@@ -30,7 +30,6 @@ interface MaterialFiltersProps {
     values: Filters;
     accessibilityFeatureOptions: Record<string, string>;
     errors: Record<string, string | undefined>;
-    processing: boolean;
     onUpdate: (name: keyof Filters, value: string) => void;
     onClear: () => void;
     onSubmit: () => void;
@@ -40,7 +39,6 @@ export default function MaterialFilters({
     values,
     accessibilityFeatureOptions,
     errors,
-    processing,
     onUpdate,
     onClear,
     onSubmit,
@@ -74,7 +72,6 @@ export default function MaterialFilters({
                         value={values.name}
                         maxLength={255}
                         placeholder="Filtrar por nome..."
-                        disabled={processing}
                         invalid={!!errors.name}
                         aria-describedby={
                             errors.name ? 'material-name-error' : undefined
@@ -96,7 +93,6 @@ export default function MaterialFilters({
                         placeholder="Todos"
                         options={booleanOptions.nature}
                         value={values.is_digital}
-                        disabled={processing}
                         aria-invalid={!!errors.is_digital}
                         aria-describedby={
                             errors.is_digital
@@ -120,7 +116,6 @@ export default function MaterialFilters({
                         placeholder="Todos"
                         options={featureOptions}
                         value={values.accessibility_feature_id}
-                        disabled={processing}
                         aria-invalid={!!errors.accessibility_feature_id}
                         aria-describedby={
                             errors.accessibility_feature_id
@@ -137,7 +132,6 @@ export default function MaterialFilters({
                 </FormField>
                 <TableListFilterActions>
                     <TableListClearButton
-                        disabled={processing}
                         onClick={onClear}
                     />
                 </TableListFilterActions>
@@ -158,7 +152,6 @@ export default function MaterialFilters({
                             placeholder="Todos"
                             options={booleanOptions.status}
                             value={values.is_active}
-                            disabled={processing}
                             aria-invalid={!!errors.is_active}
                             aria-describedby={
                                 errors.is_active
@@ -182,7 +175,6 @@ export default function MaterialFilters({
                             placeholder="Todos"
                             options={booleanOptions.availability}
                             value={values.available}
-                            disabled={processing}
                             aria-invalid={!!errors.available}
                             aria-describedby={
                                 errors.available

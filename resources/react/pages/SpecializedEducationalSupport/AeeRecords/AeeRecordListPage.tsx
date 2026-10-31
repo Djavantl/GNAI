@@ -9,6 +9,7 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
@@ -21,7 +22,6 @@ import type {
     AeeRecordListPageProps,
 } from "./AeeRecordList.types";
 import { aeeRecordPdfUrl, aeeRecordShowUrl } from "./AeeRecord.utils";
-import useAeeRecordListVisit from "./useAeeRecordListVisit";
 
 interface AeeRecordListPageConfig {
     url: string;
@@ -139,10 +139,10 @@ export default function AeeRecordListPage({
     actions,
 }: AeeRecordListPageProps & AeeRecordListPageConfig): React.JSX.Element {
     const errors = usePage().props.errors as Record<string, string | undefined>;
-    const list = useAeeRecordListVisit(
+    const list = useTableListVisit({
         url,
-        "Não foi possível atualizar os atendimentos especializados. Tente novamente.",
-    );
+        failureText: "Não foi possível atualizar os atendimentos especializados. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => aeeFilterValues(fields, filters),
         [fields, filters],

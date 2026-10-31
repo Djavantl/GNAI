@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -15,13 +15,14 @@ import {
     TableListMoreFilters,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import WaitlistPage from "./WaitlistPage";
 import type { WaitlistPaginator, WaitlistRecord } from "./Waitlist.types";
 import "./Waitlists.css";
@@ -70,11 +71,13 @@ export default function InclusiveRadarWaitlistsIndexPage({
 }: Props): React.JSX.Element {
     const { errors: pageErrors } = usePage().props;
     const errors = pageErrors as Record<string, string | undefined>;
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [waitlistToDelete, setWaitlistToDelete] = useState<WaitlistRecord | null>(null);
-    const pending = useRef(false);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar a fila de espera. Tente novamente.",
+    });
+    const removal = useTableListAction<WaitlistRecord>({
+        failureText: "Não foi possível excluir a solicitação. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -88,48 +91,8 @@ export default function InclusiveRadarWaitlistsIndexPage({
     } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: visit,
+        onSearch: (values: Filters) => list.visit(values),
     });
-
-    useEffect(() => {
-        if (!failure) return;
-        notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-    }, [failure]);
-
-    function visit(values: Filters, url = base): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(url, url === base ? compactListFilters(values) : {}, {
-            preserveState: true,
-            preserveScroll: true,
-            onError: () => setFailure("Não foi possível atualizar a fila de espera. Tente novamente."),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !waitlistToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${waitlistToDelete.id}`, {
-            preserveScroll: true,
-            onError: () => setFailure("Não foi possível excluir a solicitação. Tente novamente."),
-            onSuccess: () => setWaitlistToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <WaitlistPage
@@ -141,8 +104,8 @@ export default function InclusiveRadarWaitlistsIndexPage({
         >
             <TableListCard
                 aria-label="Listagem da fila de espera"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando a fila de espera"
             >
                 <FormLayout onSubmit={(event) => { event.preventDefault(); submitFilters(); }}>
@@ -154,7 +117,6 @@ export default function InclusiveRadarWaitlistsIndexPage({
                                 value={filters.item}
                                 maxLength={255}
                                 placeholder="Filtrar por item..."
-                                disabled={busy}
                                 invalid={!!errors.item}
                                 aria-describedby={errors.item ? "waitlist-item-filter-error" : undefined}
                                 onChange={(event) => updateFilter("item", event.target.value)}
@@ -167,7 +129,6 @@ export default function InclusiveRadarWaitlistsIndexPage({
                                 value={filters.student}
                                 maxLength={255}
                                 placeholder="Filtrar por aluno..."
-                                disabled={busy}
                                 invalid={!!errors.student}
                                 aria-describedby={errors.student ? "waitlist-student-filter-error" : undefined}
                                 onChange={(event) => updateFilter("student", event.target.value)}
@@ -180,14 +141,13 @@ export default function InclusiveRadarWaitlistsIndexPage({
                                 value={filters.professional}
                                 maxLength={255}
                                 placeholder="Filtrar por profissional..."
-                                disabled={busy}
                                 invalid={!!errors.professional}
                                 aria-describedby={errors.professional ? "waitlist-professional-filter-error" : undefined}
                                 onChange={(event) => updateFilter("professional", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clearFilters} />
+                            <TableListClearButton onClick={clearFilters} />
                         </TableListFilterActions>
                     </div>
                     <TableListMoreFilters active={Boolean(filters.status)}>
@@ -200,7 +160,6 @@ export default function InclusiveRadarWaitlistsIndexPage({
                                     placeholder="Todos"
                                     value={filters.status}
                                     options={statusOptions}
-                                    disabled={busy}
                                     aria-invalid={!!errors.status}
                                     aria-describedby={errors.status ? "waitlist-status-filter-error" : undefined}
                                     onChange={(event) => updateFilter("status", event.target.value)}
@@ -250,10 +209,10 @@ export default function InclusiveRadarWaitlistsIndexPage({
                                                     tone="dark-red"
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
-                                                    disabled={busy}
+                                                    disabled={removal.processing}
                                                     title={`Excluir solicitação de ${waitlist.item_name}`}
                                                     aria-label={`Excluir solicitação de ${waitlist.item_name}`}
-                                                    onClick={() => setWaitlistToDelete(waitlist)}
+                                                    onClick={() => removal.open(waitlist)}
                                                 />
                                             ) : null}
                                             {!can.show && !can.destroy ? <span>Nenhuma ação</span> : null}
@@ -269,26 +228,30 @@ export default function InclusiveRadarWaitlistsIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={waitlists}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Páginas da fila de espera"
                     onSelect={(page) => {
                         cancelScheduled();
                         const params = new URLSearchParams(window.location.search);
                         params.set("page", String(page));
-                        visit(filters, `${base}?${params.toString()}`);
+                        list.visitUrl(`${base}?${params.toString()}`);
                     }}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={waitlistToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Solicitação"
-                message={<>Excluir permanentemente a solicitação <strong>#{waitlistToDelete?.id}</strong>?</>}
-                processing={busy}
+                message={<>Excluir permanentemente a solicitação <strong>#{removal.target?.id}</strong>?</>}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo solicitação..."
                 confirmTone="dark-red"
-                onClose={() => { setFailure(""); setWaitlistToDelete(null); }}
-                onConfirm={remove}
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    removal.submit("delete", `${base}/${removal.target.id}`);
+                }}
             />
         </WaitlistPage>
     );

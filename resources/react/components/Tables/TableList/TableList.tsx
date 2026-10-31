@@ -9,6 +9,7 @@ import './TableList.css';
 export { default as TableListTable } from './TableListTable';
 export { default as TableListMoreFilters } from './TableListMoreFilters';
 export { formatTableListRange } from './TableList.utils';
+export { useTableListAction, useTableListVisit } from './useTableListRequest';
 export type { TableListColumn, TableListPage, TableListRange } from './TableList.types';
 
 export function TableListCard({

@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,13 +14,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import PositionPage, { positionsBase } from "./PositionPage";
 import type { PositionFilters, PositionListRecord, PositionPaginator } from "./Position.types";
 
@@ -40,7 +41,6 @@ const columns: TableListColumn[] = [
     { id: "status", label: "Status", width: "20%", minWidth: 90 },
     { id: "actions", label: "Ações", width: "22%", minWidth: 120, fixed: "end" },
 ];
-const connectionFailure = "Falha de conexão. Confira sua conexão e tente novamente.";
 
 export default function SpecializedEducationalSupportPositionsIndexPage({
     positions,
@@ -48,11 +48,16 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [positionToDelete, setPositionToDelete] = useState<PositionListRecord | null>(null);
+    const list = useTableListVisit({
+        url: positionsBase,
+        failureText: "Não foi possível atualizar os cargos. Tente novamente.",
+    });
+    const removal = useTableListAction<PositionListRecord>({
+        failureText: "Não foi possível excluir o cargo. Tente novamente.",
+    });
+    const statusChange = useTableListAction<PositionListRecord>({
+        failureText: "Não foi possível alterar o status do cargo. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -60,86 +65,13 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
     const hasRowActions = can.view || can.update || can.delete;
 
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: PositionFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(positionsBase, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os cargos. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
     function toggleActive(position: PositionListRecord): void {
-        if (pending.current) return;
         cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.patch(`${positionsBase}/${position.id}/deactivate`, {}, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível alterar o status do cargo. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !positionToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${positionsBase}/${positionToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o cargo. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setPositionToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
+        statusChange.submit("patch", `${positionsBase}/${position.id}/deactivate`);
     }
 
     return (
@@ -155,8 +87,8 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de cargos"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando cargos"
             >
                 <FormLayout
@@ -177,7 +109,6 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
                                 value={values.name}
                                 maxLength={255}
                                 placeholder="Buscar por nome..."
-                                disabled={busy}
                                 invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "position-filter-name-error" : undefined}
                                 onChange={(event) => update("name", event.target.value)}
@@ -193,7 +124,6 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
                                 name="description"
                                 value={values.description}
                                 placeholder="Descrição..."
-                                disabled={busy}
                                 invalid={!!pageErrors.description}
                                 aria-describedby={pageErrors.description ? "position-filter-description-error" : undefined}
                                 onChange={(event) => update("description", event.target.value)}
@@ -211,17 +141,13 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
                                 placeholder="Todos"
                                 value={values.is_active}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_active}
                                 aria-describedby={pageErrors.is_active ? "position-filter-status-error" : undefined}
                                 onChange={(event) => update("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -260,7 +186,7 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
                                                 iconOnly
                                                 leftIconClass={position.is_active ? "fa fa-toggle-on" : "fa fa-toggle-off"}
                                                 aria-label={`${position.is_active ? "Desativar" : "Ativar"} ${position.name}`}
-                                                disabled={busy}
+                                                disabled={statusChange.processing}
                                                 onClick={() => toggleActive(position)}
                                             />
                                         ) : null}
@@ -271,11 +197,10 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
                                                 iconOnly
                                                 leftIconClass="fa fa-trash-o"
                                                 aria-label={`Excluir ${position.name}`}
-                                                disabled={busy}
+                                                disabled={removal.processing}
                                                 onClick={() => {
                                                     cancelScheduled();
-                                                    setFailure("");
-                                                    setPositionToDelete(position);
+                                                    removal.open(position);
                                                 }}
                                             />
                                         ) : null}
@@ -294,29 +219,27 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={positions}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de cargos"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={positionToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Cargo"
                 message={(
                     <>
-                        Deseja excluir o cargo <strong>{positionToDelete?.name}</strong>?
+                        Deseja excluir o cargo <strong>{removal.target?.name}</strong>?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo cargo..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setPositionToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${positionsBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </PositionPage>
     );

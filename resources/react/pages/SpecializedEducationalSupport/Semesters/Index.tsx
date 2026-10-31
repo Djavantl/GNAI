@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,14 +14,15 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import InlineAlert from "@/components/UI/InlineAlert/InlineAlert";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import SemesterPage, { semesterBase, semesterLabel } from "./SemesterPage";
 import type { SemesterFilters, SemesterPaginator, SemesterRecord } from "./Semester.types";
 import "./Semesters.css";
@@ -47,7 +48,6 @@ const columns: TableListColumn[] = [
     { id: "status", label: "Status", width: "22%", minWidth: 100 },
     { id: "actions", label: "Ações", width: "22%", minWidth: 120, fixed: "end" },
 ];
-const connectionFailure = "Falha de conexão. Confira sua conexão e tente novamente.";
 
 export default function SpecializedEducationalSupportSemestersIndexPage({
     semesters,
@@ -55,11 +55,16 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [semesterToDelete, setSemesterToDelete] = useState<SemesterRecord | null>(null);
+    const list = useTableListVisit({
+        url: semesterBase,
+        failureText: "Não foi possível atualizar os semestres. Tente novamente.",
+    });
+    const removal = useTableListAction<SemesterRecord>({
+        failureText: "Não foi possível excluir o semestre. Tente novamente.",
+    });
+    const currentChange = useTableListAction<SemesterRecord>({
+        failureText: "Não foi possível definir o semestre atual. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -67,85 +72,12 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
 
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: SemesterFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(semesterBase, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os semestres. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
     function setCurrent(semester: SemesterRecord): void {
-        if (pending.current) return;
         cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.patch(`${semesterBase}/${semester.id}/set-current`, {}, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível definir o semestre atual. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !semesterToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${semesterBase}/${semesterToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o semestre. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setSemesterToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
+        currentChange.submit("patch", `${semesterBase}/${semester.id}/set-current`);
     }
 
     return (
@@ -161,8 +93,8 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de semestres"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando semestres"
             >
                 <FormLayout
@@ -184,7 +116,6 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                                 inputMode="numeric"
                                 maxLength={4}
                                 placeholder="Ano..."
-                                disabled={busy}
                                 invalid={!!pageErrors.year}
                                 aria-describedby={pageErrors.year ? "semester-filter-year-error" : undefined}
                                 onChange={(event) => update("year", event.target.value)}
@@ -202,7 +133,6 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                                 placeholder="Todos"
                                 value={values.term}
                                 options={termOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.term}
                                 aria-describedby={pageErrors.term ? "semester-filter-term-error" : undefined}
                                 onChange={(event) => update("term", event.target.value)}
@@ -219,7 +149,6 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                                 value={values.label}
                                 maxLength={255}
                                 placeholder="Rótulo..."
-                                disabled={busy}
                                 invalid={!!pageErrors.label}
                                 aria-describedby={pageErrors.label ? "semester-filter-label-error" : undefined}
                                 onChange={(event) => update("label", event.target.value)}
@@ -237,17 +166,13 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                                 placeholder="Todos"
                                 value={values.is_current}
                                 options={currentOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_current}
                                 aria-describedby={pageErrors.is_current ? "semester-filter-current-error" : undefined}
                                 onChange={(event) => update("is_current", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -300,7 +225,7 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                                                     iconOnly
                                                     leftIconClass="fa fa-check"
                                                     aria-label={`Definir semestre ${name} como atual`}
-                                                    disabled={busy}
+                                                    disabled={currentChange.processing}
                                                     onClick={() => setCurrent(semester)}
                                                 />
                                             ) : null}
@@ -311,11 +236,10 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                                                     iconOnly
                                                     leftIconClass="fa fa-trash-o"
                                                     aria-label={`Excluir semestre ${name}`}
-                                                    disabled={busy}
+                                                    disabled={removal.processing}
                                                     onClick={() => {
                                                         cancelScheduled();
-                                                        setFailure("");
-                                                        setSemesterToDelete(semester);
+                                                        removal.open(semester);
                                                     }}
                                                 />
                                             ) : null}
@@ -335,9 +259,9 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={semesters}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de semestres"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <InlineAlert
@@ -348,24 +272,22 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                 O <strong>Semestre Atual</strong> determina qual período será selecionado por padrão em novos registros do sistema.
             </InlineAlert>
             <ConfirmActionModal
-                open={semesterToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Semestre"
                 message={(
                     <>
                         Tem certeza que deseja excluir o semestre{" "}
-                        <strong>{semesterToDelete ? semesterLabel(semesterToDelete) : ""}</strong>?
+                        <strong>{removal.target ? semesterLabel(removal.target) : ""}</strong>?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo semestre..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setSemesterToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${semesterBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </SemesterPage>
     );

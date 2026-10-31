@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,13 +14,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import DeficiencyPage, { deficiencyBase } from "./DeficiencyPage";
 import type { DeficiencyFilters, DeficiencyPaginator, DeficiencyRecord } from "./Deficiency.types";
 import "./Deficiencies.css";
@@ -41,7 +42,6 @@ const columns: TableListColumn[] = [
     { id: "status", label: "Status", width: "20%", minWidth: 90 },
     { id: "actions", label: "Ações", width: "22%", minWidth: 120, fixed: "end" },
 ];
-const connectionFailure = "Falha de conexão. Confira sua conexão e tente novamente.";
 
 export default function SpecializedEducationalSupportDeficienciesIndexPage({
     deficiencies,
@@ -49,11 +49,16 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [deficiencyToDelete, setDeficiencyToDelete] = useState<DeficiencyRecord | null>(null);
+    const list = useTableListVisit({
+        url: deficiencyBase,
+        failureText: "Não foi possível atualizar os perfis de atendimento. Tente novamente.",
+    });
+    const removal = useTableListAction<DeficiencyRecord>({
+        failureText: "Não foi possível excluir o perfil de atendimento. Tente novamente.",
+    });
+    const statusChange = useTableListAction<DeficiencyRecord>({
+        failureText: "Não foi possível alterar o status do perfil de atendimento. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -61,86 +66,13 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
     const hasRowActions = can.view || can.update || can.delete;
 
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: DeficiencyFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(deficiencyBase, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os perfis de atendimento. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
     function toggleActive(deficiency: DeficiencyRecord): void {
-        if (pending.current) return;
         cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.patch(`${deficiencyBase}/${deficiency.id}/deactivate`, {}, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível alterar o status do perfil de atendimento. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !deficiencyToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${deficiencyBase}/${deficiencyToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure(connectionFailure);
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o perfil de atendimento. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setDeficiencyToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
+        statusChange.submit("patch", `${deficiencyBase}/${deficiency.id}/deactivate`);
     }
 
     return (
@@ -156,8 +88,8 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
         >
             <TableListCard
                 aria-label="Listagem de perfis de atendimento"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando perfis de atendimento"
             >
                 <FormLayout
@@ -178,7 +110,6 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
                                 value={values.name}
                                 maxLength={255}
                                 placeholder="Nome..."
-                                disabled={busy}
                                 invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "deficiency-filter-name-error" : undefined}
                                 onChange={(event) => update("name", event.target.value)}
@@ -195,7 +126,6 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
                                 value={values.cid_code}
                                 maxLength={20}
                                 placeholder="Código CID..."
-                                disabled={busy}
                                 invalid={!!pageErrors.cid_code}
                                 aria-describedby={pageErrors.cid_code ? "deficiency-filter-cid-error" : undefined}
                                 onChange={(event) => update("cid_code", event.target.value)}
@@ -213,17 +143,13 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
                                 placeholder="Todos"
                                 value={values.is_active}
                                 options={statusOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_active}
                                 aria-describedby={pageErrors.is_active ? "deficiency-filter-status-error" : undefined}
                                 onChange={(event) => update("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -265,7 +191,7 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
                                                 iconOnly
                                                 leftIconClass={deficiency.is_active ? "fa fa-toggle-on" : "fa fa-toggle-off"}
                                                 aria-label={`${deficiency.is_active ? "Desativar" : "Ativar"} ${deficiency.name}`}
-                                                disabled={busy}
+                                                disabled={statusChange.processing}
                                                 onClick={() => toggleActive(deficiency)}
                                             />
                                         ) : null}
@@ -276,11 +202,10 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
                                                 iconOnly
                                                 leftIconClass="fa fa-trash-o"
                                                 aria-label={`Excluir ${deficiency.name}`}
-                                                disabled={busy}
+                                                disabled={removal.processing}
                                                 onClick={() => {
                                                     cancelScheduled();
-                                                    setFailure("");
-                                                    setDeficiencyToDelete(deficiency);
+                                                    removal.open(deficiency);
                                                 }}
                                             />
                                         ) : null}
@@ -299,29 +224,27 @@ export default function SpecializedEducationalSupportDeficienciesIndexPage({
                 </TableListScroll>
                 <TableListFooter
                     page={deficiencies}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de perfis de atendimento"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={deficiencyToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Perfil de Atendimento"
                 message={(
                     <>
-                        Deseja excluir o perfil <strong>{deficiencyToDelete?.name}</strong>?
+                        Deseja excluir o perfil <strong>{removal.target?.name}</strong>?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo perfil..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setDeficiencyToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${deficiencyBase}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </DeficiencyPage>
     );

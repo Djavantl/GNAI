@@ -1,5 +1,3 @@
-import { router } from "@inertiajs/react";
-import { useRef, useState } from "react";
 import BusinessPage from "@/components/Navigation/BusinessPage/BusinessPage";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
@@ -8,10 +6,11 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
 import "./NotificationsIndex.css";
 
@@ -48,58 +47,26 @@ const columns: TableListColumn[] = [
 ];
 
 export default function NotificationsIndexPage({ notifications }: Props): React.JSX.Element {
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-
-    function fail(text: string): false {
-        notify({ tone: "error", title: "Não foi possível concluir", text });
-        return false;
-    }
-
-    function start(loading = false): boolean {
-        if (pending.current) return false;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(loading);
-        return true;
-    }
-
-    function finish(): void {
-        pending.current = false;
-        setBusy(false);
-        setListLoading(false);
-    }
-
-    function visit(page: number): void {
-        if (!start(true)) return;
-        router.get(base, { page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => fail("Falha de conexão. Confira sua conexão e tente novamente."),
-            onHttpException: () => fail("Não foi possível atualizar as notificações. Tente novamente."),
-            onFinish: finish,
-        });
-    }
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar as notificações. Tente novamente.",
+    });
+    const readAll = useTableListAction<never>({
+        failureText: "Não foi possível marcar as notificações como lidas. Tente novamente.",
+    });
+    const readOne = useTableListAction<never>({
+        failureText: "Não foi possível marcar a notificação como lida. Tente novamente.",
+    });
+    const actionBusy = readAll.processing || readOne.processing;
 
     function markAllAsRead(): void {
-        if (!start()) return;
-        router.post(`${base}/read-all`, {}, {
-            preserveScroll: true,
-            onNetworkError: () => fail("Falha de conexão. Confira sua conexão e tente novamente."),
-            onHttpException: () => fail("Não foi possível marcar as notificações como lidas. Tente novamente."),
-            onFinish: finish,
-        });
+        if (actionBusy) return;
+        readAll.submit("post", `${base}/read-all`);
     }
 
     function markAsRead(notification: NotificationRecord): void {
-        if (!start()) return;
-        router.post(`${base}/${encodeURIComponent(notification.id)}/read`, {}, {
-            preserveScroll: true,
-            onNetworkError: () => fail("Falha de conexão. Confira sua conexão e tente novamente."),
-            onHttpException: () => fail("Não foi possível marcar a notificação como lida. Tente novamente."),
-            onFinish: finish,
-        });
+        if (actionBusy) return;
+        readOne.submit("post", `${base}/${encodeURIComponent(notification.id)}/read`);
     }
 
     return (
@@ -115,7 +82,7 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                     type="button"
                     tone="list-action"
                     labelIconClass="fa fa-check"
-                    disabled={busy}
+                    disabled={actionBusy}
                     onClick={markAllAsRead}
                 >
                     Marcar todas como lidas
@@ -125,8 +92,8 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
         >
             <TableListCard
                 aria-label="Listagem de notificações"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando notificações"
             >
                 <TableListScroll aria-label="Tabela de notificações">
@@ -183,7 +150,7 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                                                 leftIconClass="fa fa-check"
                                                 title="Marcar como lida"
                                                 aria-label={`Marcar como lida: ${notification.title}`}
-                                                disabled={busy}
+                                                disabled={actionBusy}
                                                 onClick={() => markAsRead(notification)}
                                             />
                                         ) : null}
@@ -203,9 +170,9 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                 </TableListScroll>
                 <TableListFooter
                     page={notifications}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de notificações"
-                    onSelect={visit}
+                    onSelect={(page) => list.visit({}, page)}
                 />
             </TableListCard>
         </BusinessPage>

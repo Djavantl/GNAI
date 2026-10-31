@@ -1,5 +1,6 @@
 import {
     TableListCard,
+    useTableListVisit,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import {
@@ -13,7 +14,6 @@ import type {
 } from "./SessionList.types";
 import SessionPage from "./SessionPage";
 import SessionTable from "./SessionTable";
-import { sessionQuery, useSessionListRequest } from "./useSessionListRequest";
 
 const tableFilterFields: SessionTableFilterKey[] = ["professional", "type", "status"];
 
@@ -24,8 +24,10 @@ export default function SpecializedEducationalSupportSessionsStudentIndexPage({
     options,
     can,
 }: SessionStudentIndexProps): React.JSX.Element {
-    const request = useSessionListRequest("Não foi possível atualizar os agendamentos do aluno. Tente novamente.");
-    const listUrl = studentUrl(student.id, "sessions");
+    const list = useTableListVisit({
+        url: studentUrl(student.id, "sessions"),
+        failureText: "Não foi possível atualizar os agendamentos do aluno. Tente novamente.",
+    });
     const currentFilters = {
         professional: filters.professional,
         type: filters.type,
@@ -55,24 +57,23 @@ export default function SpecializedEducationalSupportSessionsStudentIndexPage({
         >
             <TableListCard
                 aria-label={`Listagem de agendamentos de ${student.name}`}
-                loading={request.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando agendamentos do aluno"
             >
                 <SessionFilters
                     fields={tableFilterFields}
                     filters={filters}
                     options={options}
-                    disabled={request.loading}
-                    onSearch={(values) => request.visit(listUrl, sessionQuery(values))}
+                    onSearch={(values) => list.visit(values)}
                 />
                 <SessionTable
                     sessions={sessions}
                     canView={can.view}
                     showProfessional
                     showTime
-                    loading={request.loading}
+                    loading={list.loading}
                     emptyMessage="Nenhum agendamento encontrado para este aluno."
-                    onPage={(page) => request.visit(listUrl, sessionQuery(currentFilters, page))}
+                    onPage={(page) => list.visit(currentFilters, page)}
                 />
             </TableListCard>
         </SessionPage>

@@ -2,6 +2,7 @@ import FormSection from "@/components/Forms/FormSection/FormSection";
 import {
     TableListCard,
     TableListCreateButton,
+    useTableListVisit,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import { aeeBase } from "@/components/Students/Students.utils";
@@ -14,7 +15,6 @@ import type {
 import SessionPage from "./SessionPage";
 import SessionTable from "./SessionTable";
 import SessionWeeklyAgenda from "./SessionWeeklyAgenda";
-import { sessionQuery, useSessionListRequest } from "./useSessionListRequest";
 
 const mySessionsBase = `${aeeBase}/my-sessions`;
 const tableFilterFields: SessionTableFilterKey[] = ["student", "type", "status"];
@@ -27,7 +27,10 @@ export default function SpecializedEducationalSupportSessionsMySessionsPage({
     options,
     can,
 }: SessionMySessionsProps): React.JSX.Element {
-    const request = useSessionListRequest("Não foi possível atualizar seus agendamentos. Tente novamente.");
+    const list = useTableListVisit({
+        url: mySessionsBase,
+        failureText: "Não foi possível atualizar seus agendamentos. Tente novamente.",
+    });
     const actions = can.create || can.viewAll ? (
         <>
             {can.viewAll ? (
@@ -67,16 +70,13 @@ export default function SpecializedEducationalSupportSessionsMySessionsPage({
                 filters={filters}
                 students={options.students ?? []}
                 canView={can.view}
-                loading={request.loading}
-                onSearch={(values) => request.visit(
-                    mySessionsBase,
-                    sessionQuery({ ...filters, ...values }, sessions.current_page),
-                )}
-                onNavigate={(url) => request.visit(url)}
+                loading={list.loading}
+                onSearch={(values) => list.visit({ ...filters, ...values }, sessions.current_page)}
+                onNavigate={(url) => list.visitUrl(url)}
             />
             <TableListCard
                 aria-label="Listagem dos meus agendamentos"
-                loading={request.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando seus agendamentos"
             >
                 <FormSection
@@ -89,21 +89,14 @@ export default function SpecializedEducationalSupportSessionsMySessionsPage({
                         fields={tableFilterFields}
                         filters={filters}
                         options={options}
-                        disabled={request.loading}
-                        onSearch={(values) => request.visit(
-                            mySessionsBase,
-                            sessionQuery({ ...filters, ...values }),
-                        )}
+                        onSearch={(values) => list.visit({ ...filters, ...values })}
                     />
                     <SessionTable
                         sessions={sessions}
                         canView={can.view}
                         showStudents
-                        loading={request.loading}
-                        onPage={(page) => request.visit(
-                            mySessionsBase,
-                            sessionQuery({ ...filters }, page),
-                        )}
+                        loading={list.loading}
+                        onPage={(page) => list.visit({ ...filters }, page)}
                     />
                 </FormSection>
             </TableListCard>

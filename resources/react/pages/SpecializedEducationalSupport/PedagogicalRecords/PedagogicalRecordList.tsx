@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useMemo, useRef, useState, type CSSProperties } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo, type CSSProperties } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -14,13 +14,14 @@ import {
     TableListMoreFilters,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import type {
     PedagogicalRecordFilterName,
     PedagogicalRecordFilters,
@@ -105,10 +106,14 @@ export default function PedagogicalRecordList({
     studentId,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [recordToDelete, setRecordToDelete] = useState<PedagogicalRecordListRow | null>(null);
+    const list = useTableListVisit({
+        url,
+        pageParam,
+        failureText: "Não foi possível atualizar os atendimentos pedagógicos. Tente novamente.",
+    });
+    const removal = useTableListAction<PedagogicalRecordListRow>({
+        failureText: "Não foi possível excluir o atendimento pedagógico. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -116,7 +121,7 @@ export default function PedagogicalRecordList({
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (next) => visit(next),
+        onSearch: (next) => list.visit(next),
     });
     const isStudent = variant === "student";
     const columns = isStudent ? studentColumns : generalColumns;
@@ -162,58 +167,6 @@ export default function PedagogicalRecordList({
         },
     };
 
-    function failure(text: string): void {
-        notify({ tone: "error", title: "Não foi possível concluir", text });
-    }
-
-    function visit(next: PedagogicalRecordFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        router.get(url, { ...compactListFilters(next), [pageParam]: page }, {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-            onNetworkError: () => {
-                failure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                failure("Não foi possível atualizar os atendimentos pedagógicos. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !recordToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        router.delete(`${recordsBase}/${recordToDelete.id}${studentQuery}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                failure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                failure("Não foi possível excluir o atendimento pedagógico. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setRecordToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
-
     function renderFilter(name: PedagogicalRecordFilterName): React.JSX.Element {
         const field = filterFields[name];
         const id = `pedagogical-record-filter-${name.replace("_", "-")}`;
@@ -228,7 +181,6 @@ export default function PedagogicalRecordList({
                     placeholder={field.placeholder}
                     value={values[name]}
                     options={field.options}
-                    disabled={busy}
                     aria-invalid={!!error}
                     aria-describedby={error ? `${id}-error` : undefined}
                     onChange={(event) => update(name, event.target.value)}
@@ -290,10 +242,10 @@ export default function PedagogicalRecordList({
                         iconOnly
                         leftIconClass="fa fa-trash-o"
                         aria-label={`Excluir ${subject}`}
-                        disabled={busy}
+                        disabled={removal.processing}
                         onClick={() => {
                             cancelScheduled();
-                            setRecordToDelete(record);
+                            removal.open(record);
                         }}
                     />
                 ) : null}
@@ -345,8 +297,7 @@ export default function PedagogicalRecordList({
         <>
             <TableListCard
                 aria-label="Listagem de atendimentos pedagógicos"
-                aria-busy={busy}
-                loading={listLoading}
+                loading={list.loading}
                 loadingLabel="Atualizando atendimentos pedagógicos"
             >
                 <FormLayout
@@ -362,7 +313,7 @@ export default function PedagogicalRecordList({
                     >
                         {primaryFilters.map(renderFilter)}
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clear} />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                     {moreFilters.length ? (
@@ -390,30 +341,32 @@ export default function PedagogicalRecordList({
                 </TableListScroll>
                 <TableListFooter
                     page={pedagogicalRecords}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de atendimentos pedagógicos"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             {isStudent ? (
                 <ConfirmActionModal
-                    open={recordToDelete !== null}
+                    open={removal.target !== null}
                     title="Excluir Atendimento Pedagógico"
                     message="Deseja excluir este atendimento pedagógico?"
-                    details={recordToDelete ? (
+                    details={removal.target ? (
                         <>
-                            Atendimento de <strong>{dateLabel(recordToDelete.session_date)}</strong>
-                            {recordToDelete.professional_name ? ` com ${recordToDelete.professional_name}` : ""}.
+                            Atendimento de <strong>{dateLabel(removal.target.session_date)}</strong>
+                            {removal.target.professional_name ? ` com ${removal.target.professional_name}` : ""}.
                         </>
                     ) : undefined}
-                    processing={busy}
+                    processing={removal.processing}
                     confirmLabel="Confirmar exclusão"
                     processingLabel="Excluindo atendimento..."
                     confirmTone="dark-red"
-                    onClose={() => {
-                        if (!busy) setRecordToDelete(null);
+                    onClose={removal.close}
+                    onConfirm={() => {
+                        if (!removal.target) return;
+                        cancelScheduled();
+                        removal.submit("delete", `${recordsBase}/${removal.target.id}${studentQuery}`);
                     }}
-                    onConfirm={remove}
                 />
             ) : null}
         </>

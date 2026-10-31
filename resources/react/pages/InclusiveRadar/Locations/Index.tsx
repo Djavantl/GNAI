@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import FormField from "@/components/Forms/FormField/FormField";
@@ -16,11 +16,12 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import LocationPage from "./LocationPage";
 import type { LocationFilters, LocationPaginator, LocationRecord } from "./Location.types";
 import "./Locations.css";
@@ -43,70 +44,19 @@ const columns: TableListColumn[] = [
 
 export default function InclusiveRadarLocationsIndexPage({ locations, filters: initialFilters, can }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [locationToDelete, setLocationToDelete] = useState<LocationRecord | null>(null);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar os pontos de referência. Tente novamente.",
+    });
+    const removal = useTableListAction<LocationRecord>({
+        failureText: "Não foi possível excluir o ponto de referência. Tente novamente.",
+    });
     const initialValues = useMemo(() => ({ ...emptyFilters, ...initialFilters }), [initialFilters]);
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-    }, [failure]);
-
-    function visit(filters: LocationFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(base, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os pontos de referência. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !locationToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${locationToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o ponto de referência. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setLocationToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <LocationPage
@@ -114,7 +64,7 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
             subtitle="Gerencie os prédios, salas e locais específicos dentro de cada instituição."
             actions={can.create ? <TableListCreateButton href={`${base}/create`} ariaLabel="Cadastrar ponto de referência" /> : undefined}
         >
-            <TableListCard aria-label="Listagem de pontos de referência" aria-busy={busy} loading={listLoading} loadingLabel="Atualizando pontos de referência">
+            <TableListCard aria-label="Listagem de pontos de referência" aria-busy={list.loading} loading={list.loading} loadingLabel="Atualizando pontos de referência">
                 <FormLayout onSubmit={(event) => { event.preventDefault(); submit(); }}>
                     <div className="locationIndex__filters">
                         <FormField id="location-filter-name" label="Nome do Local" error={pageErrors.name}>
@@ -124,7 +74,6 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                                 value={values.name}
                                 maxLength={255}
                                 placeholder="Filtrar por nome do local..."
-                                disabled={busy}
                                 invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "location-filter-name-error" : undefined}
                                 onChange={(event) => update("name", event.target.value)}
@@ -137,7 +86,6 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                                 value={values.institution_name}
                                 maxLength={255}
                                 placeholder="Filtrar por instituição..."
-                                disabled={busy}
                                 invalid={!!pageErrors.institution_name}
                                 aria-describedby={pageErrors.institution_name ? "location-filter-institution-error" : undefined}
                                 onChange={(event) => update("institution_name", event.target.value)}
@@ -151,14 +99,13 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                                 placeholder="Todos"
                                 value={values.is_active}
                                 options={[{ value: "1", label: "Ativo" }, { value: "0", label: "Inativo" }]}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.is_active}
                                 aria-describedby={pageErrors.is_active ? "location-filter-status-error" : undefined}
                                 onChange={(event) => update("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clear} />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -199,8 +146,7 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                                                 aria-label={`Excluir ${location.name}`}
                                                 onClick={() => {
                                                     cancelScheduled();
-                                                    setFailure("");
-                                                    setLocationToDelete(location);
+                                                    removal.open(location);
                                                 }}
                                             />
                                         ) : null}
@@ -215,21 +161,23 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                 </TableListScroll>
                 <TableListFooter
                     page={locations}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de pontos de referência"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={locationToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Ponto de Referência"
-                message={<>O ponto <strong>{locationToDelete?.name}</strong> será excluído permanentemente.</>}
-                processing={busy}
+                message={<>O ponto <strong>{removal.target?.name}</strong> será excluído permanentemente.</>}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo ponto..."
                 confirmTone="dark-red"
-                onClose={() => { if (!busy) { setLocationToDelete(null); setFailure(""); } }}
-                onConfirm={remove}
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${base}/${removal.target.id}`);
+                }}
             />
         </LocationPage>
     );

@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
 import FormField from "@/components/Forms/FormField/FormField";
@@ -16,11 +16,12 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import { notify } from "@/components/UI/NotificationToast/notify";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import InstitutionPage from "./InstitutionPage";
 import type { InstitutionFilters, InstitutionPaginator, InstitutionRecord } from "./Institution.types";
 import "./Institutions.css";
@@ -42,70 +43,19 @@ const columns: TableListColumn[] = [
 
 export default function InclusiveRadarInstitutionsIndexPage({ institutions, filters: initialFilters, can }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [institutionToDelete, setInstitutionToDelete] = useState<InstitutionRecord | null>(null);
+    const list = useTableListVisit({
+        url: base,
+        failureText: "Não foi possível atualizar as instituições. Tente novamente.",
+    });
+    const removal = useTableListAction<InstitutionRecord>({
+        failureText: "Não foi possível excluir a instituição. Tente novamente.",
+    });
     const initialValues = useMemo(() => ({ ...emptyFilters, ...initialFilters }), [initialFilters]);
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-    }, [failure]);
-
-    function visit(filters: InstitutionFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(base, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar as instituições. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !institutionToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${base}/${institutionToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir a instituição. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setInstitutionToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <InstitutionPage
@@ -113,13 +63,13 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
             subtitle="Gerencie os locais centrais onde o radar de acessibilidade opera."
             actions={can.create ? <TableListCreateButton href={`${base}/create`} ariaLabel="Cadastrar instituição" /> : undefined}
         >
-            <TableListCard aria-label="Listagem de instituições" aria-busy={busy} loading={listLoading} loadingLabel="Atualizando instituições">
+            <TableListCard aria-label="Listagem de instituições" aria-busy={list.loading} loading={list.loading} loadingLabel="Atualizando instituições">
                 <FormLayout onSubmit={(event) => { event.preventDefault(); submit(); }}>
                     <div className="institutionIndex__filters">
                         <FormField id="institution-filter-name" label="Nome da Instituição" error={pageErrors.name}>
                             <TextInput
                                 id="institution-filter-name" name="name" value={values.name} maxLength={255}
-                                placeholder="Filtrar por nome..." disabled={busy} invalid={!!pageErrors.name}
+                                placeholder="Filtrar por nome..." invalid={!!pageErrors.name}
                                 aria-describedby={pageErrors.name ? "institution-filter-name-error" : undefined}
                                 onChange={(event) => update("name", event.target.value)}
                             />
@@ -127,7 +77,7 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                         <FormField id="institution-filter-location" label="Cidade ou Estado" error={pageErrors.location}>
                             <TextInput
                                 id="institution-filter-location" name="location" value={values.location} maxLength={255}
-                                placeholder="Filtrar por cidade ou estado..." disabled={busy} invalid={!!pageErrors.location}
+                                placeholder="Filtrar por cidade ou estado..." invalid={!!pageErrors.location}
                                 aria-describedby={pageErrors.location ? "institution-filter-location-error" : undefined}
                                 onChange={(event) => update("location", event.target.value)}
                             />
@@ -137,13 +87,13 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                                 id="institution-filter-status" name="is_active" label="Status" placeholder="Todos"
                                 value={values.is_active}
                                 options={[{ value: "1", label: "Ativo" }, { value: "0", label: "Inativo" }]}
-                                disabled={busy} aria-invalid={!!pageErrors.is_active}
+                                aria-invalid={!!pageErrors.is_active}
                                 aria-describedby={pageErrors.is_active ? "institution-filter-status-error" : undefined}
                                 onChange={(event) => update("is_active", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton disabled={busy} onClick={clear} />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -177,8 +127,7 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                                                 aria-label={`Excluir ${institution.name}`}
                                                 onClick={() => {
                                                     cancelScheduled();
-                                                    setFailure("");
-                                                    setInstitutionToDelete(institution);
+                                                    removal.open(institution);
                                                 }}
                                             />
                                         ) : null}
@@ -193,21 +142,23 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                 </TableListScroll>
                 <TableListFooter
                     page={institutions}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de instituições"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={institutionToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Instituição"
-                message={<>A instituição <strong>{institutionToDelete?.name}</strong> e seus dados relacionados serão excluídos permanentemente.</>}
-                processing={busy}
+                message={<>A instituição <strong>{removal.target?.name}</strong> e seus dados relacionados serão excluídos permanentemente.</>}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo instituição..."
                 confirmTone="dark-red"
-                onClose={() => { if (!busy) { setInstitutionToDelete(null); setFailure(""); } }}
-                onConfirm={remove}
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (removal.target) removal.submit("delete", `${base}/${removal.target.id}`);
+                }}
             />
         </InstitutionPage>
     );

@@ -1,5 +1,5 @@
-import { router, usePage } from "@inertiajs/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { useMemo } from "react";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
@@ -15,13 +15,14 @@ import {
     TableListFooter,
     TableListScroll,
     TableListTable,
+    useTableListAction,
+    useTableListVisit,
     type TableListColumn,
 } from "@/components/Tables/TableList/TableList";
 import Button from "@/components/UI/Button/Button";
 import ConfirmActionModal from "@/components/UI/ConfirmActionModal/ConfirmActionModal";
-import { notify } from "@/components/UI/NotificationToast/notify";
 import TableLabel from "@/components/UI/TableLabel/TableLabel";
-import useAutoListFilters, { compactListFilters } from "@/hooks/useAutoListFilters";
+import useAutoListFilters from "@/hooks/useAutoListFilters";
 import StudentDeficiencyPage from "./StudentDeficiencyPage";
 import type {
     StudentDeficiencyFilters,
@@ -62,12 +63,14 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
     can,
 }: Props): React.JSX.Element {
     const pageErrors = usePage().props.errors as Record<string, string | undefined>;
-    const pending = useRef(false);
-    const [busy, setBusy] = useState(false);
-    const [listLoading, setListLoading] = useState(false);
-    const [failure, setFailure] = useState("");
-    const [profileToDelete, setProfileToDelete] = useState<StudentDeficiencyListRecord | null>(null);
     const listUrl = `${studentsBase}/${student.id}/deficiencies`;
+    const list = useTableListVisit({
+        url: listUrl,
+        failureText: "Não foi possível atualizar os perfis de atendimento. Tente novamente.",
+    });
+    const removal = useTableListAction<StudentDeficiencyListRecord>({
+        failureText: "Não foi possível excluir o perfil de atendimento. Tente novamente.",
+    });
     const initialValues = useMemo(
         () => ({ ...emptyFilters, ...initialFilters }),
         [initialFilters],
@@ -75,63 +78,8 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
     const { values, update, clear, submit, cancelScheduled } = useAutoListFilters({
         initialValues,
         emptyValues: emptyFilters,
-        onSearch: (filters) => visit(filters),
+        onSearch: (filters) => list.visit(filters),
     });
-
-    useEffect(() => {
-        if (failure) {
-            notify({ tone: "error", title: "Não foi possível concluir", text: failure });
-        }
-    }, [failure]);
-
-    function visit(filters: StudentDeficiencyFilters, page = 1): void {
-        if (pending.current) return;
-        pending.current = true;
-        setBusy(true);
-        setListLoading(true);
-        setFailure("");
-        router.get(listUrl, { ...compactListFilters(filters), page }, {
-            preserveState: true,
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível atualizar os perfis de atendimento. Tente novamente.");
-                return false;
-            },
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-                setListLoading(false);
-            },
-        });
-    }
-
-    function remove(): void {
-        if (pending.current || !profileToDelete) return;
-        cancelScheduled();
-        pending.current = true;
-        setBusy(true);
-        setFailure("");
-        router.delete(`${listUrl}/${profileToDelete.id}`, {
-            preserveScroll: true,
-            onNetworkError: () => {
-                setFailure("Falha de conexão. Confira sua conexão e tente novamente.");
-                return false;
-            },
-            onHttpException: () => {
-                setFailure("Não foi possível excluir o perfil de atendimento. Tente novamente.");
-                return false;
-            },
-            onSuccess: () => setProfileToDelete(null),
-            onFinish: () => {
-                pending.current = false;
-                setBusy(false);
-            },
-        });
-    }
 
     return (
         <StudentDeficiencyPage
@@ -155,8 +103,8 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
         >
             <TableListCard
                 aria-label="Perfis de atendimento do aluno"
-                aria-busy={busy}
-                loading={listLoading}
+                aria-busy={list.loading}
+                loading={list.loading}
                 loadingLabel="Atualizando perfis de atendimento"
             >
                 <FormLayout
@@ -178,7 +126,6 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
                                 placeholder="Todos"
                                 value={values.deficiency_id}
                                 options={filterDeficiencies}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.deficiency_id}
                                 aria-describedby={pageErrors.deficiency_id ? "student-deficiency-filter-profile-error" : undefined}
                                 onChange={(event) => update("deficiency_id", event.target.value)}
@@ -196,17 +143,13 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
                                 placeholder="Todas"
                                 value={values.severity}
                                 options={severityOptions}
-                                disabled={busy}
                                 aria-invalid={!!pageErrors.severity}
                                 aria-describedby={pageErrors.severity ? "student-deficiency-filter-severity-error" : undefined}
                                 onChange={(event) => update("severity", event.target.value)}
                             />
                         </FormField>
                         <TableListFilterActions>
-                            <TableListClearButton
-                                disabled={busy}
-                                onClick={clear}
-                            />
+                            <TableListClearButton onClick={clear} />
                         </TableListFilterActions>
                     </div>
                 </FormLayout>
@@ -250,11 +193,10 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
                                                         iconOnly
                                                         leftIconClass="fa fa-trash-o"
                                                         aria-label={`Excluir perfil ${name}`}
-                                                        disabled={busy}
+                                                        disabled={removal.processing}
                                                         onClick={() => {
                                                             cancelScheduled();
-                                                            setFailure("");
-                                                            setProfileToDelete(profile);
+                                                            removal.open(profile);
                                                         }}
                                                     />
                                                 ) : null}
@@ -274,31 +216,32 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
                 </TableListScroll>
                 <TableListFooter
                     page={deficiencies}
-                    disabled={busy}
+                    disabled={list.loading}
                     paginationLabel="Paginação de perfis de atendimento"
-                    onSelect={(page) => visit(values, page)}
+                    onSelect={(page) => list.visit(values, page)}
                 />
             </TableListCard>
             <ConfirmActionModal
-                open={profileToDelete !== null}
+                open={removal.target !== null}
                 title="Excluir Perfil de Atendimento"
                 message={(
                     <>
                         Deseja remover o perfil{" "}
-                        <strong>{profileToDelete?.deficiency?.name ?? "selecionado"}</strong>{" "}
+                        <strong>{removal.target?.deficiency?.name ?? "selecionado"}</strong>{" "}
                         do registro do aluno?
                     </>
                 )}
-                processing={busy}
+                processing={removal.processing}
                 confirmLabel="Confirmar exclusão"
                 processingLabel="Excluindo perfil..."
                 confirmTone="dark-red"
-                onClose={() => {
-                    if (busy) return;
-                    setProfileToDelete(null);
-                    setFailure("");
+                onClose={removal.close}
+                onConfirm={() => {
+                    if (!removal.target) return;
+                    cancelScheduled();
+                    list.cancel();
+                    removal.submit("delete", `${listUrl}/${removal.target.id}`);
                 }}
-                onConfirm={remove}
             />
         </StudentDeficiencyPage>
     );

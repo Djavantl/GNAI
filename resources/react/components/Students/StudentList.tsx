@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { router } from '@inertiajs/react';
 import TableActions from '@/components/Tables/TableActions/TableActions';
 import {
   TableListEmpty,
@@ -12,8 +10,7 @@ import Button from '@/components/UI/Button/Button';
 import TableLabel from '@/components/UI/TableLabel/TableLabel';
 import DeleteStudent from './DeleteStudent';
 import type { StudentIndexProps } from './Students.types';
-import { dateLabel, studentsBase, studentUrl } from './Students.utils';
-import { useStudentRequest } from './useStudentRequest';
+import { dateLabel, studentUrl } from './Students.utils';
 
 const studentColumns: TableListColumn[] = [
   {
@@ -38,31 +35,23 @@ const studentColumns: TableListColumn[] = [
 
 export default function StudentList({
   students,
-  filters,
   permissions,
   studentStatuses,
   statusColors,
-  onProcessingChange,
-}: StudentIndexProps & {
-  onProcessingChange?: (processing: boolean) => void;
+  loading,
+  onPageChange,
+}: Pick<
+  StudentIndexProps,
+  'students' | 'permissions' | 'studentStatuses' | 'statusColors'
+> & {
+  loading: boolean;
+  onPageChange: (page: number) => void;
 }): React.JSX.Element {
-  const [processing, setProcessing] = useState(false);
-  const request = useStudentRequest();
   const canView = permissions['student.view'];
   const canDelete = permissions['student.delete'];
 
-  function pageHref(page: number) {
-    const query = new URLSearchParams(
-      Object.entries(filters)
-        .filter(([, value]) => value !== '')
-        .map(([key, value]) => [key, String(value)]),
-    );
-    query.set('page', String(page));
-    return `${studentsBase}?${query}`;
-  }
-
   return (
-    <div aria-busy={processing}>
+    <div aria-busy={loading}>
       <TableListScroll aria-label="Tabela de alunos">
         <TableListTable
           className="studentsPage__indexTable"
@@ -130,31 +119,9 @@ export default function StudentList({
       </TableListScroll>
       <TableListFooter
         page={students}
-        disabled={processing}
+        disabled={loading}
         paginationLabel="Páginas de alunos"
-        onSelect={(page) => {
-          if (processing) {
-            return;
-          }
-
-          router.get(
-            pageHref(page),
-            {},
-            {
-              ...request.options,
-              preserveState: true,
-              preserveScroll: true,
-              onStart: () => {
-                setProcessing(true);
-                onProcessingChange?.(true);
-              },
-              onFinish: () => {
-                setProcessing(false);
-                onProcessingChange?.(false);
-              },
-            },
-          );
-        }}
+        onSelect={onPageChange}
       />
     </div>
   );
