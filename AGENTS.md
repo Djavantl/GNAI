@@ -6,6 +6,8 @@ Estas são as diretrizes permanentes para o Gnai, sistema de acessibilidade e in
 
 Consulte as convenções relevantes em `docs/ai-conventions/` antes de implementar ou modificar telas. **Ao criar, refatorar ou migrar telas de formulários React, leia [a convenção de formulários](docs/ai-conventions/frontend/form-pages.md) antes de iniciar a implementação.** Ela documenta o padrão atual de alunos, separando regras gerais, componentes condicionais e particularidades do exemplo. Para listagens React, siga [a convenção de listagens](docs/ai-conventions/frontend/list-pages.md), baseada nos componentes compartilhados de `Tables/TableList`. Para telas de visualização, siga [a convenção de páginas de detalhes](docs/ai-conventions/frontend/detail-pages.md), incluindo o tratamento de prontuários extensos com resumo e abas.
 
+**Sempre que criar, alterar ou remover testes, siga [a convenção de testes do backend](docs/ai-conventions/backend/tests.md).** Ela reproduz o padrão da `main`: testes por domínio em `app/Domains/<Dominio>/Tests/{Feature,Unit}`, classes PHPUnit `final` com métodos `test_it_...`, só comportamentos úteis e sem testes triviais ou redundantes, e a suíte verde ao final.
+
 Novas convenções devem ser adicionadas a `docs/ai-conventions/` e indexadas aqui quando existirem. Atualize o documento correspondente quando uma mudança autorizada alterar o padrão oficial; não crie uma convenção por formulário nem documentos vazios para usos futuros. Preserve também as instruções específicas do diretório em que estiver trabalhando.
 
 ## Arquitetura e caminhos reais
@@ -139,6 +141,7 @@ Sem exigir auditoria completa por tela, confira HTML semântico, hierarquia de t
 ### Limites de execução em migrações comuns
 
 - A inspeção de código continua obrigatória: leia o legado (histórico do git) quando existir, TSX, rotas, controllers, Data/Rules, Queries/Actions, componentes, feedback, assets e permissões necessários. A simplificação da homologação não reduz os requisitos de integração, paridade funcional, acessibilidade e responsividade.
+- Quando a tarefa envolver testes, siga `docs/ai-conventions/backend/tests.md`.
 - Não crie nem altere testes automaticamente apenas porque uma tela foi migrada: Unit, Feature, Inertia, React, frontend ou E2E (Playwright/Cypress). Não crie mocks, scripts temporários, arquivos de teste manual ou infraestrutura de teste. Testes existentes podem ser consultados como documentação, sem alterá-los ou executá-los.
 - Não prepare SQLite para homologar a migração: não crie banco temporário, execute migrations, configure fixtures ou popule banco de testes. Configurações de teste existentes não tornam sua preparação ou execução parte da migração.
 - Não inicie `npm run dev`, Vite, Laravel, Docker, Nginx, Apache ou outro servidor apenas para conferir a implementação. Não abra navegador, acesse URLs, inspecione telas em runtime, gere screenshots ou execute o catálogo React automaticamente.
