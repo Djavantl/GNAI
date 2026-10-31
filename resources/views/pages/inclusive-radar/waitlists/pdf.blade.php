@@ -42,7 +42,7 @@
     <x-pdf.row>
         <x-pdf.info-item
             label="Item / Recurso"
-            :value="$waitlist->waitlistable->name ?? ($waitlist->waitlistable->title ?? 'Item Removido')"
+            :value="$waitlist->waitlistable?->name ?? 'Item Removido'"
             colspan="2"
         />
         <x-pdf.info-item
@@ -55,7 +55,7 @@
 
 {{-- Seção 3: Observações --}}
 <x-pdf.section-title title="Informações Complementares" />
-<x-pdf.text-area label="Observações Técnicas" :value="$waitlist->observations ?? 'Sem observações registradas.'" />
+<x-pdf.text-area label="Observações Técnicas" :value="$waitlist->observation ?? 'Sem observações registradas.'" />
 
 {{-- Tabela de registro --}}
 <x-pdf.table class="pdf-mt-15">

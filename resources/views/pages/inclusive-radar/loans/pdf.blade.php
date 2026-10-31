@@ -53,7 +53,7 @@
     <x-pdf.row>
         <x-pdf.info-item
             label="Nome"
-            :value="$loan->loanable->name ?? ($loan->loanable->title ?? '---')"
+            :value="$loan->loanable?->name ?? '---'"
             colspan="2"
         />
 

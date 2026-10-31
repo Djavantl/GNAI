@@ -193,7 +193,7 @@ final class WaitlistController
             'professional_id' => $waitlist->professional_id,
             'waitlistable_id' => $waitlist->waitlistable_id,
             'item_type' => $waitlist->waitlistable?->item_type?->value,
-            'item_name' => $waitlist->waitlistable?->name ?? $waitlist->waitlistable?->title ?? 'Item removido',
+            'item_name' => $waitlist->waitlistable?->name ?? 'Item removido',
             'asset_code' => $waitlist->waitlistable?->asset_code,
             'student' => $waitlist->student ? [
                 'name' => $waitlist->student->person?->name ?? 'Sem nome',

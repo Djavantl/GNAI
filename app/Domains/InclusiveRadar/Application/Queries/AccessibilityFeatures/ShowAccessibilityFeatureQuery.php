@@ -10,6 +10,6 @@ final class ShowAccessibilityFeatureQuery
 {
     public function execute(AccessibilityFeature $feature): AccessibilityFeature
     {
-        return $feature->loadCount('materials');
+        return $feature->loadCount('items');
     }
 }

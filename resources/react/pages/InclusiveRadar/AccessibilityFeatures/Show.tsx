@@ -79,9 +79,9 @@ export default function InclusiveRadarAccessibilityFeaturesShowPage({
                                 {feature.is_active ? "Ativo" : "Inativo"}
                             </TableLabel>
                         </DetailField>
-                        {feature.materials_count !== undefined ? (
-                            <DetailField label="Materiais Vinculados">
-                                {feature.materials_count}
+                        {feature.items_count !== undefined ? (
+                            <DetailField label="Itens Vinculados">
+                                {feature.items_count}
                             </DetailField>
                         ) : null}
                     </dl>

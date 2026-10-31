@@ -3,7 +3,7 @@ export interface AccessibilityFeatureRecord {
     name: string;
     description: string | null;
     is_active: boolean;
-    materials_count?: number;
+    items_count?: number;
 }
 
 export interface AccessibilityFeaturePaginator {
