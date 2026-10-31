@@ -18,9 +18,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ReportController
 {
-    public function index(): InertiaResponse
+    public function index(Request $request): InertiaResponse
     {
-        return Inertia::render('Reports/Builder');
+        return Inertia::render('Reports/Builder', [
+            'can' => [
+                'sources' => $request->user()?->can('report.available') ?? false,
+                'metadata' => $request->user()?->can('report.meta') ?? false,
+                'configureRelations' => $request->user()?->can('report.builder') ?? false,
+                'run' => $request->user()?->can('report.run') ?? false,
+                'pdf' => $request->user()?->can('report.pdf') ?? false,
+            ],
+        ]);
     }
 
     public function sources(ListReportSourcesQuery $query): JsonResponse
