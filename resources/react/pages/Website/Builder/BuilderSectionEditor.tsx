@@ -35,8 +35,9 @@ export default function BuilderSectionEditor({
         [hint ? `${id(name)}-hint` : null, error(name) ? `${id(name)}-error` : null]
             .filter(Boolean)
             .join(" ") || undefined;
-    const usesSubtitle = section.type !== "about" && section.type !== "highlights";
-    const usesButton = ["hero", "about", "cta"].includes(section.type);
+    const usesButton = ["hero", "about", "guidance"].includes(section.type);
+    const usesItems = ["pillars", "audience", "features", "guidance", "faq", "resources"].includes(section.type);
+    const usesIcon = ["pillars", "audience", "features", "resources"].includes(section.type);
     const usesLimit = ["team", "events", "publications"].includes(section.type);
 
     function updateItem(itemIndex: number, patch: Partial<WebsiteSectionItem>): void {
@@ -58,38 +59,41 @@ export default function BuilderSectionEditor({
     return (
         <FormGrid>
             <FormGridWide>
-                <FormField id={id("title")} label="Título" error={error("title")}>
+                <FormField
+                    id={id("title")}
+                    label="Título"
+                    error={error("title")}
+                    hint={`Para criar um link para esta seção, use #${section.id}.`}
+                >
                     <TextInput
                         id={id("title")}
                         name={`sections[${index}][title]`}
                         value={section.title}
                         maxLength={160}
                         invalid={!!error("title")}
-                        aria-describedby={describedBy("title")}
+                        aria-describedby={describedBy("title", true)}
                         onChange={(event) => onChange({ title: event.target.value })}
                     />
                 </FormField>
             </FormGridWide>
-            {usesSubtitle ? (
-                <FormGridWide>
-                    <FormField
+            <FormGridWide>
+                <FormField
+                    id={id("subtitle")}
+                    label={section.type === "hero" ? "Texto de apoio" : "Subtítulo"}
+                    error={error("subtitle")}
+                >
+                    <TextArea
                         id={id("subtitle")}
-                        label={section.type === "hero" ? "Texto de apoio" : "Subtítulo"}
-                        error={error("subtitle")}
-                    >
-                        <TextArea
-                            id={id("subtitle")}
-                            name={`sections[${index}][subtitle]`}
-                            rows={3}
-                            value={section.subtitle}
-                            maxLength={500}
-                            aria-invalid={!!error("subtitle")}
-                            aria-describedby={describedBy("subtitle")}
-                            onChange={(event) => onChange({ subtitle: event.target.value })}
-                        />
-                    </FormField>
-                </FormGridWide>
-            ) : null}
+                        name={`sections[${index}][subtitle]`}
+                        rows={3}
+                        value={section.subtitle}
+                        maxLength={500}
+                        aria-invalid={!!error("subtitle")}
+                        aria-describedby={describedBy("subtitle")}
+                        onChange={(event) => onChange({ subtitle: event.target.value })}
+                    />
+                </FormField>
+            </FormGridWide>
             {section.type === "about" ? (
                 <FormGridWide>
                     <FormField id={`${id("body")}-input`} label="Texto" error={error("body")}>
@@ -216,6 +220,7 @@ export default function BuilderSectionEditor({
                 <FormGridWide>
                     <p className="websiteBuilder__note">
                         <i className="fa fa-info-circle" aria-hidden="true" />{" "}
+                        Sem registros disponíveis, esta seção fica oculta no site público. Na prévia, continua disponível para edição.{" "}
                         {section.type === "team"
                             ? "Mostra os profissionais ativos marcados como \"Aparece no site\" no cadastro de profissionais."
                             : section.type === "events"
@@ -224,10 +229,10 @@ export default function BuilderSectionEditor({
                     </p>
                 </FormGridWide>
             ) : null}
-            {section.type === "highlights" || section.type === "features" ? (
+            {usesItems ? (
                 <FormGridWide>
                     <fieldset className="websiteBuilder__items">
-                        <legend>{section.type === "highlights" ? "Números" : "Itens"}</legend>
+                        <legend>{section.type === "faq" ? "Perguntas e respostas" : "Itens da seção"}</legend>
                         {error("items") ? (
                             <p className="websiteBuilder__itemsError" id={`${id("items")}-error`}>{error("items")}</p>
                         ) : null}
@@ -240,20 +245,7 @@ export default function BuilderSectionEditor({
                                 return (
                                     <li key={itemIndex} className="websiteBuilder__item">
                                         <div className="websiteBuilder__itemFields">
-                                            {section.type === "highlights" ? (
-                                                <FormField id={itemId("value")} label={`Número ${position}`} error={itemError("value")}>
-                                                    <TextInput
-                                                        id={itemId("value")}
-                                                        name={`sections[${index}][items][${itemIndex}][value]`}
-                                                        value={item.value}
-                                                        maxLength={30}
-                                                        placeholder="+100"
-                                                        invalid={!!itemError("value")}
-                                                        aria-describedby={itemError("value") ? `${itemId("value")}-error` : undefined}
-                                                        onChange={(event) => updateItem(itemIndex, { value: event.target.value })}
-                                                    />
-                                                </FormField>
-                                            ) : (
+                                            {usesIcon ? (
                                                 <FormField id={itemId("icon")} label={`Ícone do item ${position}`} error={itemError("icon")}>
                                                     <SelectField
                                                         id={itemId("icon")}
@@ -268,10 +260,10 @@ export default function BuilderSectionEditor({
                                                         onChange={(event) => updateItem(itemIndex, { icon: event.target.value })}
                                                     />
                                                 </FormField>
-                                            )}
+                                            ) : null}
                                             <FormField
                                                 id={itemId("title")}
-                                                label={section.type === "highlights" ? `Descrição do número ${position}` : `Título do item ${position}`}
+                                                label={section.type === "faq" ? `Pergunta ${position}` : `Título do item ${position}`}
                                                 error={itemError("title")}
                                             >
                                                 <TextInput
@@ -284,18 +276,43 @@ export default function BuilderSectionEditor({
                                                     onChange={(event) => updateItem(itemIndex, { title: event.target.value })}
                                                 />
                                             </FormField>
-                                            {section.type === "features" ? (
+                                            <div className="websiteBuilder__itemWide">
+                                                <FormField
+                                                    id={itemId("text")}
+                                                    label={section.type === "faq" ? `Resposta ${position}` : `Texto do item ${position}`}
+                                                    error={itemError("text")}
+                                                >
+                                                    <TextArea
+                                                        id={itemId("text")}
+                                                        name={`sections[${index}][items][${itemIndex}][text]`}
+                                                        rows={2}
+                                                        value={item.text}
+                                                        maxLength={300}
+                                                        aria-invalid={!!itemError("text")}
+                                                        aria-describedby={itemError("text") ? `${itemId("text")}-error` : undefined}
+                                                        onChange={(event) => updateItem(itemIndex, { text: event.target.value })}
+                                                    />
+                                                </FormField>
+                                            </div>
+                                            {section.type === "resources" ? (
                                                 <div className="websiteBuilder__itemWide">
-                                                    <FormField id={itemId("text")} label={`Texto do item ${position}`} error={itemError("text")}>
-                                                        <TextArea
-                                                            id={itemId("text")}
-                                                            name={`sections[${index}][items][${itemIndex}][text]`}
-                                                            rows={2}
-                                                            value={item.text}
-                                                            maxLength={300}
-                                                            aria-invalid={!!itemError("text")}
-                                                            aria-describedby={itemError("text") ? `${itemId("text")}-error` : undefined}
-                                                            onChange={(event) => updateItem(itemIndex, { text: event.target.value })}
+                                                    <FormField
+                                                        id={itemId("url")}
+                                                        label={`Link do material ${position}`}
+                                                        error={itemError("url")}
+                                                        hint="Informe o endereço de um documento, formulário ou página institucional."
+                                                    >
+                                                        <TextInput
+                                                            id={itemId("url")}
+                                                            name={`sections[${index}][items][${itemIndex}][url]`}
+                                                            value={item.url}
+                                                            maxLength={500}
+                                                            invalid={!!itemError("url")}
+                                                            aria-describedby={[
+                                                                `${itemId("url")}-hint`,
+                                                                itemError("url") ? `${itemId("url")}-error` : null,
+                                                            ].filter(Boolean).join(" ")}
+                                                            onChange={(event) => updateItem(itemIndex, { url: event.target.value })}
                                                         />
                                                     </FormField>
                                                 </div>

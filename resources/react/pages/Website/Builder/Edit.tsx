@@ -39,6 +39,7 @@ type Props = {
     site: WebsiteSite;
     content: WebsiteContent;
     sectionTypes: { value: WebsiteSectionType; label: string }[];
+    sectionTemplates: Record<WebsiteSectionType, WebsiteSection>;
     publicUrl: string;
     can: { submit: boolean };
 };
@@ -97,6 +98,7 @@ export default function WebsiteBuilderEditPage({
     site,
     content,
     sectionTypes,
+    sectionTemplates,
     publicUrl,
     can,
 }: Props): React.JSX.Element {
@@ -203,7 +205,7 @@ export default function WebsiteBuilderEditPage({
     }
 
     function addSection(type: WebsiteSectionType): void {
-        const section = newSection(type);
+        const section = newSection(type, sectionTemplates[type]);
 
         form.setData((data) => ({ ...data, sections: [...data.sections, section] }));
         openEditor({ sectionId: section.id });

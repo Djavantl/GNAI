@@ -10,6 +10,7 @@ use App\Domains\Website\Application\Queries\WebsiteContentQuery;
 use App\Domains\Website\Domain\Enums\WebsiteSectionType;
 use App\Domains\Website\Domain\Exceptions\InvalidWebsite;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
+use App\Domains\Website\Domain\Support\WebsiteDefaults;
 use App\Domains\Website\UI\Presenters\WebsitePresenter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,6 +35,9 @@ final readonly class WebsiteBuilderController
             'site' => $this->presenter->site($setting),
             'content' => $content->execute(),
             'sectionTypes' => WebsiteSectionType::options(),
+            'sectionTemplates' => collect(WebsiteDefaults::sections())
+                ->mapWithKeys(fn (array $section): array => [$section['type'] => [...$section, 'image_url' => null]])
+                ->all(),
             'publicUrl' => route('website.home'),
             'can' => [
                 'submit' => $request->user()?->can('website.update') ?? false,

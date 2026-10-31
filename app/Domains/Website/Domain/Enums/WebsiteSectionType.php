@@ -11,12 +11,15 @@ enum WebsiteSectionType: string
 {
     case HERO = 'hero';
     case ABOUT = 'about';
-    case HIGHLIGHTS = 'highlights';
+    case PILLARS = 'pillars';
+    case AUDIENCE = 'audience';
+    case GUIDANCE = 'guidance';
+    case FAQ = 'faq';
+    case RESOURCES = 'resources';
     case FEATURES = 'features';
     case TEAM = 'team';
     case EVENTS = 'events';
     case PUBLICATIONS = 'publications';
-    case CTA = 'cta';
     case CONTACT = 'contact';
 
     public function label(): string
@@ -24,19 +27,22 @@ enum WebsiteSectionType: string
         return match ($this) {
             self::HERO => 'Banner principal',
             self::ABOUT => 'Sobre nós',
-            self::HIGHLIGHTS => 'Números em destaque',
-            self::FEATURES => 'O que fazemos',
+            self::PILLARS => 'Princípios de atuação',
+            self::AUDIENCE => 'Público e comunidade',
+            self::GUIDANCE => 'Como buscar apoio',
+            self::FAQ => 'Dúvidas frequentes',
+            self::RESOURCES => 'Orientações e documentos',
+            self::FEATURES => 'Formas de apoio',
             self::TEAM => 'Equipe',
             self::EVENTS => 'Próximos eventos',
             self::PUBLICATIONS => 'Últimas publicações',
-            self::CTA => 'Chamada para ação',
             self::CONTACT => 'Contato',
         };
     }
 
     public function hasItems(): bool
     {
-        return $this === self::HIGHLIGHTS || $this === self::FEATURES;
+        return in_array($this, [self::PILLARS, self::AUDIENCE, self::FEATURES, self::GUIDANCE, self::FAQ, self::RESOURCES], true);
     }
 
     public function hasImage(): bool

@@ -147,12 +147,12 @@ final class WebsiteSetting extends Model implements Auditable
 
                 $normalized = [
                     'icon' => trim((string) ($item['icon'] ?? '')),
-                    'value' => trim((string) ($item['value'] ?? '')),
+                    'url' => $type === WebsiteSectionType::RESOURCES ? trim((string) ($item['url'] ?? '')) : '',
                     'title' => trim((string) ($item['title'] ?? '')),
                     'text' => trim((string) ($item['text'] ?? '')),
                 ];
 
-                if (implode('', $normalized) !== '') {
+                if ($normalized['title'] !== '' || $normalized['text'] !== '' || $normalized['url'] !== '') {
                     $items[] = $normalized;
                 }
             }

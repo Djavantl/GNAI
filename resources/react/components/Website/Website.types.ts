@@ -22,17 +22,20 @@ export interface WebsiteSite {
 export type WebsiteSectionType =
     | "hero"
     | "about"
-    | "highlights"
+    | "pillars"
+    | "audience"
+    | "guidance"
+    | "faq"
+    | "resources"
     | "features"
     | "team"
     | "events"
     | "publications"
-    | "cta"
     | "contact";
 
 export interface WebsiteSectionItem {
     icon: string;
-    value: string;
+    url: string;
     title: string;
     text: string;
 }

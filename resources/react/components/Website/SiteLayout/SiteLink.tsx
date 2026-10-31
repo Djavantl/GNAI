@@ -46,7 +46,7 @@ export default function SiteLink({
         );
     }
 
-    if (isInternal(href)) {
+    if (isInternal(href) && !href.includes("#")) {
         return (
             <Link
                 href={href}

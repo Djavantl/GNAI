@@ -81,12 +81,15 @@ export function builderFieldId(target: BuilderEditTarget): string | undefined {
 export const sectionTypeIcons: Record<WebsiteSectionType, string> = {
     hero: "fa fa-picture-o",
     about: "fa fa-info-circle",
-    highlights: "fa fa-bar-chart",
+    pillars: "fa fa-heart-o",
+    audience: "fa fa-users",
+    guidance: "fa fa-list-ol",
+    faq: "fa fa-question-circle",
+    resources: "fa fa-file-text-o",
     features: "fa fa-th-large",
     team: "fa fa-users",
     events: "fa fa-calendar",
     publications: "fa fa-newspaper-o",
-    cta: "fa fa-bullhorn",
     contact: "fa fa-envelope-o",
 };
 
@@ -111,40 +114,24 @@ export const featureIconOptions: { value: string; label: string; iconClass: stri
 ].map((option) => ({ ...option, iconClass: option.value }));
 
 export function emptyItem(type: WebsiteSectionType): WebsiteSectionItem {
-    return type === "highlights"
-        ? { icon: "", value: "+10", title: "Novo destaque", text: "" }
-        : { icon: "fa fa-star-o", value: "", title: "Novo item", text: "Descreva este item." };
+    return {
+        icon: ["guidance", "faq"].includes(type) ? "" : "fa fa-book",
+        url: "",
+        title: "",
+        text: "",
+    };
 }
 
-const defaults: Record<WebsiteSectionType, Partial<WebsiteSection>> = {
-    hero: { title: "Título do banner", subtitle: "Uma frase curta apresentando o núcleo." },
-    about: { title: "Quem somos", body: "<p>Conte a história e a missão do núcleo.</p>" },
-    highlights: { title: "Em números", items: [emptyItem("highlights")] },
-    features: { title: "O que fazemos", items: [emptyItem("features")] },
-    team: { title: "Nossa equipe", limit: 4 },
-    events: { title: "Próximos eventos", limit: 3 },
-    publications: { title: "Publicações", limit: 3 },
-    cta: { title: "Participe", subtitle: "Convide o público para uma ação.", button_label: "Saiba mais", button_url: "/site/publicacoes" },
-    contact: { title: "Fale conosco" },
-};
-
-export function newSection(type: WebsiteSectionType): BuilderSection {
+/** Os modelos vêm do backend, a mesma fonte do site sem configuração. */
+export function newSection(type: WebsiteSectionType, template: WebsiteSection): BuilderSection {
     return {
+        ...template,
         id: `${type}-${Date.now().toString(36)}`,
         type,
         enabled: true,
-        title: "",
-        subtitle: "",
-        body: "",
-        button_label: "",
-        button_url: "",
-        image_url: null,
-        image_alt: "",
-        limit: 3,
-        items: [],
+        items: template.items.map((item) => ({ ...item })),
         image: null,
         remove_image: false,
-        ...defaults[type],
     };
 }
 

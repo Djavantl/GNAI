@@ -3,7 +3,7 @@ import RichTextContent from "@/components/UI/RichTextContent/RichTextContent";
 import { joinClassNames } from "@/utils/joinClassNames";
 import PublicationCard from "../PublicationCard/PublicationCard";
 import { SiteSocialLinks } from "../SiteLayout/SiteLayout";
-import SiteLink from "../SiteLayout/SiteLink";
+import SiteLink, { useSitePreview } from "../SiteLayout/SiteLink";
 import TeamMemberCard from "../TeamMemberCard/TeamMemberCard";
 import {
     websiteRoutes,
@@ -100,29 +100,16 @@ function AboutSection({ section }: SectionProps): React.JSX.Element {
     );
 }
 
-function HighlightsSection({ section }: SectionProps): React.JSX.Element {
+function CardsSection({ section }: SectionProps): React.JSX.Element {
     return (
-        <section className="siteSections__section siteSections__section--tinted">
+        <section
+            className={joinClassNames(
+                "siteSections__section",
+                ["pillars", "resources"].includes(section.type) && "siteSections__section--tinted",
+            )}
+        >
             <div className="siteLayout__container">
-                <SectionHeading section={section} />
-                <ul className="siteSections__highlights">
-                    {section.items.map((item, index) => (
-                        <li key={`${item.title}-${index}`}>
-                            <span className="siteSections__highlightValue">{item.value}</span>
-                            <span className="siteSections__highlightLabel">{item.title}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </section>
-    );
-}
-
-function FeaturesSection({ section }: SectionProps): React.JSX.Element {
-    return (
-        <section className="siteSections__section">
-            <div className="siteLayout__container">
-                <SectionHeading section={section} />
+                <SectionHeading section={section} align={section.type === "resources" ? "start" : "center"} />
                 <ul className="siteSections__features">
                     {section.items.map((item, index) => (
                         <li key={`${item.title}-${index}`} className="siteSections__feature">
@@ -133,6 +120,15 @@ function FeaturesSection({ section }: SectionProps): React.JSX.Element {
                             ) : null}
                             <h3>{item.title}</h3>
                             {item.text ? <p>{item.text}</p> : null}
+                            {section.type === "resources" && item.url ? (
+                                <SiteLink
+                                    href={item.url}
+                                    className="siteSections__more siteSections__resourceLink"
+                                    ariaLabel={`Consultar: ${item.title}`}
+                                >
+                                    Consultar material <i className="fa fa-arrow-right" aria-hidden="true" />
+                                </SiteLink>
+                            ) : null}
                         </li>
                     ))}
                 </ul>
@@ -216,20 +212,46 @@ function PublicationsSection({ section, content }: SectionProps): React.JSX.Elem
     );
 }
 
-function CtaSection({ section }: SectionProps): React.JSX.Element {
+function GuidanceSection({ section }: SectionProps): React.JSX.Element {
+    return (
+        <section className="siteSections__section siteSections__section--tinted">
+            <div className="siteLayout__container">
+                <SectionHeading section={section} align="start" />
+                <ol className="siteSections__steps">
+                    {section.items.map((item, index) => (
+                        <li key={index} className="siteSections__step">
+                            <span className="siteSections__stepNumber" aria-hidden="true">{index + 1}</span>
+                            <div>
+                                <h3>{item.title}</h3>
+                                {item.text ? <p>{item.text}</p> : null}
+                            </div>
+                        </li>
+                    ))}
+                </ol>
+                {section.button_label && section.button_url ? (
+                    <SiteLink href={section.button_url} className="siteSections__more siteSections__guidanceLink">
+                        {section.button_label} <i className="fa fa-arrow-right" aria-hidden="true" />
+                    </SiteLink>
+                ) : null}
+            </div>
+        </section>
+    );
+}
+
+function FaqSection({ section }: SectionProps): React.JSX.Element {
+    const preview = useSitePreview();
+
     return (
         <section className="siteSections__section">
             <div className="siteLayout__container">
-                <div className="siteSections__cta">
-                    <div>
-                        {section.title ? <h2 className="siteSections__ctaTitle">{section.title}</h2> : null}
-                        {section.subtitle ? <p>{section.subtitle}</p> : null}
-                    </div>
-                    {section.button_label && section.button_url ? (
-                        <SiteLink href={section.button_url} className="siteSections__button siteSections__button--light">
-                            {section.button_label}
-                        </SiteLink>
-                    ) : null}
+                <SectionHeading section={section} align="start" />
+                <div className="siteSections__faq">
+                    {section.items.map((item, index) => (
+                        <details key={index} className="siteSections__question" open={preview || undefined}>
+                            <summary>{item.title}</summary>
+                            <p>{item.text}</p>
+                        </details>
+                    ))}
                 </div>
             </div>
         </section>
@@ -268,7 +290,7 @@ function ContactSection({ section, site }: SectionProps): React.JSX.Element {
                         ))}
                     </ul>
                 ) : (
-                    <p className="siteSections__empty">Informações de contato em breve.</p>
+                    <p className="siteSections__empty">Para orientação sobre o núcleo, procure o setor pedagógico ou os canais oficiais de sua instituição.</p>
                 )}
                 <SiteSocialLinks site={site} className="siteSections__contactSocial" />
             </div>
@@ -279,12 +301,15 @@ function ContactSection({ section, site }: SectionProps): React.JSX.Element {
 const renderers = {
     hero: HeroSection,
     about: AboutSection,
-    highlights: HighlightsSection,
-    features: FeaturesSection,
+    pillars: CardsSection,
+    audience: CardsSection,
+    guidance: GuidanceSection,
+    faq: FaqSection,
+    resources: CardsSection,
+    features: CardsSection,
     team: TeamSection,
     events: EventsSection,
     publications: PublicationsSection,
-    cta: CtaSection,
     contact: ContactSection,
 } satisfies Record<WebsiteSection["type"], (props: SectionProps) => React.JSX.Element>;
 
@@ -303,7 +328,19 @@ export default function SiteSections({
     content: WebsiteContent;
     highlightedId?: string | null;
 }): React.JSX.Element {
-    const visible = sections.filter((section) => section.enabled && renderers[section.type]);
+    const preview = useSitePreview();
+    const visible = sections.filter((section) => {
+        if (!section.enabled || !renderers[section.type]) return false;
+        if (preview) return true;
+        if (section.type === "team") return content.team.length > 0;
+        if (section.type === "events") return content.events.length > 0;
+        if (section.type === "publications") return content.publications.length > 0;
+        if (["pillars", "audience", "features", "guidance", "faq", "resources"].includes(section.type)) {
+            return section.items.length > 0;
+        }
+
+        return true;
+    });
     const mainHeroId = visible.find((section) => section.type === "hero")?.id;
 
     return (
@@ -320,6 +357,7 @@ export default function SiteSections({
                             highlightedId === section.id && "siteSections__block--highlighted",
                         )}
                         data-section-id={section.id}
+                        id={section.id}
                     >
                         <Renderer
                             section={section}

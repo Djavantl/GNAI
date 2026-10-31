@@ -68,7 +68,7 @@ final class UpdateWebsiteData extends Data
             'sections.*.limit' => ['nullable', 'integer', 'min:1', 'max:12'],
             'sections.*.items' => ['sometimes', 'array', 'max:12'],
             'sections.*.items.*.icon' => ['nullable', 'string', 'max:60', 'regex:/^[a-z0-9 -]*$/'],
-            'sections.*.items.*.value' => ['nullable', 'string', 'max:30'],
+            'sections.*.items.*.url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/|\/|#|mailto:|tel:)\S*$/i'],
             'sections.*.items.*.title' => ['nullable', 'string', 'max:120'],
             'sections.*.items.*.text' => ['nullable', 'string', 'max:300'],
         ];
@@ -96,7 +96,7 @@ final class UpdateWebsiteData extends Data
             'sections.*.title.max' => 'O título da seção não pode ultrapassar 160 caracteres.',
             'sections.*.subtitle.max' => 'O subtítulo da seção não pode ultrapassar 500 caracteres.',
             'sections.*.button_label.max' => 'O texto do botão não pode ultrapassar 60 caracteres.',
-            'sections.*.button_url.regex' => 'Use um link iniciado por http://, https:// ou /.',
+            'sections.*.button_url.regex' => 'Use um link iniciado por http://, https://, /, #, mailto: ou tel:.',
             'sections.*.image.image' => 'A imagem da seção deve ser uma imagem.',
             'sections.*.image.mimes' => 'A imagem da seção deve estar em JPG, PNG ou WEBP.',
             'sections.*.image.max' => 'A imagem da seção não pode ultrapassar 4 MB.',
@@ -105,7 +105,8 @@ final class UpdateWebsiteData extends Data
             'sections.*.limit.max' => 'Exiba no máximo 12 itens.',
             'sections.*.items.max' => 'Cada seção pode ter no máximo 12 itens.',
             'sections.*.items.*.icon.regex' => 'Use uma classe de ícone válida, por exemplo "fa fa-star".',
-            'sections.*.items.*.value.max' => 'O destaque não pode ultrapassar 30 caracteres.',
+            'sections.*.items.*.url.max' => 'O link do documento não pode ultrapassar 500 caracteres.',
+            'sections.*.items.*.url.regex' => 'Use um link iniciado por http://, https://, /, #, mailto: ou tel:.',
             'sections.*.items.*.title.max' => 'O título do item não pode ultrapassar 120 caracteres.',
             'sections.*.items.*.text.max' => 'O texto do item não pode ultrapassar 300 caracteres.',
         ];
