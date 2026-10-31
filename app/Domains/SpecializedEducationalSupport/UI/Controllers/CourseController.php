@@ -43,13 +43,19 @@ final class CourseController
         );
     }
 
-    public function show(Course $course, ShowCourseQuery $query): InertiaResponse
+    public function show(Course $course, ShowCourseQuery $query, Request $request): InertiaResponse
     {
         $course = $query->execute($course);
 
         return Inertia::render(
             'SpecializedEducationalSupport/Courses/Show',
-            compact('course'),
+            [
+                'course' => $course,
+                'can' => [
+                    'update' => $request->user()?->can('course.update') ?? false,
+                    'delete' => $request->user()?->can('course.delete') ?? false,
+                ],
+            ],
         );
     }
 

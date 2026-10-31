@@ -1,0 +1,32 @@
+.pedagogicalRecordShow {
+    padding-bottom: 24px;
+}
+
+.pedagogicalRecordShow .formSection:last-child {
+    margin-bottom: 0;
+}
+
+.pedagogicalRecordShow__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 32px;
+    margin: 0;
+}
+
+.pedagogicalRecordShow__text {
+    display: block;
+    line-height: 1.6;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+    .pedagogicalRecordShow__grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .pedagogicalRecordShow__grid .detailField--wide {
+        grid-column: auto;
+    }
+}

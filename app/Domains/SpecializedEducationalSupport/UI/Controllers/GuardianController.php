@@ -52,14 +52,26 @@ final class GuardianController
         );
     }
 
-    public function show(Guardian $guardian, ShowGuardianQuery $query): InertiaResponse
+    public function show(Guardian $guardian, ShowGuardianQuery $query, Request $request): InertiaResponse
     {
         $guardian = $query->execute($guardian);
+        $guardian->person?->append('photo_url');
         $student = $guardian->student;
 
         return Inertia::render(
             'SpecializedEducationalSupport/Guardians/Show',
-            compact('guardian', 'student'),
+            [
+                ...compact('guardian', 'student'),
+                'display' => [
+                    'relationshipLabel' => $guardian->relationship?->label(),
+                    'genderLabel' => $guardian->person?->gender?->label(),
+                    'age' => $guardian->person?->birth_date?->age,
+                ],
+                'can' => [
+                    'update' => $request->user()?->can('guardian.update') ?? false,
+                    'delete' => $request->user()?->can('guardian.delete') ?? false,
+                ],
+            ],
         );
     }
 

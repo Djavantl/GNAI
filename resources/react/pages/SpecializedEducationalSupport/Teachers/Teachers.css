@@ -70,3 +70,151 @@
         gap: 8px;
     }
 }
+
+.teacherShow__panel .formSection:last-child {
+    margin-bottom: 0;
+}
+
+.teacherShow__profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.teacherShow__photo {
+    width: 128px;
+    height: 128px;
+    margin-bottom: 4px;
+    border: 3px solid var(--ui-color-surface-alt);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.teacherShow__name {
+    margin: 0;
+    color: var(--ui-color-heading);
+    font: 600 1.25rem/1.35 var(--ui-font-ui);
+    overflow-wrap: anywhere;
+}
+
+.teacherShow__role {
+    margin: 0;
+    color: var(--ui-color-text-muted);
+    font-size: 13px;
+}
+
+.teacherShow__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 32px;
+    margin: 0;
+}
+
+.teacherShow__text {
+    white-space: pre-wrap;
+}
+
+.teacherShow__registration {
+    color: inherit;
+    font-weight: 700;
+}
+
+.teacherShow__subheading {
+    margin: 28px 0 16px;
+    color: var(--ui-color-form-label);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.teacherShow__courses,
+.teacherShow__disciplines {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.teacherShow__courses {
+    display: grid;
+    gap: 16px;
+}
+
+.teacherShow__course {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 4px;
+}
+
+.teacherShow__courseHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 12px 16px;
+    background: var(--ui-color-surface-alt);
+}
+
+.teacherShow__courseName {
+    min-width: 0;
+    color: var(--ui-color-form-label);
+    overflow-wrap: anywhere;
+}
+
+.teacherShow__disciplines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px;
+}
+
+.teacherShow__disciplines li {
+    max-width: 100%;
+    padding: 4px 10px;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 3px;
+    background: var(--ui-color-table-header);
+    color: var(--ui-color-legacy-text);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.teacherShow__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 32px 16px;
+    color: var(--ui-color-text-muted);
+    text-align: center;
+}
+
+.teacherShow__empty > .fa {
+    margin-bottom: 6px;
+    font-size: 32px;
+}
+
+@media (max-width: 900px) {
+    .teacherShow__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .teacherShow__panel.card-box {
+        padding: 16px;
+    }
+
+    .teacherShow__grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .teacherShow__photo {
+        width: 96px;
+        height: 96px;
+    }
+}

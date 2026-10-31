@@ -108,7 +108,7 @@ export default function PeiDisciplineForm({
     const editing = Boolean(peiDiscipline);
     const busy = useRef(false);
     const element = useRef<HTMLFormElement>(null);
-    const peiHref = `${aeeBase}/peis/${pei.id}/show`;
+    const peiHref = `${aeeBase}/peis/${pei.id}/show?tab=disciplines`;
     const form = useForm<PeiDisciplineFormData>({
         teacher_id: String(peiDiscipline?.teacher_id ?? loggedTeacher?.id ?? ""),
         discipline_id: String(peiDiscipline?.discipline_id ?? ""),

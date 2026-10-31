@@ -197,7 +197,8 @@ export default function PedagogicalRecordForm({
         };
 
         if (record) {
-            form.put(`${recordsBase}/${record.id}`, options);
+            // A origem no prontuário segue pela URL, para o redirect após salvar voltar a ela.
+            form.put(`${recordsBase}/${record.id}${returnStudentId ? `?student_id=${returnStudentId}` : ""}`, options);
         } else {
             form.post(`${recordsBase}/store`, options);
         }

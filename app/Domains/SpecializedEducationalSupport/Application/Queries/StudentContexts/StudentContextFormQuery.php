@@ -85,6 +85,21 @@ final class StudentContextFormQuery
     }
 
     /**
+     * Read-only presentation data shared by the context details page.
+     *
+     * @return array{studentContextOptions: array<string, array<string, string>>, studentProfile: array<string, mixed>}
+     */
+    public function forDisplay(Student $student): array
+    {
+        $student->loadMissing(['person', 'deficiencies']);
+
+        return [
+            'studentContextOptions' => $this->options(),
+            'studentProfile' => $this->studentProfile($student),
+        ];
+    }
+
+    /**
      * Presentation values the legacy form read through accessors and enum methods.
      *
      * @return array<string, mixed>

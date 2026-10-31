@@ -13,6 +13,11 @@ export interface PositionRecord {
     permissions?: Array<Pick<PositionPermission, "id">>;
 }
 
+export type PositionDetailRecord = Omit<PositionRecord, "permissions"> & {
+    is_active: boolean;
+    permissions?: Array<Pick<PositionPermission, "id" | "name">>;
+};
+
 export interface PositionFormProps {
     permissions: GroupedPositionPermissions;
 }

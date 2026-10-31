@@ -16,3 +16,26 @@
         gap: 8px;
     }
 }
+
+.disciplineShow__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0;
+}
+
+.disciplineShow__text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+    .disciplineShow__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.disciplineShow__list {
+    margin: 0;
+    padding-left: 20px;
+}

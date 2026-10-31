@@ -22,6 +22,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Shared\Application\Exceptions\AccessDeniedException;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -77,12 +78,14 @@ final class PedagogicalRecordController
 
     public function show(PedagogicalRecord $pedagogicalRecord, ShowPedagogicalRecordQuery $query, Request $request): InertiaResponse
     {
-        $pedagogicalRecord = $query->execute($pedagogicalRecord, $this->user($request));
-        $returnStudentId = $request->integer('student_id');
+        $user = $this->user($request);
+        $pedagogicalRecord = $query->execute($pedagogicalRecord, $user);
 
         return Inertia::render(
             'SpecializedEducationalSupport/PedagogicalRecords/Show',
-            compact('pedagogicalRecord', 'returnStudentId'),
+            $this->showProps($pedagogicalRecord, $user) + [
+                'returnStudentId' => $request->integer('student_id'),
+            ],
         );
     }
 
@@ -101,7 +104,14 @@ final class PedagogicalRecordController
     {
         $pedagogicalRecord = $action->execute($pedagogicalRecord, $data, $this->professionalId($request));
 
-        return redirect()->route('specialized-educational-support.pedagogical-records.show', $pedagogicalRecord)->with('success', 'Atendimento pedagógico atualizado com sucesso.');
+        $parameters = ['pedagogicalRecord' => $pedagogicalRecord];
+
+        // Edição aberta pelo prontuário: a visualização mantém a origem para o Voltar.
+        if ($request->integer('student_id') > 0) {
+            $parameters['student_id'] = $request->integer('student_id');
+        }
+
+        return redirect()->route('specialized-educational-support.pedagogical-records.show', $parameters)->with('success', 'Atendimento pedagógico atualizado com sucesso.');
     }
 
     /** @throws Throwable */
@@ -199,6 +209,48 @@ final class PedagogicalRecordController
                 'view_own' => $user->can('pedagogical-record.view-own'),
                 'update' => $user->can('pedagogical-record.update'),
                 'delete' => $user->can('pedagogical-record.delete'),
+            ],
+        ];
+    }
+
+    /**
+     * Presentation-only props for the React details page, with the same data and authorship rules used by the Blade view.
+     *
+     * @return array<string, mixed>
+     */
+    private function showProps(PedagogicalRecord $pedagogicalRecord, User $user): array
+    {
+        $session = $pedagogicalRecord->attendanceSession;
+        $student = $session->students->first();
+        $canManage = $user->professional_id !== null
+            && (int) $session->professional_id === (int) $user->professional_id;
+
+        return [
+            'pedagogicalRecord' => [
+                'id' => $pedagogicalRecord->getKey(),
+                'follow_up_reason' => $pedagogicalRecord->follow_up_reason,
+                'duration' => $pedagogicalRecord->duration,
+                'is_present' => (bool) $pedagogicalRecord->is_present,
+                'absence_reason' => $pedagogicalRecord->absence_reason,
+                'systematic_pedagogical_follow_up_record' => $pedagogicalRecord->systematic_pedagogical_follow_up_record,
+                'strategies_and_resources_adopted' => $pedagogicalRecord->strategies_and_resources_adopted,
+                'referrals_made' => $pedagogicalRecord->referrals_made,
+                'complementary_observations' => $pedagogicalRecord->complementary_observations,
+                'has_guardians' => $pedagogicalRecord->guardians->isNotEmpty(),
+                'guardian_names' => $pedagogicalRecord->guardian_names,
+            ],
+            'session' => [
+                'id' => (int) $session->id,
+                'session_date' => $session->session_date?->format('d/m/Y'),
+                'start_time' => $session->start_time ? Carbon::parse($session->start_time)->format('H:i') : null,
+                'end_time' => $session->end_time ? Carbon::parse($session->end_time)->format('H:i') : null,
+                'student_name' => $student?->person?->name,
+                'professional_name' => $session->professional?->person?->name,
+            ],
+            'can' => [
+                'update' => $canManage && $user->can('pedagogical-record.update'),
+                'delete' => $canManage && $user->can('pedagogical-record.delete'),
+                'pdf' => $user->can('pedagogical-record.view'),
             ],
         ];
     }

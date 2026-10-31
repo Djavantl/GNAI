@@ -1,11 +1,13 @@
 export interface StudentCourseDiscipline {
     id: number;
     name: string;
+    description?: string | null;
 }
 
 export interface StudentCourseCourse {
     id: number;
     name: string;
+    description?: string | null;
     disciplines?: StudentCourseDiscipline[];
 }
 
@@ -27,6 +29,16 @@ export interface StudentCourseRecord {
     failed_disciplines?: { id: number }[];
     at_risk_disciplines?: { id: number }[];
 }
+
+export type StudentCourseShowRecord = Omit<
+    StudentCourseRecord,
+    "failed_disciplines" | "at_risk_disciplines"
+> & {
+    failed_disciplines: StudentCourseDiscipline[];
+    at_risk_disciplines: StudentCourseDiscipline[];
+    created_at: string | null;
+    updated_at: string | null;
+};
 
 export interface StudentCourseListRecord {
     id: number;

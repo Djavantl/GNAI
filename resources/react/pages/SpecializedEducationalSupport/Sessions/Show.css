@@ -1,0 +1,17 @@
+.sessionShow { min-width: 0; padding-bottom: 24px; }
+.sessionsPage .sessionShow__panel .formSection--inline { margin-bottom: 28px; }
+.sessionsPage .sessionShow__panel .formSection--inline:last-child { margin-bottom: 0; }
+.sessionShow__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; margin: 0; }
+.sessionShow__grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.sessionShow__students { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.sessionShow__text { display: block; white-space: pre-line; line-height: 1.6; }
+.sessionShow__cancelDetails { display: grid; gap: 12px; margin-top: 12px; text-align: left; }
+@media (max-width: 900px) {
+  .sessionShow__grid,
+  .sessionShow__grid--three { grid-template-columns: 1fr; }
+  .sessionShow__grid .detailField--wide { grid-column: auto; }
+}
+@media (max-width: 600px) {
+  .sessionShow__panel.card-box { padding: 16px; }
+  .sessionShow__grid { gap: 20px; }
+}

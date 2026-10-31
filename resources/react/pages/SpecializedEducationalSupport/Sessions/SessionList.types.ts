@@ -101,3 +101,36 @@ export interface SessionStudentIndexProps {
         view: boolean;
     };
 }
+
+export interface SessionShowRecord {
+    kind: "aee" | "pedagogical";
+    show_url: string | null;
+    pdf_url: string | null;
+    create_url: string | null;
+}
+
+export interface SessionShowProps {
+    session: {
+        id: number;
+        student_names: string[];
+        professional_name: string;
+        status_label: string;
+        status_color: string;
+        is_scheduled: boolean;
+        session_date: string | null;
+        start_time: string | null;
+        end_time: string | null;
+        location: string | null;
+        attendance_type_label: string;
+        type_label: string;
+        session_objective: string | null;
+        cancellation_reason: string | null;
+    };
+    record: SessionShowRecord | null;
+    can: {
+        edit: boolean;
+        cancel: boolean;
+        delete: boolean;
+    };
+    backUrl: string;
+}

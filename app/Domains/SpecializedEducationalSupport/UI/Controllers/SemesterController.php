@@ -46,13 +46,19 @@ final class SemesterController
         );
     }
 
-    public function show(Semester $semester, ShowSemesterQuery $query): InertiaResponse
+    public function show(Semester $semester, ShowSemesterQuery $query, Request $request): InertiaResponse
     {
         $semester = $query->execute($semester);
 
         return Inertia::render(
             'SpecializedEducationalSupport/Semesters/Show',
-            compact('semester'),
+            [
+                'semester' => $semester,
+                'can' => [
+                    'update' => $request->user()?->can('semester.update') ?? false,
+                    'delete' => $request->user()?->can('semester.delete') ?? false,
+                ],
+            ],
         );
     }
 

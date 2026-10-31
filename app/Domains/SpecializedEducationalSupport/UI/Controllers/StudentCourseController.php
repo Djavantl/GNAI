@@ -54,14 +54,21 @@ final class StudentCourseController
         ]);
     }
 
-    public function show(StudentCourse $studentCourse, ShowStudentCourseQuery $query): InertiaResponse
-    {
+    public function show(
+        StudentCourse $studentCourse,
+        ShowStudentCourseQuery $query,
+        Request $request,
+    ): InertiaResponse {
         $studentCourse = $query->execute($studentCourse);
+        $user = $request->user();
 
-        return Inertia::render(
-            'SpecializedEducationalSupport/StudentCourses/Show',
-            compact('studentCourse'),
-        );
+        return Inertia::render('SpecializedEducationalSupport/StudentCourses/Show', [
+            'studentCourse' => $studentCourse,
+            'can' => [
+                'update' => $user?->can('student-course.update') ?? false,
+                'delete' => $user?->can('student-course.delete') ?? false,
+            ],
+        ]);
     }
 
     public function create(Student $student, StudentCourseFormQuery $form): InertiaResponse

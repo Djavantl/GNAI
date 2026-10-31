@@ -21,6 +21,10 @@ export type StudentDeficiencyListRecord = StudentDeficiencyRecord & {
     severity_color: string | null;
 };
 
+export type StudentDeficiencyShowRecord = StudentDeficiencyListRecord & {
+    created_at: string | null;
+};
+
 export interface StudentDeficiencyPaginator {
     data: StudentDeficiencyListRecord[];
     current_page: number;

@@ -48,13 +48,19 @@ final class DeficiencyController
         );
     }
 
-    public function show(Deficiency $deficiency, ShowDeficiencyQuery $query): InertiaResponse
+    public function show(Deficiency $deficiency, ShowDeficiencyQuery $query, Request $request): InertiaResponse
     {
         $deficiency = $query->execute($deficiency);
 
         return Inertia::render(
             'SpecializedEducationalSupport/Deficiencies/Show',
-            compact('deficiency'),
+            [
+                'deficiency' => $deficiency,
+                'can' => [
+                    'update' => $request->user()?->can('deficiency.update') ?? false,
+                    'delete' => $request->user()?->can('deficiency.delete') ?? false,
+                ],
+            ],
         );
     }
 
