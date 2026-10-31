@@ -26,6 +26,7 @@ export default function InclusionBarriersEditPage({
 }): React.JSX.Element {
     return (
         <BarrierForm
+            key={barrier.id}
             barrier={barrier}
             institutions={institutions}
             categories={categories}

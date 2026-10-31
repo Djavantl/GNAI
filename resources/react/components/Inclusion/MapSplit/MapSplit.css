@@ -1,0 +1,7 @@
+.mapSplit { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(280px, 1fr); gap: 0 32px; align-items: start; }
+.mapSplit--wideAside { grid-template-columns: minmax(0, 1.2fr) minmax(320px, 1fr); }
+.mapSplit__main, .mapSplit__aside { min-width: 0; }
+
+@media (max-width: 1100px) {
+    .mapSplit { grid-template-columns: minmax(0, 1fr); }
+}

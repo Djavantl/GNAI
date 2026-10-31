@@ -4,11 +4,13 @@ import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import FormActions from "@/components/Forms/FormActions/FormActions";
 import FormField from "@/components/Forms/FormField/FormField";
-import FormGrid, { FormGridWide, FormStack } from "@/components/Forms/FormGrid/FormGrid";
+import FormGrid, { FormStack } from "@/components/Forms/FormGrid/FormGrid";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import FormSection from "@/components/Forms/FormSection/FormSection";
+import RangeSlider from "@/components/Forms/RangeSlider/RangeSlider";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
+import MapSplit, { MapSplitAside, MapSplitMain } from "@/components/Inclusion/MapSplit/MapSplit";
 import GeoMap, { type GeoPoint } from "@/components/Inclusion/GeoMap/GeoMap";
 import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import { notify } from "@/components/UI/NotificationToast/notify";
@@ -174,97 +176,107 @@ export default function InstitutionForm({ institution, canSubmit }: { institutio
         >
             <FormLayout onSubmit={submit} aria-busy={form.processing}>
                 <CardBox>
-                    <FormSection id="institution-information" title="Identificação" variant="inline" iconClass="fa fa-university">
-                        <FormGrid columns={2}>
-                            <FormField id="institution-name" label="Nome da Instituição" requiredIndicator error={errors.name}>
-                                <TextInput
-                                    id="institution-name" name="name" required maxLength={255}
-                                    placeholder="Ex.: IFBA - Campus Guanambi" value={form.data.name}
-                                    invalid={!!errors.name} aria-describedby={errors.name ? "institution-name-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("name", event.target.value)}
-                                />
-                            </FormField>
-                            <FormField id="institution-short-name" label="Sigla / Nome Curto" error={errors.short_name}>
-                                <TextInput
-                                    id="institution-short-name" name="short_name" maxLength={100}
-                                    placeholder="Ex.: IFBA-GBI" value={form.data.short_name}
-                                    invalid={!!errors.short_name} aria-describedby={errors.short_name ? "institution-short-name-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("short_name", event.target.value)}
-                                />
-                            </FormField>
-                            <FormField id="institution-city" label="Cidade" requiredIndicator error={errors.city}>
-                                <TextInput
-                                    id="institution-city" name="city" required maxLength={255} value={form.data.city}
-                                    invalid={!!errors.city} aria-describedby={errors.city ? "institution-city-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("city", event.target.value)}
-                                />
-                            </FormField>
-                            <FormField id="institution-state" label="Estado" requiredIndicator error={errors.state}>
-                                <TextInput
-                                    id="institution-state" name="state" required maxLength={255} value={form.data.state}
-                                    invalid={!!errors.state} aria-describedby={errors.state ? "institution-state-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("state", event.target.value)}
-                                />
-                            </FormField>
-                            <FormField id="institution-district" label="Bairro / Distrito" error={errors.district}>
-                                <TextInput
-                                    id="institution-district" name="district" maxLength={255} value={form.data.district}
-                                    invalid={!!errors.district} aria-describedby={errors.district ? "institution-district-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("district", event.target.value)}
-                                />
-                            </FormField>
-                            <FormField id="institution-address" label="Rua / Logradouro" error={errors.address}>
-                                <TextInput
-                                    id="institution-address" name="address" maxLength={255} value={form.data.address}
-                                    invalid={!!errors.address} aria-describedby={errors.address ? "institution-address-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("address", event.target.value)}
-                                />
-                            </FormField>
-                        </FormGrid>
-                    </FormSection>
-                    <FormSection id="institution-map-settings" title="Configuração" variant="inline" iconClass="fa fa-globe">
-                        <FormGrid columns={2}>
-                            <FormGridWide>
-                                <FormStack>
-                                    <ToggleControl
-                                        id="institution-active" name="is_active" size="small"
-                                        label="Instituição Ativa"
-                                        labelAddon={<InfoTooltip text="Define se esta sede estará disponível para o mapeamento público." />}
-                                        checked={form.data.is_active} disabled={form.processing}
-                                        onChange={(checked) => form.setData("is_active", checked)}
-                                    />
-                                </FormStack>
-                            </FormGridWide>
-                            <FormGridWide>
-                                <FormField id="institution-default-zoom" label="Zoom Padrão" error={errors.default_zoom}>
-                                    <div className="institutionForm__rangeField">
-                                        <input
-                                            id="institution-default-zoom" name="default_zoom" type="range" min="0" max="20"
-                                            value={zoom} aria-describedby={errors.default_zoom ? "institution-default-zoom-error" : undefined}
-                                            disabled={form.processing}
-                                            onChange={(event) => form.setData("default_zoom", event.target.value)}
+                    <MapSplit wideAside>
+                        <MapSplitMain>
+                            <FormSection id="institution-information" title="Identificação" variant="inline" iconClass="fa fa-university">
+                                <FormGrid columns={2}>
+                                    <FormField id="institution-name" label="Nome da Instituição" requiredIndicator error={errors.name}>
+                                        <TextInput
+                                            id="institution-name" name="name" required maxLength={255}
+                                            placeholder="Ex.: IFBA - Campus Guanambi" value={form.data.name}
+                                            invalid={!!errors.name} aria-describedby={errors.name ? "institution-name-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("name", event.target.value)}
                                         />
-                                        <output htmlFor="institution-default-zoom">{zoom}</output>
-                                    </div>
-                                </FormField>
-                            </FormGridWide>
-                            <FormField id="institution-latitude" label="Latitude Sede" requiredIndicator error={errors.latitude}>
-                                <TextInput
-                                    id="institution-latitude" name="latitude" type="number" step="any" required
-                                    placeholder="-14.2350" value={form.data.latitude} invalid={!!errors.latitude}
-                                    aria-describedby={errors.latitude ? "institution-latitude-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("latitude", event.target.value)}
-                                />
-                            </FormField>
-                            <FormField id="institution-longitude" label="Longitude Sede" requiredIndicator error={errors.longitude}>
-                                <TextInput
-                                    id="institution-longitude" name="longitude" type="number" step="any" required
-                                    placeholder="-51.9253" value={form.data.longitude} invalid={!!errors.longitude}
-                                    aria-describedby={errors.longitude ? "institution-longitude-error" : undefined}
-                                    disabled={form.processing} onChange={(event) => form.setData("longitude", event.target.value)}
-                                />
-                            </FormField>
-                            <FormGridWide>
+                                    </FormField>
+                                    <FormField id="institution-short-name" label="Sigla / Nome Curto" error={errors.short_name}>
+                                        <TextInput
+                                            id="institution-short-name" name="short_name" maxLength={100}
+                                            placeholder="Ex.: IFBA-GBI" value={form.data.short_name}
+                                            invalid={!!errors.short_name} aria-describedby={errors.short_name ? "institution-short-name-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("short_name", event.target.value)}
+                                        />
+                                    </FormField>
+                                    <FormField id="institution-city" label="Cidade" requiredIndicator error={errors.city}>
+                                        <TextInput
+                                            id="institution-city" name="city" required maxLength={255} value={form.data.city}
+                                            invalid={!!errors.city} aria-describedby={errors.city ? "institution-city-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("city", event.target.value)}
+                                        />
+                                    </FormField>
+                                    <FormField id="institution-state" label="Estado" requiredIndicator error={errors.state}>
+                                        <TextInput
+                                            id="institution-state" name="state" required maxLength={255} value={form.data.state}
+                                            invalid={!!errors.state} aria-describedby={errors.state ? "institution-state-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("state", event.target.value)}
+                                        />
+                                    </FormField>
+                                    <FormField id="institution-district" label="Bairro / Distrito" error={errors.district}>
+                                        <TextInput
+                                            id="institution-district" name="district" maxLength={255} value={form.data.district}
+                                            invalid={!!errors.district} aria-describedby={errors.district ? "institution-district-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("district", event.target.value)}
+                                        />
+                                    </FormField>
+                                    <FormField id="institution-address" label="Rua / Logradouro" error={errors.address}>
+                                        <TextInput
+                                            id="institution-address" name="address" maxLength={255} value={form.data.address}
+                                            invalid={!!errors.address} aria-describedby={errors.address ? "institution-address-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("address", event.target.value)}
+                                        />
+                                    </FormField>
+                                </FormGrid>
+                            </FormSection>
+                            <FormSection id="institution-map-settings" title="Configuração" variant="inline" iconClass="fa fa-globe">
+                                <FormGrid columns={2}>
+                                    <FormStack>
+                                        <ToggleControl
+                                            id="institution-active" name="is_active" size="small"
+                                            label="Instituição Ativa"
+                                            labelAddon={<InfoTooltip text="Define se esta sede estará disponível para o mapeamento público." />}
+                                            checked={form.data.is_active} disabled={form.processing}
+                                            onChange={(checked) => form.setData("is_active", checked)}
+                                        />
+                                    </FormStack>
+                                    <FormField id="institution-default-zoom" label="Zoom Padrão" error={errors.default_zoom}>
+                                        <RangeSlider
+                                            id="institution-default-zoom"
+                                            name="default_zoom"
+                                            label="Zoom Padrão"
+                                            min={0}
+                                            max={20}
+                                            value={zoom}
+                                            disabled={form.processing}
+                                            invalid={!!errors.default_zoom}
+                                            describedBy={errors.default_zoom ? "institution-default-zoom-error" : undefined}
+                                            onChange={(nextZoom) => form.setData("default_zoom", String(nextZoom))}
+                                        />
+                                    </FormField>
+                                    <FormField id="institution-latitude" label="Latitude Sede" requiredIndicator error={errors.latitude}>
+                                        <TextInput
+                                            id="institution-latitude" name="latitude" type="number" step="any" required
+                                            placeholder="-14.2350" value={form.data.latitude} invalid={!!errors.latitude}
+                                            aria-describedby={errors.latitude ? "institution-latitude-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("latitude", event.target.value)}
+                                        />
+                                    </FormField>
+                                    <FormField id="institution-longitude" label="Longitude Sede" requiredIndicator error={errors.longitude}>
+                                        <TextInput
+                                            id="institution-longitude" name="longitude" type="number" step="any" required
+                                            placeholder="-51.9253" value={form.data.longitude} invalid={!!errors.longitude}
+                                            aria-describedby={errors.longitude ? "institution-longitude-error" : undefined}
+                                            disabled={form.processing} onChange={(event) => form.setData("longitude", event.target.value)}
+                                        />
+                                    </FormField>
+                                </FormGrid>
+                            </FormSection>
+                        </MapSplitMain>
+                        <MapSplitAside>
+                            <FormSection
+                                id="institution-map"
+                                title="Localização no Mapa"
+                                variant="inline"
+                                iconClass="fa fa-map-marker"
+                            >
                                 <GeoMap
                                     title={editing ? "Ajuste a Sede no Mapa" : "Localize a Sede no Mapa"}
                                     value={mapPoint} zoom={zoom} editable
@@ -275,9 +287,9 @@ export default function InstitutionForm({ institution, canSubmit }: { institutio
                                         if (!form.processing) form.setData("default_zoom", String(nextZoom));
                                     }}
                                 />
-                            </FormGridWide>
-                        </FormGrid>
-                    </FormSection>
+                            </FormSection>
+                        </MapSplitAside>
+                    </MapSplit>
                 </CardBox>
                 <FormActions status={form.processing ? (editing ? "Salvando alterações…" : "Cadastrando instituição…") : undefined}>
                     <Button href={institution ? `${base}/${institution.id}` : base} tone="cancel" label="Cancelar" disabled={form.processing} />

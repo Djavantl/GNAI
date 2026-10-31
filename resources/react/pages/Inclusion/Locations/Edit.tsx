@@ -16,6 +16,7 @@ export default function InclusionLocationsEditPage({
 }): React.JSX.Element {
     return (
         <LocationForm
+            key={location.id}
             location={location}
             institutions={institutions}
             institutionsData={institutionsData}

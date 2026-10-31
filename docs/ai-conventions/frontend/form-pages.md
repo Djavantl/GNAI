@@ -62,6 +62,7 @@ Os caminhos desta tabela são relativos a `resources/react/components/`.
 | Seleção | `Forms/SelectField/SelectField.tsx`; `options`, `value`, `onChange`, `label`, `id`, `name` |
 | Grupos de checkbox/radio | `Forms/ChoiceGroup/ChoiceGroup.tsx` envolvendo controles `ChoiceControl` e recebendo o estado inválido |
 | Alternância booleana | `Forms/ToggleControl/ToggleControl.tsx`; adaptador React do Switchery local, com estado controlado, tamanho e limpeza |
+| Valor numérico em faixa | `Forms/RangeSlider/RangeSlider.tsx`; adaptador controlado do Ion.RangeSlider do Ubold, com grade, cor roxa do Gnai, trilha focável por teclado e `role="slider"` |
 | Data de calendário | `Forms/DatePicker/DatePicker.tsx`, quando aplicável ao formato de data esperado |
 | Foto de pessoa | `Forms/PersonPhotoUpload/PersonPhotoUpload.tsx`, quando o cadastro precisar dessa informação |
 | Imagem única que não é foto de pessoa (capa, logo, banner) | `Forms/ImageUploadField/ImageUploadField.tsx`; o pai controla arquivo, imagem atual e remoção, e pede texto alternativo quando a imagem for informativa |
@@ -171,6 +172,8 @@ Plugins usam os assets locais de `public/assets/react/`, com adaptadores que car
 ### Mapas vinculados à instituição
 
 Use `Inclusion/GeoMap` com a instituição em `reference`, incluindo suas coordenadas e `default_zoom`. A sede e o zoom padrão definem o enquadramento inicial em cadastro, edição e visualização; `value` continua representando a posição real da barreira ou do ponto de referência. Não substitua o zoom cadastrado por valores fixos nas telas de edição. Ao trocar de instituição, o mapa atualiza o enquadramento e mantém os comportamentos existentes de seleção do marcador. Sem instituição selecionada/vinculada, preserve o fallback da funcionalidade. O zoom zero é válido e não deve ser tratado como ausência de configuração.
+
+Nos cadastros com mapa (barreiras, instituições e pontos de referência), o formulário e a visualização dividem o card com `Inclusion/MapSplit`: a seção de identificação fica em `MapSplitMain`, à esquerda, e o mapa com seus controles fica em `MapSplitAside`, uma coluna menor à direita. Abaixo de 1100 px as colunas se empilham. Nas barreiras, a coluna principal agrupa os campos curtos em três por linha e a vistoria segue abaixo do mapa. Em instituições e pontos de referência, a Configuração fica abaixo da Identificação, o mapa fica sozinho à direita e `MapSplit wideAside` alarga sua coluna; com menos espaço, os campos ficam em duas colunas. Coleções extensas, como o histórico de vistorias, ficam fora da divisão, na largura total do card.
 
 ## Particularidades do formulário de alunos
 

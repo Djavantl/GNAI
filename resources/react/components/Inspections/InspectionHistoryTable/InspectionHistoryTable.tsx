@@ -41,13 +41,20 @@ interface InspectionHistoryTableProps {
   id: string;
   baseUrl: string;
   inspections: InspectionHistoryItem[];
+  /** Rótulo da coluna de situação; itens usam o estado de conservação e barreiras, o status. */
+  stateLabel?: string;
 }
 
 export default function InspectionHistoryTable({
   id,
   baseUrl,
   inspections,
+  stateLabel = 'Estado de conservação',
 }: InspectionHistoryTableProps): React.JSX.Element {
+  const columns = inspectionColumns.map((column) =>
+    column.id === 'state' ? { ...column, label: stateLabel } : column,
+  );
+
   return (
     <FormSection
       id={id}
@@ -58,7 +65,7 @@ export default function InspectionHistoryTable({
       <TableListScroll aria-label="Histórico de vistorias">
         <TableListTable
           className="inspectionHistoryTable__table"
-          columns={inspectionColumns}
+          columns={columns}
           summary={`${inspections.length} registro(s)`}
         >
           {inspections.length ? (

@@ -1,0 +1,15 @@
+/* Ion.RangeSlider do Ubold com a cor institucional do Gnai. */
+.rangeSlider { min-width: 0; }
+.rangeSlider .irs { margin-top: 0; }
+.rangeSlider .irs-bar,
+.rangeSlider .irs-bar-edge { background: var(--ui-color-gnai-primary); }
+.rangeSlider .irs-single,
+.rangeSlider .irs-from,
+.rangeSlider .irs-to { background: var(--ui-color-gnai-primary); font-size: 11px; }
+.rangeSlider .irs-single::after,
+.rangeSlider .irs-from::after,
+.rangeSlider .irs-to::after { border-top-color: var(--ui-color-gnai-primary); }
+.rangeSlider .irs-line { cursor: pointer; }
+.rangeSlider .irs-line:focus-visible { outline: 2px solid var(--ui-color-gnai-primary); outline-offset: 3px; }
+.rangeSlider--invalid .irs-line { box-shadow: 0 0 0 1px var(--ui-color-danger); border-radius: 6px; }
+.rangeSlider--disabled { opacity: 0.6; }
