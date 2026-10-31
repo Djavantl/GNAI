@@ -2,11 +2,14 @@ import type { HTMLAttributes, ReactNode, TdHTMLAttributes } from 'react';
 import Pagination from '@/components/Navigation/Pagination/Pagination';
 import Button from '@/components/UI/Button/Button';
 import { joinClassNames } from '@/utils/joinClassNames';
+import type { TableListPage } from './TableList.types';
+import { formatTableListRange } from './TableList.utils';
 import './TableList.css';
 
 export { default as TableListTable } from './TableListTable';
 export { default as TableListMoreFilters } from './TableListMoreFilters';
-export type { TableListColumn } from './TableList.types';
+export { formatTableListRange } from './TableList.utils';
+export type { TableListColumn, TableListPage, TableListRange } from './TableList.types';
 
 export function TableListCard({
   className,
@@ -120,28 +123,25 @@ export function TableListEmpty({
   );
 }
 
+/** Rodapé das listagens paginadas: o intervalo ("1–10 de 14") e a paginação vêm do mesmo paginador. */
 export function TableListFooter({
-  summary,
-  currentPage,
-  pageCount,
+  page,
   disabled = false,
   paginationLabel,
   onSelect,
 }: {
-  summary: ReactNode;
-  currentPage: number;
-  pageCount: number;
+  page: TableListPage;
   disabled?: boolean;
   paginationLabel: string;
   onSelect: (page: number) => void;
 }): React.JSX.Element {
   return (
     <footer className="tableListFooter">
-      <span>{summary}</span>
+      <span>{formatTableListRange(page)}</span>
       <nav aria-label={paginationLabel}>
         <Pagination
-          currentPage={currentPage}
-          pageCount={pageCount}
+          currentPage={page.current_page}
+          pageCount={page.last_page}
           disabled={disabled}
           onSelect={onSelect}
         />

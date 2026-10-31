@@ -1,0 +1,56 @@
+.aeeRecordList__filters {
+    display: grid;
+    grid-template-columns: repeat(var(--aee-filter-count, 1), minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.aeeRecordList__date {
+    color: var(--ui-color-form-label);
+}
+
+.aeeRecordList__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.aeeRecordList__stack > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aeeRecordList__student {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.aeeRecordList__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aeeRecordList__student > .tableLabel {
+    flex: 0 0 auto;
+}
+
+.aeeRecordList__muted {
+    color: var(--ui-color-text-muted);
+}
+
+@media (max-width: 900px) {
+    .aeeRecordList__filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .aeeRecordList__filters {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

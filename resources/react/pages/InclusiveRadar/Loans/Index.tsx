@@ -234,7 +234,7 @@ export default function InclusiveRadarLoansIndexPage({
                     <TableListTable
                         className="loanIndex__table"
                         columns={columns}
-                        summary={`${loans.from ?? 0}–${loans.to ?? 0} de ${loans.total} registros`}
+                        page={loans}
                     >
                         {loans.data.map((loan) => {
                             const beneficiary = loan.student ?? loan.professional;
@@ -299,9 +299,7 @@ export default function InclusiveRadarLoansIndexPage({
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${loans.from ?? 0}–${loans.to ?? 0} de ${loans.total}`}
-                    currentPage={loans.current_page}
-                    pageCount={loans.last_page}
+                    page={loans}
                     disabled={busy}
                     paginationLabel="Páginas da listagem de empréstimos"
                     onSelect={(page) => {

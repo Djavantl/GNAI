@@ -147,7 +147,7 @@ export default function InclusiveRadarBarriersIndexPage({ barriers, filters: ini
                     </div>
                 </FormLayout>
                 <TableListScroll aria-label="Tabela de barreiras">
-                    <TableListTable className="barrierIndex__table" columns={columns} summary={`${barriers.from ?? 0}–${barriers.to ?? 0} de ${barriers.total} registros`}>
+                    <TableListTable className="barrierIndex__table" columns={columns} page={barriers}>
                         {barriers.data.length ? barriers.data.map((barrier) => {
                             const status = barrier.inspections?.[0]?.status ?? barrier.status ?? "";
                             return (
@@ -168,7 +168,7 @@ export default function InclusiveRadarBarriersIndexPage({ barriers, filters: ini
                         }) : <tr><TableListEmpty colSpan={5}>Nenhuma barreira identificada até o momento.</TableListEmpty></tr>}
                     </TableListTable>
                 </TableListScroll>
-                <TableListFooter summary={`${barriers.total} barreira(s)`} currentPage={barriers.current_page} pageCount={barriers.last_page} disabled={busy} paginationLabel="Paginação de barreiras" onSelect={(page) => visit(values, page)} />
+                <TableListFooter page={barriers} disabled={busy} paginationLabel="Paginação de barreiras" onSelect={(page) => visit(values, page)} />
             </TableListCard>
             <ConfirmActionModal
                 open={barrierToDelete !== null}

@@ -25,6 +25,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Peis\ShowPeiQu
 use App\Domains\SpecializedEducationalSupport\Domain\Exceptions\InvalidStudent;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pei;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\PeiDiscipline;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Semester;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -50,12 +51,22 @@ final class PeiController
         $user = $request->user();
         $peis = $query->execute($filters, $user instanceof User ? $user : null);
 
-        $students = $filterOptions->students();
-        $semesters = $filterOptions->semesters();
-
         return Inertia::render(
             'SpecializedEducationalSupport/Peis/All',
-            compact('peis', 'students', 'semesters')
+            [
+                'peis' => $peis,
+                'students' => $filterOptions->students()
+                    ->map(static fn (Student $student): array => [
+                        'value' => (string) $student->getKey(),
+                        'label' => (string) ($student->person?->name ?? ''),
+                    ])
+                    ->values(),
+                'semesters' => $this->semesterOptions($filterOptions),
+                'filters' => $this->listFilterValues($filters) + [
+                    'student_id' => $filters->studentId === null ? '' : (string) $filters->studentId,
+                ],
+                'can' => $this->listPermissions($request),
+            ]
         );
     }
 
@@ -71,12 +82,21 @@ final class PeiController
     ): InertiaResponse {
         $user = $request->user();
         $peis = $query->execute($student, $filters, $user instanceof User ? $user : null);
-        $semesters = $filterOptions->semesters();
         $disciplines = $filterOptions->disciplines();
 
         return Inertia::render(
             'SpecializedEducationalSupport/Peis/Index',
-            compact('peis', 'student', 'semesters', 'disciplines')
+            [
+                'peis' => $peis,
+                'student' => [
+                    'id' => $student->getKey(),
+                    'name' => (string) ($student->person?->name ?? ''),
+                ],
+                'semesters' => $this->semesterOptions($filterOptions),
+                'disciplines' => $disciplines,
+                'filters' => $this->listFilterValues($filters),
+                'can' => $this->listPermissions($request),
+            ]
         );
     }
 
@@ -336,5 +356,49 @@ final class PeiController
         }
 
         return response()->json($query->execute($pei, $teacherId));
+    }
+
+    /**
+     * @return array{semester_id: string, version: string, is_finished: string}
+     */
+    private function listFilterValues(ListPeisData $filters): array
+    {
+        $isFinished = $filters->isFinished;
+
+        return [
+            'semester_id' => $filters->semesterId === null ? '' : (string) $filters->semesterId,
+            'version' => $filters->version === null ? '' : (string) $filters->version,
+            'is_finished' => $isFinished === null || $isFinished === ''
+                ? ''
+                : (string) (int) filter_var($isFinished, FILTER_VALIDATE_BOOLEAN),
+        ];
+    }
+
+    /**
+     * @return list<array{value: string, label: string}>
+     */
+    private function semesterOptions(PeiFilterOptionsQuery $filterOptions): array
+    {
+        return $filterOptions->semesters()
+            ->map(static fn (Semester $semester): array => [
+                'value' => (string) $semester->getKey(),
+                'label' => (string) $semester->label,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array{create: bool, view: bool, delete: bool}
+     */
+    private function listPermissions(Request $request): array
+    {
+        $user = $request->user();
+
+        return [
+            'create' => $user?->can('pei.create') ?? false,
+            'view' => $user?->can('pei.view') ?? false,
+            'delete' => $user?->can('pei.delete') ?? false,
+        ];
     }
 }

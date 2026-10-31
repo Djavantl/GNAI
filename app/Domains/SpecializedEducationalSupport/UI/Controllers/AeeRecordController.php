@@ -40,14 +40,20 @@ final class AeeRecordController
     {
         $aeeRecords = $query->execute($filters, $this->user($request));
 
-        return Inertia::render('SpecializedEducationalSupport/AeeRecords/Index', compact('aeeRecords') + $options->execute());
+        return Inertia::render(
+            'SpecializedEducationalSupport/AeeRecords/Index',
+            compact('aeeRecords') + $options->execute() + $this->listProps($request, ['student', 'professional_id', 'course_id', 'is_present']),
+        );
     }
 
     public function myRecords(ListAeeRecordsData $filters, ListAeeRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $aeeRecords = $query->execute($filters, $this->user($request), onlyOwn: true);
 
-        return Inertia::render('SpecializedEducationalSupport/AeeRecords/MyRecords', compact('aeeRecords') + $options->execute());
+        return Inertia::render(
+            'SpecializedEducationalSupport/AeeRecords/MyRecords',
+            compact('aeeRecords') + $options->execute() + $this->listProps($request, ['student', 'course_id', 'is_present']),
+        );
     }
 
     public function create(Session $session, AeeRecordFormQuery $form, Request $request): InertiaResponse
@@ -106,9 +112,29 @@ final class AeeRecordController
 
     public function studentIndex(Student $student, ListAeeRecordsData $filters, ListStudentAeeEvaluationsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
-        $aeeEvaluations = $query->execute($student, $filters, $this->user($request));
+        $user = $this->user($request);
+        $aeeEvaluations = $query->execute($student, $filters, $user);
+        $student->loadMissing('person');
+        $professionalId = $user->professional_id;
+        $aeeEvaluations->getCollection()->each(static function (AeeStudentEvaluation $evaluation) use ($professionalId): void {
+            $evaluation->setAttribute(
+                'can_manage',
+                $professionalId !== null
+                    && (int) $evaluation->aeeRecord?->attendanceSession?->professional_id === (int) $professionalId,
+            );
+        });
 
-        return Inertia::render('SpecializedEducationalSupport/Students/AeeRecords/Index', compact('student', 'aeeEvaluations') + $options->execute());
+        return Inertia::render(
+            'SpecializedEducationalSupport/Students/AeeRecords/Index',
+            [
+                'can' => [
+                    'view' => $user->can('aee-record.view'),
+                    'update' => $user->can('aee-record.update'),
+                    'delete' => $user->can('aee-record.delete'),
+                    'view_all' => $user->can('aee-record.view-all'),
+                ],
+            ] + compact('student', 'aeeEvaluations') + $options->execute() + $this->listProps($request, ['professional_id', 'is_present']),
+        );
     }
 
     public function studentShow(Student $student, AeeStudentEvaluation $evaluation, ListStudentAeeEvaluationsQuery $query, Request $request): InertiaResponse
@@ -174,6 +200,26 @@ final class AeeRecordController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("historico-atendimentos-aee-{$student->registration}.pdf");
+    }
+
+    /**
+     * @param  list<string>  $filterKeys
+     * @return array{filters: array<string, string>, can: array<string, bool>}
+     */
+    private function listProps(Request $request, array $filterKeys): array
+    {
+        $user = $this->user($request);
+
+        return [
+            'filters' => collect($filterKeys)
+                ->mapWithKeys(fn (string $key): array => [$key => (string) $request->query($key, '')])
+                ->all(),
+            'can' => [
+                'view' => $user->can('aee-record.view'),
+                'view_all' => $user->can('aee-record.view-all'),
+                'view_own' => $user->can('aee-record.view-own'),
+            ],
+        ];
     }
 
     private function user(Request $request): User

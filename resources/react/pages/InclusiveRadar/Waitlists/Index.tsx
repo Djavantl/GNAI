@@ -213,7 +213,7 @@ export default function InclusiveRadarWaitlistsIndexPage({
                     <TableListTable
                         className="waitlistIndex__table"
                         columns={columns}
-                        summary={`${waitlists.from ?? 0}–${waitlists.to ?? 0} de ${waitlists.total} registros`}
+                        page={waitlists}
                     >
                         {waitlists.data.map((waitlist) => {
                             const beneficiary = waitlist.student
@@ -268,9 +268,7 @@ export default function InclusiveRadarWaitlistsIndexPage({
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${waitlists.from ?? 0}–${waitlists.to ?? 0} de ${waitlists.total}`}
-                    currentPage={waitlists.current_page}
-                    pageCount={waitlists.last_page}
+                    page={waitlists}
                     disabled={busy}
                     paginationLabel="Páginas da fila de espera"
                     onSelect={(page) => {

@@ -61,3 +61,28 @@ export interface StudentContextFormProps {
     studentProfile: StudentContextProfile;
     studentContextOptions: StudentContextOptions;
 }
+
+export interface StudentContextListRecord {
+    id: number;
+    version: number;
+    evaluation_type: string;
+    evaluation_type_label: string;
+    is_current: boolean;
+    created_at: string;
+    can_manage: boolean;
+}
+
+export interface StudentContextPaginator {
+    data: StudentContextListRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
+export type StudentContextFilters = {
+    semester_id: string;
+    evaluation_type: string;
+    is_current: string;
+};

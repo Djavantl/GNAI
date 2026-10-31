@@ -329,7 +329,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                     <TableListTable
                         className="technologyIndex__table"
                         columns={technologyColumns}
-                        summary={`${records.from ?? 0}–${records.to ?? 0} de ${records.total} registros`}
+                        page={records}
                     >
                         {records.data.map((technology) => {
                             const exhausted =
@@ -411,9 +411,7 @@ export default function InclusiveRadarAssistiveTechnologiesIndexPage({
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${records.from ?? 0}–${records.to ?? 0} de ${records.total}`}
-                    currentPage={records.current_page}
-                    pageCount={records.last_page}
+                    page={records}
                     disabled={busy}
                     paginationLabel="Páginas da listagem"
                     onSelect={(page) => {

@@ -166,7 +166,7 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                     <TableListTable
                         className="locationIndex__table"
                         columns={columns}
-                        summary={`${locations.from ?? 0}–${locations.to ?? 0} de ${locations.total} registros`}
+                        page={locations}
                     >
                         {locations.data.length ? locations.data.map((location) => (
                             <tr key={location.id}>
@@ -214,9 +214,7 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${locations.total} ponto(s) de referência`}
-                    currentPage={locations.current_page}
-                    pageCount={locations.last_page}
+                    page={locations}
                     disabled={busy}
                     paginationLabel="Paginação de pontos de referência"
                     onSelect={(page) => visit(values, page)}

@@ -1,0 +1,18 @@
+.disciplineIndex__filters {
+    display: grid;
+    grid-template-columns: minmax(200px, 1.6fr) minmax(140px, 0.8fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.disciplineIndex__name {
+    color: var(--ui-color-form-label);
+    font-weight: 700;
+}
+
+@media (max-width: 560px) {
+    .disciplineIndex__filters {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

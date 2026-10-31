@@ -169,7 +169,7 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                     <TableListTable
                         className="institutionalEventIndex__table"
                         columns={columns}
-                        summary={`${events.from ?? 0}–${events.to ?? 0} de ${events.total} registros`}
+                        page={events}
                     >
                         {events.data.map((event) => (
                             <tr key={event.id}>
@@ -218,9 +218,7 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${events.from ?? 0}–${events.to ?? 0} de ${events.total}`}
-                    currentPage={events.current_page}
-                    pageCount={events.last_page}
+                    page={events}
                     disabled={busy}
                     paginationLabel="Páginas da agenda institucional"
                     onSelect={(page) => {

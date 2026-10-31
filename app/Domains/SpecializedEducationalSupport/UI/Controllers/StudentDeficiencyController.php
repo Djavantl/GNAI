@@ -14,6 +14,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDeficie
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDeficiencies\ShowStudentDeficiencyQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDeficiencies\StudentDeficiencyFilterOptionsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentDeficiencies\StudentDeficiencyFormQuery;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\DeficiencySeverity;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentDeficiency;
 use Illuminate\Http\RedirectResponse;
@@ -31,12 +32,34 @@ final class StudentDeficiencyController
         StudentDeficiencyFilterOptionsQuery $filterOptions,
         Request $request,
     ): InertiaResponse {
-        $deficiencies = $query->execute($student, $filters);
+        $deficiencies = $query->execute($student, $filters)->through(
+            static function (StudentDeficiency $studentDeficiency): array {
+                $severity = DeficiencySeverity::tryFrom((string) $studentDeficiency->severity);
+
+                return [
+                    ...$studentDeficiency->toArray(),
+                    'severity_label' => $severity?->label(),
+                    'severity_color' => $severity?->color(),
+                ];
+            },
+        );
+        $user = $request->user();
 
         return Inertia::render('SpecializedEducationalSupport/StudentDeficiencies/Index', [
             'student' => $student->loadMissing('person'),
             'deficiencies' => $deficiencies,
-            'filterDeficiencies' => $filterOptions->execute($student),
+            'filterDeficiencies' => collect($filterOptions->execute($student))
+                ->map(static fn (mixed $name, int|string $id): array => ['value' => (string) $id, 'label' => (string) $name])
+                ->values(),
+            'filters' => [
+                'deficiency_id' => $filters->deficiencyId === null ? '' : (string) $filters->deficiencyId,
+                'severity' => $filters->severity?->value ?? '',
+            ],
+            'can' => [
+                'create' => $user?->can('student-deficiency.create') ?? false,
+                'view' => $user?->can('student-deficiency.view') ?? false,
+                'delete' => $user?->can('student-deficiency.delete') ?? false,
+            ],
         ]);
     }
 

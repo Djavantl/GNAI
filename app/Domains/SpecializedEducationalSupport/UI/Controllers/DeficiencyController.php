@@ -31,7 +31,20 @@ final class DeficiencyController
 
         return Inertia::render(
             'SpecializedEducationalSupport/Deficiencies/Index',
-            compact('deficiencies'),
+            [
+                'deficiencies' => $deficiencies,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'cid_code' => $filters->cidCode ?? '',
+                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('deficiency.create') ?? false,
+                    'view' => $request->user()?->can('deficiency.view') ?? false,
+                    'update' => $request->user()?->can('deficiency.update') ?? false,
+                    'delete' => $request->user()?->can('deficiency.delete') ?? false,
+                ],
+            ],
         );
     }
 

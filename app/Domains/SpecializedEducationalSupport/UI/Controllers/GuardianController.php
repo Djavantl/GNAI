@@ -27,11 +27,28 @@ final class GuardianController
     {
         $student->loadMissing('person');
         $guardians = $query->execute($student, $filters);
+        $guardians->through(static function (Guardian $guardian): Guardian {
+            $guardian->person?->append('photo_url');
+
+            return $guardian;
+        });
         $relationships = $form->relationshipOptions();
 
         return Inertia::render(
             'SpecializedEducationalSupport/Guardians/Index',
-            compact('student', 'guardians', 'relationships'),
+            [
+                ...compact('student', 'guardians', 'relationships'),
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'email' => $filters->email ?? '',
+                    'relationship' => $filters->relationship?->value ?? '',
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('guardian.create') ?? false,
+                    'view' => $request->user()?->can('guardian.view') ?? false,
+                    'delete' => $request->user()?->can('guardian.delete') ?? false,
+                ],
+            ],
         );
     }
 

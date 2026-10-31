@@ -26,3 +26,26 @@ export interface GuardianFormOptions {
     genders: Record<string, string>;
     relationships: Record<string, string>;
 }
+
+export interface GuardianFilters {
+    name: string;
+    email: string;
+    relationship: string;
+}
+
+export interface GuardianPaginator {
+    data: GuardianRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
+export interface GuardianIndexProps {
+    student: GuardianStudent;
+    guardians: GuardianPaginator;
+    relationships: Record<string, string>;
+    filters: Partial<GuardianFilters>;
+    can: { create: boolean; view: boolean; delete: boolean };
+}

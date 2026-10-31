@@ -16,3 +16,22 @@ export interface PositionRecord {
 export interface PositionFormProps {
     permissions: GroupedPositionPermissions;
 }
+
+export type PositionListRecord = Pick<PositionRecord, "id" | "name" | "description"> & {
+    is_active: boolean;
+};
+
+export type PositionPaginator = {
+    data: PositionListRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+};
+
+export type PositionFilters = {
+    name: string;
+    description: string;
+    is_active: string;
+};

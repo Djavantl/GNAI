@@ -67,7 +67,7 @@ export default function StudentList({
         <TableListTable
           className="studentsPage__indexTable"
           columns={studentColumns}
-          summary={`${students.from ?? 0}–${students.to ?? 0} de ${students.total} registros`}
+          page={students}
         >
           {students.data.length ? (
             students.data.map((student) => (
@@ -129,9 +129,7 @@ export default function StudentList({
         </TableListTable>
       </TableListScroll>
       <TableListFooter
-        summary={`${students.from ?? 0}–${students.to ?? 0} de ${students.total}`}
-        currentPage={students.current_page}
-        pageCount={students.last_page}
+        page={students}
         disabled={processing}
         paginationLabel="Páginas de alunos"
         onSelect={(page) => {

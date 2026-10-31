@@ -27,7 +27,18 @@ final class DisciplineController
 
         return Inertia::render(
             'SpecializedEducationalSupport/Disciplines/Index',
-            compact('disciplines'),
+            [
+                'disciplines' => $disciplines,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('discipline.create') ?? false,
+                    'view' => $request->user()?->can('discipline.view') ?? false,
+                    'delete' => $request->user()?->can('discipline.delete') ?? false,
+                ],
+            ],
         );
     }
 

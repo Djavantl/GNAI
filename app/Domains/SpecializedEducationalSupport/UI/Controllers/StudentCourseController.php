@@ -33,11 +33,24 @@ final class StudentCourseController
         Request $request,
     ): InertiaResponse {
         $studentCourses = $query->execute($student, $filters);
+        $user = $request->user();
 
         return Inertia::render('SpecializedEducationalSupport/StudentCourses/Index', [
             'student' => $student->loadMissing('person'),
             'studentCourses' => $studentCourses,
-            'courses' => $filterCourses->execute($student),
+            'courses' => collect($filterCourses->execute($student))
+                ->map(static fn (mixed $name, int|string $id): array => ['value' => (string) $id, 'label' => (string) $name])
+                ->values(),
+            'filters' => [
+                'course_id' => $filters->courseId === null ? '' : (string) $filters->courseId,
+                'academic_year' => $filters->academicYear ?? '',
+                'is_current' => $filters->isCurrent === null ? '' : (string) (int) $filters->isCurrent,
+            ],
+            'can' => [
+                'create' => $user?->can('student-course.create') ?? false,
+                'view' => $user?->can('student-course.view') ?? false,
+                'delete' => $user?->can('student-course.delete') ?? false,
+            ],
         ]);
     }
 

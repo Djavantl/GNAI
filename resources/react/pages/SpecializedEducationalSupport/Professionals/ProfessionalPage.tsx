@@ -8,12 +8,14 @@ export default function ProfessionalPage({
     title,
     subtitle,
     current,
+    actions,
     professional,
     children,
 }: {
     title: string;
     subtitle?: string;
-    current: string;
+    current?: string;
+    actions?: ReactNode;
     professional?: { id: number; name: string };
     children: ReactNode;
 }): React.JSX.Element {
@@ -29,13 +31,16 @@ export default function ProfessionalPage({
         });
     }
 
-    breadcrumbItems.push({ label: current });
+    if (current) {
+        breadcrumbItems.push({ label: current });
+    }
 
     return (
         <BusinessPage
             title={title}
             subtitle={subtitle}
             breadcrumbItems={breadcrumbItems}
+            actions={actions}
             className="professionalPage"
         >
             {children}

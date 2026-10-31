@@ -14,6 +14,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\Professionals\Upd
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\ListProfessionalsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\ProfessionalFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\ShowProfessionalQuery;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\ProfessionalStatus;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,10 +27,34 @@ final class ProfessionalController
     public function index(ListProfessionalsData $filters, ListProfessionalsQuery $query, ProfessionalFormQuery $form, Request $request): InertiaResponse
     {
         $professionals = $query->execute($filters);
+        $professionals->through(static function (Professional $professional): Professional {
+            $professional->person?->append('photo_url');
+
+            return $professional;
+        });
 
         return Inertia::render(
             'SpecializedEducationalSupport/Professionals/Index',
-            ['professionals' => $professionals, ...$form->forIndex()],
+            [
+                'professionals' => $professionals,
+                ...$form->forIndex(),
+                'professionalStatusColors' => collect(ProfessionalStatus::cases())
+                    ->mapWithKeys(static fn (ProfessionalStatus $status): array => [
+                        $status->value => $status->color(),
+                    ]),
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'email' => $filters->email ?? '',
+                    'registration' => $filters->registration ?? '',
+                    'position' => $filters->position === null ? '' : (string) $filters->position,
+                    'status' => $filters->status?->value ?? '',
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('professional.create') ?? false,
+                    'view' => $request->user()?->can('professional.view') ?? false,
+                    'delete' => $request->user()?->can('professional.delete') ?? false,
+                ],
+            ],
         );
     }
 

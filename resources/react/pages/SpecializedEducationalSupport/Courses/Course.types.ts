@@ -10,3 +10,21 @@ export interface CourseRecord {
     is_active: boolean;
     disciplines?: CourseDisciplineOption[];
 }
+
+export type CourseListRecord = CourseRecord & {
+    disciplines_count: number;
+};
+
+export type CoursePaginator = {
+    data: CourseListRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+};
+
+export type CourseFilters = {
+    name: string;
+    is_active: string;
+};

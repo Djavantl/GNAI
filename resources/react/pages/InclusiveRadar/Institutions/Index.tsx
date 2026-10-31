@@ -151,7 +151,7 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                     <TableListTable
                         className="institutionIndex__table"
                         columns={columns}
-                        summary={`${institutions.from ?? 0}–${institutions.to ?? 0} de ${institutions.total} registros`}
+                        page={institutions}
                     >
                         {institutions.data.length ? institutions.data.map((institution) => (
                             <tr key={institution.id}>
@@ -192,9 +192,7 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${institutions.total} instituição(ões)`}
-                    currentPage={institutions.current_page}
-                    pageCount={institutions.last_page}
+                    page={institutions}
                     disabled={busy}
                     paginationLabel="Paginação de instituições"
                     onSelect={(page) => visit(values, page)}

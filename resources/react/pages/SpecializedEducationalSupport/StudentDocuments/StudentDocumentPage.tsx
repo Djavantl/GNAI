@@ -13,13 +13,15 @@ export default function StudentDocumentPage({
     title,
     subtitle,
     current,
+    actions,
     student,
     documentTitle,
     children,
 }: {
     title: string;
     subtitle?: string;
-    current: string;
+    current?: string;
+    actions?: ReactNode;
     student: StudentDocumentStudent;
     documentTitle?: string;
     children: ReactNode;
@@ -30,19 +32,22 @@ export default function StudentDocumentPage({
         { label: student.person.name, href: studentUrl(student.id) },
         {
             label: "Documentos",
-            href: studentRecordUrl(student.id, "documents"),
+            href: current ? studentRecordUrl(student.id, "documents") : undefined,
         },
     ];
 
     if (documentTitle) breadcrumbItems.push({ label: documentTitle });
 
-    breadcrumbItems.push({ label: current });
+    if (current) {
+        breadcrumbItems.push({ label: current });
+    }
 
     return (
         <BusinessPage
             title={title}
             subtitle={subtitle}
             breadcrumbItems={breadcrumbItems}
+            actions={actions}
             className="studentDocumentPage"
         >
             {children}

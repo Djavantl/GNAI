@@ -10,33 +10,36 @@ export default function PositionPage({
     subtitle,
     current,
     position,
+    actions,
     children,
 }: {
     title: string;
     subtitle?: string;
-    current: string;
+    current?: string;
     position?: { id: number; name: string };
+    actions?: ReactNode;
     children: ReactNode;
 }): React.JSX.Element {
     const breadcrumbItems: PageBreadcrumbItem[] = [
         { label: "Home", href: "/auth/dashboard" },
-        { label: "Cargos", href: positionsBase },
+        { label: "Cargos", href: current || position ? positionsBase : undefined },
     ];
 
     if (position) {
         breadcrumbItems.push({
             label: position.name,
-            href: `${positionsBase}/${position.id}/show`,
+            href: current ? `${positionsBase}/${position.id}/show` : undefined,
         });
     }
 
-    breadcrumbItems.push({ label: current });
+    if (current) breadcrumbItems.push({ label: current });
 
     return (
         <BusinessPage
             title={title}
             subtitle={subtitle}
             breadcrumbItems={breadcrumbItems}
+            actions={actions}
             className="positionPage"
         >
             {children}

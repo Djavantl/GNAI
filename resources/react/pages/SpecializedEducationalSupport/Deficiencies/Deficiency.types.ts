@@ -5,3 +5,18 @@ export interface DeficiencyRecord {
     description: string | null;
     is_active: boolean;
 }
+
+export type DeficiencyPaginator = {
+    data: DeficiencyRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+};
+
+export type DeficiencyFilters = {
+    name: string;
+    cid_code: string;
+    is_active: string;
+};

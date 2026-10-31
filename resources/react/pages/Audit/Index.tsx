@@ -210,7 +210,7 @@ export default function AuditIndexPage({ records, filters: initialFilters, optio
                     <TableListTable
                         className="auditIndex__table"
                         columns={columns}
-                        summary={`${records.from ?? 0}–${records.to ?? 0} de ${records.total} registros`}
+                        page={records}
                     >
                         {records.data.length ? records.data.map((record) => (
                             <tr key={record.id}>
@@ -246,9 +246,7 @@ export default function AuditIndexPage({ records, filters: initialFilters, optio
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${records.total} ${records.total === 1 ? "registro" : "registros"}`}
-                    currentPage={records.current_page}
-                    pageCount={records.last_page}
+                    page={records}
                     disabled={busy}
                     paginationLabel="Paginação do histórico de alterações"
                     onSelect={(page) => visit(values, page)}

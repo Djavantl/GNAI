@@ -1,0 +1,13 @@
+.studentDeficiencyIndex__filters {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.4fr) minmax(140px, 1fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+@media (max-width: 560px) {
+    .studentDeficiencyIndex__filters {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

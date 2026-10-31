@@ -7,3 +7,19 @@ export interface SemesterRecord {
     end_date: string | null;
     is_current: boolean;
 }
+
+export type SemesterPaginator = {
+    data: SemesterRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+};
+
+export type SemesterFilters = {
+    year: string;
+    term: string;
+    label: string;
+    is_current: string;
+};

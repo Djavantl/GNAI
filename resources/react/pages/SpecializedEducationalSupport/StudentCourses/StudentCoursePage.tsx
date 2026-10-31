@@ -9,6 +9,8 @@ export default function StudentCoursePage({
     studentId,
     studentName,
     studentCourse,
+    index = false,
+    actions,
     children,
 }: {
     title: string;
@@ -16,21 +18,26 @@ export default function StudentCoursePage({
     studentId: number;
     studentName: string;
     studentCourse?: { id: number; courseName: string };
+    index?: boolean;
+    actions?: ReactNode;
     children: ReactNode;
 }): React.JSX.Element {
     const breadcrumbItems: PageBreadcrumbItem[] = [
         { label: "Home", href: "/auth/dashboard" },
         { label: "Alunos", href: studentsBase },
         { label: studentName, href: studentUrl(studentId) },
-        { label: "Matrículas", href: `${aeeBase}/students/${studentId}/history` },
+        {
+            label: "Matrículas",
+            href: index ? undefined : `${aeeBase}/students/${studentId}/history`,
+        },
     ];
 
-    if (studentCourse) {
+    if (!index && studentCourse) {
         breadcrumbItems.push(
             { label: studentCourse.courseName, href: `${aeeBase}/student-courses/${studentCourse.id}` },
             { label: "Editar" },
         );
-    } else {
+    } else if (!index) {
         breadcrumbItems.push({ label: "Cadastrar" });
     }
 
@@ -39,6 +46,7 @@ export default function StudentCoursePage({
             title={title}
             subtitle={subtitle}
             breadcrumbItems={breadcrumbItems}
+            actions={actions}
             className="studentCoursePage"
         >
             {children}

@@ -1,0 +1,25 @@
+.pendencyList__filters {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.4fr) minmax(160px, 1.2fr) minmax(130px, .8fr) minmax(130px, .8fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.pendencyList__filters--my {
+    grid-template-columns: minmax(200px, 1.6fr) minmax(140px, .8fr) minmax(140px, .8fr) auto;
+}
+
+@media (max-width: 1000px) {
+    .pendencyList__filters,
+    .pendencyList__filters--my {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .pendencyList__filters,
+    .pendencyList__filters--my {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

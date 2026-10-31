@@ -171,7 +171,7 @@ export default function InclusiveRadarAccessibilityFeaturesIndexPage({
                     <TableListTable
                         className="accessibilityFeatureIndex__table"
                         columns={columns}
-                        summary={`${features.from ?? 0}–${features.to ?? 0} de ${features.total} registros`}
+                        page={features}
                     >
                         {features.data.length ? features.data.map((feature) => (
                             <tr key={feature.id}>
@@ -217,9 +217,7 @@ export default function InclusiveRadarAccessibilityFeaturesIndexPage({
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${features.total} recurso(s) de acessibilidade`}
-                    currentPage={features.current_page}
-                    pageCount={features.last_page}
+                    page={features}
                     disabled={busy}
                     paginationLabel="Paginação de recursos de acessibilidade"
                     onSelect={(page) => visit(filterValues, page)}

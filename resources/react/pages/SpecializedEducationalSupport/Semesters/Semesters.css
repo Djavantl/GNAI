@@ -1,0 +1,47 @@
+.semesterIndex__filters {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.7fr) minmax(140px, 0.9fr) minmax(160px, 1.2fr) minmax(140px, 0.9fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.semesterIndex__period {
+    display: flex;
+    min-width: 0;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.semesterIndex__period small {
+    overflow: hidden;
+    color: var(--ui-color-text-muted);
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.semesterIndex__label {
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.semesterIndex__table tr.semesterIndex__row--current > td {
+    background-color: var(--ui-color-surface-alt);
+}
+
+.semesterIndex__info {
+    margin: 16px 0 0;
+}
+
+@media (max-width: 1000px) {
+    .semesterIndex__filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .semesterIndex__filters {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

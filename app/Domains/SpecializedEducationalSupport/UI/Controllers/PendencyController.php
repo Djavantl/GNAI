@@ -17,7 +17,9 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\Lis
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\PendencyFilterOptionsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\PendencyFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Pendencies\ShowPendencyQuery;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\Priority;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Pendency;
+use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,11 +31,29 @@ final class PendencyController
     public function index(ListPendenciesData $filters, ListPendenciesQuery $query, PendencyFilterOptionsQuery $filterOptions, Request $request): InertiaResponse
     {
         $pendencies = $query->execute($filters);
-        $professionals = $filterOptions->professionals();
+        $user = $request->user();
 
         return Inertia::render(
             'SpecializedEducationalSupport/Pendencies/Index',
-            compact('pendencies', 'professionals'),
+            [
+                'pendencies' => $pendencies,
+                'professionals' => $filterOptions->professionals()
+                    ->map(static fn (Professional $professional): array => [
+                        'value' => (string) $professional->getKey(),
+                        'label' => (string) ($professional->person?->name ?? ''),
+                    ])
+                    ->values(),
+                'priorities' => $this->priorityOptions(),
+                'filters' => $this->filterValues($filters) + [
+                    'assigned_to' => $filters->assignedTo === null ? '' : (string) $filters->assignedTo,
+                ],
+                'can' => [
+                    'create' => $user?->can('pendency.create') ?? false,
+                    'view' => $user?->can('pendency.view') ?? false,
+                    'delete' => $user?->can('pendency.delete') ?? false,
+                    'my' => ($user?->professional !== null) && ($user?->can('pendency.view') ?? false),
+                ],
+            ],
         );
     }
 
@@ -118,7 +138,14 @@ final class PendencyController
 
         return Inertia::render(
             'SpecializedEducationalSupport/Pendencies/My',
-            compact('pendencies'),
+            [
+                'pendencies' => $pendencies,
+                'priorities' => $this->priorityOptions(),
+                'filters' => $this->filterValues($filters),
+                'can' => [
+                    'view' => $request->user()?->can('pendency.view') ?? false,
+                ],
+            ],
         );
     }
 
@@ -136,5 +163,32 @@ final class PendencyController
         return redirect()
             ->route('specialized-educational-support.pendencies.my')
             ->with('success', 'Pendência completada com sucesso.');
+    }
+
+    /**
+     * @return array{title: string, priority: string, is_completed: string}
+     */
+    private function filterValues(ListPendenciesData $filters): array
+    {
+        return [
+            'title' => $filters->title ?? '',
+            'priority' => $filters->priority?->value ?? '',
+            'is_completed' => $filters->isCompleted === null ? '' : (string) (int) $filters->isCompleted,
+        ];
+    }
+
+    /**
+     * @return list<array{value: string, label: string, color: string}>
+     */
+    private function priorityOptions(): array
+    {
+        return array_map(
+            static fn (Priority $priority): array => [
+                'value' => $priority->value,
+                'label' => $priority->label(),
+                'color' => $priority->color(),
+            ],
+            Priority::cases(),
+        );
     }
 }

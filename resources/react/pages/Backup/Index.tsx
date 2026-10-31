@@ -321,7 +321,7 @@ export default function BackupIndexPage({
                     <TableListTable
                         className="backupIndex__table"
                         columns={columns}
-                        summary={`${backups.from ?? 0}–${backups.to ?? 0} de ${backups.total} registros`}
+                        page={backups}
                     >
                         {backups.data.length ? backups.data.map((backup) => {
                             return (
@@ -399,9 +399,7 @@ export default function BackupIndexPage({
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${backups.total} backup(s)`}
-                    currentPage={backups.current_page}
-                    pageCount={backups.last_page}
+                    page={backups}
                     disabled={busy}
                     paginationLabel="Paginação de backups"
                     onSelect={(page) => {

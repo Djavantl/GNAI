@@ -40,3 +40,52 @@
     color: var(--ui-color-danger);
     font-size: 12px;
 }
+
+.professionalIndex__filters {
+    display: grid;
+    grid-template-columns: minmax(200px, 5fr) minmax(150px, 3fr) minmax(130px, 2fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.professionalIndex__filters--secondary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.professionalIndex__identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.professionalIndex__avatar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.professionalIndex__identity strong {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .professionalIndex__filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .professionalIndex__filters,
+    .professionalIndex__filters--secondary {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

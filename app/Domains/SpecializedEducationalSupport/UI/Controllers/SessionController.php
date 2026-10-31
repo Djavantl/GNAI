@@ -26,6 +26,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\Sessions\Weekl
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Session;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
+use App\Domains\SpecializedEducationalSupport\UI\Presenters\SessionListPresenter;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -43,6 +44,7 @@ final class SessionController
         ListSessionsData $filters,
         ListSessionsQuery $query,
         WeeklyAgendaQuery $agendaQuery,
+        SessionListPresenter $presenter,
         Request $request,
     ): InertiaResponse {
         $sessions = $query->execute($filters);
@@ -53,11 +55,24 @@ final class SessionController
             $request,
             'specialized-educational-support.sessions.index',
         );
+        $user = $request->user();
 
-        return Inertia::render(
-            'SpecializedEducationalSupport/Sessions/Index',
-            compact('sessions', 'students', 'professionals', 'agenda', 'weekNavigation'),
-        );
+        return Inertia::render('SpecializedEducationalSupport/Sessions/Index', [
+            'sessions' => $presenter->sessions($sessions, $request),
+            'agenda' => $presenter->agenda($agenda, $request),
+            'weekNavigation' => $weekNavigation,
+            'filters' => $presenter->filters($filters),
+            'options' => [
+                'students' => $presenter->peopleOptions($students, 'Aluno'),
+                'professionals' => $presenter->peopleOptions($professionals, 'Profissional'),
+                ...$presenter->enumOptions(),
+            ],
+            'can' => [
+                'create' => $user?->can('session.create') ?? false,
+                'view' => $user?->can('session.view') ?? false,
+                'mySessions' => $user?->professional !== null && ($user?->can('session.view-own') ?? false),
+            ],
+        ]);
     }
 
     public function create(SessionFormQuery $form): InertiaResponse
@@ -129,17 +144,30 @@ final class SessionController
         Student $student,
         ListSessionsData $filters,
         ListStudentSessionsQuery $query,
+        SessionListPresenter $presenter,
         Request $request,
     ): InertiaResponse {
         $sessions = $query->execute($student, $filters);
         $professionals = Professional::with('person')
             ->orderBy('id')
             ->get(['id', 'person_id']);
+        $student->loadMissing('person');
 
-        return Inertia::render(
-            'SpecializedEducationalSupport/Sessions/StudentIndex',
-            compact('sessions', 'student', 'professionals'),
-        );
+        return Inertia::render('SpecializedEducationalSupport/Sessions/StudentIndex', [
+            'sessions' => $presenter->sessions($sessions, $request),
+            'student' => [
+                'id' => $student->id,
+                'name' => $student->person?->name ?? 'Aluno',
+            ],
+            'filters' => $presenter->filters($filters),
+            'options' => [
+                'professionals' => $presenter->peopleOptions($professionals, 'Profissional'),
+                ...$presenter->enumOptions(),
+            ],
+            'can' => [
+                'view' => $request->user()?->can('session.view') ?? false,
+            ],
+        ]);
     }
 
     /**
@@ -150,6 +178,7 @@ final class SessionController
         ListMySessionsQuery $query,
         WeeklyAgendaQuery $agendaQuery,
         AuthenticatedUserResolver $authenticatedUser,
+        SessionListPresenter $presenter,
         Request $request,
     ): InertiaResponse {
         $user = $authenticatedUser->fromRequest($request);
@@ -164,10 +193,21 @@ final class SessionController
             'specialized-educational-support.sessions.my-sessions',
         );
 
-        return Inertia::render(
-            'SpecializedEducationalSupport/Sessions/MySessions',
-            compact('sessions', 'students', 'agenda', 'weekNavigation'),
-        );
+        return Inertia::render('SpecializedEducationalSupport/Sessions/MySessions', [
+            'sessions' => $presenter->sessions($sessions, $request),
+            'agenda' => $presenter->agenda($agenda, $request),
+            'weekNavigation' => $weekNavigation,
+            'filters' => $presenter->filters($filters),
+            'options' => [
+                'students' => $presenter->peopleOptions($students, 'Aluno'),
+                ...$presenter->enumOptions(),
+            ],
+            'can' => [
+                'create' => $user->can('session.create'),
+                'view' => $user->can('session.view'),
+                'viewAll' => $user->can('session.view-all'),
+            ],
+        ]);
     }
 
     /**

@@ -28,7 +28,21 @@ final class SemesterController
 
         return Inertia::render(
             'SpecializedEducationalSupport/Semesters/Index',
-            compact('semesters'),
+            [
+                'semesters' => $semesters,
+                'filters' => [
+                    'year' => $filters->year === null ? '' : (string) $filters->year,
+                    'term' => $filters->term === null ? '' : (string) $filters->term,
+                    'label' => $filters->label ?? '',
+                    'is_current' => $filters->isCurrent === null ? '' : (string) (int) $filters->isCurrent,
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('semester.create') ?? false,
+                    'view' => $request->user()?->can('semester.view') ?? false,
+                    'update' => $request->user()?->can('semester.update') ?? false,
+                    'delete' => $request->user()?->can('semester.delete') ?? false,
+                ],
+            ],
         );
     }
 

@@ -172,7 +172,7 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                     <TableListTable
                         className="barrierCategoryIndex__table"
                         columns={columns}
-                        summary={`${categories.from ?? 0}–${categories.to ?? 0} de ${categories.total} registros`}
+                        page={categories}
                     >
                         {categories.data.length ? categories.data.map((category) => (
                             <tr key={category.id}>
@@ -219,9 +219,7 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter
-                    summary={`${categories.total} categoria(s) de barreira`}
-                    currentPage={categories.current_page}
-                    pageCount={categories.last_page}
+                    page={categories}
                     disabled={busy}
                     paginationLabel="Paginação de categorias de barreiras"
                     onSelect={(page) => visit(filterValues, page)}

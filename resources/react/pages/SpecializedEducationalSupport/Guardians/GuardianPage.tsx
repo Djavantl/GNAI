@@ -14,13 +14,15 @@ export default function GuardianPage({
     title,
     subtitle,
     current,
+    actions,
     student,
     guardian,
     children,
 }: {
     title: string;
     subtitle?: string;
-    current: string;
+    current?: string;
+    actions?: ReactNode;
     student: GuardianStudent;
     guardian?: { id: number; person: { name: string } };
     children: ReactNode;
@@ -42,13 +44,16 @@ export default function GuardianPage({
         });
     }
 
-    breadcrumbItems.push({ label: current });
+    if (current) {
+        breadcrumbItems.push({ label: current });
+    }
 
     return (
         <BusinessPage
             title={title}
             subtitle={subtitle}
             breadcrumbItems={breadcrumbItems}
+            actions={actions}
             className="guardianPage"
         >
             {children}

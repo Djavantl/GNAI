@@ -56,7 +56,7 @@ export default function MaterialList({
                 <TableListTable
                     className="materialList"
                     columns={materialColumns}
-                    summary={`${materials.from ?? 0}–${materials.to ?? 0} de ${materials.total} registros`}
+                    page={materials}
                 >
                     {materials.data.map((material) => {
                         const exhausted =
@@ -132,9 +132,7 @@ export default function MaterialList({
                 </TableListTable>
             </TableListScroll>
             <TableListFooter
-                summary={`${materials.from ?? 0}–${materials.to ?? 0} de ${materials.total}`}
-                currentPage={materials.current_page}
-                pageCount={materials.last_page}
+                page={materials}
                 disabled={processing}
                 paginationLabel="Páginas de materiais pedagógicos acessíveis"
                 onSelect={onPageSelect}

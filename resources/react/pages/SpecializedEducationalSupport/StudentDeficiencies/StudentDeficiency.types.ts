@@ -15,3 +15,22 @@ export interface DeficiencyOption {
     id: number;
     name: string;
 }
+
+export type StudentDeficiencyListRecord = StudentDeficiencyRecord & {
+    severity_label: string | null;
+    severity_color: string | null;
+};
+
+export interface StudentDeficiencyPaginator {
+    data: StudentDeficiencyListRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
+export type StudentDeficiencyFilters = {
+    deficiency_id: string;
+    severity: string;
+};

@@ -28,3 +28,37 @@ export interface ProfessionalFormOptions {
     defaultGender?: string;
     defaultStatus?: string;
 }
+
+export interface ProfessionalListRecord {
+    id: number;
+    person: Pick<ProfessionalPerson, "id" | "name" | "email"> & { photo_url?: string | null };
+    position: { id: number; name: string } | null;
+    registration: string;
+    status: string | null;
+}
+
+export interface ProfessionalFilters {
+    name: string;
+    email: string;
+    registration: string;
+    position: string;
+    status: string;
+}
+
+export interface ProfessionalPaginator {
+    data: ProfessionalListRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
+export interface ProfessionalIndexProps {
+    professionals: ProfessionalPaginator;
+    positions: Array<{ id: number; name: string }>;
+    professionalStatuses: Record<string, string>;
+    professionalStatusColors: Record<string, string>;
+    filters: Partial<ProfessionalFilters>;
+    can: { create: boolean; view: boolean; delete: boolean };
+}

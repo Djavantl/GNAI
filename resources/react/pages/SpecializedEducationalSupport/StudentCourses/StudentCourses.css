@@ -34,3 +34,23 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+.studentCourseIndex__filters {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.4fr) minmax(120px, 0.8fr) minmax(140px, 1fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+@media (max-width: 900px) {
+    .studentCourseIndex__filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .studentCourseIndex__filters {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

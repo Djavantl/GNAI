@@ -29,7 +29,20 @@ final class PositionController
 
         return Inertia::render(
             'SpecializedEducationalSupport/Positions/Index',
-            compact('positions'),
+            [
+                'positions' => $positions,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'description' => $filters->description ?? '',
+                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('position.create') ?? false,
+                    'view' => $request->user()?->can('position.view') ?? false,
+                    'update' => $request->user()?->can('position.update') ?? false,
+                    'delete' => $request->user()?->can('position.delete') ?? false,
+                ],
+            ],
         );
     }
 

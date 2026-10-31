@@ -1,0 +1,4 @@
+.notificationIndex__row--unread > td:first-child { box-shadow: inset 4px 0 0 var(--ui-color-gnai-primary); }
+.notificationIndex__row--unread .notificationIndex__title { font-weight: 700; color: var(--ui-color-gnai-primary); }
+.notificationIndex__clock { margin-right: 5px; color: var(--ui-color-text-muted); }
+.notificationIndex__emptyIcon { display: block; margin-bottom: 10px; font-size: 2em; }

@@ -31,10 +31,28 @@ final class TeacherController
     public function index(ListTeachersData $filters, ListTeachersQuery $query, Request $request): InertiaResponse
     {
         $teachers = $query->execute($filters);
+        $teachers->through(static function (Teacher $teacher): Teacher {
+            $teacher->person?->append('photo_url');
+
+            return $teacher;
+        });
 
         return Inertia::render(
             'SpecializedEducationalSupport/Teachers/Index',
-            compact('teachers'),
+            [
+                'teachers' => $teachers,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'email' => $filters->email ?? '',
+                    'registration' => $filters->registration ?? '',
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('teacher.create') ?? false,
+                    'view' => $request->user()?->can('teacher.view') ?? false,
+                    'update' => $request->user()?->can('teacher.update') ?? false,
+                    'delete' => $request->user()?->can('teacher.delete') ?? false,
+                ],
+            ],
         );
     }
 

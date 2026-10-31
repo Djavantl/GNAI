@@ -12,6 +12,7 @@ import {
 import Table from '@/components/Tables/Table/Table';
 import { joinClassNames } from '@/utils/joinClassNames';
 import TableListColumnsMenu from './TableListColumnsMenu';
+import { formatTableListRange } from './TableList.utils';
 import type {
   TableListColumn,
   TableListTableProps,
@@ -101,6 +102,7 @@ export default function TableListTable({
   className,
   children,
   columns,
+  page,
   summary,
   hover = true,
   ...props
@@ -247,7 +249,7 @@ export default function TableListTable({
       <div className="tableListToolbar">
         <span className="tableListToolbar__spacer" aria-hidden="true" />
         <strong className="tableListToolbar__summary" role="status">
-          {summary}
+          {summary ?? (page ? `${formatTableListRange(page)} registros` : null)}
         </strong>
         <TableListColumnsMenu
           columns={columns}

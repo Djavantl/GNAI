@@ -6,6 +6,15 @@ import type {
 export const aeeBase = "/specialized-educational-support";
 export const sessionShowUrl = (id: number): string => `${aeeBase}/sessions/${id}/show`;
 export const aeeRecordShowUrl = (id: number): string => `${aeeBase}/aee-records/${id}/show`;
+export const aeeRecordPdfUrl = (id: number): string => `${aeeBase}/aee-records/${id}/pdf`;
+export const aeeRecordsIndexUrl = `${aeeBase}/aee-records`;
+export const myAeeRecordsUrl = `${aeeBase}/my-aee-records`;
+export const studentAeeRecordsUrl = (studentId: number): string => `${aeeBase}/students/${studentId}/aee-records`;
+export const studentAeeEvaluationUrl = (
+    studentId: number,
+    evaluationId: number,
+    action = "show",
+): string => `${studentAeeRecordsUrl(studentId)}/${evaluationId}${action ? `/${action}` : ""}`;
 
 export const absenceFields = ["absence_reason"] as const;
 export const presenceFields = [

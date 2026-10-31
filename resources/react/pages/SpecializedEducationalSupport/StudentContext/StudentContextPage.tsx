@@ -9,6 +9,8 @@ export default function StudentContextPage({
     studentId,
     studentName,
     contextId,
+    index = false,
+    actions,
     children,
 }: {
     title: string;
@@ -16,10 +18,19 @@ export default function StudentContextPage({
     studentId: number;
     studentName: string;
     contextId?: number;
+    index?: boolean;
+    actions?: ReactNode;
     children: ReactNode;
 }): React.JSX.Element {
     const contextsUrl = `${aeeBase}/student-context/${studentId}/index`;
-    const breadcrumbItems: PageBreadcrumbItem[] = contextId
+    const breadcrumbItems: PageBreadcrumbItem[] = index
+        ? [
+            { label: "Home", href: "/auth/dashboard" },
+            { label: "Alunos", href: studentsBase },
+            { label: studentName, href: studentUrl(studentId) },
+            { label: "Contextos" },
+        ]
+        : contextId
         ? [
             { label: "Home", href: "/auth/dashboard" },
             { label: "Alunos", href: studentsBase },
@@ -40,6 +51,7 @@ export default function StudentContextPage({
             title={title}
             subtitle={subtitle}
             breadcrumbItems={breadcrumbItems}
+            actions={actions}
             className="studentContextPage"
         >
             {children}

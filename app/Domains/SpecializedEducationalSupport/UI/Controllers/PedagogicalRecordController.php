@@ -22,6 +22,7 @@ use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Shared\Application\Exceptions\AccessDeniedException;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -35,14 +36,14 @@ final class PedagogicalRecordController
     {
         $pedagogicalRecords = $query->execute($filters, $this->user($request));
 
-        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Index', compact('pedagogicalRecords') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/Index', $this->listingProps($pedagogicalRecords, $options, $request));
     }
 
     public function myRecords(ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
     {
         $pedagogicalRecords = $query->execute($filters, $this->user($request), onlyOwn: true);
 
-        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/MyRecords', compact('pedagogicalRecords') + $options->execute());
+        return Inertia::render('SpecializedEducationalSupport/PedagogicalRecords/MyRecords', $this->listingProps($pedagogicalRecords, $options, $request));
     }
 
     public function studentIndex(Student $student, ListPedagogicalRecordsData $filters, ListPedagogicalRecordsQuery $query, AttendanceRecordFilterOptionsQuery $options, Request $request): InertiaResponse
@@ -50,7 +51,15 @@ final class PedagogicalRecordController
         $student->loadMissing('person');
         $pedagogicalRecords = $query->execute($filters, $this->user($request), student: $student);
 
-        return Inertia::render('SpecializedEducationalSupport/Students/PedagogicalRecords/Index', compact('student', 'pedagogicalRecords') + $options->execute());
+        return Inertia::render(
+            'SpecializedEducationalSupport/Students/PedagogicalRecords/Index',
+            $this->listingProps($pedagogicalRecords, $options, $request) + [
+                'student' => [
+                    'id' => $student->getKey(),
+                    'name' => $student->person?->name,
+                ],
+            ],
+        );
     }
 
     public function create(Session $session, PedagogicalRecordFormQuery $form, Request $request): InertiaResponse
@@ -136,6 +145,62 @@ final class PedagogicalRecordController
         PdfPageNumberer::apply($pdf);
 
         return $pdf->stream("historico-atendimentos-pedagogicos-{$student->registration}.pdf");
+    }
+
+    /**
+     * Presentation-only props for the React listings: lean rows, filter options, current filters and abilities.
+     *
+     * @param  LengthAwarePaginator<int, PedagogicalRecord>  $pedagogicalRecords
+     * @return array<string, mixed>
+     */
+    private function listingProps(LengthAwarePaginator $pedagogicalRecords, AttendanceRecordFilterOptionsQuery $options, Request $request): array
+    {
+        $user = $this->user($request);
+        $professionalId = $user->professional_id;
+        $pedagogicalRecords->through(static function (PedagogicalRecord $record) use ($professionalId): array {
+            $session = $record->attendanceSession;
+            $student = $session?->students?->first();
+
+            return [
+                'id' => $record->getKey(),
+                'session_date' => $session?->session_date?->toDateString(),
+                'start_time' => $session?->start_time,
+                'end_time' => $session?->end_time,
+                'duration' => $record->duration,
+                'is_present' => (bool) $record->is_present,
+                'has_guardians' => $record->guardians->isNotEmpty(),
+                'student_name' => $student?->person?->name,
+                'course_name' => $student?->currentCourse?->course?->name,
+                'professional_name' => $session?->professional?->person?->name,
+                'can_manage' => $professionalId !== null
+                    && (int) $session?->professional_id === (int) $professionalId,
+            ];
+        });
+        $filterOptions = $options->execute();
+        $personOption = static fn ($model): array => [
+            'id' => $model->getKey(),
+            'name' => $model->person->name ?? ('ID '.$model->getKey()),
+        ];
+
+        return [
+            'pedagogicalRecords' => $pedagogicalRecords,
+            'students' => $filterOptions['students']->map($personOption)->values(),
+            'professionals' => $filterOptions['professionals']->map($personOption)->values(),
+            'courses' => $filterOptions['courses']->map(static fn ($course): array => [
+                'id' => $course->getKey(),
+                'name' => $course->name,
+            ])->values(),
+            'filters' => collect(['student', 'professional_id', 'course_id', 'is_present', 'with_guardians'])
+                ->mapWithKeys(fn (string $key): array => [$key => $request->string($key)->toString()])
+                ->all(),
+            'can' => [
+                'view' => $user->can('pedagogical-record.view'),
+                'view_all' => $user->can('pedagogical-record.view-all'),
+                'view_own' => $user->can('pedagogical-record.view-own'),
+                'update' => $user->can('pedagogical-record.update'),
+                'delete' => $user->can('pedagogical-record.delete'),
+            ],
+        ];
     }
 
     private function user(Request $request): User

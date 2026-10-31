@@ -16,3 +16,25 @@ export interface StudentDocumentFormOptions {
     types: Record<string, string>;
     semester: { label: string } | null;
 }
+
+export type StudentDocumentListRecord = StudentDocumentRecord & {
+    type_label: string;
+    semester_label: string | null;
+    file_size: number | null;
+    created_at: string;
+};
+
+export interface StudentDocumentPaginator {
+    data: StudentDocumentListRecord[];
+    current_page: number;
+    last_page: number;
+    from: number | null;
+    to: number | null;
+    total: number;
+}
+
+export type StudentDocumentFilters = {
+    title: string;
+    type: string;
+    semester_id: string;
+};

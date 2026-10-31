@@ -28,7 +28,18 @@ final class CourseController
 
         return Inertia::render(
             'SpecializedEducationalSupport/Courses/Index',
-            compact('courses'),
+            [
+                'courses' => $courses,
+                'filters' => [
+                    'name' => $filters->name ?? '',
+                    'is_active' => $filters->isActive === null ? '' : (string) (int) $filters->isActive,
+                ],
+                'can' => [
+                    'create' => $request->user()?->can('course.create') ?? false,
+                    'view' => $request->user()?->can('course.view') ?? false,
+                    'delete' => $request->user()?->can('course.delete') ?? false,
+                ],
+            ],
         );
     }
 

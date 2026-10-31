@@ -18,6 +18,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentContext
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentContexts\StudentContextFilterOptionsQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentContexts\StudentContextFormQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\StudentContexts\StudentContextPdfQuery;
+use App\Domains\SpecializedEducationalSupport\Domain\Enums\ContextEvaluationType;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Student;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\StudentContext;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -32,13 +33,37 @@ final class StudentContextController
 {
     public function index(ListStudentContextsData $filters, Student $student, ListStudentContextsQuery $query, StudentContextFilterOptionsQuery $filterOptions, Request $request): InertiaResponse
     {
-        $contexts = $query->execute($student, $filters);
-        $student->loadMissing('person');
-
-        return Inertia::render(
-            'SpecializedEducationalSupport/StudentContext/Index',
-            compact('contexts', 'student') + $filterOptions->execute(),
+        $contexts = $query->execute($student, $filters)->through(
+            static fn (StudentContext $context): array => [
+                ...$context->toArray(),
+                'evaluation_type_label' => ContextEvaluationType::tryFrom((string) $context->evaluation_type)?->label()
+                    ?? (string) $context->evaluation_type,
+                'can_manage' => $context->canBeManagedByCurrentUser(),
+            ],
         );
+        $student->loadMissing('person');
+        $user = $request->user();
+
+        return Inertia::render('SpecializedEducationalSupport/StudentContext/Index', [
+            'contexts' => $contexts,
+            'student' => $student,
+            // The create action depends on the full history, not on the filtered page.
+            'hasContexts' => $student->contexts()->exists(),
+            'semesters' => collect($filterOptions->execute()['semesters'])
+                ->except('')
+                ->map(static fn (mixed $label, int|string $id): array => ['value' => (string) $id, 'label' => (string) $label])
+                ->values(),
+            'filters' => [
+                'semester_id' => $filters->semesterId === null ? '' : (string) $filters->semesterId,
+                'evaluation_type' => $filters->evaluationType?->value ?? '',
+                'is_current' => $filters->isCurrent === null ? '' : (string) (int) $filters->isCurrent,
+            ],
+            'can' => [
+                'create' => $user?->can('student-context.create') ?? false,
+                'view' => $user?->can('student-context.view') ?? false,
+                'delete' => $user?->can('student-context.delete') ?? false,
+            ],
+        ]);
     }
 
     public function show(StudentContext $studentContext, ShowStudentContextQuery $query): InertiaResponse

@@ -15,13 +15,15 @@ export default function StudentDeficiencyPage({
     title,
     subtitle,
     current,
+    actions,
     student,
     studentDeficiency,
     children,
 }: {
     title: string;
     subtitle?: string;
-    current: string;
+    current?: string;
+    actions?: ReactNode;
     student: StudentDeficiencyStudent;
     studentDeficiency?: StudentDeficiencyRecord;
     children: ReactNode;
@@ -32,7 +34,7 @@ export default function StudentDeficiencyPage({
         { label: student.person.name, href: studentUrl(student.id) },
         {
             label: "Perfis de Atendimento",
-            href: studentRecordUrl(student.id, "support-profiles"),
+            href: current ? studentRecordUrl(student.id, "support-profiles") : undefined,
         },
     ];
 
@@ -43,13 +45,16 @@ export default function StudentDeficiencyPage({
         });
     }
 
-    breadcrumbItems.push({ label: current });
+    if (current) {
+        breadcrumbItems.push({ label: current });
+    }
 
     return (
         <BusinessPage
             title={title}
             subtitle={subtitle}
             breadcrumbItems={breadcrumbItems}
+            actions={actions}
             className="studentDeficiencyPage"
         >
             {children}
