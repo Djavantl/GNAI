@@ -143,7 +143,8 @@ export default function AuditRecordModal({
                         <div className="auditRecord__views" role="group" aria-label="Forma de exibição">
                             <Button
                                 size="sm"
-                                tone={view === "plain" ? "save" : "white"}
+                                tone="inverse"
+                                className="auditRecord__view"
                                 leftIconClass="fa fa-align-left"
                                 label="Formatado"
                                 aria-pressed={view === "plain"}
@@ -151,7 +152,8 @@ export default function AuditRecordModal({
                             />
                             <Button
                                 size="sm"
-                                tone={view === "technical" ? "save" : "white"}
+                                tone="inverse"
+                                className="auditRecord__view"
                                 leftIconClass="fa fa-code"
                                 label="Log técnico"
                                 aria-pressed={view === "technical"}
