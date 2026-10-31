@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Actions\Professionals;
 
+use App\Domains\Auth\Application\Policies\AdministratorAccessPolicy;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Application\Data\Professionals\UpdateProfessionalData;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\ProfessionalHasPendingPendenciesQuery;
@@ -27,6 +28,7 @@ final readonly class UpdateProfessionalAction
         private ProfessionalHasPendingPendenciesQuery $hasPendingPendencies,
         private ProfessionalHasSessionsQuery $hasSessions,
         private ProfessionalPhotoStorage $photoStorage,
+        private AdministratorAccessPolicy $administratorAccess,
     ) {}
 
     /**
@@ -51,12 +53,24 @@ final readonly class UpdateProfessionalAction
                     ->lockForUpdate()
                     ->findOrFail($lockedProfessional->person_id);
                 $currentPhotoPath = $person->getRawOriginal('photo');
+                $user = $lockedProfessional->user()->first();
+                $inactivating = $lockedProfessional->status !== $data->status
+                    && $data->status === ProfessionalStatus::INACTIVE;
 
-                if ($lockedProfessional->status !== $data->status && $data->status === ProfessionalStatus::INACTIVE) {
+                if ($inactivating) {
                     $lockedProfessional->ensureCanBeInactivated(
                         hasPendingPendencies: $this->hasPendingPendencies->execute($lockedProfessional),
                         hasSessions: $this->hasSessions->execute($lockedProfessional),
                     );
+                    $this->administratorAccess->ensureCanRevokeAccess($actor, $user);
+                }
+
+                if ($user !== null) {
+                    $this->administratorAccess->ensureCanChangeEmail($actor, $user, $data->email);
+
+                    if ($data->isAdmin !== null) {
+                        $this->administratorAccess->ensureCanAssign($actor, $user, $data->isAdmin);
+                    }
                 }
 
                 if ($newPhotoPath !== null) {
@@ -92,15 +106,13 @@ final readonly class UpdateProfessionalAction
                 $lockedProfessional->revise($position, $professionalDTO);
                 $lockedProfessional->save();
 
-                $user = $lockedProfessional->user()->first();
-
                 if ($user !== null) {
                     $userData = [
                         'name' => $person->name,
                         'email' => $person->email,
                     ];
 
-                    if ($actor?->isAdmin() === true) {
+                    if ($data->isAdmin !== null) {
                         $userData['is_admin'] = $data->isAdmin;
                     }
 

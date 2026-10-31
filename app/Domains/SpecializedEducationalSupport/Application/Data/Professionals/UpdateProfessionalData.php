@@ -34,7 +34,7 @@ final class UpdateProfessionalData extends Data
         public ?string $address = null,
         public ?UploadedFile $photo = null,
         public bool $removePhoto = false,
-        public bool $isAdmin = false,
+        public ?bool $isAdmin = null,
     ) {}
 
     public static function rules(): array

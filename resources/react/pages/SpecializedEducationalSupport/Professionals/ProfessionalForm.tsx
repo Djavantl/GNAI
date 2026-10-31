@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
 import ChoiceControl from "@/components/Forms/ChoiceControl/ChoiceControl";
 import DatePicker from "@/components/Forms/DatePicker/DatePicker";
 import FormActions from "@/components/Forms/FormActions/FormActions";
@@ -11,6 +11,7 @@ import PersonPhotoUpload from "@/components/Forms/PersonPhotoUpload/PersonPhotoU
 import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
+import AccessPasswordFields from "@/components/People/AccessPasswordFields";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import { notify } from "@/components/UI/NotificationToast/notify";
@@ -37,6 +38,8 @@ type ProfessionalFormData = {
     is_admin: boolean;
     photo: File | null;
     remove_photo: boolean;
+    password: string;
+    password_confirmation: string;
 };
 
 type TextFieldName = "name" | "document" | "email" | "phone" | "registration";
@@ -52,9 +55,9 @@ export default function ProfessionalForm(props: Props): React.JSX.Element {
     const { professional, positions, genders, professionalStatuses } = props;
     const person = professional?.person;
     const editing = props.mode === "edit";
-    const canManageAdmin = usePage<{
-        auth?: { user?: { is_admin?: boolean } | null };
-    }>().props.auth?.user?.is_admin === true;
+    // Somente o administrador superior concede ou retira o acesso de administrador interno.
+    const canManageAdmin = props.canManageAdministrators;
+    const isAdministrator = professional?.user?.is_admin === true;
     const form = useForm<ProfessionalFormData>({
         name: person?.name ?? "",
         document: cpfMask(person?.document ?? ""),
@@ -70,6 +73,8 @@ export default function ProfessionalForm(props: Props): React.JSX.Element {
         is_admin: professional?.user?.is_admin === true,
         photo: null,
         remove_photo: false,
+        password: "",
+        password_confirmation: "",
     });
     const errors = form.errors as Record<string, string | undefined>;
     const element = useRef<HTMLFormElement>(null);
@@ -179,6 +184,8 @@ export default function ProfessionalForm(props: Props): React.JSX.Element {
                 status,
                 remove_photo: removePhoto,
                 is_admin: isAdmin,
+                password,
+                password_confirmation: passwordConfirmation,
                 ...common
             } = data;
             const payload: Record<string, unknown> = { ...common };
@@ -188,6 +195,9 @@ export default function ProfessionalForm(props: Props): React.JSX.Element {
                 payload.status = status;
                 payload.remove_photo = removePhoto;
                 payload._method = "put";
+            } else {
+                payload.password = password;
+                payload.password_confirmation = passwordConfirmation;
             }
 
             return payload;
@@ -225,6 +235,11 @@ export default function ProfessionalForm(props: Props): React.JSX.Element {
                 },
                 onFinish: () => {
                     busy.current = false;
+                    form.setData((data) => ({
+                        ...data,
+                        password: "",
+                        password_confirmation: "",
+                    }));
                 },
             },
         );
@@ -350,11 +365,14 @@ export default function ProfessionalForm(props: Props): React.JSX.Element {
                                     type="checkbox"
                                     id="professional-is-admin"
                                     name="is_admin"
-                                    label="Definir este profissional como administrador do sistema"
+                                    label="Definir este profissional como administrador interno da unidade"
                                     checked={form.data.is_admin}
                                     disabled={form.processing}
                                     onChange={(checked) => form.setData("is_admin", checked)}
                                 />
+                                <p className="formField__hint">
+                                    Somente o administrador superior do Gnai pode conceder ou retirar este acesso.
+                                </p>
                                 {errors.is_admin ? (
                                     <p
                                         className="professionalForm__error"
@@ -364,8 +382,29 @@ export default function ProfessionalForm(props: Props): React.JSX.Element {
                                     </p>
                                 ) : null}
                             </div>
+                        ) : isAdministrator ? (
+                            <p className="professionalForm__admin formField__hint">
+                                Este profissional é administrador interno da unidade. Somente o administrador
+                                superior do Gnai pode alterar esse acesso, desativá-lo ou removê-lo.
+                            </p>
                         ) : null}
                     </FormSection>
+                    {editing ? null : (
+                        <FormSection
+                            id="professional-access"
+                            title="Acesso ao Sistema"
+                            variant="inline"
+                            iconClass="fa fa-lock"
+                        >
+                            <AccessPasswordFields
+                                idPrefix="professional"
+                                password={form.data.password}
+                                confirmation={form.data.password_confirmation}
+                                error={errors.password}
+                                onChange={(field, value) => form.setData(field, value)}
+                            />
+                        </FormSection>
+                    )}
                 </fieldset>
             </CardBox>
             <FormActions

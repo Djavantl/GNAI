@@ -30,6 +30,9 @@ final readonly class CreateTeacherAction
     ) {}
 
     /**
+     * Com senha informada no cadastro, o acesso é imediato; sem ela, mantém-se
+     * o envio do link de definição de senha por e-mail.
+     *
      * @throws Throwable
      */
     public function execute(CreateTeacherData $data): Teacher
@@ -65,7 +68,7 @@ final readonly class CreateTeacherAction
                 User::query()->create([
                     'name' => $person->name,
                     'email' => $person->email,
-                    'password' => Hash::make(Str::random(40)),
+                    'password' => Hash::make($data->password ?? Str::random(40)),
                     'teacher_id' => $teacher->id,
                     'is_admin' => false,
                 ]);
@@ -78,9 +81,11 @@ final readonly class CreateTeacherAction
             throw $exception;
         }
 
-        $this->sendPasswordResetLink->execute(
-            new SendPasswordResetLinkData(email: $teacher->person->email),
-        );
+        if ($data->password === null) {
+            $this->sendPasswordResetLink->execute(
+                new SendPasswordResetLinkData(email: $teacher->person->email),
+            );
+        }
 
         return $teacher;
     }

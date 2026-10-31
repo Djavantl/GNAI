@@ -7,6 +7,10 @@ namespace App\Domains\Backup\Application\Actions;
 use App\Domains\Backup\Application\Contracts\BackupArchiveStorageContract;
 use App\Domains\Backup\Application\Contracts\PruneBackupsActionContract;
 use App\Domains\Backup\Domain\Models\Backup;
+use App\Domains\Settings\Application\Queries\GetBackupSettingsQuery;
+use App\Domains\Settings\Domain\Enums\BackupRetentionMode;
+use App\Domains\Settings\Domain\ValueObjects\BackupSettings;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,19 +18,14 @@ use Throwable;
 
 final readonly class PruneBackupsAction implements PruneBackupsActionContract
 {
-    public const int MAX_BACKUPS = 30;
-
     public function __construct(
         private BackupArchiveStorageContract $archives,
+        private GetBackupSettingsQuery $backupSettings,
     ) {}
 
     public function execute(): int
     {
-        $keptBackups = Backup::query()
-            ->orderByDesc('created_at')
-            ->orderByDesc('id')
-            ->limit(self::MAX_BACKUPS)
-            ->get(['id', 'file_path']);
+        $keptBackups = $this->keptBackups($this->backupSettings->execute());
 
         $keptIds = $keptBackups
             ->pluck('id')
@@ -93,5 +92,36 @@ final readonly class PruneBackupsAction implements PruneBackupsActionContract
         }
 
         return $deleted;
+    }
+
+    /**
+     * Aplica a retenção definida em Configurações > Backups. O backup mais
+     * recente é sempre mantido, mesmo quando ultrapassa o período em dias.
+     *
+     * @return EloquentCollection<int, Backup>
+     */
+    private function keptBackups(BackupSettings $settings): EloquentCollection
+    {
+        if ($settings->retentionMode === BackupRetentionMode::COUNT) {
+            return Backup::query()
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->limit($settings->retentionValue)
+                ->get(['id', 'file_path']);
+        }
+
+        $latestId = Backup::query()
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->value('id');
+
+        if ($latestId === null) {
+            return new EloquentCollection;
+        }
+
+        return Backup::query()
+            ->where('created_at', '>=', now()->subDays($settings->retentionValue))
+            ->orWhere('id', $latestId)
+            ->get(['id', 'file_path']);
     }
 }

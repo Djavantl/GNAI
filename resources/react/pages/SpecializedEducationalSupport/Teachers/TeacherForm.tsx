@@ -10,6 +10,7 @@ import PersonPhotoUpload from "@/components/Forms/PersonPhotoUpload/PersonPhotoU
 import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
+import AccessPasswordFields from "@/components/People/AccessPasswordFields";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import { notify } from "@/components/UI/NotificationToast/notify";
@@ -33,6 +34,8 @@ type TeacherFormData = {
     registration: string;
     photo: File | null;
     remove_photo: boolean;
+    password: string;
+    password_confirmation: string;
 };
 
 type TextFieldName = "name" | "document" | "email" | "phone" | "registration";
@@ -55,6 +58,8 @@ export default function TeacherForm({ mode, teacher }: Props): React.JSX.Element
         registration: teacher?.registration ?? "",
         photo: null,
         remove_photo: false,
+        password: "",
+        password_confirmation: "",
     });
     const errors = form.errors as Record<string, string | undefined>;
     const element = useRef<HTMLFormElement>(null);
@@ -110,11 +115,17 @@ export default function TeacherForm({ mode, teacher }: Props): React.JSX.Element
         busy.current = true;
 
         form.transform((data) => {
-            const { remove_photo: removePhoto, ...common } = data;
+            const {
+                remove_photo: removePhoto,
+                password,
+                password_confirmation: passwordConfirmation,
+                ...common
+            } = data;
 
+            // A senha inicial é opcional e só existe no cadastro.
             return editing
                 ? { ...common, remove_photo: removePhoto, _method: "put" }
-                : common;
+                : { ...common, password, password_confirmation: passwordConfirmation };
         });
 
         form.post(
@@ -149,6 +160,11 @@ export default function TeacherForm({ mode, teacher }: Props): React.JSX.Element
                 },
                 onFinish: () => {
                     busy.current = false;
+                    form.setData((data) => ({
+                        ...data,
+                        password: "",
+                        password_confirmation: "",
+                    }));
                 },
             },
         );
@@ -294,6 +310,22 @@ export default function TeacherForm({ mode, teacher }: Props): React.JSX.Element
                             )}
                         </FormGrid>
                     </FormSection>
+                    {editing ? null : (
+                        <FormSection
+                            id="teacher-access"
+                            title="Acesso ao Sistema"
+                            variant="inline"
+                            iconClass="fa fa-lock"
+                        >
+                            <AccessPasswordFields
+                                idPrefix="teacher"
+                                password={form.data.password}
+                                confirmation={form.data.password_confirmation}
+                                error={errors.password}
+                                onChange={(field, value) => form.setData(field, value)}
+                            />
+                        </FormSection>
+                    )}
                 </fieldset>
             </CardBox>
             <FormActions

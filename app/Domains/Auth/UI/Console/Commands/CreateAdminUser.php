@@ -5,21 +5,23 @@ declare(strict_types=1);
 namespace App\Domains\Auth\UI\Console\Commands;
 
 use App\Domains\Auth\Domain\Models\User;
+use App\Domains\Auth\UI\Console\Concerns\HandlesAdminCredentials;
 use Illuminate\Console\Command;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules\Password;
 
 final class CreateAdminUser extends Command
 {
-    protected $signature = 'auth:create-admin
-        {--name= : Nome do administrador. Em promoção, atualiza o nome apenas se informado}
-        {--email= : E-mail do administrador}
-        {--password= : Senha do administrador. Evite em terminal compartilhado; pode aparecer no histórico/processos}
-        {--promote : Promove um usuário existente com o e-mail informado}';
+    use HandlesAdminCredentials;
 
-    protected $description = 'Cria o primeiro usuário administrador ou promove um usuário existente.';
+    protected $signature = 'auth:create-admin
+        {--name= : Nome do administrador superior. Em promoção, atualiza o nome apenas se informado}
+        {--email= : E-mail do administrador superior}
+        {--password= : Senha do administrador. Evite em terminal compartilhado; pode aparecer no histórico/processos}
+        {--promote : Promove um usuário existente, sem vínculo com a equipe, com o e-mail informado}';
+
+    protected $description = 'Cria o administrador superior do Gnai ou promove um usuário existente sem vínculo com a equipe.';
 
     public function handle(): int
     {
@@ -32,13 +34,19 @@ final class CreateAdminUser extends Command
         $user = User::query()->where('email', $email)->first();
 
         if ($user instanceof User) {
-            if ($user->isAdmin()) {
-                $this->components->info('Este usuário já é administrador.');
+            if ($user->isSuperAdmin()) {
+                $this->components->info('Este usuário já é administrador superior.');
 
                 return self::SUCCESS;
             }
 
-            if (! $this->option('promote') && ! $this->confirm('Usuário já existe. Promover para administrador?')) {
+            if ($user->professional_id !== null || $user->teacher_id !== null) {
+                $this->components->error('Este e-mail pertence a um membro da equipe. O administrador superior deve ser uma conta própria; administradores internos são definidos no cadastro da equipe pela conta superior.');
+
+                return self::FAILURE;
+            }
+
+            if (! $this->option('promote') && ! $this->confirm('Usuário já existe. Promover para administrador superior?')) {
                 $this->components->warn('Operação cancelada.');
 
                 return self::FAILURE;
@@ -46,6 +54,7 @@ final class CreateAdminUser extends Command
 
             $attributes = [
                 'is_admin' => true,
+                'is_super_admin' => true,
                 'role' => 'admin',
             ];
 
@@ -71,7 +80,7 @@ final class CreateAdminUser extends Command
 
             $user->forceFill($attributes)->save();
 
-            $this->components->info('Usuário promovido para administrador com sucesso.');
+            $this->components->info('Usuário promovido para administrador superior com sucesso.');
 
             return self::SUCCESS;
         }
@@ -89,20 +98,21 @@ final class CreateAdminUser extends Command
         }
 
         try {
-            User::query()->create([
+            (new User)->forceFill([
                 'name' => $name,
                 'email' => $email,
                 'password' => Hash::make($password),
                 'is_admin' => true,
+                'is_super_admin' => true,
                 'role' => 'admin',
-            ]);
+            ])->save();
         } catch (UniqueConstraintViolationException) {
             $this->components->error('Já existe um usuário com este e-mail. Execute novamente com --promote para promovê-lo.');
 
             return self::FAILURE;
         }
 
-        $this->components->info('Usuário administrador criado com sucesso.');
+        $this->components->info('Administrador superior criado com sucesso.');
 
         return self::SUCCESS;
     }
@@ -117,44 +127,7 @@ final class CreateAdminUser extends Command
             return (string) $password;
         }
 
-        do {
-            $password = (string) $this->secret('Senha');
-            $confirmation = (string) $this->secret('Confirmar senha');
-
-            if ($password === $confirmation) {
-                return $password;
-            }
-
-            $this->components->error('As senhas não conferem.');
-        } while (true);
-    }
-
-    private function validatePassword(string $password): bool
-    {
-        $validator = Validator::make(
-            ['password' => $password],
-            [
-                'password' => [
-                    'required',
-                    'string',
-                    Password::min(12)
-                        ->mixedCase()
-                        ->numbers()
-                        ->symbols()
-                        ->uncompromised(),
-                ],
-            ],
-            [
-                'password.required' => 'Informe a senha do administrador.',
-                'password.min' => 'A senha do administrador deve ter pelo menos :min caracteres.',
-                'password.mixed' => 'A senha do administrador deve conter letras maiúsculas e minúsculas.',
-                'password.numbers' => 'A senha do administrador deve conter pelo menos um número.',
-                'password.symbols' => 'A senha do administrador deve conter pelo menos um símbolo.',
-                'password.uncompromised' => 'Esta senha aparece em vazamentos conhecidos. Escolha outra senha.',
-            ],
-        );
-
-        return $this->displayValidationErrors($validator);
+        return $this->askForPassword();
     }
 
     private function validateEmail(string $email): bool
@@ -185,19 +158,6 @@ final class CreateAdminUser extends Command
         );
 
         return $this->displayValidationErrors($validator);
-    }
-
-    private function displayValidationErrors($validator): bool
-    {
-        if ($validator->passes()) {
-            return true;
-        }
-
-        foreach ($validator->errors()->all() as $error) {
-            $this->components->error($error);
-        }
-
-        return false;
     }
 
     private function warnPasswordOptionExposure(): void

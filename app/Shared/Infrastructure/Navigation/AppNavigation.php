@@ -53,6 +53,7 @@ final class AppNavigation
                 ['reports', 'Relatórios', 'reports.index', 'ti-bar-chart', ['report.index'], ['reports.*']],
                 ['backups', 'Backups', 'backup.backups.index', 'ti-cloud-down', ['backup.index'], ['backup.backups.*']],
                 ['audit', 'Auditoria', 'audit.index', 'ti-shield', ['audit.index'], ['audit.*']],
+                ['settings', 'Configurações', 'settings.index', 'ti-settings', ['setting.view'], ['settings.*']],
                 ['about', 'Sobre o Sistema', 'about-us', 'ti-info-alt', [], ['about-us']],
             ]],
         ];

@@ -68,11 +68,11 @@ final class ProfessionalController
         );
     }
 
-    public function create(ProfessionalFormQuery $form): InertiaResponse
+    public function create(ProfessionalFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'SpecializedEducationalSupport/Professionals/Create',
-            $form->forCreation(),
+            $form->forCreation($this->canManageAdministrators($request)),
         );
     }
 
@@ -86,14 +86,16 @@ final class ProfessionalController
 
         return redirect()
             ->route('specialized-educational-support.professionals.index')
-            ->with('success', 'Profissional cadastrado com sucesso. O link para definição da senha foi enviado por e-mail.');
+            ->with('success', $data->password === null
+                ? 'Profissional cadastrado com sucesso. O link para definição da senha foi enviado por e-mail.'
+                : 'Profissional cadastrado com sucesso. O acesso já pode ser feito com a senha definida.');
     }
 
-    public function edit(Professional $professional, ProfessionalFormQuery $form): InertiaResponse
+    public function edit(Professional $professional, ProfessionalFormQuery $form, Request $request): InertiaResponse
     {
         return Inertia::render(
             'SpecializedEducationalSupport/Professionals/Edit',
-            $form->forUpdate($professional),
+            $form->forUpdate($professional, $this->canManageAdministrators($request)),
         );
     }
 
@@ -121,5 +123,12 @@ final class ProfessionalController
         return redirect()
             ->route('specialized-educational-support.professionals.index')
             ->with('success', 'Profissional removido com sucesso.');
+    }
+
+    private function canManageAdministrators(Request $request): bool
+    {
+        $user = $request->user();
+
+        return $user instanceof User && $user->isSuperAdmin();
     }
 }

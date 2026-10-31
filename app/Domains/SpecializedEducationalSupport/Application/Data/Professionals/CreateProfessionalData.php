@@ -9,6 +9,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Rules\ValidCpf;
 use App\Domains\SpecializedEducationalSupport\Domain\Enums\Gender;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
@@ -31,6 +32,7 @@ final class CreateProfessionalData extends Data
         public ?string $address = null,
         public ?UploadedFile $photo = null,
         public bool $isAdmin = false,
+        public ?string $password = null,
     ) {}
 
     public static function rules(): array
@@ -67,6 +69,12 @@ final class CreateProfessionalData extends Data
             'entry_date' => ['required', 'date', 'after_or_equal:birth_date'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
             'is_admin' => ['sometimes', 'boolean'],
+            'password' => [
+                'nullable',
+                'string',
+                'confirmed',
+                Password::min(8)->letters()->numbers(),
+            ],
         ];
     }
 
@@ -107,6 +115,11 @@ final class CreateProfessionalData extends Data
             'photo.mimes' => 'A foto deve estar nos formatos JPEG, JPG ou PNG.',
             'photo.max' => 'A foto não pode ultrapassar 2 MB.',
             'is_admin.boolean' => 'A indicação de administrador é inválida.',
+            'password.string' => 'A senha do profissional deve ser um texto válido.',
+            'password.confirmed' => 'As senhas digitadas não conferem.',
+            'password.min' => 'A senha do profissional deve ter pelo menos 8 caracteres.',
+            'password.letters' => 'A senha do profissional deve conter pelo menos uma letra.',
+            'password.numbers' => 'A senha do profissional deve conter pelo menos um número.',
         ];
     }
 }

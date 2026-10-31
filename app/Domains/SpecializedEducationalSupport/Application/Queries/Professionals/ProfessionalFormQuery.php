@@ -20,14 +20,15 @@ final class ProfessionalFormQuery
         ];
     }
 
-    public function forCreation(): array
+    public function forCreation(bool $canManageAdministrators): array
     {
         return $this->formOptions() + [
             'defaultGender' => Gender::NOT_SPECIFIED->value,
+            'canManageAdministrators' => $canManageAdministrators,
         ];
     }
 
-    public function forUpdate(Professional $professional): array
+    public function forUpdate(Professional $professional, bool $canManageAdministrators): array
     {
         $professional->loadMissing(['person', 'position', 'user']);
         $professional->person?->append('photo_url');
@@ -35,6 +36,7 @@ final class ProfessionalFormQuery
         return $this->formOptions() + [
             'professional' => $professional,
             'defaultStatus' => ProfessionalStatus::ACTIVE->value,
+            'canManageAdministrators' => $canManageAdministrators,
         ];
     }
 

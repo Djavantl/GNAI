@@ -70,9 +70,11 @@ class User extends Authenticatable implements Auditable
         return [
             'name' => AuditedField::text('Nome'),
             'email' => AuditedField::text('E-mail'),
+            'photo' => AuditedField::file('Foto'),
             'password' => AuditedField::secret('Senha'),
             'email_verified_at' => AuditedField::dateTime('E-mail verificado em'),
             'is_admin' => AuditedField::boolean('Administrador'),
+            'is_super_admin' => AuditedField::boolean('Administrador superior'),
             'role' => AuditedField::enum('Perfil', valueLabels: [
                 'admin' => 'Administrador',
                 'professional' => 'Profissional',
@@ -136,15 +138,42 @@ class User extends Authenticatable implements Auditable
 
     public function getPhotoUrlAttribute()
     {
-        $photoUrl = $this->professional?->person?->photo_url
-                ?? $this->teacher?->person?->photo_url;
+        if ($this->hasPersonProfile()) {
+            $photoUrl = $this->professional?->person?->photo_url
+                    ?? $this->teacher?->person?->photo_url;
 
-        return $photoUrl ?? asset('images/default-user.jpg');
+            return $photoUrl ?? asset('images/default-user.jpg');
+        }
+
+        return filled($this->photo)
+            ? asset('storage/'.$this->photo)
+            : asset('images/default-user.jpg');
     }
 
+    /**
+     * Profissionais e professores mantêm seus dados no cadastro de pessoa; as
+     * demais contas (como o administrador superior) têm apenas o perfil de conta.
+     */
+    public function hasPersonProfile(): bool
+    {
+        return $this->professional_id !== null || $this->teacher_id !== null;
+    }
+
+    /**
+     * Administrador interno da unidade ou administrador superior do Gnai.
+     */
     public function isAdmin(): bool
     {
-        return (bool) $this->is_admin;
+        return (bool) $this->is_admin || $this->isSuperAdmin();
+    }
+
+    /**
+     * Conta de controle do Gnai, criada e mantida pelo terminal. Não é
+     * atribuível por formulários (fora de $fillable).
+     */
+    public function isSuperAdmin(): bool
+    {
+        return (bool) $this->is_super_admin;
     }
 
     public function canAccessSystem(): bool
@@ -169,6 +198,7 @@ class User extends Authenticatable implements Auditable
         return [
             'email_verified_at' => 'datetime',
             'is_admin' => 'boolean',
+            'is_super_admin' => 'boolean',
             'password' => 'hashed',
         ];
     }

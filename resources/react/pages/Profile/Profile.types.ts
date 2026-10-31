@@ -27,3 +27,17 @@ export interface ProfileEditProps {
   professional: ProfileProfessional | null;
   teacher: ProfileTeacher | null;
 }
+
+export interface AccountProfile {
+  id: number;
+  name: string;
+  email: string;
+  photo: string | null;
+  photo_url: string;
+  is_super_admin: boolean;
+  is_admin: boolean;
+}
+
+export interface ProfileAccountProps {
+  account: AccountProfile;
+}

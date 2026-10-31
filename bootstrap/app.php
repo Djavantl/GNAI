@@ -56,7 +56,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return redirect()->back()
-                ->withInput()
+                ->withInput($request->except(['password', 'password_confirmation']))
                 ->with('error', $e->getMessage());
         });
 
@@ -79,7 +79,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => 'Dados inválidos.', 'errors' => $e->errors()], 422);
             }
 
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput($request->except(['password', 'password_confirmation']));
         });
 
         // Não Autenticado

@@ -8,6 +8,7 @@ use App\Domains\SpecializedEducationalSupport\Application\Data\People\Concerns\N
 use App\Domains\SpecializedEducationalSupport\Application\Rules\ValidCpf;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\MergeValidationRules;
 use Spatie\LaravelData\Data;
@@ -30,6 +31,7 @@ final class CreateTeacherData extends Data
         public ?string $address = null,
         public ?UploadedFile $photo = null,
         public bool $removePhoto = false,
+        public ?string $password = null,
     ) {}
 
     public static function rules(): array
@@ -61,6 +63,12 @@ final class CreateTeacherData extends Data
             ],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'remove_photo' => ['nullable', 'boolean'],
+            'password' => [
+                'nullable',
+                'string',
+                'confirmed',
+                Password::min(8)->letters()->numbers(),
+            ],
         ];
     }
 
@@ -89,6 +97,11 @@ final class CreateTeacherData extends Data
             'photo.mimes' => 'A foto deve estar nos formatos jpeg, jpg ou png.',
             'photo.max' => 'A foto não pode ultrapassar 2 MB.',
             'remove_photo.boolean' => 'O campo de remoção da foto é inválido.',
+            'password.string' => 'A senha do professor deve ser um texto válido.',
+            'password.confirmed' => 'As senhas digitadas não conferem.',
+            'password.min' => 'A senha do professor deve ter pelo menos 8 caracteres.',
+            'password.letters' => 'A senha do professor deve conter pelo menos uma letra.',
+            'password.numbers' => 'A senha do professor deve conter pelo menos um número.',
         ];
     }
 

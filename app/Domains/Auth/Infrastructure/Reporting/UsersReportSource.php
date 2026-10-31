@@ -6,10 +6,12 @@ namespace App\Domains\Auth\Infrastructure\Reporting;
 
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Reporting\Application\Services\ReportOptionCatalog;
+use App\Domains\Reporting\Domain\DTOs\ReportRequestDTO;
 use App\Domains\Reporting\Domain\Enums\ReportColumnType;
 use App\Domains\Reporting\Infrastructure\Sources\EloquentReportSource;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Professional;
 use App\Domains\SpecializedEducationalSupport\Domain\Models\Teacher;
+use Illuminate\Database\Eloquent\Builder;
 
 final class UsersReportSource extends EloquentReportSource
 {
@@ -26,6 +28,14 @@ final class UsersReportSource extends EloquentReportSource
     protected function model(): string
     {
         return User::class;
+    }
+
+    /**
+     * O administrador superior do Gnai não é membro da equipe da unidade.
+     */
+    public function query(ReportRequestDTO $request): Builder
+    {
+        return parent::query($request)->where('is_super_admin', false);
     }
 
     protected function with(): array

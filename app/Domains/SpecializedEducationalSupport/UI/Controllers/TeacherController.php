@@ -83,7 +83,9 @@ final class TeacherController
 
         return redirect()
             ->route('specialized-educational-support.teachers.index')
-            ->with('success', 'Professor cadastrado com sucesso.');
+            ->with('success', $data->password === null
+                ? 'Professor cadastrado com sucesso. O link para definição da senha foi enviado por e-mail.'
+                : 'Professor cadastrado com sucesso. O acesso já pode ser feito com a senha definida.');
     }
 
     public function edit(Teacher $teacher, TeacherFormQuery $form): InertiaResponse

@@ -149,7 +149,7 @@ CPF e telefone são mascarados por helpers locais de alunos. Só use máscaras q
 
 Use `PersonPhotoUpload` exclusivamente quando o cadastro precisar de foto de pessoa. A API real está em `PersonPhotoUpload.types.ts`: o pai controla `file`, `current`, `removed`, erros e envio, com callbacks `onChange`, `onRemove`, `onError` e, quando necessário, `onValidatingChange`.
 
-O componente preserva o círculo do Blade, aceita clique e arrastar/soltar, apresenta preview de arquivo ou foto existente e ação de remoção. A validação local confere formato, tamanho e leitura da imagem; URLs temporárias e leituras pendentes são liberadas. Seleção e remoção não fazem upload automático.
+O componente preserva o círculo do Blade, aceita clique, arrastar/soltar e câmera (no celular abre a câmera nativa; no computador, a webcam em janela, que exige HTTPS ou localhost; desative com `allowCamera={false}`), apresenta preview de arquivo ou foto existente e ação de remoção. A validação local confere formato, tamanho e leitura da imagem; URLs temporárias e leituras pendentes são liberadas. Seleção e remoção não fazem upload automático.
 
 JPG/PNG e 2 MB são os defaults que atendem a alunos. `acceptedTypes` e `maxSizeBytes` devem corresponder ao backend do cadastro que o reutilizar; não universalize esses limites. O estado do pai determina se uma remoção significa apenas descartar um arquivo novo ou também remover a foto persistida. Bloqueie o envio enquanto a validação local da imagem estiver pendente.
 

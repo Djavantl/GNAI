@@ -14,6 +14,8 @@ export interface PersonPhotoUploadProps {
   size?: CSSProperties['width'];
   acceptedTypes?: readonly PersonPhotoType[];
   maxSizeBytes?: number;
+  /** Mostra o botão de câmera: câmera nativa no celular e webcam no computador. */
+  allowCamera?: boolean;
   onChange: (file: File) => void;
   onRemove: () => void;
   onError: (message: string) => void;

@@ -10,6 +10,7 @@ use App\Domains\Auth\Application\Permissions\PermissionRegistry;
 use App\Domains\Auth\Application\Queries\Permissions\UserHasPermissionQuery;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\Auth\UI\Console\Commands\CreateAdminUser;
+use App\Domains\Auth\UI\Console\Commands\ResetAdminPassword;
 use App\Domains\Auth\UI\Console\Commands\SyncPermissions;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
@@ -29,13 +30,14 @@ final class AuthServiceProvider extends ServiceProvider
     {
         $this->commands([
             CreateAdminUser::class,
+            ResetAdminPassword::class,
             SyncPermissions::class,
         ]);
 
         $this->app->make(AuditableEntities::class)->register(User::class);
 
         Gate::before(function ($user, string $ability): ?bool {
-            if ($user->is_admin) {
+            if ($user->isAdmin()) {
                 return true;
             }
 

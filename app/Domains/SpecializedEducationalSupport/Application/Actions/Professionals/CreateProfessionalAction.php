@@ -6,6 +6,7 @@ namespace App\Domains\SpecializedEducationalSupport\Application\Actions\Professi
 
 use App\Domains\Auth\Application\Actions\Passwords\SendPasswordResetLinkAction;
 use App\Domains\Auth\Application\Data\Passwords\SendPasswordResetLinkData;
+use App\Domains\Auth\Application\Policies\AdministratorAccessPolicy;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Application\Data\Professionals\CreateProfessionalData;
 use App\Domains\SpecializedEducationalSupport\Domain\DTOs\People\CreatePersonDTO;
@@ -27,13 +28,19 @@ final readonly class CreateProfessionalAction
     public function __construct(
         private SendPasswordResetLinkAction $sendPasswordResetLink,
         private ProfessionalPhotoStorage $photoStorage,
+        private AdministratorAccessPolicy $administratorAccess,
     ) {}
 
     /**
+     * Com senha informada no cadastro, o acesso é imediato; sem ela, mantém-se
+     * o envio do link de definição de senha por e-mail.
+     *
      * @throws Throwable
      */
     public function execute(CreateProfessionalData $data, ?User $actor): Professional
     {
+        $this->administratorAccess->ensureCanAssign($actor, null, $data->isAdmin);
+
         $photoPath = $data->photo !== null
             ? $this->photoStorage->store($data->photo)
             : null;
@@ -69,10 +76,10 @@ final readonly class CreateProfessionalAction
                 User::query()->create([
                     'name' => $person->name,
                     'email' => $person->email,
-                    'password' => Hash::make(Str::random(40)),
+                    'password' => Hash::make($data->password ?? Str::random(40)),
                     'role' => 'professional',
                     'professional_id' => $professional->getKey(),
-                    'is_admin' => $actor?->isAdmin() === true && $data->isAdmin,
+                    'is_admin' => $data->isAdmin,
                 ]);
 
                 return $professional->load(['person', 'position', 'user']);
@@ -83,9 +90,11 @@ final readonly class CreateProfessionalAction
             throw $exception;
         }
 
-        $this->sendPasswordResetLink->execute(
-            new SendPasswordResetLinkData(email: $professional->person->email),
-        );
+        if ($data->password === null) {
+            $this->sendPasswordResetLink->execute(
+                new SendPasswordResetLinkData(email: $professional->person->email),
+            );
+        }
 
         return $professional;
     }

@@ -27,6 +27,7 @@ export interface ProfessionalFormOptions {
     professionalStatuses: Record<string, string>;
     defaultGender?: string;
     defaultStatus?: string;
+    canManageAdministrators: boolean;
 }
 
 export interface ProfessionalListRecord {

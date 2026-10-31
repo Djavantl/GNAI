@@ -127,8 +127,12 @@ DB_PASSWORD=troque_esta_senha
 MYSQL_ROOT_PASSWORD=troque_esta_senha
 ```
 
-Preencha tambem as configuracoes reais de e-mail e backup. Para gerar a
-`APP_KEY`:
+Preencha tambem as configuracoes reais de backup. O e-mail pode ser configurado
+pela interface, em Configuracoes > E-mail; os valores `MAIL_*` do `.env` sao
+usados somente enquanto nao houver configuracao cadastrada. A senha de e-mail
+cadastrada e criptografada com a `APP_KEY`: se ela mudar, cadastre a senha
+novamente. Retencao e horarios dos backups automaticos ficam em
+Configuracoes > Backups. Para gerar a `APP_KEY`:
 
 ```bash
 printf 'base64:%s\n' "$(openssl rand -base64 32)"
@@ -214,6 +218,21 @@ make deploy
 
 Esse comando constroi a imagem, publica os assets, cria o link de `storage`,
 inicia os containers, executa as migrations e sincroniza as permissoes.
+
+Na primeira implantacao, crie o administrador superior do Gnai. Essa conta
+administra as unidades e e a unica que concede ou retira o acesso de
+administrador interno; ela nao aparece como membro da equipe:
+
+```bash
+make create-admin ENV=prod
+```
+
+Para redefinir a senha do administrador superior (a senha e solicitada de forma
+oculta e nao fica no historico do terminal):
+
+```bash
+make reset-admin-password ENV=prod
+```
 
 Confira a implantacao:
 

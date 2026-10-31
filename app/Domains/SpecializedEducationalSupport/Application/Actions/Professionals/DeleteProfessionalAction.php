@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\SpecializedEducationalSupport\Application\Actions\Professionals;
 
+use App\Domains\Auth\Application\Policies\AdministratorAccessPolicy;
 use App\Domains\Auth\Domain\Models\User;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\PersonHasOtherRolesQuery;
 use App\Domains\SpecializedEducationalSupport\Application\Queries\Professionals\ProfessionalHasLinkedRecordsQuery;
@@ -19,6 +20,7 @@ final readonly class DeleteProfessionalAction
         private ProfessionalHasLinkedRecordsQuery $hasLinkedRecords,
         private PersonHasOtherRolesQuery $hasOtherRoles,
         private ProfessionalPhotoStorage $photoStorage,
+        private AdministratorAccessPolicy $administratorAccess,
     ) {}
 
     /**
@@ -35,6 +37,10 @@ final readonly class DeleteProfessionalAction
             );
             $lockedProfessional->ensureCanBeDeleted(
                 $this->hasLinkedRecords->execute($lockedProfessional),
+            );
+            $this->administratorAccess->ensureCanRevokeAccess(
+                $actor,
+                $lockedProfessional->user()->first(),
             );
 
             $person = Person::query()

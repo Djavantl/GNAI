@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/perfil/conta', [ProfileController::class, 'updateAccount'])->name('profile.account.update');
 
     Route::post('/impersonate/leave', [ImpersonationController::class, 'leave'])
         ->name('admin.impersonate.leave');

@@ -33,6 +33,11 @@ Route::middleware('web')->group(function () {
         ->name('audit.')
         ->group(base_path('routes/modules/audit.php'));
 
+    Route::middleware(['auth'])
+        ->prefix('settings')
+        ->name('settings.')
+        ->group(base_path('routes/modules/settings.php'));
+
     Route::prefix('reports')
         ->name('reports.')
         ->group(base_path('routes/modules/reporting.php'));
