@@ -37,6 +37,7 @@ return [
         'institution' => 'Instituições',
         'location' => 'Localizações',
         'accessibility-feature' => 'Recursos de Acessibilidade',
+        'tag' => 'Etiquetas',
         'publication' => 'Publicações',
         'resource-status' => 'Status de Recurso',
     ],

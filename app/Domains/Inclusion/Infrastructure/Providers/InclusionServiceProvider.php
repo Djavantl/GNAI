@@ -35,6 +35,7 @@ use App\Domains\Inclusion\Domain\Models\StudentContext;
 use App\Domains\Inclusion\Domain\Models\StudentCourse;
 use App\Domains\Inclusion\Domain\Models\StudentDeficiency;
 use App\Domains\Inclusion\Domain\Models\StudentDocument;
+use App\Domains\Inclusion\Domain\Models\Tag;
 use App\Domains\Inclusion\Domain\Models\Teacher;
 use App\Domains\Inclusion\Domain\Models\TeacherCourseDiscipline;
 use App\Domains\Inclusion\Domain\Models\TeacherGlobalPermission;
@@ -85,6 +86,7 @@ final class InclusionServiceProvider extends ServiceProvider
             StudentCourse::class,
             StudentDeficiency::class,
             StudentDocument::class,
+            Tag::class,
             Teacher::class,
             TeacherCourseDiscipline::class,
             TeacherGlobalPermission::class,

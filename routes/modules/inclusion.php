@@ -25,6 +25,7 @@ use App\Domains\Inclusion\UI\Controllers\StudentController;
 use App\Domains\Inclusion\UI\Controllers\StudentCourseController;
 use App\Domains\Inclusion\UI\Controllers\StudentDeficiencyController;
 use App\Domains\Inclusion\UI\Controllers\StudentDocumentController;
+use App\Domains\Inclusion\UI\Controllers\TagController;
 use App\Domains\Inclusion\UI\Controllers\TeacherController;
 use App\Domains\Inclusion\UI\Controllers\WaitlistController;
 use Illuminate\Support\Facades\Route;
@@ -115,6 +116,22 @@ Route::prefix('inclusive-radar')->name('inclusive-radar.')->group(function (): v
             ->name('accessibility-features.update')->middleware('can:accessibility-feature.update');
         Route::delete('/accessibility-features/{accessibilityFeature}', [AccessibilityFeatureController::class, 'destroy'])
             ->name('accessibility-features.destroy')->middleware('can:accessibility-feature.destroy');
+
+        // ------------------- ETIQUETAS -------------------
+        Route::get('/tags', [TagController::class, 'index'])
+            ->name('tags.index')->middleware('can:tag.index');
+        Route::get('/tags/create', [TagController::class, 'create'])
+            ->name('tags.create')->middleware('can:tag.create');
+        Route::post('/tags/store', [TagController::class, 'store'])
+            ->name('tags.store')->middleware('can:tag.store');
+        Route::get('/tags/{tag}', [TagController::class, 'show'])
+            ->name('tags.show')->middleware('can:tag.show');
+        Route::get('/tags/{tag}/edit', [TagController::class, 'edit'])
+            ->name('tags.edit')->middleware('can:tag.edit');
+        Route::put('/tags/{tag}', [TagController::class, 'update'])
+            ->name('tags.update')->middleware('can:tag.update');
+        Route::delete('/tags/{tag}', [TagController::class, 'destroy'])
+            ->name('tags.destroy')->middleware('can:tag.destroy');
 
         // ------------------- ITENS (TECNOLOGIAS ASSISTIVAS E MATERIAIS PEDAGÓGICOS) -------------------
         Route::get('/items', [ItemController::class, 'index'])

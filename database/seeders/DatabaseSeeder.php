@@ -30,6 +30,7 @@ use Database\Seeders\Inclusion\AttendanceSessionSeeder;
 use Database\Seeders\Inclusion\TeacherSeeder;
 use Database\Seeders\Inclusion\BarrierCategorySeeder;
 use Database\Seeders\Inclusion\AccessibilityFeatureSeeder;
+use Database\Seeders\Inclusion\TagSeeder;
 use Database\Seeders\Inclusion\AssistiveTechnologySeeder;
 use Database\Seeders\Inclusion\AccessibleEducationalMaterialSeeder;
 
@@ -43,6 +44,7 @@ class DatabaseSeeder extends Seeder
             PositionSeeder::class,
             BarrierCategorySeeder::class,
             AccessibilityFeatureSeeder::class,
+            TagSeeder::class,
             AccessibleEducationalMaterialSeeder::class,
             PSPUSeeder::class,
             // StudentSeeder::class,

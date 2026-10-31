@@ -132,6 +132,7 @@ final class AppNavigation
                     ['disciplines', 'Disciplinas', 'specialized-educational-support.disciplines.index', 'ti-agenda', ['discipline.view'], ['specialized-educational-support.disciplines.*']],
                     ['courses', 'Cursos', 'specialized-educational-support.courses.index', 'ti-medall', ['course.view'], ['specialized-educational-support.courses.*']],
                     ['accessibility-features', 'Recursos de Acessibilidade', 'inclusive-radar.accessibility-features.index', 'ti-wheelchair', ['accessibility-feature.index'], ['inclusive-radar.accessibility-features.*']],
+                    ['tags', 'Etiquetas', 'inclusive-radar.tags.index', 'fa fa-tags', ['tag.index'], ['inclusive-radar.tags.*']],
                     ['barrier-categories', 'Categorias de Barreiras', 'inclusive-radar.barrier-categories.index', 'ti-layout-grid2', ['barrier-category.index'], ['inclusive-radar.barrier-categories.*']],
                     ['institutions', 'Instituições', 'inclusive-radar.institutions.index', 'ti-home', ['institution.index'], ['inclusive-radar.institutions.*']],
                     ['locations', 'Localizações', 'inclusive-radar.locations.index', 'ti-location-pin', ['location.index'], ['inclusive-radar.locations.*']],
