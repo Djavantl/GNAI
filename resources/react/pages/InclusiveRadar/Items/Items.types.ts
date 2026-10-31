@@ -18,6 +18,14 @@ export type ItemSummary = {
     is_active: boolean;
     quantity: number | null;
     quantity_available: number | null;
+    asset_code: string | null;
+    is_loanable: boolean;
+    conservation_state_label: string | null;
+    resource_status_label: string | null;
+    deficiencies: Array<{ id: number; name: string }>;
+    accessibility_features: Array<{ id: number; name: string }>;
+    created_at: string | null;
+    updated_at: string | null;
 };
 
 export type ItemPaginator = {

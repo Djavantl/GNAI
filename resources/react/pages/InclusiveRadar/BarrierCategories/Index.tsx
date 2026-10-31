@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -42,6 +43,8 @@ const columns: TableListColumn[] = [
     { id: "name", label: "Nome", width: "42%", minWidth: 140, fixed: "start" },
     { id: "count", label: "Vínculos", width: "20%", minWidth: 80 },
     { id: "status", label: "Status", width: "18%", minWidth: 90 },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
+    { id: "map", label: "Permite marcar no mapa", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "20%", minWidth: 86, fixed: "end" },
 ];
 
@@ -130,6 +133,8 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                                         {category.is_active ? "Ativo" : "Inativo"}
                                     </TableLabel>
                                 </td>
+                                <td>{formatTableListText(category.description)}</td>
+                                <td>{category.blocks_map ? "Não" : "Sim"}</td>
                                 <td>
                                     <TableActions>
                                         {can.show ? (
@@ -160,7 +165,7 @@ export default function InclusiveRadarBarrierCategoriesIndexPage({
                                 </td>
                             </tr>
                         )) : (
-                            <tr><TableListEmpty colSpan={4}>Nenhuma categoria encontrada.</TableListEmpty></tr>
+                            <tr><TableListEmpty colSpan={columns.length}>Nenhuma categoria encontrada.</TableListEmpty></tr>
                         )}
                     </TableListTable>
                 </TableListScroll>

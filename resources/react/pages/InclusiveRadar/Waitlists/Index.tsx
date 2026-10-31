@@ -1,11 +1,13 @@
 import { usePage } from "@inertiajs/react";
 import { useMemo } from "react";
+import { itemTypeLabels } from "@/pages/InclusiveRadar/Items/Items.types";
 import FormField from "@/components/Forms/FormField/FormField";
 import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -54,6 +56,10 @@ const columns: TableListColumn[] = [
     { id: "requested", label: "Data da Solicitação", width: "18%", minWidth: 110 },
     { id: "status", label: "Status", width: "13%", minWidth: 90 },
     { id: "user", label: "Usuário", width: "12%", minWidth: 80 },
+    { id: "type", label: "Tipo do item", width: "16%", defaultVisible: false },
+    { id: "asset", label: "Patrimônio / Tombamento", width: "16%", defaultVisible: false },
+    { id: "registration", label: "Matrícula do aluno", width: "16%", defaultVisible: false },
+    { id: "observation", label: "Observações", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "8%", minWidth: 76, fixed: "end" },
 ];
 
@@ -187,6 +193,10 @@ export default function InclusiveRadarWaitlistsIndexPage({
                                     <td>{waitlist.requested_at_label}</td>
                                     <td><TableLabel tone={waitlist.status_color}>{waitlist.status_label}</TableLabel></td>
                                     <td>{waitlist.user}</td>
+                                    <td>{itemTypeLabels[waitlist.item_type] ?? "Não informado"}</td>
+                                    <td>{waitlist.asset_code || "Não informado"}</td>
+                                    <td>{waitlist.student?.registration || "Não informado"}</td>
+                                    <td>{formatTableListText(waitlist.observation)}</td>
                                     <td>
                                         <TableActions>
                                             {can.show ? (
@@ -219,7 +229,7 @@ export default function InclusiveRadarWaitlistsIndexPage({
                             );
                         })}
                         {!waitlists.data.length ? (
-                            <tr><TableListEmpty colSpan={6}>Nenhuma solicitação registrada.</TableListEmpty></tr>
+                            <tr><TableListEmpty colSpan={columns.length}>Nenhuma solicitação registrada.</TableListEmpty></tr>
                         ) : null}
                     </TableListTable>
                 </TableListScroll>

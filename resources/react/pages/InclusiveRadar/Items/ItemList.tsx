@@ -1,5 +1,6 @@
 import TableActions from '@/components/Tables/TableActions/TableActions';
 import {
+    formatTableListDate,
     TableListEmpty,
     TableListFooter,
     TableListScroll,
@@ -28,6 +29,16 @@ const itemColumns: TableListColumn[] = [
     { id: 'nature', label: 'Natureza', width: '12%', minWidth: 72 },
     { id: 'stock', label: 'Estoque', width: '12%', minWidth: 72 },
     { id: 'status', label: 'Status', width: '12%', minWidth: 72 },
+    { id: 'asset', label: 'Patrimônio / Tombamento', width: '16%', defaultVisible: false },
+    { id: 'quantity', label: 'Quantidade total', width: '16%', defaultVisible: false },
+    { id: 'available', label: 'Quantidade disponível', width: '16%', defaultVisible: false },
+    { id: 'conservation', label: 'Conservação', width: '16%', defaultVisible: false },
+    { id: 'resourceStatus', label: 'Status do recurso', width: '16%', defaultVisible: false },
+    { id: 'loanable', label: 'Permite empréstimos', width: '16%', defaultVisible: false },
+    { id: 'audience', label: 'Público-alvo', width: '16%', defaultVisible: false },
+    { id: 'features', label: 'Recursos presentes no item', width: '16%', defaultVisible: false },
+    { id: 'created', label: 'Criado em', width: '16%', defaultVisible: false },
+    { id: 'updated', label: 'Atualizado em', width: '16%', defaultVisible: false },
     {
         id: 'actions',
         label: 'Ações',
@@ -96,6 +107,20 @@ export default function ItemList({
                                                 : 'Inativo'}
                                     </TableLabel>
                                 </td>
+                                <td>{item.asset_code || 'Não informado'}</td>
+                                <td>{item.is_digital ? 'Não se aplica' : (item.quantity ?? 0)}</td>
+                                <td>{item.is_digital ? 'Não se aplica' : (item.quantity_available ?? 0)}</td>
+                                <td>{item.conservation_state_label || 'Não informado'}</td>
+                                <td>{item.resource_status_label || 'Não informado'}</td>
+                                <td>{item.is_loanable ? 'Sim' : 'Não'}</td>
+                                <td>
+                                    {item.deficiencies.map((entry) => entry.name).join(', ') || 'Não informado'}
+                                </td>
+                                <td>
+                                    {item.accessibility_features.map((entry) => entry.name).join(', ') || 'Não informado'}
+                                </td>
+                                <td>{formatTableListDate(item.created_at, true)}</td>
+                                <td>{formatTableListDate(item.updated_at, true)}</td>
                                 <td>
                                     <TableActions>
                                         {permissions.show ? (
@@ -129,7 +154,7 @@ export default function ItemList({
                     })}
                     {!items.data.length ? (
                         <tr>
-                            <TableListEmpty colSpan={6}>
+                            <TableListEmpty colSpan={itemColumns.length}>
                                 Nenhum item cadastrado.
                             </TableListEmpty>
                         </tr>

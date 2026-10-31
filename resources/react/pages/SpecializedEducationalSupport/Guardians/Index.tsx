@@ -8,6 +8,7 @@ import StudentRecordReturnButton from "@/components/Students/StudentRecordReturn
 import { aeeBase, studentsBase } from "@/components/Students/Students.utils";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListDate,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -41,6 +42,9 @@ const columns: TableListColumn[] = [
     { id: "document", label: "CPF", width: "16%", minWidth: 90 },
     { id: "relationship", label: "Vínculo", width: "14%", minWidth: 80 },
     { id: "contact", label: "Contato", width: "26%", minWidth: 110 },
+    { id: "email", label: "E-mail", width: "16%", defaultVisible: false },
+    { id: "phone", label: "Telefone", width: "16%", defaultVisible: false },
+    { id: "birth", label: "Nascimento", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "14%", minWidth: 86, fixed: "end" },
 ];
 
@@ -192,6 +196,9 @@ export default function SpecializedEducationalSupportGuardiansIndexPage({
                                             : "—"}
                                     </td>
                                     <td>{guardian.person.email || guardian.person.phone || "—"}</td>
+                                    <td>{guardian.person.email || "Não informado"}</td>
+                                    <td>{guardian.person.phone || "Não informado"}</td>
+                                    <td>{formatTableListDate(guardian.person.birth_date)}</td>
                                     <td>
                                         {can.view || can.delete ? (
                                             <TableActions>
@@ -228,7 +235,7 @@ export default function SpecializedEducationalSupportGuardiansIndexPage({
                             ))
                         ) : (
                             <tr>
-                                <TableListEmpty colSpan={5}>
+                                <TableListEmpty colSpan={columns.length}>
                                     Nenhum responsável encontrado para este aluno.
                                 </TableListEmpty>
                             </tr>

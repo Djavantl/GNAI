@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -41,6 +42,8 @@ const columns: TableListColumn[] = [
     { id: "name", label: "Nome do Curso", width: "45%", minWidth: 140, fixed: "start" },
     { id: "disciplines", label: "Disciplinas", width: "22%", minWidth: 100 },
     { id: "status", label: "Status", width: "18%", minWidth: 80 },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
+    { id: "enrollments", label: "Vínculos de alunos", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "15%", minWidth: 86, fixed: "end" },
 ];
 
@@ -144,6 +147,8 @@ export default function SpecializedEducationalSupportCoursesIndexPage({
                                         {course.is_active ? "Ativo" : "Inativo"}
                                     </TableLabel>
                                 </td>
+                                <td>{formatTableListText(course.description)}</td>
+                                <td>{course.student_courses_count}</td>
                                 <td>
                                     <TableActions>
                                         {can.view ? (

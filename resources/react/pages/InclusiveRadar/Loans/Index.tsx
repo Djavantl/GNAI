@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -59,6 +60,12 @@ const columns: TableListColumn[] = [
     { id: "due", label: "Prazo", width: "14%", minWidth: 85 },
     { id: "status", label: "Status", width: "16%", minWidth: 90 },
     { id: "user", label: "Usuário", width: "12%", minWidth: 80 },
+    { id: "type", label: "Tipo do item", width: "16%", defaultVisible: false },
+    { id: "asset", label: "Patrimônio / Tombamento", width: "16%", defaultVisible: false },
+    { id: "registration", label: "Matrícula do beneficiário", width: "16%", defaultVisible: false },
+    { id: "departure", label: "Saída", width: "16%", defaultVisible: false },
+    { id: "return", label: "Devolução", width: "16%", defaultVisible: false },
+    { id: "observation", label: "Observações", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "12%", minWidth: 92, fixed: "end" },
 ];
 
@@ -211,6 +218,12 @@ export default function InclusiveRadarLoansIndexPage({
                                         </TableLabel>
                                     </td>
                                     <td>{loan.user.name}</td>
+                                    <td>{loan.item_type_label}</td>
+                                    <td>{loan.loanable.asset_code || "Não informado"}</td>
+                                    <td>{loan.student?.registration || loan.professional?.registration || "Não informado"}</td>
+                                    <td>{loan.loan_date_label}</td>
+                                    <td>{loan.return_date_label || "Não informado"}</td>
+                                    <td>{formatTableListText(loan.observation)}</td>
                                     <td>
                                         <TableActions>
                                             {can.show ? (
@@ -242,7 +255,7 @@ export default function InclusiveRadarLoansIndexPage({
                         })}
                         {!loans.data.length ? (
                             <tr>
-                                <TableListEmpty colSpan={6}>
+                                <TableListEmpty colSpan={columns.length}>
                                     Nenhum empréstimo registrado.
                                 </TableListEmpty>
                             </tr>

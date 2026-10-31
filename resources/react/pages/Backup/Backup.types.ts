@@ -5,6 +5,7 @@ export interface BackupRecord {
     size: string;
     status: "success" | "failed" | "archived" | null;
     created_at: string;
+    updated_at: string | null;
     created_at_label: string;
     user: { name: string } | null;
 }

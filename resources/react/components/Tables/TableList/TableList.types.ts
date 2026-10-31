@@ -8,6 +8,8 @@ export interface TableListColumn {
   /** @deprecated Mantido por compatibilidade; não limita o redimensionamento. */
   minWidth?: number;
   hideable?: boolean;
+  /** Colunas complementares começam desmarcadas; fixas continuam sempre visíveis. */
+  defaultVisible?: boolean;
   /** Mantém a coluna visível na extremidade; end também bloqueia o redimensionamento. */
   fixed?: 'start' | 'end';
 }

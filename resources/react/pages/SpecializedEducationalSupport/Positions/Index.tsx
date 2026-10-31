@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -39,6 +40,7 @@ const statusOptions = [
 const columns: TableListColumn[] = [
     { id: "name", label: "Cargo", width: "58%", minWidth: 140, fixed: "start" },
     { id: "status", label: "Status", width: "20%", minWidth: 90 },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "22%", minWidth: 120, fixed: "end" },
 ];
 
@@ -167,6 +169,7 @@ export default function SpecializedEducationalSupportPositionsIndexPage({
                                         {position.is_active ? "Ativo" : "Inativo"}
                                     </TableLabel>
                                 </td>
+                                <td>{formatTableListText(position.description)}</td>
                                 <td>
                                     <TableActions>
                                         {can.view ? (

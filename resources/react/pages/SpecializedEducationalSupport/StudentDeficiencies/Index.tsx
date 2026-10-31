@@ -7,6 +7,7 @@ import StudentRecordReturnButton from "@/components/Students/StudentRecordReturn
 import { studentsBase } from "@/components/Students/Students.utils";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -52,6 +53,7 @@ const severityOptions = [
 const columns: TableListColumn[] = [
     { id: "name", label: "Nome", width: "46%", minWidth: 140, fixed: "start" },
     { id: "severity", label: "Severidade", width: "26%", minWidth: 90 },
+    { id: "notes", label: "Observações", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "28%", minWidth: 104, fixed: "end" },
 ];
 
@@ -173,6 +175,7 @@ export default function SpecializedEducationalSupportStudentDeficienciesIndexPag
                                             </TableLabel>
                                         ) : "Não informada"}
                                     </td>
+                                    <td>{formatTableListText(profile.notes)}</td>
                                     <td>
                                         {can.view || can.delete ? (
                                             <TableActions>

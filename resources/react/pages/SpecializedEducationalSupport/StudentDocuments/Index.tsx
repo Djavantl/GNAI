@@ -57,6 +57,7 @@ const columns: TableListColumn[] = [
     { id: "semester", label: "Semestre", width: "13%", minWidth: 82 },
     { id: "size", label: "Tamanho", width: "11%", minWidth: 76 },
     { id: "upload", label: "Data de upload", width: "16%", minWidth: 110 },
+    { id: "originalName", label: "Nome original do arquivo", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "22%", minWidth: 150, fixed: "end" },
 ];
 
@@ -192,6 +193,7 @@ export default function SpecializedEducationalSupportStudentDocumentsIndexPage({
                                 <td>{document.semester_label ?? "Não informado"}</td>
                                 <td>{fileSizeLabel(document.file_size)}</td>
                                 <td>{dateTimeLabel(document.created_at)}</td>
+                                <td>{document.original_name || "Não informado"}</td>
                                 <td>
                                     {can.view || can.update || can.delete ? (
                                         <TableActions>

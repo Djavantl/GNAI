@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListDate,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -46,6 +47,8 @@ const columns: TableListColumn[] = [
     { id: "period", label: "Ano / Período", width: "28%", minWidth: 130, fixed: "start" },
     { id: "label", label: "Rótulo Identificador", width: "28%", minWidth: 110 },
     { id: "status", label: "Status", width: "22%", minWidth: 100 },
+    { id: "start", label: "Início", width: "16%", defaultVisible: false },
+    { id: "end", label: "Fim", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "22%", minWidth: 120, fixed: "end" },
 ];
 
@@ -206,6 +209,8 @@ export default function SpecializedEducationalSupportSemestersIndexPage({
                                             {semester.is_current ? "Semestre atual" : "Histórico"}
                                         </TableLabel>
                                     </td>
+                                    <td>{formatTableListDate(semester.start_date)}</td>
+                                    <td>{formatTableListDate(semester.end_date)}</td>
                                     <td>
                                         <TableActions>
                                             {can.view ? (

@@ -283,6 +283,9 @@
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
+  width: max-content;
+  min-width: min(210px, calc(100vw - 48px));
+  max-width: calc(100vw - 48px);
   z-index: 20;
   display: grid;
   grid-template-rows: 0fr;
@@ -307,13 +310,17 @@
 .tableListColumnsMenu__options {
   display: grid;
   min-height: 0;
-  min-width: 210px;
+  min-width: 0;
   margin: 0;
   padding: 6px;
   border: 1px solid var(--ui-color-card-border);
   border-radius: 4px;
   background: var(--ui-color-surface);
   box-shadow: 0 2px 5px var(--ui-color-shadow);
+  max-height: min(360px, 60vh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .tableListColumnsMenu__options legend {
@@ -335,7 +342,7 @@
   padding-bottom: 6px;
   padding-left: 28px;
   border-radius: 3px;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .tableListColumnsMenu__options .tableListColumnsMenu__option + .tableListColumnsMenu__option {
@@ -345,6 +352,7 @@
 .tableListColumnsMenu__option label {
   display: block;
   width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .tableListColumnsMenu__option:not(:has(input:disabled)):hover {

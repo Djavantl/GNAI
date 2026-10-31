@@ -107,10 +107,21 @@ export default function TableListTable({
 }: TableListTableProps): React.JSX.Element {
   const tableRef = useRef<HTMLTableElement>(null);
   const resizeState = useRef<ResizeState | null>(null);
-  const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(
-    () => new Set(),
-  );
+  const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({});
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+
+  const hiddenColumns = useMemo(
+    () => new Set(
+      columns
+        .filter((column) =>
+          !column.fixed
+          && column.hideable !== false
+          && !(columnVisibility[column.id] ?? (column.defaultVisible !== false)),
+        )
+        .map((column) => column.id),
+    ),
+    [columns, columnVisibility],
+  );
 
   const visibleColumns = useMemo(
     () => columns.filter((column) => !hiddenColumns.has(column.id)),
@@ -121,6 +132,15 @@ export default function TableListTable({
     () => filterRowCells(children, columns, hiddenColumns),
     [children, columns, hiddenColumns],
   );
+
+  // Redistribui as larguras percentuais ao ativar colunas complementares,
+  // mantendo a tabela dentro do card. O arraste continua usando pixels medidos.
+  const hasPercentageWidths = visibleColumns.every((column) =>
+    typeof column.width === 'string' && /^\d+(?:\.\d+)?%$/.test(column.width),
+  );
+  const totalWidth = hasPercentageWidths
+    ? visibleColumns.reduce((total, column) => total + parseFloat(String(column.width)), 0)
+    : 0;
 
   function measureVisibleColumns(): Record<string, number> {
     const headerCells = tableRef.current?.querySelectorAll('thead th');
@@ -231,15 +251,15 @@ export default function TableListTable({
       return;
     }
 
-    setHiddenColumns((currentColumns) => {
-      const nextColumns = new Set(currentColumns);
-      if (nextColumns.has(columnId)) {
-        nextColumns.delete(columnId);
-      } else if (columns.length - nextColumns.size > 1) {
-        nextColumns.add(columnId);
-      }
-      return nextColumns;
+    setColumnVisibility((current) => {
+      const isVisible = (candidate: TableListColumn) => Boolean(candidate.fixed)
+        || candidate.hideable === false
+        || (current[candidate.id] ?? (candidate.defaultVisible !== false));
+      const visible = isVisible(column);
+      if (visible && columns.filter(isVisible).length <= 1) return current;
+      return { ...current, [columnId]: !visible };
     });
+    setColumnWidths({});
   }
 
   return (
@@ -267,7 +287,9 @@ export default function TableListTable({
             {visibleColumns.map((column) => (
               <col
                 key={column.id}
-                width={columnWidths[column.id] ?? column.width}
+                width={columnWidths[column.id] ?? (totalWidth
+                  ? `${parseFloat(String(column.width)) / totalWidth * 100}%`
+                  : column.width)}
               />
             ))}
           </colgroup>

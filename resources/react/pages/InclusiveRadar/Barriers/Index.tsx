@@ -7,6 +7,8 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListDate,
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -52,6 +54,11 @@ const columns: TableListColumn[] = [
     { id: "category", label: "Categoria", width: "22%", minWidth: 100 },
     { id: "priority", label: "Prioridade", width: "16%", minWidth: 90 },
     { id: "status", label: "Status", width: "16%", minWidth: 100 },
+    { id: "location", label: "Ponto de referência", width: "16%", defaultVisible: false },
+    { id: "identified", label: "Identificada em", width: "16%", defaultVisible: false },
+    { id: "reporter", label: "Relator", width: "16%", defaultVisible: false },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
+    { id: "audience", label: "Público impactado", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "15%", minWidth: 86, fixed: "end" },
 ];
 
@@ -106,6 +113,11 @@ export default function InclusiveRadarBarriersIndexPage({ barriers, filters: ini
                                     <td>{barrier.category?.name ?? "—"}</td>
                                     <td><TableLabel tone={barrier.priority === "urgent" || barrier.priority === "high" ? "danger" : barrier.priority === "low" ? "info" : "warning"}>{priorityLabels[barrier.priority] ?? barrier.priority}</TableLabel></td>
                                     <td><TableLabel tone={status === "resolved" ? "success" : status === "in_progress" ? "warning" : status === "not_applicable" ? "danger" : "inverse"}>{statusLabels[status] ?? "Pendente"}</TableLabel></td>
+                                    <td>{barrier.location?.name || "Não informado"}</td>
+                                    <td>{formatTableListDate(barrier.identified_at)}</td>
+                                    <td>{barrier.is_anonymous ? "Contribuidor Anônimo" : (barrier.registered_by?.name || "Usuário não identificado")}</td>
+                                    <td>{formatTableListText(barrier.description)}</td>
+                                    <td>{barrier.deficiencies?.map((entry) => entry.name).join(", ") || "Não informado"}</td>
                                     <td>
                                         <TableActions>
                                             {can.show ? <Button href={`${base}/${barrier.id}`} size="sm" tone="dark-blue" iconOnly leftIconClass="fa fa-eye" aria-label={`Visualizar ${barrier.name}`} /> : null}
@@ -115,7 +127,7 @@ export default function InclusiveRadarBarriersIndexPage({ barriers, filters: ini
                                     </td>
                                 </tr>
                             );
-                        }) : <tr><TableListEmpty colSpan={5}>Nenhuma barreira identificada até o momento.</TableListEmpty></tr>}
+                        }) : <tr><TableListEmpty colSpan={columns.length}>Nenhuma barreira identificada até o momento.</TableListEmpty></tr>}
                     </TableListTable>
                 </TableListScroll>
                 <TableListFooter page={barriers} disabled={list.loading} paginationLabel="Paginação de barreiras" onSelect={(page) => list.visit(values, page)} />

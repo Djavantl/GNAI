@@ -8,6 +8,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -39,6 +40,9 @@ const columns: TableListColumn[] = [
     { id: "institution", label: "Instituição", width: "25%", minWidth: 110 },
     { id: "type", label: "Tipo", width: "18%", minWidth: 90 },
     { id: "status", label: "Status", width: "13%", minWidth: 80 },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
+    { id: "latitude", label: "Latitude", width: "16%", defaultVisible: false },
+    { id: "longitude", label: "Longitude", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "15%", minWidth: 86, fixed: "end" },
 ];
 
@@ -125,6 +129,9 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                                         {location.is_active ? "Ativo" : "Inativo"}
                                     </TableLabel>
                                 </td>
+                                <td>{formatTableListText(location.description)}</td>
+                                <td>{location.latitude ?? "Não informado"}</td>
+                                <td>{location.longitude ?? "Não informado"}</td>
                                 <td>
                                     <TableActions>
                                         {can.show ? (
@@ -155,7 +162,7 @@ export default function InclusiveRadarLocationsIndexPage({ locations, filters: i
                                 </td>
                             </tr>
                         )) : (
-                            <tr><TableListEmpty colSpan={5}>Nenhum ponto de referência encontrado.</TableListEmpty></tr>
+                            <tr><TableListEmpty colSpan={columns.length}>Nenhum ponto de referência encontrado.</TableListEmpty></tr>
                         )}
                     </TableListTable>
                 </TableListScroll>

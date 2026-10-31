@@ -31,8 +31,9 @@ export interface ProfessionalFormOptions {
 }
 
 export interface ProfessionalListRecord {
+    entry_date: string | null;
     id: number;
-    person: Pick<ProfessionalPerson, "id" | "name" | "email"> & { photo_url?: string | null };
+    person: Pick<ProfessionalPerson, "id" | "name" | "email" | "phone"> & { photo_url?: string | null };
     position: { id: number; name: string } | null;
     registration: string;
     status: string | null;

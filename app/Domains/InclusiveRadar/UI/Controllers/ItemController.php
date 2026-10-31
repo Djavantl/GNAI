@@ -36,6 +36,10 @@ final class ItemController
     public function index(ListItemsData $filters, ListItemsQuery $query, Request $request): InertiaResponse
     {
         $items = $query->execute($filters);
+        $items->getCollection()->each(static function (Item $item): void {
+            $item->setAttribute('conservation_state_label', $item->conservation_state?->label());
+            $item->setAttribute('resource_status_label', $item->status?->label());
+        });
 
         return Inertia::render(
             'InclusiveRadar/Items/Index',

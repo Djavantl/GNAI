@@ -53,6 +53,7 @@ export default function TableListColumnsMenu({
       <button
         type="button"
         className="tableListColumnsMenu__trigger"
+        title="Selecionar colunas visíveis"
         aria-expanded={open}
         aria-controls={`${controlId}-options`}
         onClick={() => setOpen((current) => !current)}

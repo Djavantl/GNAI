@@ -13,6 +13,7 @@ export interface CourseRecord {
 
 export type CourseListRecord = CourseRecord & {
     disciplines_count: number;
+    student_courses_count: number;
 };
 
 export type CoursePaginator = {

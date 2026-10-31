@@ -10,6 +10,10 @@ export interface PendencyPriorityOption extends PendencyListOption {
 }
 
 export interface PendencyListRecord {
+    description: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+    creator: { name: string } | null;
     id: number;
     title: string;
     priority: string | null;

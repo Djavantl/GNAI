@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListDate,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -44,6 +45,9 @@ const columns: TableListColumn[] = [
     { id: "email", label: "E-mail", width: "26%", minWidth: 110 },
     { id: "position", label: "Cargo", width: "17%", minWidth: 90 },
     { id: "status", label: "Status", width: "11%", minWidth: 72 },
+    { id: "registration", label: "Matrícula", width: "16%", defaultVisible: false },
+    { id: "phone", label: "Telefone", width: "16%", defaultVisible: false },
+    { id: "entry", label: "Ingresso", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "14%", minWidth: 86, fixed: "end" },
 ];
 
@@ -217,6 +221,9 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
                                             "—"
                                         )}
                                     </td>
+                                    <td>{professional.registration || "Não informado"}</td>
+                                    <td>{professional.person.phone || "Não informado"}</td>
+                                    <td>{formatTableListDate(professional.entry_date)}</td>
                                     <td>
                                         {can.view || can.delete ? (
                                             <TableActions>
@@ -253,7 +260,7 @@ export default function SpecializedEducationalSupportProfessionalsIndexPage({
                             ))
                         ) : (
                             <tr>
-                                <TableListEmpty colSpan={5}>
+                                <TableListEmpty colSpan={columns.length}>
                                     Nenhum profissional encontrado.
                                 </TableListEmpty>
                             </tr>

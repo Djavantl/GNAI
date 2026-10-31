@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -44,6 +45,10 @@ const columns: TableListColumn[] = [
     { id: "end", label: "Data Final", width: "15%", minWidth: 100 },
     { id: "time", label: "Horário", width: "17%", minWidth: 100 },
     { id: "status", label: "Status", width: "12%", minWidth: 80 },
+    { id: "location", label: "Local", width: "16%", defaultVisible: false },
+    { id: "organizer", label: "Organizador", width: "16%", defaultVisible: false },
+    { id: "audience", label: "Público-alvo", width: "16%", defaultVisible: false },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "10%", minWidth: 76, fixed: "end" },
 ];
 
@@ -143,6 +148,10 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                                         {event.is_active ? "Ativo" : "Inativo"}
                                     </TableLabel>
                                 </td>
+                                <td>{event.location || "Não informado"}</td>
+                                <td>{event.organizer || "Não informado"}</td>
+                                <td>{event.audience || "Não informado"}</td>
+                                <td>{formatTableListText(event.description)}</td>
                                 <td>
                                     <TableActions>
                                         {can.show ? (
@@ -174,7 +183,7 @@ export default function InclusiveRadarInstitutionalEventsIndexPage({
                             </tr>
                         ))}
                         {!events.data.length ? (
-                            <tr><TableListEmpty colSpan={6}>Nenhum evento cadastrado.</TableListEmpty></tr>
+                            <tr><TableListEmpty colSpan={columns.length}>Nenhum evento cadastrado.</TableListEmpty></tr>
                         ) : null}
                     </TableListTable>
                 </TableListScroll>

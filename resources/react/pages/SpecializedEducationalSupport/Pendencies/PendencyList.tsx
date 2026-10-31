@@ -6,6 +6,8 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListDate,
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListEmpty,
@@ -53,6 +55,10 @@ const allColumns: TableListColumn[] = [
     { id: "priority", label: "Prioridade", width: "13%", minWidth: 80 },
     { id: "due_date", label: "Vencimento", width: "12%", minWidth: 80 },
     { id: "completed", label: "Concluída", width: "11%", minWidth: 80 },
+    { id: "creator", label: "Criado por", width: "16%", defaultVisible: false },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
+    { id: "created", label: "Criado em", width: "16%", defaultVisible: false },
+    { id: "updated", label: "Atualizado em", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "12%", minWidth: 86, fixed: "end" },
 ];
 
@@ -61,6 +67,10 @@ const myColumns: TableListColumn[] = [
     { id: "priority", label: "Prioridade", width: "16%", minWidth: 80 },
     { id: "due_date", label: "Vencimento", width: "15%", minWidth: 80 },
     { id: "status", label: "Status", width: "17%", minWidth: 90 },
+    { id: "creator", label: "Criado por", width: "16%", defaultVisible: false },
+    { id: "description", label: "Descrição", width: "16%", defaultVisible: false },
+    { id: "created", label: "Criado em", width: "16%", defaultVisible: false },
+    { id: "updated", label: "Atualizado em", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "12%", minWidth: 70, fixed: "end" },
 ];
 
@@ -265,6 +275,10 @@ export default function PendencyList({
                                     <td>{renderPriority(pendency)}</td>
                                     <td>{pendency.due_date ? dateLabel(pendency.due_date) : "—"}</td>
                                     <td>{renderStatus(pendency)}</td>
+                                    <td>{pendency.creator?.name || "Não informado"}</td>
+                                    <td>{formatTableListText(pendency.description)}</td>
+                                    <td>{formatTableListDate(pendency.created_at, true)}</td>
+                                    <td>{formatTableListDate(pendency.updated_at, true)}</td>
                                     <td>
                                         <TableActions>
                                             {canView ? (

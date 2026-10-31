@@ -63,6 +63,8 @@ export interface StudentContextFormProps {
 }
 
 export interface StudentContextListRecord {
+    semester: { label: string | null } | null;
+    evaluator: { person: { name: string } | null } | null;
     id: number;
     version: number;
     evaluation_type: string;

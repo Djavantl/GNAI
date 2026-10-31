@@ -6,6 +6,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListDate,
     TableListCard,
     TableListClearButton,
     TableListEmpty,
@@ -56,6 +57,8 @@ const columns: TableListColumn[] = [
     { id: "size", label: "Tamanho", width: "11%", minWidth: 60 },
     { id: "created", label: "Criado em", width: "18%", minWidth: 100 },
     { id: "user", label: "Responsável", width: "14%", minWidth: 85 },
+    { id: "path", label: "Caminho do arquivo", width: "16%", defaultVisible: false },
+    { id: "updated", label: "Atualizado em", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "18%", minWidth: 108, fixed: "end" },
 ];
 
@@ -177,8 +180,8 @@ export default function BackupIndexPage({
                                 }}
                             />
                             <Button
-                                tone="default"
-                                leftIconClass="fa fa-upload"
+                                tone="dark-blue"
+                                labelIconClass="fa fa-cloud-upload"
                                 label={busy ? "Processando..." : "Importar Backup"}
                                 aria-label={busy ? "Importando backup..." : "Importar backup ZIP"}
                                 aria-describedby={pageErrors.backup_file ? "backup-file-error" : undefined}
@@ -189,8 +192,8 @@ export default function BackupIndexPage({
                     ) : null}
                     {can.store ? (
                         <Button
-                            tone="save"
-                            leftIconClass="fa fa-database"
+                            tone="list-action"
+                            labelIconClass="fa fa-database"
                             label={busy ? "Processando..." : "Gerar Novo"}
                             aria-label={busy ? "Gerando backup..." : "Gerar novo backup"}
                             disabled={actionBusy}
@@ -277,6 +280,8 @@ export default function BackupIndexPage({
                                     <td>{backup.size}</td>
                                     <td>{backup.created_at_label}</td>
                                     <td>{backup.user?.name ?? "Sistema"}</td>
+                                    <td>{backup.file_path || "Não informado"}</td>
+                                    <td>{formatTableListDate(backup.updated_at, true)}</td>
                                     <td>
                                         <TableActions>
                                             {can.download ? (
@@ -328,7 +333,7 @@ export default function BackupIndexPage({
                                 </tr>
                             );
                         }) : (
-                            <tr><TableListEmpty colSpan={6}>Nenhum backup encontrado no histórico.</TableListEmpty></tr>
+                            <tr><TableListEmpty colSpan={columns.length}>Nenhum backup encontrado no histórico.</TableListEmpty></tr>
                         )}
                     </TableListTable>
                 </TableListScroll>

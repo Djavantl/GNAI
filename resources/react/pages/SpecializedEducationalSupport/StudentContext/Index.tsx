@@ -58,6 +58,8 @@ const columns: TableListColumn[] = [
     { id: "version", label: "Versão", width: "14%", minWidth: 72 },
     { id: "evaluation", label: "Tipo de avaliação", width: "30%", minWidth: 120 },
     { id: "status", label: "Status", width: "16%", minWidth: 80 },
+    { id: "semester", label: "Semestre", width: "16%", defaultVisible: false },
+    { id: "evaluator", label: "Avaliador", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "22%", minWidth: 104, fixed: "end" },
 ];
 
@@ -203,6 +205,8 @@ export default function SpecializedEducationalSupportStudentContextIndexPage({
                                             {context.is_current ? "Atual" : "Histórico"}
                                         </TableLabel>
                                     </td>
+                                    <td>{context.semester?.label || "Não informado"}</td>
+                                    <td>{context.evaluator?.person?.name || "Não informado"}</td>
                                     <td>
                                         {can.view || canDelete ? (
                                             <TableActions>

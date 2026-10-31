@@ -8,6 +8,7 @@ import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListText,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -38,6 +39,12 @@ const columns: TableListColumn[] = [
     { id: "name", label: "Nome", width: "39%", minWidth: 140, fixed: "start" },
     { id: "location", label: "Localização", width: "28%", minWidth: 110 },
     { id: "status", label: "Status", width: "15%", minWidth: 85 },
+    { id: "shortName", label: "Sigla", width: "16%", defaultVisible: false },
+    { id: "district", label: "Bairro", width: "16%", defaultVisible: false },
+    { id: "address", label: "Endereço", width: "16%", defaultVisible: false },
+    { id: "zoom", label: "Zoom padrão", width: "16%", defaultVisible: false },
+    { id: "latitude", label: "Latitude", width: "16%", defaultVisible: false },
+    { id: "longitude", label: "Longitude", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "18%", minWidth: 86, fixed: "end" },
 ];
 
@@ -112,6 +119,12 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                                         {institution.is_active ? "Ativo" : "Inativo"}
                                     </TableLabel>
                                 </td>
+                                <td>{institution.short_name || "Não informado"}</td>
+                                <td>{institution.district || "Não informado"}</td>
+                                <td>{formatTableListText(institution.address)}</td>
+                                <td>{institution.default_zoom}</td>
+                                <td>{institution.latitude ?? "Não informado"}</td>
+                                <td>{institution.longitude ?? "Não informado"}</td>
                                 <td>
                                     <TableActions>
                                         {can.show ? (
@@ -136,7 +149,7 @@ export default function InclusiveRadarInstitutionsIndexPage({ institutions, filt
                                 </td>
                             </tr>
                         )) : (
-                            <tr><TableListEmpty colSpan={4}>Nenhuma instituição cadastrada.</TableListEmpty></tr>
+                            <tr><TableListEmpty colSpan={columns.length}>Nenhuma instituição cadastrada.</TableListEmpty></tr>
                         )}
                     </TableListTable>
                 </TableListScroll>

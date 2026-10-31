@@ -1,5 +1,6 @@
 import TableActions from '@/components/Tables/TableActions/TableActions';
 import {
+  formatTableListDate,
   TableListEmpty,
   TableListFooter,
   TableListScroll,
@@ -24,6 +25,11 @@ const studentColumns: TableListColumn[] = [
   { id: 'email', label: 'E-mail', width: '25%', minWidth: 100 },
   { id: 'status', label: 'Status', width: '10%', minWidth: 72 },
   { id: 'entry', label: 'Ingresso', width: '10%', minWidth: 72 },
+  { id: 'registration', label: 'Matrícula', width: '16%', defaultVisible: false },
+  { id: 'document', label: 'CPF', width: '16%', defaultVisible: false },
+  { id: 'birth', label: 'Nascimento', width: '16%', defaultVisible: false },
+  { id: 'age', label: 'Idade', width: '16%', defaultVisible: false },
+  { id: 'gender', label: 'Gênero', width: '16%', defaultVisible: false },
   {
     id: 'actions',
     label: 'Ações',
@@ -81,6 +87,11 @@ export default function StudentList({
                   </TableLabel>
                 </td>
                 <td>{dateLabel(student.entry_date)}</td>
+                <td>{student.registration || 'Não informado'}</td>
+                <td>{student.person.document || 'Não informado'}</td>
+                <td>{formatTableListDate(student.person.birth_date)}</td>
+                <td>{student.person.age ?? 'Não informado'}</td>
+                <td>{student.person.gender_label || 'Não informado'}</td>
                 <td>
                   {canView || canDelete ? (
                     <TableActions>
@@ -110,7 +121,7 @@ export default function StudentList({
             ))
           ) : (
             <tr>
-              <TableListEmpty colSpan={6}>
+              <TableListEmpty colSpan={studentColumns.length}>
                 Nenhum aluno encontrado.
               </TableListEmpty>
             </tr>

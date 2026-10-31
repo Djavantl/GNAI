@@ -5,6 +5,7 @@ import FormLayout from "@/components/Forms/FormLayout/FormLayout";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import TableActions from "@/components/Tables/TableActions/TableActions";
 import {
+    formatTableListDate,
     TableListCard,
     TableListClearButton,
     TableListCreateButton,
@@ -38,6 +39,9 @@ const columns: TableListColumn[] = [
     { id: "name", label: "Nome", width: "38%", minWidth: 140, fixed: "start" },
     { id: "email", label: "E-mail", width: "30%", minWidth: 110 },
     { id: "registration", label: "Matrícula", width: "18%", minWidth: 90 },
+    { id: "phone", label: "Telefone", width: "16%", defaultVisible: false },
+    { id: "document", label: "CPF", width: "16%", defaultVisible: false },
+    { id: "birth", label: "Nascimento", width: "16%", defaultVisible: false },
     { id: "actions", label: "Ações", width: "14%", minWidth: 86, fixed: "end" },
 ];
 
@@ -183,6 +187,9 @@ export default function SpecializedEducationalSupportTeachersIndexPage({
                                     </td>
                                     <td>{teacher.person.email || "Não informado"}</td>
                                     <td>{teacher.registration || "—"}</td>
+                                    <td>{teacher.person.phone || "Não informado"}</td>
+                                    <td>{teacher.person.document || "Não informado"}</td>
+                                    <td>{formatTableListDate(teacher.person.birth_date)}</td>
                                     <td>
                                         {can.view || can.delete ? (
                                             <TableActions>
@@ -219,7 +226,7 @@ export default function SpecializedEducationalSupportTeachersIndexPage({
                             ))
                         ) : (
                             <tr>
-                                <TableListEmpty colSpan={4}>
+                                <TableListEmpty colSpan={columns.length}>
                                     Nenhum professor encontrado.
                                 </TableListEmpty>
                             </tr>
