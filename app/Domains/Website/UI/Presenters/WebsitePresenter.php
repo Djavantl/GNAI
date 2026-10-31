@@ -7,6 +7,7 @@ namespace App\Domains\Website\UI\Presenters;
 use App\Domains\Inclusion\Domain\Enums\PublicationType;
 use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Models\PublicationMedia;
+use App\Domains\Inclusion\Domain\Models\PublicationSpeaker;
 use App\Domains\Inclusion\Domain\Models\Professional;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
@@ -114,11 +115,13 @@ final class WebsitePresenter
                 ->values()
                 ->all(),
             'speakers' => $event->speakers
-                ->map(fn (Professional $professional): array => [
-                    ...$this->teamMember($professional),
-                    'role' => collect([$professional->pivot?->participation, $professional->position?->name])
+                ->map(fn (PublicationSpeaker $speaker): array => [
+                    'id' => $speaker->id,
+                    'name' => $speaker->displayName(),
+                    'role' => collect([$speaker->participation, $speaker->professional?->position?->name])
                         ->filter()
                         ->implode(' · ') ?: null,
+                    'photo_url' => $speaker->professional?->person?->photo_url ?? asset('images/default-user.jpg'),
                 ])
                 ->values()
                 ->all(),

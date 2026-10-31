@@ -10,6 +10,6 @@ final class ShowPublicationQuery
 {
     public function execute(Publication $publication): Publication
     {
-        return $publication->load(['author', 'media', 'speakers.person', 'speakers.position', 'tags']);
+        return $publication->load(['author', 'media', 'speakers.professional.person', 'speakers.professional.position', 'tags']);
     }
 }

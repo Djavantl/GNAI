@@ -20,7 +20,7 @@ final class UpdatePublicationData extends Data
     use PublicationRules;
 
     /**
-     * @param  list<array{id?: int|string, participation?: string|null}>  $speakers
+     * @param  list<array{id?: int|string|null, name?: string|null, participation?: string|null}>  $speakers
      * @param  list<int|string>  $tagIds
      * @param  list<array{file?: UploadedFile, alt?: string|null}>  $gallery
      * @param  list<array{id?: int|string, alt?: string|null, remove?: bool|string|null}>  $galleryExisting

@@ -14,8 +14,18 @@ import InfoTooltip from "@/components/UI/InfoTooltip/InfoTooltip";
 import type { PublicationFormOptions, SpeakerRow } from "./Publication.types";
 import { describedBy, type PublicationFieldsProps } from "./PublicationFields.types";
 
-export function newSpeakerRow(id = "", participation = ""): SpeakerRow {
-    return { key: `${Date.now()}-${Math.random().toString(36).slice(2)}`, id, participation };
+/** Valor da opção que representa o participante avulso digitado na busca. */
+const guestOption = "__guest";
+
+export function newSpeakerRow(values: Partial<Omit<SpeakerRow, "key">> = {}): SpeakerRow {
+    return {
+        key: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        id: "",
+        name: "",
+        guest: false,
+        participation: "",
+        ...values,
+    };
 }
 
 /** Texto e classificação da publicação. */
@@ -289,25 +299,34 @@ export function PublicationPeopleFields({
                                 {data.speaker_rows.map((row, index) => {
                                     const id = `publication-speaker-${row.key}`;
                                     const idError = errors[`speakers.${index}.id`];
+                                    const nameError = errors[`speakers.${index}.name`];
                                     const participationError = errors[`speakers.${index}.participation`];
                                     const takenElsewhere = new Set(
                                         data.speaker_rows
-                                            .filter((other) => other.key !== row.key && other.id)
+                                            .filter((other) => other.key !== row.key && !other.guest && other.id)
                                             .map((other) => other.id),
                                     );
 
                                     return (
                                         <li key={row.key} className="publicationForm__speakerRow">
-                                            <FormField id={id} label={`Participante ${index + 1}`} error={idError} requiredIndicator>
+                                            <FormField id={id} label={`Participante ${index + 1}`} error={idError ?? nameError} requiredIndicator>
                                                 <SelectField
                                                     id={id}
+                                                    name={`speakers[${index}][id]`}
                                                     label={`Participante ${index + 1}`}
-                                                    placeholder="Selecione o participante"
-                                                    value={row.id}
-                                                    options={options.speakers.filter((option) => !takenElsewhere.has(option.value))}
-                                                    aria-invalid={!!idError}
-                                                    aria-describedby={idError ? `${id}-error` : undefined}
-                                                    onChange={(event) => updateRow(row.key, { id: event.target.value })}
+                                                    placeholder="Selecione ou digite o nome"
+                                                    value={row.guest ? guestOption : row.id}
+                                                    options={[
+                                                        ...(row.guest ? [{ value: guestOption, label: `${row.name} (avulso)` }] : []),
+                                                        ...options.speakers.filter((option) => !takenElsewhere.has(option.value)),
+                                                    ]}
+                                                    aria-invalid={!!(idError ?? nameError)}
+                                                    aria-describedby={idError ?? nameError ? `${id}-error` : undefined}
+                                                    onCreateOption={(text) => updateRow(row.key, { guest: true, id: "", name: text })}
+                                                    onChange={(event) => {
+                                                        if (event.target.value === guestOption) return;
+                                                        updateRow(row.key, { guest: false, id: event.target.value, name: "" });
+                                                    }}
                                                 />
                                             </FormField>
                                             <FormField id={`${id}-participation`} label="Atuação" error={participationError}>
@@ -343,7 +362,7 @@ export function PublicationPeopleFields({
                             label="Participante"
                             title="Adicionar participante"
                             aria-label="Adicionar participante"
-                            disabled={disabled || data.speaker_rows.length >= options.speakers.length}
+                            disabled={disabled}
                             onClick={() => update("speaker_rows", [...data.speaker_rows, newSpeakerRow()])}
                         />
                         {speakersError ? (

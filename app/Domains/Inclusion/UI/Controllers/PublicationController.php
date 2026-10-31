@@ -18,7 +18,7 @@ use App\Domains\Inclusion\Domain\Enums\PublicationType;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidPublication;
 use App\Domains\Inclusion\Domain\Models\Publication;
 use App\Domains\Inclusion\Domain\Models\PublicationMedia;
-use App\Domains\Inclusion\Domain\Models\Professional;
+use App\Domains\Inclusion\Domain\Models\PublicationSpeaker;
 use App\Domains\Inclusion\Domain\Models\Tag;
 use App\Shared\Infrastructure\Pdf\PdfPageNumberer;
 use App\Shared\Infrastructure\Security\RichTextSanitizer;
@@ -112,7 +112,7 @@ final class PublicationController
             'publication' => $this->publicationPayload($publication, detailed: true),
             'options' => $formQuery->execute(
                 $request->user(),
-                $publication->speakers->modelKeys(),
+                $publication->speakers->pluck('professional_id')->filter()->map(fn ($id): int => (int) $id)->values()->all(),
                 $publication->tags->modelKeys(),
             ),
             'can' => ['submit' => $request->user()?->can('publication.update') ?? false],
@@ -238,12 +238,14 @@ final class PublicationController
                 ->values()
                 ->all(),
             'speakers' => $publication->speakers
-                ->map(fn (Professional $professional): array => [
-                    'id' => $professional->id,
-                    'name' => $professional->person?->name,
-                    'role' => $professional->position?->name,
-                    'participation' => $professional->pivot?->participation,
-                    'photo_url' => $professional->person?->photo_url,
+                ->map(fn (PublicationSpeaker $speaker): array => [
+                    'id' => $speaker->id,
+                    'professional_id' => $speaker->professional_id,
+                    'name' => $speaker->displayName(),
+                    'guest_name' => $speaker->isGuest() ? $speaker->name : null,
+                    'role' => $speaker->professional?->position?->name,
+                    'participation' => $speaker->participation,
+                    'photo_url' => $speaker->professional?->person?->photo_url,
                 ])
                 ->values()
                 ->all(),

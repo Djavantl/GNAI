@@ -21,7 +21,7 @@ final readonly class SyncPublicationRelationsAction
     public function __construct(private PublicationMediaStorage $storage) {}
 
     /**
-     * @param  list<array{id?: int|string, participation?: string|null}>  $speakers
+     * @param  list<array{id?: int|string|null, name?: string|null, participation?: string|null}>  $speakers
      * @param  list<int|string>  $tagIds
      * @param  list<array{file?: UploadedFile, alt?: string|null}>  $newGallery
      * @param  list<array{id?: int|string, alt?: string|null, remove?: bool|string|null}>  $existingGallery
@@ -161,26 +161,38 @@ final readonly class SyncPublicationRelationsAction
     }
 
     /**
-     * @param  list<array{id?: int|string, participation?: string|null}>  $speakers
+     * @param  list<array{id?: int|string|null, name?: string|null, participation?: string|null}>  $speakers
      */
     private function syncSpeakers(Publication $publication, array $speakers): void
     {
-        $sync = [];
+        $rows = [];
+        $professionalIds = [];
 
-        foreach (array_values($speakers) as $index => $speaker) {
+        foreach (array_values($speakers) as $speaker) {
             $id = (int) ($speaker['id'] ?? 0);
+            $name = trim((string) ($speaker['name'] ?? ''));
 
-            if ($id <= 0 || isset($sync[$id])) {
+            if ($id > 0 ? isset($professionalIds[$id]) : $name === '') {
                 continue;
             }
 
+            if ($id > 0) {
+                $professionalIds[$id] = true;
+            }
+
             $participation = trim((string) ($speaker['participation'] ?? ''));
-            $sync[$id] = [
-                'position' => $index,
+            $rows[] = [
+                'professional_id' => $id > 0 ? $id : null,
+                'name' => $id > 0 ? null : mb_substr($name, 0, 150),
+                'position' => count($rows),
                 'participation' => $participation !== '' ? mb_substr($participation, 0, 100) : null,
             ];
         }
 
-        $publication->speakers()->sync($sync);
+        $publication->speakers()->delete();
+
+        if ($rows !== []) {
+            $publication->speakers()->createMany($rows);
+        }
     }
 }

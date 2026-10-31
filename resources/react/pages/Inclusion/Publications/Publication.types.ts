@@ -8,7 +8,9 @@ export interface PublicationGalleryItem {
 
 export interface PublicationSpeaker {
     id: number;
+    professional_id: number | null;
     name: string | null;
+    guest_name: string | null;
     role: string | null;
     participation: string | null;
     photo_url: string | null;
@@ -85,7 +87,11 @@ export interface NewGalleryImage {
 /** Linha dinâmica de participante; `key` mantém a identidade ao remover linhas. */
 export interface SpeakerRow {
     key: string;
+    /** Profissional cadastrado; vazio quando o participante é avulso. */
     id: string;
+    /** Nome digitado do participante avulso. */
+    name: string;
+    guest: boolean;
     participation: string;
 }
 

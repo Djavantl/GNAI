@@ -84,7 +84,7 @@ final readonly class PublicWebsiteController
         $event = Publication::query()
             ->publiclyVisible()
             ->where('slug', $slug)
-            ->with(['author', 'media', 'speakers.person', 'speakers.position', 'tags'])
+            ->with(['author', 'media', 'speakers.professional.person', 'speakers.professional.position', 'tags'])
             ->firstOrFail();
         $site = $this->presenter->site(WebsiteSetting::current());
         $publication = $this->presenter->publicationDetail($event);

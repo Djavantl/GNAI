@@ -56,9 +56,12 @@ export default function PublicationForm({
         author_id: publication
             ? (publication.author_id ? String(publication.author_id) : "")
             : (options.defaultAuthorId ? String(options.defaultAuthorId) : ""),
-        speaker_rows: (publication?.speakers ?? []).map((speaker) => (
-            newSpeakerRow(String(speaker.id), speaker.participation ?? "")
-        )),
+        speaker_rows: (publication?.speakers ?? []).map((speaker) => newSpeakerRow({
+            id: speaker.professional_id ? String(speaker.professional_id) : "",
+            name: speaker.guest_name ?? "",
+            guest: speaker.professional_id === null,
+            participation: speaker.participation ?? "",
+        })),
         link_url: publication?.link_url ?? "",
         link_label: publication?.link_label ?? "",
         cover: null,
@@ -96,7 +99,11 @@ export default function PublicationForm({
         form.transform(({ speaker_rows: speakerRows, ...data }) => ({
             ...data,
             ...(editing ? { _method: "put" } : {}),
-            speakers: speakerRows.map((row) => ({ id: row.id, participation: row.participation })),
+            speakers: speakerRows.map((row) => ({
+                id: row.guest ? "" : row.id,
+                name: row.guest ? row.name : "",
+                participation: row.participation,
+            })),
             gallery: data.gallery.map((image) => ({ file: image.file, alt: image.alt })),
             gallery_existing: data.gallery_existing.map((image) => ({
                 id: image.id,

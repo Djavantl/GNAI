@@ -12,7 +12,6 @@ use App\Domains\Inclusion\Domain\DTOs\Publications\CreatePublicationDTO;
 use App\Domains\Inclusion\Domain\DTOs\Publications\UpdatePublicationDTO;
 use App\Domains\Inclusion\Domain\Enums\PublicationType;
 use App\Domains\Inclusion\Domain\Exceptions\InvalidPublication;
-use App\Domains\Inclusion\Domain\Models\Professional;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Database\Factories\Domains\Inclusion\PublicationFactory;
@@ -169,16 +168,14 @@ class Publication extends Model implements Auditable
             ->orderBy('id');
     }
 
-    public function speakers(): BelongsToMany
+    /**
+     * Participantes da publicação, cadastrados ou avulsos, na ordem informada.
+     */
+    public function speakers(): HasMany
     {
-        return $this->belongsToMany(
-            Professional::class,
-            'publication_speakers',
-            'publication_id',
-            'professional_id',
-        )
-            ->withPivot(['position', 'participation'])
-            ->orderByPivot('position');
+        return $this->hasMany(PublicationSpeaker::class, 'publication_id')
+            ->orderBy('position')
+            ->orderBy('id');
     }
 
     public function tags(): BelongsToMany
