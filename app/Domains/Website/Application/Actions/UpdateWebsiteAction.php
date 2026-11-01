@@ -66,6 +66,24 @@ final readonly class UpdateWebsiteAction
                     $storedPaths[] = $section['image_path'];
                 }
 
+                if ($section['type'] === WebsiteSectionType::HERO->value) {
+                    $previous = $previousSections->get($section['id']);
+                    $previousSlides = ($previous['type'] ?? null) === 'hero'
+                        ? (array) ($previous['slides'] ?? []) : [];
+
+                    $section['slides'] = $this->storage->storeSlideFiles(
+                        (array) ($input['slides'] ?? []),
+                        $previousSlides,
+                    );
+                    $storedPaths = [
+                        ...$storedPaths,
+                        ...array_diff(
+                            array_column($section['slides'], 'image_path'),
+                            array_column($previousSlides, 'image_path'),
+                        ),
+                    ];
+                }
+
                 WebsiteSetting::ensureSectionImageDescribed($section);
 
                 $sections[] = $section;
@@ -97,8 +115,9 @@ final readonly class UpdateWebsiteAction
             throw $exception;
         }
 
-        $keptPaths = collect($sections)->pluck('image_path')->filter()->push($logoPath)->filter()->all();
-        $previousPaths = $previousSections->pluck('image_path')->push($previousLogo)->filter();
+        $keptPaths = $this->storage->pathsForSections($sections);
+        $keptPaths[] = $logoPath;
+        $previousPaths = collect([...$this->storage->pathsForSections($previousSections->all()), $previousLogo])->filter();
 
         $this->storage->deleteMany($previousPaths->reject(fn (string $path): bool => in_array($path, $keptPaths, true)));
 

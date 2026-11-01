@@ -49,11 +49,19 @@ function contactField(element: Element): string {
  * (ou a identidade, no topo e no rodapé) sem campo específico.
  */
 const previewRules: PreviewRule[] = [
-    { selector: ".siteSections__heroTitle, .siteSections__title", field: () => "title" },
-    { selector: ".siteSections__heroText, .siteSections__subtitle", field: () => "subtitle" },
-    { selector: ".siteSections__button, .siteSections__guidanceLink", field: () => "button_label" },
+    { selector: ".siteHero__title, .siteSections__title", field: () => "title" },
+    { selector: ".siteHero__text, .siteSections__subtitle", field: () => "subtitle" },
+    { selector: ".siteSections__button, .siteSections__guidanceLink, .siteHero__button", field: () => "button_label" },
+    { selector: ".siteHero__badge", field: () => "hero-badge_text" },
+    {
+        selector: ".siteHero__image",
+        field: (element) => {
+            const id = element.getAttribute("data-hero-slide-id");
+            return id && id !== "background" ? `slide-${id}-image` : "image";
+        },
+    },
     { selector: ".siteSections__richText", field: () => "body" },
-    { selector: ".siteSections__aboutImage, .siteSections__hero", field: () => "image" },
+    { selector: ".siteSections__aboutImage, .siteHero__media", field: () => "image" },
     { selector: ".siteSections__resourceLink", field: itemField(".siteSections__feature", "url") },
     { selector: ".siteSections__question summary", field: itemField(".siteSections__question", "title") },
     { selector: ".siteSections__question p", field: itemField(".siteSections__question", "text") },
@@ -63,7 +71,7 @@ const previewRules: PreviewRule[] = [
     { selector: ".siteSections__feature p", field: itemField(".siteSections__feature", "text") },
     { selector: ".siteSections__feature .siteSections__featureIcon", field: itemField(".siteSections__feature", "icon") },
     { selector: ".siteSections__grid", field: () => "limit" },
-    { selector: ".siteSections__heroEyebrow, .siteLayout__brandName, .siteLayout__footerName", identity: true, field: () => "site_name" },
+    { selector: ".siteLayout__brandName, .siteLayout__footerName", identity: true, field: () => "site_name" },
     { selector: ".siteLayout__brandTagline", identity: true, field: () => "tagline" },
     { selector: ".siteLayout__logo, .siteLayout__monogram", identity: true, field: () => "logo" },
     { selector: ".siteLayout__footerBrand > p:not(.siteLayout__footerName)", identity: true, field: () => "footer_text" },
@@ -137,14 +145,51 @@ export default function BuilderPreview({
     selectedId: string | null;
     onEdit: (target: BuilderEditTarget) => void;
 }): React.JSX.Element {
+    const panel = useRef<HTMLElement>(null);
     const viewport = useRef<HTMLDivElement>(null);
     const frame = useRef<HTMLDivElement>(null);
     const keepScroll = useRef(false);
+    const [panelHeight, setPanelHeight] = useState<number>();
     const [device, setDevice] = useState<Device>("desktop");
     const [viewportWidth, setViewportWidth] = useState(0);
     const [frameHeight, setFrameHeight] = useState(0);
     const frameWidth = frameWidths[device];
     const scale = viewportWidth ? Math.min(1, viewportWidth / frameWidth) : 1;
+
+    useLayoutEffect(() => {
+        const desktop = window.matchMedia("(min-width: 1101px)");
+        let frame = 0;
+
+        const measure = (): void => {
+            frame = 0;
+            if (!desktop.matches || !panel.current) {
+                setPanelHeight(undefined);
+                return;
+            }
+
+            const actions = document.querySelector(".websiteBuilderPage .formActions__bar");
+            const bottomGap = (actions?.getBoundingClientRect().height ?? 60) + 16;
+            const stickyTop = Number.parseFloat(window.getComputedStyle(panel.current).top) || 16;
+            const top = Math.max(stickyTop, panel.current.getBoundingClientRect().top);
+            setPanelHeight(Math.max(180, Math.floor(window.innerHeight - top - bottomGap)));
+        };
+        const schedule = (): void => {
+            if (!frame) frame = window.requestAnimationFrame(measure);
+        };
+
+        measure();
+        window.addEventListener("scroll", schedule, { passive: true });
+        window.addEventListener("resize", schedule);
+        const observer = new ResizeObserver(schedule);
+        if (panel.current) observer.observe(panel.current);
+
+        return () => {
+            window.cancelAnimationFrame(frame);
+            window.removeEventListener("scroll", schedule);
+            window.removeEventListener("resize", schedule);
+            observer.disconnect();
+        };
+    }, []);
 
     useLayoutEffect(() => {
         const viewportElement = viewport.current;
@@ -198,7 +243,12 @@ export default function BuilderPreview({
     }
 
     return (
-        <section className="websiteBuilder__preview" aria-labelledby="website-preview-title">
+        <section
+            ref={panel}
+            className="websiteBuilder__preview"
+            aria-labelledby="website-preview-title"
+            style={panelHeight ? { height: panelHeight } : undefined}
+        >
             <div className="websiteBuilder__previewBar">
                 <h2 id="website-preview-title" className="websiteBuilder__previewTitle">
                     <i className="fa fa-eye" aria-hidden="true" /> Prévia em tempo real

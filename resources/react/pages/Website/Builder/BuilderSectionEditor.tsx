@@ -7,6 +7,8 @@ import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import Button from "@/components/UI/Button/Button";
 import type { WebsiteSectionItem } from "@/components/Website/Website.types";
+import BuilderHeroAppearance from "./BuilderHeroAppearance";
+import BuilderHeroSlides from "./BuilderHeroSlides";
 import { emptyItem, featureIconOptions, type BuilderSection } from "./websiteBuilder";
 
 type Props = {
@@ -35,7 +37,7 @@ export default function BuilderSectionEditor({
         [hint ? `${id(name)}-hint` : null, error(name) ? `${id(name)}-error` : null]
             .filter(Boolean)
             .join(" ") || undefined;
-    const usesButton = ["hero", "about", "guidance"].includes(section.type);
+    const usesButton = ["about", "guidance"].includes(section.type);
     const usesItems = ["pillars", "audience", "features", "guidance", "faq", "resources"].includes(section.type);
     const usesIcon = ["pillars", "audience", "features", "resources"].includes(section.type);
     const usesLimit = ["team", "events", "publications"].includes(section.type);
@@ -54,6 +56,29 @@ export default function BuilderSectionEditor({
 
         [items[itemIndex], items[target]] = [items[target], items[itemIndex]];
         onChange({ items });
+    }
+
+    if (section.type === "hero") {
+        return (
+            <FormGrid>
+                <BuilderHeroAppearance
+                    section={section}
+                    index={index}
+                    disabled={disabled}
+                    errors={errors}
+                    onChange={onChange}
+                    onImageError={onImageError}
+                />
+                <BuilderHeroSlides
+                    section={section}
+                    index={index}
+                    disabled={disabled}
+                    errors={errors}
+                    onChange={onChange}
+                    onImageError={onImageError}
+                />
+            </FormGrid>
+        );
     }
 
     return (
@@ -79,7 +104,7 @@ export default function BuilderSectionEditor({
             <FormGridWide>
                 <FormField
                     id={id("subtitle")}
-                    label={section.type === "hero" ? "Texto de apoio" : "Subtítulo"}
+                    label="Subtítulo"
                     error={error("subtitle")}
                 >
                     <TextArea
@@ -112,11 +137,11 @@ export default function BuilderSectionEditor({
                     </FormField>
                 </FormGridWide>
             ) : null}
-            {section.type === "hero" || section.type === "about" ? (
+            {section.type === "about" ? (
                 <FormGridWide>
                     <FormField
                         id={id("image")}
-                        label={section.type === "hero" ? "Imagem de fundo" : "Imagem"}
+                        label="Imagem"
                         error={error("image")}
                         hint={section.type === "about" ? "Opcional. JPG, PNG ou WEBP com até 4 MB." : undefined}
                     >

@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Domains\Website\Application\Data;
 
 use App\Domains\Website\Domain\Enums\WebsiteSectionType;
+use App\Domains\Website\Domain\Models\WebsiteSetting;
+use App\Domains\Website\Domain\Support\HeroAppearance;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 use Spatie\LaravelData\Attributes\MapInputName;
 use Spatie\LaravelData\Attributes\MergeValidationRules;
 use Spatie\LaravelData\Data;
@@ -38,7 +41,32 @@ final class UpdateWebsiteData extends Data
 
     public static function rules(): array
     {
+        $heroRules = [
+            'sections.*.hero' => ['sometimes', 'array'],
+            'sections.*.hero.badge_text' => ['nullable', 'string', 'max:120'],
+            'sections.*.slides' => ['sometimes', 'array', 'max:8'],
+            'sections.*.slides.*.id' => ['required', 'string', 'max:40', 'regex:/^[A-Za-z0-9_-]+$/'],
+            'sections.*.slides.*.image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'sections.*.slides.*.remove_image' => ['sometimes', 'boolean'],
+            'sections.*.slides.*.alt' => ['required', 'string', 'max:255'],
+            'sections.*.slides.*.url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/|\/|#|mailto:|tel:)\S*$/i'],
+        ];
+
+        foreach (HeroAppearance::RANGES as $key => [$min, $max]) {
+            $heroRules["sections.*.hero.{$key}"] = ['sometimes', 'integer', "min:{$min}", "max:{$max}"];
+        }
+        foreach (HeroAppearance::COLORS as $key) {
+            $heroRules["sections.*.hero.{$key}"] = ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'];
+        }
+        foreach (HeroAppearance::CHOICES as $key => $options) {
+            $heroRules["sections.*.hero.{$key}"] = ['sometimes', Rule::in($options)];
+        }
+        foreach (HeroAppearance::TOGGLES as $key => $default) {
+            $heroRules["sections.*.hero.{$key}"] = ['sometimes', 'boolean'];
+        }
+
         return [
+            ...$heroRules,
             'site_name' => ['required', 'string', 'max:120'],
             'tagline' => ['nullable', 'string', 'max:255'],
             'primary_color' => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
@@ -77,6 +105,20 @@ final class UpdateWebsiteData extends Data
     public static function messages(): array
     {
         return [
+            'sections.*.hero.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
+            'sections.*.hero.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
+            'sections.*.hero.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',
+            'sections.*.hero.*.integer' => 'Informe um valor inteiro para este ajuste.',
+            'sections.*.hero.*.in' => 'Selecione uma opção válida.',
+            'sections.*.hero.badge_text.max' => 'O texto da identificação pode ter até 120 caracteres.',
+            'sections.*.slides.max' => 'Adicione no máximo 8 imagens ao banner.',
+            'sections.*.slides.*.image.image' => 'Selecione uma imagem válida.',
+            'sections.*.slides.*.image.mimes' => 'Use uma imagem JPG, PNG ou WEBP.',
+            'sections.*.slides.*.image.max' => 'Cada imagem pode ter até 4 MB.',
+            'sections.*.slides.*.alt.required' => 'Descreva o conteúdo desta imagem para quem usa leitor de tela.',
+            'sections.*.slides.*.alt.max' => 'A descrição pode ter até 255 caracteres.',
+            'sections.*.slides.*.url.regex' => 'Use um link iniciado por http://, https://, /, #, mailto: ou tel:.',
+            'sections.*.slides.*.url.max' => 'O link pode ter até 500 caracteres.',
             'site_name.required' => 'Informe o nome do site.',
             'site_name.max' => 'O nome do site não pode ultrapassar 120 caracteres.',
             'tagline.max' => 'O slogan não pode ultrapassar 255 caracteres.',
@@ -110,5 +152,65 @@ final class UpdateWebsiteData extends Data
             'sections.*.items.*.title.max' => 'O título do item não pode ultrapassar 120 caracteres.',
             'sections.*.items.*.text.max' => 'O texto do item não pode ultrapassar 300 caracteres.',
         ];
+    }
+
+    public static function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $sections = $validator->getData()['sections'] ?? [];
+            $previousSections = collect(WebsiteSetting::current()->sections ?? [])->keyBy('id');
+
+            foreach ($sections as $index => $section) {
+                if ($section['type'] !== WebsiteSectionType::HERO->value) {
+                    continue;
+                }
+
+                $previous = $previousSections->get($section['id']);
+                $previous = ($previous['type'] ?? null) === 'hero' ? $previous : [];
+                $previousSlides = array_column($previous['slides'] ?? [], null, 'id');
+                $slides = $section['slides'] ?? [];
+                $seen = [];
+
+                foreach ($slides as $slideIndex => $slide) {
+                    $id = (string) $slide['id'];
+                    $field = "sections.{$index}.slides.{$slideIndex}.image";
+
+                    if (isset($seen[$id])) {
+                        $validator->errors()->add($field, 'Cada imagem deve ter uma identificação diferente.');
+                    }
+                    $seen[$id] = true;
+
+                    $keepsImage = ! filter_var($slide['remove_image'] ?? false, FILTER_VALIDATE_BOOL)
+                        && filled($previousSlides[$id]['image_path'] ?? null);
+
+                    if (! $keepsImage && ! (($slide['image'] ?? null) instanceof UploadedFile)) {
+                        $validator->errors()->add($field, 'Selecione uma imagem ou remova este item da lista.');
+                    }
+                }
+
+                if (($section['hero']['mode'] ?? 'text') !== 'banners' || $slides !== []) {
+                    continue;
+                }
+
+                $keepsBackground = ! filter_var($section['remove_image'] ?? false, FILTER_VALIDATE_BOOL)
+                    && filled($previous['image_path'] ?? null);
+
+                if (! $keepsBackground && ! (($section['image'] ?? null) instanceof UploadedFile)) {
+                    $validator->errors()->add(
+                        "sections.{$index}.slides",
+                        'Adicione pelo menos uma imagem para o modo de banners.',
+                    );
+                } elseif (blank($section['image_alt'] ?? null)) {
+                    $validator->errors()->add(
+                        "sections.{$index}.image_alt",
+                        'Descreva o conteúdo do banner para quem usa leitor de tela.',
+                    );
+                }
+            }
+        });
     }
 }

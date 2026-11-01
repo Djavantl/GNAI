@@ -73,7 +73,10 @@ function fileKey(file: File): number {
 function useSectionImageUrls(sections: BuilderSection[]): Record<string, string> {
     const [urls, setUrls] = useState<Record<string, string>>({});
     const signature = sections
-        .map((section) => (section.image ? `${section.id}:${fileKey(section.image)}` : ""))
+        .flatMap((section) => [
+            section.image ? `${section.id}:${fileKey(section.image)}` : "",
+            ...section.slides.map((slide) => slide.image ? `${section.id}:${slide.id}:${fileKey(slide.image)}` : ""),
+        ])
         .join("|");
     const files = useRef(sections);
     files.current = sections;
@@ -83,6 +86,9 @@ function useSectionImageUrls(sections: BuilderSection[]): Record<string, string>
 
         files.current.forEach((section) => {
             if (section.image) next[section.id] = URL.createObjectURL(section.image);
+            section.slides.forEach((slide) => {
+                if (slide.image) next[`${section.id}:${slide.id}`] = URL.createObjectURL(slide.image);
+            });
         });
         setUrls(next);
 
@@ -171,6 +177,10 @@ export default function WebsiteBuilderEditPage({
     const previewSections = useMemo<WebsiteSection[]>(() => sections.map((section) => ({
         ...section,
         image_url: sectionImageUrls[section.id] ?? (section.remove_image ? null : section.image_url),
+        slides: section.slides.map((slide) => ({
+            ...slide,
+            image_url: sectionImageUrls[`${section.id}:${slide.id}`] ?? (slide.remove_image ? null : slide.image_url),
+        })),
     })), [sections, sectionImageUrls]);
 
     function updateSection(index: number, patch: Partial<BuilderSection>): void {
@@ -298,7 +308,10 @@ export default function WebsiteBuilderEditPage({
         form.transform((data) => ({
             ...data,
             _method: "put",
-            sections: data.sections.map(({ image_url: _url, image_path: _path, ...section }) => section),
+            sections: data.sections.map(({ image_url: _url, image_path: _path, ...section }) => ({
+                ...section,
+                slides: section.slides.map(({ image_url: _slideUrl, image_path: _slidePath, ...slide }) => slide),
+            })),
         }));
         form.post(endpoint, {
             forceFormData: true,

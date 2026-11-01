@@ -149,6 +149,7 @@ final class WebsiteDefaults
             'image_alt' => '',
             'limit' => 3,
             'items' => [],
+            ...($type === 'hero' ? ['hero' => HeroAppearance::defaults(), 'slides' => []] : []),
             ...$values,
         ];
     }

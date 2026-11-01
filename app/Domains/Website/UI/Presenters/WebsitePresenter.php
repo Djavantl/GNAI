@@ -11,6 +11,7 @@ use App\Domains\Inclusion\Domain\Models\PublicationMedia;
 use App\Domains\Inclusion\Domain\Models\PublicationSpeaker;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
+use App\Domains\Website\Domain\Support\HeroAppearance;
 use App\Domains\Website\Infrastructure\Storage\WebsiteMediaStorage;
 use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Illuminate\Support\Str;
@@ -57,6 +58,13 @@ final class WebsitePresenter
                 ...WebsiteDefaults::section((string) $section['id'], (string) $section['type']),
                 ...$section,
                 'image_url' => WebsiteMediaStorage::url($section['image_path'] ?? null),
+                ...($section['type'] === 'hero' ? [
+                    'hero' => HeroAppearance::normalize((array) ($section['hero'] ?? [])),
+                    'slides' => array_map(fn (array $slide): array => [
+                        ...$slide,
+                        'image_url' => WebsiteMediaStorage::url($slide['image_path'] ?? null),
+                    ], (array) ($section['slides'] ?? [])),
+                ] : []),
             ])
             ->values()
             ->all();

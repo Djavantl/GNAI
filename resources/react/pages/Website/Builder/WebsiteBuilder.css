@@ -1,3 +1,12 @@
+/* Nesta tela, o recorte horizontal não deve criar um ancestral de rolagem para a prévia sticky. */
+body:has(.websiteBuilderPage) {
+    overflow-x: clip;
+}
+
+.app-content-placeholder:has(.websiteBuilderPage) {
+    overflow: clip;
+}
+
 .websiteBuilder {
     display: grid;
     grid-template-columns: minmax(360px, 460px) minmax(0, 1fr);
@@ -8,6 +17,7 @@
 .websiteBuilder__editor {
     align-self: stretch;
     min-width: 0;
+    container: website-editor / inline-size;
 }
 
 .websiteBuilder__editor .tabs,
@@ -245,16 +255,15 @@
 }
 
 /* Prévia */
-/*
- * A prévia acompanha a altura do card de edição, terminando junto dele e do
- * rodapé de ações. O contêiner da aplicação usa overflow: hidden, o que
- * impede position: sticky; por isso a prévia estica na linha do grid.
- */
+/* A prévia fica visível enquanto o formulário longo é percorrido. */
 .websiteBuilder__preview {
+    position: sticky;
+    top: calc(var(--ui-topbar-height) + 16px);
     display: flex;
     flex-direction: column;
-    align-self: stretch;
-    min-height: 480px;
+    align-self: start;
+    height: calc(100dvh - var(--ui-topbar-height) - 112px);
+    min-height: 180px;
     min-width: 0;
     padding: 14px;
     border: 1px solid var(--ui-color-card-border);
@@ -311,7 +320,8 @@
 .websiteBuilder__viewport {
     overflow-x: hidden;
     overflow-y: auto;
-    /* Altura zero + crescimento: o site não aumenta a linha, só ocupa o espaço que sobra. */
+    overscroll-behavior: contain;
+    /* O site rola dentro da área disponível da prévia. */
     flex: 1 1 auto;
     height: 0;
     min-height: 0;
@@ -340,12 +350,14 @@
     }
 
     .websiteBuilder__preview {
+        position: static;
+        height: auto;
         min-height: 0;
     }
 
     .websiteBuilder__viewport {
         flex: none;
-        height: 70vh;
+        height: 60dvh;
         min-height: 320px;
     }
 }
@@ -363,4 +375,89 @@
     .websiteBuilder__itemFields {
         grid-template-columns: minmax(0, 1fr);
     }
+}
+
+
+.websiteBuilder__heroFields {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* O seletor de cor, o hexadecimal e a ação têm espaço próprio. */
+.websiteBuilder__heroFields .websiteBuilder__color {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+}
+
+.websiteBuilder__heroFields .websiteBuilder__color .textInput {
+    min-width: 0;
+}
+
+.websiteBuilder__editor .toggleControl {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+}
+
+.websiteBuilder__editor .toggleControl__text {
+    flex: 1 1 180px;
+}
+
+.websiteBuilder__editor .toggleControl__labelRow {
+    flex-wrap: wrap;
+}
+
+@container website-editor (max-width: 520px) {
+    .websiteBuilder__editor .formGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .websiteBuilder__editor .formGrid__wide {
+        grid-column: 1;
+    }
+
+    .websiteBuilder__itemFields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@container website-editor (max-width: 320px) {
+    .websiteBuilder__heroFields .websiteBuilder__color {
+        grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    .websiteBuilder__heroFields .websiteBuilder__color > .button {
+        grid-column: 2;
+        justify-self: start;
+    }
+}
+
+.websiteBuilder__slides {
+    display: grid;
+    gap: 20px;
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.websiteBuilder__slide {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 6px;
+}
+
+.websiteBuilder__slide h3 {
+    margin: 0 0 16px;
+    color: var(--ui-color-heading);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.websiteBuilder__slideActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
 }

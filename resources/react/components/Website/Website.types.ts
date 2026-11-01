@@ -40,6 +40,50 @@ export interface WebsiteSectionItem {
     text: string;
 }
 
+export type HeroAlignment = "left" | "center" | "right";
+
+export interface HeroAppearance {
+    mode: "text" | "banners";
+    title_align: HeroAlignment;
+    subtitle_align: HeroAlignment;
+    badge_align: HeroAlignment;
+    button_align: HeroAlignment;
+    title_size: number;
+    subtitle_size: number;
+    badge_radius: number;
+    button_radius: number;
+    button_shadow: number;
+    overlay_opacity: number;
+    gradient_end_opacity: number;
+    height: number;
+    content_width: number;
+    interval: number;
+    background_color: string;
+    title_color: string;
+    subtitle_color: string;
+    badge_color: string;
+    badge_background: string;
+    button_color: string;
+    button_background: string;
+    overlay_color: string;
+    gradient_end_color: string;
+    badge_text: string;
+    badge_visible: boolean;
+    gradient_enabled: boolean;
+    autoplay: boolean;
+    gradient_direction: "to bottom" | "to top" | "to right" | "to left";
+    image_fit: "cover" | "contain";
+    image_position: "center" | "top" | "bottom" | "left" | "right";
+}
+
+export interface HeroSlide {
+    id: string;
+    image_url: string | null;
+    image_path?: string | null;
+    alt: string;
+    url: string;
+}
+
 export interface WebsiteSection {
     id: string;
     type: WebsiteSectionType;
@@ -54,6 +98,8 @@ export interface WebsiteSection {
     image_alt: string;
     limit: number;
     items: WebsiteSectionItem[];
+    hero?: HeroAppearance;
+    slides?: HeroSlide[];
 }
 
 export interface PublicationSchedule {

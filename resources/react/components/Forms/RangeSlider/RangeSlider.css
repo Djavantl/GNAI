@@ -13,3 +13,13 @@
 .rangeSlider .irs-line:focus-visible { outline: 2px solid var(--ui-color-gnai-primary); outline-offset: 3px; }
 .rangeSlider--invalid .irs-line { box-shadow: 0 0 0 1px var(--ui-color-danger); border-radius: 6px; }
 .rangeSlider--disabled { opacity: 0.6; }
+
+.rangeSlider input[type="range"] {
+    width: 100%;
+    accent-color: var(--ui-color-gnai-primary);
+}
+
+.rangeSlider input[type="range"]:focus-visible {
+    outline: 2px solid var(--ui-color-gnai-primary);
+    outline-offset: 3px;
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { joinClassNames } from "@/utils/joinClassNames";
 import { loadExternalScript } from "@/utils/loadExternalScript";
 import { loadExternalStylesheet } from "@/utils/loadExternalStylesheet";
@@ -36,6 +36,8 @@ export interface RangeSliderProps {
     step?: number;
     value: number;
     grid?: boolean;
+    /** Atualiza a prévia durante o arraste; o padrão preserva a entrega ao soltar. */
+    live?: boolean;
     disabled?: boolean;
     invalid?: boolean;
     describedBy?: string;
@@ -45,8 +47,8 @@ export interface RangeSliderProps {
 
 /**
  * Adaptador controlado do Ion.RangeSlider do Ubold, com as cores do Gnai.
- * Como no Ubold, o plugin controla o arraste e o valor só é entregue ao
- * soltar, clicar ou usar as setas; valores externos não interrompem o gesto.
+ * Por padrão, entrega o valor ao soltar, clicar ou usar as setas. A opção
+ * live também atualiza durante o arraste, sem interromper o gesto.
  * A trilha recebe foco e responde às setas, expondo `role="slider"`.
  */
 export default function RangeSlider({
@@ -58,20 +60,22 @@ export default function RangeSlider({
     step = 1,
     value,
     grid = true,
+    live = false,
     disabled = false,
     invalid = false,
     describedBy,
     className,
     onChange,
 }: RangeSliderProps): React.JSX.Element {
+    const [loadFailed, setLoadFailed] = useState(false);
     const root = useRef<HTMLDivElement>(null);
     const input = useRef<HTMLInputElement>(null);
     const instance = useRef<IonSliderInstance | null>(null);
     const callback = useRef(onChange);
     const interacting = useRef(false);
-    const current = useRef({ value, disabled, label, describedBy, invalid });
+    const current = useRef({ value, disabled, label, describedBy, invalid, live });
     callback.current = onChange;
-    current.current = { value, disabled, label, describedBy, invalid };
+    current.current = { value, disabled, label, describedBy, invalid, live };
 
     function describeTrack(): void {
         const track = root.current?.querySelector<HTMLElement>(".irs-line");
@@ -117,6 +121,7 @@ export default function RangeSlider({
                 disable: current.current.disabled,
                 onChange: (data: IonSliderData) => {
                     root.current?.querySelector(".irs-line")?.setAttribute("aria-valuenow", String(data.from));
+                    if (current.current.live && data.from !== current.current.value) callback.current(data.from);
                 },
                 onFinish: (data: IonSliderData) => {
                     interacting.current = false;
@@ -127,7 +132,9 @@ export default function RangeSlider({
             describeTrack();
         }
 
-        void initialize().catch(console.error);
+        void initialize().catch(() => {
+            if (!disposed) setLoadFailed(true);
+        });
 
         return () => {
             disposed = true;
@@ -174,7 +181,24 @@ export default function RangeSlider({
                 className,
             )}
         >
-            <input ref={input} id={id} name={name} type="text" defaultValue={value} readOnly tabIndex={-1} aria-hidden="true" />
+            {loadFailed ? (
+                <input
+                    id={id}
+                    name={name}
+                    type="range"
+                    min={min}
+                    max={max}
+                    step={step}
+                    value={value}
+                    disabled={disabled}
+                    aria-label={label}
+                    aria-invalid={invalid || undefined}
+                    aria-describedby={describedBy}
+                    onChange={(event) => callback.current(Number(event.target.value))}
+                />
+            ) : (
+                <input ref={input} id={id} name={name} type="text" defaultValue={value} readOnly tabIndex={-1} aria-hidden="true" />
+            )}
         </div>
     );
 }

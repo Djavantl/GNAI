@@ -59,3 +59,39 @@ A migration `2026_10_31_180000_standardize_institutional_website_sections.php`:
 Foram inspecionados os contratos do motor, validação, normalização, armazenamento, prévia, renderização e conteúdo retornado pelas quatro rotas públicas locais. A migration específica foi aplicada ao ambiente local existente e as respostas HTTP confirmaram a identidade NAI e os novos tipos de seção.
 
 Não foram iniciados servidores, executados build, typecheck ou suítes de testes. Não houve homologação visual em navegador nem submissão autenticada do construtor.
+
+## Personalização do banner principal
+
+O tipo `hero` também aceita `hero` (aparência) e `slides` (imagens ordenadas), no mesmo JSON de seções. Não há nova tabela nem migration. `HeroAppearance` centraliza os valores iniciais, as opções aceitas e os limites usados pela validação do backend. Configurações antigas recebem esses valores pelo presenter e continuam utilizando sua imagem de fundo.
+
+No modo **Textos sobre o fundo**, o editor permite:
+
+- Alinhamento independente de título, texto de apoio, identificação e botão.
+- Cores do fundo, textos, identificação e botão; campos vazios restauram o padrão.
+- Tamanho e largura máxima dos textos, com adaptação para telas menores.
+- Texto próprio ou nome do site na identificação, exibição opcional e arredondamento.
+- Arredondamento e sombra do botão, mantendo os campos de texto e link existentes.
+- Sobreposição de cor sobre a imagem, intensidade, degradê opcional, direção, cor final e intensidade final.
+
+No modo **Somente banners com links**, as imagens são apresentadas sem sobreposição textual nem sombreamento. Cada item possui descrição acessível e link opcional, inclusive para endereços HTTPS do WhatsApp. O título da seção continua identificando a página para leitores de tela. A opção de mostrar a imagem inteira evita recorte do texto incorporado ao banner.
+
+Os dois modos permitem até oito imagens JPG, PNG ou WEBP de até 4 MB cada, com inclusão, substituição, remoção e ordenação. Duas ou mais imagens formam um carrossel. Sem itens na lista, a imagem única anterior continua sendo usada. O modo de banners exige uma imagem e uma descrição.
+
+Há ajustes de altura, enquadramento, posição, reprodução automática e intervalo entre imagens. O carrossel reutiliza `UI/BootstrapCarousel`, com controles acessíveis, pausa manual, pausa durante foco/hover e respeito à preferência de movimento reduzido. Os sliders reutilizam `Forms/RangeSlider` com `live`, sem alterar o comportamento padrão das demais telas.
+
+A prévia utiliza URLs temporárias dos uploads, liberadas ao trocar arquivos ou desmontar. No salvamento, caminhos enviados pelo navegador não são aceitos para adotar arquivos existentes. Cada imagem mantida precisa pertencer ao mesmo slide da mesma seção salva. Substituições e exclusões limpam os arquivos antigos depois da persistência; falhas limpam somente os arquivos novos. Erros permanecem no formulário, com o transporte global de feedback já existente.
+
+A Action de atualização mantém apenas `execute()`, coordenando o salvamento. As validações de configuração e imagens ficam em `UpdateWebsiteData`, incluindo `withValidator()`; o armazenamento em lote, a descoberta de caminhos e a limpeza de arquivos ficam em `WebsiteMediaStorage`, seguindo as referências de validação de barreiras e armazenamento de evidências da `main`.
+
+Esta ampliação recebeu revisão de código e de diff. Não foram executados build, typecheck, testes, upload real ou homologação em navegador.
+
+## Usabilidade da edição e prévia
+
+No desktop, o painel de prévia acompanha a rolagem do formulário e ajusta sua altura ao espaço entre a barra superior e as ações do rodapé. O conteúdo do site mantém rolagem própria dentro desse painel. O recorte do layout da aplicação é ajustado somente nesta página para permitir o posicionamento sticky.
+
+As grades do editor respondem à largura do próprio painel, passando para uma coluna quando o espaço é reduzido. Identificação, switches e controles de cor mantêm espaço para seus textos e ações sem sobreposição.
+
+A conferência desta alteração foi feita na sessão autenticada existente do Brave, percorrendo o formulário até os ajustes da identificação e alterando seu arredondamento na prévia. A configuração usada na conferência não foi salva. Build e testes automatizados não foram executados.
+
+
+O editor do banner agrupa os campos na ordem visual dos elementos: identificação, título, texto de apoio, botão, apresentação/fundo e carrossel. Cada grupo reúne seu conteúdo e os respectivos ajustes de posição, tamanho, cores e acabamento. Os toggles usam `size="small"`, como nos formulários integrados. Os IDs dos campos permanecem os mesmos para preservar o foco pelo clique duplo na prévia e a associação dos erros.

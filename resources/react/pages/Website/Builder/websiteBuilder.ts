@@ -1,10 +1,14 @@
 import type {
+    HeroSlide,
     WebsiteSection,
     WebsiteSectionItem,
     WebsiteSectionType,
 } from "@/components/Website/Website.types";
 
+export type BuilderSlide = HeroSlide & { image: File | null; remove_image: boolean };
+
 export type BuilderSection = WebsiteSection & {
+    slides: BuilderSlide[];
     image: File | null;
     remove_image: boolean;
 };
@@ -130,6 +134,7 @@ export function newSection(type: WebsiteSectionType, template: WebsiteSection): 
         type,
         enabled: true,
         items: template.items.map((item) => ({ ...item })),
+        slides: (template.slides ?? []).map((slide) => ({ ...slide, image: null, remove_image: false })),
         image: null,
         remove_image: false,
     };
@@ -138,6 +143,7 @@ export function newSection(type: WebsiteSectionType, template: WebsiteSection): 
 export function toBuilderSection(section: WebsiteSection): BuilderSection {
     return {
         ...section,
+        slides: (section.slides ?? []).map((slide) => ({ ...slide, image: null, remove_image: false })),
         title: section.title ?? "",
         subtitle: section.subtitle ?? "",
         body: section.body ?? "",

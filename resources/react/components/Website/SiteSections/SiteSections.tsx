@@ -1,7 +1,7 @@
-import type { CSSProperties } from "react";
 import RichTextContent from "@/components/UI/RichTextContent/RichTextContent";
 import { joinClassNames } from "@/utils/joinClassNames";
 import PublicationCard from "../PublicationCard/PublicationCard";
+import SiteHero from "../SiteHero/SiteHero";
 import { SiteSocialLinks } from "../SiteLayout/SiteLayout";
 import SiteLink, { useSitePreview } from "../SiteLayout/SiteLink";
 import TeamMemberCard from "../TeamMemberCard/TeamMemberCard";
@@ -43,32 +43,6 @@ function SectionHeading({
                 </SiteLink>
             ) : null}
         </div>
-    );
-}
-
-function HeroSection({ section, site, isMainHeading }: SectionProps): React.JSX.Element {
-    const Heading = isMainHeading ? "h1" : "h2";
-    const style = section.image_url
-        ? ({ "--site-hero-image": `url("${section.image_url}")` } as CSSProperties)
-        : undefined;
-
-    return (
-        <section
-            className={joinClassNames("siteSections__hero", section.image_url ? "siteSections__hero--image" : undefined)}
-            style={style}
-            aria-label={section.title ? undefined : site.name}
-        >
-            <div className="siteLayout__container siteSections__heroInner">
-                {section.title ? <p className="siteSections__heroEyebrow">{site.name}</p> : null}
-                <Heading className="siteSections__heroTitle">{section.title || site.name}</Heading>
-                {section.subtitle ? <p className="siteSections__heroText">{section.subtitle}</p> : null}
-                {section.button_label && section.button_url ? (
-                    <SiteLink href={section.button_url} className="siteSections__button siteSections__button--light">
-                        {section.button_label}
-                    </SiteLink>
-                ) : null}
-            </div>
-        </section>
     );
 }
 
@@ -299,7 +273,7 @@ function ContactSection({ section, site }: SectionProps): React.JSX.Element {
 }
 
 const renderers = {
-    hero: HeroSection,
+    hero: SiteHero,
     about: AboutSection,
     pillars: CardsSection,
     audience: CardsSection,

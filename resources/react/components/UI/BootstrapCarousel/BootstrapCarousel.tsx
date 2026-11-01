@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { joinClassNames } from '@/utils/joinClassNames';
 import { isInteractiveElement } from '@/utils/carouselInteraction';
 import ImageDisplay from '@/components/UI/ImageDisplay/ImageDisplay';
@@ -16,6 +16,9 @@ export interface BootstrapCarouselSlide {
 interface BootstrapCarouselProps {
   ariaLabel: string;
   controls?: boolean;
+  autoplay?: boolean;
+  showPause?: boolean;
+  renderSlide?: (slide: BootstrapCarouselSlide, index: number) => ReactNode;
   interval?: number;
   slides: BootstrapCarouselSlide[];
 }
@@ -25,6 +28,9 @@ type CarouselDirection = 'next' | 'prev';
 export default function BootstrapCarousel({
   ariaLabel,
   controls = false,
+  autoplay = true,
+  showPause = false,
+  renderSlide,
   interval = 5000,
   slides
 }: BootstrapCarouselProps): React.JSX.Element {
@@ -36,13 +42,31 @@ export default function BootstrapCarousel({
   const animationTimerRef = useRef<number | null>(null);
   const dragStartXRef = useRef<number | null>(null);
 
+  const [stopped, setStopped] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const slideCount = slides.length;
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = (): void => setReducedMotion(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
+    if (activeIndex >= slideCount) {
+      setActiveIndex(0);
+      setPreviousIndex(null);
+    }
+  }, [activeIndex, slideCount]);
 
   const nextIndex = useMemo((): number => (activeIndex + 1) % slideCount, [activeIndex, slideCount]);
   const previousSlideIndex = useMemo((): number => (activeIndex - 1 + slideCount) % slideCount, [activeIndex, slideCount]);
 
   function goTo(targetIndex: number, requestedDirection?: CarouselDirection): void {
-    if (targetIndex === activeIndex || isAnimating) {
+    if (slideCount < 2 || targetIndex === activeIndex || isAnimating) {
       return;
     }
 
@@ -64,7 +88,7 @@ export default function BootstrapCarousel({
   }
 
   useEffect(() => {
-    if (paused || isAnimating) {
+    if (!autoplay || stopped || focused || reducedMotion || slideCount < 2 || paused || isAnimating) {
       return undefined;
     }
 
@@ -75,7 +99,7 @@ export default function BootstrapCarousel({
     return () => {
       window.clearInterval(timerId);
     };
-  }, [activeIndex, interval, isAnimating, paused, slideCount]);
+  }, [activeIndex, interval, isAnimating, paused, slideCount, autoplay, stopped, focused, reducedMotion]);
 
   useEffect(() => () => {
     if (animationTimerRef.current !== null) {
@@ -86,7 +110,13 @@ export default function BootstrapCarousel({
   return (
     <div
       className="bootstrapCarousel slide"
+      role="region"
+      aria-roledescription="carrossel"
       aria-label={ariaLabel}
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
+      }}
       data-active-index={activeIndex}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -136,12 +166,19 @@ export default function BootstrapCarousel({
             key={`${slide.src}-indicator`}
             className={index === activeIndex ? 'active' : undefined}
             aria-label={`Slide ${index + 1}`}
-            onClick={() => goTo(index)}
-          />
+          >
+            <button
+              type="button"
+              aria-label={`Mostrar imagem ${index + 1}`}
+              aria-current={index === activeIndex ? "true" : undefined}
+              title={`Mostrar imagem ${index + 1}`}
+              onClick={() => goTo(index)}
+            />
+          </li>
         ))}
       </ol>
 
-      <div className="bootstrapCarousel__inner" role="listbox">
+      <div className="bootstrapCarousel__inner">
         {slides.map((slide: BootstrapCarouselSlide, index: number) => {
           const isActive = index === activeIndex;
           const isPrevious = previousIndex === index;
@@ -149,6 +186,11 @@ export default function BootstrapCarousel({
           return (
             <div
               key={slide.src}
+              inert={!isActive}
+              aria-hidden={!isActive}
+              role="group"
+              aria-roledescription="imagem"
+              aria-label={`${index + 1} de ${slideCount}`}
               className={joinClassNames(
                 'bootstrapCarousel__item',
                 isActive ? 'active' : undefined,
@@ -158,7 +200,9 @@ export default function BootstrapCarousel({
                 (isActive || isPrevious) && direction === 'prev' ? 'bootstrapCarousel__item--prev' : undefined
               )}
             >
-              <ImageDisplay src={slide.src} alt={slide.alt} className="bootstrapCarousel__image" />
+              {renderSlide ? renderSlide(slide, index) : (
+                <ImageDisplay src={slide.src} alt={slide.alt} className="bootstrapCarousel__image" />
+              )}
               {slide.caption ? (
                 <div className="bootstrapCarousel__caption">
                   <h3>{slide.caption.title}</h3>
@@ -170,33 +214,43 @@ export default function BootstrapCarousel({
         })}
       </div>
 
-      {controls ? (
+      {controls && slideCount > 1 ? (
         <>
-          <a
-            href="#"
-            role="button"
+          <button
+            type="button"
             className="bootstrapCarousel__control bootstrapCarousel__control--left"
-            onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+            title="Imagem anterior"
+            onClick={(event) => {
               event.preventDefault();
               goTo(previousSlideIndex, 'prev');
             }}
           >
             <span aria-hidden="true" className="fa fa-angle-left" />
             <span className="bootstrapCarousel__srOnly">Anterior</span>
-          </a>
-          <a
-            href="#"
-            role="button"
+          </button>
+          <button
+            type="button"
             className="bootstrapCarousel__control bootstrapCarousel__control--right"
-            onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+            title="Próxima imagem"
+            onClick={(event) => {
               event.preventDefault();
               goTo(nextIndex, 'next');
             }}
           >
             <span aria-hidden="true" className="fa fa-angle-right" />
             <span className="bootstrapCarousel__srOnly">Próximo</span>
-          </a>
+          </button>
         </>
+      ) : null}
+      {showPause && autoplay && slideCount > 1 && !reducedMotion ? (
+        <button
+          type="button"
+          className="bootstrapCarousel__pause"
+          title={stopped ? "Retomar apresentação" : "Pausar apresentação"}
+          onClick={() => setStopped((value) => !value)}
+        >
+          {stopped ? "Retomar" : "Pausar"}
+        </button>
       ) : null}
     </div>
   );
