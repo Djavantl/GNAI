@@ -11,6 +11,7 @@ use App\Domains\Website\Domain\DTOs\UpdateWebsiteDTO;
 use App\Domains\Website\Domain\Enums\WebsiteSectionType;
 use App\Domains\Website\Domain\Exceptions\InvalidWebsite;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
+use App\Domains\Website\Domain\Support\AboutAppearance;
 use App\Domains\Website\Domain\Support\HeroAppearance;
 use App\Shared\Infrastructure\Security\RichTextSanitizer;
 use Illuminate\Database\Eloquent\Model;
@@ -172,6 +173,7 @@ final class WebsiteSetting extends Model implements Auditable
             'image_alt' => trim((string) ($input['image_alt'] ?? '')),
             'limit' => max(1, min(12, (int) ($input['limit'] ?? 3))),
             'items' => $items,
+            ...($type === WebsiteSectionType::ABOUT ? ['about' => AboutAppearance::normalize((array) ($input['about'] ?? []))] : []),
             ...($type === WebsiteSectionType::HERO ? ['hero' => HeroAppearance::normalize((array) ($input['hero'] ?? [])), 'slides' => []] : []),
         ]);
     }

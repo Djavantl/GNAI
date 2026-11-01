@@ -378,7 +378,7 @@ body:has(.websiteBuilderPage) {
 }
 
 
-.websiteBuilder__heroFields {
+.websiteBuilder__appearanceFields {
     min-width: 0;
     margin: 0;
     padding: 0;
@@ -386,12 +386,12 @@ body:has(.websiteBuilderPage) {
 }
 
 /* O seletor de cor, o hexadecimal e a ação têm espaço próprio. */
-.websiteBuilder__heroFields .websiteBuilder__color {
+.websiteBuilder__appearanceFields .websiteBuilder__color {
     display: grid;
     grid-template-columns: 44px minmax(0, 1fr) auto;
 }
 
-.websiteBuilder__heroFields .websiteBuilder__color .textInput {
+.websiteBuilder__appearanceFields .websiteBuilder__color .textInput {
     min-width: 0;
 }
 
@@ -423,11 +423,11 @@ body:has(.websiteBuilderPage) {
 }
 
 @container website-editor (max-width: 320px) {
-    .websiteBuilder__heroFields .websiteBuilder__color {
+    .websiteBuilder__appearanceFields .websiteBuilder__color {
         grid-template-columns: 44px minmax(0, 1fr);
     }
 
-    .websiteBuilder__heroFields .websiteBuilder__color > .button {
+    .websiteBuilder__appearanceFields .websiteBuilder__color > .button {
         grid-column: 2;
         justify-self: start;
     }

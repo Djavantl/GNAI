@@ -1,7 +1,7 @@
-import RichTextContent from "@/components/UI/RichTextContent/RichTextContent";
 import { joinClassNames } from "@/utils/joinClassNames";
 import PublicationCard from "../PublicationCard/PublicationCard";
 import SiteHero from "../SiteHero/SiteHero";
+import SiteAbout from "../SiteAbout/SiteAbout";
 import { SiteSocialLinks } from "../SiteLayout/SiteLayout";
 import SiteLink, { useSitePreview } from "../SiteLayout/SiteLink";
 import TeamMemberCard from "../TeamMemberCard/TeamMemberCard";
@@ -43,34 +43,6 @@ function SectionHeading({
                 </SiteLink>
             ) : null}
         </div>
-    );
-}
-
-function AboutSection({ section }: SectionProps): React.JSX.Element {
-    return (
-        <section className="siteSections__section">
-            <div
-                className={joinClassNames(
-                    "siteLayout__container siteSections__about",
-                    section.image_url ? "siteSections__about--withImage" : undefined,
-                )}
-            >
-                <div>
-                    <SectionHeading section={section} align="start" />
-                    {section.body ? (
-                        <RichTextContent html={section.body} className="siteSections__richText" />
-                    ) : null}
-                    {section.button_label && section.button_url ? (
-                        <SiteLink href={section.button_url} className="siteSections__button">
-                            {section.button_label}
-                        </SiteLink>
-                    ) : null}
-                </div>
-                {section.image_url ? (
-                    <img src={section.image_url} alt={section.image_alt} className="siteSections__aboutImage" />
-                ) : null}
-            </div>
-        </section>
     );
 }
 
@@ -274,7 +246,7 @@ function ContactSection({ section, site }: SectionProps): React.JSX.Element {
 
 const renderers = {
     hero: SiteHero,
-    about: AboutSection,
+    about: SiteAbout,
     pillars: CardsSection,
     audience: CardsSection,
     guidance: GuidanceSection,

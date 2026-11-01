@@ -3,19 +3,16 @@ import FormGrid, { FormGridWide } from "@/components/Forms/FormGrid/FormGrid";
 import FormSection from "@/components/Forms/FormSection/FormSection";
 import ImageUploadField from "@/components/Forms/ImageUploadField/ImageUploadField";
 import TextArea from "@/components/Forms/TextArea/TextArea";
-import RangeSlider from "@/components/Forms/RangeSlider/RangeSlider";
-import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
-import Button from "@/components/UI/Button/Button";
 import type { HeroAppearance } from "@/components/Website/Website.types";
 import type { BuilderSection } from "./websiteBuilder";
-
-const alignments = [
-    { value: "left", label: "À esquerda" },
-    { value: "center", label: "Centralizado" },
-    { value: "right", label: "À direita" },
-];
+import {
+    AppearanceColorField,
+    AppearanceRangeField,
+    AppearanceSelectField,
+    appearanceAlignments as alignments,
+} from "./BuilderAppearanceFields";
 
 type Props = {
     section: BuilderSection;
@@ -44,75 +41,44 @@ export default function BuilderHeroAppearance({
 
     function select(key: keyof HeroAppearance, label: string, options: { value: string; label: string }[]): React.JSX.Element {
         return (
-            <FormField id={id(key)} label={label} error={error(key)}>
-                <SelectField
-                    id={id(key)}
-                    name={`sections[${index}][hero][${key}]`}
-                    label={label}
-                    value={String(appearance![key])}
-                    options={options}
-                    disabled={disabled}
-                    aria-invalid={!!error(key)}
-                    aria-describedby={describedBy(key)}
-                    onChange={(event) => patch({ [key]: event.target.value })}
-                />
-            </FormField>
+            <AppearanceSelectField
+                id={id(key)}
+                name={`sections[${index}][hero][${key}]`}
+                label={label}
+                value={String(appearance![key])}
+                options={options}
+                error={error(key)}
+                disabled={disabled}
+                onChange={(value) => patch({ [key]: value })}
+            />
         );
     }
 
     function range(key: keyof HeroAppearance, label: string, min: number, max: number): React.JSX.Element {
         return (
-            <FormField id={id(key)} label={label} error={error(key)}>
-                <RangeSlider
-                    id={id(key)}
-                    label={label}
-                    value={Number(appearance![key])}
-                    min={min}
-                    max={max}
-                    disabled={disabled}
-                    invalid={!!error(key)}
-                    describedBy={describedBy(key)}
-                    live
-                    onChange={(value) => patch({ [key]: value })}
-                />
-            </FormField>
+            <AppearanceRangeField
+                id={id(key)}
+                label={label}
+                value={Number(appearance![key])}
+                min={min}
+                max={max}
+                error={error(key)}
+                disabled={disabled}
+                onChange={(value) => patch({ [key]: value })}
+            />
         );
     }
 
     function color(key: keyof HeroAppearance, label: string): React.JSX.Element {
-        const value = String(appearance![key]);
         return (
-            <FormField id={id(key)} label={label} error={error(key)}>
-                <div className="websiteBuilder__color">
-                    <input
-                        type="color"
-                        aria-label={`Selecionar ${label.toLowerCase()}`}
-                        title={`Selecionar ${label.toLowerCase()}`}
-                        value={/^#[0-9a-f]{6}$/i.test(value) ? value : "#322b75"}
-                        disabled={disabled}
-                        onChange={(event) => patch({ [key]: event.target.value })}
-                    />
-                    <TextInput
-                        id={id(key)}
-                        value={value}
-                        placeholder="Padrão do tema"
-                        maxLength={7}
-                        disabled={disabled}
-                        invalid={!!error(key)}
-                        aria-describedby={describedBy(key)}
-                        onChange={(event) => patch({ [key]: event.target.value })}
-                    />
-                    <Button
-                        size="sm"
-                        tone="white"
-                        label="Padrão"
-                        title={`Restaurar padrão de ${label.toLowerCase()}`}
-                        leftIconClass="fa fa-undo"
-                        disabled={disabled || !value}
-                        onClick={() => patch({ [key]: "" })}
-                    />
-                </div>
-            </FormField>
+            <AppearanceColorField
+                id={id(key)}
+                label={label}
+                value={String(appearance![key])}
+                error={error(key)}
+                disabled={disabled}
+                onChange={(value) => patch({ [key]: value })}
+            />
         );
     }
 
@@ -157,7 +123,7 @@ export default function BuilderHeroAppearance({
 
     return (
         <FormGridWide>
-            <fieldset disabled={disabled} className="websiteBuilder__heroFields">
+            <fieldset disabled={disabled} className="websiteBuilder__heroFields websiteBuilder__appearanceFields">
                 {appearance.mode === "text" ? (
                     <>
                         <FormSection title="Identificação do núcleo" variant="inline" iconClass="fa fa-tag">

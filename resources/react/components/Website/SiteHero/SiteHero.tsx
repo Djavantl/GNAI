@@ -3,6 +3,7 @@ import BootstrapCarousel from "@/components/UI/BootstrapCarousel/BootstrapCarous
 import SiteLink from "../SiteLayout/SiteLink";
 import type { HeroAlignment, HeroSlide, WebsiteSection, WebsiteSite } from "../Website.types";
 import "./SiteHero.css";
+import { appearanceColor as color } from "../WebsiteAppearance";
 
 function align(value: HeroAlignment): CSSProperties {
     return {
@@ -10,10 +11,6 @@ function align(value: HeroAlignment): CSSProperties {
         marginLeft: value === "left" ? 0 : "auto",
         marginRight: value === "right" ? 0 : "auto",
     };
-}
-
-function color(value: string, fallback: string): string {
-    return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
 }
 
 export default function SiteHero({

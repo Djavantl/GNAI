@@ -124,30 +124,6 @@
     text-align: center;
 }
 
-/* Sobre */
-.siteSections__about {
-    display: grid;
-    gap: 48px;
-    align-items: center;
-}
-
-.siteSections__about--withImage {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-}
-
-.siteSections__aboutImage {
-    width: 100%;
-    max-height: 420px;
-    border-radius: 20px;
-    box-shadow: var(--site-shadow);
-    object-fit: cover;
-}
-
-.siteSections__richText {
-    color: var(--site-ink-soft);
-    font-size: 1.05rem;
-}
-
 /* O que fazemos */
 .siteSections__features {
     display: grid;
@@ -253,9 +229,6 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .siteSections__about--withImage {
-        grid-template-columns: minmax(0, 1fr);
-    }
 }
 
 @container site (max-width: 600px) {

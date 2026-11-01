@@ -1,13 +1,12 @@
 import FormField from "@/components/Forms/FormField/FormField";
 import FormGrid, { FormGridWide } from "@/components/Forms/FormGrid/FormGrid";
-import ImageUploadField from "@/components/Forms/ImageUploadField/ImageUploadField";
 import SelectField from "@/components/Forms/SelectField/SelectField";
-import SummernoteEditor from "@/components/Forms/SummernoteEditor/SummernoteEditor";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import Button from "@/components/UI/Button/Button";
 import type { WebsiteSectionItem } from "@/components/Website/Website.types";
 import BuilderHeroAppearance from "./BuilderHeroAppearance";
+import BuilderAboutEditor from "./BuilderAboutEditor";
 import BuilderHeroSlides from "./BuilderHeroSlides";
 import { emptyItem, featureIconOptions, type BuilderSection } from "./websiteBuilder";
 
@@ -37,7 +36,7 @@ export default function BuilderSectionEditor({
         [hint ? `${id(name)}-hint` : null, error(name) ? `${id(name)}-error` : null]
             .filter(Boolean)
             .join(" ") || undefined;
-    const usesButton = ["about", "guidance"].includes(section.type);
+    const usesButton = section.type === "guidance";
     const usesItems = ["pillars", "audience", "features", "guidance", "faq", "resources"].includes(section.type);
     const usesIcon = ["pillars", "audience", "features", "resources"].includes(section.type);
     const usesLimit = ["team", "events", "publications"].includes(section.type);
@@ -81,6 +80,20 @@ export default function BuilderSectionEditor({
         );
     }
 
+    if (section.type === "about") {
+        return (
+            <BuilderAboutEditor
+                section={section}
+                index={index}
+                disabled={disabled}
+                errors={errors}
+                onChange={onChange}
+                onImageError={onImageError}
+                onEditorError={onEditorError}
+            />
+        );
+    }
+
     return (
         <FormGrid>
             <FormGridWide>
@@ -119,72 +132,6 @@ export default function BuilderSectionEditor({
                     />
                 </FormField>
             </FormGridWide>
-            {section.type === "about" ? (
-                <FormGridWide>
-                    <FormField id={`${id("body")}-input`} label="Texto" error={error("body")}>
-                        <SummernoteEditor
-                            key={section.id}
-                            id={id("body")}
-                            label="Texto da seção"
-                            defaultValue={section.body}
-                            height={180}
-                            disabled={disabled}
-                            invalid={!!error("body")}
-                            describedBy={error("body") ? `${id("body")}-input-error` : undefined}
-                            onLoadError={onEditorError}
-                            onChange={(html) => onChange({ body: html })}
-                        />
-                    </FormField>
-                </FormGridWide>
-            ) : null}
-            {section.type === "about" ? (
-                <FormGridWide>
-                    <FormField
-                        id={id("image")}
-                        label="Imagem"
-                        error={error("image")}
-                        hint={section.type === "about" ? "Opcional. JPG, PNG ou WEBP com até 4 MB." : undefined}
-                    >
-                        <ImageUploadField
-                            id={id("image")}
-                            name={`sections[${index}][image]`}
-                            label="Imagem"
-                            file={section.image}
-                            currentUrl={section.image_url}
-                            removed={section.remove_image}
-                            previewAlt={section.image_alt}
-                            disabled={disabled}
-                            invalid={!!error("image")}
-                            describedBy={describedBy("image", section.type === "about")}
-                            onChange={(file) => onChange({ image: file, remove_image: false })}
-                            onRemove={() => onChange({ image: null, remove_image: true })}
-                            onError={onImageError}
-                        />
-                    </FormField>
-                </FormGridWide>
-            ) : null}
-            {section.type === "about" ? (
-                <FormGridWide>
-                    <FormField
-                        id={id("image_alt")}
-                        label="Texto alternativo da imagem"
-                        error={error("image_alt")}
-                        hint="Descreva a imagem para quem usa leitor de tela. Obrigatório quando houver imagem."
-                        requiredIndicator={!!section.image || (!!section.image_url && !section.remove_image)}
-                    >
-                        <TextInput
-                            id={id("image_alt")}
-                            name={`sections[${index}][image_alt]`}
-                            value={section.image_alt}
-                            maxLength={255}
-                            placeholder="Ex.: Equipe reunida na sala do núcleo"
-                            invalid={!!error("image_alt")}
-                            aria-describedby={describedBy("image_alt", true)}
-                            onChange={(event) => onChange({ image_alt: event.target.value })}
-                        />
-                    </FormField>
-                </FormGridWide>
-            ) : null}
             {usesButton ? (
                 <>
                     <FormField id={id("button_label")} label="Texto do botão" error={error("button_label")}>

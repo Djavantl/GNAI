@@ -95,3 +95,13 @@ A conferência desta alteração foi feita na sessão autenticada existente do B
 
 
 O editor do banner agrupa os campos na ordem visual dos elementos: identificação, título, texto de apoio, botão, apresentação/fundo e carrossel. Cada grupo reúne seu conteúdo e os respectivos ajustes de posição, tamanho, cores e acabamento. Os toggles usam `size="small"`, como nos formulários integrados. Os IDs dos campos permanecem os mesmos para preservar o foco pelo clique duplo na prévia e a associação dos erros.
+
+## Personalização de Conheça o núcleo
+
+O tipo `about` aceita o objeto `about` de aparência no JSON já existente. `AboutAppearance` fornece os valores iniciais e os limites da validação. Não há migration; o presenter completa as configurações antigas e o salvamento mantém a identidade e a imagem da seção.
+
+O formulário reúne conteúdo e aparência em grupos de título, texto de apoio, texto principal, imagem, botão e fundo. Título e subtítulo têm alinhamento, tamanho e cor; o título também permite ajustar ou ocultar sua linha decorativa. O texto principal preserva o editor rico e a sanitização, acrescentando cor, tamanho, alinhamento e espaçamento entre linhas. A formatação explícita feita dentro do editor rico continua preservada.
+
+A imagem mantém upload, prévia, remoção e descrição acessível, com opção de exibição, posição ao lado/acima/abaixo do texto, largura da coluna, altura, enquadramento, foco, arredondamento e sombra. Em telas menores, as colunas se reorganizam verticalmente. O botão reúne texto, link, posição, cores, arredondamento e sombra. A seção permite ajustar fundo, degradê, espaçamento vertical e distância entre imagem e texto.
+
+Os seletores de cor, sliders e seleções são compartilhados com a edição do banner principal. A prévia e o site público usam o mesmo componente de apresentação, e os IDs existentes são mantidos para o clique duplo e os erros por campo. Os ajustes desta ampliação foram revisados em código e no diff, sem executar build, testes ou homologação no navegador.

@@ -76,6 +76,40 @@ export interface HeroAppearance {
     image_position: "center" | "top" | "bottom" | "left" | "right";
 }
 
+export interface AboutAppearance {
+    title_size: number;
+    subtitle_size: number;
+    body_size: number;
+    body_line_height: number;
+    image_width: number;
+    image_height: number;
+    image_radius: number;
+    image_shadow: number;
+    button_radius: number;
+    button_shadow: number;
+    padding_vertical: number;
+    gap: number;
+    title_color: string;
+    subtitle_color: string;
+    body_color: string;
+    button_color: string;
+    button_background: string;
+    background_color: string;
+    divider_color: string;
+    gradient_end_color: string;
+    title_align: HeroAlignment;
+    subtitle_align: HeroAlignment;
+    body_align: HeroAlignment | "justify";
+    button_align: HeroAlignment;
+    image_side: "right" | "left" | "top" | "bottom";
+    image_fit: "cover" | "contain";
+    image_position: "center" | "top" | "bottom" | "left" | "right";
+    gradient_direction: "to bottom" | "to top" | "to right" | "to left";
+    image_visible: boolean;
+    title_divider: boolean;
+    gradient_enabled: boolean;
+}
+
 export interface HeroSlide {
     id: string;
     image_url: string | null;
@@ -99,6 +133,7 @@ export interface WebsiteSection {
     limit: number;
     items: WebsiteSectionItem[];
     hero?: HeroAppearance;
+    about?: AboutAppearance;
     slides?: HeroSlide[];
 }
 

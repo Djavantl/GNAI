@@ -1,0 +1,106 @@
+.siteAbout {
+    padding: var(--about-padding) 0;
+}
+
+.siteAbout .siteAbout__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: var(--about-gap);
+}
+
+.siteAbout--withImage.siteAbout--right .siteAbout__grid {
+    grid-template-columns: minmax(0, var(--about-text-column)) minmax(0, var(--about-image-column));
+}
+
+.siteAbout--withImage.siteAbout--left .siteAbout__grid {
+    grid-template-columns: minmax(0, var(--about-image-column)) minmax(0, var(--about-text-column));
+}
+
+.siteAbout--left .siteAbout__image,
+.siteAbout--top .siteAbout__image {
+    order: -1;
+}
+
+.siteAbout__main {
+    min-width: 0;
+}
+
+.siteAbout .siteAbout__title {
+    font-size: clamp(20px, 3.2cqi, var(--about-title-size));
+    overflow-wrap: anywhere;
+}
+
+.siteAbout .siteAbout__title::after {
+    background: var(--about-divider-color);
+}
+
+.siteAbout__title[data-title-align="center"]::after {
+    margin-inline: auto;
+}
+
+.siteAbout__title[data-title-align="right"]::after {
+    margin-left: auto;
+}
+
+.siteAbout--noDivider .siteAbout__title::after {
+    display: none;
+}
+
+.siteAbout .siteAbout__subtitle {
+    max-width: none;
+    font-size: clamp(14px, 2.5cqi, var(--about-subtitle-size));
+    overflow-wrap: anywhere;
+}
+
+.siteAbout .siteAbout__body {
+    color: var(--about-body-color);
+    text-align: var(--about-body-align);
+    line-height: var(--about-body-line-height);
+    margin-top: 36px;
+    font-size: clamp(14px, 2.5cqi, var(--about-body-size));
+}
+
+.siteAbout .siteAbout__image {
+    display: block;
+    width: 100%;
+    height: var(--about-image-height);
+    max-height: none;
+}
+
+.siteAbout .siteSections__button {
+    display: inline-block;
+    max-width: 100%;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.siteAbout .siteSections__button:hover {
+    box-shadow: none;
+}
+
+.siteAbout__button {
+    max-width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 28px;
+    overflow-wrap: anywhere;
+}
+
+@container site (max-width: 760px) {
+    .siteAbout {
+        padding: min(var(--about-padding), 48px) 0;
+    }
+
+    .siteAbout--withImage.siteAbout--left .siteAbout__grid,
+    .siteAbout--withImage.siteAbout--right .siteAbout__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .siteAbout .siteAbout__image {
+        height: min(var(--about-image-height), 420px);
+    }
+}
