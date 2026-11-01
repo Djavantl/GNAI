@@ -51,13 +51,18 @@ function contactField(element: Element): string {
  * (ou a identidade, no topo e no rodapé) sem campo específico.
  */
 const previewRules: PreviewRule[] = [
+    { selector: ".siteTeam .teamMemberCard__photo", field: () => "team-photo_radius" },
+    { selector: ".siteTeam .teamMemberCard__name", field: () => "team-card_title_size" },
+    { selector: ".siteTeam .teamMemberCard__role", field: () => "team-card_text_size" },
+    { selector: ".siteTeam .teamMemberCard", field: () => "team-card_radius" },
+    { selector: ".siteCollection__grid", field: () => "limit" },
     { selector: ".sitePublications .publicationCard__dateBadge", field: () => "events-date_badge_radius" },
     { selector: ".sitePublications .publicationCard__meta", field: () => "events-card_text_size" },
     { selector: ".sitePublications .publicationCard__type, .sitePublications .publicationCard__category, .sitePublications .publicationCard__status", field: (element) => `${element.closest("[data-feed-type=events]") ? "events" : "publications"}-badge_radius` },
     { selector: ".sitePublications .publicationCard__media", field: () => "publications-image_height" },
     { selector: ".sitePublications .publicationCard__title", field: (element) => `${element.closest("[data-feed-type=events]") ? "events" : "publications"}-card_title_size` },
     { selector: ".sitePublications .publicationCard__summary", field: () => "publications-card_text_size" },
-    { selector: ".sitePublications .publicationCard, .sitePublications__grid", field: () => "limit" },
+    { selector: ".sitePublications .publicationCard", field: () => "limit" },
     { selector: ".siteGuidance .siteSections__featureIcon", field: itemField(".siteSections__feature", "appearance-icon_radius") },
     { selector: ".siteHero__title, .siteSections__title", field: () => "title" },
     { selector: ".siteHero__text, .siteSections__subtitle", field: () => "subtitle" },
@@ -244,7 +249,7 @@ export default function BuilderPreview({
     }
 
     function handlePreviewPointerMove(event: React.PointerEvent<HTMLDivElement>): void {
-        const cards = frame.current?.querySelectorAll<HTMLElement>(".siteItemCard__card--hover, .siteGuidance__action--hover");
+        const cards = frame.current?.querySelectorAll<HTMLElement>(".siteItemCard__card--hover, .siteGuidance__action--hover, .siteTeam .teamMemberCard");
         const card = cards
             ? Array.from(cards).find((item) => contains(item.getBoundingClientRect(), event.clientX, event.clientY))
             : undefined;

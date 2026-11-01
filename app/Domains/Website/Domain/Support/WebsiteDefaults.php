@@ -146,11 +146,13 @@ final class WebsiteDefaults
             'button_label' => match ($type) {
                 'publications' => 'Ver todas as publicações',
                 'events' => 'Ver todos os eventos',
+                'team' => 'Ver equipe completa',
                 default => '',
             },
             'button_url' => match ($type) {
                 'publications' => '/site/publicacoes',
                 'events' => '/site/publicacoes?type=event',
+                'team' => '/site/equipe',
                 default => '',
             },
             'image_path' => null,
@@ -159,6 +161,7 @@ final class WebsiteDefaults
             'items' => [],
             ...($type === 'publications' ? ['publications' => PublicationsAppearance::normalize((array) ($values['publications'] ?? []))] : []),
             ...($type === 'events' ? ['events' => PublicationsAppearance::normalize((array) ($values['events'] ?? []))] : []),
+            ...($type === 'team' ? ['team' => TeamAppearance::normalize((array) ($values['team'] ?? []))] : []),
             ...($type === 'about' ? ['about' => AboutAppearance::defaults()] : []),
             ...($type === 'hero' ? ['hero' => HeroAppearance::defaults(), 'slides' => []] : []),
             ...$values,

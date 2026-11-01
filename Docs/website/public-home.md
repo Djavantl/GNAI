@@ -169,3 +169,16 @@ Mantém os eventos reais com programação ainda não encerrada, ordenados por i
 Título, texto de apoio, fundo, degradê, espaçamentos, colunas, grade/lista/carrossel, ação e hover seguem o padrão anterior. Cada seção configura cores, tipografia, padding, borda e arredondamento dos seus cards. Eventos também permitem escolher a largura, arredondamento, fundo e cor do destaque de data, além de ocultar data ou situação e ajustar o arredondamento das badges. A ação inicial leva à listagem filtrada por eventos e aceita outro destino no seletor compartilhado.
 
 Prévia e site público utilizam o mesmo componente; o clique duplo nas informações, título, data e badge abre seus ajustes. A conferência foi de código e diff. Implementado no código; comportamento em runtime deve ser conferido na homologação manual. Não foram executados build, typecheck, testes ou navegador.
+
+
+## Equipe do núcleo
+
+A seção `team` armazena sua aparência em `team`, no JSON existente. `TeamAppearance` centraliza padrões, opções e limites utilizados pela validação e normalização. O presenter completa configurações antigas e o modelo de novas seções recebe os mesmos valores, sem migration.
+
+O editor organiza título, texto de apoio, profissionais, ação e organização/fundo como nas seções anteriores. Permite configurar tamanho, arredondamento e borda da foto; exibição de foto e cargo; alinhamento, tamanhos e cores de nome/cargo; fundo, borda, padding e arredondamento dos cards. A organização oferece grade de uma a quatro colunas, lista ou carrossel com avanço opcional e pausa. Fundo, degradê, espaçamentos e ação de equipe completa possuem os controles compartilhados de aparência e destinos.
+
+A consulta permanece limitada aos profissionais ativos marcados como “Aparece no site”, em ordem alfabética; nomes, cargos e fotos continuam sendo gerenciados no cadastro de profissionais. O limite permanece entre 1 e 12, sem inventar registros na prévia. Sem profissionais elegíveis, a seção fica oculta no site público e editável na prévia. A página completa de equipe conserva sua apresentação atual.
+
+`SiteCollection` compartilha cabeçalho, fundo, organização, carrossel e ação entre equipe, publicações e eventos; cada renderer mantém seus próprios cards e configurações. `SiteTeam` reutiliza `TeamMemberCard`, com estilos restritos à home. Clique duplo em foto, nome, cargo e card direciona aos ajustes correspondentes, e o hover é simulado na prévia como nas seções anteriores.
+
+Revisão de código e diff, sem executar build, typecheck, testes ou navegador. Implementado no código; comportamento em runtime deve ser conferido na homologação manual.

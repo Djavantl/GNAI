@@ -7,9 +7,8 @@ import SiteAbout from "../SiteAbout/SiteAbout";
 import SitePillars from "../SitePillars/SitePillars";
 import { SiteSocialLinks } from "../SiteLayout/SiteLayout";
 import SiteLink, { useSitePreview } from "../SiteLayout/SiteLink";
-import TeamMemberCard from "../TeamMemberCard/TeamMemberCard";
+import SiteTeam from "../SiteTeam/SiteTeam";
 import {
-    websiteRoutes,
     type WebsiteContent,
     type WebsiteSection,
     type WebsiteSite,
@@ -86,31 +85,6 @@ function CardsSection({ section }: SectionProps): React.JSX.Element {
     );
 }
 
-function TeamSection({ section, content }: SectionProps): React.JSX.Element {
-    const members = content.team.slice(0, section.limit);
-
-    return (
-        <section className="siteSections__section siteSections__section--tinted">
-            <div className="siteLayout__container">
-                <SectionHeading
-                    section={section}
-                    align="start"
-                    action={{ label: "Ver equipe completa", href: websiteRoutes.team }}
-                />
-                {members.length ? (
-                    <div className="siteSections__grid siteSections__grid--team">
-                        {members.map((member) => (
-                            <TeamMemberCard key={member.id} member={member} />
-                        ))}
-                    </div>
-                ) : (
-                    <p className="siteSections__empty">Em breve apresentaremos nossa equipe.</p>
-                )}
-            </div>
-        </section>
-    );
-}
-
 function FaqSection({ section }: SectionProps): React.JSX.Element {
     const preview = useSitePreview();
 
@@ -180,7 +154,7 @@ const renderers = {
     faq: FaqSection,
     resources: CardsSection,
     features: SitePillars,
-    team: TeamSection,
+    team: SiteTeam,
     events: SitePublications,
     publications: SitePublications,
     contact: ContactSection,

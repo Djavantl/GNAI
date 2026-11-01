@@ -1,0 +1,36 @@
+.siteTeam .teamMemberCard {
+    min-width: 0;
+    padding: var(--team-card-padding);
+    border-radius: var(--team-card-radius);
+    border-color: var(--team-card-border);
+    background: var(--team-card-background);
+    text-align: var(--team-card-align);
+    align-items: stretch;
+}
+.siteTeam .teamMemberCard__photo {
+    width: min(100%, var(--team-photo-size));
+    height: auto;
+    aspect-ratio: 1;
+    align-self: var(--team-photo-align);
+    border-radius: var(--team-photo-radius);
+    border-width: var(--team-photo-border-width);
+    border-color: var(--team-photo-border);
+}
+.siteTeam .teamMemberCard__name {
+    font-size: var(--team-name-size);
+    color: var(--team-name-color);
+    overflow-wrap: anywhere;
+}
+.siteTeam .teamMemberCard__role {
+    font-size: var(--team-role-size);
+    color: var(--team-role-color);
+    overflow-wrap: anywhere;
+}
+.siteTeam .teamMemberCard.siteItemCard__card--previewHover {
+    box-shadow: var(--site-shadow);
+    transform: translateY(-2px);
+}
+@media (prefers-reduced-motion: reduce) {
+    .siteTeam .teamMemberCard { transition: none; }
+    .siteTeam .teamMemberCard:is(:hover, .siteItemCard__card--previewHover) { transform: none; }
+}
