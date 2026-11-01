@@ -7,6 +7,7 @@ namespace App\Domains\Website\Application\Data;
 use App\Domains\Website\Domain\Enums\WebsiteSectionType;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\AboutAppearance;
+use App\Domains\Website\Domain\Support\GuidanceAppearance;
 use App\Domains\Website\Domain\Support\PillarCardAppearance;
 use App\Domains\Website\Domain\Support\PillarsAppearance;
 use App\Domains\Website\Domain\Support\HeroAppearance;
@@ -58,6 +59,7 @@ final class UpdateWebsiteData extends Data
             'sections.*.hero' => HeroAppearance::class,
             'sections.*.about' => AboutAppearance::class,
             'sections.*.pillars' => PillarsAppearance::class,
+            'sections.*.guidance' => GuidanceAppearance::class,
             'sections.*.items.*.appearance' => PillarCardAppearance::class,
         ] as $scope => $appearanceClass) {
             $appearanceRules[$scope] = ['sometimes', 'array'];
@@ -116,6 +118,11 @@ final class UpdateWebsiteData extends Data
     public static function messages(): array
     {
         return [
+            'sections.*.guidance.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
+            'sections.*.guidance.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
+            'sections.*.guidance.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',
+            'sections.*.guidance.*.integer' => 'Informe um valor inteiro para este ajuste.',
+            'sections.*.guidance.*.in' => 'Selecione uma opção válida.',
             'sections.*.pillars.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
             'sections.*.pillars.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
             'sections.*.pillars.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',

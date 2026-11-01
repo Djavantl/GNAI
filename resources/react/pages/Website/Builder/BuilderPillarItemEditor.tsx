@@ -14,6 +14,8 @@ import BuilderIconField from "./BuilderIconField";
 import type { BuilderEditTarget } from "./websiteBuilder";
 
 type Props = {
+    numbered?: boolean;
+    timeline?: boolean;
     sectionId: string;
     sectionIndex: number;
     item: WebsiteSectionItem;
@@ -29,7 +31,8 @@ type Props = {
 };
 
 export default function BuilderPillarItemEditor({
-    sectionId, sectionIndex, item, itemIndex, count, template, disabled, errors, editTarget, onChange, onMove, onRemove,
+    numbered = false, timeline = false, sectionId, sectionIndex, item, itemIndex, count,
+    template, disabled, errors, editTarget, onChange, onMove, onRemove,
 }: Props): React.JSX.Element {
     const appearance = item.appearance ?? template;
     const prefix = `sections.${sectionIndex}.items.${itemIndex}`;
@@ -108,8 +111,8 @@ export default function BuilderPillarItemEditor({
         <li className="websiteBuilder__pillarItem">
             <details open={open} onToggle={(event) => setOpen(event.currentTarget.open)}>
                 <summary>
-                    <strong>Item {itemIndex + 1}</strong>
-                    <span>{item.title || "Novo item"}</span>
+                    <strong>{numbered ? "Etapa" : "Item"} {itemIndex + 1}</strong>
+                    <span>{item.title || (numbered ? "Nova etapa" : "Novo item")}</span>
                 </summary>
                 {open ? (
                     <div className="websiteBuilder__pillarItemBody">
@@ -131,7 +134,7 @@ export default function BuilderPillarItemEditor({
                                 onClick={() => onMove(1)}
                             />
                             <Button
-                                label="Remover item"
+                                label={numbered ? "Remover etapa" : "Remover item"}
                                 leftIconClass="fa fa-times"
                                 tone="dark-red"
                                 size="sm"
@@ -139,35 +142,37 @@ export default function BuilderPillarItemEditor({
                                 onClick={onRemove}
                             />
                         </div>
-                        <FormSection title="Ícone" variant="inline" iconClass="fa fa-star-o">
+                        <FormSection title={numbered ? "Número da etapa" : "Ícone"} variant="inline" iconClass={numbered ? "fa fa-list-ol" : "fa fa-star-o"}>
                             <FormGrid>
-                                <FormGridWide>
-                                    <BuilderIconField
-                                        id={id("icon")}
-                                        name={`sections[${sectionIndex}][items][${itemIndex}][icon]`}
-                                        label="Ícone"
-                                        value={item.icon}
-                                        error={error("icon")}
-                                        disabled={disabled}
-                                        onChange={(icon) => onChange({ icon })}
-                                    />
-                                </FormGridWide>
-                                {select("icon_position", "Posição do ícone", [
+                                {!numbered ? (
+                                    <FormGridWide>
+                                        <BuilderIconField
+                                            id={id("icon")}
+                                            name={`sections[${sectionIndex}][items][${itemIndex}][icon]`}
+                                            label="Ícone"
+                                            value={item.icon}
+                                            error={error("icon")}
+                                            disabled={disabled}
+                                            onChange={(icon) => onChange({ icon })}
+                                        />
+                                    </FormGridWide>
+                                ) : null}
+                                {!timeline ? select("icon_position", numbered ? "Posição do número" : "Posição do ícone", [
                                     { value: "top", label: "Acima do texto" },
                                     { value: "left", label: "À esquerda do texto" },
                                     { value: "right", label: "À direita do texto" },
-                                ])}
-                                {select("icon_align", "Alinhamento do ícone")}
-                                {color("icon_color", "Cor do ícone")}
-                                {color("icon_background", "Cor do fundo do ícone")}
-                                {range("icon_size", "Tamanho do ícone (px)", 12, 64)}
-                                {range("icon_width", "Largura do fundo do ícone (px)", 24, 120)}
-                                {range("icon_height", "Altura do fundo do ícone (px)", 24, 120)}
-                                {range("icon_radius", "Arredondamento do fundo do ícone (px)", 0, 60)}
-                                {range("icon_gap", "Distância entre ícone e texto (px)", 4, 40)}
+                                ]) : null}
+                                {!timeline ? select("icon_align", numbered ? "Alinhamento do número" : "Alinhamento do ícone") : null}
+                                {color("icon_color", numbered ? "Cor do número" : "Cor do ícone")}
+                                {color("icon_background", numbered ? "Cor do fundo do número" : "Cor do fundo do ícone")}
+                                {range("icon_size", numbered ? "Tamanho do número (px)" : "Tamanho do ícone (px)", 12, 64)}
+                                {range("icon_width", numbered ? "Largura do fundo do número (px)" : "Largura do fundo do ícone (px)", 24, 120)}
+                                {range("icon_height", numbered ? "Altura do fundo do número (px)" : "Altura do fundo do ícone (px)", 24, 120)}
+                                {range("icon_radius", numbered ? "Arredondamento do fundo do número (px)" : "Arredondamento do fundo do ícone (px)", 0, 60)}
+                                {range("icon_gap", numbered ? "Distância entre número e texto (px)" : "Distância entre ícone e texto (px)", 4, 40)}
                             </FormGrid>
                         </FormSection>
-                        <FormSection title="Título do item" variant="inline" iconClass="fa fa-font">
+                        <FormSection title={numbered ? "Título da etapa" : "Título do item"} variant="inline" iconClass="fa fa-font">
                             <FormGrid>
                                 <FormGridWide>
                                     <FormField id={id("title")} label="Título" error={error("title")}>
@@ -187,7 +192,7 @@ export default function BuilderPillarItemEditor({
                                 {color("title_color", "Cor do título")}
                             </FormGrid>
                         </FormSection>
-                        <FormSection title="Texto do item" variant="inline" iconClass="fa fa-align-left">
+                        <FormSection title={numbered ? "Texto da etapa" : "Texto do item"} variant="inline" iconClass="fa fa-align-left">
                             <FormGrid>
                                 <FormGridWide>
                                     <FormField id={id("text")} label="Texto" error={error("text")}>
@@ -217,7 +222,7 @@ export default function BuilderPillarItemEditor({
                                 {range("card_radius", "Arredondamento do card (px)", 0, 60)}
                                 {range("card_width", "Largura do card na coluna (%)", 50, 100)}
                                 {range("card_min_height", "Altura mínima do card (px)", 0, 600)}
-                                {range("card_padding", "Espaçamento interno (px)", 8, 48)}
+                                {range("card_padding", "Espaçamento interno (px)", numbered ? 0 : 8, 48)}
                                 {range("card_shadow", "Sombra do card", 0, 40)}
                                 {toggle("gradient_enabled", "Usar degradê no card")}
                                 {appearance.gradient_enabled ? (

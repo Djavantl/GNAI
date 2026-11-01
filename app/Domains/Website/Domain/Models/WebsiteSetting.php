@@ -12,6 +12,7 @@ use App\Domains\Website\Domain\Enums\WebsiteSectionType;
 use App\Domains\Website\Domain\Exceptions\InvalidWebsite;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
 use App\Domains\Website\Domain\Support\AboutAppearance;
+use App\Domains\Website\Domain\Support\GuidanceAppearance;
 use App\Domains\Website\Domain\Support\PillarCardAppearance;
 use App\Domains\Website\Domain\Support\PillarsAppearance;
 use App\Domains\Website\Domain\Support\HeroAppearance;
@@ -154,8 +155,8 @@ final class WebsiteSetting extends Model implements Auditable
                     'url' => $type === WebsiteSectionType::RESOURCES ? trim((string) ($item['url'] ?? '')) : '',
                     'title' => trim((string) ($item['title'] ?? '')),
                     'text' => trim((string) ($item['text'] ?? '')),
-                    ...(in_array($type->value, PillarsAppearance::SECTION_TYPES, true) ? [
-                        'appearance' => PillarCardAppearance::normalize((array) ($item['appearance'] ?? [])),
+                    ...(in_array($type->value, [...PillarsAppearance::SECTION_TYPES, 'guidance'], true) ? [
+                        'appearance' => PillarCardAppearance::normalize((array) ($item['appearance'] ?? []), $type->value),
                     ] : []),
                 ];
 
@@ -179,6 +180,7 @@ final class WebsiteSetting extends Model implements Auditable
             'limit' => max(1, min(12, (int) ($input['limit'] ?? 3))),
             'items' => $items,
             ...(in_array($type->value, PillarsAppearance::SECTION_TYPES, true) ? ['pillars' => PillarsAppearance::normalize((array) ($input['pillars'] ?? []), $type->value)] : []),
+            ...($type === WebsiteSectionType::GUIDANCE ? ['guidance' => GuidanceAppearance::normalize((array) ($input['guidance'] ?? []))] : []),
             ...($type === WebsiteSectionType::ABOUT ? ['about' => AboutAppearance::normalize((array) ($input['about'] ?? []))] : []),
             ...($type === WebsiteSectionType::HERO ? ['hero' => HeroAppearance::normalize((array) ($input['hero'] ?? [])), 'slides' => []] : []),
         ]);

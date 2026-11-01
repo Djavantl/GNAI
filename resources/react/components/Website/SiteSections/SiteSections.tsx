@@ -1,3 +1,5 @@
+import { isWebsiteSectionVisible } from "../WebsiteSections";
+import SiteGuidance from "../SiteGuidance/SiteGuidance";
 import { joinClassNames } from "@/utils/joinClassNames";
 import PublicationCard from "../PublicationCard/PublicationCard";
 import SiteHero from "../SiteHero/SiteHero";
@@ -159,32 +161,6 @@ function PublicationsSection({ section, content }: SectionProps): React.JSX.Elem
     );
 }
 
-function GuidanceSection({ section }: SectionProps): React.JSX.Element {
-    return (
-        <section className="siteSections__section siteSections__section--tinted">
-            <div className="siteLayout__container">
-                <SectionHeading section={section} align="start" />
-                <ol className="siteSections__steps">
-                    {section.items.map((item, index) => (
-                        <li key={index} className="siteSections__step">
-                            <span className="siteSections__stepNumber" aria-hidden="true">{index + 1}</span>
-                            <div>
-                                <h3>{item.title}</h3>
-                                {item.text ? <p>{item.text}</p> : null}
-                            </div>
-                        </li>
-                    ))}
-                </ol>
-                {section.button_label && section.button_url ? (
-                    <SiteLink href={section.button_url} className="siteSections__more siteSections__guidanceLink">
-                        {section.button_label} <i className="fa fa-arrow-right" aria-hidden="true" />
-                    </SiteLink>
-                ) : null}
-            </div>
-        </section>
-    );
-}
-
 function FaqSection({ section }: SectionProps): React.JSX.Element {
     const preview = useSitePreview();
 
@@ -250,7 +226,7 @@ const renderers = {
     about: SiteAbout,
     pillars: SitePillars,
     audience: SitePillars,
-    guidance: GuidanceSection,
+    guidance: SiteGuidance,
     faq: FaqSection,
     resources: CardsSection,
     features: SitePillars,
@@ -276,18 +252,8 @@ export default function SiteSections({
     highlightedId?: string | null;
 }): React.JSX.Element {
     const preview = useSitePreview();
-    const visible = sections.filter((section) => {
-        if (!section.enabled || !renderers[section.type]) return false;
-        if (preview) return true;
-        if (section.type === "team") return content.team.length > 0;
-        if (section.type === "events") return content.events.length > 0;
-        if (section.type === "publications") return content.publications.length > 0;
-        if (["pillars", "audience", "features", "guidance", "faq", "resources"].includes(section.type)) {
-            return section.items.length > 0;
-        }
-
-        return true;
-    });
+    const visible = sections.filter((section) => renderers[section.type]
+        && (preview ? section.enabled : isWebsiteSectionVisible(section, content)));
     const mainHeroId = visible.find((section) => section.type === "hero")?.id;
 
     return (

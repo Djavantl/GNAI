@@ -9,6 +9,8 @@ import Tabs from "@/components/Navigation/Tabs/Tabs";
 import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import { notify } from "@/components/UI/NotificationToast/notify";
+import { isWebsiteSectionVisible } from "@/components/Website/WebsiteSections";
+import { websiteRoutes } from "@/components/Website/Website.types";
 import type {
     PillarCardAppearance,
     WebsiteContent,
@@ -42,6 +44,7 @@ type Props = {
     sectionTypes: { value: WebsiteSectionType; label: string }[];
     sectionTemplates: Record<WebsiteSectionType, WebsiteSection>;
     pillarCardTemplate: PillarCardAppearance;
+    guidanceStepTemplate: PillarCardAppearance;
     publicUrl: string;
     can: { submit: boolean };
 };
@@ -108,6 +111,7 @@ export default function WebsiteBuilderEditPage({
     sectionTypes,
     sectionTemplates,
     pillarCardTemplate,
+    guidanceStepTemplate,
     publicUrl,
     can,
 }: Props): React.JSX.Element {
@@ -413,6 +417,17 @@ export default function WebsiteBuilderEditPage({
                 >
                     <BuilderSectionEditor
                         pillarCardTemplate={pillarCardTemplate}
+                        guidanceStepTemplate={guidanceStepTemplate}
+                        linkOptions={[
+                            ...form.data.sections
+                                .filter((section) => isWebsiteSectionVisible(section, content))
+                                .map((section) => ({
+                                    value: `#${section.id}`,
+                                    label: section.title || sectionTypes.find((type) => type.value === section.type)?.label || section.id,
+                                })),
+                            { value: websiteRoutes.team, label: "Página da equipe" },
+                            { value: websiteRoutes.publications, label: "Página de publicações" },
+                        ]}
                         editTarget={editTarget}
                         onEditTarget={openEditor}
                         key={selected.id}

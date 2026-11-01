@@ -14,8 +14,10 @@ import {
     appearanceAlignments as alignments,
 } from "./BuilderAppearanceFields";
 
+import BuilderLinkField, { type BuilderLinkOption } from "./BuilderLinkField";
 type Props = {
     section: BuilderSection;
+    linkOptions: BuilderLinkOption[];
     index: number;
     disabled: boolean;
     errors: Record<string, string | undefined>;
@@ -25,6 +27,7 @@ type Props = {
 
 export default function BuilderHeroAppearance({
     section,
+    linkOptions,
     index,
     disabled,
     errors,
@@ -83,7 +86,7 @@ export default function BuilderHeroAppearance({
     }
 
     function textField(
-        key: "title" | "button_label" | "button_url" | "image_alt",
+        key: "title" | "button_label" | "image_alt",
         label: string,
         maxLength: number,
         hint?: string,
@@ -199,7 +202,15 @@ export default function BuilderHeroAppearance({
                                     {textField("button_label", "Texto do botão", 60)}
                                 </FormGridWide>
                                 <FormGridWide>
-                                    {textField("button_url", "Link do botão", 500)}
+                                    <BuilderLinkField
+                                        id={`website-section-${section.id}-button_url`}
+                                        name={`sections[${index}][button_url]`}
+                                        value={section.button_url}
+                                        options={linkOptions}
+                                        error={errors[`sections.${index}.button_url`]}
+                                        disabled={disabled}
+                                        onChange={(button_url) => onChange({ button_url })}
+                                    />
                                 </FormGridWide>
                                 {select("button_align", "Posição do botão", alignments)}
                                 {range("button_radius", "Arredondamento do botão (px)", 0, 60)}

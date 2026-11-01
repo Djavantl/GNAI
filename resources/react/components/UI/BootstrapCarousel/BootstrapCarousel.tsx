@@ -15,6 +15,7 @@ export interface BootstrapCarouselSlide {
 
 interface BootstrapCarouselProps {
   ariaLabel: string;
+  itemLabel?: string;
   controls?: boolean;
   autoplay?: boolean;
   showPause?: boolean;
@@ -27,6 +28,7 @@ type CarouselDirection = 'next' | 'prev';
 
 export default function BootstrapCarousel({
   ariaLabel,
+  itemLabel = "imagem",
   controls = false,
   autoplay = true,
   showPause = false,
@@ -169,9 +171,9 @@ export default function BootstrapCarousel({
           >
             <button
               type="button"
-              aria-label={`Mostrar imagem ${index + 1}`}
+              aria-label={`Mostrar ${itemLabel} ${index + 1}`}
               aria-current={index === activeIndex ? "true" : undefined}
-              title={`Mostrar imagem ${index + 1}`}
+              title={`Mostrar ${itemLabel} ${index + 1}`}
               onClick={() => goTo(index)}
             />
           </li>
@@ -189,7 +191,7 @@ export default function BootstrapCarousel({
               inert={!isActive}
               aria-hidden={!isActive}
               role="group"
-              aria-roledescription="imagem"
+              aria-roledescription={itemLabel}
               aria-label={`${index + 1} de ${slideCount}`}
               className={joinClassNames(
                 'bootstrapCarousel__item',
@@ -219,7 +221,7 @@ export default function BootstrapCarousel({
           <button
             type="button"
             className="bootstrapCarousel__control bootstrapCarousel__control--left"
-            title="Imagem anterior"
+            title="Anterior"
             onClick={(event) => {
               event.preventDefault();
               goTo(previousSlideIndex, 'prev');
@@ -231,7 +233,7 @@ export default function BootstrapCarousel({
           <button
             type="button"
             className="bootstrapCarousel__control bootstrapCarousel__control--right"
-            title="Próxima imagem"
+            title="Próximo"
             onClick={(event) => {
               event.preventDefault();
               goTo(nextIndex, 'next');

@@ -37,6 +37,7 @@ final readonly class WebsiteBuilderController
             'content' => $content->execute(),
             'sectionTypes' => WebsiteSectionType::options(),
             'pillarCardTemplate' => PillarCardAppearance::defaults(),
+            'guidanceStepTemplate' => PillarCardAppearance::defaults('guidance'),
             'sectionTemplates' => collect(WebsiteDefaults::sections())
                 ->mapWithKeys(fn (array $section): array => [$section['type'] => [...$section, 'image_url' => null]])
                 ->all(),

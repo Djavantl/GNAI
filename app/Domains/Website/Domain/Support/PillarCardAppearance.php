@@ -6,6 +6,10 @@ namespace App\Domains\Website\Domain\Support;
 
 final class PillarCardAppearance
 {
+    public const STEP_DEFAULTS = [
+        'icon_width' => 44, 'icon_height' => 44, 'icon_radius' => 44, 'icon_size' => 18,
+        'icon_position' => 'left', 'card_padding' => 0, 'card_radius' => 0, 'card_border_width' => 0,
+    ];
 
     public const RANGES = [
         'icon_size' => [12, 64, 24],
@@ -17,7 +21,7 @@ final class PillarCardAppearance
         'text_size' => [12, 24, 16],
         'text_line_height' => [140, 220, 160],
         'card_radius' => [0, 60, 14],
-        'card_padding' => [8, 48, 28],
+        'card_padding' => [0, 48, 28],
         'card_border_width' => [0, 4, 1],
         'card_shadow' => [0, 40, 0],
         'card_min_height' => [0, 600, 0],
@@ -39,7 +43,7 @@ final class PillarCardAppearance
     public const TOGGLES = ['hover_enabled' => false, 'gradient_enabled' => false];
 
     /** @return array<string, mixed> */
-    public static function defaults(): array
+    public static function defaults(string $sectionType = 'pillars'): array
     {
         $values = [];
 
@@ -55,16 +59,16 @@ final class PillarCardAppearance
             $values[$key] = $options[0];
         }
 
-        return [...$values, ...self::TOGGLES];
+        return [...$values, ...self::TOGGLES, ...($sectionType === 'guidance' ? self::STEP_DEFAULTS : [])];
     }
 
     /** @return array<string, mixed> */
-    public static function normalize(array $input): array
+    public static function normalize(array $input, string $sectionType = 'pillars'): array
     {
-        $values = self::defaults();
+        $values = self::defaults($sectionType);
 
         foreach (self::RANGES as $key => [$min, $max, $default]) {
-            $values[$key] = max($min, min($max, (int) ($input[$key] ?? $default)));
+            $values[$key] = max($min, min($max, (int) ($input[$key] ?? $values[$key])));
         }
 
         foreach (self::COLORS as $key) {
@@ -73,7 +77,7 @@ final class PillarCardAppearance
         }
 
         foreach (self::CHOICES as $key => $options) {
-            $values[$key] = in_array($input[$key] ?? null, $options, true) ? $input[$key] : $options[0];
+            $values[$key] = in_array($input[$key] ?? null, $options, true) ? $input[$key] : $values[$key];
         }
 
         foreach (self::TOGGLES as $key => $default) {

@@ -4,6 +4,7 @@ import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import Button from "@/components/UI/Button/Button";
 import type { PillarCardAppearance, WebsiteSectionItem } from "@/components/Website/Website.types";
+import type { BuilderLinkOption } from "./BuilderLinkField";
 import BuilderHeroAppearance from "./BuilderHeroAppearance";
 import BuilderAboutEditor from "./BuilderAboutEditor";
 import BuilderHeroSlides from "./BuilderHeroSlides";
@@ -13,6 +14,8 @@ import { emptyItem, type BuilderEditTarget, type BuilderSection } from "./websit
 
 type Props = {
     pillarCardTemplate: PillarCardAppearance;
+    guidanceStepTemplate: PillarCardAppearance;
+    linkOptions: BuilderLinkOption[];
     editTarget: BuilderEditTarget | null;
     onEditTarget: (target: BuilderEditTarget) => void;
     section: BuilderSection;
@@ -28,6 +31,8 @@ type Props = {
 export default function BuilderSectionEditor({
     section,
     pillarCardTemplate,
+    guidanceStepTemplate,
+    linkOptions,
     editTarget,
     onEditTarget,
     index,
@@ -43,8 +48,7 @@ export default function BuilderSectionEditor({
         [hint ? `${id(name)}-hint` : null, error(name) ? `${id(name)}-error` : null]
             .filter(Boolean)
             .join(" ") || undefined;
-    const usesButton = section.type === "guidance";
-    const usesItems = ["guidance", "faq", "resources"].includes(section.type);
+    const usesItems = ["faq", "resources"].includes(section.type);
     const usesIcon = section.type === "resources";
     const usesLimit = ["team", "events", "publications"].includes(section.type);
 
@@ -69,6 +73,7 @@ export default function BuilderSectionEditor({
             <FormGrid>
                 <BuilderHeroAppearance
                     section={section}
+                    linkOptions={linkOptions}
                     index={index}
                     disabled={disabled}
                     errors={errors}
@@ -90,6 +95,7 @@ export default function BuilderSectionEditor({
     if (section.type === "about") {
         return (
             <BuilderAboutEditor
+                linkOptions={linkOptions}
                 section={section}
                 index={index}
                 disabled={disabled}
@@ -101,14 +107,15 @@ export default function BuilderSectionEditor({
         );
     }
 
-    if (["pillars", "audience", "features"].includes(section.type)) {
+    if (["pillars", "audience", "features", "guidance"].includes(section.type)) {
         return (
             <BuilderPillarsEditor
                 section={section}
                 index={index}
                 disabled={disabled}
                 errors={errors}
-                template={pillarCardTemplate}
+                template={section.type === "guidance" ? guidanceStepTemplate : pillarCardTemplate}
+                linkOptions={linkOptions}
                 editTarget={editTarget}
                 onEditTarget={onEditTarget}
                 onChange={onChange}
@@ -123,7 +130,6 @@ export default function BuilderSectionEditor({
                     id={id("title")}
                     label="Título"
                     error={error("title")}
-                    hint={`Para criar um link para esta seção, use #${section.id}.`}
                 >
                     <TextInput
                         id={id("title")}
@@ -131,7 +137,7 @@ export default function BuilderSectionEditor({
                         value={section.title}
                         maxLength={160}
                         invalid={!!error("title")}
-                        aria-describedby={describedBy("title", true)}
+                        aria-describedby={describedBy("title")}
                         onChange={(event) => onChange({ title: event.target.value })}
                     />
                 </FormField>
@@ -154,34 +160,6 @@ export default function BuilderSectionEditor({
                     />
                 </FormField>
             </FormGridWide>
-            {usesButton ? (
-                <>
-                    <FormField id={id("button_label")} label="Texto do botão" error={error("button_label")}>
-                        <TextInput
-                            id={id("button_label")}
-                            name={`sections[${index}][button_label]`}
-                            value={section.button_label}
-                            maxLength={60}
-                            placeholder="Ex.: Saiba mais"
-                            invalid={!!error("button_label")}
-                            aria-describedby={describedBy("button_label")}
-                            onChange={(event) => onChange({ button_label: event.target.value })}
-                        />
-                    </FormField>
-                    <FormField id={id("button_url")} label="Link do botão" error={error("button_url")}>
-                        <TextInput
-                            id={id("button_url")}
-                            name={`sections[${index}][button_url]`}
-                            value={section.button_url}
-                            maxLength={500}
-                            placeholder="/site/equipe"
-                            invalid={!!error("button_url")}
-                            aria-describedby={describedBy("button_url")}
-                            onChange={(event) => onChange({ button_url: event.target.value })}
-                        />
-                    </FormField>
-                </>
-            ) : null}
             {usesLimit ? (
                 <FormField
                     id={id("limit")}

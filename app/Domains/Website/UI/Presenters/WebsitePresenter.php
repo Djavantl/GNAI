@@ -12,6 +12,7 @@ use App\Domains\Inclusion\Domain\Models\PublicationSpeaker;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
 use App\Domains\Website\Domain\Support\AboutAppearance;
+use App\Domains\Website\Domain\Support\GuidanceAppearance;
 use App\Domains\Website\Domain\Support\PillarCardAppearance;
 use App\Domains\Website\Domain\Support\PillarsAppearance;
 use App\Domains\Website\Domain\Support\HeroAppearance;
@@ -61,6 +62,13 @@ final class WebsitePresenter
                 ...WebsiteDefaults::section((string) $section['id'], (string) $section['type']),
                 ...$section,
                 'image_url' => WebsiteMediaStorage::url($section['image_path'] ?? null),
+                ...($section['type'] === 'guidance' ? [
+                    'guidance' => GuidanceAppearance::normalize((array) ($section['guidance'] ?? [])),
+                    'items' => array_map(fn (array $item): array => [
+                        ...$item,
+                        'appearance' => PillarCardAppearance::normalize((array) ($item['appearance'] ?? []), 'guidance'),
+                    ], $section['items'] ?? []),
+                ] : []),
                 ...(in_array($section['type'], PillarsAppearance::SECTION_TYPES, true) ? [
                     'pillars' => PillarsAppearance::normalize((array) ($section['pillars'] ?? []), $section['type']),
                     'items' => array_map(fn (array $item): array => [

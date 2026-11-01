@@ -134,3 +134,14 @@ As seções `audience` (Para quem é este espaço) e `features` (Como o núcleo 
 As três seções permitem título e texto de apoio configuráveis, grade ou lista, espaçamentos, fundo e degradê. Cada card tem escolhas próprias de ícone, cores, tamanhos, alinhamentos, arredondamento, borda, sombra e hover. Inclusão, remoção, reordenação, pesquisa de ícones, expansão dos itens, foco por clique duplo e prévia reutilizam o fluxo já padronizado.
 
 Os valores iniciais mantêm fundo branco para público e apoio, três colunas para público e quatro para apoio, com adaptação responsiva. Personalizações existentes de princípios são preservadas. A mudança não modifica os textos nem a quantidade dos itens cadastrados e não exige migration. A conferência desta ampliação foi de código e diff, sem executar build, testes ou navegador.
+
+
+## Como buscar apoio
+
+A seção `guidance` guarda a aparência geral em `guidance` e reutiliza `items[*].appearance` para cada etapa. Os números acompanham automaticamente a ordem dos itens. O editor permite adicionar, remover e reordenar etapas, com configurações de formato, tamanho, cores, posição do número, textos, card, degradê e hover agrupadas junto do conteúdo.
+
+A exibição pode ser em grade, lista vertical, linha do tempo ou carrossel. A linha do tempo conecta os números e permite escolher a cor da linha. O carrossel reutiliza o componente compartilhado, com controles, indicadores, avanço automático opcional, intervalo e pausa. O movimento respeita a preferência de movimento reduzido.
+
+A ação aceita apresentação de link ou botão, com alinhamento, tamanho do texto, cores, arredondamento, sombra, seta e hover. O destino utiliza um seletor compartilhado também pela apresentação e pela seção sobre o núcleo: lista as seções visíveis pelos seus títulos e as páginas de equipe e publicações. Outro endereço permite informar links externos, telefone ou e-mail. Âncoras são montadas pelo editor; o operador não precisa digitá-las. Destinos antigos indisponíveis são preservados e identificados no seletor.
+
+As configurações antigas recebem os valores iniciais no presenter, preservando as etapas e o link cadastrados, sem migration. Os cards de princípios, público e formas de apoio compartilham a renderização com as etapas. A conferência desta frente foi de código e diff, sem executar build, testes ou navegador.

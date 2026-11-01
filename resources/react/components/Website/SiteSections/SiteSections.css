@@ -247,49 +247,7 @@
     }
 }
 
-/* Orientação de atendimento, documentos e perguntas frequentes. */
-.siteSections__steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-    gap: 28px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.siteSections__step {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.siteSections__stepNumber {
-    display: grid;
-    flex: 0 0 44px;
-    height: 44px;
-    place-items: center;
-    border: 1px solid var(--site-border);
-    border-radius: 50%;
-    background: #fff;
-    color: var(--site-primary);
-    font-size: 1.15rem;
-    font-weight: 700;
-}
-
-.siteSections__step h3 {
-    margin: 4px 0 8px;
-    color: var(--site-primary);
-    font-family: var(--site-font-heading);
-    font-size: 1.15rem;
-    font-weight: 700;
-}
-
-.siteSections__step p {
-    margin: 0;
-    color: var(--site-ink-soft);
-}
-
-.siteSections__guidanceLink,
+/* Documentos e perguntas frequentes. */
 .siteSections__resourceLink {
     margin-top: 24px;
     white-space: normal;
@@ -322,7 +280,6 @@
 
 .siteSections__feature h3,
 .siteSections__feature p,
-.siteSections__question,
-.siteSections__step {
+.siteSections__question {
     overflow-wrap: anywhere;
 }

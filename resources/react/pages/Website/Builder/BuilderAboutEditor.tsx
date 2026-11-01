@@ -15,8 +15,10 @@ import {
 } from "./BuilderAppearanceFields";
 import type { BuilderSection } from "./websiteBuilder";
 
+import BuilderLinkField, { type BuilderLinkOption } from "./BuilderLinkField";
 type Props = {
     section: BuilderSection;
+    linkOptions: BuilderLinkOption[];
     index: number;
     errors: Record<string, string | undefined>;
     disabled: boolean;
@@ -26,7 +28,7 @@ type Props = {
 };
 
 export default function BuilderAboutEditor({
-    section, index, errors, disabled, onChange, onImageError, onEditorError,
+    section, linkOptions, index, errors, disabled, onChange, onImageError, onEditorError,
 }: Props): React.JSX.Element | null {
     const appearance = section.about;
     if (!appearance) return null;
@@ -93,7 +95,7 @@ export default function BuilderAboutEditor({
         );
     }
 
-    function text(key: "title" | "subtitle" | "button_label" | "button_url" | "image_alt", label: string, maxLength: number): React.JSX.Element {
+    function text(key: "title" | "subtitle" | "button_label" | "image_alt", label: string, maxLength: number): React.JSX.Element {
         const props = {
             id: id(key),
             name: `sections[${index}][${key}]`,
@@ -216,7 +218,15 @@ export default function BuilderAboutEditor({
                     <FormSection title="Botão" variant="inline" iconClass="fa fa-hand-o-up">
                         <FormGrid>
                             {text("button_label", "Texto do botão", 60)}
-                            {text("button_url", "Link do botão", 500)}
+                            <BuilderLinkField
+                                id={`website-section-${section.id}-button_url`}
+                                name={`sections[${index}][button_url]`}
+                                value={section.button_url}
+                                options={linkOptions}
+                                error={errors[`sections.${index}.button_url`]}
+                                disabled={disabled}
+                                onChange={(button_url) => onChange({ button_url })}
+                            />
                             {select("button_align", "Posição do botão")}
                             {range("button_radius", "Arredondamento do botão (px)", 0, 60)}
                             {color("button_color", "Cor do texto do botão")}

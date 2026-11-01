@@ -21,7 +21,9 @@ type PreviewRule = {
 };
 
 function itemIndex(element: Element, itemSelector: string): number {
-    const item = element.closest(itemSelector);
+    const item = element.closest("[data-item-index]") ?? element.closest(itemSelector);
+
+    if (item?.hasAttribute("data-item-index")) return Number(item.getAttribute("data-item-index"));
 
     return item?.parentElement ? Array.from(item.parentElement.children).indexOf(item) : -1;
 }
@@ -49,6 +51,7 @@ function contactField(element: Element): string {
  * (ou a identidade, no topo e no rodapé) sem campo específico.
  */
 const previewRules: PreviewRule[] = [
+    { selector: ".siteGuidance .siteSections__featureIcon", field: itemField(".siteSections__feature", "appearance-icon_radius") },
     { selector: ".siteHero__title, .siteSections__title", field: () => "title" },
     { selector: ".siteHero__text, .siteSections__subtitle", field: () => "subtitle" },
     { selector: ".siteSections__button, .siteSections__guidanceLink, .siteHero__button", field: () => "button_label" },
@@ -65,8 +68,6 @@ const previewRules: PreviewRule[] = [
     { selector: ".siteSections__resourceLink", field: itemField(".siteSections__feature", "url") },
     { selector: ".siteSections__question summary", field: itemField(".siteSections__question", "title") },
     { selector: ".siteSections__question p", field: itemField(".siteSections__question", "text") },
-    { selector: ".siteSections__step h3", field: itemField(".siteSections__step", "title") },
-    { selector: ".siteSections__step p", field: itemField(".siteSections__step", "text") },
     { selector: ".siteSections__feature, .siteSections__feature h3", field: itemField(".siteSections__feature", "title") },
     { selector: ".siteSections__feature p", field: itemField(".siteSections__feature", "text") },
     { selector: ".siteSections__feature .siteSections__featureIcon", field: itemField(".siteSections__feature", "icon") },
@@ -231,19 +232,19 @@ export default function BuilderPreview({
     }, [selectedId, scale, device]);
 
     function clearPillarHover(): void {
-        hoveredPillar.current?.classList.remove("sitePillars__card--previewHover");
+        hoveredPillar.current?.classList.remove("siteItemCard__card--previewHover");
         hoveredPillar.current = null;
     }
 
     function handlePreviewPointerMove(event: React.PointerEvent<HTMLDivElement>): void {
-        const cards = frame.current?.querySelectorAll<HTMLElement>(".sitePillars__card--hover");
+        const cards = frame.current?.querySelectorAll<HTMLElement>(".siteItemCard__card--hover, .siteGuidance__action--hover");
         const card = cards
             ? Array.from(cards).find((item) => contains(item.getBoundingClientRect(), event.clientX, event.clientY))
             : undefined;
         if (card === hoveredPillar.current) return;
         clearPillarHover();
         if (card) {
-            card.classList.add("sitePillars__card--previewHover");
+            card.classList.add("siteItemCard__card--previewHover");
             hoveredPillar.current = card;
         }
     }

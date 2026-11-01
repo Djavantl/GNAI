@@ -1,0 +1,90 @@
+.siteGuidance {
+    --item-card-default: transparent;
+    --item-marker-default: #ffffff;
+    --item-title-default: var(--site-primary);
+    padding: var(--guidance-padding) 0;
+}
+.siteGuidance .siteGuidance__title { font-size: clamp(20px, 3.2cqi, var(--guidance-title-size)); overflow-wrap: anywhere; }
+.siteGuidance .siteGuidance__title::after { background: var(--guidance-divider); }
+.siteGuidance__title[data-title-align="center"]::after { margin-inline: auto; }
+.siteGuidance__title[data-title-align="right"]::after { margin-left: auto; }
+.siteGuidance--noDivider .siteGuidance__title::after { display: none; }
+.siteGuidance .siteGuidance__subtitle { max-width: none; font-size: clamp(14px, 2.5cqi, var(--guidance-subtitle-size)); overflow-wrap: anywhere; }
+.siteGuidance__steps {
+    display: grid;
+    grid-template-columns: repeat(var(--guidance-columns), minmax(0, 1fr));
+    align-items: stretch;
+    gap: var(--guidance-gap);
+    margin: 36px 0 0;
+    padding: 0;
+    list-style: none;
+}
+.siteGuidance--list .siteGuidance__steps,
+.siteGuidance--timeline .siteGuidance__steps { grid-template-columns: minmax(0, 1fr); }
+.siteGuidance .siteItemCard__icon { font-weight: 700; }
+.siteGuidance__timelineRow {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--guidance-marker-column) minmax(0, 1fr);
+    gap: var(--pillar-icon-gap);
+    min-width: 0;
+}
+.siteGuidance__timelineRow > .siteItemCard__icon { justify-self: center; position: relative; z-index: 1; }
+.siteGuidance__timelineRow:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--guidance-marker-column) / 2 - 1px);
+    top: var(--pillar-icon-height);
+    bottom: calc(-1 * var(--guidance-gap));
+    width: 2px;
+    background: var(--guidance-timeline);
+}
+.siteGuidance__actionRow { margin-top: 28px; }
+.siteGuidance a.siteGuidance__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 100%;
+    padding: 8px 0;
+    color: var(--guidance-button-color);
+    background: var(--guidance-button-background);
+    border-radius: var(--guidance-button-radius);
+    box-shadow: var(--guidance-button-shadow);
+    font-size: var(--guidance-button-size);
+    font-weight: 600;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color .2s, background .2s, box-shadow .2s, transform .2s;
+}
+.siteGuidance a.siteGuidance__action--button { padding: 12px 24px; }
+.siteGuidance a.siteGuidance__action--hover:is(:hover, :focus-visible, .siteItemCard__card--previewHover) {
+    color: var(--guidance-hover-color);
+    background: var(--guidance-hover-background);
+    box-shadow: var(--guidance-hover-shadow);
+    transform: translateY(var(--guidance-hover-lift));
+}
+.siteGuidance a.siteGuidance__action--link.siteGuidance__action--hover:is(:hover, :focus-visible, .siteItemCard__card--previewHover) { text-decoration: underline; }
+.siteGuidance__action:focus-visible { outline: 2px solid var(--site-primary); outline-offset: 4px; }
+.siteGuidance__carousel { margin-top: 36px; }
+.siteGuidance__carousel .bootstrapCarousel__inner { padding: 8px 48px 16px; }
+.siteGuidance__carousel .bootstrapCarousel__item { width: 100%; }
+.siteGuidance__carousel .bootstrapCarousel__item--entering { width: calc(100% - 96px); top: 8px; }
+.siteGuidance__carousel .siteItemCard__card { margin-inline: auto; }
+.siteGuidance__carousel .bootstrapCarousel__control { width: 36px; height: 40px; top: calc(50% - 40px); bottom: auto; color: var(--site-primary); background: var(--site-primary-soft); border-radius: 6px; opacity: 1; text-shadow: none; }
+.siteGuidance__carousel .bootstrapCarousel__indicators { position: relative; left: auto; bottom: auto; width: auto; margin: 12px 0; text-indent: 0; }
+.siteGuidance__carousel .bootstrapCarousel__indicators li { border-color: var(--site-primary); }
+.siteGuidance__carousel .bootstrapCarousel__indicators li.active { background: var(--site-primary); }
+.siteGuidance__carousel .bootstrapCarousel__indicators button:focus-visible { outline-color: var(--site-primary); }
+.siteGuidance__carousel .bootstrapCarousel__pause { position: relative; bottom: auto; right: auto; display: block; margin: 12px auto 0; color: var(--site-primary); background: transparent; }
+@container site (max-width: 960px) {
+    .siteGuidance--grid:not([data-columns="1"]) .siteGuidance__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container site (max-width: 600px) {
+    .siteGuidance { padding: min(var(--guidance-padding), 48px) 0; }
+    .siteGuidance--grid:not([data-columns="1"]) .siteGuidance__steps { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .siteGuidance a.siteGuidance__action { transition: none; }
+    .siteGuidance a.siteGuidance__action--hover:is(:hover, :focus-visible, .siteItemCard__card--previewHover) { transform: none; }
+}

@@ -165,6 +165,41 @@ export interface PillarCardAppearance {
     gradient_enabled: boolean;
 }
 
+export interface GuidanceAppearance {
+    title_size: number;
+    subtitle_size: number;
+    padding_vertical: number;
+    gap: number;
+    columns: number;
+    interval: number;
+    button_size: number;
+    button_radius: number;
+    button_shadow: number;
+    hover_lift: number;
+    hover_shadow: number;
+    title_color: string;
+    subtitle_color: string;
+    divider_color: string;
+    background_color: string;
+    gradient_end_color: string;
+    timeline_color: string;
+    button_color: string;
+    button_background: string;
+    hover_color: string;
+    hover_background: string;
+    title_align: "left" | "center" | "right";
+    subtitle_align: "left" | "center" | "right";
+    layout: "grid" | "list" | "timeline" | "carousel";
+    button_align: "left" | "center" | "right";
+    action_style: "link" | "button";
+    gradient_direction: "to bottom" | "to top" | "to right" | "to left";
+    title_divider: boolean;
+    gradient_enabled: boolean;
+    autoplay: boolean;
+    hover_enabled: boolean;
+    button_icon: boolean;
+}
+
 export interface HeroSlide {
     id: string;
     image_url: string | null;
@@ -189,6 +224,7 @@ export interface WebsiteSection {
     items: WebsiteSectionItem[];
     hero?: HeroAppearance;
     about?: AboutAppearance;
+    guidance?: GuidanceAppearance;
     /** Aparência compartilhada por princípios, público e formas de apoio. */
     pillars?: PillarsAppearance;
     slides?: HeroSlide[];
