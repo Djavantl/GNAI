@@ -61,8 +61,8 @@ final class WebsitePresenter
                 ...WebsiteDefaults::section((string) $section['id'], (string) $section['type']),
                 ...$section,
                 'image_url' => WebsiteMediaStorage::url($section['image_path'] ?? null),
-                ...($section['type'] === 'pillars' ? [
-                    'pillars' => PillarsAppearance::normalize((array) ($section['pillars'] ?? [])),
+                ...(in_array($section['type'], PillarsAppearance::SECTION_TYPES, true) ? [
+                    'pillars' => PillarsAppearance::normalize((array) ($section['pillars'] ?? []), $section['type']),
                     'items' => array_map(fn (array $item): array => [
                         ...$item,
                         'appearance' => PillarCardAppearance::normalize((array) ($item['appearance'] ?? [])),

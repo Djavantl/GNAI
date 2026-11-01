@@ -189,6 +189,7 @@ export interface WebsiteSection {
     items: WebsiteSectionItem[];
     hero?: HeroAppearance;
     about?: AboutAppearance;
+    /** Aparência compartilhada por princípios, público e formas de apoio. */
     pillars?: PillarsAppearance;
     slides?: HeroSlide[];
 }

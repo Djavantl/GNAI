@@ -126,3 +126,11 @@ Os itens do editor podem ser expandidos individualmente. Seus controles são mon
 O catálogo oferece **2.742 ícones** presentes no CSS e nas fontes locais: Font Awesome (668), Material Design (744), Ionicons (593), Themify (350), Simple Line (181) e Weather (206). A seleção tem filtro por biblioteca e pesquisa pelo nome, mantendo o desenho dos ícones na grade. As opções são filtradas pelo CSS ativo, sem fontes externas, e o seletor também é reutilizado pelos outros itens do construtor.
 
 A revisão incluiu código, diff, uma conferência visual no Brave existente e leitura das props públicas. Os quatro itens salvos permaneceram preservados. Não houve envio de configuração durante a conferência, nem execução de build ou testes automatizados.
+
+## Público e formas de apoio
+
+As seções `audience` (Para quem é este espaço) e `features` (Como o núcleo pode apoiar) utilizam os mesmos controles, validação e apresentação de cards de `pillars`. O objeto `pillars` é mantido como chave do contrato compartilhado, e cada item conserva sua aparência em `items[*].appearance`.
+
+As três seções permitem título e texto de apoio configuráveis, grade ou lista, espaçamentos, fundo e degradê. Cada card tem escolhas próprias de ícone, cores, tamanhos, alinhamentos, arredondamento, borda, sombra e hover. Inclusão, remoção, reordenação, pesquisa de ícones, expansão dos itens, foco por clique duplo e prévia reutilizam o fluxo já padronizado.
+
+Os valores iniciais mantêm fundo branco para público e apoio, três colunas para público e quatro para apoio, com adaptação responsiva. Personalizações existentes de princípios são preservadas. A mudança não modifica os textos nem a quantidade dos itens cadastrados e não exige migration. A conferência desta ampliação foi de código e diff, sem executar build, testes ou navegador.

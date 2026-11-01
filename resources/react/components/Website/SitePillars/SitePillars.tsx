@@ -68,7 +68,10 @@ function PillarCard({ item, index }: { item: WebsiteSectionItem; index: number }
 export default function SitePillars({ section }: { section: WebsiteSection }): React.JSX.Element | null {
     const appearance = section.pillars;
     if (!appearance) return null;
-    const background = color(appearance.background_color, "var(--site-surface)");
+    const background = color(
+        appearance.background_color,
+        section.type === "pillars" ? "var(--site-surface)" : "#ffffff",
+    );
     const style = {
         "--pillars-padding": `${appearance.padding_vertical}px`,
         "--pillars-gap": `${appearance.gap}px`,

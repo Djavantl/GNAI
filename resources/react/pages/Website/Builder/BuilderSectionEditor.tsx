@@ -44,8 +44,8 @@ export default function BuilderSectionEditor({
             .filter(Boolean)
             .join(" ") || undefined;
     const usesButton = section.type === "guidance";
-    const usesItems = ["pillars", "audience", "features", "guidance", "faq", "resources"].includes(section.type);
-    const usesIcon = ["pillars", "audience", "features", "resources"].includes(section.type);
+    const usesItems = ["guidance", "faq", "resources"].includes(section.type);
+    const usesIcon = section.type === "resources";
     const usesLimit = ["team", "events", "publications"].includes(section.type);
 
     function updateItem(itemIndex: number, patch: Partial<WebsiteSectionItem>): void {
@@ -101,7 +101,7 @@ export default function BuilderSectionEditor({
         );
     }
 
-    if (section.type === "pillars") {
+    if (["pillars", "audience", "features"].includes(section.type)) {
         return (
             <BuilderPillarsEditor
                 section={section}

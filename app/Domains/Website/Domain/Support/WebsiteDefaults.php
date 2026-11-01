@@ -152,8 +152,8 @@ final class WebsiteDefaults
             ...($type === 'about' ? ['about' => AboutAppearance::defaults()] : []),
             ...($type === 'hero' ? ['hero' => HeroAppearance::defaults(), 'slides' => []] : []),
             ...$values,
-            ...($type === 'pillars' ? [
-                'pillars' => PillarsAppearance::normalize((array) ($values['pillars'] ?? [])),
+            ...(in_array($type, PillarsAppearance::SECTION_TYPES, true) ? [
+                'pillars' => PillarsAppearance::normalize((array) ($values['pillars'] ?? []), $type),
                 'items' => array_map(fn (array $item): array => [
                     ...$item,
                     'appearance' => PillarCardAppearance::normalize((array) ($item['appearance'] ?? [])),

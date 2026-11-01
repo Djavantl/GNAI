@@ -176,7 +176,7 @@ export default function BuilderPillarsEditor({
                             onClick={() => {
                                 onChange({
                                     items: [...section.items, {
-                                        ...emptyItem("pillars"),
+                                        ...emptyItem(section.type),
                                         editor_key: `item-${Date.now().toString(36)}`,
                                         appearance: { ...template },
                                     }],

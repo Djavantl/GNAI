@@ -154,7 +154,7 @@ final class WebsiteSetting extends Model implements Auditable
                     'url' => $type === WebsiteSectionType::RESOURCES ? trim((string) ($item['url'] ?? '')) : '',
                     'title' => trim((string) ($item['title'] ?? '')),
                     'text' => trim((string) ($item['text'] ?? '')),
-                    ...($type === WebsiteSectionType::PILLARS ? [
+                    ...(in_array($type->value, PillarsAppearance::SECTION_TYPES, true) ? [
                         'appearance' => PillarCardAppearance::normalize((array) ($item['appearance'] ?? [])),
                     ] : []),
                 ];
@@ -178,7 +178,7 @@ final class WebsiteSetting extends Model implements Auditable
             'image_alt' => trim((string) ($input['image_alt'] ?? '')),
             'limit' => max(1, min(12, (int) ($input['limit'] ?? 3))),
             'items' => $items,
-            ...($type === WebsiteSectionType::PILLARS ? ['pillars' => PillarsAppearance::normalize((array) ($input['pillars'] ?? []))] : []),
+            ...(in_array($type->value, PillarsAppearance::SECTION_TYPES, true) ? ['pillars' => PillarsAppearance::normalize((array) ($input['pillars'] ?? []), $type->value)] : []),
             ...($type === WebsiteSectionType::ABOUT ? ['about' => AboutAppearance::normalize((array) ($input['about'] ?? []))] : []),
             ...($type === WebsiteSectionType::HERO ? ['hero' => HeroAppearance::normalize((array) ($input['hero'] ?? [])), 'slides' => []] : []),
         ]);
