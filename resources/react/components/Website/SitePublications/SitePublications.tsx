@@ -8,11 +8,14 @@ import "../SiteGuidance/SiteGuidance.css";
 import "./SitePublications.css";
 
 export default function SitePublications({ section, content }: { section: WebsiteSection; content: WebsiteContent }): React.JSX.Element | null {
-    const appearance = section.publications;
+    const events = section.type === "events";
+    const appearance = events ? section.events : section.publications;
     if (!appearance) return null;
 
-    const publications = content.publications.slice(0, section.limit);
-    const background = color(appearance.background_color, "var(--site-surface)");
+    const publications = (events ? content.events : content.publications).slice(0, section.limit);
+    const actionLabel = section.button_label || (events ? "Ver todos os eventos" : "Ver todas as publicações");
+    const actionUrl = section.button_url || (events ? `${websiteRoutes.publications}?type=event` : websiteRoutes.publications);
+    const background = color(appearance.background_color, events ? "#ffffff" : "var(--site-surface)");
     const buttonBackground = color(appearance.button_background, appearance.action_style === "button" ? "var(--site-primary)" : "transparent");
     const buttonColor = color(appearance.button_color, appearance.action_style === "button" ? "#ffffff" : "var(--site-primary)");
     const shadow = (value: number) => value ? `0 ${value / 3}px ${value}px rgba(0,0,0,.15)` : "none";
@@ -32,6 +35,10 @@ export default function SitePublications({ section, content }: { section: Websit
         "--guidance-hover-background": color(appearance.hover_background, buttonBackground),
         "--guidance-hover-shadow": shadow(appearance.hover_shadow),
         "--guidance-hover-lift": `-${appearance.hover_lift}px`,
+        "--event-date-width": `${appearance.date_badge_width}px`,
+        "--event-date-radius": `${appearance.date_badge_radius}px`,
+        "--event-date-color": color(appearance.date_badge_color, "#ffffff"),
+        "--event-date-background": color(appearance.date_badge_background, "var(--site-primary)"),
         "--publication-badge-radius": `${appearance.badge_radius}px`,
         "--publication-card-radius": `${appearance.card_radius}px`,
         "--publication-card-padding": `${appearance.card_padding}px`,
@@ -52,6 +59,7 @@ export default function SitePublications({ section, content }: { section: Websit
             className={`sitePublications siteGuidance siteGuidance--${appearance.layout}${appearance.title_divider ? "" : " siteGuidance--noDivider"}`}
             style={style}
             data-columns={appearance.columns}
+            data-feed-type={section.type}
         >
             <div className="siteLayout__container">
                 {section.title ? (
@@ -72,35 +80,44 @@ export default function SitePublications({ section, content }: { section: Websit
                     </p>
                 ) : null}
                 {!publications.length ? (
-                    <p className="siteSections__empty">Nenhuma publicação disponível no momento.</p>
+                    <p className="siteSections__empty">{events ? "Nenhum evento programado no momento." : "Nenhuma publicação disponível no momento."}</p>
                 ) : appearance.layout === "carousel" ? (
                     <div className="siteGuidance__carousel">
                         <BootstrapCarousel
-                            ariaLabel={section.title || "Últimas publicações"}
-                            itemLabel="publicação"
+                            ariaLabel={section.title || (events ? "Atividades e encontros" : "Últimas publicações")}
+                            itemLabel={events ? "evento" : "publicação"}
                             controls
                             showPause
                             autoplay={appearance.autoplay}
                             interval={appearance.interval * 1000}
                             slides={publications.map((publication) => ({ src: `publication-${publication.id}`, alt: publication.title }))}
                             renderSlide={(_, index) => (
-                                <PublicationCard publication={publications[index]} appearance={appearance} />
+                                <PublicationCard
+                                    publication={publications[index]}
+                                    appearance={appearance}
+                                    variant={events ? "event" : "default"}
+                                />
                             )}
                         />
                     </div>
                 ) : (
                     <div className="sitePublications__grid">
                         {publications.map((publication) => (
-                            <PublicationCard key={publication.id} publication={publication} appearance={appearance} />
+                            <PublicationCard
+                                key={publication.id}
+                                publication={publication}
+                                appearance={appearance}
+                                variant={events ? "event" : "default"}
+                            />
                         ))}
                     </div>
                 )}
                 <div className="siteGuidance__actionRow" style={{ textAlign: appearance.button_align }}>
                     <SiteLink
-                        href={section.button_url || websiteRoutes.publications}
+                        href={actionUrl}
                         className={`siteSections__guidanceLink siteGuidance__action siteGuidance__action--${appearance.action_style}${appearance.hover_enabled ? " siteGuidance__action--hover" : ""}`}
                     >
-                        {section.button_label || "Ver todas as publicações"}
+                        {actionLabel}
                         {appearance.button_icon ? <i className="fa fa-arrow-right" aria-hidden="true" /> : null}
                     </SiteLink>
                 </div>

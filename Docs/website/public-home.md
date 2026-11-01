@@ -158,3 +158,14 @@ A ação mantém o destino inicial da listagem de publicações e permite escolh
 Conferência de código e diff, sem build, typecheck, testes ou navegador.
 
 As badges de tipo, marcadores e situação das publicações têm um controle compartilhado de arredondamento entre 0 e 100 px, mantendo o formato de pílula por padrão. O ajuste fica no grupo Publicações e também pode ser localizado por clique duplo na badge da prévia.
+
+
+## Atividades e encontros
+
+A seção `events` utiliza o mesmo editor e renderer de publicações, com aparência independente guardada em `events` e normalizada por `PublicationsAppearance`. A integração cobre validação, normalização no salvamento, modelos de novas seções e preenchimento das configurações antigas pelo presenter, sem migration.
+
+Mantém os eventos reais com programação ainda não encerrada, ordenados por início, limite de 1 a 12 e ocultação pública quando vazia. Os cards conservam o destaque de dia/mês, período, horário, local, situação por texto e ícone e acesso aos detalhes pelo título. Os controles de capa e resumo ficam restritos à seção de publicações, pois o card de evento apresenta informações da programação.
+
+Título, texto de apoio, fundo, degradê, espaçamentos, colunas, grade/lista/carrossel, ação e hover seguem o padrão anterior. Cada seção configura cores, tipografia, padding, borda e arredondamento dos seus cards. Eventos também permitem escolher a largura, arredondamento, fundo e cor do destaque de data, além de ocultar data ou situação e ajustar o arredondamento das badges. A ação inicial leva à listagem filtrada por eventos e aceita outro destino no seletor compartilhado.
+
+Prévia e site público utilizam o mesmo componente; o clique duplo nas informações, título, data e badge abre seus ajustes. A conferência foi de código e diff. Implementado no código; comportamento em runtime deve ser conferido na homologação manual. Não foram executados build, typecheck, testes ou navegador.

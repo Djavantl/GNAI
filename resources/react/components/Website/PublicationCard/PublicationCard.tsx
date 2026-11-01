@@ -43,21 +43,25 @@ export default function PublicationCard({
     if (variant === "event" && schedule) {
         return (
             <article className="publicationCard publicationCard--event">
-                <div className="publicationCard__dateBadge" aria-hidden="true">
-                    <span className="publicationCard__day">{schedule.day}</span>
-                    <span className="publicationCard__month">{schedule.month}</span>
-                </div>
+                {appearance?.show_date !== false ? (
+                    <div className="publicationCard__dateBadge" aria-hidden="true">
+                        <span className="publicationCard__day">{schedule.day}</span>
+                        <span className="publicationCard__month">{schedule.month}</span>
+                    </div>
+                ) : null}
                 <div className="publicationCard__body">
-                    <ScheduleStatus schedule={schedule} />
+                    {appearance?.show_tags !== false ? <ScheduleStatus schedule={schedule} /> : null}
                     <Heading className="publicationCard__title">
                         <SiteLink href={publication.url}>{publication.title}</SiteLink>
                     </Heading>
                     <ul className="publicationCard__meta">
-                        <li>
-                            <i className="fa fa-calendar" aria-hidden="true" />
-                            <span className="publicationCard__srOnly">Data: </span>
-                            {schedule.date_label}
-                        </li>
+                        {appearance?.show_date !== false ? (
+                            <li>
+                                <i className="fa fa-calendar" aria-hidden="true" />
+                                <span className="publicationCard__srOnly">Data: </span>
+                                {schedule.date_label}
+                            </li>
+                        ) : null}
                         {schedule.time_label ? (
                             <li>
                                 <i className="fa fa-clock-o" aria-hidden="true" />

@@ -202,6 +202,10 @@ export interface GuidanceAppearance {
 
 export interface PublicationsAppearance extends GuidanceAppearance {
     badge_radius: number;
+    date_badge_width: number;
+    date_badge_radius: number;
+    date_badge_color: string;
+    date_badge_background: string;
     card_radius: number;
     card_padding: number;
     card_title_size: number;
@@ -243,6 +247,7 @@ export interface WebsiteSection {
     about?: AboutAppearance;
     guidance?: GuidanceAppearance;
     publications?: PublicationsAppearance;
+    events?: PublicationsAppearance;
     /** Aparência compartilhada por princípios, público e formas de apoio. */
     pillars?: PillarsAppearance;
     slides?: HeroSlide[];

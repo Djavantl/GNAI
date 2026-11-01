@@ -107,7 +107,7 @@ export default function BuilderSectionEditor({
         );
     }
 
-    if (["pillars", "audience", "features", "guidance", "publications"].includes(section.type)) {
+    if (["pillars", "audience", "features", "guidance", "publications", "events"].includes(section.type)) {
         return (
             <BuilderPillarsEditor
                 section={section}

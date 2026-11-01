@@ -27,17 +27,22 @@ export default function BuilderPillarsEditor({
     onEditTarget: (target: BuilderEditTarget) => void;
     onChange: (patch: Partial<BuilderSection>) => void;
 }): React.JSX.Element | null {
-    const publications = section.type === "publications";
+    const events = section.type === "events";
+    const publications = section.type === "publications" || events;
     const numbered = section.type === "guidance";
-    const appearance = publications ? section.publications : numbered ? section.guidance : section.pillars;
+    const appearance = events ? section.events : publications ? section.publications : numbered ? section.guidance : section.pillars;
     if (!appearance) return null;
 
     const id = (key: string) => `website-section-${section.id}-${key}`;
     const error = (key: string) => errors[`sections.${index}.${key}`];
-    const scope = publications ? "publications" : numbered ? "guidance" : "pillars";
+    const scope = events ? "events" : publications ? "publications" : numbered ? "guidance" : "pillars";
     const values: Partial<PublicationsAppearance> = appearance;
 
     function patch(changes: Partial<PublicationsAppearance>): void {
+        if (events) {
+            onChange({ events: { ...section.events!, ...changes } });
+            return;
+        }
         if (publications) {
             onChange({ publications: { ...section.publications!, ...changes } });
             return;
@@ -167,9 +172,18 @@ export default function BuilderPillarsEditor({
                         </FormGrid>
                     </FormSection>
                     {publications ? (
-                        <FormSection title="Publicações" variant="inline" iconClass="fa fa-newspaper-o">
+                        <FormSection
+                            title={events ? "Eventos" : "Publicações"}
+                            variant="inline"
+                            iconClass={events ? "fa fa-calendar" : "fa fa-newspaper-o"}
+                        >
                             <FormGrid>
-                                <FormField id={id("limit")} label="Quantidade exibida" error={error("limit")} hint="Entre 1 e 12 publicações.">
+                                <FormField
+                                    id={id("limit")}
+                                    label="Quantidade exibida"
+                                    error={error("limit")}
+                                    hint={events ? "Entre 1 e 12 eventos." : "Entre 1 e 12 publicações."}
+                                >
                                     <TextInput
                                         id={id("limit")}
                                         type="number"
@@ -184,31 +198,41 @@ export default function BuilderPillarsEditor({
                                 </FormField>
                                 <FormGridWide>
                                     <p className="websiteBuilder__note">
-                                        Mostra as publicações mais recentes, com os destaques primeiro. O conteúdo é gerenciado no cadastro de publicações.
+                                        {events
+                                            ? "Mostra publicações publicadas com programação que ainda não terminou, em ordem de início. O conteúdo é gerenciado no cadastro de publicações."
+                                            : "Mostra as publicações mais recentes, com os destaques primeiro. O conteúdo é gerenciado no cadastro de publicações."}{" "}
                                         Sem registros disponíveis, a seção fica oculta no site público e permanece editável na prévia.
                                     </p>
                                 </FormGridWide>
                                 {([
                                     ["show_image", "Exibir capa"], ["show_summary", "Exibir resumo"],
                                     ["show_date", "Exibir data"], ["show_tags", "Exibir tipo, marcadores e situação"],
-                                ] as const).map(([key, label]) => (
+                                ] as const).filter(([key]) => !events || !["show_image", "show_summary"].includes(key)).map(([key, label]) => (
                                     <FormGridWide key={key}>
                                         <ToggleControl
-                                            id={id(`publications-${key}`)}
-                                            label={label}
+                                            id={id(`${scope}-${key}`)}
+                                            label={events && key === "show_tags" ? "Exibir situação" : label}
                                             size="small"
-                                            checked={section.publications![key]}
+                                            checked={(events ? section.events! : section.publications!)[key]}
                                             disabled={disabled}
                                             onChange={(checked) => patch({ [key]: checked })}
                                         />
                                     </FormGridWide>
                                 ))}
                                 {range("badge_radius", "Arredondamento das badges (px)", 0, 100)}
-                                {range("image_height", "Altura da capa (px)", 120, 480)}
+                                {!events ? range("image_height", "Altura da capa (px)", 120, 480) : null}
                                 {range("card_title_size", "Tamanho do título do card (px)", 16, 32)}
-                                {range("card_text_size", "Tamanho do resumo (px)", 14, 24)}
+                                {range("card_text_size", events ? "Tamanho das informações (px)" : "Tamanho do resumo (px)", 14, 24)}
                                 {color("card_title_color", "Cor do título do card")}
-                                {color("card_text_color", "Cor do resumo")}
+                                {color("card_text_color", events ? "Cor das informações" : "Cor do resumo")}
+                                {events ? (
+                                    <>
+                                        {range("date_badge_width", "Largura do destaque da data (px)", 48, 140)}
+                                        {range("date_badge_radius", "Arredondamento do destaque da data (px)", 0, 60)}
+                                        {color("date_badge_color", "Cor do texto da data")}
+                                        {color("date_badge_background", "Fundo do destaque da data")}
+                                    </>
+                                ) : null}
                                 {color("card_background", "Fundo do card")}
                                 {color("card_border_color", "Cor da borda do card")}
                                 {range("card_radius", "Arredondamento do card (px)", 0, 60)}

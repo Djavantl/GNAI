@@ -78,6 +78,7 @@ final class WebsitePresenter
                     ], $section['items'] ?? []),
                 ] : []),
                 ...($section['type'] === 'publications' ? ['publications' => PublicationsAppearance::normalize((array) ($section['publications'] ?? []))] : []),
+                ...($section['type'] === 'events' ? ['events' => PublicationsAppearance::normalize((array) ($section['events'] ?? []))] : []),
                 ...($section['type'] === 'about' ? ['about' => AboutAppearance::normalize((array) ($section['about'] ?? []))] : []),
                 ...($section['type'] === 'hero' ? [
                     'hero' => HeroAppearance::normalize((array) ($section['hero'] ?? [])),

@@ -62,6 +62,7 @@ final class UpdateWebsiteData extends Data
             'sections.*.pillars' => PillarsAppearance::class,
             'sections.*.guidance' => GuidanceAppearance::class,
             'sections.*.publications' => PublicationsAppearance::class,
+            'sections.*.events' => PublicationsAppearance::class,
             'sections.*.items.*.appearance' => PillarCardAppearance::class,
         ] as $scope => $appearanceClass) {
             $appearanceRules[$scope] = ['sometimes', 'array'];
@@ -120,6 +121,11 @@ final class UpdateWebsiteData extends Data
     public static function messages(): array
     {
         return [
+            'sections.*.events.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
+            'sections.*.events.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
+            'sections.*.events.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',
+            'sections.*.events.*.integer' => 'Informe um valor inteiro para este ajuste.',
+            'sections.*.events.*.in' => 'Selecione uma opção válida.',
             'sections.*.publications.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
             'sections.*.publications.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
             'sections.*.publications.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',

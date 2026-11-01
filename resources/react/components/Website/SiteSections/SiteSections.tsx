@@ -2,7 +2,6 @@ import { isWebsiteSectionVisible } from "../WebsiteSections";
 import SitePublications from "../SitePublications/SitePublications";
 import SiteGuidance from "../SiteGuidance/SiteGuidance";
 import { joinClassNames } from "@/utils/joinClassNames";
-import PublicationCard from "../PublicationCard/PublicationCard";
 import SiteHero from "../SiteHero/SiteHero";
 import SiteAbout from "../SiteAbout/SiteAbout";
 import SitePillars from "../SitePillars/SitePillars";
@@ -112,31 +111,6 @@ function TeamSection({ section, content }: SectionProps): React.JSX.Element {
     );
 }
 
-function EventsSection({ section, content }: SectionProps): React.JSX.Element {
-    const events = content.events.slice(0, section.limit);
-
-    return (
-        <section className="siteSections__section">
-            <div className="siteLayout__container">
-                <SectionHeading
-                    section={section}
-                    align="start"
-                    action={{ label: "Ver todos os eventos", href: `${websiteRoutes.publications}?type=event` }}
-                />
-                {events.length ? (
-                    <div className="siteSections__grid siteSections__grid--events">
-                        {events.map((event) => (
-                            <PublicationCard key={event.id} publication={event} variant="event" />
-                        ))}
-                    </div>
-                ) : (
-                    <p className="siteSections__empty">Nenhum evento programado no momento.</p>
-                )}
-            </div>
-        </section>
-    );
-}
-
 function FaqSection({ section }: SectionProps): React.JSX.Element {
     const preview = useSitePreview();
 
@@ -207,7 +181,7 @@ const renderers = {
     resources: CardsSection,
     features: SitePillars,
     team: TeamSection,
-    events: EventsSection,
+    events: SitePublications,
     publications: SitePublications,
     contact: ContactSection,
 } satisfies Record<WebsiteSection["type"], (props: SectionProps) => React.JSX.Element>;

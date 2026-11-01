@@ -15,6 +15,8 @@ final class PublicationsAppearance
         'columns' => [1, 4, 3],
         'card_radius' => [0, 60, 16],
         'badge_radius' => [0, 100, 100],
+        'date_badge_width' => [48, 140, 88],
+        'date_badge_radius' => [0, 60, 0],
         'card_padding' => [8, 48, 20],
         'card_title_size' => [16, 32, 18],
         'card_text_size' => [14, 24, 15],
@@ -28,6 +30,7 @@ final class PublicationsAppearance
     ];
     public const COLORS = [
         'title_color', 'subtitle_color', 'divider_color', 'background_color',
+        'date_badge_color', 'date_badge_background',
         'gradient_end_color', 'timeline_color', 'button_color', 'button_background',
         'hover_color', 'hover_background', 'card_background', 'card_title_color', 'card_text_color', 'card_border_color',
     ];

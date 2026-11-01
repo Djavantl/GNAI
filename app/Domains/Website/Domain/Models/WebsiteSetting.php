@@ -183,6 +183,7 @@ final class WebsiteSetting extends Model implements Auditable
             ...(in_array($type->value, PillarsAppearance::SECTION_TYPES, true) ? ['pillars' => PillarsAppearance::normalize((array) ($input['pillars'] ?? []), $type->value)] : []),
             ...($type === WebsiteSectionType::GUIDANCE ? ['guidance' => GuidanceAppearance::normalize((array) ($input['guidance'] ?? []))] : []),
             ...($type->value === 'publications' ? ['publications' => PublicationsAppearance::normalize((array) ($input['publications'] ?? []))] : []),
+            ...($type->value === 'events' ? ['events' => PublicationsAppearance::normalize((array) ($input['events'] ?? []))] : []),
             ...($type === WebsiteSectionType::ABOUT ? ['about' => AboutAppearance::normalize((array) ($input['about'] ?? []))] : []),
             ...($type === WebsiteSectionType::HERO ? ['hero' => HeroAppearance::normalize((array) ($input['hero'] ?? [])), 'slides' => []] : []),
         ]);

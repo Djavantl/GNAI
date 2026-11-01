@@ -33,3 +33,16 @@
 .sitePublications .publicationCard__status {
     border-radius: var(--publication-badge-radius);
 }
+
+.sitePublications .publicationCard__dateBadge {
+    flex-basis: var(--event-date-width);
+    border-radius: var(--event-date-radius);
+    color: var(--event-date-color);
+    background: var(--event-date-background);
+}
+.sitePublications .publicationCard__meta {
+    color: var(--publication-card-text-color);
+    font-size: var(--publication-card-text-size);
+    overflow-wrap: anywhere;
+}
+.sitePublications .publicationCard--event .publicationCard__body { min-width: 0; }
