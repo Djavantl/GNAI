@@ -4,6 +4,9 @@ body:has(.websiteBuilderPage) {
 }
 
 .app-content-placeholder:has(.websiteBuilderPage) {
+    /* Contém a margem inferior do conteúdo e reserva o espaço do AppFooter,
+       sem criar um ancestral de rolagem que impeça a prévia sticky. */
+    display: flow-root;
     overflow: clip;
 }
 
