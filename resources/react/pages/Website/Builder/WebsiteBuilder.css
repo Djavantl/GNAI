@@ -178,7 +178,7 @@ body:has(.websiteBuilderPage) {
     font-weight: 600;
 }
 
-/* Itens de números e serviços */
+/* Itens das seções */
 .websiteBuilder__items {
     margin: 0;
     padding: 12px;
@@ -188,7 +188,7 @@ body:has(.websiteBuilderPage) {
 
 .websiteBuilder__items legend {
     width: auto;
-    margin: 0;
+    margin: 0 0 20px;
     padding: 0 6px;
     border: 0;
     color: var(--ui-color-form-label);
@@ -213,7 +213,8 @@ body:has(.websiteBuilderPage) {
 
 .websiteBuilder__item {
     display: flex;
-    gap: 8px;
+    flex-direction: column;
+    gap: 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--ui-color-border-subtle, #eef0f2);
 }
@@ -221,8 +222,8 @@ body:has(.websiteBuilderPage) {
 .websiteBuilder__itemFields {
     display: grid;
     flex: 1;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 8px 12px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
     min-width: 0;
 }
 
@@ -232,9 +233,9 @@ body:has(.websiteBuilderPage) {
 
 .websiteBuilder__itemActions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 4px;
-    padding-top: 28px;
 }
 
 .websiteBuilder__color {
@@ -460,4 +461,50 @@ body:has(.websiteBuilderPage) {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 16px;
+}
+
+.websiteBuilder__iconPicker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    min-width: 0;
+}
+
+.websiteBuilder__pillarItems {
+    display: grid;
+    gap: 16px;
+    margin: 0 0 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.websiteBuilder__pillarItem {
+    min-width: 0;
+    border: 1px solid var(--ui-color-card-border);
+    border-radius: 6px;
+}
+
+.websiteBuilder__pillarItem summary {
+    padding: 16px;
+    color: var(--ui-color-form-label);
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.websiteBuilder__pillarItem summary span {
+    display: block;
+    margin-top: 4px;
+    color: var(--ui-color-heading);
+}
+
+.websiteBuilder__pillarItemBody {
+    padding: 0 16px 16px;
+}
+
+.websiteBuilder__pillarItemBody .websiteBuilder__slideActions {
+    margin: 0 0 24px;
+}
+
+.websiteBuilder__pillarItemBody .formGrid {
+    grid-template-columns: minmax(0, 1fr);
 }

@@ -2,6 +2,7 @@ import { joinClassNames } from "@/utils/joinClassNames";
 import PublicationCard from "../PublicationCard/PublicationCard";
 import SiteHero from "../SiteHero/SiteHero";
 import SiteAbout from "../SiteAbout/SiteAbout";
+import SitePillars from "../SitePillars/SitePillars";
 import { SiteSocialLinks } from "../SiteLayout/SiteLayout";
 import SiteLink, { useSitePreview } from "../SiteLayout/SiteLink";
 import TeamMemberCard from "../TeamMemberCard/TeamMemberCard";
@@ -51,7 +52,7 @@ function CardsSection({ section }: SectionProps): React.JSX.Element {
         <section
             className={joinClassNames(
                 "siteSections__section",
-                ["pillars", "resources"].includes(section.type) && "siteSections__section--tinted",
+                section.type === "resources" && "siteSections__section--tinted",
             )}
         >
             <div className="siteLayout__container">
@@ -247,7 +248,7 @@ function ContactSection({ section, site }: SectionProps): React.JSX.Element {
 const renderers = {
     hero: SiteHero,
     about: SiteAbout,
-    pillars: CardsSection,
+    pillars: SitePillars,
     audience: CardsSection,
     guidance: GuidanceSection,
     faq: FaqSection,

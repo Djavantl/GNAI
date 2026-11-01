@@ -1,0 +1,156 @@
+.sitePillars {
+    padding: var(--pillars-padding) 0;
+}
+
+.sitePillars .sitePillars__title {
+    font-size: clamp(20px, 3.2cqi, var(--pillars-title-size));
+    overflow-wrap: anywhere;
+}
+
+.sitePillars .sitePillars__title::after {
+    background: var(--pillars-divider-color);
+}
+
+.sitePillars__title[data-title-align="center"]::after {
+    margin-inline: auto;
+}
+
+.sitePillars__title[data-title-align="right"]::after {
+    margin-left: auto;
+}
+
+.sitePillars--noDivider .sitePillars__title::after {
+    display: none;
+}
+
+.sitePillars .sitePillars__subtitle {
+    max-width: none;
+    font-size: clamp(14px, 2.5cqi, var(--pillars-subtitle-size));
+    overflow-wrap: anywhere;
+}
+
+.sitePillars__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--pillars-columns), minmax(0, 1fr));
+    align-items: stretch;
+    gap: var(--pillars-gap);
+    margin: 36px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sitePillars .sitePillars__card {
+    display: grid;
+    align-content: start;
+    gap: var(--pillar-icon-gap);
+    width: var(--pillar-card-width);
+    min-width: 0;
+    min-height: var(--pillar-card-height);
+    justify-self: center;
+    padding: var(--pillar-card-padding);
+    border: var(--pillar-card-border-width) solid var(--pillar-card-border);
+    border-radius: var(--pillar-card-radius);
+    background: var(--pillar-card-background);
+    box-shadow: var(--pillar-card-shadow);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.sitePillars .sitePillars__card--left[data-has-icon="true"] {
+    grid-template-columns: minmax(0, var(--pillar-icon-width)) minmax(0, 1fr);
+}
+
+.sitePillars .sitePillars__card--right[data-has-icon="true"] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--pillar-icon-width));
+}
+
+.sitePillars__card--right[data-has-icon="true"] .sitePillars__icon {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.sitePillars__card--right[data-has-icon="true"] .sitePillars__cardText {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.sitePillars .sitePillars__icon {
+    display: grid;
+    place-items: center;
+    justify-self: var(--pillar-icon-align);
+    width: min(100%, var(--pillar-icon-width));
+    height: var(--pillar-icon-height);
+    border-radius: var(--pillar-icon-radius);
+    background: var(--pillar-icon-background);
+    color: var(--pillar-icon-color);
+    font-size: var(--pillar-icon-size);
+    line-height: 1;
+}
+
+.sitePillars__cardText {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.sitePillars .sitePillars__card h3 {
+    margin: 0 0 8px;
+    color: var(--pillar-title-color);
+    font-size: clamp(14px, 2.5cqi, var(--pillar-title-size));
+    line-height: 1.4;
+    text-align: var(--pillar-title-align);
+}
+
+.sitePillars .sitePillars__card p {
+    margin: 0;
+    color: var(--pillar-text-color);
+    font-size: clamp(12px, 2.5cqi, var(--pillar-text-size));
+    line-height: var(--pillar-text-height);
+    text-align: var(--pillar-text-align);
+}
+
+.sitePillars .sitePillars__card--hover:is(:hover, :focus-within, .sitePillars__card--previewHover) {
+    transform: translateY(var(--pillar-hover-lift));
+    box-shadow: var(--pillar-hover-shadow);
+    background: var(--pillar-hover-background);
+    border-color: var(--pillar-hover-border);
+}
+
+.sitePillars--list .sitePillars__grid,
+.sitePillars[data-columns="1"] .sitePillars__grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+@container site (max-width: 960px) {
+    .sitePillars--grid:not([data-columns="1"]) .sitePillars__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container site (max-width: 600px) {
+    .sitePillars {
+        padding: min(var(--pillars-padding), 48px) 0;
+    }
+
+    .sitePillars--grid:not([data-columns="1"]) .sitePillars__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sitePillars .sitePillars__card {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sitePillars .sitePillars__card {
+        transition: none;
+    }
+
+    .sitePillars .sitePillars__card--hover:is(:hover, :focus-within, .sitePillars__card--previewHover) {
+        transform: none;
+    }
+}
+
+
+.sitePillars__icon > i {
+    font-size: inherit;
+    line-height: 1;
+}

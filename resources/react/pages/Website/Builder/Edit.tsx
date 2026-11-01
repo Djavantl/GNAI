@@ -10,6 +10,7 @@ import Button from "@/components/UI/Button/Button";
 import CardBox from "@/components/UI/CardBox/CardBox";
 import { notify } from "@/components/UI/NotificationToast/notify";
 import type {
+    PillarCardAppearance,
     WebsiteContent,
     WebsiteSection,
     WebsiteSectionType,
@@ -40,6 +41,7 @@ type Props = {
     content: WebsiteContent;
     sectionTypes: { value: WebsiteSectionType; label: string }[];
     sectionTemplates: Record<WebsiteSectionType, WebsiteSection>;
+    pillarCardTemplate: PillarCardAppearance;
     publicUrl: string;
     can: { submit: boolean };
 };
@@ -105,6 +107,7 @@ export default function WebsiteBuilderEditPage({
     content,
     sectionTypes,
     sectionTemplates,
+    pillarCardTemplate,
     publicUrl,
     can,
 }: Props): React.JSX.Element {
@@ -114,6 +117,7 @@ export default function WebsiteBuilderEditPage({
     const editorBody = useRef<HTMLDivElement>(null);
     const pendingFocus = useRef<FocusRequest | null>(null);
     const [focusRequest, setFocusRequest] = useState(0);
+    const [editTarget, setEditTarget] = useState<BuilderEditTarget | null>(null);
     const [selectedId, setSelectedId] = useState<string>(IDENTITY_ID);
     const [tab, setTab] = useState<BuilderTab>("sections");
     const form = useForm<BuilderFormData>({
@@ -228,6 +232,7 @@ export default function WebsiteBuilderEditPage({
 
     /** Abre a aba de edição com o item escolhido na lista ou na prévia. */
     function openEditor(target: BuilderEditTarget): void {
+        setEditTarget(target);
         setSelectedId(target.sectionId);
         setTab("edit");
         requestFocus({ elementId: builderFieldId(target) });
@@ -268,6 +273,11 @@ export default function WebsiteBuilderEditPage({
             const fallback = body?.querySelector<HTMLElement>(focusableSelector) ?? null;
             const target = control ?? fallback;
             const visible = anchor ?? target ?? body;
+            let parent = visible?.parentElement;
+            while (parent && parent !== body) {
+                if (parent instanceof HTMLDetailsElement) parent.open = true;
+                parent = parent.parentElement;
+            }
 
             visible?.scrollIntoView({ block: "center", behavior: "smooth" });
             target?.focus({ preventScroll: true });
@@ -311,6 +321,7 @@ export default function WebsiteBuilderEditPage({
             sections: data.sections.map(({ image_url: _url, image_path: _path, ...section }) => ({
                 ...section,
                 slides: section.slides.map(({ image_url: _slideUrl, image_path: _slidePath, ...slide }) => slide),
+                items: section.items.map(({ editor_key: _editorKey, ...item }) => item),
             })),
         }));
         form.post(endpoint, {
@@ -401,6 +412,9 @@ export default function WebsiteBuilderEditPage({
                     iconClass={sectionTypeIcons[selected.type] ?? "fa fa-pencil"}
                 >
                     <BuilderSectionEditor
+                        pillarCardTemplate={pillarCardTemplate}
+                        editTarget={editTarget}
+                        onEditTarget={openEditor}
                         key={selected.id}
                         section={selected}
                         index={selectedIndex}

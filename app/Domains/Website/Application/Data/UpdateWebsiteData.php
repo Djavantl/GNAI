@@ -7,6 +7,8 @@ namespace App\Domains\Website\Application\Data;
 use App\Domains\Website\Domain\Enums\WebsiteSectionType;
 use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\AboutAppearance;
+use App\Domains\Website\Domain\Support\PillarCardAppearance;
+use App\Domains\Website\Domain\Support\PillarsAppearance;
 use App\Domains\Website\Domain\Support\HeroAppearance;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
@@ -52,20 +54,25 @@ final class UpdateWebsiteData extends Data
             'sections.*.slides.*.url' => ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/|\/|#|mailto:|tel:)\S*$/i'],
         ];
 
-        foreach (['hero' => HeroAppearance::class, 'about' => AboutAppearance::class] as $scope => $appearanceClass) {
-            $appearanceRules["sections.*.{$scope}"] = ['sometimes', 'array'];
+        foreach ([
+            'sections.*.hero' => HeroAppearance::class,
+            'sections.*.about' => AboutAppearance::class,
+            'sections.*.pillars' => PillarsAppearance::class,
+            'sections.*.items.*.appearance' => PillarCardAppearance::class,
+        ] as $scope => $appearanceClass) {
+            $appearanceRules[$scope] = ['sometimes', 'array'];
 
             foreach ($appearanceClass::RANGES as $key => [$min, $max]) {
-                $appearanceRules["sections.*.{$scope}.{$key}"] = ['sometimes', 'integer', "min:{$min}", "max:{$max}"];
+                $appearanceRules["{$scope}.{$key}"] = ['sometimes', 'integer', "min:{$min}", "max:{$max}"];
             }
             foreach ($appearanceClass::COLORS as $key) {
-                $appearanceRules["sections.*.{$scope}.{$key}"] = ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'];
+                $appearanceRules["{$scope}.{$key}"] = ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'];
             }
             foreach ($appearanceClass::CHOICES as $key => $options) {
-                $appearanceRules["sections.*.{$scope}.{$key}"] = ['sometimes', Rule::in($options)];
+                $appearanceRules["{$scope}.{$key}"] = ['sometimes', Rule::in($options)];
             }
             foreach ($appearanceClass::TOGGLES as $key => $default) {
-                $appearanceRules["sections.*.{$scope}.{$key}"] = ['sometimes', 'boolean'];
+                $appearanceRules["{$scope}.{$key}"] = ['sometimes', 'boolean'];
             }
         }
 
@@ -109,6 +116,16 @@ final class UpdateWebsiteData extends Data
     public static function messages(): array
     {
         return [
+            'sections.*.pillars.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
+            'sections.*.pillars.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
+            'sections.*.pillars.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',
+            'sections.*.pillars.*.integer' => 'Informe um valor inteiro para este ajuste.',
+            'sections.*.pillars.*.in' => 'Selecione uma opção válida.',
+            'sections.*.items.*.appearance.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
+            'sections.*.items.*.appearance.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
+            'sections.*.items.*.appearance.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',
+            'sections.*.items.*.appearance.*.integer' => 'Informe um valor inteiro para este ajuste.',
+            'sections.*.items.*.appearance.*.in' => 'Selecione uma opção válida.',
             'sections.*.about.*.regex' => 'Informe uma cor hexadecimal válida, por exemplo #322b75.',
             'sections.*.about.*.min' => 'O valor está abaixo do mínimo permitido para este ajuste.',
             'sections.*.about.*.max' => 'O valor ultrapassa o limite permitido para este ajuste.',

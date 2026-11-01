@@ -40,6 +40,7 @@ export default function SelectField({
   defaultValue,
   enhanced = true,
   iconOnly = false,
+  iconSearch = false,
   placeholder = "Selecione",
   onCreateOption,
   ...props
@@ -53,6 +54,8 @@ export default function SelectField({
   enhanced?: boolean;
   /** Mostra as opções e o valor escolhido pelos ícones (`iconClass`), em grade e sem busca. */
   iconOnly?: boolean;
+  /** Mantém a grade de ícones com busca por nome. */
+  iconSearch?: boolean;
   placeholder?: string;
   /**
    * Permite usar um texto digitado na busca quando nenhuma opção corresponde:
@@ -117,7 +120,7 @@ export default function SelectField({
         width: "100%",
         dropdownCssClass: iconOnly ? "selectFieldDropdown selectFieldDropdown--icons" : "selectFieldDropdown",
         ...(iconOnly ? {
-          minimumResultsForSearch: -1,
+          minimumResultsForSearch: iconSearch ? 0 : -1,
           formatResult: formatIconOption,
           formatSelection: formatIconOption,
           formatResultCssClass: (data: Select2OptionData) =>
@@ -215,7 +218,7 @@ export default function SelectField({
       disposed = true;
       cleanup?.();
     };
-  }, [enhanced, iconOnly, id, props.multiple, allowCreate]);
+  }, [enhanced, iconOnly, iconSearch, id, props.multiple, allowCreate]);
   return (
     <div
       className={joinClassNames(

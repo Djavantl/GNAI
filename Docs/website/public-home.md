@@ -105,3 +105,24 @@ O formulário reúne conteúdo e aparência em grupos de título, texto de apoio
 A imagem mantém upload, prévia, remoção e descrição acessível, com opção de exibição, posição ao lado/acima/abaixo do texto, largura da coluna, altura, enquadramento, foco, arredondamento e sombra. Em telas menores, as colunas se reorganizam verticalmente. O botão reúne texto, link, posição, cores, arredondamento e sombra. A seção permite ajustar fundo, degradê, espaçamento vertical e distância entre imagem e texto.
 
 Os seletores de cor, sliders e seleções são compartilhados com a edição do banner principal. A prévia e o site público usam o mesmo componente de apresentação, e os IDs existentes são mantidos para o clique duplo e os erros por campo. Os ajustes desta ampliação foram revisados em código e no diff, sem executar build, testes ou homologação no navegador.
+
+## Personalização de Princípios de atuação
+
+O tipo `pillars` aceita a aparência da seção em `pillars` e a aparência de cada card em `items[*].appearance`. `PillarsAppearance` e `PillarCardAppearance` centralizam valores iniciais, opções e limites usados pela validação e pela normalização. A Action de salvamento não ganhou métodos auxiliares privados. A tabela e os contratos de título, texto, ícone, ordem e visibilidade são preservados; configurações antigas recebem os padrões pelo presenter, sem migration.
+
+A seção permite configurar título e texto de apoio com alinhamento, tamanho e cor, além da linha decorativa. A organização pode ser em grade de uma a quatro colunas ou lista, com distância entre cards, espaçamento vertical, fundo e degradê com direção e cor final.
+
+Cada item tem controles próprios, agrupados junto do conteúdo:
+
+- Ícone: biblioteca, desenho, posição, alinhamento, cor, cor do fundo, tamanho do desenho, largura e altura do fundo, arredondamento e distância até o texto.
+- Título e descrição: conteúdo, alinhamento, tamanhos e cores, com espaçamento entre linhas na descrição.
+- Card: largura na coluna, altura mínima, espaçamento interno, fundo, cor e espessura da borda, arredondamento e sombra.
+- Degradê próprio e efeito opcional ao passar o ponteiro, com cores, elevação e sombra.
+
+As colunas se adaptam em telas menores e os textos podem aumentar a altura do card sem corte. O movimento de hover respeita a preferência de movimento reduzido. A prévia simula esse hover por geometria, preservando sua navegação inerte.
+
+Os itens do editor podem ser expandidos individualmente. Seus controles são montados ao abrir, evitando inicializar sliders em áreas ocultas. O clique duplo na prévia e os erros abrem o item correspondente; adicionar um item abre sua edição. Chaves locais preservam o item durante reordenações e são removidas do envio ao servidor. O botão de adicionar segue o mesmo padrão de participantes e imagens.
+
+O catálogo oferece **2.742 ícones** presentes no CSS e nas fontes locais: Font Awesome (668), Material Design (744), Ionicons (593), Themify (350), Simple Line (181) e Weather (206). A seleção tem filtro por biblioteca e pesquisa pelo nome, mantendo o desenho dos ícones na grade. As opções são filtradas pelo CSS ativo, sem fontes externas, e o seletor também é reutilizado pelos outros itens do construtor.
+
+A revisão incluiu código, diff, uma conferência visual no Brave existente e leitura das props públicas. Os quatro itens salvos permaneceram preservados. Não houve envio de configuração durante a conferência, nem execução de build ou testes automatizados.

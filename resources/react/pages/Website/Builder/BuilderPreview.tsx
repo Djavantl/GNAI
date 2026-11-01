@@ -149,6 +149,7 @@ export default function BuilderPreview({
     const viewport = useRef<HTMLDivElement>(null);
     const frame = useRef<HTMLDivElement>(null);
     const keepScroll = useRef(false);
+    const hoveredPillar = useRef<HTMLElement | null>(null);
     const [panelHeight, setPanelHeight] = useState<number>();
     const [device, setDevice] = useState<Device>("desktop");
     const [viewportWidth, setViewportWidth] = useState(0);
@@ -229,6 +230,24 @@ export default function BuilderPreview({
         viewport.current.scrollTo({ top: Math.max(0, target.offsetTop * scale - 24), behavior: "smooth" });
     }, [selectedId, scale, device]);
 
+    function clearPillarHover(): void {
+        hoveredPillar.current?.classList.remove("sitePillars__card--previewHover");
+        hoveredPillar.current = null;
+    }
+
+    function handlePreviewPointerMove(event: React.PointerEvent<HTMLDivElement>): void {
+        const cards = frame.current?.querySelectorAll<HTMLElement>(".sitePillars__card--hover");
+        const card = cards
+            ? Array.from(cards).find((item) => contains(item.getBoundingClientRect(), event.clientX, event.clientY))
+            : undefined;
+        if (card === hoveredPillar.current) return;
+        clearPillarHover();
+        if (card) {
+            card.classList.add("sitePillars__card--previewHover");
+            hoveredPillar.current = card;
+        }
+    }
+
     function handleDoubleClick(event: React.MouseEvent<HTMLDivElement>): void {
         if (!frame.current) return;
 
@@ -278,6 +297,9 @@ export default function BuilderPreview({
                 ref={viewport}
                 className="websiteBuilder__viewport"
                 onDoubleClick={handleDoubleClick}
+                onPointerMove={handlePreviewPointerMove}
+                onPointerLeave={clearPillarHover}
+                onScroll={clearPillarHover}
             >
                 <div
                     className="websiteBuilder__frameSizer"

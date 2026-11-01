@@ -7,7 +7,10 @@ import type {
 
 export type BuilderSlide = HeroSlide & { image: File | null; remove_image: boolean };
 
+export type BuilderItem = WebsiteSectionItem & { editor_key?: string };
+
 export type BuilderSection = WebsiteSection & {
+    items: BuilderItem[];
     slides: BuilderSlide[];
     image: File | null;
     remove_image: boolean;
@@ -97,26 +100,6 @@ export const sectionTypeIcons: Record<WebsiteSectionType, string> = {
     contact: "fa fa-envelope-o",
 };
 
-/** Ícones do Font Awesome 4.4 disponíveis no projeto para os itens; o seletor mostra o ícone. */
-export const featureIconOptions: { value: string; label: string; iconClass: string }[] = [
-    { value: "fa fa-users", label: "Pessoas" },
-    { value: "fa fa-wheelchair", label: "Acessibilidade" },
-    { value: "fa fa-graduation-cap", label: "Formação" },
-    { value: "fa fa-book", label: "Livro" },
-    { value: "fa fa-lightbulb-o", label: "Ideia" },
-    { value: "fa fa-heart-o", label: "Acolhimento" },
-    { value: "fa fa-comments-o", label: "Conversa" },
-    { value: "fa fa-calendar", label: "Calendário" },
-    { value: "fa fa-university", label: "Instituição" },
-    { value: "fa fa-hand-paper-o", label: "Mão" },
-    { value: "fa fa-child", label: "Criança" },
-    { value: "fa fa-microphone", label: "Palestra" },
-    { value: "fa fa-eye", label: "Visão" },
-    { value: "fa fa-star-o", label: "Destaque" },
-    { value: "fa fa-sitemap", label: "Organização" },
-    { value: "fa fa-globe", label: "Mundo" },
-].map((option) => ({ ...option, iconClass: option.value }));
-
 export function emptyItem(type: WebsiteSectionType): WebsiteSectionItem {
     return {
         icon: ["guidance", "faq"].includes(type) ? "" : "fa fa-book",
@@ -133,7 +116,7 @@ export function newSection(type: WebsiteSectionType, template: WebsiteSection): 
         id: `${type}-${Date.now().toString(36)}`,
         type,
         enabled: true,
-        items: template.items.map((item) => ({ ...item })),
+        items: template.items.map((item, index) => ({ ...item, editor_key: `item-${index}` })),
         slides: (template.slides ?? []).map((slide) => ({ ...slide, image: null, remove_image: false })),
         image: null,
         remove_image: false,
@@ -150,7 +133,7 @@ export function toBuilderSection(section: WebsiteSection): BuilderSection {
         button_label: section.button_label ?? "",
         button_url: section.button_url ?? "",
         image_alt: section.image_alt ?? "",
-        items: Array.isArray(section.items) ? section.items : [],
+        items: Array.isArray(section.items) ? section.items.map((item, index) => ({ ...item, editor_key: `item-${index}` })) : [],
         limit: Number(section.limit) || 3,
         image: null,
         remove_image: false,

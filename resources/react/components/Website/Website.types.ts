@@ -38,6 +38,7 @@ export interface WebsiteSectionItem {
     url: string;
     title: string;
     text: string;
+    appearance?: PillarCardAppearance;
 }
 
 export type HeroAlignment = "left" | "center" | "right";
@@ -110,6 +111,60 @@ export interface AboutAppearance {
     gradient_enabled: boolean;
 }
 
+export interface PillarsAppearance {
+    title_size: number;
+    subtitle_size: number;
+    padding_vertical: number;
+    gap: number;
+    columns: number;
+    title_color: string;
+    subtitle_color: string;
+    background_color: string;
+    gradient_end_color: string;
+    divider_color: string;
+    title_align: "center" | "left" | "right";
+    subtitle_align: "center" | "left" | "right";
+    layout: "grid" | "list";
+    gradient_direction: "to bottom" | "to top" | "to right" | "to left";
+    title_divider: boolean;
+    gradient_enabled: boolean;
+}
+
+export interface PillarCardAppearance {
+    icon_size: number;
+    icon_width: number;
+    icon_height: number;
+    icon_radius: number;
+    icon_gap: number;
+    title_size: number;
+    text_size: number;
+    text_line_height: number;
+    card_radius: number;
+    card_padding: number;
+    card_border_width: number;
+    card_shadow: number;
+    card_min_height: number;
+    card_width: number;
+    hover_lift: number;
+    hover_shadow: number;
+    icon_color: string;
+    icon_background: string;
+    title_color: string;
+    text_color: string;
+    card_background: string;
+    card_border_color: string;
+    hover_background: string;
+    hover_border_color: string;
+    gradient_end_color: string;
+    icon_align: "left" | "center" | "right";
+    title_align: "left" | "center" | "right";
+    text_align: "left" | "center" | "right" | "justify";
+    icon_position: "top" | "left" | "right";
+    gradient_direction: "to bottom" | "to top" | "to right" | "to left";
+    hover_enabled: boolean;
+    gradient_enabled: boolean;
+}
+
 export interface HeroSlide {
     id: string;
     image_url: string | null;
@@ -134,6 +189,7 @@ export interface WebsiteSection {
     items: WebsiteSectionItem[];
     hero?: HeroAppearance;
     about?: AboutAppearance;
+    pillars?: PillarsAppearance;
     slides?: HeroSlide[];
 }
 

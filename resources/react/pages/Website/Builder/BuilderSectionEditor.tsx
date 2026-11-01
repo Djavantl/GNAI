@@ -1,16 +1,20 @@
 import FormField from "@/components/Forms/FormField/FormField";
 import FormGrid, { FormGridWide } from "@/components/Forms/FormGrid/FormGrid";
-import SelectField from "@/components/Forms/SelectField/SelectField";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import TextInput from "@/components/Forms/TextInput/TextInput";
 import Button from "@/components/UI/Button/Button";
-import type { WebsiteSectionItem } from "@/components/Website/Website.types";
+import type { PillarCardAppearance, WebsiteSectionItem } from "@/components/Website/Website.types";
 import BuilderHeroAppearance from "./BuilderHeroAppearance";
 import BuilderAboutEditor from "./BuilderAboutEditor";
 import BuilderHeroSlides from "./BuilderHeroSlides";
-import { emptyItem, featureIconOptions, type BuilderSection } from "./websiteBuilder";
+import BuilderPillarsEditor from "./BuilderPillarsEditor";
+import BuilderIconField from "./BuilderIconField";
+import { emptyItem, type BuilderEditTarget, type BuilderSection } from "./websiteBuilder";
 
 type Props = {
+    pillarCardTemplate: PillarCardAppearance;
+    editTarget: BuilderEditTarget | null;
+    onEditTarget: (target: BuilderEditTarget) => void;
     section: BuilderSection;
     index: number;
     errors: Record<string, string | undefined>;
@@ -23,6 +27,9 @@ type Props = {
 /** Campos editáveis da seção selecionada, conforme o tipo do bloco. */
 export default function BuilderSectionEditor({
     section,
+    pillarCardTemplate,
+    editTarget,
+    onEditTarget,
     index,
     errors,
     disabled,
@@ -90,6 +97,21 @@ export default function BuilderSectionEditor({
                 onChange={onChange}
                 onImageError={onImageError}
                 onEditorError={onEditorError}
+            />
+        );
+    }
+
+    if (section.type === "pillars") {
+        return (
+            <BuilderPillarsEditor
+                section={section}
+                index={index}
+                disabled={disabled}
+                errors={errors}
+                template={pillarCardTemplate}
+                editTarget={editTarget}
+                onEditTarget={onEditTarget}
+                onChange={onChange}
             />
         );
     }
@@ -218,20 +240,17 @@ export default function BuilderSectionEditor({
                                     <li key={itemIndex} className="websiteBuilder__item">
                                         <div className="websiteBuilder__itemFields">
                                             {usesIcon ? (
-                                                <FormField id={itemId("icon")} label={`Ícone do item ${position}`} error={itemError("icon")}>
-                                                    <SelectField
+                                                <div className="websiteBuilder__itemWide">
+                                                    <BuilderIconField
                                                         id={itemId("icon")}
                                                         name={`sections[${index}][items][${itemIndex}][icon]`}
                                                         label={`Ícone do item ${position}`}
                                                         value={item.icon}
-                                                        placeholder="Sem ícone"
-                                                        options={featureIconOptions}
-                                                        iconOnly
-                                                        aria-invalid={!!itemError("icon")}
-                                                        aria-describedby={itemError("icon") ? `${itemId("icon")}-error` : undefined}
-                                                        onChange={(event) => updateItem(itemIndex, { icon: event.target.value })}
+                                                        error={itemError("icon")}
+                                                        disabled={disabled}
+                                                        onChange={(icon) => updateItem(itemIndex, { icon })}
                                                     />
-                                                </FormField>
+                                                </div>
                                             ) : null}
                                             <FormField
                                                 id={itemId("title")}
@@ -325,9 +344,12 @@ export default function BuilderSectionEditor({
                         </ol>
                         <Button
                             size="sm"
-                            tone="list-action"
-                            leftIconClass="fa fa-plus"
-                            label="Adicionar item"
+                            tone="white"
+                            className="removableField__add"
+                            labelIconClass="fa fa-plus"
+                            label="Item"
+                            title="Adicionar item"
+                            aria-label="Adicionar item"
                             disabled={disabled || section.items.length >= 12}
                             onClick={() => onChange({ items: [...section.items, emptyItem(section.type)] })}
                         />
