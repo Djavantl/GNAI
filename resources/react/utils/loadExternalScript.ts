@@ -2,7 +2,9 @@ export function loadExternalScript(src: string): Promise<void> {
   return new Promise((resolve: () => void, reject: (reason?: unknown) => void) => {
     const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
 
-    if (existing) {
+    // Uma falha anterior não pode prender as próximas tentativas: recria a tag.
+    if (existing?.dataset.failed === 'true') existing.remove();
+    else if (existing) {
       if (existing.dataset.loaded === 'true') {
         resolve();
         return;
@@ -24,7 +26,14 @@ export function loadExternalScript(src: string): Promise<void> {
       },
       { once: true }
     );
-    script.addEventListener('error', (event: Event) => reject(event), { once: true });
+    script.addEventListener(
+      'error',
+      (event: Event) => {
+        script.dataset.failed = 'true';
+        reject(event);
+      },
+      { once: true }
+    );
     document.body.appendChild(script);
   });
 }

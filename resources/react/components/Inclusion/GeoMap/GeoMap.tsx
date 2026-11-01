@@ -40,6 +40,7 @@ type LeafletMap = {
     flyTo(point: [number, number], zoom?: number, options?: Record<string, unknown>): void;
     setView(point: [number, number], zoom?: number): void;
     getZoom(): number;
+    getSize(): { x: number; y: number };
     addLayer(layer: LeafletLayerGroup): void;
     removeLayer(layer: LeafletLayerGroup): void;
     on(event: string, handler: (event: LeafletEvent) => void): void;
@@ -240,8 +241,12 @@ export default function GeoMap({
             latitude: viewportCenter.latitude,
             longitude: viewportCenter.longitude,
         };
-        if (changedInstitution && reference) {
+        // Com o contêiner sem tamanho, o flyTo do Leaflet calcula NaN e lança erro.
+        const size = map.getSize();
+        if (changedInstitution && reference && size.x > 0 && size.y > 0) {
             map.flyTo(point, viewportZoom, { animate: true, duration: 0.8 });
+        } else if (changedInstitution && reference) {
+            map.setView(point, viewportZoom);
         } else if (changedCenter || map.getZoom() !== viewportZoom) {
             map.setView(point, viewportZoom);
         }

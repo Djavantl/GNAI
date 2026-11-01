@@ -13,7 +13,7 @@ const statuses = [
   ['in_progress', 'Em tratamento'], ['resolved', 'Resolvida'], ['not_applicable', 'Não aplicável'],
 ];
 interface MapInstance {
-  remove(): void; invalidateSize(): void;
+  remove(): void; invalidateSize(): void; getSize(): { x: number; y: number };
   fitBounds(points: number[][], options: object): void;
 }
 interface MapLayer { addTo(map: MapInstance): MapLayer; bindPopup(content: HTMLElement, options?: object): MapLayer }
@@ -73,7 +73,9 @@ export default function BarrierMap({ barriers }: { barriers: Barrier[] }): React
         markers.addLayer(L.circleMarker(point, { radius: 9, color: colors[barrier.color] ?? colors.primary, fillOpacity: 0.85 }).bindPopup(popup, { className: 'barrierPopup', minWidth: 240, maxWidth: 240 }));
         points.push(point);
       }
-      if (!fitted.current && points.length) {
+      // O padding maior que o mapa gera zoom NaN no Leaflet; ajusta quando houver espaço.
+      const size = map.getSize();
+      if (!fitted.current && points.length && size.x > 70 && size.y > 70) {
         map.fitBounds(points, { padding: [35, 35], maxZoom: 16 });
         fitted.current = true;
       }
