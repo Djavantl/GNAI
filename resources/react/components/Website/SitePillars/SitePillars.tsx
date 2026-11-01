@@ -9,7 +9,7 @@ export default function SitePillars({ section }: { section: WebsiteSection }): R
     if (!appearance) return null;
     const background = color(
         appearance.background_color,
-        section.type === "pillars" ? "var(--site-surface)" : "#ffffff",
+        ["pillars", "resources"].includes(section.type) ? "var(--site-surface)" : "#ffffff",
     );
     const style = {
         "--pillars-padding": `${appearance.padding_vertical}px`,
@@ -25,7 +25,7 @@ export default function SitePillars({ section }: { section: WebsiteSection }): R
 
     return (
         <section
-            className={`sitePillars sitePillars--${appearance.layout}${appearance.title_divider ? "" : " sitePillars--noDivider"}`}
+            className={`sitePillars sitePillars--type-${section.type} sitePillars--${appearance.layout}${appearance.title_divider ? "" : " sitePillars--noDivider"}`}
             style={style}
             data-columns={appearance.columns}
         >
@@ -48,7 +48,15 @@ export default function SitePillars({ section }: { section: WebsiteSection }): R
                     </p>
                 ) : null}
                 <ul className="sitePillars__grid">
-                    {section.items.map((item, index) => <SiteItemCard key={index} item={item} index={index} />)}
+                    {section.items.map((item, index) => (
+                        <SiteItemCard
+                            key={index}
+                            item={item}
+                            index={index}
+                            faq={section.type === "faq"}
+                            resource={section.type === "resources"}
+                        />
+                    ))}
                 </ul>
             </div>
         </section>

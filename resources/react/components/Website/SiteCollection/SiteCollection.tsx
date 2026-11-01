@@ -13,18 +13,21 @@ type Props = {
     className: string;
     style?: CSSProperties;
     defaultBackground?: string;
-    actionLabel: string;
-    actionUrl: string;
+    actionLabel?: string;
+    actionUrl?: string;
     emptyLabel: string;
     itemLabel: string;
     fallbackTitle: string;
+    children?: ReactNode;
 };
 
 /** Estrutura compartilhada das seções com conteúdo real e aparência configurável. */
 export default function SiteCollection({
     section, appearance, cards, className, style: cardStyle, defaultBackground = "var(--site-surface)",
-    actionLabel, actionUrl, emptyLabel, itemLabel, fallbackTitle,
+    actionLabel, actionUrl, emptyLabel, itemLabel, fallbackTitle, children,
 }: Props): React.JSX.Element {
+    const resolvedActionLabel = section.button_label || actionLabel;
+    const resolvedActionUrl = section.button_url || actionUrl;
     const background = color(appearance.background_color, defaultBackground);
     const buttonBackground = color(appearance.button_background, appearance.action_style === "button" ? "var(--site-primary)" : "transparent");
     const buttonColor = color(appearance.button_color, appearance.action_style === "button" ? "#ffffff" : "var(--site-primary)");
@@ -100,15 +103,18 @@ export default function SiteCollection({
                         ))}
                     </div>
                 )}
-                <div className="siteGuidance__actionRow" style={{ textAlign: appearance.button_align }}>
-                    <SiteLink
-                        href={section.button_url || actionUrl}
-                        className={`siteSections__guidanceLink siteGuidance__action siteGuidance__action--${appearance.action_style}${appearance.hover_enabled ? " siteGuidance__action--hover" : ""}`}
-                    >
-                        {section.button_label || actionLabel}
-                        {appearance.button_icon ? <i className="fa fa-arrow-right" aria-hidden="true" /> : null}
-                    </SiteLink>
-                </div>
+                {children}
+                {resolvedActionLabel && resolvedActionUrl ? (
+                    <div className="siteGuidance__actionRow" style={{ textAlign: appearance.button_align }}>
+                        <SiteLink
+                            href={resolvedActionUrl}
+                            className={`siteSections__guidanceLink siteGuidance__action siteGuidance__action--${appearance.action_style}${appearance.hover_enabled ? " siteGuidance__action--hover" : ""}`}
+                        >
+                            {resolvedActionLabel}
+                            {appearance.button_icon ? <i className="fa fa-arrow-right" aria-hidden="true" /> : null}
+                        </SiteLink>
+                    </div>
+                ) : null}
             </div>
         </section>
     );

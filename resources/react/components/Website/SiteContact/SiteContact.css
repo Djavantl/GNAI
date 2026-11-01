@@ -1,0 +1,38 @@
+.siteContact__card {
+    min-width: 0;
+    padding: var(--contact-card-padding);
+    border: 1px solid var(--contact-card-border);
+    border-radius: var(--contact-card-radius);
+    background: var(--contact-card-background);
+    text-align: var(--contact-card-align);
+    overflow-wrap: anywhere;
+}
+.siteContact__icon {
+    display: inline-grid;
+    place-items: center;
+    padding: 12px;
+    margin-bottom: 16px;
+    border: var(--contact-icon-border-width) solid currentColor;
+    border-radius: var(--contact-icon-radius);
+    color: var(--contact-icon-color);
+    background: var(--contact-icon-background);
+    font-size: var(--contact-icon-size);
+}
+.siteContact__label {
+    margin: 0 0 8px;
+    color: var(--contact-title-color);
+    font-size: var(--contact-title-size);
+}
+.siteContact__card p, .siteContact__card a {
+    margin: 0;
+    color: var(--contact-text-color);
+    font-size: var(--contact-text-size);
+}
+.siteContact__card a:focus-visible, .siteContact__social a:focus-visible {
+    outline: 2px solid var(--site-primary);
+    outline-offset: 4px;
+}
+.siteContact .siteContact__social {
+    justify-content: var(--contact-card-align);
+    margin-top: 28px;
+}

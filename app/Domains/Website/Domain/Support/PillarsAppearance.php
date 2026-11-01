@@ -7,7 +7,7 @@ namespace App\Domains\Website\Domain\Support;
 /** Contrato compartilhado das seções institucionais organizadas em cards. */
 final class PillarsAppearance
 {
-    public const SECTION_TYPES = ['pillars', 'audience', 'features'];
+    public const SECTION_TYPES = ['pillars', 'audience', 'features', 'faq', 'resources'];
 
     public const RANGES = [
         'title_size' => [20, 56, 35],
@@ -48,7 +48,15 @@ final class PillarsAppearance
     /** @return array<string, mixed> */
     public static function normalize(array $input, string $sectionType = 'pillars'): array
     {
-        $input = ['columns' => $sectionType === 'audience' ? 3 : 4, ...$input];
+        $input = [
+            'columns' => match ($sectionType) {
+                'faq' => 1,
+                'audience', 'resources' => 3,
+                default => 4,
+            },
+            ...($sectionType === 'faq' ? ['layout' => 'list'] : []),
+            ...$input,
+        ];
         $values = self::defaults();
 
         foreach (self::RANGES as $key => [$min, $max, $default]) {

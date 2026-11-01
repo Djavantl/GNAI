@@ -162,6 +162,7 @@ final class WebsiteDefaults
             ...($type === 'publications' ? ['publications' => PublicationsAppearance::normalize((array) ($values['publications'] ?? []))] : []),
             ...($type === 'events' ? ['events' => PublicationsAppearance::normalize((array) ($values['events'] ?? []))] : []),
             ...($type === 'team' ? ['team' => TeamAppearance::normalize((array) ($values['team'] ?? []))] : []),
+            ...($type === 'contact' ? ['contact' => ContactAppearance::normalize((array) ($values['contact'] ?? []))] : []),
             ...($type === 'about' ? ['about' => AboutAppearance::defaults()] : []),
             ...($type === 'hero' ? ['hero' => HeroAppearance::defaults(), 'slides' => []] : []),
             ...$values,

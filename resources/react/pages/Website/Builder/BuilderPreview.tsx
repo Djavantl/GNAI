@@ -37,7 +37,7 @@ function itemField(itemSelector: string, name: string): (element: Element) => st
 }
 
 function contactField(element: Element): string {
-    const item = element.closest("li") ?? element;
+    const item = element.closest(".siteContact__card, li") ?? element;
 
     if (item.querySelector('a[href^="tel:"]') || element.matches('a[href^="tel:"]')) return "contact_phone";
     if (item.querySelector('a[href^="mailto:"]') || element.matches('a[href^="mailto:"]')) return "contact_email";
@@ -51,11 +51,16 @@ function contactField(element: Element): string {
  * (ou a identidade, no topo e no rodapé) sem campo específico.
  */
 const previewRules: PreviewRule[] = [
+    { selector: ".siteContact__icon", field: () => "contact-icon_radius" },
+    { selector: ".siteContact__label", field: () => "contact-card_title_size" },
+    { selector: ".siteContact__card p, .siteContact__card a", identity: true, field: contactField },
+    { selector: ".siteContact__card", field: () => "contact-card_radius" },
+    { selector: ".siteContact__social", identity: true, field: () => "instagram_url" },
     { selector: ".siteTeam .teamMemberCard__photo", field: () => "team-photo_radius" },
     { selector: ".siteTeam .teamMemberCard__name", field: () => "team-card_title_size" },
     { selector: ".siteTeam .teamMemberCard__role", field: () => "team-card_text_size" },
     { selector: ".siteTeam .teamMemberCard", field: () => "team-card_radius" },
-    { selector: ".siteCollection__grid", field: () => "limit" },
+    { selector: ".siteCollection:not(.siteContact) .siteCollection__grid", field: () => "limit" },
     { selector: ".sitePublications .publicationCard__dateBadge", field: () => "events-date_badge_radius" },
     { selector: ".sitePublications .publicationCard__meta", field: () => "events-card_text_size" },
     { selector: ".sitePublications .publicationCard__type, .sitePublications .publicationCard__category, .sitePublications .publicationCard__status", field: (element) => `${element.closest("[data-feed-type=events]") ? "events" : "publications"}-badge_radius` },

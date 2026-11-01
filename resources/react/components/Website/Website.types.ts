@@ -239,6 +239,25 @@ export interface TeamAppearance extends GuidanceAppearance {
     show_role: boolean;
 }
 
+export interface ContactAppearance extends GuidanceAppearance {
+    icon_size: number;
+    icon_radius: number;
+    icon_border_width: number;
+    icon_color: string;
+    icon_background: string;
+    card_radius: number;
+    card_padding: number;
+    card_title_size: number;
+    card_text_size: number;
+    card_background: string;
+    card_title_color: string;
+    card_text_color: string;
+    card_border_color: string;
+    card_align: "left" | "center" | "right";
+    show_icons: boolean;
+    show_social: boolean;
+}
+
 export interface HeroSlide {
     id: string;
     image_url: string | null;
@@ -267,7 +286,8 @@ export interface WebsiteSection {
     publications?: PublicationsAppearance;
     events?: PublicationsAppearance;
     team?: TeamAppearance;
-    /** Aparência compartilhada por princípios, público e formas de apoio. */
+    contact?: ContactAppearance;
+    /** Aparência compartilhada das seções com itens, incluindo perguntas e materiais. */
     pillars?: PillarsAppearance;
     slides?: HeroSlide[];
 }

@@ -14,6 +14,7 @@ use App\Domains\Website\Domain\Support\WebsiteDefaults;
 use App\Domains\Website\Domain\Support\AboutAppearance;
 use App\Domains\Website\Domain\Support\GuidanceAppearance;
 use App\Domains\Website\Domain\Support\TeamAppearance;
+use App\Domains\Website\Domain\Support\ContactAppearance;
 use App\Domains\Website\Domain\Support\PublicationsAppearance;
 use App\Domains\Website\Domain\Support\PillarCardAppearance;
 use App\Domains\Website\Domain\Support\PillarsAppearance;
@@ -186,6 +187,7 @@ final class WebsiteSetting extends Model implements Auditable
             ...($type->value === 'publications' ? ['publications' => PublicationsAppearance::normalize((array) ($input['publications'] ?? []))] : []),
             ...($type->value === 'events' ? ['events' => PublicationsAppearance::normalize((array) ($input['events'] ?? []))] : []),
             ...($type->value === 'team' ? ['team' => TeamAppearance::normalize((array) ($input['team'] ?? []))] : []),
+            ...($type->value === 'contact' ? ['contact' => ContactAppearance::normalize((array) ($input['contact'] ?? []))] : []),
             ...($type === WebsiteSectionType::ABOUT ? ['about' => AboutAppearance::normalize((array) ($input['about'] ?? []))] : []),
             ...($type === WebsiteSectionType::HERO ? ['hero' => HeroAppearance::normalize((array) ($input['hero'] ?? [])), 'slides' => []] : []),
         ]);

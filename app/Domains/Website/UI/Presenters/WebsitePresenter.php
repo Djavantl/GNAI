@@ -14,6 +14,7 @@ use App\Domains\Website\Domain\Support\WebsiteDefaults;
 use App\Domains\Website\Domain\Support\AboutAppearance;
 use App\Domains\Website\Domain\Support\GuidanceAppearance;
 use App\Domains\Website\Domain\Support\TeamAppearance;
+use App\Domains\Website\Domain\Support\ContactAppearance;
 use App\Domains\Website\Domain\Support\PublicationsAppearance;
 use App\Domains\Website\Domain\Support\PillarCardAppearance;
 use App\Domains\Website\Domain\Support\PillarsAppearance;
@@ -81,6 +82,7 @@ final class WebsitePresenter
                 ...($section['type'] === 'publications' ? ['publications' => PublicationsAppearance::normalize((array) ($section['publications'] ?? []))] : []),
                 ...($section['type'] === 'events' ? ['events' => PublicationsAppearance::normalize((array) ($section['events'] ?? []))] : []),
                 ...($section['type'] === 'team' ? ['team' => TeamAppearance::normalize((array) ($section['team'] ?? []))] : []),
+                ...($section['type'] === 'contact' ? ['contact' => ContactAppearance::normalize((array) ($section['contact'] ?? []))] : []),
                 ...($section['type'] === 'about' ? ['about' => AboutAppearance::normalize((array) ($section['about'] ?? []))] : []),
                 ...($section['type'] === 'hero' ? [
                     'hero' => HeroAppearance::normalize((array) ($section['hero'] ?? [])),

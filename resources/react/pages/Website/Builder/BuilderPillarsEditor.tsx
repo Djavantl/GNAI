@@ -5,7 +5,7 @@ import TextInput from "@/components/Forms/TextInput/TextInput";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
 import Button from "@/components/UI/Button/Button";
-import type { TeamAppearance, PublicationsAppearance, PillarCardAppearance, WebsiteSectionItem } from "@/components/Website/Website.types";
+import type { ContactAppearance, TeamAppearance, PublicationsAppearance, PillarCardAppearance, WebsiteSectionItem } from "@/components/Website/Website.types";
 import "@/components/Forms/RemovableField/RemovableField.css";
 import {
     AppearanceColorField, AppearanceRangeField, AppearanceSelectField, appearanceAlignments,
@@ -27,19 +27,24 @@ export default function BuilderPillarsEditor({
     onEditTarget: (target: BuilderEditTarget) => void;
     onChange: (patch: Partial<BuilderSection>) => void;
 }): React.JSX.Element | null {
+    const contact = section.type === "contact";
     const team = section.type === "team";
     const events = section.type === "events";
     const publications = section.type === "publications" || events;
     const numbered = section.type === "guidance";
-    const appearance = team ? section.team : events ? section.events : publications ? section.publications : numbered ? section.guidance : section.pillars;
+    const appearance = contact ? section.contact : team ? section.team : events ? section.events : publications ? section.publications : numbered ? section.guidance : section.pillars;
     if (!appearance) return null;
 
     const id = (key: string) => `website-section-${section.id}-${key}`;
     const error = (key: string) => errors[`sections.${index}.${key}`];
-    const scope = team ? "team" : events ? "events" : publications ? "publications" : numbered ? "guidance" : "pillars";
-    const values: Partial<PublicationsAppearance & TeamAppearance> = appearance;
+    const scope = contact ? "contact" : team ? "team" : events ? "events" : publications ? "publications" : numbered ? "guidance" : "pillars";
+    const values: Partial<PublicationsAppearance & TeamAppearance & ContactAppearance> = appearance;
 
-    function patch(changes: Partial<PublicationsAppearance & TeamAppearance>): void {
+    function patch(changes: Partial<PublicationsAppearance & TeamAppearance & ContactAppearance>): void {
+        if (contact) {
+            onChange({ contact: { ...section.contact!, ...changes } });
+            return;
+        }
         if (team) {
             onChange({ team: { ...section.team!, ...changes } });
             return;
@@ -65,7 +70,7 @@ export default function BuilderPillarsEditor({
         } });
     }
 
-    function color(key: keyof (PublicationsAppearance & TeamAppearance), label: string): React.JSX.Element {
+    function color(key: keyof (PublicationsAppearance & TeamAppearance & ContactAppearance), label: string): React.JSX.Element {
         return (
             <AppearanceColorField
                 id={id(`${scope}-${key}`)}
@@ -78,7 +83,7 @@ export default function BuilderPillarsEditor({
         );
     }
 
-    function range(key: keyof (PublicationsAppearance & TeamAppearance), label: string, min: number, max: number): React.JSX.Element {
+    function range(key: keyof (PublicationsAppearance & TeamAppearance & ContactAppearance), label: string, min: number, max: number): React.JSX.Element {
         return (
             <AppearanceRangeField
                 id={id(`${scope}-${key}`)}
@@ -93,7 +98,7 @@ export default function BuilderPillarsEditor({
         );
     }
 
-    function select(key: keyof (PublicationsAppearance & TeamAppearance), label: string, options = appearanceAlignments): React.JSX.Element {
+    function select(key: keyof (PublicationsAppearance & TeamAppearance & ContactAppearance), label: string, options = appearanceAlignments): React.JSX.Element {
         return (
             <AppearanceSelectField
                 id={id(`${scope}-${key}`)}
@@ -176,7 +181,46 @@ export default function BuilderPillarsEditor({
                             {color("subtitle_color", "Cor do texto de apoio")}
                         </FormGrid>
                     </FormSection>
-                    {team ? (
+                    {contact ? (
+                        <FormSection title="Canais de contato" variant="inline" iconClass="fa fa-envelope-o">
+                            <FormGrid>
+                                <FormGridWide>
+                                    <p className="websiteBuilder__note">
+                                        Endereço, telefone, e-mail e redes sociais são gerenciados no item Identidade.
+                                        Somente os canais preenchidos aparecem no site.
+                                    </p>
+                                </FormGridWide>
+                                {([
+                                    ["show_icons", "Exibir ícones"], ["show_social", "Exibir redes sociais"],
+                                ] as const).map(([key, label]) => (
+                                    <FormGridWide key={key}>
+                                        <ToggleControl
+                                            id={id(`contact-${key}`)}
+                                            label={label}
+                                            size="small"
+                                            checked={section.contact![key]}
+                                            disabled={disabled}
+                                            onChange={(checked) => patch({ [key]: checked })}
+                                        />
+                                    </FormGridWide>
+                                ))}
+                                {range("icon_size", "Tamanho dos ícones (px)", 16, 64)}
+                                {range("icon_radius", "Arredondamento dos ícones (px)", 0, 60)}
+                                {range("icon_border_width", "Espessura da borda dos ícones (px)", 0, 12)}
+                                {color("icon_color", "Cor dos ícones e suas bordas")}
+                                {color("icon_background", "Fundo dos ícones")}
+                                {select("card_align", "Alinhamento dos canais")}
+                                {range("card_title_size", "Tamanho dos títulos dos canais (px)", 16, 32)}
+                                {color("card_title_color", "Cor dos títulos dos canais")}
+                                {range("card_text_size", "Tamanho das informações (px)", 14, 24)}
+                                {color("card_text_color", "Cor das informações")}
+                                {color("card_background", "Fundo dos cards")}
+                                {color("card_border_color", "Cor das bordas dos cards")}
+                                {range("card_radius", "Arredondamento dos cards (px)", 0, 60)}
+                                {range("card_padding", "Espaçamento interno dos cards (px)", 8, 48)}
+                            </FormGrid>
+                        </FormSection>
+                    ) : team ? (
                         <FormSection title="Profissionais" variant="inline" iconClass="fa fa-users">
                             <FormGrid>
                                 <FormField
@@ -303,13 +347,16 @@ export default function BuilderPillarsEditor({
                             </FormGrid>
                         </FormSection>
                     ) : (
-                        <FormSection title={numbered ? "Etapas" : "Itens"} variant="inline" iconClass="fa fa-th-large">
+                        <FormSection title={section.type === "faq" ? "Perguntas e respostas" : numbered ? "Etapas" : "Itens"} variant="inline" iconClass="fa fa-th-large">
                             {error("items") ? <p className="websiteBuilder__itemsError">{error("items")}</p> : null}
                             <ol className="websiteBuilder__pillarItems">
                                 {section.items.map((item, itemIndex) => (
                                     <BuilderPillarItemEditor
                                         key={item.editor_key ?? itemIndex}
                                         numbered={numbered}
+                                    faq={section.type === "faq"}
+                                    resource={section.type === "resources"}
+                                    linkOptions={linkOptions}
                                         timeline={numbered && appearance.layout === "timeline"}
                                         sectionId={section.id}
                                         sectionIndex={index}
@@ -331,9 +378,9 @@ export default function BuilderPillarsEditor({
                                 tone="white"
                                 className="removableField__add"
                                 labelIconClass="fa fa-plus"
-                                label={numbered ? "Etapa" : "Item"}
-                                title={numbered ? "Adicionar etapa" : "Adicionar item"}
-                                aria-label={numbered ? "Adicionar etapa" : "Adicionar item"}
+                                label={section.type === "faq" ? "Pergunta" : numbered ? "Etapa" : "Item"}
+                                title={section.type === "faq" ? "Adicionar pergunta" : numbered ? "Adicionar etapa" : "Adicionar item"}
+                                aria-label={section.type === "faq" ? "Adicionar pergunta" : numbered ? "Adicionar etapa" : "Adicionar item"}
                                 disabled={disabled || section.items.length >= 12}
                                 onClick={() => {
                                     onChange({
@@ -343,7 +390,7 @@ export default function BuilderPillarsEditor({
                                             appearance: { ...template },
                                         }],
                                     });
-                                    onEditTarget({ sectionId: section.id, field: `item-${section.items.length}-${numbered ? "title" : "icon"}` });
+                                    onEditTarget({ sectionId: section.id, field: `item-${section.items.length}-${numbered || section.type === "faq" ? "title" : "icon"}` });
                                 }}
                             />
                         </FormSection>
@@ -418,7 +465,7 @@ export default function BuilderPillarsEditor({
                                 ...(numbered || publications || team ? [{ value: "carousel", label: "Carrossel" }] : []),
                             ])}
                             {appearance.layout === "grid" ? range("columns", "Colunas", 1, 4) : null}
-                            {appearance.layout !== "carousel" ? range("gap", numbered ? "Espaço entre etapas (px)" : "Espaço entre cards (px)", 8, numbered || publications || team ? 64 : 48) : null}
+                            {appearance.layout !== "carousel" ? range("gap", numbered ? "Espaço entre etapas (px)" : "Espaço entre cards (px)", 8, numbered || publications || team || contact ? 64 : 48) : null}
                             {numbered && appearance.layout === "timeline" ? color("timeline_color", "Cor da linha do tempo") : null}
                             {(numbered || publications || team) && appearance.layout === "carousel" ? (
                                 <>

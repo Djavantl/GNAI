@@ -182,3 +182,14 @@ A consulta permanece limitada aos profissionais ativos marcados como “Aparece 
 `SiteCollection` compartilha cabeçalho, fundo, organização, carrossel e ação entre equipe, publicações e eventos; cada renderer mantém seus próprios cards e configurações. `SiteTeam` reutiliza `TeamMemberCard`, com estilos restritos à home. Clique duplo em foto, nome, cargo e card direciona aos ajustes correspondentes, e o hover é simulado na prévia como nas seções anteriores.
 
 Revisão de código e diff, sem executar build, typecheck, testes ou navegador. Implementado no código; comportamento em runtime deve ser conferido na homologação manual.
+
+
+## Dúvidas frequentes, documentos e contato
+
+As seções pendentes `faq`, `resources` e `contact` passam a utilizar os controles de aparência do construtor, mantendo os conteúdos e contratos existentes. Não há migration nem criação de registros demonstrativos.
+
+Perguntas e documentos compartilham a aparência geral `pillars` e a aparência por item `items[*].appearance`, com validação e normalização já utilizadas nas demais listas de cards. Título, texto de apoio, alinhamento, tipografia, linha decorativa, grade/lista, espaçamentos, fundo e degradê seguem o padrão anterior. Cada item mantém seus próprios textos, cores, borda, arredondamento, sombra, dimensões e hover. Perguntas possuem rótulos de pergunta/resposta e mantêm `details`/`summary`, acionáveis pelo teclado e abertos na prévia para edição; começam em lista de uma coluna. Materiais mantêm ícones e links reais de consulta, agora com o seletor compartilhado de destinos, e permanecem desativados por padrão até serem cadastrados. Inclusão, exclusão, reordenação, expansão do editor, erros e clique duplo reutilizam os componentes existentes.
+
+Contato possui aparência independente em `contact`, centralizada em `ContactAppearance`. Reutiliza `SiteCollection` para título, texto de apoio, organização, espaçamentos e fundo, com grade ou lista. Os controles abrangem ícones (exibição, tamanho, fundo, borda e arredondamento), textos dos canais, alinhamento, cores, padding e arredondamento dos cards, além da exibição de redes sociais. Endereço, telefone, e-mail e redes continuam vindo da Identidade; apenas os canais preenchidos são exibidos, e os links `tel:` e `mailto:` são preservados. Não foi criado formulário público nem canal fictício. O clique duplo sobre os valores leva ao campo correspondente da Identidade; os elementos de aparência levam aos ajustes da seção.
+
+O presenter completa configurações antigas e o salvamento normaliza os novos ajustes. O editor genérico anterior foi substituído pela composição compartilhada, sem manter uma segunda lista de controles. Prévia e site público utilizam os mesmos renderers. Revisão de código e diff, sem executar build, typecheck, testes ou navegador. Implementado no código; comportamento em runtime deve ser conferido na homologação manual.

@@ -10,10 +10,14 @@ import type { PillarCardAppearance, WebsiteSectionItem } from "@/components/Webs
 import {
     AppearanceColorField, AppearanceRangeField, AppearanceSelectField, appearanceAlignments,
 } from "./BuilderAppearanceFields";
+import BuilderLinkField, { type BuilderLinkOption } from "./BuilderLinkField";
 import BuilderIconField from "./BuilderIconField";
 import type { BuilderEditTarget } from "./websiteBuilder";
 
 type Props = {
+    faq?: boolean;
+    resource?: boolean;
+    linkOptions?: BuilderLinkOption[];
     numbered?: boolean;
     timeline?: boolean;
     sectionId: string;
@@ -31,7 +35,7 @@ type Props = {
 };
 
 export default function BuilderPillarItemEditor({
-    numbered = false, timeline = false, sectionId, sectionIndex, item, itemIndex, count,
+    faq = false, resource = false, linkOptions = [], numbered = false, timeline = false, sectionId, sectionIndex, item, itemIndex, count,
     template, disabled, errors, editTarget, onChange, onMove, onRemove,
 }: Props): React.JSX.Element {
     const appearance = item.appearance ?? template;
@@ -111,8 +115,8 @@ export default function BuilderPillarItemEditor({
         <li className="websiteBuilder__pillarItem">
             <details open={open} onToggle={(event) => setOpen(event.currentTarget.open)}>
                 <summary>
-                    <strong>{numbered ? "Etapa" : "Item"} {itemIndex + 1}</strong>
-                    <span>{item.title || (numbered ? "Nova etapa" : "Novo item")}</span>
+                    <strong>{faq ? "Pergunta" : numbered ? "Etapa" : "Item"} {itemIndex + 1}</strong>
+                    <span>{item.title || (faq ? "Nova pergunta" : numbered ? "Nova etapa" : "Novo item")}</span>
                 </summary>
                 {open ? (
                     <div className="websiteBuilder__pillarItemBody">
@@ -134,7 +138,7 @@ export default function BuilderPillarItemEditor({
                                 onClick={() => onMove(1)}
                             />
                             <Button
-                                label={numbered ? "Remover etapa" : "Remover item"}
+                                label={faq ? "Remover pergunta" : numbered ? "Remover etapa" : "Remover item"}
                                 leftIconClass="fa fa-times"
                                 tone="dark-red"
                                 size="sm"
@@ -142,78 +146,95 @@ export default function BuilderPillarItemEditor({
                                 onClick={onRemove}
                             />
                         </div>
-                        <FormSection title={numbered ? "Número da etapa" : "Ícone"} variant="inline" iconClass={numbered ? "fa fa-list-ol" : "fa fa-star-o"}>
-                            <FormGrid>
-                                {!numbered ? (
+                        {!faq ? (
+                            <FormSection title={numbered ? "Número da etapa" : "Ícone"} variant="inline" iconClass={numbered ? "fa fa-list-ol" : "fa fa-star-o"}>
+                                <FormGrid>
+                                    {!numbered ? (
+                                        <FormGridWide>
+                                            <BuilderIconField
+                                                id={id("icon")}
+                                                name={`sections[${sectionIndex}][items][${itemIndex}][icon]`}
+                                                label="Ícone"
+                                                value={item.icon}
+                                                error={error("icon")}
+                                                disabled={disabled}
+                                                onChange={(icon) => onChange({ icon })}
+                                            />
+                                        </FormGridWide>
+                                    ) : null}
+                                    {!timeline ? select("icon_position", numbered ? "Posição do número" : "Posição do ícone", [
+                                        { value: "top", label: "Acima do texto" },
+                                        { value: "left", label: "À esquerda do texto" },
+                                        { value: "right", label: "À direita do texto" },
+                                    ]) : null}
+                                    {!timeline ? select("icon_align", numbered ? "Alinhamento do número" : "Alinhamento do ícone") : null}
+                                    {color("icon_color", numbered ? "Cor do número" : "Cor do ícone")}
+                                    {color("icon_background", numbered ? "Cor do fundo do número" : "Cor do fundo do ícone")}
+                                    {range("icon_size", numbered ? "Tamanho do número (px)" : "Tamanho do ícone (px)", 12, 64)}
+                                    {range("icon_width", numbered ? "Largura do fundo do número (px)" : "Largura do fundo do ícone (px)", 24, 120)}
+                                    {range("icon_height", numbered ? "Altura do fundo do número (px)" : "Altura do fundo do ícone (px)", 24, 120)}
+                                    {range("icon_radius", numbered ? "Arredondamento do fundo do número (px)" : "Arredondamento do fundo do ícone (px)", 0, 60)}
+                                    {range("icon_gap", numbered ? "Distância entre número e texto (px)" : "Distância entre ícone e texto (px)", 4, 40)}
+                                </FormGrid>
+                            </FormSection>
+                            ) : null}
+                            <FormSection title={faq ? "Pergunta" : numbered ? "Título da etapa" : "Título do item"} variant="inline" iconClass="fa fa-font">
+                                <FormGrid>
                                     <FormGridWide>
-                                        <BuilderIconField
-                                            id={id("icon")}
-                                            name={`sections[${sectionIndex}][items][${itemIndex}][icon]`}
-                                            label="Ícone"
-                                            value={item.icon}
-                                            error={error("icon")}
-                                            disabled={disabled}
-                                            onChange={(icon) => onChange({ icon })}
-                                        />
+                                        <FormField id={id("title")} label={faq ? "Pergunta" : "Título"} error={error("title")}>
+                                            <TextInput
+                                                id={id("title")}
+                                                value={item.title}
+                                                maxLength={120}
+                                                disabled={disabled}
+                                                invalid={!!error("title")}
+                                                aria-describedby={error("title") ? `${id("title")}-error` : undefined}
+                                                onChange={(event) => onChange({ title: event.target.value })}
+                                            />
+                                        </FormField>
                                     </FormGridWide>
-                                ) : null}
-                                {!timeline ? select("icon_position", numbered ? "Posição do número" : "Posição do ícone", [
-                                    { value: "top", label: "Acima do texto" },
-                                    { value: "left", label: "À esquerda do texto" },
-                                    { value: "right", label: "À direita do texto" },
-                                ]) : null}
-                                {!timeline ? select("icon_align", numbered ? "Alinhamento do número" : "Alinhamento do ícone") : null}
-                                {color("icon_color", numbered ? "Cor do número" : "Cor do ícone")}
-                                {color("icon_background", numbered ? "Cor do fundo do número" : "Cor do fundo do ícone")}
-                                {range("icon_size", numbered ? "Tamanho do número (px)" : "Tamanho do ícone (px)", 12, 64)}
-                                {range("icon_width", numbered ? "Largura do fundo do número (px)" : "Largura do fundo do ícone (px)", 24, 120)}
-                                {range("icon_height", numbered ? "Altura do fundo do número (px)" : "Altura do fundo do ícone (px)", 24, 120)}
-                                {range("icon_radius", numbered ? "Arredondamento do fundo do número (px)" : "Arredondamento do fundo do ícone (px)", 0, 60)}
-                                {range("icon_gap", numbered ? "Distância entre número e texto (px)" : "Distância entre ícone e texto (px)", 4, 40)}
-                            </FormGrid>
-                        </FormSection>
-                        <FormSection title={numbered ? "Título da etapa" : "Título do item"} variant="inline" iconClass="fa fa-font">
-                            <FormGrid>
-                                <FormGridWide>
-                                    <FormField id={id("title")} label="Título" error={error("title")}>
-                                        <TextInput
-                                            id={id("title")}
-                                            value={item.title}
-                                            maxLength={120}
+                                    {select("title_align", "Alinhamento do título")}
+                                    {range("title_size", "Tamanho do título (px)", 14, 32)}
+                                    {color("title_color", "Cor do título")}
+                                </FormGrid>
+                            </FormSection>
+                            <FormSection title={faq ? "Resposta" : numbered ? "Texto da etapa" : "Texto do item"} variant="inline" iconClass="fa fa-align-left">
+                                <FormGrid>
+                                    <FormGridWide>
+                                        <FormField id={id("text")} label={faq ? "Resposta" : "Texto"} error={error("text")}>
+                                            <TextArea
+                                                id={id("text")}
+                                                value={item.text}
+                                                rows={3}
+                                                maxLength={300}
+                                                disabled={disabled}
+                                                aria-invalid={!!error("text")}
+                                                aria-describedby={error("text") ? `${id("text")}-error` : undefined}
+                                                onChange={(event) => onChange({ text: event.target.value })}
+                                            />
+                                        </FormField>
+                                    </FormGridWide>
+                                    {select("text_align", "Alinhamento do texto", [...appearanceAlignments, { value: "justify", label: "Justificado" }])}
+                                    {range("text_size", "Tamanho do texto (px)", 12, 24)}
+                                    {range("text_line_height", "Espaçamento entre linhas (%)", 140, 220)}
+                                    {color("text_color", "Cor do texto")}
+                                </FormGrid>
+                            </FormSection>
+                            {resource ? (
+                                <FormSection title="Destino do material" variant="inline" iconClass="fa fa-link">
+                                    <FormGrid>
+                                        <BuilderLinkField
+                                            id={id("url")}
+                                            name={`sections[${sectionIndex}][items][${itemIndex}][url]`}
+                                            value={item.url}
+                                            options={linkOptions}
+                                            error={error("url")}
                                             disabled={disabled}
-                                            invalid={!!error("title")}
-                                            aria-describedby={error("title") ? `${id("title")}-error` : undefined}
-                                            onChange={(event) => onChange({ title: event.target.value })}
+                                            onChange={(url) => onChange({ url })}
                                         />
-                                    </FormField>
-                                </FormGridWide>
-                                {select("title_align", "Alinhamento do título")}
-                                {range("title_size", "Tamanho do título (px)", 14, 32)}
-                                {color("title_color", "Cor do título")}
-                            </FormGrid>
-                        </FormSection>
-                        <FormSection title={numbered ? "Texto da etapa" : "Texto do item"} variant="inline" iconClass="fa fa-align-left">
-                            <FormGrid>
-                                <FormGridWide>
-                                    <FormField id={id("text")} label="Texto" error={error("text")}>
-                                        <TextArea
-                                            id={id("text")}
-                                            value={item.text}
-                                            rows={3}
-                                            maxLength={300}
-                                            disabled={disabled}
-                                            aria-invalid={!!error("text")}
-                                            aria-describedby={error("text") ? `${id("text")}-error` : undefined}
-                                            onChange={(event) => onChange({ text: event.target.value })}
-                                        />
-                                    </FormField>
-                                </FormGridWide>
-                                {select("text_align", "Alinhamento do texto", [...appearanceAlignments, { value: "justify", label: "Justificado" }])}
-                                {range("text_size", "Tamanho do texto (px)", 12, 24)}
-                                {range("text_line_height", "Espaçamento entre linhas (%)", 140, 220)}
-                                {color("text_color", "Cor do texto")}
-                            </FormGrid>
-                        </FormSection>
+                                </FormGrid>
+                            </FormSection>
+                        ) : null}
                         <FormSection title="Card" variant="inline" iconClass="fa fa-square-o">
                             <FormGrid>
                                 {color("card_background", "Cor de fundo")}

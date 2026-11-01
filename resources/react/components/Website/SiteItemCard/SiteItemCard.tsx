@@ -1,3 +1,4 @@
+import SiteLink, { useSitePreview } from "../SiteLayout/SiteLink";
 import type { CSSProperties } from "react";
 import { appearanceColor as color } from "../WebsiteAppearance";
 import type { PillarCardAppearance, WebsiteSectionItem } from "../Website.types";
@@ -45,13 +46,16 @@ type Props = {
     item: WebsiteSectionItem;
     index: number;
     numbered?: boolean;
+    faq?: boolean;
+    resource?: boolean;
     hideMarker?: boolean;
     as?: "li" | "div";
 };
 
 export default function SiteItemCard({
-    item, index, numbered = false, hideMarker = false, as: Tag = "li",
+    item, index, faq = false, resource = false, numbered = false, hideMarker = false, as: Tag = "li",
 }: Props): React.JSX.Element | null {
+    const preview = useSitePreview();
     const appearance = item.appearance;
     if (!appearance) return null;
 
@@ -60,17 +64,33 @@ export default function SiteItemCard({
             className={`siteSections__feature siteItemCard__card siteItemCard__card--${appearance.icon_position}${appearance.hover_enabled ? " siteItemCard__card--hover" : ""}`}
             style={itemCardStyle(appearance)}
             data-item-index={index}
-            data-has-icon={!hideMarker && (numbered || !!item.icon)}
+            data-has-icon={!faq && !hideMarker && (numbered || !!item.icon)}
         >
-            {!hideMarker && (numbered || item.icon) ? (
+            {!faq && !hideMarker && (numbered || item.icon) ? (
                 <span className="siteSections__featureIcon siteItemCard__icon" aria-hidden="true">
                     {numbered ? index + 1 : <i className={item.icon} />}
                 </span>
             ) : null}
-            <div className="siteItemCard__cardText">
-                {item.title ? <h3>{item.title}</h3> : null}
-                {item.text ? <p>{item.text}</p> : null}
-            </div>
+            {faq ? (
+                <details className="siteSections__question" open={preview || undefined}>
+                    <summary>{item.title}</summary>
+                    {item.text ? <p>{item.text}</p> : null}
+                </details>
+            ) : (
+                <div className="siteItemCard__cardText">
+                    {item.title ? <h3>{item.title}</h3> : null}
+                    {item.text ? <p>{item.text}</p> : null}
+                    {resource && item.url ? (
+                        <SiteLink
+                            href={item.url}
+                            className="siteSections__more siteSections__resourceLink"
+                            ariaLabel={`Consultar: ${item.title}`}
+                        >
+                            Consultar material <i className="fa fa-arrow-right" aria-hidden="true" />
+                        </SiteLink>
+                    ) : null}
+                </div>
+            )}
         </Tag>
     );
 }
