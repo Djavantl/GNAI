@@ -1,11 +1,10 @@
-/* Nesta tela, o recorte horizontal não deve criar um ancestral de rolagem para a prévia sticky. */
+/* Permite o sticky dentro do card sem criar outro ancestral de rolagem. */
 body:has(.websiteBuilderPage) {
     overflow-x: clip;
 }
 
 .app-content-placeholder:has(.websiteBuilderPage) {
-    /* Contém a margem inferior do conteúdo e reserva o espaço do AppFooter,
-       sem criar um ancestral de rolagem que impeça a prévia sticky. */
+    /* Mantém a margem que reserva espaço para o rodapé da aplicação. */
     display: flow-root;
     overflow: clip;
 }
@@ -28,9 +27,9 @@ body:has(.websiteBuilderPage) {
     min-width: 0;
 }
 
-/* O card já tem respiro; o conteúdo começa logo abaixo das abas. */
+/* O card compartilhado fornece o respiro externo do editor e da prévia. */
 .websiteBuilder__editor .tabs__content {
-    padding: 0;
+    padding: 24px 0 0;
     box-shadow: none;
 }
 
@@ -259,7 +258,6 @@ body:has(.websiteBuilderPage) {
 }
 
 /* Prévia */
-/* A prévia fica visível enquanto o formulário longo é percorrido. */
 .websiteBuilder__preview {
     position: sticky;
     top: calc(var(--ui-topbar-height) + 16px);
@@ -269,10 +267,6 @@ body:has(.websiteBuilderPage) {
     height: calc(100dvh - var(--ui-topbar-height) - 112px);
     min-height: 180px;
     min-width: 0;
-    padding: 14px;
-    border: 1px solid var(--ui-color-card-border);
-    border-radius: 6px;
-    background: #fff;
 }
 
 .websiteBuilder__previewBar {

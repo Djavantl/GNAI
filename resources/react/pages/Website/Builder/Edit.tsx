@@ -472,37 +472,39 @@ export default function WebsiteBuilderEditPage({
                 encType="multipart/form-data"
                 onSubmit={submit}
             >
-                <div className="websiteBuilder">
-                    <CardBox className="websiteBuilder__editor">
-                        <fieldset disabled={form.processing}>
-                            <Tabs
-                                initialActiveId={tab}
-                                onChange={(id) => setTab(id as BuilderTab)}
-                                items={[
-                                    {
-                                        id: "sections",
-                                        label: "Seções",
-                                        icon: "fa fa-th-list",
-                                        content: sectionsTab,
-                                    },
-                                    {
-                                        id: "edit",
-                                        label: "Edição",
-                                        icon: "fa fa-pencil",
-                                        content: editTab,
-                                    },
-                                ]}
-                            />
-                        </fieldset>
-                    </CardBox>
-                    <BuilderPreview
-                        site={previewSite}
-                        sections={previewSections}
-                        content={content}
-                        selectedId={selectedId}
-                        onEdit={openEditor}
-                    />
-                </div>
+                <CardBox className="websiteBuilder__content">
+                    <div className="websiteBuilder">
+                        <div className="websiteBuilder__editor">
+                            <fieldset disabled={form.processing}>
+                                <Tabs
+                                    initialActiveId={tab}
+                                    onChange={(id) => setTab(id as BuilderTab)}
+                                    items={[
+                                        {
+                                            id: "sections",
+                                            label: "Seções",
+                                            icon: "fa fa-th-list",
+                                            content: sectionsTab,
+                                        },
+                                        {
+                                            id: "edit",
+                                            label: "Edição",
+                                            icon: "fa fa-pencil",
+                                            content: editTab,
+                                        },
+                                    ]}
+                                />
+                            </fieldset>
+                        </div>
+                        <BuilderPreview
+                            site={previewSite}
+                            sections={previewSections}
+                            content={content}
+                            selectedId={selectedId}
+                            onEdit={openEditor}
+                        />
+                    </div>
+                </CardBox>
                 <FormActions
                     secondary={(
                         <Button

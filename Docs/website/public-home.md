@@ -87,7 +87,7 @@ Esta ampliação recebeu revisão de código e de diff. Não foram executados bu
 
 ## Usabilidade da edição e prévia
 
-No desktop, o painel de prévia acompanha a rolagem do formulário e ajusta sua altura ao espaço entre a barra superior e as ações do rodapé. O conteúdo do site mantém rolagem própria dentro desse painel. O recorte do layout da aplicação é ajustado somente nesta página para permitir o posicionamento sticky.
+Editor e prévia pertencem ao mesmo card, com ações no rodapé compartilhado. No desktop, a prévia acompanha a rolagem com posicionamento sticky dentro do card, mantendo altura limitada e rolagem própria do site. Em telas menores, os painéis ficam empilhados e a prévia acompanha o fluxo normal.
 
 As grades do editor respondem à largura do próprio painel, passando para uma coluna quando o espaço é reduzido. Identificação, switches e controles de cor mantêm espaço para seus textos e ações sem sobreposição.
 
@@ -195,4 +195,4 @@ Contato possui aparência independente em `contact`, centralizada em `ContactApp
 O presenter completa configurações antigas e o salvamento normaliza os novos ajustes. O editor genérico anterior foi substituído pela composição compartilhada, sem manter uma segunda lista de controles. Prévia e site público utilizam os mesmos renderers. Revisão de código e diff, sem executar build, typecheck, testes ou navegador. Implementado no código; comportamento em runtime deve ser conferido na homologação manual.
 
 
-O contêiner da aplicação no construtor usa `display: flow-root` junto de `overflow: clip`: isso contém a margem inferior do conteúdo, preservando a reserva de espaço do rodapé da aplicação. O ajuste evita sua sobreposição com a barra de ações sem criar um ancestral de rolagem que desative a prévia sticky. Correção revisada no código e no diff; conferência visual permanece para a homologação manual.
+O construtor agora reúne editor e prévia dentro de um único `CardBox`, seguido imediatamente pelo `FormActions`, como nas páginas de visualização. A prévia acompanha a rolagem no desktop, limitada ao mesmo card que contém o editor, e mantém a rolagem interna do site. O overflow da aplicação usa clip somente nesta tela para permitir o sticky; flow-root contém a margem inferior e preserva o espaço reservado ao rodapé. Correção revisada no código e no diff; conferência visual permanece para a homologação manual.
