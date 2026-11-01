@@ -5,7 +5,7 @@ import TextInput from "@/components/Forms/TextInput/TextInput";
 import TextArea from "@/components/Forms/TextArea/TextArea";
 import ToggleControl from "@/components/Forms/ToggleControl/ToggleControl";
 import Button from "@/components/UI/Button/Button";
-import type { GuidanceAppearance, PillarCardAppearance, WebsiteSectionItem } from "@/components/Website/Website.types";
+import type { PublicationsAppearance, PillarCardAppearance, WebsiteSectionItem } from "@/components/Website/Website.types";
 import "@/components/Forms/RemovableField/RemovableField.css";
 import {
     AppearanceColorField, AppearanceRangeField, AppearanceSelectField, appearanceAlignments,
@@ -27,16 +27,21 @@ export default function BuilderPillarsEditor({
     onEditTarget: (target: BuilderEditTarget) => void;
     onChange: (patch: Partial<BuilderSection>) => void;
 }): React.JSX.Element | null {
+    const publications = section.type === "publications";
     const numbered = section.type === "guidance";
-    const appearance = numbered ? section.guidance : section.pillars;
+    const appearance = publications ? section.publications : numbered ? section.guidance : section.pillars;
     if (!appearance) return null;
 
     const id = (key: string) => `website-section-${section.id}-${key}`;
     const error = (key: string) => errors[`sections.${index}.${key}`];
-    const scope = numbered ? "guidance" : "pillars";
-    const values: Partial<GuidanceAppearance> = appearance;
+    const scope = publications ? "publications" : numbered ? "guidance" : "pillars";
+    const values: Partial<PublicationsAppearance> = appearance;
 
-    function patch(changes: Partial<GuidanceAppearance>): void {
+    function patch(changes: Partial<PublicationsAppearance>): void {
+        if (publications) {
+            onChange({ publications: { ...section.publications!, ...changes } });
+            return;
+        }
         if (numbered) {
             onChange({ guidance: { ...section.guidance!, ...changes } });
             return;
@@ -50,7 +55,7 @@ export default function BuilderPillarsEditor({
         } });
     }
 
-    function color(key: keyof GuidanceAppearance, label: string): React.JSX.Element {
+    function color(key: keyof PublicationsAppearance, label: string): React.JSX.Element {
         return (
             <AppearanceColorField
                 id={id(`${scope}-${key}`)}
@@ -63,7 +68,7 @@ export default function BuilderPillarsEditor({
         );
     }
 
-    function range(key: keyof GuidanceAppearance, label: string, min: number, max: number): React.JSX.Element {
+    function range(key: keyof PublicationsAppearance, label: string, min: number, max: number): React.JSX.Element {
         return (
             <AppearanceRangeField
                 id={id(`${scope}-${key}`)}
@@ -78,7 +83,7 @@ export default function BuilderPillarsEditor({
         );
     }
 
-    function select(key: keyof GuidanceAppearance, label: string, options = appearanceAlignments): React.JSX.Element {
+    function select(key: keyof PublicationsAppearance, label: string, options = appearanceAlignments): React.JSX.Element {
         return (
             <AppearanceSelectField
                 id={id(`${scope}-${key}`)}
@@ -161,51 +166,102 @@ export default function BuilderPillarsEditor({
                             {color("subtitle_color", "Cor do texto de apoio")}
                         </FormGrid>
                     </FormSection>
-                    <FormSection title={numbered ? "Etapas" : "Itens"} variant="inline" iconClass="fa fa-th-large">
-                        {error("items") ? <p className="websiteBuilder__itemsError">{error("items")}</p> : null}
-                        <ol className="websiteBuilder__pillarItems">
-                            {section.items.map((item, itemIndex) => (
-                                <BuilderPillarItemEditor
-                                    key={item.editor_key ?? itemIndex}
-                                    numbered={numbered}
-                                    timeline={numbered && appearance.layout === "timeline"}
-                                    sectionId={section.id}
-                                    sectionIndex={index}
-                                    item={item}
-                                    itemIndex={itemIndex}
-                                    count={section.items.length}
-                                    template={template}
-                                    disabled={disabled}
-                                    errors={errors}
-                                    editTarget={editTarget}
-                                    onChange={(values) => updateItem(itemIndex, values)}
-                                    onMove={(offset) => moveItem(itemIndex, offset)}
-                                    onRemove={() => onChange({ items: section.items.filter((_, current) => current !== itemIndex) })}
-                                />
-                            ))}
-                        </ol>
-                        <Button
-                            type="button"
-                            tone="white"
-                            className="removableField__add"
-                            labelIconClass="fa fa-plus"
-                            label={numbered ? "Etapa" : "Item"}
-                            title={numbered ? "Adicionar etapa" : "Adicionar item"}
-                            aria-label={numbered ? "Adicionar etapa" : "Adicionar item"}
-                            disabled={disabled || section.items.length >= 12}
-                            onClick={() => {
-                                onChange({
-                                    items: [...section.items, {
-                                        ...emptyItem(section.type),
-                                        editor_key: `item-${Date.now().toString(36)}`,
-                                        appearance: { ...template },
-                                    }],
-                                });
-                                onEditTarget({ sectionId: section.id, field: `item-${section.items.length}-${numbered ? "title" : "icon"}` });
-                            }}
-                        />
-                    </FormSection>
-                    {numbered ? (
+                    {publications ? (
+                        <FormSection title="Publicações" variant="inline" iconClass="fa fa-newspaper-o">
+                            <FormGrid>
+                                <FormField id={id("limit")} label="Quantidade exibida" error={error("limit")} hint="Entre 1 e 12 publicações.">
+                                    <TextInput
+                                        id={id("limit")}
+                                        type="number"
+                                        min={1}
+                                        max={12}
+                                        value={String(section.limit)}
+                                        disabled={disabled}
+                                        invalid={!!error("limit")}
+                                        aria-describedby={[`${id("limit")}-hint`, error("limit") ? `${id("limit")}-error` : null].filter(Boolean).join(" ")}
+                                        onChange={(event) => onChange({ limit: Number(event.target.value) || 1 })}
+                                    />
+                                </FormField>
+                                <FormGridWide>
+                                    <p className="websiteBuilder__note">
+                                        Mostra as publicações mais recentes, com os destaques primeiro. O conteúdo é gerenciado no cadastro de publicações.
+                                        Sem registros disponíveis, a seção fica oculta no site público e permanece editável na prévia.
+                                    </p>
+                                </FormGridWide>
+                                {([
+                                    ["show_image", "Exibir capa"], ["show_summary", "Exibir resumo"],
+                                    ["show_date", "Exibir data"], ["show_tags", "Exibir tipo, marcadores e situação"],
+                                ] as const).map(([key, label]) => (
+                                    <FormGridWide key={key}>
+                                        <ToggleControl
+                                            id={id(`publications-${key}`)}
+                                            label={label}
+                                            size="small"
+                                            checked={section.publications![key]}
+                                            disabled={disabled}
+                                            onChange={(checked) => patch({ [key]: checked })}
+                                        />
+                                    </FormGridWide>
+                                ))}
+                                {range("badge_radius", "Arredondamento das badges (px)", 0, 100)}
+                                {range("image_height", "Altura da capa (px)", 120, 480)}
+                                {range("card_title_size", "Tamanho do título do card (px)", 16, 32)}
+                                {range("card_text_size", "Tamanho do resumo (px)", 14, 24)}
+                                {color("card_title_color", "Cor do título do card")}
+                                {color("card_text_color", "Cor do resumo")}
+                                {color("card_background", "Fundo do card")}
+                                {color("card_border_color", "Cor da borda do card")}
+                                {range("card_radius", "Arredondamento do card (px)", 0, 60)}
+                                {range("card_padding", "Espaçamento interno do card (px)", 8, 48)}
+                            </FormGrid>
+                        </FormSection>
+                    ) : (
+                        <FormSection title={numbered ? "Etapas" : "Itens"} variant="inline" iconClass="fa fa-th-large">
+                            {error("items") ? <p className="websiteBuilder__itemsError">{error("items")}</p> : null}
+                            <ol className="websiteBuilder__pillarItems">
+                                {section.items.map((item, itemIndex) => (
+                                    <BuilderPillarItemEditor
+                                        key={item.editor_key ?? itemIndex}
+                                        numbered={numbered}
+                                        timeline={numbered && appearance.layout === "timeline"}
+                                        sectionId={section.id}
+                                        sectionIndex={index}
+                                        item={item}
+                                        itemIndex={itemIndex}
+                                        count={section.items.length}
+                                        template={template}
+                                        disabled={disabled}
+                                        errors={errors}
+                                        editTarget={editTarget}
+                                        onChange={(values) => updateItem(itemIndex, values)}
+                                        onMove={(offset) => moveItem(itemIndex, offset)}
+                                        onRemove={() => onChange({ items: section.items.filter((_, current) => current !== itemIndex) })}
+                                    />
+                                ))}
+                            </ol>
+                            <Button
+                                type="button"
+                                tone="white"
+                                className="removableField__add"
+                                labelIconClass="fa fa-plus"
+                                label={numbered ? "Etapa" : "Item"}
+                                title={numbered ? "Adicionar etapa" : "Adicionar item"}
+                                aria-label={numbered ? "Adicionar etapa" : "Adicionar item"}
+                                disabled={disabled || section.items.length >= 12}
+                                onClick={() => {
+                                    onChange({
+                                        items: [...section.items, {
+                                            ...emptyItem(section.type),
+                                            editor_key: `item-${Date.now().toString(36)}`,
+                                            appearance: { ...template },
+                                        }],
+                                    });
+                                    onEditTarget({ sectionId: section.id, field: `item-${section.items.length}-${numbered ? "title" : "icon"}` });
+                                }}
+                            />
+                        </FormSection>
+                    )}
+                    {numbered || publications ? (
                         <FormSection title="Ação" variant="inline" iconClass="fa fa-link">
                             <FormGrid>
                                 <FormField id={id("button_label")} label="Texto da ação" error={error("button_label")}>
@@ -237,25 +293,25 @@ export default function BuilderPillarsEditor({
                                 {range("button_shadow", "Sombra", 0, 40)}
                                 <FormGridWide>
                                     <ToggleControl
-                                        id={id("guidance-button_icon")}
+                                        id={id(`${scope}-button_icon`)}
                                         label="Exibir seta"
                                         size="small"
-                                        checked={section.guidance!.button_icon}
+                                        checked={values.button_icon ?? true}
                                         disabled={disabled}
                                         onChange={(checked) => patch({ button_icon: checked })}
                                     />
                                 </FormGridWide>
                                 <FormGridWide>
                                     <ToggleControl
-                                        id={id("guidance-hover_enabled")}
+                                        id={id(`${scope}-hover_enabled`)}
                                         label="Efeito ao passar o ponteiro"
                                         size="small"
-                                        checked={section.guidance!.hover_enabled}
+                                        checked={values.hover_enabled ?? true}
                                         disabled={disabled}
                                         onChange={(checked) => patch({ hover_enabled: checked })}
                                     />
                                 </FormGridWide>
-                                {section.guidance!.hover_enabled ? (
+                                {values.hover_enabled ? (
                                     <>
                                         {color("hover_color", "Cor do texto ao passar o ponteiro")}
                                         {color("hover_background", "Cor de fundo ao passar o ponteiro")}
@@ -271,24 +327,25 @@ export default function BuilderPillarsEditor({
                             {select("layout", numbered ? "Exibição das etapas" : "Organização dos itens", [
                                 { value: "grid", label: numbered ? "Grade de etapas" : "Grade de cards" },
                                 { value: "list", label: "Lista" },
-                                ...(numbered ? [{ value: "timeline", label: "Linha do tempo" }, { value: "carousel", label: "Carrossel" }] : []),
+                                ...(numbered ? [{ value: "timeline", label: "Linha do tempo" }] : []),
+                                ...(numbered || publications ? [{ value: "carousel", label: "Carrossel" }] : []),
                             ])}
                             {appearance.layout === "grid" ? range("columns", "Colunas", 1, 4) : null}
-                            {appearance.layout !== "carousel" ? range("gap", numbered ? "Espaço entre etapas (px)" : "Espaço entre cards (px)", 8, numbered ? 64 : 48) : null}
+                            {appearance.layout !== "carousel" ? range("gap", numbered ? "Espaço entre etapas (px)" : "Espaço entre cards (px)", 8, numbered || publications ? 64 : 48) : null}
                             {numbered && appearance.layout === "timeline" ? color("timeline_color", "Cor da linha do tempo") : null}
-                            {numbered && appearance.layout === "carousel" ? (
+                            {(numbered || publications) && appearance.layout === "carousel" ? (
                                 <>
                                     <FormGridWide>
                                         <ToggleControl
-                                            id={id("guidance-autoplay")}
+                                            id={id(`${scope}-autoplay`)}
                                             label="Avançar automaticamente"
                                             size="small"
-                                            checked={section.guidance!.autoplay}
+                                            checked={values.autoplay ?? false}
                                             disabled={disabled}
                                             onChange={(checked) => patch({ autoplay: checked })}
                                         />
                                     </FormGridWide>
-                                    {section.guidance!.autoplay ? range("interval", "Intervalo entre etapas (segundos)", 3, 20) : null}
+                                    {values.autoplay ? range("interval", "Intervalo entre itens (segundos)", 3, 20) : null}
                                 </>
                             ) : null}
                             {range("padding_vertical", "Espaçamento vertical (px)", 24, 120)}

@@ -13,6 +13,7 @@ use App\Domains\Website\Domain\Models\WebsiteSetting;
 use App\Domains\Website\Domain\Support\WebsiteDefaults;
 use App\Domains\Website\Domain\Support\AboutAppearance;
 use App\Domains\Website\Domain\Support\GuidanceAppearance;
+use App\Domains\Website\Domain\Support\PublicationsAppearance;
 use App\Domains\Website\Domain\Support\PillarCardAppearance;
 use App\Domains\Website\Domain\Support\PillarsAppearance;
 use App\Domains\Website\Domain\Support\HeroAppearance;
@@ -76,6 +77,7 @@ final class WebsitePresenter
                         'appearance' => PillarCardAppearance::normalize((array) ($item['appearance'] ?? [])),
                     ], $section['items'] ?? []),
                 ] : []),
+                ...($section['type'] === 'publications' ? ['publications' => PublicationsAppearance::normalize((array) ($section['publications'] ?? []))] : []),
                 ...($section['type'] === 'about' ? ['about' => AboutAppearance::normalize((array) ($section['about'] ?? []))] : []),
                 ...($section['type'] === 'hero' ? [
                     'hero' => HeroAppearance::normalize((array) ($section['hero'] ?? [])),

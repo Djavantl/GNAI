@@ -1,3 +1,4 @@
+import { websiteRoutes } from "@/components/Website/Website.types";
 import type {
     HeroSlide,
     WebsiteSection,
@@ -130,8 +131,8 @@ export function toBuilderSection(section: WebsiteSection): BuilderSection {
         title: section.title ?? "",
         subtitle: section.subtitle ?? "",
         body: section.body ?? "",
-        button_label: section.button_label ?? "",
-        button_url: section.button_url ?? "",
+        button_label: section.button_label || (section.type === "publications" ? "Ver todas as publicações" : ""),
+        button_url: section.button_url || (section.type === "publications" ? websiteRoutes.publications : ""),
         image_alt: section.image_alt ?? "",
         items: Array.isArray(section.items) ? section.items.map((item, index) => ({ ...item, editor_key: `item-${index}` })) : [],
         limit: Number(section.limit) || 3,

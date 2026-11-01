@@ -1,6 +1,6 @@
 import { joinClassNames } from "@/utils/joinClassNames";
 import SiteLink from "../SiteLayout/SiteLink";
-import type { PublicationCardData, PublicationSchedule } from "../Website.types";
+import type { PublicationCardData, PublicationSchedule, PublicationsAppearance } from "../Website.types";
 import "./PublicationCard.css";
 
 export function ScheduleStatus({
@@ -30,10 +30,12 @@ export default function PublicationCard({
     publication,
     headingLevel = 3,
     variant = "default",
+    appearance,
 }: {
     publication: PublicationCardData;
     headingLevel?: 2 | 3;
     variant?: "default" | "event";
+    appearance?: PublicationsAppearance;
 }): React.JSX.Element {
     const Heading = headingLevel === 2 ? "h2" : "h3";
     const schedule = publication.schedule;
@@ -83,24 +85,28 @@ export default function PublicationCard({
                 publication.is_featured && "publicationCard--featured",
             )}
         >
-            <div className="publicationCard__media">
-                {publication.cover_url ? (
-                    <img src={publication.cover_url} alt={publication.cover_alt} loading="lazy" />
-                ) : (
-                    <span className="publicationCard__placeholder" aria-hidden="true">
-                        <i className={publication.schedule ? "fa fa-calendar" : "fa fa-file-text-o"} />
-                    </span>
-                )}
-            </div>
-            <div className="publicationCard__body">
-                <div className="publicationCard__tags">
-                    <span className="publicationCard__type">{publication.type_label}</span>
-                    {publication.tags.map((tag) => (
-                        <span key={tag} className="publicationCard__category">{tag}</span>
-                    ))}
-                    {schedule ? <ScheduleStatus schedule={schedule} /> : null}
+            {appearance?.show_image !== false ? (
+                <div className="publicationCard__media">
+                    {publication.cover_url ? (
+                        <img src={publication.cover_url} alt={publication.cover_alt} loading="lazy" />
+                    ) : (
+                        <span className="publicationCard__placeholder" aria-hidden="true">
+                            <i className={publication.schedule ? "fa fa-calendar" : "fa fa-file-text-o"} />
+                        </span>
+                    )}
                 </div>
-                {publication.published_at_label ? (
+            ) : null}
+            <div className="publicationCard__body">
+                {appearance?.show_tags !== false ? (
+                    <div className="publicationCard__tags">
+                        <span className="publicationCard__type">{publication.type_label}</span>
+                        {publication.tags.map((tag) => (
+                            <span key={tag} className="publicationCard__category">{tag}</span>
+                        ))}
+                        {schedule ? <ScheduleStatus schedule={schedule} /> : null}
+                    </div>
+                ) : null}
+                {appearance?.show_date !== false && publication.published_at_label ? (
                     <time className="publicationCard__date" dateTime={publication.published_at ?? undefined}>
                         {publication.published_at_label}
                     </time>
@@ -108,7 +114,7 @@ export default function PublicationCard({
                 <Heading className="publicationCard__title">
                     <SiteLink href={publication.url}>{publication.title}</SiteLink>
                 </Heading>
-                {publication.summary ? (
+                {appearance?.show_summary !== false && publication.summary ? (
                     <p className="publicationCard__summary">{publication.summary}</p>
                 ) : null}
                 <SiteLink

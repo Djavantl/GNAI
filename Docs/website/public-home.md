@@ -145,3 +145,16 @@ A exibição pode ser em grade, lista vertical, linha do tempo ou carrossel. A l
 A ação aceita apresentação de link ou botão, com alinhamento, tamanho do texto, cores, arredondamento, sombra, seta e hover. O destino utiliza um seletor compartilhado também pela apresentação e pela seção sobre o núcleo: lista as seções visíveis pelos seus títulos e as páginas de equipe e publicações. Outro endereço permite informar links externos, telefone ou e-mail. Âncoras são montadas pelo editor; o operador não precisa digitá-las. Destinos antigos indisponíveis são preservados e identificados no seletor.
 
 As configurações antigas recebem os valores iniciais no presenter, preservando as etapas e o link cadastrados, sem migration. Os cards de princípios, público e formas de apoio compartilham a renderização com as etapas. A conferência desta frente foi de código e diff, sem executar build, testes ou navegador.
+
+
+## Últimas publicações
+
+A seção `publications` guarda sua aparência no objeto `publications` do JSON existente, sem migration. `PublicationsAppearance` centraliza padrões, limites, validação e normalização. Configurações antigas recebem os padrões pelo presenter e preservam título, texto de apoio e quantidade.
+
+O editor reutiliza os grupos das demais seções: título e linha decorativa, texto de apoio, publicações, ação e organização/fundo. Permite configurar cores, tamanhos, alinhamento, fundo e degradê, espaçamentos, colunas, lista ou carrossel com avanço opcional e pausa. Os cards compartilham a aparência definida para a seção, com capa, resumo, data e marcadores opcionais, altura da capa, tamanhos de texto, cores, borda, arredondamento e padding. O conteúdo continua vindo dos cadastros reais; não há edição de notícias dentro do construtor.
+
+A ação mantém o destino inicial da listagem de publicações e permite escolher outro destino pelo seletor compartilhado, texto, apresentação como link ou botão, cores, alinhamento, sombra, arredondamento e hover. Os cards reutilizam `PublicationCard`; os ajustes se aplicam somente à home. A prévia usa o mesmo renderer público, permite foco dos campos por clique duplo e mantém a seção vazia editável. O site público continua ocultando a seção sem registros e priorizando destaques antes das publicações recentes.
+
+Conferência de código e diff, sem build, typecheck, testes ou navegador.
+
+As badges de tipo, marcadores e situação das publicações têm um controle compartilhado de arredondamento entre 0 e 100 px, mantendo o formato de pílula por padrão. O ajuste fica no grupo Publicações e também pode ser localizado por clique duplo na badge da prévia.

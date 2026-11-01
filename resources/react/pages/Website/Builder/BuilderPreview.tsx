@@ -51,6 +51,11 @@ function contactField(element: Element): string {
  * (ou a identidade, no topo e no rodapé) sem campo específico.
  */
 const previewRules: PreviewRule[] = [
+    { selector: ".sitePublications .publicationCard__type, .sitePublications .publicationCard__category, .sitePublications .publicationCard__status", field: () => "publications-badge_radius" },
+    { selector: ".sitePublications .publicationCard__media", field: () => "publications-image_height" },
+    { selector: ".sitePublications .publicationCard__title", field: () => "publications-card_title_size" },
+    { selector: ".sitePublications .publicationCard__summary", field: () => "publications-card_text_size" },
+    { selector: ".sitePublications .publicationCard, .sitePublications__grid", field: () => "limit" },
     { selector: ".siteGuidance .siteSections__featureIcon", field: itemField(".siteSections__feature", "appearance-icon_radius") },
     { selector: ".siteHero__title, .siteSections__title", field: () => "title" },
     { selector: ".siteHero__text, .siteSections__subtitle", field: () => "subtitle" },

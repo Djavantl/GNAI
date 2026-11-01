@@ -1,4 +1,5 @@
 import { isWebsiteSectionVisible } from "../WebsiteSections";
+import SitePublications from "../SitePublications/SitePublications";
 import SiteGuidance from "../SiteGuidance/SiteGuidance";
 import { joinClassNames } from "@/utils/joinClassNames";
 import PublicationCard from "../PublicationCard/PublicationCard";
@@ -136,31 +137,6 @@ function EventsSection({ section, content }: SectionProps): React.JSX.Element {
     );
 }
 
-function PublicationsSection({ section, content }: SectionProps): React.JSX.Element {
-    const publications = content.publications.slice(0, section.limit);
-
-    return (
-        <section className="siteSections__section siteSections__section--tinted">
-            <div className="siteLayout__container">
-                <SectionHeading
-                    section={section}
-                    align="start"
-                    action={{ label: "Ver todas as publicações", href: websiteRoutes.publications }}
-                />
-                {publications.length ? (
-                    <div className="siteSections__grid">
-                        {publications.map((publication) => (
-                            <PublicationCard key={publication.id} publication={publication} />
-                        ))}
-                    </div>
-                ) : (
-                    <p className="siteSections__empty">Nenhuma publicação disponível no momento.</p>
-                )}
-            </div>
-        </section>
-    );
-}
-
 function FaqSection({ section }: SectionProps): React.JSX.Element {
     const preview = useSitePreview();
 
@@ -232,7 +208,7 @@ const renderers = {
     features: SitePillars,
     team: TeamSection,
     events: EventsSection,
-    publications: PublicationsSection,
+    publications: SitePublications,
     contact: ContactSection,
 } satisfies Record<WebsiteSection["type"], (props: SectionProps) => React.JSX.Element>;
 

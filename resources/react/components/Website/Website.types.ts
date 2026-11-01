@@ -200,6 +200,23 @@ export interface GuidanceAppearance {
     button_icon: boolean;
 }
 
+export interface PublicationsAppearance extends GuidanceAppearance {
+    badge_radius: number;
+    card_radius: number;
+    card_padding: number;
+    card_title_size: number;
+    card_text_size: number;
+    image_height: number;
+    card_background: string;
+    card_title_color: string;
+    card_text_color: string;
+    card_border_color: string;
+    show_image: boolean;
+    show_summary: boolean;
+    show_date: boolean;
+    show_tags: boolean;
+}
+
 export interface HeroSlide {
     id: string;
     image_url: string | null;
@@ -225,6 +242,7 @@ export interface WebsiteSection {
     hero?: HeroAppearance;
     about?: AboutAppearance;
     guidance?: GuidanceAppearance;
+    publications?: PublicationsAppearance;
     /** Aparência compartilhada por princípios, público e formas de apoio. */
     pillars?: PillarsAppearance;
     slides?: HeroSlide[];
