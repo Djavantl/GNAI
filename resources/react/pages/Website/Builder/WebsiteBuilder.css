@@ -28,9 +28,9 @@ body:has(.websiteBuilderPage) {
     min-width: 0;
 }
 
-/* O card já tem respiro; o painel das abas não precisa repetir o padding largo do tema. */
+/* O card já tem respiro; o conteúdo começa logo abaixo das abas. */
 .websiteBuilder__editor .tabs__content {
-    padding: 24px 0 0;
+    padding: 0;
     box-shadow: none;
 }
 
