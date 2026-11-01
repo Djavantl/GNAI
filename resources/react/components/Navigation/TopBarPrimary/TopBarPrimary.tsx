@@ -26,10 +26,11 @@ interface TopBarPrimaryProps {
   unreadCount?: number;
   notificationsHref?: string;
   settingsHref?: string;
+  showSettings?: boolean;
 
 }
 
-export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false, brand = 'Interface', compactLogoSrc, expandedLogoText, homeHref = 'index.html', leadingContent, actionsContent, user, profileItems, notificationItems, unreadCount, notificationsHref, settingsHref }: TopBarPrimaryProps): React.JSX.Element {
+export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, smallMenu = false, brand = 'Interface', compactLogoSrc, expandedLogoText, homeHref = 'index.html', leadingContent, actionsContent, user, profileItems, notificationItems, unreadCount, notificationsHref, settingsHref, showSettings = true }: TopBarPrimaryProps): React.JSX.Element {
   const { url } = usePage();
   const [notificationsOpen, setNotificationsOpen] = useState<boolean>(false);
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
@@ -155,18 +156,20 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
               </a>
               </li>
 
-              <li className="topbar__navItem hidden-xs">
-              {settingsHref ? <Link href={settingsHref} className="topbar__navLink waves-effect" aria-label="Configurações da conta">
-                <i className="icon-settings" aria-hidden="true" />
-              </Link> : <a
-                href="/"
-                className="topbar__navLink waves-effect"
-                onClick={toggleRightSidebar}
-                aria-label="Abrir painel de configurações"
-              >
-                <i className="icon-settings" aria-hidden="true" />
-              </a>}
-              </li>
+              {showSettings ? (
+                <li className="topbar__navItem hidden-xs">
+                {settingsHref ? <Link href={settingsHref} className="topbar__navLink waves-effect" aria-label="Configurações da conta">
+                  <i className="icon-settings" aria-hidden="true" />
+                </Link> : <a
+                  href="/"
+                  className="topbar__navLink waves-effect"
+                  onClick={toggleRightSidebar}
+                  aria-label="Abrir painel de configurações"
+                >
+                  <i className="icon-settings" aria-hidden="true" />
+                </a>}
+                </li>
+              ) : null}
 
               <TopBarProfileDropdown
                 user={user}
@@ -181,7 +184,7 @@ export default function TopBarPrimary({ sidebarCollapsed, onToggleSidebar, small
         </div>
       </header>
 
-      {!settingsHref ? <RightSidebar isOpen={rightSidebarOpen} /> : null}
+      {showSettings && !settingsHref ? <RightSidebar isOpen={rightSidebarOpen} /> : null}
     </>
   );
 }

@@ -45,7 +45,7 @@ const columns: TableListColumn[] = [
     { id: "message", label: "Mensagem", width: "38%", minWidth: 160 },
     { id: "date", label: "Recebida", width: "14%", minWidth: 100 },
     { id: "status", label: "Status", width: "11%", minWidth: 80 },
-    { id: "actions", label: "Ações", width: "11%", minWidth: 80, fixed: "end" },
+    { id: "actions", label: "Ações", width: "11%", minWidth: 104, fixed: "end" },
 ];
 
 export default function NotificationsIndexPage({ notifications }: Props): React.JSX.Element {
@@ -115,7 +115,9 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                                             className={`${notification.icon_class} notificationIndex__icon`}
                                             aria-hidden="true"
                                         />
-                                        {notification.title}
+                                        <span className="notificationIndex__titleText">
+                                            {notification.title}
+                                        </span>
                                     </span>
                                 </td>
                                 <td title={notification.message || undefined}>
@@ -140,7 +142,7 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                                             <Button
                                                 href={notification.url}
                                                 size="sm"
-                                                tone="success"
+                                                tone="save"
                                                 iconOnly
                                                 leftIconClass="fa fa-arrow-right"
                                                 title="Abrir"
@@ -151,7 +153,7 @@ export default function NotificationsIndexPage({ notifications }: Props): React.
                                             <Button
                                                 type="button"
                                                 size="sm"
-                                                tone="save"
+                                                tone="success"
                                                 iconOnly
                                                 leftIconClass="fa fa-check"
                                                 title="Marcar como lida"

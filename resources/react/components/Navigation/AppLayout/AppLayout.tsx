@@ -59,7 +59,7 @@ export default function AppLayout({ children }: { children: ReactNode }): React.
                 notificationItems={topbar?.notifications ?? []}
                 unreadCount={topbar?.unreadCount ?? 0}
                 notificationsHref="/notifications"
-                settingsHref="/auth/perfil"
+                showSettings={false}
                 actionsContent={
                     impersonating ? (
                         <ImpersonationIndicator
